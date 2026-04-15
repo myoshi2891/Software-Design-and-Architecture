@@ -1,6 +1,4 @@
 # 🏛️ TOGAF 完全試験ガイド
->
-> 初学者から合格まで導く、世界トップクラスのソフトウェアアーキテクトによる決定版解説
 
 ---
 
@@ -376,8 +374,8 @@ TOGAFの中核技術の一つ。**AS-IS（現状）**から**TO-BE（目標）**
 ```mermaid
 quadrantChart
     title ギャップ分析マトリクス（アプリケーション例）
-    x-axis 現状(AS-IS)なし --> 現状(AS-IS)あり
-    y-axis 目標(TO-BE)なし --> 目標(TO-BE)あり
+    x-axis "現状(AS-IS)なし" --> "現状(AS-IS)あり"
+    y-axis "目標(TO-BE)なし" --> "目標(TO-BE)あり"
     quadrant-1 "維持・改善<br>Retain/Improve"
     quadrant-2 "新規開発<br>New Development"
     quadrant-3 "廃止<br>Retire/Eliminate"
