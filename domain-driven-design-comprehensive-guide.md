@@ -828,7 +828,7 @@ class Order:
         self._status = OrderStatus.CONFIRMED
         # ドメインイベントを発行
         self._events.append(OrderConfirmedEvent(order_id=self.id,
-                                                  total=self.total_amount))
+                                                  total_amount=int(self.total_amount.amount)))
 
     def cancel(self) -> None:
         """注文キャンセル"""

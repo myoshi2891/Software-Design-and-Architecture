@@ -1,6 +1,6 @@
 # 🌐 API-First設計 完全ガイド
->
-> 世界トップクラスのソフトウェアアーキテクトが解説する、初学者から実践者まで対応したAPI-First決定版
+
+**世界トップクラスのソフトウェアアーキテクトが解説する、初学者から実践者まで対応したAPI-First決定版**
 
 ---
 
@@ -917,7 +917,7 @@ graph LR
 
 ```python
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, field_validator, Field
 from typing import Optional, List
 from enum import Enum
 
@@ -927,8 +927,9 @@ class CreateOrderRequest(BaseModel):
     items: List[OrderItemRequest] = Field(..., min_items=1, description="注文商品リスト")
     shipping_address: AddressRequest
 
-    @validator("customer_id")
-    def customer_id_must_not_be_empty(cls, v):
+    @field_validator("customer_id")
+    @classmethod
+    def customer_id_must_not_be_empty(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("顧客IDは空白のみは不可です")
         return v
@@ -1237,6 +1238,11 @@ class TestOrderService:
         """非アクティブ顧客は注文できないこと"""
         customer_service = MockCustomerService(is_active=False)
         service = OrderService(customer_service=customer_service)
+
+        valid_request = CreateOrderRequest(
+            customer_id="cust_123",
+            items=[OrderItem(product_id="prod_001", quantity=2)]
+        )
 
         with pytest.raises(DomainError) as exc_info:
             service.create_order(valid_request)

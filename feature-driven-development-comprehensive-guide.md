@@ -91,8 +91,8 @@ mindmap
 ```mermaid
 quadrantChart
     title FDDの適用判断マトリクス
-    x-axis プロジェクト規模（小） --> プロジェクト規模（大）
-    y-axis ドメイン複雑さ（低） --> ドメイン複雑さ（高）
+    x-axis "プロジェクト規模（小）" --> "プロジェクト規模（大）"
+    y-axis "ドメイン複雑さ（低）" --> "ドメイン複雑さ（高）"
     quadrant-1 "FDDを強く推奨<br>大規模×複雑ドメイン"
     quadrant-2 "FDDまたはScrumが適切<br>大規模×シンプル"
     quadrant-3 "XP/Kanbanで十分<br>小規模×シンプル"
@@ -450,8 +450,8 @@ flowchart LR
 ```mermaid
 quadrantChart
     title フィーチャー優先順位マトリクス
-    x-axis 実装コスト（低） --> 実装コスト（高）
-    y-axis ビジネス価値（低） --> ビジネス価値（高）
+    x-axis "実装コスト（低）" --> "実装コスト（高）"
+    y-axis "ビジネス価値（低）" --> "ビジネス価値（高）"
     quadrant-1 "🏆 最優先<br>今すぐ着手"
     quadrant-2 "⚠️ 要検討<br>コスト削減できれば着手"
     quadrant-3 "🗑️ 後回し<br>最低優先度"

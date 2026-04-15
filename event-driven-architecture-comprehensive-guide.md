@@ -226,6 +226,8 @@ class OrderPlacedEvent:
     def from_json(cls, json_str: str) -> "OrderPlacedEvent":
         """JSONデシリアライズ"""
         data = json.loads(json_str)
+        if isinstance(data.get("metadata"), dict):
+            data["metadata"] = EventMetadata(**data["metadata"])
         return cls(**data)
 
 
@@ -634,6 +636,8 @@ mindmap
 ```python
 from kafka import KafkaProducer, KafkaConsumer
 from kafka.errors import KafkaError
+from uuid import uuid4
+from datetime import datetime, timezone
 import json
 import logging
 
