@@ -207,7 +207,7 @@ sequenceDiagram
 
 ## 3. 依存性の逆転原則（DIP）
 
-### 3.1 DIの前後比較
+### 3.1 DIPの前後比較
 
 ```mermaid
 graph TD
@@ -949,6 +949,7 @@ graph TD
 ### 7.3 Composition Root 実装例（FastAPI）
 
 ```python
+import os
 from fastapi import FastAPI, Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -956,7 +957,10 @@ from functools import lru_cache
 
 # ─── DB設定 ───
 
-DATABASE_URL = "postgresql://user:pass@localhost/mydb"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL が環境変数に設定されていません。")
+
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
@@ -1910,7 +1914,7 @@ flowchart TD
 | リソース | URL |
 |---------|-----|
 | **DDD Community** | https://dddcommunity.org/ |
-| **Awesome Clean Architecture（GitHub）** | https://github.com/donnemartin/system-design-primer |
+| **Awesome Clean Architecture（GitHub）** | https://github.com/serodari/awesome-clean-architecture |
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
 
 ---
