@@ -1312,6 +1312,8 @@ if not JWT_PUBLIC_KEY:
     # 起動時に公開鍵の存在をチェック（Fail-Fast）
     raise RuntimeError("JWT_PUBLIC_KEY が設定されていません。")
 
+logger = logging.getLogger(__name__)
+
 security = HTTPBearer()
 
 class TokenData(BaseModel):
@@ -1337,7 +1339,8 @@ def verify_jwt_token(
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="トークンの有効期限切れ")
     except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"無効なトークン: {str(e)}")
+        logger.error(f"JWT検証失敗: {str(e)}")
+        raise HTTPException(status_code=401, detail="認証に失敗しました")
 
 
 def require_role(required_role: str):
@@ -1535,7 +1538,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Security scan with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
           severity: HIGH,CRITICAL

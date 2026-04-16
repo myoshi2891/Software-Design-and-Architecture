@@ -1610,7 +1610,7 @@ class TestPlaceOrderUseCase:
             customer_id="active_customer",
             items=[{"product_id": "prod_001", "quantity": 1}],
         ))
-        events = repositories["event_pub"].published_events
+        events = repositories["event_publisher"].published_events
         assert len(events) == 1
         assert isinstance(events[0], OrderPlacedEvent)
 
