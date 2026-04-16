@@ -727,13 +727,22 @@ plugins:
       timeout: 1000
       keepalive: 1000
 
-  # サーキットブレーカー
-  - name: circuit-breaker
-    service: inventory-service
-    config:
-      threshold: 50        # 50%のエラー率でOPEN
-      min_calls: 10        # 最低10リクエスト後に判定
-      timeout_window: 30   # 30秒のウィンドウ
+  # サーキットブレーカー（Upstream ヘルスチェックによる実装）
+upstreams:
+  - name: inventory-service
+    healthchecks:
+      passive:
+        healthy:
+          http_statuses: [200, 201, 204]
+          successes: 5
+        unhealthy:
+          http_statuses: [429, 500, 503]
+          tcp_failures: 2
+          timeouts: 3
+          http_failures: 5
+    targets:
+      - target: inventory-service:8080
+        weight: 100
 ```
 
 ---
@@ -1295,8 +1304,13 @@ import os
 
 # ─── JWT設定 ───
 
-JWT_SECRET = os.getenv("JWT_SECRET", "your-secret-key")
-JWT_ALGORITHM = "RS256"  # 本番では非対称鍵（RS256）を推奨
+# 公開鍵を環境変数またはファイルから読み込む（本番ではRS256必須）
+JWT_PUBLIC_KEY = os.getenv("JWT_PUBLIC_KEY")
+JWT_ALGORITHM = "RS256"
+
+if not JWT_PUBLIC_KEY:
+    # 起動時に公開鍵の存在をチェック（Fail-Fast）
+    raise RuntimeError("JWT_PUBLIC_KEY が設定されていません。")
 
 security = HTTPBearer()
 
@@ -1310,20 +1324,20 @@ class TokenData(BaseModel):
 def verify_jwt_token(
     credentials: HTTPAuthorizationCredentials = Security(security)
 ) -> TokenData:
-    """JWTトークンの検証"""
+    """JWTトークンの検証（非対称鍵 RS256 を使用）"""
     token = credentials.credentials
     try:
         payload = jwt.decode(
             token,
-            JWT_SECRET,
+            JWT_PUBLIC_KEY,
             algorithms=[JWT_ALGORITHM],
             options={"verify_exp": True}
         )
         return TokenData(**payload)
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="トークンの有効期限切れ")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="無効なトークン")
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"無効なトークン: {str(e)}")
 
 
 def require_role(required_role: str):

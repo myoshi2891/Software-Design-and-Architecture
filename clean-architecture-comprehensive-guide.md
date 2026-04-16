@@ -1567,18 +1567,18 @@ class TestPlaceOrderUseCase:
     def repositories(self):
         """テスト用インメモリリポジトリのセットアップ"""
         return {
-            "order_repo": InMemoryOrderRepository(),
-            "product_repo": InMemoryProductRepository([
+            "order_repository": InMemoryOrderRepository(),
+            "product_repository": InMemoryProductRepository([
                 Product(id="prod_001", name="Tシャツ",
                         price=Money(1000), stock=10),
                 Product(id="prod_002", name="ジーンズ",
                         price=Money(5000), stock=3),
             ]),
-            "customer_repo": InMemoryCustomerRepository([
+            "customer_repository": InMemoryCustomerRepository([
                 Customer(id="active_customer",  is_active=True),
                 Customer(id="inactive_customer", is_active=False),
             ]),
-            "event_pub": InMemoryEventPublisher(),
+            "event_publisher": InMemoryEventPublisher(),
         }
 
     @pytest.fixture
