@@ -1623,6 +1623,8 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # 毎週日曜日に実行
 
 jobs:
   unit-tests:
@@ -2102,6 +2104,16 @@ flowchart TD
 |---------|-----|
 | **Kent Beck - TDD解説動画（YouTube）** | https://www.youtube.com/watch?v=H4XuJXTJHGU |
 | **Udemy - TDD実践コース** | https://www.udemy.com/topic/test-driven-development/ |
+| **Coursera - Software Testing and Automation** | https://www.coursera.org/specializations/software-testing-automation |
+
+---
+
+> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+
+---
+
+*作成者：World-Class Software Architect Guide | バージョン 1.0 | TDD Complete Guide*
+com/topic/test-driven-development/ |
 | **Coursera - Software Testing and Automation** | https://www.coursera.org/specializations/software-testing-automation |
 
 ---

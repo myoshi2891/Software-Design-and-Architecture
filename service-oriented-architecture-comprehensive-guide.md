@@ -1253,6 +1253,8 @@ class CreateOrderResponse(BaseModel):
     message:    str
 
 
+import jwt
+
 # サービス間認証（ESBからの呼び出しを検証）
 async def verify_esb_token(
     x_service_token: Optional[str] = Header(None),
@@ -1261,7 +1263,21 @@ async def verify_esb_token(
     """ESBからの呼び出しであることを検証するミドルウェア"""
     if not x_service_token:
         raise HTTPException(status_code=401, detail="サービストークンが必要です")
-    # 実際はトークンの署名・有効期限を検証する
+    
+    try:
+        # トークンの署名・有効期限・オーディエンスを検証する
+        JWT_SECRET = "your-256-bit-secret"
+        jwt.decode(
+            x_service_token,
+            JWT_SECRET,
+            algorithms=["HS256"],
+            audience="order-service"
+        )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="トークンの有効期限が切れています")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="無効なトークンです")
+
     return {"correlation_id": x_correlation_id or str(uuid.uuid4())}
 
 
@@ -1281,7 +1297,7 @@ async def create_order(
     ESBを経由して呼び出される（直接クライアントからは呼べない）
     """
     correlation_id = auth["correlation_id"]
-    logger.info(f"[{correlation_id}] 注文作成: customer={request.customer_id}")
+    logger.info(f"[{correlation_id}] 注文作成リクエストを受信しました")
 
     # ビジネスロジック（在庫確認・注文作成など）
     order_id = f"ORD-{uuid.uuid4().hex[:8].upper()}"

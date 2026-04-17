@@ -1624,7 +1624,7 @@ USER appuser
 
 # ヘルスチェック設定
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8001/health || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')" || exit 1
 
 # ポート公開
 EXPOSE 8001
@@ -1746,7 +1746,7 @@ graph LR
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from opentelemetry.propagate import inject, extract
@@ -1756,14 +1756,14 @@ import structlog
 
 def setup_tracing(service_name: str):
     """分散トレーシングの初期化"""
-    # Jaegerエクスポーター設定
-    jaeger_exporter = JaegerExporter(
-        agent_host_name="jaeger",
-        agent_port=6831,
+    # OTLPエクスポーター設定
+    otlp_exporter = OTLPSpanExporter(
+        endpoint="http://otel-collector:4317",
+        insecure=True,
     )
 
     provider = TracerProvider()
-    provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
+    provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
     trace.set_tracer_provider(provider)
 
     # FastAPIとHTTPXの自動計装

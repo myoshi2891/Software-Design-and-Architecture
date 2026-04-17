@@ -1759,6 +1759,7 @@ jobs:
             --tb=short
 
       - name: Run all BDD scenarios
+        # 注記: このオプション（--gherkin-terminal-reporter）は pytest-bdd >= 2.18.0 および pytest >= 7.0.0 が必要です
         run: |
           pytest tests/bdd/ \
             --alluredir=allure-results \
