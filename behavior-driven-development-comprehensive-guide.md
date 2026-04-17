@@ -826,8 +826,11 @@ def error_message_displayed(expected_message, context):
 @then("カートの中身は変わらない")
 def cart_is_unchanged(shopping_cart, context):
     """カートの状態が変更されていないことを検証"""
-    # エラーが発生した場合、カートは空のまま
-    assert shopping_cart.is_empty, "カートは変更されていないはずです"
+    # 初期状態（例: context["initial_cart"]）と比較する
+    expected_items = context.get("initial_cart", [])
+    assert shopping_cart.items == expected_items, (
+        f"カートの状態が変わっています。期待: {expected_items}, 実際: {shopping_cart.items}"
+    )
 ```
 
 ```python
@@ -2189,7 +2192,7 @@ flowchart TD
 
 ---
 
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+> 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
 
 ---
 

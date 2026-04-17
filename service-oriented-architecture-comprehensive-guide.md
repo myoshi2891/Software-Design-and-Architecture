@@ -1305,7 +1305,7 @@ async def create_order(
     return CreateOrderResponse(
         order_id=order_id,
         status="CREATED",
-        created_at=datetime.utcnow().isoformat(),
+        created_at=datetime.now(timezone.utc).isoformat(),
         message="注文が正常に作成されました",
     )
 
@@ -1848,7 +1848,7 @@ flowchart TD
 |---------|-----|
 | **The Open Group SOA Governance** | https://www.opengroup.org/soa/source-book/gov/ |
 | **Gartner SOA Research** | https://www.gartner.com/en/information-technology/insights/service-oriented-architecture |
-| **IBMSOA ベストプラクティス** | https://www.ibm.com/think/topics/soa |
+| **IBM SOA ベストプラクティス** | https://www.ibm.com/think/topics/soa |
 | **Microsoft SOA Architecture Guide** | https://learn.microsoft.com/en-us/azure/architecture/guide/ |
 
 #### SOAとマイクロサービスの比較
@@ -1860,7 +1860,7 @@ flowchart TD
 
 ---
 
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
+> 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
 
 ---
 

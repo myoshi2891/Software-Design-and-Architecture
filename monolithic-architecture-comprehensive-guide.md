@@ -1043,8 +1043,9 @@ class OrderItemRequest(BaseModel):
     product_id:   str   = Field(..., min_length=1, description="商品ID")
     quantity:     int   = Field(..., ge=1, le=999, description="数量（1〜999）")
 
-    @validator("product_id")
-    def product_id_not_empty(cls, v):
+    @field_validator("product_id")
+    @classmethod
+    def product_id_not_empty(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("商品IDは空白のみは不可")
         return v.strip()
@@ -1334,12 +1335,12 @@ def get_current_user(
 def require_roles(*roles: Role):
     """ロールベースアクセス制御デコレーター"""
     def dependency(current_user: CurrentUser = Depends(get_current_user)):
-        for role in roles:
-            if not current_user.has_role(role):
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"権限が不足しています。必要なロール: {[r.value for r in roles]}",
-                )
+        # いずれかのロールを持っていれば許可 (OR条件)
+        if not any(current_user.has_role(role) for role in roles):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"権限が不足しています。必要なロールのいずれか: {[r.value for r in roles]}",
+            )
         return current_user
     return dependency
 
@@ -2212,7 +2213,12 @@ flowchart TD
 
 ---
 
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
+> 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
+
+---
+
+*作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*
+ります。実装前に必ず公式ドキュメントをご確認ください。
 
 ---
 

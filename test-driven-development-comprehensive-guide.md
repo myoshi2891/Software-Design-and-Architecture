@@ -1398,6 +1398,19 @@ class TestOrderRepository:
         # Assert: リポジトリ内のデータは変わらない
         result = repo.find_by_id(sample_order["id"])
         assert result["status"] == "pending"
+
+    def test_取得したデータを変更しても元のデータは変わらない(self, repo, sample_order):
+        """取得時にコピーが返されること（変更防止）"""
+        # Arrange
+        repo.save(sample_order)
+        result = repo.find_by_id(sample_order["id"])
+
+        # Act: 取得したオブジェクトを変更する
+        result["status"] = "cancelled"
+
+        # Assert: 再取得したデータは変わっていない
+        refetched = repo.find_by_id(sample_order["id"])
+        assert refetched["status"] == "pending"
 ```
 
 ---
@@ -2108,18 +2121,9 @@ flowchart TD
 
 ---
 
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+> 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
 
 ---
 
 *作成者：World-Class Software Architect Guide | バージョン 1.0 | TDD Complete Guide*
-com/topic/test-driven-development/ |
-| **Coursera - Software Testing and Automation** | https://www.coursera.org/specializations/software-testing-automation |
 
----
-
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
-
----
-
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | TDD Complete Guide*
