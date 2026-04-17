@@ -461,6 +461,16 @@ class Order:
     def create(cls, customer_id: str) -> "Order":
         return cls(id=str(uuid4()), customer_id=customer_id)
 
+    @classmethod
+    def from_persistence(cls, id: str, customer_id: str, status: OrderStatus, lines: list[OrderLine], created_at: datetime) -> "Order":
+        """永続化層からの復元用ファクトリ"""
+        order = cls(customer_id=customer_id)
+        order.id = id
+        order._status = status
+        order._lines = lines
+        order.created_at = created_at
+        return order
+
     # ─── ビジネスルール ───
     def add_line(self, product_id: str, product_name: str,
                  price: Money, qty: int) -> None:
@@ -899,12 +909,13 @@ class SQLAlchemyOrderRepository(OrderRepository):
 
     def _to_domain(self, record: OrderModel) -> Order:
         """DBレコード → ドメインエンティティ変換"""
-        order = Order.__new__(Order)
-        order.id          = record.id
-        order.customer_id = record.customer_id
-        order._status     = OrderStatus(record.status)
-        order._lines      = []
-        return order
+        return Order.from_persistence(
+            id=record.id,
+            customer_id=record.customer_id,
+            status=OrderStatus(record.status),
+            lines=[],  # 本来は明細のロードも必要
+            created_at=record.created_at if hasattr(record, 'created_at') else datetime.now()
+        )
 
     def _to_model(self, order: Order) -> OrderModel:
         """ドメインエンティティ → DBレコード変換"""

@@ -1229,8 +1229,9 @@ class OrderServiceClient:
 from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
+import os
 
 
 app = FastAPI(

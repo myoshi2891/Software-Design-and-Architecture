@@ -1090,6 +1090,7 @@ def context() -> ScenarioContext:
 def db_engine():
     """DBエンジン（セッション全体で1回）"""
     from sqlalchemy import create_engine
+    from src.infrastructure.db import Base
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     yield engine
@@ -2195,6 +2196,10 @@ flowchart TD
 ---
 
 > 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+
+---
+\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*
+�や仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
 
 ---
 \n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*

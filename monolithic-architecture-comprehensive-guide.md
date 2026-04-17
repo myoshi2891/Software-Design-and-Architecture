@@ -1658,9 +1658,7 @@ USER appuser
 
 # ヘルスチェック
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request, sys; \
-                   try: r = urllib.request.urlopen('http://localhost:8000/health'); sys.exit(0 if r.status == 200 else 1) \
-                   except: sys.exit(1)"
+    CMD python -c "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status == 200 else 1)"
 
 EXPOSE 8000
 
