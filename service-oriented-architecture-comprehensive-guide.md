@@ -1266,7 +1266,11 @@ async def verify_esb_token(
     
     try:
         # トークンの署名・有効期限・オーディエンスを検証する
-        JWT_SECRET = "your-256-bit-secret"
+        JWT_SECRET = os.getenv("JWT_SECRET")
+        if not JWT_SECRET:
+            logger.error("JWT_SECRET is not set in environment variables.")
+            raise HTTPException(status_code=500, detail="Server configuration error")
+            
         jwt.decode(
             x_service_token,
             JWT_SECRET,

@@ -1658,7 +1658,9 @@ USER appuser
 
 # ヘルスチェック
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD python -c "import urllib.request, sys; \
+                   try: r = urllib.request.urlopen('http://localhost:8000/health'); sys.exit(0 if r.status == 200 else 1) \
+                   except: sys.exit(1)"
 
 EXPOSE 8000
 
@@ -2220,6 +2222,4 @@ flowchart TD
 *作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*
 ります。実装前に必ず公式ドキュメントをご確認ください。
 
----
-
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*
+\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*

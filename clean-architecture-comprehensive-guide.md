@@ -419,6 +419,17 @@ class Money:
         return Money(self.amount * factor, self.currency)
 
 
+    @classmethod
+    def from_persistence(cls, id: str, customer_id: str, status: OrderStatus, lines: list[OrderLine], created_at: datetime) -> "Order":
+        """永続化層からの復元用ファクトリ"""
+        order = cls(customer_id=customer_id)
+        order.id = id
+        order._status = status
+        order._lines = lines
+        order.created_at = created_at
+        return order
+
+
 @dataclass
 class OrderLine:
     """注文明細（Aggregate内部のオブジェクト）"""
@@ -1916,11 +1927,4 @@ flowchart TD
 | **DDD Community** | https://dddcommunity.org/ |
 | **Awesome Clean Architecture（GitHub）** | https://github.com/serodari/awesome-clean-architecture |
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
-
----
-
-> 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
-
----
-
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*
+\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*

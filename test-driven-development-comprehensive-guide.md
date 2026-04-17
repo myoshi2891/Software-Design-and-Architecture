@@ -1277,6 +1277,8 @@ class OrderRepository(ABC):
     def exists(self, order_id: str) -> bool: ...
 
 
+from copy import deepcopy
+
 # ─── InMemory実装（テスト用）───
 
 class InMemoryOrderRepository(OrderRepository):
@@ -1288,14 +1290,15 @@ class InMemoryOrderRepository(OrderRepository):
         self._store: dict[str, dict] = {}
 
     def save(self, order: dict) -> None:
-        self._store[order["id"]] = order.copy()
+        self._store[order["id"]] = deepcopy(order)
 
     def find_by_id(self, order_id: str) -> Optional[dict]:
-        return self._store.get(order_id)
+        record = self._store.get(order_id)
+        return deepcopy(record) if record else None
 
     def find_by_customer_id(self, customer_id: str) -> list[dict]:
         return [
-            o.copy() for o in self._store.values()
+            deepcopy(o) for o in self._store.values()
             if o.get("customer_id") == customer_id
         ]
 

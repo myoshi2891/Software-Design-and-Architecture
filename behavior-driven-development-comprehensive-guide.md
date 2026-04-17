@@ -826,8 +826,10 @@ def error_message_displayed(expected_message, context):
 @then("カートの中身は変わらない")
 def cart_is_unchanged(shopping_cart, context):
     """カートの状態が変更されていないことを検証"""
-    # 初期状態（例: context["initial_cart"]）と比較する
-    expected_items = context.get("initial_cart", [])
+    if "initial_cart" not in context:
+        raise AssertionError("コンテキストに初期状態（initial_cart）が保存されていません")
+    
+    expected_items = context["initial_cart"]
     assert shopping_cart.items == expected_items, (
         f"カートの状態が変わっています。期待: {expected_items}, 実際: {shopping_cart.items}"
     )
@@ -2195,5 +2197,4 @@ flowchart TD
 > 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
 
 ---
-
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*
+\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*
