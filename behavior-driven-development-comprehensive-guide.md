@@ -1394,8 +1394,13 @@ def authenticated_headers(jwt_token_factory):
 @when(parsers.parse('以下のリクエストで「{method} {path}」を呼び出す'))
 def send_api_request(method, path, docstring, context, api_client, auth_headers):
     """DocStringのJSONボディを送信する汎用APIリクエストステップ"""
+    allowed_methods = {'get', 'post', 'put', 'delete', 'patch', 'head', 'options'}
+    method_lower = method.lower()
+    if method_lower not in allowed_methods:
+        raise ValueError(f"許可されていないHTTPメソッドです: {method}")
+
     request_body = json.loads(docstring)
-    http_method = getattr(api_client, method.lower())
+    http_method = getattr(api_client, method_lower)
     response = http_method(
         path,
         json=request_body,
@@ -2199,7 +2204,7 @@ flowchart TD
 
 ---
 \n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*
-�や仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+�や仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
 
 ---
 \n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*

@@ -600,6 +600,13 @@ class OrderNotificationHandler:
         logger.info(f"注文確認メール送信: order={order_id}")
         # メール送信処理...
 
+    def handle_order_cancelled(self, payload: dict) -> None:
+        """注文キャンセルイベントを処理する"""
+        order_id = payload["order_id"]
+        customer_id = payload["customer_id"]
+        logger.info(f"注文キャンセルメール送信: order={order_id}")
+        # メール送信処理...
+
 
 # ─── アプリ起動時の配線（Composition Root）───
 # config/dependencies.py
