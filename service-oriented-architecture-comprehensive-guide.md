@@ -1200,7 +1200,7 @@ class OrderServiceClient:
         import uuid
         corr_id = correlation_id or str(uuid.uuid4())
 
-        logger.info(f"注文作成開始 correlationId={corr_id} customerId={customer_id}")
+        logger.info(f"注文作成開始 correlationId={corr_id}")
 
         try:
             # SOAPリクエスト送信

@@ -1035,7 +1035,7 @@ graph TD
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, Annotated
 from decimal import Decimal
 import logging
@@ -1332,11 +1332,18 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Security(security_scheme),
 ) -> CurrentUser:
     """認証済みユーザーを取得する（FastAPI依存性注入）"""
-    payload = JWTService.verify_token(credentials.credentials)
-    return CurrentUser(
-        user_id=payload["sub"],
-        roles=payload.get("roles", []),
-    )
+    try:
+        payload = JWTService.verify_token(credentials.credentials)
+        return CurrentUser(
+            user_id=payload["sub"],
+            roles=payload.get("roles", []),
+        )
+    except AuthenticationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 def require_roles(*roles: Role):
@@ -1665,7 +1672,12 @@ USER appuser
 
 # ヘルスチェック
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status == 200 else 1)"
+    CMD python -c "import urllib.request, sys; \
+    try: \
+        res = urllib.request.urlopen('http://localhost:8000/health', timeout=5); \
+        sys.exit(0 if res.status == 200 else 1) \
+    except Exception: \
+        sys.exit(1)"
 
 EXPOSE 8000
 
@@ -2225,6 +2237,4 @@ flowchart TD
 ---
 
 *作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*
-ります。実装前に必ず公式ドキュメントをご確認ください。
 
-\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*

@@ -535,7 +535,7 @@ export const Button: React.FC<ButtonProps> = ({
         styles[size],
         fullWidth ? styles.fullWidth : '',
         loading ? styles.loading : '',
-      ].join(' ')}
+      ].filter(Boolean).join(' ')}
       onClick={handleClick}
       disabled={disabled || loading}
       aria-label={ariaLabel}
@@ -588,6 +588,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     setIsAdding(true);
     try {
       await onAddToCart(product.id, quantity);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      // 必要に応じてユーザーへの通知処理などをここに追加
     } finally {
       setIsAdding(false);
     }
@@ -701,26 +704,25 @@ function useFetch<T>(url: string): FetchState<T> {
   const refetch = useCallback(() => setTrigger(prev => prev + 1), []);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         const json = await response.json();
-        if (!cancelled) {
-          setData(json);
-        }
+        setData(json);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err : new Error('不明なエラー'));
+        if ((err as Error).name === 'AbortError') {
+          return; // アボート時は状態更新をスキップ
         }
+        setError(err instanceof Error ? err : new Error('不明なエラー'));
       } finally {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setLoading(false);
         }
       }
@@ -728,8 +730,10 @@ function useFetch<T>(url: string): FetchState<T> {
 
     fetchData();
 
-    // クリーンアップ：アンマウント時にリクエストをキャンセル
-    return () => { cancelled = true; };
+    // クリーンアップ：アンマウント時にリクエストを中断
+    return () => {
+      controller.abort();
+    };
   }, [url, trigger]);
 
   return { data, loading, error, refetch };
@@ -1993,6 +1997,16 @@ function useCart() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // UUID 生成のフォールバック
+  const generateId = useCallback(() => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }, []);
+
   const addItem = useCallback((product: CartItem['product'], quantity = 1) => {
     setItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
@@ -2003,9 +2017,9 @@ function useCart() {
             : item
         );
       }
-      return [...prev, { id: crypto.randomUUID(), product, quantity }];
+      return [...prev, { id: generateId(), product, quantity }];
     });
-  }, []);
+  }, [generateId]);
 
   const updateQuantity = useCallback((itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {

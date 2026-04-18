@@ -418,16 +418,10 @@ class Money:
     def multiply(self, factor: int) -> "Money":
         return Money(self.amount * factor, self.currency)
 
-
-    @classmethod
-    def from_persistence(cls, id: str, customer_id: str, status: OrderStatus, lines: list[OrderLine], created_at: datetime) -> "Order":
-        """永続化層からの復元用ファクトリ"""
-        order = cls(customer_id=customer_id)
-        order.id = id
-        order._status = status
-        order._lines = lines
-        order.created_at = created_at
-        return order
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Money):
+            return False
+        return self.amount == other.amount and self.currency == other.currency
 
 
 @dataclass
@@ -464,8 +458,7 @@ class Order:
     @classmethod
     def from_persistence(cls, id: str, customer_id: str, status: OrderStatus, lines: list[OrderLine], created_at: datetime) -> "Order":
         """永続化層からの復元用ファクトリ"""
-        order = cls(customer_id=customer_id)
-        order.id = id
+        order = cls(id=id, customer_id=customer_id)
         order._status = status
         order._lines = lines
         order.created_at = created_at
@@ -858,6 +851,7 @@ async def create_order(
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Integer, Enum as SAEnum
 from typing import Optional
+from datetime import datetime
 
 
 # ─── DBモデル（外側の詳細・ドメインとは別物）───
@@ -1938,4 +1932,6 @@ flowchart TD
 | **DDD Community** | https://dddcommunity.org/ |
 | **Awesome Clean Architecture（GitHub）** | https://github.com/serodari/awesome-clean-architecture |
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
-\n---\n\n*作成者：World-Class Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*
+---
+
+*作成者：World-Class Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*
