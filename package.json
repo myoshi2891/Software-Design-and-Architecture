@@ -1,0 +1,10 @@
+{
+  "name": "software-architecture-design",
+  "version": "1.0.0",
+  "scripts": {
+    "check-links": "find . -name \"*.md\" -not -path \"./node_modules/*\" | xargs -n 1 markdown-link-check -c .markdown-link-check.json"
+  },
+  "devDependencies": {
+    "markdown-link-check": "^3.12.0"
+  }
+}
