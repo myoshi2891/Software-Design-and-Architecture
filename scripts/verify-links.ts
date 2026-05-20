@@ -6,7 +6,7 @@ interface IgnorePattern {
   pattern: string;
 }
 
-const configPath = path.resolve(__dirname, '../.markdown-link-check.json');
+const configPath = path.resolve(import.meta.dir, '../.markdown-link-check.json');
 let ignoreRegexes: RegExp[] = [];
 
 if (fs.existsSync(configPath)) {
@@ -74,20 +74,26 @@ async function verifyUrl(url: string, timeoutMs: number = 10000): Promise<{ ok: 
       signal: controller.signal,
       headers
     });
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
-      clearTimeout(timeoutId);
       const getController = new AbortController();
       const getTimeoutId = setTimeout(() => getController.abort(), timeoutMs);
-      
-      res = await fetch(url, {
-        method: 'GET',
-        signal: getController.signal,
-        headers
-      });
-      clearTimeout(getTimeoutId);
-    } else {
-      clearTimeout(timeoutId);
+      try {
+        res = await fetch(url, {
+          method: 'GET',
+          signal: getController.signal,
+          headers
+        });
+        clearTimeout(getTimeoutId);
+      } catch (getErr: any) {
+        clearTimeout(getTimeoutId);
+        return {
+          ok: false,
+          status: 0,
+          error: getErr.name === 'AbortError' ? 'Timeout' : getErr.message
+        };
+      }
     }
 
     return {
@@ -96,11 +102,28 @@ async function verifyUrl(url: string, timeoutMs: number = 10000): Promise<{ ok: 
     };
   } catch (err: any) {
     clearTimeout(timeoutId);
-    return {
-      ok: false,
-      status: 0,
-      error: err.name === 'AbortError' ? 'Timeout' : err.message
-    };
+    // HEAD がthrow（タイムアウト・ネットワークエラー）した場合もGETで再試行
+    const getController = new AbortController();
+    const getTimeoutId = setTimeout(() => getController.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        signal: getController.signal,
+        headers
+      });
+      clearTimeout(getTimeoutId);
+      return {
+        ok: res.ok,
+        status: res.status
+      };
+    } catch (getErr: any) {
+      clearTimeout(getTimeoutId);
+      return {
+        ok: false,
+        status: 0,
+        error: getErr.name === 'AbortError' ? 'Timeout' : getErr.message
+      };
+    }
   }
 }
 

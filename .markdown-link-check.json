@@ -133,7 +133,10 @@
       "pattern": "^https://designtokens\\.org"
     },
     {
-      "pattern": "^https?://www\\.w3\\.org/"
+      "pattern": "^http://www\\.w3\\.org/2001/XMLSchema"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/TR/"
     },
     {
       "pattern": "^https://kentcdodds\\.com"
