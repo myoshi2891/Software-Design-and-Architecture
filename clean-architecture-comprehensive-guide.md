@@ -1903,7 +1903,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/ |
+| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 | **Ports and Adapters（詳細解説）** | https://herbertograca.com/2017/09/14/ports-adapters-architecture/ |
 
 #### アーキテクチャ解説
@@ -1944,7 +1944,7 @@ flowchart TD
 | リソース | URL |
 |---------|-----|
 | **DDD Community** | https://dddcommunity.org/ |
-| **Awesome Clean Architecture（GitHub）** | https://github.com/serodari/awesome-clean-architecture |
+| **Awesome Clean Architecture（GitHub）** | https://github.com/SSWConsulting/awesome-clean-architecture |
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
 ---
 

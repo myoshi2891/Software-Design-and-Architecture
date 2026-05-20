@@ -1808,7 +1808,7 @@ flowchart TD
 |---------|-----|
 | **OASIS SOA Reference Model** | https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm |
 | **W3C Web Services Architecture** | https://www.w3.org/TR/ws-arch/ |
-| **SOA Design Patterns（公式サイト）** | https://www.soapatterns.org/ |
+| **SOA Design Patterns（Wikipedia）** | https://en.wikipedia.org/wiki/Service-oriented_architecture |
 | **Thomas Erl SOA公式** | https://www.serviceorientation.com/ |
 | **TOGAF SOA Reference Architecture** | https://pubs.opengroup.org/architecture/togaf9-doc/arch/ |
 
@@ -1841,13 +1841,13 @@ flowchart TD
 |---------|-----|
 | **AWS Application Integration** | https://aws.amazon.com/products/application-integration/ |
 | **Azure Integration Services** | https://azure.microsoft.com/en-us/products/category/integration |
-| **Google Cloud Integration** | https://cloud.google.com/integration-connectors |
+| **Google Cloud Integration** | https://cloud.google.com/integration-connectors/docs/overview |
 
 #### SOAガバナンス・ベストプラクティス
 
 | リソース | URL |
 |---------|-----|
-| **The Open Group SOA Governance** | https://www.opengroup.org/soa/source-book/gov/ |
+| **The Open Group SOA Governance** | https://www.opengroup.org/subjectareas/soa |
 | **Gartner SOA Research** | https://www.gartner.com/en/information-technology/insights/service-oriented-architecture |
 | **IBM SOA ベストプラクティス** | https://www.ibm.com/think/topics/soa |
 | **Microsoft SOA Architecture Guide** | https://learn.microsoft.com/en-us/azure/architecture/guide/ |

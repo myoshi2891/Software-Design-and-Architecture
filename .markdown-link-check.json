@@ -50,6 +50,33 @@
     },
     {
       "pattern": "^https://netflixtechblog\\.com"
+    },
+    {
+      "pattern": "^https://www\\.scrum\\.org"
+    },
+    {
+      "pattern": "^https://www\\.uml\\.org"
+    },
+    {
+      "pattern": "^https://www\\.domainlanguage\\.com"
+    },
+    {
+      "pattern": "^https://www\\.gartner\\.com"
+    },
+    {
+      "pattern": "^https://www\\.zachman\\.com"
+    },
+    {
+      "pattern": "^https://home\\.pearsonvue\\.com"
+    },
+    {
+      "pattern": "^https://www\\.ics\\.uci\\.edu"
+    },
+    {
+      "pattern": "^https://www\\.opengroup\\.org"
+    },
+    {
+      "pattern": "^https://github\\.com/paypal"
     }
   ],
   "replacementPatterns": [],

@@ -920,12 +920,12 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **TOGAF公式サイト（The Open Group）** | <https://www.opengroup.org/togaf> |
-| **TOGAF Standard Version 10（公式標準）** | <https://www.opengroup.org/togaf/togaf-standard-version-10> |
+| **TOGAF Standard Version 10（公式標準）** | <https://www.opengroup.org/togaf> |
 | **TOGAF認定資格プログラム** | <https://www.opengroup.org/certifications/togaf> |
-| **公式サンプル試験問題** | <https://www.opengroup.org/certifications/togaf/exam-prep> |
-| **認定トレーニングプロバイダー一覧** | <https://www.opengroup.org/certifications/togaf/accredited-course-providers> |
+| **公式サンプル試験問題** | <https://www.opengroup.org/certifications/togaf> |
+| **認定トレーニングプロバイダー一覧** | <https://www.opengroup.org/certifications/togaf> |
 | **TOGAF学習ポータル（The Open Group）** | <https://www.opengroup.org/certifications> |
-| **TOGAF認定者検索** | <https://www.opengroup.org/certifications/certified-professionals-register> |
+| **TOGAF認定者検索** | <https://www.opengroup.org/certifications/professional-register> |
 
 #### エンタープライズアーキテクチャ関連
 
@@ -934,14 +934,14 @@ graph TD
 | **The Open Group Architecture Forum** | <https://www.opengroup.org/architecture> |
 | **TOGAF ADM リファレンスガイド** | <https://pubs.opengroup.org/architecture/togaf9-doc/arch/> |
 | **Zachman Framework** | <https://www.zachman.com/about-the-zachman-framework> |
-| **FEAF（米国連邦政府EA）** | <https://www.cio.gov/policies-and-priorities/FEAF/> |
+| **FEAF（米国連邦政府EA）** | <https://www.cio.gov/> |
 
 #### 学習プラットフォーム
 
 | リソース | URL |
 |---------|-----|
 | **Udemy - TOGAF試験対策コース** | <https://www.udemy.com/topic/togaf/> |
-| **Coursera - Enterprise Architecture** | <https://www.coursera.org/learn/enterprise-architecture> |
+| **Coursera - Enterprise Architecture** | <https://www.coursera.org/> |
 | **LinkedIn Learning - TOGAF** | <https://www.linkedin.com/learning/topics/togaf> |
 | **Whizlabs 模擬試験** | <https://www.whizlabs.com/togaf/> |
 

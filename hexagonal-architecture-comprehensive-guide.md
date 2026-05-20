@@ -2259,8 +2259,8 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **Alistair Cockburn 原著論文（英語）** | https://alistair.cockburn.us/ |
-| **Alistair Cockburn — Hexagonal Architecture Explained（最新解説）** | https://alistair.cockburn.us/ |
+| **Alistair Cockburn 原著論文（英語）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Alistair Cockburn — Hexagonal Architecture Explained（最新解説）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 | **Wikipedia — Hexagonal Architecture** | https://en.wikipedia.org/wiki/Hexagonal_architecture_(software) |
 
 #### アーキテクチャ関連
@@ -2291,7 +2291,7 @@ graph TD
 | **FastAPI — Dependency Injection** | https://fastapi.tiangolo.com/ja/tutorial/dependencies/ |
 | **SQLAlchemy — ORM チュートリアル** | https://docs.sqlalchemy.org/en/20/orm/tutorial.html |
 | **TestContainers Python** | https://testcontainers-python.readthedocs.io/ |
-| **pytest 公式ドキュメント** | https://docs.pytest.org/ja/latest/ |
+| **pytest 公式ドキュメント** | https://docs.pytest.org/ |
 
 #### TypeScript / Java 実装例（参考）
 

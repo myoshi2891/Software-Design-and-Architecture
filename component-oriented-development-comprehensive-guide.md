@@ -2428,7 +2428,7 @@ graph TD
 | **Design Tokens W3C 仕様** | https://tr.designtokens.org/ |
 | **Brad Frost — Atomic Design オンライン書籍（無料）** | https://atomicdesign.bradfrost.com/table-of-contents/ |
 | **Chromatic（ビジュアルテスト）** | https://www.chromatic.com/ |
-| **Style Dictionary（デザイントークン管理）** | https://amzn.github.io/style-dictionary/ |
+| **Style Dictionary（デザイントークン管理）** | https://styledictionary.com/ |
 
 #### マイクロフロントエンド
 

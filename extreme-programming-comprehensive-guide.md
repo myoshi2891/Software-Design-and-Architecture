@@ -1924,7 +1924,7 @@ quadrantChart
 |---------|-----|
 | **Agile Alliance - Pair Programming** | https://www.agilealliance.org/glossary/pairing/ |
 | **Martin Fowler - Pair Programming** | https://martinfowler.com/articles/on-pair-programming.html |
-| **Williams & Kessler - ペアプロ研究論文** | https://collaboration.csc.ncsu.edu/laurie/Papers/XPSardinia.PDF |
+| **Williams & Kessler - ペアプロ研究論文** | https://web.archive.org/web/20200810141635/https://collaboration.csc.ncsu.edu/laurie/Papers/XPSardinia.PDF |
 | **VS Code Live Share 公式** | https://learn.microsoft.com/ja-jp/visualstudio/liveshare/ |
 
 #### 継続的インテグレーション
@@ -1960,7 +1960,7 @@ quadrantChart
 |---------|-----|
 | **The Art of Agile Development（無料公開版）** | https://www.jamesshore.com/v2/books/aoad2 |
 | **Industrial Logic - XP Practices** | https://www.industriallogic.com/blog/is-xp-right-for-my-team/ |
-| **Thoughtworks - Agile Engineering Practices** | https://www.thoughtworks.com/agile-engineering |
+| **Thoughtworks - Agile Engineering Practices** | https://www.thoughtworks.com/insights/blog/agile |
 | **xp123.com（XP実践サイト）** | https://xp123.com/ |
 
 #### コーディング規約・ツール

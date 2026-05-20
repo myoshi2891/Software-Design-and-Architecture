@@ -1317,9 +1317,9 @@ graph TD
 | **Eric Ries 公式サイト（Lean Startup）** | https://theleanstartup.com/ |
 | **Lean Startup - Wikipedia（詳細解説）** | https://en.wikipedia.org/wiki/Lean_startup |
 | **Ash Maurya - Running Lean（Lean Stack）** | https://leanstack.com/lean-canvas |
-| **Y Combinator - How to Validate Your Startup Idea** | https://www.ycombinator.com/library/6g-how-to-validate-your-startup-idea |
+| **Y Combinator - How to Validate Your Startup Idea** | https://www.ycombinator.com/library |
 | **Paul Graham - Do Things That Don't Scale** | https://paulgraham.com/ds.html |
-| **a16z - Product-Market Fit（解説）** | https://a16z.com/product-market-fit/ |
+| **a16z - Product-Market Fit（解説）** | https://a16z.com/ |
 
 #### 顧客開発・インタビュー
 
@@ -1371,7 +1371,7 @@ graph TD
 |---------|-----|
 | **Dropbox MVP（動画デモで需要検証）** | https://www.youtube.com/watch?v=7QmCUDHpNzE |
 | **Airbnb の初期戦略（Paul Graham）** | https://paulgraham.com/growth.html |
-| **Twitter の誕生（ピボット事例）** | https://hbr.org/2017/10/why-the-lean-start-up-changes-everything |
+| **Twitter の誕生（ピボット事例）** | https://hbr.org/2013/05/why-the-lean-start-up-changes-everything |
 
 ---
 

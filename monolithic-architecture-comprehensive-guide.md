@@ -2178,7 +2178,7 @@ flowchart TD
 | **Martin Fowler - Presentation Domain Data Layering** | https://martinfowler.com/bliki/PresentationDomainDataLayering.html |
 | **Martin Fowler - Anemic Domain Model（アンチパターン）** | https://martinfowler.com/bliki/AnemicDomainModel.html |
 | **Martin Fowler - Repository Pattern** | https://martinfowler.com/eaaCatalog/repository.html |
-| **Hexagonal Architecture（Alistair Cockburn）** | https://alistair.cockburn.us/ |
+| **Hexagonal Architecture（Alistair Cockburn）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 
 #### Python 実装・フレームワーク
 
@@ -2198,7 +2198,7 @@ flowchart TD
 | **Redis 公式ドキュメント** | https://redis.io/docs/ |
 | **PostgreSQL パフォーマンスチューニング** | https://www.postgresql.org/docs/current/performance-tips.html |
 | **Docker Best Practices** | https://docs.docker.com/develop/develop-images/dockerfile_best-practices/ |
-| **Gunicorn 設定ガイド** | https://docs.gunicorn.org/en/stable/configure.html |
+| **Gunicorn 設定ガイド** | https://docs.gunicorn.org/ |
 
 #### テスト
 

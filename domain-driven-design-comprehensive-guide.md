@@ -1732,7 +1732,7 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **Hexagonal Architecture（Alistair Cockburn）** | https://alistair.cockburn.us/ |
+| **Hexagonal Architecture（Alistair Cockburn）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 | **CQRS（Martin Fowler）** | https://martinfowler.com/bliki/CQRS.html |
 | **Event Sourcing（Martin Fowler）** | https://martinfowler.com/eaaDev/EventSourcing.html |
 | **Microservices × DDD（Martin Fowler）** | https://martinfowler.com/articles/microservices.html |

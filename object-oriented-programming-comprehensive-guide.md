@@ -1601,9 +1601,9 @@ print(processor.process(text))   # HELLO WORLD!!!
 
 ---
 
-## 8. OOP とアーキテクチャの統合
+## 8. OOPとアーキテクチャの統合
 
-### 8.1 OOP とクリーンアーキテクチャ
+### 8.1 OOPとクリーンアーキテクチャ
 
 ```mermaid
 graph TD
@@ -2204,7 +2204,7 @@ if __name__ == "__main__":
 
 ---
 
-## 12. OOP アンチパターン
+## 12. OOPアンチパターン
 
 ### 12.1 主要なアンチパターン一覧
 
@@ -2417,7 +2417,7 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **pytest 公式ドキュメント** | https://docs.pytest.org/ja/latest/ |
+| **pytest 公式ドキュメント** | https://docs.pytest.org/ |
 | **Martin Fowler — Mocks Aren't Stubs** | https://martinfowler.com/articles/mocksArentStubs.html |
 | **Martin Fowler — テストピラミッド** | https://martinfowler.com/bliki/TestPyramid.html |
 
@@ -2426,7 +2426,7 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **Clean Architecture（Uncle Bob ブログ原文）** | https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html |
-| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/ |
+| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 | **The Onion Architecture** | https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/ |
 
 ---

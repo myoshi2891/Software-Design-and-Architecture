@@ -269,7 +269,7 @@ mindmap
 
 ---
 
-## 3. CSSカスタムプロパティ（変数）
+## 3. CSSカスタムプロパティ（変数）システム
 
 ### 3.1 CSS変数とは何か？
 
@@ -2708,7 +2708,7 @@ styles/
 ```
 
 > 📖 **参考：**  
-> - ITCSS：https://csswizardry.com/2018/11/itcss-and-cascade-layers/  
+> - ITCSS：https://csswizardry.com/  
 > - CUBE CSS：https://cube.fyi/  
 > - CSS Cascade Layers（MDN）：https://developer.mozilla.org/ja/docs/Learn/CSS/Building_blocks/Cascade_layers
 
@@ -2932,9 +2932,9 @@ flowchart LR
 ```
 
 > 📖 **参考：**  
-> - Style Dictionary：https://amzn.github.io/style-dictionary/  
+> - Style Dictionary：https://styledictionary.com/  
 > - Tokens Studio（Figmaプラグイン）：https://tokens.studio/  
-> - W3C Design Tokens仕様：https://design-tokens.github.io/community-group/format-spec/
+> - W3C Design Tokens仕様：https://designtokens.org
 
 ---
 
@@ -3947,8 +3947,8 @@ mindmap
 | アーキ | ITCSS | https://csswizardry.com/ |
 | アーキ | CUBE CSS | https://cube.fyi/ |
 | レイアウト | Every Layout | https://every-layout.dev/ |
-| トークン | Style Dictionary | https://amzn.github.io/style-dictionary/ |
-| トークン | W3C Design Tokens 仕様 | https://design-tokens.github.io/community-group/format-spec/ |
+| トークン | Style Dictionary | https://styledictionary.com/ |
+| トークン | W3C Design Tokens 仕様 | https://designtokens.org |
 
 ### 18.3 アクセシビリティ
 
