@@ -1,6 +1,7 @@
 # Software Architecture Design - Project Instructions
 
 このプロジェクトは、ソフトウェアアーキテクチャおよび設計原則に関する包括的なガイドラインを管理するドキュメントリポジトリです。
+このファイルに記載された指示は、AIエージェントが作業を行う際の**絶対的なルール**として機能します。
 
 ## 🏛 アーキテクチャと設計の原則
 
@@ -8,13 +9,16 @@
 - 各ガイドは、特定のトピック（DDD, Clean Architecture, TDD等）に焦点を当て、初学者から上級者までを対象とした内容にする。
 - 視覚的な理解を助けるため、Mermaidを使用したダイアグラムを積極的に活用する。
 - 実践的な理解のため、動作可能なコードスニペットを必ず含める。
+- 詳細は `docs/development-rules.md` も参照すること。
 
-### 2. 技術スタック（コード例）
-ガイド内で使用するコード例は、以下のスタックを標準とする：
-- **Backend:** Python (FastAPI, SQLAlchemy, Pydantic)
-- **Frontend:** TypeScript (React)
-- **Testing:** pytest, pytest-bdd
-- **Runtime:** Bun (スクリプトおよびツール用)
+### 2. スクリプト開発と技術スタック
+- **JavaScript の使用禁止:** 新規スクリプトの作成、または既存スクリプトの修正において、JavaScript (`.js`) を使用してはならない。必ず **TypeScript (`.ts`)** を使用すること。
+- **実行環境:** ランタイムとして **Bun** を標準とする。TypeScript ファイルは `bun` コマンドで直接実行すること。
+- **コード例の標準スタック:**
+    - **Backend:** Python (FastAPI, SQLAlchemy, Pydantic)
+    - **Frontend:** TypeScript (React)
+    - **Testing:** pytest, pytest-bdd
+    - **Runtime:** Bun (スクリプトおよびツール用)
 
 ### 3. 命名規則
 - **ファイル名:** `kebab-case-comprehensive-guide.md` の形式。
@@ -27,7 +31,7 @@
 ```bash
 bun run check-links
 ```
-このコマンドは `scripts/verify-links.js` を介して実行される。
+このコマンドは `scripts/verify-links.ts` を実行する。
 
 ### 2. CI/CD
 - GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックを実行する。
