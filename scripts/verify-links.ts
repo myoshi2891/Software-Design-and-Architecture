@@ -28,17 +28,29 @@ function shouldIgnore(url: string): boolean {
 }
 
 /**
- * MarkdownコンテンツからURLを抽出する
+ * MarkdownコンテンツからURLを抽出する（コードブロック内は除外）
  */
 function extractUrls(content: string): string[] {
-  const urlRegex = /https?:\/\/[^\s"'>\)]+/g;
+  // 1. 複数行コードブロック (``` ... ```) を除外
+  let cleanContent = content.replace(/```[\s\S]*?```/g, '');
+  
+  // 2. インラインコードブロック (`...`) を除外
+  cleanContent = cleanContent.replace(/`[^`\n]*`/g, '');
+
+  // 3. URLとして有効な文字セットのみにマッチさせる正規表現
+  const urlRegex = /https?:\/\/[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/]+(?:\?[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/?#]*)?/g;
+  
   const urls: string[] = [];
   let match;
-  while ((match = urlRegex.exec(content)) !== null) {
+  while ((match = urlRegex.exec(cleanContent)) !== null) {
     let url = match[0];
     url = url.replace(/[|`\]\s]+$/, '');
     if (url.endsWith('.') || url.endsWith(',') || url.endsWith(')')) {
-      url = url.replace(/[.,\)]+$/, '');
+      const openCount = (url.match(/\(/g) || []).length;
+      const closeCount = (url.match(/\)/g) || []).length;
+      if (closeCount > openCount) {
+        url = url.replace(/[.,\)]+$/, '');
+      }
     }
     urls.push(url);
   }

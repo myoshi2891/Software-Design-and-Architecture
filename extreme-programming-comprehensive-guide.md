@@ -1940,7 +1940,7 @@ quadrantChart
 
 | リソース | URL |
 |---------|-----|
-| **Martin Fowler - Refactoring（公式）** | https://refactoring.com/ |
+| **Martin Fowler - Refactoring（公式）** | https://martinfowler.com/books/refactoring.html |
 | **Martin Fowler - シンプルな設計の4つのルール** | https://martinfowler.com/bliki/BeckDesignRules.html |
 | **Martin Fowler - YAGNI** | https://martinfowler.com/bliki/Yagni.html |
 | **ボーイスカウトルール（Uncle Bob）** | https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html |

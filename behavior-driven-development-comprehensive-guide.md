@@ -1644,7 +1644,7 @@ mindmap
 ```mermaid
 graph TD
     subgraph "❌ 命令的（実装詳細が露出）"
-        IMP1["Scenario: ログインしてカートに追加する<br>  Given ユーザーがブラウザを開く<br>  When 「https://example.com/login」にアクセスする<br>  And テキストフィールドにメールを入力する<br>  And パスワードフィールドにパスワードを入力する<br>  And 「ログイン」ボタンをクリックする<br>  And 商品ページに移動する<br>  And 「カートに追加」ボタンをクリックする<br>  Then カートに商品が追加される"]
+        IMP1["Scenario: ログインしてカートに追加する<br>  Given ユーザーがブラウザを開く<br>  When 「example.com/login」にアクセスする<br>  And テキストフィールドにメールを入力する<br>  And パスワードフィールドにパスワードを入力する<br>  And 「ログイン」ボタンをクリックする<br>  And 商品ページに移動する<br>  And 「カートに追加」ボタンをクリックする<br>  Then カートに商品が追加される"]
         IMP_NOTE["❌ UI変更のたびにシナリオが壊れる<br>❌ ビジネスルールが不明確<br>❌ 非エンジニアには読みにくい"]
     end
 

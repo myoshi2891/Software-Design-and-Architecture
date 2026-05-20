@@ -2368,7 +2368,7 @@ graph TD
 |---------|-----|
 | **SOLID 原則（Robert C. Martin 公式）** | https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html |
 | **Martin Fowler — OOP パターン解説** | https://martinfowler.com/bliki/ |
-| **Refactoring.com — リファクタリング技法カタログ** | https://refactoring.com/ |
+| **Refactoring.com — リファクタリング技法カタログ** | https://martinfowler.com/books/refactoring.html |
 | **SourceMaking — デザインパターン・アンチパターン** | https://sourcemaking.com/ |
 | **Refactoring Guru — デザインパターン図解** | https://refactoring.guru/design-patterns |
 

@@ -125,6 +125,9 @@
     },
     {
       "pattern": "^https://designtokens\\.org"
+    },
+    {
+      "pattern": "^https?://www\\.w3\\.org/"
     }
   ],
   "replacementPatterns": [],
