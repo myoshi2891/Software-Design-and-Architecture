@@ -895,10 +895,8 @@ graph TD
             PROXY_B["Envoy Proxy<br>（Sidecar）"]
         end
 
-        subgraph CONTROL_PLANE["コントロールプレーン（Istiod）"]
-            PILOT["Pilot<br>トラフィック管理"]
-            CITADEL["Citadel<br>証明書管理（mTLS）"]
-            GALLEY["Galley<br>設定検証"]
+        subgraph CONTROL_PLANE["コントロールプレーン（istiod）"]
+            ISTIOD["istiod<br>トラフィック管理・証明書管理・設定検証"]
         end
 
         GRAFANA["📊 Grafana<br>メトリクス可視化"]
