@@ -89,6 +89,9 @@
     },
     {
       "pattern": "^https://web\\.archive\\.org"
+    },
+    {
+      "pattern": "^https://cloudevents\\.io"
     }
   ],
   "replacementPatterns": [],
