@@ -684,7 +684,7 @@ from decimal import Decimal
 from datetime import datetime
 
 from application.ports.outbound.order_repository_port import OrderRepositoryPort
-from domain.entities.order import Order, OrderStatus
+from domain.entities.order import Order, OrderStatus, OrderLine, Money
 
 
 # DBモデル（ドメインエンティティとは完全に分離）
@@ -747,8 +747,24 @@ class SQLOrderRepository(OrderRepositoryPort):
         order = Order(
             order_id=record.id,
             customer_id=record.customer_id,
+            created_at=record.created_at,
         )
-        order.status = OrderStatus(record.status)
+        order._status = OrderStatus(record.status)
+        
+        # record.items（明細）から OrderLine を復元して設定
+        if hasattr(record, "items") and record.items:
+            order._lines = [
+                OrderLine(
+                    product_id=item.product_id,
+                    product_name=item.product_name,
+                    unit_price=Money(item.unit_price),
+                    quantity=item.quantity
+                )
+                for item in record.items
+            ]
+        # total_amount は @property のため直接代入できませんが、
+        # 整合性検証のために記録用フィールドに退避するか、指示通りに属性を設定します。
+        # order._total_amount = Money(record.total_amount)
         return order
 ```
 

@@ -411,8 +411,24 @@ class Money:
             raise ValueError("通貨単位が一致しません")
         return Money(self.amount + other.amount, self.currency)
 
+    def __add__(self, other: "Money") -> "Money":
+        return self.add(other)
+
+    def __radd__(self, other: object) -> "Money":
+        if other == 0:
+            return self
+        if not isinstance(other, Money):
+            return NotImplemented
+        return self.add(other)
+
     def multiply(self, factor: int) -> "Money":
         return Money(self.amount * factor, self.currency)
+
+    def __mul__(self, factor: int) -> "Money":
+        return self.multiply(factor)
+
+    def __rmul__(self, factor: int) -> "Money":
+        return self.multiply(factor)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Money):
@@ -845,7 +861,7 @@ async def create_order(
 
 ```python
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, Enum as SAEnum
+from sqlalchemy import String, Integer, Enum as SAEnum, DateTime
 from typing import Optional
 from datetime import datetime
 
@@ -863,6 +879,7 @@ class OrderModel(Base):
     customer_id: Mapped[str]  = mapped_column(String(36), nullable=False)
     status:      Mapped[str]  = mapped_column(String(20), nullable=False)
     total_amount:Mapped[int]  = mapped_column(Integer,    nullable=False)
+    created_at:  Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
 # ─── Repository Adapter（Interface Adapters層）───
@@ -904,7 +921,7 @@ class SQLAlchemyOrderRepository(OrderRepository):
             customer_id=record.customer_id,
             status=OrderStatus(record.status),
             lines=[],  # 本来は明細のロードも必要
-            created_at=record.created_at if hasattr(record, 'created_at') else datetime.now()
+            created_at=record.created_at
         )
 
     def _to_model(self, order: Order) -> OrderModel:
@@ -914,6 +931,7 @@ class SQLAlchemyOrderRepository(OrderRepository):
             customer_id=order.customer_id,
             status=order.status.value,
             total_amount=order.total.amount,
+            created_at=order.created_at,
         )
 ```
 

@@ -1994,13 +1994,21 @@ function useCart() {
   const [isLoading, setIsLoading] = useState(false);
 
   // UUID 生成のフォールバック
+  // 安全なコンテキスト（HTTPS等）以外では crypto.randomUUID および crypto.getRandomValues が
+  // 使用できない場合があるため、段階的にフォールバックを行います（最終フォールバックはタイムスタンプ + 乱数）。
   const generateId = useCallback(() => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
+    if (typeof crypto !== 'undefined') {
+      if (crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      if (crypto.getRandomValues) {
+        return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
     }
-    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+    // 非セキュアコンテキスト用の非暗号フォールバック
+    return 'fbb-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 9);
   }, []);
 
   const addItem = useCallback((product: CartItem['product'], quantity = 1) => {

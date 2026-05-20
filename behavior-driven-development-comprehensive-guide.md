@@ -819,6 +819,13 @@ def error_message_displayed(expected_message, context):
     )
 
 
+@given("現在のカートの状態を保存する")
+def save_initial_cart(shopping_cart, context):
+    """現在のカートの状態（items）のコピーを context['initial_cart'] に保存"""
+    import copy
+    context["initial_cart"] = copy.deepcopy(shopping_cart.items)
+
+
 @then("カートの中身は変わらない")
 def cart_is_unchanged(shopping_cart, context):
     """カートの状態が変更されていないことを検証"""
@@ -994,7 +1001,10 @@ def send_order_request(docstring, context, api_client):
       { "shipping_address": {...} }
       \"\"\"
     """
-    request_body = json.loads(docstring)
+    try:
+        request_body = json.loads(docstring)
+    except json.JSONDecodeError as e:
+        raise AssertionError(f"DocString に不正な JSON が含まれています: {e}")
     response = api_client.post("/v1/orders", json=request_body)
     context["last_response"] = response
 

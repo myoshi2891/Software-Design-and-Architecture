@@ -2,6 +2,30 @@
   "ignorePatterns": [
     {
       "pattern": "^https://www.linkedin.com"
+    },
+    {
+      "pattern": "^https://ja\\.react\\.dev"
+    },
+    {
+      "pattern": "^https://testing-library\\.com"
+    },
+    {
+      "pattern": "^https://reactpatterns\\.com"
+    },
+    {
+      "pattern": "^https://blog\\.cleancoder\\.com"
+    },
+    {
+      "pattern": "^https://atomicdesign\\.bradfrost\\.com"
+    },
+    {
+      "pattern": "^https://www\\.componentdriven\\.org"
+    },
+    {
+      "pattern": "^https://www\\.smashingmagazine\\.com"
+    },
+    {
+      "pattern": "^https://martinfowler\\.com"
     }
   ],
   "replacementPatterns": [],

@@ -1344,6 +1344,9 @@ def get_current_user(
 
 def require_roles(*roles: Role):
     """ロールベースアクセス制御デコレーター"""
+    if not roles:
+        raise ValueError("少なくとも1つのロールを指定する必要があります")
+
     def dependency(current_user: CurrentUser = Depends(get_current_user)):
         # いずれかのロールを持っていれば許可 (OR条件)
         if not any(current_user.has_role(role) for role in roles):
@@ -1668,12 +1671,7 @@ USER appuser
 
 # ヘルスチェック
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request, sys; \
-    try: \
-        res = urllib.request.urlopen('http://localhost:8000/health', timeout=5); \
-        sys.exit(0 if res.status == 200 else 1) \
-    except Exception: \
-        sys.exit(1)"
+    CMD python -c "import urllib.request, sys; res = urllib.request.urlopen('http://localhost:8000/health', timeout=5); sys.exit(0 if res.status == 200 else 1)"
 
 EXPOSE 8000
 
