@@ -92,6 +92,18 @@
     },
     {
       "pattern": "^https://cloudevents\\.io"
+    },
+    {
+      "pattern": "^https://scaledagileframework\\.com"
+    },
+    {
+      "pattern": "^https://www\\.coursera\\.org"
+    },
+    {
+      "pattern": "^https://d1\\.awsstatic\\.com"
+    },
+    {
+      "pattern": "^https://www\\.eventstorming\\.com"
     }
   ],
   "replacementPatterns": [],
