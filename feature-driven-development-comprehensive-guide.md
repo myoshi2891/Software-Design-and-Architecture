@@ -1322,8 +1322,8 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **FDD公式サイト（Jeff De Luca）** | http://www.nebulon.com/articles/fdd/index.html |
-| **FDD原典論文（1997年シンガポールプロジェクト）** | http://www.nebulon.com/articles/fdd/downloads/oreilly-fdd.pdf |
+| **FDD公式サイト（Jeff De Luca）** | https://www.nebulon.com/articles/fdd/index.html |
+| **FDD原典論文（1997年シンガポールプロジェクト）** | https://www.nebulon.com/articles/fdd/downloads/oreilly-fdd.pdf |
 | **Agile Alliance - FDD解説** | https://www.agilealliance.org/glossary/fdd/ |
 | **Martin Fowler - FDD概要** | https://martinfowler.com/articles/newMethodology.html |
 
@@ -1341,7 +1341,7 @@ flowchart TD
 | **Agile Manifesto（公式）** | https://agilemanifesto.org/ |
 | **Agile Alliance（一般）** | https://www.agilealliance.org/ |
 | **Scrum.org（比較参考）** | https://www.scrum.org/ |
-| **Extreme Programming（XP公式）** | http://www.extremeprogramming.org/ |
+| **Extreme Programming（XP公式）** | https://www.extremeprogramming.org/ |
 
 #### ドメインモデリング関連
 

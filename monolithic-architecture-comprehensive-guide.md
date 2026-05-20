@@ -2221,7 +2221,7 @@ flowchart TD
 | リソース | URL |
 |---------|-----|
 | **Martin Fowler - Microservices（比較）** | https://martinfowler.com/articles/microservices.html |
-| **Sam Newman - When to use Microservices** | https://samnewman.io/talks/principles-of-microservices/ |
+| **Sam Newman - When to use Microservices** | https://www.youtube.com/watch?v=PFQnNFe27kU |
 | **AWS - Monolith to Microservices** | https://aws.amazon.com/microservices/ |
 
 ---

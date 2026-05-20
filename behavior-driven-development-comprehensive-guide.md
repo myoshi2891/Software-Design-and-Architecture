@@ -2177,7 +2177,7 @@ flowchart TD
 |---------|-----|
 | **Allure Framework 公式** | https://allurereport.org/ |
 | **Cucumber Reports** | https://reports.cucumber.io/ |
-| **Pickles（Living Documentation）** | http://www.picklesdoc.com/ |
+| **Pickles（Living Documentation）** | https://www.picklesdoc.com/ |
 | **GitHub Actions 公式** | https://docs.github.com/en/actions |
 
 #### UIテスト統合

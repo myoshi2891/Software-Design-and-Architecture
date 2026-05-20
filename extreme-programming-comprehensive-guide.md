@@ -1901,7 +1901,7 @@ quadrantChart
 
 | リソース | URL |
 |---------|-----|
-| **Extreme Programming（XP）公式サイト（Kent Beck）** | http://www.extremeprogramming.org/ |
+| **Extreme Programming（XP）公式サイト（Kent Beck）** | https://www.extremeprogramming.org/ |
 | **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/エクストリーム・プログラミング |
 | **Martin Fowler - Extreme Programming** | https://martinfowler.com/bliki/ExtremeProgramming.html |
 | **Ron Jeffries - XP解説（原典）** | https://ronjeffries.com/xprog/what-is-extreme-programming/ |
@@ -1914,7 +1914,7 @@ quadrantChart
 |---------|-----|
 | **Martin Fowler - TestDrivenDevelopment** | https://martinfowler.com/bliki/TestDrivenDevelopment.html |
 | **Martin Fowler - テストピラミッド** | https://martinfowler.com/bliki/TestPyramid.html |
-| **Uncle Bob - TDDの3つのルール** | http://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd |
+| **Uncle Bob - TDDの3つのルール** | https://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd |
 | **FIRST原則（詳細解説）** | https://agileinaflash.blogspot.com/2009/02/first.html |
 | **Kent Beck - TDD By Example（サンプル）** | https://www.google.com/books/edition/Test_Driven_Development/gFgnde_vwMAC |
 
