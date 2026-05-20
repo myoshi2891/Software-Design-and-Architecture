@@ -13,6 +13,15 @@ if (fs.existsSync(configPath)) {
   }
 }
 
+/**
+ * Scan all Markdown files (excluding node_modules) and validate links, logging outcomes.
+ *
+ * For each `**/*.md` file found under the current working directory, reads the file
+ * and runs a link check. Per-file outcomes are logged: a success message with the
+ * number of links and each link's status, an error message if the checker reports
+ * an error, or a timeout/blocked message if the checker does not complete within
+ * three seconds.
+ */
 async function run() {
   const glob = new Glob('**/*.md');
   const files = [];
