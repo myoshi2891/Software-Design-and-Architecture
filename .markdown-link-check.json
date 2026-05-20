@@ -104,6 +104,27 @@
     },
     {
       "pattern": "^https://www\\.eventstorming\\.com"
+    },
+    {
+      "pattern": "^https?://fonts\\.googleapis\\.com"
+    },
+    {
+      "pattern": "^https?://fonts\\.gstatic\\.com"
+    },
+    {
+      "pattern": "^http://www\\.w3\\.org/2000/svg"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/WAI/ARIA"
+    },
+    {
+      "pattern": "^https://schemas\\.tokens\\.studio"
+    },
+    {
+      "pattern": "^https://styledictionary\\.com"
+    },
+    {
+      "pattern": "^https://designtokens\\.org"
     }
   ],
   "replacementPatterns": [],
