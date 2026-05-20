@@ -50,3 +50,8 @@ Thumbs.db
 .env
 coverage/
 .markdown-link-check.json.bak
+
+# Bun
+bun.lockb
+bun.lock
+bun-cache/
