@@ -1,0 +1,155 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://www.linkedin.com"
+    },
+    {
+      "pattern": "^https://ja\\.react\\.dev"
+    },
+    {
+      "pattern": "^https://testing-library\\.com"
+    },
+    {
+      "pattern": "^https://reactpatterns\\.com"
+    },
+    {
+      "pattern": "^https://blog\\.cleancoder\\.com"
+    },
+    {
+      "pattern": "^https://atomicdesign\\.bradfrost\\.com"
+    },
+    {
+      "pattern": "^https://www\\.componentdriven\\.org"
+    },
+    {
+      "pattern": "^https://www\\.smashingmagazine\\.com"
+    },
+    {
+      "pattern": "^https://martinfowler\\.com"
+    },
+    {
+      "pattern": "^https://www\\.martinfowler\\.com"
+    },
+    {
+      "pattern": "^https://docs\\.nestjs\\.com"
+    },
+    {
+      "pattern": "^https://www\\.agilealliance\\.org"
+    },
+    {
+      "pattern": "^https://www\\.udemy\\.com"
+    },
+    {
+      "pattern": "^https://school\\.cucumber\\.io"
+    },
+    {
+      "pattern": "^https://wso2\\.com"
+    },
+    {
+      "pattern": "^https://www\\.wso2\\.com"
+    },
+    {
+      "pattern": "^https://cucumber\\.io"
+    },
+    {
+      "pattern": "^https://reports\\.cucumber\\.io"
+    },
+    {
+      "pattern": "^https://netflixtechblog\\.com"
+    },
+    {
+      "pattern": "^https://www\\.scrum\\.org"
+    },
+    {
+      "pattern": "^https://www\\.uml\\.org"
+    },
+    {
+      "pattern": "^https://www\\.domainlanguage\\.com"
+    },
+    {
+      "pattern": "^https://www\\.gartner\\.com"
+    },
+    {
+      "pattern": "^https://www\\.zachman\\.com"
+    },
+    {
+      "pattern": "^https://home\\.pearsonvue\\.com"
+    },
+    {
+      "pattern": "^https://www\\.ics\\.uci\\.edu"
+    },
+    {
+      "pattern": "^https://www\\.opengroup\\.org"
+    },
+    {
+      "pattern": "^https://github\\.com/paypal"
+    },
+    {
+      "pattern": "^https://www\\.fastcompany\\.com"
+    },
+    {
+      "pattern": "^https?://localhost"
+    },
+    {
+      "pattern": "^https?://127\\.0\\.0\\.1"
+    },
+    {
+      "pattern": "^https://web\\.archive\\.org"
+    },
+    {
+      "pattern": "^https://cloudevents\\.io"
+    },
+    {
+      "pattern": "^https://scaledagileframework\\.com"
+    },
+    {
+      "pattern": "^https://www\\.coursera\\.org"
+    },
+    {
+      "pattern": "^https://d1\\.awsstatic\\.com"
+    },
+    {
+      "pattern": "^https://www\\.eventstorming\\.com"
+    },
+    {
+      "pattern": "^https?://fonts\\.googleapis\\.com"
+    },
+    {
+      "pattern": "^https?://fonts\\.gstatic\\.com"
+    },
+    {
+      "pattern": "^http://www\\.w3\\.org/2000/svg"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/WAI/ARIA"
+    },
+    {
+      "pattern": "^https://schemas\\.tokens\\.studio"
+    },
+    {
+      "pattern": "^https://styledictionary\\.com"
+    },
+    {
+      "pattern": "^https://designtokens\\.org"
+    },
+    {
+      "pattern": "^http://www\\.w3\\.org/2001/XMLSchema"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/TR/"
+    },
+    {
+      "pattern": "^https://kentcdodds\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?extremeprogramming\\.org"
+    }
+  ],
+  "replacementPatterns": [],
+  "httpHeaders": [],
+  "timeout": "10s",
+  "retryOn429": true,
+  "retryCount": 1,
+  "fallbackRetryDelay": "10s",
+  "aliveStatusCodes": [200, 206]
+}

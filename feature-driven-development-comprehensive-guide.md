@@ -1322,8 +1322,8 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **FDD公式サイト（Jeff De Luca）** | http://www.nebulon.com/articles/fdd/index.html |
-| **FDD原典論文（1997年シンガポールプロジェクト）** | http://www.nebulon.com/articles/fdd/downloads/oreilly-fdd.pdf |
+| **FDD公式サイト（Jeff De Luca）** | https://web.archive.org/web/20210226190807/https://www.nebulon.com/articles/fdd/index.html |
+| **FDD原典論文（1997年シンガポールプロジェクト）** | https://web.archive.org/web/20201026042456/https://www.nebulon.com/articles/fdd/downloads/oreilly-fdd.pdf |
 | **Agile Alliance - FDD解説** | https://www.agilealliance.org/glossary/fdd/ |
 | **Martin Fowler - FDD概要** | https://martinfowler.com/articles/newMethodology.html |
 

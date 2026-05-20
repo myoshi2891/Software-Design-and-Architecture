@@ -1732,7 +1732,7 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **Hexagonal Architecture（Alistair Cockburn）** | https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Hexagonal Architecture（Alistair Cockburn）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
 | **CQRS（Martin Fowler）** | https://martinfowler.com/bliki/CQRS.html |
 | **Event Sourcing（Martin Fowler）** | https://martinfowler.com/eaaDev/EventSourcing.html |
 | **Microservices × DDD（Martin Fowler）** | https://martinfowler.com/articles/microservices.html |
@@ -1742,7 +1742,7 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **DDD Community** | https://dddcommunity.org/ |
-| **Virtual DDD（Meetup・講演）** | https://virtualddd.com/ |
+| **Virtual DDD（Meetup・講演）** | [外部サイト（活動休止・アーカイブ）](https://virtualddd.com/sessions) |
 | **DDD Crew（GitHub・リソース集）** | https://github.com/ddd-crew |
 | **Awesome DDD（GitHub）** | https://github.com/heynickc/awesome-ddd |
 

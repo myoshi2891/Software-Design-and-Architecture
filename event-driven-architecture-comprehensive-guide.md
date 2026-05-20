@@ -1,8 +1,4 @@
 # ⚡ EDA（イベント駆動アーキテクチャ）完全ガイド
->
-> 世界トップクラスのソフトウェアアーキテクトが解説する、初学者から実践者まで対応したEDA決定版
-
----
 
 ## 📚 目次
 
@@ -1697,7 +1693,7 @@ flowchart TD
 | **Martin Fowler - CQRS** | https://martinfowler.com/bliki/CQRS.html |
 | **Martin Fowler - Saga Pattern** | https://martinfowler.com/articles/patterns-of-distributed-systems/saga.html |
 | **CloudEvents 仕様（CNCF公式）** | https://cloudevents.io/ |
-| **EDA Visuals - イベント設計ガイド** | https://www.eventarchitect.io/ |
+| **EDA Visuals - イベント設計ガイド** | https://www.enterpriseintegrationpatterns.com/ |
 
 #### Apache Kafka
 

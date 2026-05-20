@@ -1,0 +1,13 @@
+{
+  "name": "software-architecture-design",
+  "version": "1.0.0",
+  "scripts": {
+    "check-links": "bun ./scripts/verify-links.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/node": "^25.9.1",
+    "markdown-link-check": "^3.14.2",
+    "typescript": "^6.0.3"
+  }
+}
