@@ -38,7 +38,7 @@ async function run(): Promise<void> {
       const timer = setTimeout(() => {
         console.log(`>>> TIMEOUT / BLOCKED: ${file}`);
         reject(new Error(`Timeout checking links in ${file}`));
-      }, 60000);
+      }, 180000);
 
       markdownLinkCheck(content, config, (err: Error | null, results: LinkCheckResult[]) => {
         clearTimeout(timer);
