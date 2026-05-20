@@ -757,8 +757,17 @@ class SQLOrderRepository(OrderRepositoryPort):
             id=order.order_id,
             customer_id=order.customer_id,
             status=order.status.value,
-            total_amount=order.total_amount,
+            total_amount=order.total_amount.amount,
             created_at=order.created_at,
+            items=[
+                OrderLineModel(
+                    product_id=line.product_id,
+                    product_name=line.product_name,
+                    unit_price=line.unit_price.amount,
+                    quantity=line.quantity,
+                )
+                for line in order.lines
+            ],
         )
 
     def _to_domain(self, record: OrderModel) -> Order:

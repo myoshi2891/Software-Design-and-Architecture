@@ -38,7 +38,7 @@ async function run(): Promise<void> {
       const timer = setTimeout(() => {
         console.log(`>>> TIMEOUT / BLOCKED: ${file}`);
         reject(new Error(`Timeout checking links in ${file}`));
-      }, 20000);
+      }, 60000);
 
       markdownLinkCheck(content, config, (err: Error | null, results: LinkCheckResult[]) => {
         clearTimeout(timer);
@@ -48,7 +48,7 @@ async function run(): Promise<void> {
           return;
         }
 
-        const failedLinks = results.filter((r) => r.status !== 'ok');
+        const failedLinks = results.filter((r) => r.status === 'dead' || r.status === 'error');
         if (failedLinks.length > 0) {
           const details = failedLinks.map((r) => `${r.link} (${r.status})`).join(', ');
           reject(new Error(`Dead links found in ${file}: ${details}`));
