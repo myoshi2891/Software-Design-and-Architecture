@@ -1074,7 +1074,7 @@ Month 10-12: 資格・応用
 
 - **Coursera - Software Architecture**: <https://www.coursera.org/specializations/software-design-architecture>
 - **Udemy - Clean Architecture**: <https://www.udemy.com/course/clean-architecture/>
-- **TOGAF学習（The Open Group）**: <https://learn.opengroup.org/>
+- **TOGAF学習（The Open Group）**: <https://www.opengroup.org/certifications>
 
 ---
 

@@ -2426,7 +2426,7 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **Clean Architecture（Uncle Bob ブログ原文）** | https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html |
-| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/ |
 | **The Onion Architecture** | https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/ |
 
 ---

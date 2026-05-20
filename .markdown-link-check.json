@@ -26,6 +26,30 @@
     },
     {
       "pattern": "^https://martinfowler\\.com"
+    },
+    {
+      "pattern": "^https://www\\.agilealliance\\.org"
+    },
+    {
+      "pattern": "^https://www\\.udemy\\.com"
+    },
+    {
+      "pattern": "^https://school\\.cucumber\\.io"
+    },
+    {
+      "pattern": "^https://wso2\\.com"
+    },
+    {
+      "pattern": "^https://www\\.wso2\\.com"
+    },
+    {
+      "pattern": "^https://cucumber\\.io"
+    },
+    {
+      "pattern": "^https://reports\\.cucumber\\.io"
+    },
+    {
+      "pattern": "^https://netflixtechblog\\.com"
     }
   ],
   "replacementPatterns": [],

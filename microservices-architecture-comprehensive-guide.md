@@ -2308,8 +2308,8 @@ flowchart TD
 |---------|-----|
 | **Microservices.io（Chris Richardson）** | https://microservices.io/ |
 | **AWS マイクロサービス解説** | https://aws.amazon.com/microservices/ |
-| **Google Cloud マイクロサービス** | https://cloud.google.com/architecture/microservices-architecture |
-| **Netflix Tech Blog** | https://netflixtechblog.com/ |
+| **Google Cloud マイクロサービス** | https://cloud.google.com/learn/what-is-microservices-architecture |
+| **Netflix Tech Blog** | https://netflixtechblog.com/tagged/architecture |
 
 ---
 

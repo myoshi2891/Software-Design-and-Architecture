@@ -2178,7 +2178,7 @@ flowchart TD
 | **Martin Fowler - Presentation Domain Data Layering** | https://martinfowler.com/bliki/PresentationDomainDataLayering.html |
 | **Martin Fowler - Anemic Domain Model（アンチパターン）** | https://martinfowler.com/bliki/AnemicDomainModel.html |
 | **Martin Fowler - Repository Pattern** | https://martinfowler.com/eaaCatalog/repository.html |
-| **Hexagonal Architecture（Alistair Cockburn）** | https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Hexagonal Architecture（Alistair Cockburn）** | https://alistair.cockburn.us/ |
 
 #### Python 実装・フレームワーク
 
@@ -2222,7 +2222,7 @@ flowchart TD
 |---------|-----|
 | **Martin Fowler - Microservices（比較）** | https://martinfowler.com/articles/microservices.html |
 | **Sam Newman - When to use Microservices** | https://samnewman.io/talks/principles-of-microservices/ |
-| **AWS - Monolith to Microservices** | https://aws.amazon.com/microservices/monolith-to-microservices/ |
+| **AWS - Monolith to Microservices** | https://aws.amazon.com/microservices/ |
 
 ---
 

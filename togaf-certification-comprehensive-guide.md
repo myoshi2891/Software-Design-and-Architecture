@@ -924,7 +924,7 @@ graph TD
 | **TOGAF認定資格プログラム** | <https://www.opengroup.org/certifications/togaf> |
 | **公式サンプル試験問題** | <https://www.opengroup.org/certifications/togaf/exam-prep> |
 | **認定トレーニングプロバイダー一覧** | <https://www.opengroup.org/certifications/togaf/accredited-course-providers> |
-| **TOGAF学習ポータル（The Open Group）** | <https://learn.opengroup.org/> |
+| **TOGAF学習ポータル（The Open Group）** | <https://www.opengroup.org/certifications> |
 | **TOGAF認定者検索** | <https://www.opengroup.org/certifications/certified-professionals-register> |
 
 #### エンタープライズアーキテクチャ関連
@@ -965,7 +965,7 @@ graph TD
 
 ---
 
-> 📅 本ドキュメントは2024年時点の情報を基に作成しています。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（<https://www.opengroup.org/togaf）をご確認ください。>
+> 📅 本ドキュメントは2024年時点の情報を基に作成しています。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（<https://www.opengroup.org/togaf>）をご確認ください。
 
 ---
 

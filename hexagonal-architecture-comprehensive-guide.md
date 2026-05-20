@@ -2259,8 +2259,8 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **Alistair Cockburn 原著論文（英語）** | https://alistair.cockburn.us/hexagonal-architecture/ |
-| **Alistair Cockburn — Hexagonal Architecture Explained（最新解説）** | https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Alistair Cockburn 原著論文（英語）** | https://alistair.cockburn.us/ |
+| **Alistair Cockburn — Hexagonal Architecture Explained（最新解説）** | https://alistair.cockburn.us/ |
 | **Wikipedia — Hexagonal Architecture** | https://en.wikipedia.org/wiki/Hexagonal_architecture_(software) |
 
 #### アーキテクチャ関連

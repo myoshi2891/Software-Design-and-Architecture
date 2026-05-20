@@ -1903,7 +1903,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Hexagonal Architecture（Alistair Cockburn 原文）** | https://alistair.cockburn.us/ |
 | **Ports and Adapters（詳細解説）** | https://herbertograca.com/2017/09/14/ports-adapters-architecture/ |
 
 #### アーキテクチャ解説
