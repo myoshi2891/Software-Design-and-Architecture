@@ -28,6 +28,12 @@
       "pattern": "^https://martinfowler\\.com"
     },
     {
+      "pattern": "^https://www\\.martinfowler\\.com"
+    },
+    {
+      "pattern": "^https://docs\\.nestjs\\.com"
+    },
+    {
       "pattern": "^https://www\\.agilealliance\\.org"
     },
     {
