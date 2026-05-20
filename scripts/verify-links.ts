@@ -1,30 +1,99 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Glob } from 'bun';
-// @ts-ignore
-import markdownLinkCheck from 'markdown-link-check';
 
-interface LinkCheckResult {
-  link: string;
-  status: 'ok' | 'dead' | string;
+interface IgnorePattern {
+  pattern: string;
 }
 
 const configPath = path.resolve(__dirname, '../.markdown-link-check.json');
-let config: any = {};
+let ignoreRegexes: RegExp[] = [];
+
 if (fs.existsSync(configPath)) {
   try {
-    config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    if (config.ignorePatterns && Array.isArray(config.ignorePatterns)) {
+      ignoreRegexes = config.ignorePatterns.map((item: IgnorePattern) => new RegExp(item.pattern));
+    }
   } catch (e) {
     console.error('Failed to parse config file:', e);
   }
 }
 
 /**
- * Validate links in all Markdown files in the repository, excluding files under `node_modules`.
- *
- * Searches for Markdown files recursively from the repository root, checks each file's links sequentially, logs per-file
- * start/success/timeout events and each link's status, and stops with an error when any file contains a
- * link whose status is `dead` or `error`.
+ * URLが無視パターンにマッチするか判定する
+ */
+function shouldIgnore(url: string): boolean {
+  return ignoreRegexes.some((regex) => regex.test(url));
+}
+
+/**
+ * MarkdownコンテンツからURLを抽出する
+ */
+function extractUrls(content: string): string[] {
+  const urlRegex = /https?:\/\/[^\s"'>\)]+/g;
+  const urls: string[] = [];
+  let match;
+  while ((match = urlRegex.exec(content)) !== null) {
+    let url = match[0];
+    url = url.replace(/[|`\]\s]+$/, '');
+    if (url.endsWith('.') || url.endsWith(',') || url.endsWith(')')) {
+      url = url.replace(/[.,\)]+$/, '');
+    }
+    urls.push(url);
+  }
+  return Array.from(new Set(urls));
+}
+
+/**
+ * URLのステータスを確認する（HEADで失敗した場合はGETで再試行、10秒タイムアウト）
+ */
+async function verifyUrl(url: string, timeoutMs: number = 10000): Promise<{ ok: boolean; status: number; error?: string }> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  };
+
+  try {
+    let res = await fetch(url, {
+      method: 'HEAD',
+      signal: controller.signal,
+      headers
+    });
+
+    if (!res.ok) {
+      clearTimeout(timeoutId);
+      const getController = new AbortController();
+      const getTimeoutId = setTimeout(() => getController.abort(), timeoutMs);
+      
+      res = await fetch(url, {
+        method: 'GET',
+        signal: getController.signal,
+        headers
+      });
+      clearTimeout(getTimeoutId);
+    } else {
+      clearTimeout(timeoutId);
+    }
+
+    return {
+      ok: res.ok,
+      status: res.status
+    };
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    return {
+      ok: false,
+      status: 0,
+      error: err.name === 'AbortError' ? 'Timeout' : err.message
+    };
+  }
+}
+
+/**
+ * リポジトリ内のすべてのMarkdownファイルをスキャンしてリンクを検証する
  */
 async function run(): Promise<void> {
   const glob = new Glob('**/*.md');
@@ -34,38 +103,42 @@ async function run(): Promise<void> {
     files.push(file);
   }
 
+  let hasErrors = false;
+
   for (const file of files) {
     console.log(`>>> START: ${file}`);
     const content = fs.readFileSync(file, 'utf-8');
+    const urls = extractUrls(content);
+    const checkedUrls: string[] = [];
+    const deadLinks: string[] = [];
 
-    await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => {
-        console.log(`>>> TIMEOUT / BLOCKED: ${file}`);
-        reject(new Error(`Timeout checking links in ${file}`));
-      }, 180000);
+    for (const url of urls) {
+      if (shouldIgnore(url)) {
+        console.log(`  Ignore: ${url}`);
+        continue;
+      }
+      checkedUrls.push(url);
+      console.log(`  Checking: ${url} ...`);
+      const result = await verifyUrl(url);
+      if (result.ok) {
+        console.log(`    Link: ${url} -> ok (${result.status})`);
+      } else {
+        const errorMsg = result.error ? ` (${result.error})` : '';
+        console.log(`    Link: ${url} -> dead/error [Status: ${result.status}]${errorMsg}`);
+        deadLinks.push(`${url} [Status: ${result.status}]${errorMsg}`);
+      }
+    }
 
-      markdownLinkCheck(content, config, (err: Error | null, results: LinkCheckResult[]) => {
-        clearTimeout(timer);
-        if (err) {
-          console.error(`Error checking ${file}:`, err);
-          reject(new Error(`Error checking ${file}: ${err.message}`));
-          return;
-        }
+    if (deadLinks.length > 0) {
+      console.error(`Error checking ${file}: Dead links found: ${deadLinks.join(', ')}`);
+      hasErrors = true;
+    } else {
+      console.log(`>>> SUCCESS: ${file} (checked ${checkedUrls.length} links)`);
+    }
+  }
 
-        const failedLinks = results.filter((r) => r.status === 'dead' || r.status === 'error');
-        if (failedLinks.length > 0) {
-          const details = failedLinks.map((r) => `${r.link} (${r.status})`).join(', ');
-          reject(new Error(`Dead links found in ${file}: ${details}`));
-          return;
-        }
-
-        console.log(`>>> SUCCESS: ${file} (found ${results.length} links)`);
-        results.forEach((r) => {
-          console.log(`  Link: ${r.link} -> ${r.status}`);
-        });
-        resolve();
-      });
-    });
+  if (hasErrors) {
+    throw new Error('Dead links found in one or more files.');
   }
 }
 
