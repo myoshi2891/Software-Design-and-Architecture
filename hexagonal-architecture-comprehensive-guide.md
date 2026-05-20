@@ -751,20 +751,30 @@ class SQLOrderRepository(OrderRepositoryPort):
         )
         order._status = OrderStatus(record.status)
         
-        # record.items（明細）から OrderLine を復元して設定
-        if hasattr(record, "items") and record.items:
-            order._lines = [
-                OrderLine(
-                    product_id=item.product_id,
-                    product_name=item.product_name,
-                    unit_price=Money(item.unit_price),
-                    quantity=item.quantity
-                )
-                for item in record.items
-            ]
-        # total_amount は @property のため直接代入できませんが、
-        # 整合性検証のために記録用フィールドに退避するか、指示通りに属性を設定します。
-        # order._total_amount = Money(record.total_amount)
+        # record.items（明細）がロードされていない場合はエラー
+        if not hasattr(record, "items") or record.items is None:
+            raise ValueError("Order items cannot be reconstructed (missing or not loaded)")
+
+        order._lines = [
+            OrderLine(
+                product_id=item.product_id,
+                product_name=item.product_name,
+                unit_price=Money(item.unit_price),
+                quantity=item.quantity
+            )
+            for item in record.items
+        ]
+        
+        # _total_amount を設定して整合性を保証
+        order._total_amount = order.total_amount
+        
+        # record.total_amount との整合性検証
+        if order._total_amount.amount != record.total_amount:
+            raise ValueError(
+                f"Consistency error: calculated total {order._total_amount.amount} "
+                f"does not match record total {record.total_amount}"
+            )
+            
         return order
 ```
 

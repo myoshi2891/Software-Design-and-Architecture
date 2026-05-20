@@ -707,12 +707,15 @@ def shopping_cart(product_catalog):
 
 
 @pytest.fixture
-def context():
+def context(shopping_cart):
     """
     シナリオをまたぐコンテキスト（状態共有）
     pytest-bdd では辞書でステップ間の状態を共有する
     """
-    return {}
+    import copy
+    return {
+        "initial_cart": copy.deepcopy(shopping_cart.items)
+    }
 ```
 
 ```python

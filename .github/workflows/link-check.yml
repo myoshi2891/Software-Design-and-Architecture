@@ -1,19 +1,28 @@
 name: link-check
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: '0 0 * * 1' # 毎週月曜日に実行
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          node-version: '20'
-      - run: npm install
-      - run: npm run check-links
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@06793c2091292fee037419ef06b251d5ff7a9f47 # v1.2.1
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun run check-links

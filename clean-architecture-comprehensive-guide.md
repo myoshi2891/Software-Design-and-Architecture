@@ -470,11 +470,7 @@ class Order:
     @classmethod
     def from_persistence(cls, id: str, customer_id: str, status: OrderStatus, lines: list[OrderLine], created_at: datetime) -> "Order":
         """永続化層からの復元用ファクトリ"""
-        order = cls(id=id, customer_id=customer_id)
-        order._status = status
-        order._lines = lines
-        order.created_at = created_at
-        return order
+        return cls(id=id, customer_id=customer_id, _status=status, _lines=lines, created_at=created_at)
 
     # ─── ビジネスルール ───
     def add_line(self, product_id: str, product_name: str,
@@ -503,10 +499,7 @@ class Order:
 
     @property
     def total(self) -> Money:
-        if not self._lines:
-            return Money(0)
-        totals = [line.subtotal for line in self._lines]
-        return sum(totals[1:], totals[0])
+        return sum((line.subtotal for line in self._lines), Money(0))
 
     @property
     def lines(self) -> tuple[OrderLine, ...]:
