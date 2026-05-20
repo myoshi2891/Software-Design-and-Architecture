@@ -1960,7 +1960,7 @@ quadrantChart
 |---------|-----|
 | **The Art of Agile Development（無料公開版）** | https://www.jamesshore.com/v2/books/aoad2 |
 | **Industrial Logic - XP Practices** | https://www.industriallogic.com/blog/is-xp-right-for-my-team/ |
-| **Thoughtworks - Agile Engineering Practices** | https://www.thoughtworks.com/insights/blog/agile |
+| **Thoughtworks - Agile Engineering Practices** | https://www.thoughtworks.com/insights/topic/agile-engineering-practices |
 | **xp123.com（XP実践サイト）** | https://xp123.com/ |
 
 #### コーディング規約・ツール

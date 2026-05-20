@@ -2,9 +2,11 @@
   "name": "software-architecture-design",
   "version": "1.0.0",
   "scripts": {
-    "check-links": "bun ./scripts/verify-links.js"
+    "check-links": "bun ./scripts/verify-links.ts"
   },
   "devDependencies": {
-    "markdown-link-check": "^3.14.2"
+    "@types/node": "^25.9.1",
+    "markdown-link-check": "^3.14.2",
+    "typescript": "^6.0.3"
   }
 }

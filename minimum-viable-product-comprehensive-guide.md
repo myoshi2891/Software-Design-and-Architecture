@@ -225,7 +225,7 @@ flowchart TD
 
     PHASE3["🏗️ Phase 3：アーキテクチャ設計\n技術スタック選定\n拡張性を考慮した設計\nセキュリティ設計"]
 
-    PHASE4["⚙️ Phase 4：実装\nコアコア機能の開発\nCI/CDの整備\n品質保証"]
+    PHASE4["⚙️ Phase 4：実装\nコア機能の開発\nCI/CDの整備\n品質保証"]
 
     PHASE5["🚀 Phase 5：リリース\n限定公開\n段階的ロールアウト\nモニタリング設定"]
 
@@ -1317,9 +1317,9 @@ graph TD
 | **Eric Ries 公式サイト（Lean Startup）** | https://theleanstartup.com/ |
 | **Lean Startup - Wikipedia（詳細解説）** | https://en.wikipedia.org/wiki/Lean_startup |
 | **Ash Maurya - Running Lean（Lean Stack）** | https://leanstack.com/lean-canvas |
-| **Y Combinator - How to Validate Your Startup Idea** | https://www.ycombinator.com/library |
+| **Y Combinator - How to Validate Your Startup Idea** | https://www.ycombinator.com/library/7x-how-to-get-and-test-ideas |
 | **Paul Graham - Do Things That Don't Scale** | https://paulgraham.com/ds.html |
-| **a16z - Product-Market Fit（解説）** | https://a16z.com/ |
+| **a16z - Product-Market Fit（解説）** | https://a16z.com/12-things-about-product-market-fit/ |
 
 #### 顧客開発・インタビュー
 
@@ -1371,7 +1371,7 @@ graph TD
 |---------|-----|
 | **Dropbox MVP（動画デモで需要検証）** | https://www.youtube.com/watch?v=7QmCUDHpNzE |
 | **Airbnb の初期戦略（Paul Graham）** | https://paulgraham.com/growth.html |
-| **Twitter の誕生（ピボット事例）** | https://hbr.org/2013/05/why-the-lean-start-up-changes-everything |
+| **Twitter の誕生（ピボット事例）** | [Wikipedia: History of Twitter](https://en.wikipedia.org/wiki/History_of_Twitter) / [FastCompany: Insiders' History](https://www.fastcompany.com/3001880/insiders-history-how-podcasting-startup-pivoted-become-twitter) |
 
 ---
 

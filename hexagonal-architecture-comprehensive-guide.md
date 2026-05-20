@@ -678,8 +678,8 @@ class EventPublisherPort(ABC):
 # ─── ドリブンアダプター：SQLAlchemy 実装 ───
 # adapters/outbound/persistence/sql_order_repository.py
 
-from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Numeric, DateTime
+from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import String, Numeric, DateTime, ForeignKey
 from decimal import Decimal
 from datetime import datetime
 
@@ -699,6 +699,24 @@ class OrderModel(Base):
     status:      Mapped[str]      = mapped_column(String(20), nullable=False)
     total_amount:Mapped[Decimal]  = mapped_column(Numeric(12, 2), nullable=False)
     created_at:  Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+    items: Mapped[list["OrderLineModel"]] = relationship(
+        "OrderLineModel",
+        back_populates="order",
+        cascade="all, delete-orphan"
+    )
+
+
+class OrderLineModel(Base):
+    __tablename__ = "order_lines"
+    id:           Mapped[int]      = mapped_column(primary_key=True, autoincrement=True)
+    order_id:     Mapped[str]      = mapped_column(String(36), ForeignKey("orders.id"), nullable=False)
+    product_id:   Mapped[str]      = mapped_column(String(36), nullable=False)
+    product_name: Mapped[str]      = mapped_column(String(100), nullable=False)
+    unit_price:   Mapped[Decimal]  = mapped_column(Numeric(12, 2), nullable=False)
+    quantity:     Mapped[int]      = mapped_column(nullable=False)
+
+    order: Mapped["OrderModel"] = relationship("OrderModel", back_populates="items")
 
 
 class SQLOrderRepository(OrderRepositoryPort):
@@ -765,13 +783,10 @@ class SQLOrderRepository(OrderRepositoryPort):
             for item in record.items
         ]
         
-        # _total_amount を設定して整合性を保証
-        order._total_amount = order.total_amount
-        
         # record.total_amount との整合性検証
-        if order._total_amount.amount != record.total_amount:
+        if order.total_amount.amount != record.total_amount:
             raise ValueError(
-                f"Consistency error: calculated total {order._total_amount.amount} "
+                f"Consistency error: calculated total {order.total_amount.amount} "
                 f"does not match record total {record.total_amount}"
             )
             
@@ -2270,7 +2285,7 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **Alistair Cockburn 原著論文（英語）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
-| **Alistair Cockburn — Hexagonal Architecture Explained（最新解説）** | https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/ |
+| **Alistair Cockburn — Hexagonal Architecture (YouTube動画)** | https://www.youtube.com/watch?v=th4AgBcrEHA |
 | **Wikipedia — Hexagonal Architecture** | https://en.wikipedia.org/wiki/Hexagonal_architecture_(software) |
 
 #### アーキテクチャ関連

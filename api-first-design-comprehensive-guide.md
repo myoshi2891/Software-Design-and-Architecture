@@ -1878,7 +1878,7 @@ flowchart TD
 | リソース | URL |
 |---------|-----|
 | **Zalando RESTful API Guidelines** | https://opensource.zalando.com/restful-api-guidelines/ |
-| **Paypal API Style Guide** | https://github.com/paypal/api-style-guide |
+| **Paypal API Style Guide** | https://github.com/paypal/api-standards |
 | **Atlassian API Design Guidelines** | https://developer.atlassian.com/server/framework/atlassian-sdk/rest-plugin-module/ |
 | **JSON API 仕様（標準フォーマット）** | https://jsonapi.org/ |
 | **Problem Details RFC 7807（エラー形式標準）** | https://www.rfc-editor.org/rfc/rfc7807 |
