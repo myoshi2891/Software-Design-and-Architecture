@@ -1901,10 +1901,10 @@ quadrantChart
 
 | リソース | URL |
 |---------|-----|
-| **Extreme Programming（XP）公式サイト（Kent Beck）** | https://www.extremeprogramming.org/ |
+| **Extreme Programming（XP）公式サイト（Kent Beck）** | http://www.extremeprogramming.org/ |
 | **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/エクストリーム・プログラミング |
 | **Martin Fowler - Extreme Programming** | https://martinfowler.com/bliki/ExtremeProgramming.html |
-| **Ron Jeffries - XP解説（原典）** | https://ronjeffries.com/xprog/what-is-extreme-programming/ |
+| **Ron Jeffries - XP解説（原典）** | https://web.archive.org/web/20260301000000/https://ronjeffries.com/xprog/what-is-extreme-programming/ |
 | **アジャイルマニフェスト（XPの基礎）** | https://agilemanifesto.org/iso/ja/manifesto.html |
 | **Agile Alliance - XP用語集** | https://www.agilealliance.org/glossary/xp/ |
 
@@ -1914,7 +1914,7 @@ quadrantChart
 |---------|-----|
 | **Martin Fowler - TestDrivenDevelopment** | https://martinfowler.com/bliki/TestDrivenDevelopment.html |
 | **Martin Fowler - テストピラミッド** | https://martinfowler.com/bliki/TestPyramid.html |
-| **Uncle Bob - TDDの3つのルール** | https://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd |
+| **Uncle Bob - TDDの3つのルール** | https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html |
 | **FIRST原則（詳細解説）** | https://agileinaflash.blogspot.com/2009/02/first.html |
 | **Kent Beck - TDD By Example（サンプル）** | https://www.google.com/books/edition/Test_Driven_Development/gFgnde_vwMAC |
 

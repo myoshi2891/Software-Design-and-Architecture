@@ -2068,7 +2068,7 @@ flowchart TD
 |---------|-----|
 | **TDD（Kent Beck / Agile Alliance）** | https://www.agilealliance.org/glossary/tdd/ |
 | **Martin Fowler - TestDrivenDevelopment** | https://martinfowler.com/bliki/TestDrivenDevelopment.html |
-| **Robert C. Martin - TDDの3つのルール** | https://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd |
+| **Robert C. Martin - TDDの3つのルール** | https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html |
 | **Martin Fowler - テストピラミッド** | https://martinfowler.com/bliki/TestPyramid.html |
 | **Martin Fowler - Unit Test** | https://martinfowler.com/bliki/UnitTest.html |
 | **Martin Fowler - Mocks Aren't Stubs** | https://martinfowler.com/articles/mocksArentStubs.html |
@@ -2098,7 +2098,7 @@ flowchart TD
 | リソース | URL |
 |---------|-----|
 | **F.I.R.S.T. 原則** | https://agileinaflash.blogspot.com/2009/02/first.html |
-| **xUnit Test Patterns（Webサイト版）** | https://xunitpatterns.com/ |
+| **xUnit Test Patterns（Webサイト版）** | https://web.archive.org/web/20231122170327/http://xunitpatterns.com/ |
 | **Test Doubles（Martin Fowler）** | https://martinfowler.com/bliki/TestDouble.html |
 | **Characterization Test（Michael Feathers）** | https://michaelfeathers.silvrback.com/characterization-testing |
 
