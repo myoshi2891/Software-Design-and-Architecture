@@ -20,7 +20,11 @@ if (fs.existsSync(configPath)) {
 }
 
 /**
- * Scan all Markdown files (excluding node_modules) and validate links, logging outcomes.
+ * Validate links in all Markdown files in the repository, excluding files under `node_modules`.
+ *
+ * Searches for `**/*.md` from the repository root, checks each file's links sequentially, logs per-file
+ * start/success/timeout events and each link's status, and stops with an error when any file contains a
+ * link whose status is `dead` or `error`.
  */
 async function run(): Promise<void> {
   const glob = new Glob('**/*.md');
