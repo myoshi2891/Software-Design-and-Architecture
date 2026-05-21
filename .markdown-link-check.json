@@ -143,6 +143,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?extremeprogramming\\.org"
+    },
+    {
+      "pattern": "^https://samnewman\\.io"
     }
   ],
   "replacementPatterns": [],
