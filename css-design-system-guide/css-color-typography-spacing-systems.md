@@ -1289,5 +1289,5 @@ graph TD
 ### デザイントークン全般
 
 - **Design Tokens Community Group (W3C)** — https://www.w3.org/community/design-tokens/
-- **Style Dictionary (Amazon)** — https://amzn.github.io/style-dictionary/
+- **Style Dictionary (Amazon)** — https://styledictionary.com/
 - **Token Types Specification** — https://tr.designtokens.org/format/

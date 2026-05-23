@@ -2313,9 +2313,9 @@ graph TD
 |---------|-----|
 | **DDD + Hexagonal（詳細解説）** | https://herbertograca.com/2017/09/14/ports-adapters-architecture/ |
 | **DDD Crew — GitHub（実践リソース集）** | https://github.com/ddd-crew |
-| **Cosmic Python — Architecture Patterns with Python（無料書籍）** | https://www.cosmicpython.com/ |
-| **Cosmic Python — Repository パターン章** | https://www.cosmicpython.com/book/chapter_02_repository.html |
-| **Cosmic Python — Service Layer 章** | https://www.cosmicpython.com/book/chapter_04_service_layer.html |
+| **Cosmic Python — Architecture Patterns with Python（書籍リポジトリ）** | https://github.com/cosmicpython/book |
+| **Cosmic Python — Repository パターン章（リポジトリ）** | https://github.com/cosmicpython/book |
+| **Cosmic Python — Service Layer 章（リポジトリ）** | https://github.com/cosmicpython/book |
 
 #### Python 実装リファレンス
 

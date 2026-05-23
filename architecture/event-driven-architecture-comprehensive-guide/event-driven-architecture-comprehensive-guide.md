@@ -1722,7 +1722,7 @@ flowchart TD
 |---------|-----|
 | **Event Store DB 公式** | https://www.eventstore.com/ |
 | **Axon Framework（Java CQRS/ES）** | https://developer.axoniq.io/ |
-| **Cosmic Python - Event Sourcing** | https://www.cosmicpython.com/ |
+| **Cosmic Python - Event Sourcing（リポジトリ）** | https://github.com/cosmicpython/book |
 | **Greg Young - CQRS Documents** | https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf |
 
 #### 分散システム・信頼性

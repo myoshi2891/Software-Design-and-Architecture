@@ -146,6 +146,12 @@
     },
     {
       "pattern": "^https://samnewman\\.io"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/WAI/WCAG21/"
+    },
+    {
+      "pattern": "^https://www\\.w3\\.org/community/"
     }
   ],
   "replacementPatterns": [],

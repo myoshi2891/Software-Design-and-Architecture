@@ -1913,7 +1913,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **Architecture Patterns with Python（無料オンライン版）** | https://www.cosmicpython.com/ |
+| **Architecture Patterns with Python（リポジトリ）** | https://github.com/cosmicpython/book |
 | **Cosmic Python GitHub（サンプルコード）** | https://github.com/cosmicpython/book |
 | **FastAPI Clean Architecture サンプル** | https://github.com/tiangolo/full-stack-fastapi-template |
 
