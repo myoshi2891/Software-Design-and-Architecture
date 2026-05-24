@@ -379,7 +379,7 @@ graph TD
 }
 
 /* ===== 7. フルブリード（1要素だけ全幅） ===== */
-/* 参考: https://ryanmulligan.dev/blog/layout-breakout/ */
+/* 参考: https://ryanmulligan.dev/blog/layout-breakouts/ */
 .content-grid {
   --padding-inline: var(--space-4);
   --content-max-width: 680px;
@@ -1752,13 +1752,13 @@ graph TD
 - **CSS Tricks - A Complete Guide to Flexbox** — https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 - **CSS Tricks - A Complete Guide to CSS Grid** — https://css-tricks.com/snippets/css/complete-guide-grid/
 - **Every Layout（レイアウトプリミティブ集）** — https://every-layout.dev/
-- **Full-Bleed Layout（Ryan Mulligan）** — https://ryanmulligan.dev/blog/layout-breakout/
+- **Full-Bleed Layout（Ryan Mulligan）** — https://ryanmulligan.dev/blog/layout-breakouts/
 - **Grid by Example（Rachel Andrew）** — https://gridbyexample.com/
 
 ### コンポーネント設計・BEM
 
 - **BEM 公式ドキュメント** — https://getbem.com/introduction/
-- **BEM Methodology（公式）** — https://en.bem.info/methodology/
+- **BEM Methodology（公式）** — https://getbem.com/
 - **Inverted Triangle CSS（Harry Roberts）** — https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528
 - **CSS Modules 公式** — https://github.com/css-modules/css-modules
 

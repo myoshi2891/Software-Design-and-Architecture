@@ -1707,7 +1707,7 @@ graph LR
 ### デザイントークン
 
 - **W3C Design Tokens 仕様** — https://tr.designtokens.org/format/
-- **Style Dictionary（Amazon）** — https://amzn.github.io/style-dictionary/
+- **Style Dictionary（Amazon）** — https://styledictionary.com
 - **Tokens Studio for Figma** — https://tokens.studio/
 - **Theo（Salesforce）** — https://github.com/salesforce-ux/theo
 
@@ -1718,7 +1718,7 @@ graph LR
 - **web.dev - CSS Performance** — https://web.dev/articles/fast#optimize_your_css
 - **Lightning CSS** — https://lightningcss.dev/
 - **Google - Eliminate render-blocking resources** — https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources
-- **web.dev - font-display** — https://web.dev/articles/font-display
+- **web.dev - font-display** — https://web.dev/articles/avoid-invisible-text
 - **PurgeCSS** — https://purgecss.com/
 
 ### ツール・エコシステム
