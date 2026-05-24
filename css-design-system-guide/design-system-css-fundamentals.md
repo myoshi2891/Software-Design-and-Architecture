@@ -768,8 +768,8 @@ mindmap
 
 ### デザインシステム
 
-- **Atomic Design by Brad Frost** — https://atomicdesign.bradfrost.com/
-- **Design Tokens Community Group (W3C)** — https://www.w3.org/community/design-tokens/
+- **Atomic Design by Brad Frost** — https://github.com/bradfrost/atomic-design
+- **Design Tokens Community Group (W3C)** — https://www.designtokens.org/
 - **Design Systems Handbook (InVision)** — https://www.designbetter.co/design-systems-handbook
 - **Carbon Design System (IBM)** — https://carbondesignsystem.com/
 - **Material Design 3 (Google)** — https://m3.material.io/

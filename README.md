@@ -53,7 +53,7 @@
 
 ### リンクチェック
 
-Markdownファイル内の外部リンクが有効であることを確認するために、カスタムTypeScriptスクリプト `verify-links`（[scripts/verify-links.ts](file:///Users/mitsuruyoshizumi/Workspace/software-architecture-design/scripts/verify-links.ts)）を使用しています。
+Markdownファイル内の外部リンクが有効であることを確認するために、カスタムTypeScriptスクリプト `verify-links`（[scripts/verify-links.ts](scripts/verify-links.ts)）を使用しています。
 
 実行するには、`package.json` に定義されている `check-links` スクリプトを使うか、直接スクリプトを `bun` で実行します。
 
