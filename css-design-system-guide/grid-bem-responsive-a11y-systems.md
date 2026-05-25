@@ -1397,8 +1397,8 @@ flowchart LR
 *:focus { outline: none; } /* 最悪のアンチパターン */
 button:focus { outline: 0; }
 
-/* OK: マウス使用時は非表示、キーボード時は表示 */
-:focus { outline: none; }                      /* デフォルトは非表示 */
+/* OK: マウス使用時は非表示、キーボード時は表示（focus-visible非対応環境への配慮） */
+:focus:not(:focus-visible) { outline: none; }  /* マウス操作などの非キーボードフォーカス時のみアウトラインを消す */
 :focus-visible {                               /* キーボードフォーカス時のみ表示 */
   outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;

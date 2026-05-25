@@ -1276,7 +1276,7 @@ flowchart LR
   /* 可変フォント: 1ファイルで複数ウェイトをカバー */
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;      /* FLASHを防ぎ、FLOUTを許容 */
+  font-display: swap;      /* FLASHを防ぎ、FOUTを許容 */
   unicode-range: U+0000-00FF, U+0131; /* 使用する文字範囲のみ */
 }
 
@@ -1397,12 +1397,16 @@ graph TD
     style INP_FIX fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
 ```
 
+HTML側で `width` と `height` 属性（または `srcset`）を適切に指定し、CSS側で `width: 100%; height: auto;` を指定することで、モダンブラウザは自動的に画像のアスペクト比を計算し、表示領域を事前に確保（CLSを防止）します。
+
+> [!WARNING]
+> かつて一部の例で見られた `aspect-ratio: attr(width) / attr(height)` のような CSS での `attr()` 関数を用いたアスペクト比の動的指定は、実験的な仕様であり、多くのブラウザでサポートされていません。これを記述すると、非サポート環境でアスペクト比が正しく適用されない（または無視される）リスクがあります。そのため、HTML側の属性でアスペクト比の情報をブラウザに提供するのが最も安全で確実な CLS 対策です。
+
 ```css
-/* ===== CLS 対策: 画像に必ずサイズを指定 ===== */
+/* ===== CLS 対策: 画像にサイズ（アスペクト比）を確保する ===== */
 img {
-  /* width と height 属性（HTML側）を指定すると
-     aspect-ratio が自動計算される */
-  aspect-ratio: attr(width) / attr(height); /* モダンブラウザ */
+  /* HTML側で width="..." height="..." を指定し、CSSで以下を適用します。
+     ブラウザが自動的にアスペクト比（auto width / height）を計算し、領域を確保します。 */
   width: 100%;
   height: auto;
 }
@@ -1451,12 +1455,13 @@ graph TD
 
 ### 16.2 Storybook：コンポーネントカタログ
 
-```javascript
-// Button.stories.jsx
+```typescript
+// Button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
 
 /* メタ情報 */
-export default {
+const meta: Meta<typeof Button> = {
   title: 'Components/Button',
   component: Button,
   parameters: {
@@ -1482,21 +1487,24 @@ export default {
   },
 };
 
+export default meta;
+type Story = StoryObj<typeof Button>;
+
 /* 個別のストーリー */
-export const Primary = {
+export const Primary: Story = {
   args: { variant: 'primary', size: 'md', children: '送信する' },
 };
 
-export const Danger = {
+export const Danger: Story = {
   args: { variant: 'danger', size: 'md', children: '削除する' },
 };
 
-export const Loading = {
+export const Loading: Story = {
   args: { variant: 'primary', size: 'md', loading: true, children: '処理中...' },
 };
 
 /* すべてのバリアントを一覧表示 */
-export const AllVariants = {
+export const AllVariants: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
       {['primary', 'secondary', 'ghost', 'danger'].map(variant =>
@@ -1610,16 +1618,38 @@ export default {
 
 ### 16.5 Chromatic：ビジュアルリグレッションテスト
 
-```javascript
-// .github/workflows/chromatic.yml（抜粋）
-
-// package.json のスクリプト
+```json
+// package.json
 {
   "scripts": {
     "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
     "test:storybook": "test-storybook --url http://localhost:6006"
   }
 }
+```
+
+```yaml
+# .github/workflows/chromatic.yml
+name: "Chromatic"
+
+on: push
+
+jobs:
+  chromatic-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Chromaticには履歴が必要
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 ```
 
 ```mermaid
