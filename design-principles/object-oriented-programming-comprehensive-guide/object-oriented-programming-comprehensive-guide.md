@@ -2411,7 +2411,7 @@ graph TD
 | **Martin Fowler — Anemic Domain Model（アンチパターン）** | https://martinfowler.com/bliki/AnemicDomainModel.html |
 | **Martin Fowler — Value Object** | https://martinfowler.com/bliki/ValueObject.html |
 | **DDD Crew — GitHub 実践リソース集** | https://github.com/ddd-crew |
-| **Cosmic Python（Python × DDD + OOP 無料書籍）** | https://www.cosmicpython.com/ |
+| **Cosmic Python（Python × DDD + OOP 書籍リポジトリ）** | https://github.com/cosmicpython/book |
 
 #### テスト × OOP
 

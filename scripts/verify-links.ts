@@ -1,12 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Glob } from 'bun';
 
 interface IgnorePattern {
   pattern: string;
 }
 
-const configPath = path.resolve(import.meta.dir, '../.markdown-link-check.json');
+const configPath = path.resolve(import.meta.dirname || '', '../.markdown-link-check.json');
 let ignoreRegexes: RegExp[] = [];
 
 if (fs.existsSync(configPath)) {
@@ -131,13 +130,19 @@ async function verifyUrl(url: string, timeoutMs: number = 10000): Promise<{ ok: 
  * リポジトリ内のすべてのMarkdownファイルをスキャンしてリンクを検証する
  */
 async function run(): Promise<void> {
-  const glob = new Glob('**/*.md');
   const files: string[] = [];
-  for (const file of glob.scanSync({ cwd: '.', onlyFiles: true })) {
-    if (file.startsWith('node_modules/')) continue;
-    files.push(file);
+  const allFiles = fs.readdirSync('.', { recursive: true }) as string[];
+  for (const file of allFiles) {
+    if (file.endsWith('.md')) {
+      if (file.startsWith('node_modules/') || file.includes('/node_modules/')) continue;
+      const fullPath = path.resolve('.', file);
+      if (fs.statSync(fullPath).isFile()) {
+        files.push(file);
+      }
+    }
   }
 
+  const isDryRun = process.argv.includes('--dry-run');
   let hasErrors = false;
 
   for (const file of files) {
@@ -153,14 +158,18 @@ async function run(): Promise<void> {
         continue;
       }
       checkedUrls.push(url);
-      console.log(`  Checking: ${url} ...`);
-      const result = await verifyUrl(url);
-      if (result.ok) {
-        console.log(`    Link: ${url} -> ok (${result.status})`);
+      if (isDryRun) {
+        console.log(`    Link: ${url} -> skipped (dry-run)`);
       } else {
-        const errorMsg = result.error ? ` (${result.error})` : '';
-        console.log(`    Link: ${url} -> dead/error [Status: ${result.status}]${errorMsg}`);
-        deadLinks.push(`${url} [Status: ${result.status}]${errorMsg}`);
+        console.log(`  Checking: ${url} ...`);
+        const result = await verifyUrl(url);
+        if (result.ok) {
+          console.log(`    Link: ${url} -> ok (${result.status})`);
+        } else {
+          const errorMsg = result.error ? ` (${result.error})` : '';
+          console.log(`    Link: ${url} -> dead/error [Status: ${result.status}]${errorMsg}`);
+          deadLinks.push(`${url} [Status: ${result.status}]${errorMsg}`);
+        }
       }
     }
 

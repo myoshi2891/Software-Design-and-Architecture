@@ -1828,7 +1828,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **Apache Camel 公式** | https://camel.apache.org/ |
+| **Apache Camel 公式** | https://camel.apache.org/manual/latest/index.html |
 | **MuleSoft ドキュメント** | https://docs.mulesoft.com/ |
 | **WSO2 Enterprise Integrator** | https://wso2.com/integration/ |
 | **IBM App Connect 公式** | https://www.ibm.com/products/app-connect |

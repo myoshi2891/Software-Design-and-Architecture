@@ -1752,7 +1752,7 @@ graph TD
 |---------|-----|
 | **Microsoft eShopOnContainers（.NET DDD実装例）** | https://github.com/dotnet-architecture/eShopOnContainers |
 | **DDD with Python サンプル** | https://github.com/cosmicpython/book |
-| **Cosmic Python（Python DDD Book）** | https://www.cosmicpython.com/ |
+| **Cosmic Python（Python DDD Book リポジトリ）** | https://github.com/cosmicpython/book |
 
 ---
 

@@ -2660,7 +2660,7 @@ graph TD
 
 ### 12.4 ファイル構成の推奨例
 
-```
+```text
 styles/
 ├── 00-settings/          ← デザイントークン（変数定義のみ）
 │   ├── _colors.css
