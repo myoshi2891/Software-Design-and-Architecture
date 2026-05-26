@@ -1736,7 +1736,7 @@ graph LR
 
 ### デザイントークン
 
-- **W3C Design Tokens 仕様** — https://tr.designtokens.org/format/
+- **W3C Design Tokens 仕様** — https://www.w3.org/TR/design-tokens/
 - **Style Dictionary（Amazon）** — https://styledictionary.com
 - **Tokens Studio for Figma** — https://tokens.studio/
 - **Theo（Salesforce）** — https://github.com/salesforce-ux/theo
