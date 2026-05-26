@@ -1618,8 +1618,8 @@ export default {
 
 ### 16.5 Chromatic：ビジュアルリグレッションテスト
 
+<!-- package.json -->
 ```json
-// package.json
 {
   "scripts": {
     "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
