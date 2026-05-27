@@ -1762,3 +1762,16 @@ graph LR
 - **Turborepo（Vercel）** — https://turbo.build/repo
 - **Panda CSS** — https://panda-css.com/
 - **Zeroheight（デザインドキュメント）** — https://zeroheight.com/
+
+---
+
+## 著者情報
+
+- **著者名**: Software Architect Guide
+- **所属**: ソフトウェアアーキテクチャ設計プロジェクト
+- **連絡先**: architect-guide@example.com
+- **最終更新日**: 2026-05-27
+
+---
+
+*作成者：Software Architect Guide | バージョン 1.0 | CSS Animation Architecture Tokens Performance Tools Complete Guide*

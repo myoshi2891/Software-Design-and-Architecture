@@ -2213,4 +2213,4 @@ flowchart TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | BDD Complete Guide*
+*作成者： Software Architect Guide | バージョン 1.0 | BDD Complete Guide*

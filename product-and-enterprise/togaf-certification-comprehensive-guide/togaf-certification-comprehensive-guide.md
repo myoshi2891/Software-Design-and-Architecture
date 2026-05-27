@@ -969,6 +969,7 @@ graph TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 2.0 | TOGAF® Complete Exam Guide*
+*作成者： Software Architect Guide | バージョン 2.0 | TOGAF® Complete Exam Guide*
 
-> ⚠️ **免責事項：** TOGAF® はThe Open Groupの登録商標です。本ドキュメントはThe Open Groupの公式資料ではありません。公式情報は必ず公式サイトでご確認ください。
+> ⚠️ **免責事項：** TOGAF® はThe Open
+ Groupの登録商標です。本ドキュメントはThe Open Groupの公式資料ではありません。公式情報は必ず公式サイトでご確認ください。

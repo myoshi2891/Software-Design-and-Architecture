@@ -1760,4 +1760,4 @@ graph TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | DDD Complete Guide*
+*作成者：Software Architect Guide | バージョン 1.0 | DDD Complete Guide*

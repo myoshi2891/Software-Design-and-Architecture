@@ -1082,4 +1082,4 @@ Month 10-12: 資格・応用
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0*
+*作成者： Software Architect Guide | バージョン 1.0*

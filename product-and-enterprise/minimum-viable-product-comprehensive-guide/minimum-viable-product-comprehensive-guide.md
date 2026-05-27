@@ -1379,4 +1379,4 @@ graph TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | MVP Complete Development Guide*
+*作成者： Software Architect Guide | バージョン 1.0 | MVP Complete Development Guide*
