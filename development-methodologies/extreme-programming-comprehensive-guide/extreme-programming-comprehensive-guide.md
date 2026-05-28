@@ -1904,7 +1904,7 @@ quadrantChart
 | リソース | URL |
 |---------|-----|
 | **Extreme Programming（XP）公式サイト（Kent Beck）** | http://www.extremeprogramming.org/ |
-| **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/エクストリーム・プログラミング |
+| **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%AF%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%BB%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0 |
 | **Martin Fowler - Extreme Programming** | https://martinfowler.com/bliki/ExtremeProgramming.html |
 | **Ron Jeffries - XP解説（原典）** | https://web.archive.org/web/20260301000000/https://ronjeffries.com/xprog/what-is-extreme-programming/ |
 | **アジャイルマニフェスト（XPの基礎）** | https://agilemanifesto.org/iso/ja/manifesto.html |
