@@ -1865,4 +1865,4 @@ flowchart TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | SOA Complete Guide*
+*作成者：Software Architect Guide | バージョン 1.0 | SOA Complete Guide*

@@ -1941,4 +1941,4 @@ flowchart TD
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*
+*作成者：Software Architect Guide | バージョン 1.0 | Clean Architecture Complete Guide*

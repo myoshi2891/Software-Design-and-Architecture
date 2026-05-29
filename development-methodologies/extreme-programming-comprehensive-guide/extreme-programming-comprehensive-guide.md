@@ -5,19 +5,19 @@
 1. [XPとは何か？](#1-xpとは何か)
 2. [XPの5つの価値（Values）](#2-xpの5つの価値values)
 3. [XPの13のプラクティス完全解説](#3-xpの13のプラクティス完全解説)
-4. [プラクティス①：テスト駆動開発（TDD）](#4-プラクティステスト駆動開発tdd)
-5. [プラクティス②：ペアプログラミング](#5-プラクティスペアプログラミング)
-6. [プラクティス③：継続的インテグレーション（CI）](#6-プラクティス継続的インテグレーションci)
-7. [プラクティス④：リファクタリング](#7-プラクティスリファクタリング)
-8. [プラクティス⑤：シンプルな設計](#8-プラクティスシンプルな設計)
-9. [プラクティス⑥：小さなリリース](#9-プラクティス小さなリリース)
-10. [プラクティス⑦：計画ゲーム](#10-プラクティス計画ゲーム)
-11. [プラクティス⑧：コレクティブオーナーシップ](#11-プラクティスコレクティブオーナーシップ)
-12. [プラクティス⑨：コーディング規約](#12-プラクティスコーディング規約)
-13. [プラクティス⑩：オンサイト顧客](#13-プラクティスオンサイト顧客)
-14. [プラクティス⑪：週40時間労働](#14-プラクティス週40時間労働)
-15. [プラクティス⑫：メタファー](#15-プラクティスメタファー)
-16. [プラクティス⑬：システム全体のテスト](#16-プラクティスシステム全体のテスト)
+4. [プラクティス①：テスト駆動開発（TDD）](#4-プラクティス①テスト駆動開発tdd)
+5. [プラクティス②：ペアプログラミング](#5-プラクティス②ペアプログラミング)
+6. [プラクティス③：継続的インテグレーション（CI）](#6-プラクティス③継続的インテグレーションci)
+7. [プラクティス④：リファクタリング](#7-プラクティス④リファクタリング)
+8. [プラクティス⑤：シンプルな設計](#8-プラクティス⑤シンプルな設計)
+9. [プラクティス⑥：小さなリリース](#9-プラクティス⑥小さなリリース)
+10. [プラクティス⑦：計画ゲーム](#10-プラクティス⑦計画ゲーム)
+11. [プラクティス⑧：コレクティブオーナーシップ](#11-プラクティス⑧コレクティブオーナーシップ)
+12. [プラクティス⑨：コーディング規約](#12-プラクティス⑨コーディング規約)
+13. [プラクティス⑩：オンサイト顧客](#13-プラクティス⑩オンサイト顧客)
+14. [プラクティス⑪：週40時間労働](#14-プラクティス⑪週40時間労働)
+15. [プラクティス⑫：メタファー](#15-プラクティス⑫メタファー)
+16. [プラクティス⑬：システム全体のテスト](#16-プラクティス⑬システム全体のテスト)
 17. [XPのロールと責務](#17-xpのロールと責務)
 18. [XPのイテレーションサイクル](#18-xpのイテレーションサイクル)
 19. [XPとScrumの比較・組み合わせ](#19-xpとscrumの比較組み合わせ)
@@ -1883,6 +1883,8 @@ quadrantChart
 
 ## 23. 参考文献・ソース一覧
 
+<!-- markdownlint-disable -->
+
 ### 📚 必読書籍
 
 | タイトル | 著者 | 内容 |
@@ -1902,7 +1904,7 @@ quadrantChart
 | リソース | URL |
 |---------|-----|
 | **Extreme Programming（XP）公式サイト（Kent Beck）** | http://www.extremeprogramming.org/ |
-| **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/エクストリーム・プログラミング |
+| **XP - Wikipedia 日本語（詳細解説）** | https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%AF%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%BB%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0 |
 | **Martin Fowler - Extreme Programming** | https://martinfowler.com/bliki/ExtremeProgramming.html |
 | **Ron Jeffries - XP解説（原典）** | https://web.archive.org/web/20260301000000/https://ronjeffries.com/xprog/what-is-extreme-programming/ |
 | **アジャイルマニフェスト（XPの基礎）** | https://agilemanifesto.org/iso/ja/manifesto.html |
@@ -1959,7 +1961,7 @@ quadrantChart
 | リソース | URL |
 |---------|-----|
 | **The Art of Agile Development（無料公開版）** | https://www.jamesshore.com/v2/books/aoad2 |
-| **Industrial Logic - XP Practices** | https://www.industriallogic.com/blog/is-xp-right-for-my-team/ |
+| **Industrial Logic - XP Practices** | https://www.industriallogic.com/blog/ |
 | **Thoughtworks - Agile Engineering Practices** | https://www.thoughtworks.com/insights/topic/agile-engineering-practices |
 | **xp123.com（XP実践サイト）** | https://xp123.com/ |
 
@@ -1978,4 +1980,6 @@ quadrantChart
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | XP（Extreme Programming）Complete Guide*
+*作成者：Software Architect Guide | バージョン 1.0 | XP（Extreme Programming）Complete Guide*
+
+<!-- markdownlint-enable -->

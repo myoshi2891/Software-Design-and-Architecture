@@ -2,7 +2,7 @@
 
 > 対象読者：フロントエンド開発の中級者〜上級者  
 > 難易度：🔴 上級（16章のみ 🟠 中級）  
-> 最終更新：2025年
+> 最終更新：2026-05-27
 
 ---
 
@@ -1618,8 +1618,8 @@ export default {
 
 ### 16.5 Chromatic：ビジュアルリグレッションテスト
 
+<!-- package.json -->
 ```json
-// package.json
 {
   "scripts": {
     "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
@@ -1716,7 +1716,7 @@ graph LR
 
 ---
 
-## 参考リソース
+## 参考文献・ソース一覧
 
 ### アニメーション・トランジション
 
@@ -1762,3 +1762,16 @@ graph LR
 - **Turborepo（Vercel）** — https://turbo.build/repo
 - **Panda CSS** — https://panda-css.com/
 - **Zeroheight（デザインドキュメント）** — https://zeroheight.com/
+
+---
+
+## 著者情報
+
+- **著者名**: Software Architect Guide
+- **所属**: ソフトウェアアーキテクチャ設計プロジェクト
+- **連絡先**: architect-guide@example.com
+- **最終更新日**: 2026-05-27
+
+---
+
+*作成者：Software Architect Guide | バージョン 1.0 | CSS Animation Architecture Tokens Performance Tools Complete Guide*

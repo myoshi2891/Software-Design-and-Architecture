@@ -2475,4 +2475,4 @@ graph TD
 
 ---
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | Component-Oriented Development Complete Guide*
+*作成者：Software Architect Guide | バージョン 1.0 | Component-Oriented Development Complete Guide*

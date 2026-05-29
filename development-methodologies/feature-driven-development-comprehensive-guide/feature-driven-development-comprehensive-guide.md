@@ -1363,6 +1363,10 @@ flowchart TD
 
 > 📅 本ドキュメントは2024年時点の情報を基に作成しています。
 
----
+## 著者情報
 
-*作成者：World-Class Software Architect Guide | バージョン 1.0 | FDD Complete Guide*
+- **著者名**: Software Architect Guide
+- **所属**: ソフトウェアアーキテクト設計プロジェクト
+- **バージョン**: 1.0
+- **対象ドキュメント**: FDD Complete Guide
+- **連絡先**: architect-guide@example.com
