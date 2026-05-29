@@ -2228,6 +2228,10 @@ flowchart TD
 
 > 📅 最終更新日: 2026-04-17（本ドキュメントは当時の情報に基づいて作成されています）。各ツール・フレームワークのバージョンや仕様は変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
 
----
+## 著者情報
 
-*作成者：Software Architect Guide | バージョン 1.0 | Monolithic Architecture Complete Guide*
+- **著者名**: Software Architect Guide
+- **役職**: ソフトウェアアーキテクト
+- **バージョン**: 1.0
+- **対象ドキュメント**: Monolithic Architecture Complete Guide
+- **連絡先**: architect-guide@example.com
