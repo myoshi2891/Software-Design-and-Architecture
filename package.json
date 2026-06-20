@@ -4,7 +4,9 @@
   "scripts": {
     "check-links": "node scripts/verify-links-node.mjs",
     "check-links-bun": "bun ./scripts/verify-links.ts",
-    "check-links-node": "node scripts/verify-links-node.mjs"
+    "check-links-node": "node scripts/verify-links-node.mjs",
+    "format-markdown": "bun ./scripts/format-markdown.ts",
+    "fix-markdown": "bun ./scripts/fix-markdown-errors.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.3.14",
