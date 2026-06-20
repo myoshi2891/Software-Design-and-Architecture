@@ -47,7 +47,8 @@ async function verifyUrl(url, timeoutMs = 10000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
   };
   try {
     let res = await fetch(url, { method: 'HEAD', signal: controller.signal, headers });
@@ -83,7 +84,7 @@ async function run() {
   const files = [];
   const allFiles = fs.readdirSync('.', { recursive: true });
   for (const file of allFiles) {
-    if (file.endsWith('.md')) {
+    if (file.endsWith('.md') || file.endsWith('.html')) {
       if (file.startsWith('node_modules/') || file.includes('/node_modules/')) continue;
       const fullPath = path.resolve('.', file);
       if (fs.statSync(fullPath).isFile()) {
