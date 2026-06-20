@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOGAF 完全解説ガイド</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --color-background-primary: #0d0f14;
+    --color-background-secondary: #13161e;
+    --color-background-tertiary: #1a1e2a;
+    --color-background-info: #0f1e35;
+    --color-background-danger: #1f1015;
+    --color-background-success: #0f1f16;
+    --color-background-warning: #1f1a0f;
+
+    --color-text-primary: #e8eaf0;
+    --color-text-secondary: #9ba3b8;
+    --color-text-tertiary: #6b7494;
+    --color-text-info: #60a5fa;
+    --color-text-danger: #f87171;
+    --color-text-success: #4ade80;
+    --color-text-warning: #fbbf24;
+
+    --color-border-primary: #2a2f42;
+    --color-border-secondary: #1e2233;
+    --color-border-tertiary: #161925;
+
+    --font-sans: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+
+    /* Purple ramp */
+    --c-purple-50: #f5f0ff;
+    --c-purple-100: #ede0ff;
+    --c-purple-200: #d8c0ff;
+    --c-purple-500: #9d6fff;
+    --c-purple-600: #7c4dff;
+    --c-purple-800: #2d1b5e;
+    --c-purple-900: #1a0f3d;
+
+    /* Teal ramp */
+    --c-teal-100: #ccfbf1;
+    --c-teal-200: #99f6e4;
+    --c-teal-500: #14b8a6;
+    --c-teal-600: #0d9488;
+    --c-teal-800: #134e4a;
+    --c-teal-900: #0a2e2b;
+
+    /* Coral ramp */
+    --c-coral-100: #ffe4d6;
+    --c-coral-200: #ffcba8;
+    --c-coral-500: #ff6b35;
+    --c-coral-600: #e85520;
+    --c-coral-800: #5c2210;
+    --c-coral-900: #3a1408;
+
+    /* Amber */
+    --c-amber-500: #f59e0b;
+    --c-amber-800: #451a03;
+
+    /* Blue */
+    --c-blue-400: #60a5fa;
+    --c-blue-800: #1e3a5f;
+
+    /* Green */
+    --c-green-400: #4ade80;
+    --c-green-800: #14532d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* ─── Layout ─── */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ─── Sidebar ─── */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--color-background-secondary);
+    border-right: 1px solid var(--color-border-primary);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--color-border-primary);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .badge {
+    display: inline-block;
+    background: var(--c-purple-800);
+    color: var(--c-purple-200);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-logo h1 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+  }
+
+  .nav-section {
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    margin-bottom: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover {
+    background: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .nav-item.active {
+    background: var(--c-purple-900);
+    color: var(--c-purple-200);
+  }
+
+  .nav-item .ti {
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  /* ─── Main ─── */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px;
+    max-width: 900px;
+  }
+
+  /* ─── Section ─── */
+  .section {
+    display: none;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  /* ─── Typography ─── */
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--c-purple-500);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  h1.page-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--color-border-primary);
+    padding-bottom: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 40px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 20px;
+    background: var(--c-purple-600);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 28px 0 12px;
+  }
+
+  p {
+    color: var(--color-text-secondary);
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+
+  /* ─── Callout ─── */
+  .callout {
+    border-radius: var(--border-radius-lg);
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .callout .ti {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .callout.info {
+    background: var(--color-background-info);
+    border: 1px solid var(--c-blue-800);
+    color: var(--c-blue-400);
+  }
+
+  .callout.warning {
+    background: var(--color-background-warning);
+    border: 1px solid var(--c-amber-800);
+    color: var(--c-amber-500);
+  }
+
+  .callout.success {
+    background: var(--color-background-success);
+    border: 1px solid var(--c-green-800);
+    color: var(--c-green-400);
+  }
+
+  .callout.purple {
+    background: var(--c-purple-900);
+    border: 1px solid var(--c-purple-800);
+    color: var(--c-purple-200);
+  }
+
+  /* ─── Cards grid ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .card {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+  }
+
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .card.purple { border-color: var(--c-purple-800); }
+  .card.teal   { border-color: var(--c-teal-800); }
+  .card.coral  { border-color: var(--c-coral-800); }
+
+  /* ─── Table ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border-primary);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--color-background-tertiary);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border-primary);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border-tertiary);
+    color: var(--color-text-secondary);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: var(--color-background-tertiary);
+  }
+
+  td strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  /* ─── Mermaid wrapper ─── */
+  .mermaid-wrap {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .mermaid-wrap .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  .diagram-label {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* ─── Phase stepper ─── */
+  .phase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 20px 0;
+  }
+
+  .phase-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    transition: border-color 0.15s;
+    cursor: pointer;
+  }
+
+  .phase-item:hover {
+    border-color: var(--c-purple-800);
+  }
+
+  .phase-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .phase-content .phase-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+  }
+
+  .phase-content .phase-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .phase-meta {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag-purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+  .tag-teal   { background: var(--c-teal-800);   color: var(--c-teal-100); }
+  .tag-coral  { background: var(--c-coral-800);   color: var(--c-coral-100); }
+  .tag-amber  { background: var(--c-amber-800);   color: var(--c-amber-500); }
+
+  /* ─── Source reference ─── */
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    font-size: 13px;
+    color: var(--c-teal-500);
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .source-item:hover {
+    border-color: var(--c-teal-800);
+    color: var(--c-teal-100);
+  }
+
+  .source-item .ti {
+    font-size: 16px;
+    flex-shrink: 0;
+    color: var(--c-teal-600);
+  }
+
+  /* ─── Best practice ─── */
+  .bp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .bp-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    border-left: 3px solid var(--c-purple-600);
+  }
+
+  .bp-num {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--c-purple-500);
+    flex-shrink: 0;
+    line-height: 1.2;
+    min-width: 24px;
+  }
+
+  .bp-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .bp-text span {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-xl);
+    padding: 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--c-purple-900) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--c-purple-500);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    max-width: 520px;
+    margin-bottom: 20px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-stat-val {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--c-purple-200);
+    line-height: 1.2;
+  }
+
+  .hero-stat-lbl {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ─── Timeline ─── */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+    margin: 20px 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--color-border-primary);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c-purple-600);
+  }
+
+  .tl-year {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--c-purple-500);
+    margin-bottom: 2px;
+  }
+
+  .tl-text {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ─── Domain cards ─── */
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .domain-card {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+  }
+
+  .domain-card .domain-letter {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .domain-card .domain-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .domain-card .domain-jp {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 10px;
+  }
+
+  .domain-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .domain-card ul li {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .domain-card ul li::before {
+    content: '·';
+    position: absolute;
+    left: 2px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ─── Roadmap ─── */
+  .week-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .week-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    align-items: flex-start;
+  }
+
+  .week-num {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    min-width: 48px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .week-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+  }
+
+  .week-detail {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .week-tag {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--color-background-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border-primary); border-radius: 3px; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .shell { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; }
+    .main { padding: 24px 20px; }
+    .domain-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ───────────── Sidebar ───────────── -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="badge">TOGAF v10</div>
+      <h1>完全解説ガイド</h1>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">はじめに</div>
+      <button class="nav-item active" onclick="show('overview')">
+        <i class="ti ti-building-arch"></i> TOGAFとは
+      </button>
+      <button class="nav-item" onclick="show('exam')">
+        <i class="ti ti-certificate"></i> 試験概要
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">コア概念</div>
+      <button class="nav-item" onclick="show('adm')">
+        <i class="ti ti-refresh"></i> ADM サイクル
+      </button>
+      <button class="nav-item" onclick="show('phases')">
+        <i class="ti ti-list-details"></i> 各フェーズ詳解
+      </button>
+      <button class="nav-item" onclick="show('bdat')">
+        <i class="ti ti-layout-grid"></i> BDATドメイン
+      </button>
+      <button class="nav-item" onclick="show('artifacts')">
+        <i class="ti ti-file-description"></i> 成果物・BB
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">応用</div>
+      <button class="nav-item" onclick="show('repository')">
+        <i class="ti ti-database"></i> アーキテクチャリポジトリ
+      </button>
+      <button class="nav-item" onclick="show('stakeholder')">
+        <i class="ti ti-users"></i> ステークホルダー
+      </button>
+      <button class="nav-item" onclick="show('governance')">
+        <i class="ti ti-shield-check"></i> ガバナンス
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">試験対策</div>
+      <button class="nav-item" onclick="show('strategy')">
+        <i class="ti ti-target"></i> 合格戦略
+      </button>
+      <button class="nav-item" onclick="show('roadmap')">
+        <i class="ti ti-map"></i> 学習ロードマップ
+      </button>
+      <button class="nav-item" onclick="show('references')">
+        <i class="ti ti-link"></i> 参考文献・URL
+      </button>
+    </div>
+  </nav>
+
+  <!-- ───────────── Main ───────────── -->
+  <main class="main">
+
+    <!-- ============================================================ -->
+    <!-- 1. OVERVIEW -->
+    <!-- ============================================================ -->
+    <div class="section active" id="overview">
+      <div class="hero">
+        <div class="hero-eyebrow">Enterprise Architecture Framework</div>
+        <h1>TOGAF とは何か</h1>
+        <p>The Open Group Architecture Framework — ビジネスとITを整合させる世界標準のエンタープライズアーキテクチャフレームワーク。</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-val">206カ国</span>
+            <span class="hero-stat-lbl">普及地域</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-val">10万+</span>
+            <span class="hero-stat-lbl">認定資格者数</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-val">v10</span>
+            <span class="hero-stat-lbl">最新バージョン (2022)</span>
+          </div>
+        </div>
+      </div>
+
+      <h2>TOGAF の定義</h2>
+      <p>TOGAF（The Open Group Architecture Framework）は、The Open Groupが策定・維持する<strong>エンタープライズアーキテクチャ（EA）のための世界標準フレームワーク</strong>です。大企業・組織のIT戦略とビジネス戦略を整合させるための共通言語・方法論を提供します。</p>
+
+      <div class="callout purple">
+        <i class="ti ti-bulb"></i>
+        <div><strong>一言で表すと：</strong>「組織全体のビジネスとITを同じ言語で設計・管理するための標準的な地図と羅針盤」</div>
+      </div>
+
+      <h2>TOGAF が解決する問題</h2>
+      <div class="card-grid">
+        <div class="card purple">
+          <div class="card-icon"><i class="ti ti-x" style="color:var(--color-text-danger)"></i></div>
+          <div class="card-title">導入前の課題</div>
+          <div class="card-desc">IT戦略とビジネス戦略の乖離、部門間システムの孤立、重複投資、変更コストの増大</div>
+        </div>
+        <div class="card teal">
+          <div class="card-icon"><i class="ti ti-check" style="color:var(--color-text-success)"></i></div>
+          <div class="card-title">導入後の効果</div>
+          <div class="card-desc">ビジネス目標に整合したIT投資、部門横断コミュニケーション、資産再利用、変化対応力の向上</div>
+        </div>
+      </div>
+
+      <h2>TOGAF の歴史</h2>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">1995</div><div class="tl-text">TOGAF 1.0 リリース（TAFIM from US DoD をベースに）</div></div>
+        <div class="tl-item"><div class="tl-year">2002</div><div class="tl-text">TOGAF 8（Enterprise Edition）リリース</div></div>
+        <div class="tl-item"><div class="tl-year">2009</div><div class="tl-text">TOGAF 9 リリース — 現在も広く参照される基盤バージョン</div></div>
+        <div class="tl-item"><div class="tl-year">2018</div><div class="tl-text">TOGAF 9.2 リリース — コンテンツの明確化と整理</div></div>
+        <div class="tl-item"><div class="tl-year">2022</div><div class="tl-text"><strong>TOGAF Standard Version 10 リリース</strong> — 現行の最新版</div></div>
+        <div class="tl-item"><div class="tl-year">2023</div><div class="tl-text">認定者数：世界206カ国・10万人以上</div></div>
+      </div>
+
+      <h2>EA フレームワーク比較</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>フレームワーク</th><th>提供元</th><th>特徴</th><th>TOGAF との関係</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>TOGAF</strong></td><td>The Open Group</td><td>プロセス中心の汎用 EA フレームワーク</td><td>—</td></tr>
+            <tr><td><strong>Zachman</strong></td><td>John Zachman</td><td>分類フレームワーク（What/How/Where/Who/When/Why）</td><td>TOGAF の成果物整理に補完的に利用可能</td></tr>
+            <tr><td><strong>FEAF</strong></td><td>米国連邦政府</td><td>政府機関向け EA</td><td>TOGAF が参照されることもある</td></tr>
+            <tr><td><strong>SABSA</strong></td><td>SABSA Institute</td><td>セキュリティアーキテクチャ特化</td><td>TOGAF と組み合わせてセキュリティ EA を構築</td></tr>
+            <tr><td><strong>ITIL</strong></td><td>Axelos</td><td>IT サービス管理（ITSM）</td><td>TOGAF のフェーズ G/H でサービス移行と連携</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://www.opengroup.org/togaf" target="_blank">
+          <i class="ti ti-external-link"></i> The Open Group — TOGAF 公式サイト
+        </a>
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 公式ドキュメント（pubs.opengroup.org）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 2. EXAM -->
+    <!-- ============================================================ -->
+    <div class="section" id="exam">
+      <div class="section-eyebrow">Certification</div>
+      <h1 class="page-title">試験の種類と概要</h1>
+      <p class="page-subtitle">TOGAF 認定資格は Level 1 と Level 2 の 2 段階構成。Combined 試験で両方を一度に取得することも可能です。</p>
+
+      <h2>試験レベル構造</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    A["TOGAF 認定資格体系"]:::root --> B["Level 1\nTOGAF Foundation"]:::l1
+    A --> C["Level 2\nTOGAF Practitioner"]:::l2
+    A --> D["Combined\nLevel 1 + Level 2"]:::comb
+    B --> E["40問 / 60分 / 合格55%\n知識・理解を証明"]
+    C --> F["8問複合選択 / 90分 / 合格60%\n実践・適用能力を証明"]
+    D --> G["両レベルを1回で取得\n最も効率的な取得方法"]
+    classDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+    classDef l1 fill:#134e4a,stroke:#14b8a6,color:#e8eaf0
+    classDef l2 fill:#5c2210,stroke:#ff6b35,color:#e8eaf0
+    classDef comb fill:#451a03,stroke:#f59e0b,color:#e8eaf0
+        </div>
+        <div class="diagram-label">TOGAF 認定資格の 3 経路</div>
+      </div>
+
+      <h2>試験詳細比較</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>項目</th><th>Level 1 Foundation</th><th>Level 2 Practitioner</th><th>Combined</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>目的</td><td>知識・理解の証明</td><td>実践・適用能力の証明</td><td>両レベル同時取得</td></tr>
+            <tr><td>問題形式</td><td>多肢選択（1つ選択）</td><td>複合選択（重み付きスコア）</td><td>両形式混合</td></tr>
+            <tr><td>問題数</td><td>40問</td><td>8問（各12.5点）</td><td>40問＋8問</td></tr>
+            <tr><td>試験時間</td><td>60分</td><td>90分</td><td>150分</td></tr>
+            <tr><td>合格基準</td><td><strong>55%（22/40問）</strong></td><td><strong>60%（60/100点）</strong></td><td>両方クリア</td></tr>
+            <tr><td>受験料</td><td>約 $320 USD</td><td>約 $320 USD</td><td>約 $495 USD</td></tr>
+            <tr><td>有効期限</td><td>無期限</td><td>無期限</td><td>無期限</td></tr>
+            <tr><td>ドキュメント持込</td><td>不可</td><td><strong>公式ドキュメント持込可</strong></td><td>混合</td></tr>
+            <tr><td>難易度</td><td>★★★☆☆</td><td>★★★★☆</td><td>★★★★☆</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warning">
+        <i class="ti ti-alert-triangle"></i>
+        <div><strong>Level 2 の持込可について：</strong>公式 TOGAF ドキュメントの持込みは可能ですが、試験時間（90分・8問）は非常に短いため、ドキュメントを頼りすぎると時間切れになります。知識の内在化が必須です。</div>
+      </div>
+
+      <h2>Level 2 複合選択問題の採点方式</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    Q["シナリオ問題\n（現実の状況設定）"] --> OPT["5つの選択肢\n（A〜E）"]
+    OPT --> A1["最も適切な回答 → +5点"]:::s5
+    OPT --> A2["2番目に適切 → +3点"]:::s3
+    OPT --> A3["3番目に適切 → +1点"]:::s1
+    OPT --> A4["不適切な回答 → 0点"]:::s0
+    OPT --> A5["最も不適切 → -1点"]:::sm1
+    classDef s5  fill:#14532d,stroke:#4ade80,color:#e8eaf0
+    classDef s3  fill:#134e4a,stroke:#14b8a6,color:#e8eaf0
+    classDef s1  fill:#451a03,stroke:#f59e0b,color:#e8eaf0
+    classDef s0  fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8
+    classDef sm1 fill:#1f1015,stroke:#f87171,color:#e8eaf0
+        </div>
+        <div class="diagram-label">1問あたり最大 5点・最低 -1点。8問合計 40点満点で 60点相当（換算後）</div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://www.opengroup.org/certifications/togaf" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 認定資格プログラム公式ページ
+        </a>
+        <a class="source-item" href="https://home.pearsonvue.com/opengroup" target="_blank">
+          <i class="ti ti-external-link"></i> Pearson VUE — 試験申込ポータル
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 3. ADM -->
+    <!-- ============================================================ -->
+    <div class="section" id="adm">
+      <div class="section-eyebrow">Architecture Development Method</div>
+      <h1 class="page-title">ADM サイクル完全解説</h1>
+      <p class="page-subtitle">ADM は TOGAF の中核。準備フェーズ → フェーズ A〜H → 要求管理という反復・循環プロセスです。</p>
+
+      <div class="callout info">
+        <i class="ti ti-info-circle"></i>
+        <div><strong>ADM とは：</strong>Architecture Development Method（アーキテクチャ開発手法）。エンタープライズアーキテクチャを段階的に開発・維持するための<strong>反復的サイクル</strong>です。フェーズは順序どおりに実行しますが、必要に応じて前のフェーズに戻ることができます。</div>
+      </div>
+
+      <h2>ADM 全体サイクル</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    PRELIM["準備フェーズ\nPreliminary Phase\nアーキテクチャ能力の確立"]:::prelim
+    A["フェーズA\nArchitecture Vision"]:::phA
+    B["フェーズB\nBusiness Architecture"]:::phB
+    C["フェーズC\nInformation Systems\nArchitecture"]:::phB
+    D["フェーズD\nTechnology Architecture"]:::phB
+    E["フェーズE\nOpportunities & Solutions"]:::phE
+    F["フェーズF\nMigration Planning"]:::phE
+    G["フェーズG\nImplementation Governance"]:::phG
+    H["フェーズH\nArchitecture Change\nManagement"]:::phG
+    REQ["要求管理\nRequirements Management\n全フェーズを通じた要求の管理"]:::req
+    PRELIM --> A --> B --> C --> D --> E --> F --> G --> H --> A
+    REQ -.-> A & B & C & D & E & F & G & H
+    classDef prelim fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+    classDef phA    fill:#1e3a5f,stroke:#60a5fa,color:#e8eaf0
+    classDef phB    fill:#134e4a,stroke:#14b8a6,color:#e8eaf0
+    classDef phE    fill:#451a03,stroke:#f59e0b,color:#e8eaf0
+    classDef phG    fill:#5c2210,stroke:#ff6b35,color:#e8eaf0
+    classDef req    fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8
+        </div>
+        <div class="diagram-label">要求管理（Requirements Management）はすべてのフェーズを横断する常時実施プロセス</div>
+      </div>
+
+      <h2>各フェーズ一覧</h2>
+      <div class="phase-list">
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-purple-800);color:var(--c-purple-200)">準備</div>
+          <div class="phase-content">
+            <div class="phase-name">準備フェーズ（Preliminary Phase）</div>
+            <div class="phase-desc">組織のアーキテクチャ能力を確立する。アーキテクチャ原則の定義、ガバナンスフレームワークの確立、チームの組成が主要作業。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-purple">前提条件整備</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-blue-800);color:var(--c-blue-400)">A</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ A：アーキテクチャビジョン</div>
+            <div class="phase-desc">プロジェクトスコープの定義、ステークホルダーの特定、ビジネス目標の確認。主要アウトプットは「Statement of Architecture Work（SoAW）」。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-teal">ビジョン定義</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-teal-800);color:var(--c-teal-100)">B</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ B：ビジネスアーキテクチャ</div>
+            <div class="phase-desc">現状（AS-IS）ビジネスアーキテクチャの把握と、目標（TO-BE）の設計。ギャップ分析を行い課題を明確化する。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-teal">ビジネス</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-teal-800);color:var(--c-teal-100)">C</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ C：情報システムアーキテクチャ</div>
+            <div class="phase-desc">データアーキテクチャとアプリケーションアーキテクチャの 2 つを開発する。データモデル、アプリケーションポートフォリオの整理が主な成果物。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-teal">データ / アプリ</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-teal-800);color:var(--c-teal-100)">D</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ D：テクノロジーアーキテクチャ</div>
+            <div class="phase-desc">インフラ・ネットワーク・クラウド基盤の現状把握と目標設計。B/C で定義した要件を実現するプラットフォームを決定する。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-teal">テクノロジー</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-amber-800);color:var(--c-amber-500)">E</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ E：機会とソリューション</div>
+            <div class="phase-desc">実装プロジェクトの特定、移行アーキテクチャの検討、ワークパッケージの定義。Architecture Roadmap を作成する。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-amber">実装計画</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-amber-800);color:var(--c-amber-500)">F</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ F：移行計画</div>
+            <div class="phase-desc">実装・移行計画の策定、優先順位付け、コスト・ベネフィット分析。Transition Architecture（移行中間状態）の定義が重要。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-amber">移行計画</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-coral-800);color:var(--c-coral-100)">G</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ G：実装ガバナンス</div>
+            <div class="phase-desc">実装プロジェクトのモニタリング、アーキテクチャコンプライアンスのレビュー、変更リクエストへの対応を行う。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-coral">ガバナンス</span></div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-badge" style="background:var(--c-coral-800);color:var(--c-coral-100)">H</div>
+          <div class="phase-content">
+            <div class="phase-name">フェーズ H：アーキテクチャ変更管理</div>
+            <div class="phase-desc">変更ドライバーの監視、アーキテクチャへの影響評価、次の ADM サイクルへの引き継ぎを行う。</div>
+          </div>
+          <div class="phase-meta"><span class="tag tag-coral">変更管理</span></div>
+        </div>
+      </div>
+
+      <h2>ADM 入出力フロー（試験頻出）</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    subgraph P["準備フェーズ"]
+        P_IN["インプット\nビジネス戦略・原則"] --> P_OUT["アウトプット\nアーキテクチャ原則\nガバナンスFW"]
+    end
+    subgraph PA["フェーズ A"]
+        A_IN["インプット\nRfAW・ビジネス戦略"] --> A_OUT["アウトプット\nアーキテクチャビジョン\nSoAW"]
+    end
+    subgraph PB["フェーズ B/C/D"]
+        BCD_IN["インプット\nアーキテクチャビジョン"] --> BCD_OUT["アウトプット\nAS-IS / TO-BE アーキテクチャ\nギャップ分析"]
+    end
+    subgraph PE["フェーズ E/F"]
+        EF_IN["インプット\nギャップ分析"] --> EF_OUT["アウトプット\n実装・移行計画\n移行アーキテクチャ"]
+    end
+    subgraph PG["フェーズ G/H"]
+        GH_IN["インプット\n実装・移行計画"] --> GH_OUT["アウトプット\nコンプライアンスレポート\n変更管理記録"]
+    end
+    P_OUT --> A_IN
+    A_OUT --> BCD_IN
+    BCD_OUT --> EF_IN
+    EF_OUT --> GH_IN
+        </div>
+        <div class="diagram-label">フェーズ間のインプット / アウトプット連鎖</div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap05.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — ADM Overview（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 4. PHASES -->
+    <!-- ============================================================ -->
+    <div class="section" id="phases">
+      <div class="section-eyebrow">Phase Deep Dive</div>
+      <h1 class="page-title">各フェーズ詳解</h1>
+      <p class="page-subtitle">ADM の各フェーズをベストプラクティスとともに深掘りします。</p>
+
+      <h2>準備フェーズ：アーキテクチャ能力の確立</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    subgraph OUT["準備フェーズのアウトプット"]
+        A1["アーキテクチャ原則の定義"]
+        A2["アーキテクチャFWの確立"]
+        A3["アーキテクチャチームの組成"]
+        A4["ガバナンスFWの確立"]
+        A5["組織の成熟度評価"]
+    end
+    subgraph IN["主要な作業"]
+        B1["ビジネスコンテキスト理解"]
+        B2["既存FW・手法の確認"]
+        B3["TOGAFの適用範囲定義"]
+    end
+    B1 --> A1
+    B2 --> A2
+    B3 --> A3 & A4 & A5
+        </div>
+      </div>
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">01</div>
+          <div class="bp-text"><strong>アーキテクチャ原則は経営層と合意して作成する</strong><span>原則はアーキテクトだけで作るものではなく、経営・IT・ビジネス部門が合意した内容であることが重要。後の意思決定の根拠となるため、スポンサーの署名承認を得ることが望ましい。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">02</div>
+          <div class="bp-text"><strong>TOGAFをそのまま使わず「テーラリング」する</strong><span>TOGAF は汎用フレームワークのため、組織の規模・業種・成熟度に応じてカスタマイズ（テーラリング）することが推奨されている。これも準備フェーズで定義する。</span></div>
+        </div>
+      </div>
+
+      <h2>フェーズ A：アーキテクチャビジョン</h2>
+      <div class="callout info">
+        <i class="ti ti-info-circle"></i>
+        <div>このフェーズは ADM の「出発点」。ステークホルダーの特定と合意形成が最重要タスクです。</div>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    IN2["インプット\nRequest for Architecture Work"] --> ST["ステークホルダーの特定"]
+    ST --> GO["ビジネス目標・ドライバーの確認"]
+    GO --> SC["スコープの定義"]
+    SC --> CO["制約・前提条件の把握"]
+    CO --> OUT2["アウトプット\nアーキテクチャビジョン文書\nStatement of Architecture Work"]
+        </div>
+      </div>
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">03</div>
+          <div class="bp-text"><strong>Statement of Architecture Work（SoAW）を必ず作成・署名する</strong><span>SoAW はアーキテクチャプロジェクトの「契約書」。スコープ・スケジュール・リソース・成功基準を記載し、スポンサーの承認を得ることで、後のフェーズにおける変更管理の基準となる。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">04</div>
+          <div class="bp-text"><strong>ビジネス価値（Business Value）を中心に据える</strong><span>フェーズ A では技術的詳細ではなく「なぜこのアーキテクチャが必要か」という価値命題（Value Proposition）を明確にする。これが後のフェーズのガイド役になる。</span></div>
+        </div>
+      </div>
+
+      <h2>フェーズ B/C/D：アーキテクチャ開発（BDAT）</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    subgraph B["フェーズ B：ビジネス"]
+        B1["AS-IS ビジネス分析"]
+        B2["TO-BE ビジネス設計"]
+        B3["ギャップ分析"]
+    end
+    subgraph C["フェーズ C：情報システム"]
+        C1["データアーキテクチャ"]
+        C2["アプリケーションアーキテクチャ"]
+    end
+    subgraph D["フェーズ D：テクノロジー"]
+        D1["インフラ現状分析"]
+        D2["目標テクノロジー設計"]
+        D3["クラウド / オンプレ選定"]
+    end
+    B --> C --> D
+        </div>
+      </div>
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">05</div>
+          <div class="bp-text"><strong>ギャップ分析は必ず各フェーズで実施する</strong><span>B・C・D それぞれで AS-IS と TO-BE を比較し、ギャップを明確に文書化する。このギャップが後の E/F フェーズの実装作業の基になる。抜け漏れがあると後のフェーズで手戻りが発生する。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">06</div>
+          <div class="bp-text"><strong>B → C → D の依存関係を守る</strong><span>ビジネス要件が定まらないままデータやテクノロジーを設計しない。上位ドメインの決定が下位ドメインの制約となるため、順序を守ることがアーキテクチャの整合性を保つ鍵。</span></div>
+        </div>
+      </div>
+
+      <h2>フェーズ E/F：機会・ソリューション / 移行計画</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    subgraph E["フェーズ E：機会とソリューション"]
+        E1["実装プロジェクトの特定"]
+        E2["移行アーキテクチャの検討"]
+        E3["ワークパッケージの定義"]
+        E4["Architecture Roadmap 作成"]
+        E1 --> E2 --> E3 --> E4
+    end
+    subgraph F["フェーズ F：移行計画"]
+        F1["実装移行計画の策定"]
+        F2["優先順位付け"]
+        F3["コスト・ベネフィット分析"]
+        F4["Transition Architecture 定義"]
+        F1 --> F2 --> F3 --> F4
+    end
+    E --> F
+        </div>
+      </div>
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">07</div>
+          <div class="bp-text"><strong>Transition Architecture（移行中間アーキテクチャ）を活用する</strong><span>AS-IS から TO-BE への一気の移行は困難なことが多い。Transition Architecture を中間ステップとして定義し、段階的な移行計画を立てることでリスクを低減できる。</span></div>
+        </div>
+      </div>
+
+      <h2>フェーズ G/H：ガバナンスと変更管理</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    subgraph G["フェーズ G：実装ガバナンス"]
+        G1["実装プロジェクトのモニタリング"]
+        G2["アーキテクチャコンプライアンス確認"]
+        G3["Architecture Compliance Review"]
+        G4["変更リクエスト対応"]
+    end
+    subgraph H["フェーズ H：変更管理"]
+        H1["変更ドライバーの監視"]
+        H2["アーキテクチャへの影響評価"]
+        H3["フォーマル変更管理プロセス"]
+        H4["次の ADM サイクルへ引き継ぎ"]
+    end
+    G --> H --> NEXT["フェーズ A へ戻る\n（次のサイクル開始）"]
+        </div>
+      </div>
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">08</div>
+          <div class="bp-text"><strong>フェーズ G で「架け橋」の役割を担う</strong><span>フェーズ G はアーキテクトと実装チームの橋渡し。Architecture Contract（アーキテクチャ契約）を通じて、実装がアーキテクチャ原則に準拠しているかを継続的にレビューする。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">09</div>
+          <div class="bp-text"><strong>フェーズ H では変化への感度を高く保つ</strong><span>フェーズ H はアーキテクチャを「生きたもの」として維持するフェーズ。ビジネス環境の変化・技術の変化・法規制の変化を常に監視し、次のサイクルを起動するトリガーを見極める。</span></div>
+        </div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 公式ドキュメント（全フェーズ）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 5. BDAT -->
+    <!-- ============================================================ -->
+    <div class="section" id="bdat">
+      <div class="section-eyebrow">Architecture Domains</div>
+      <h1 class="page-title">BDAT アーキテクチャドメイン</h1>
+      <p class="page-subtitle">ビジネス・データ・アプリケーション・テクノロジーの 4 ドメインがエンタープライズアーキテクチャの柱です。</p>
+
+      <h2>4 つのドメイン概要</h2>
+      <div class="domain-grid">
+        <div class="domain-card" style="border-color:var(--c-blue-800)">
+          <div class="domain-letter" style="color:var(--c-blue-400)">B</div>
+          <div class="domain-name">Business Architecture</div>
+          <div class="domain-jp">ビジネスアーキテクチャ</div>
+          <ul>
+            <li>ビジネスプロセス</li>
+            <li>組織構造</li>
+            <li>ビジネス機能・サービス</li>
+            <li>ビジネスルール・ポリシー</li>
+          </ul>
+        </div>
+        <div class="domain-card" style="border-color:var(--c-teal-800)">
+          <div class="domain-letter" style="color:var(--c-teal-500)">D</div>
+          <div class="domain-name">Data Architecture</div>
+          <div class="domain-jp">データアーキテクチャ</div>
+          <ul>
+            <li>データエンティティ</li>
+            <li>データモデル</li>
+            <li>データ管理・ガバナンス</li>
+            <li>データフロー</li>
+          </ul>
+        </div>
+        <div class="domain-card" style="border-color:var(--c-coral-800)">
+          <div class="domain-letter" style="color:var(--c-coral-500)">A</div>
+          <div class="domain-name">Application Architecture</div>
+          <div class="domain-jp">アプリケーションアーキテクチャ</div>
+          <ul>
+            <li>アプリケーションコンポーネント</li>
+            <li>アプリケーション間インタラクション</li>
+            <li>アプリケーションポートフォリオ</li>
+          </ul>
+        </div>
+        <div class="domain-card" style="border-color:var(--c-amber-800)">
+          <div class="domain-letter" style="color:var(--c-amber-500)">T</div>
+          <div class="domain-name">Technology Architecture</div>
+          <div class="domain-jp">テクノロジーアーキテクチャ</div>
+          <ul>
+            <li>技術プラットフォーム</li>
+            <li>ネットワーク・インフラ</li>
+            <li>クラウド・物理基盤</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>BDAT の依存関係</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    B["ビジネスアーキテクチャ\nビジネスニーズ・プロセス・組織"]
+    D["データアーキテクチャ\nどんなデータが必要か"]
+    AP["アプリケーションアーキテクチャ\nどんなシステムが必要か"]
+    T["テクノロジーアーキテクチャ\nどんな技術基盤が必要か"]
+    B -->|"ビジネス要件を定義"| D
+    B -->|"機能要件を定義"| AP
+    D -->|"データストレージ要件"| T
+    AP -->|"システム稼働要件"| T
+        </div>
+        <div class="diagram-label">B が最上位。ビジネス要件が D と A を規定し、D/A が T を規定する</div>
+      </div>
+
+      <div class="callout success">
+        <i class="ti ti-check"></i>
+        <div><strong>試験頻出ポイント：</strong>「どのドメインから始めるか？」という問いに対する答えは常に <strong>B（ビジネス）</strong>から。ビジネス要件が未定のまま技術設計を開始することは TOGAF のアンチパターンです。</div>
+      </div>
+
+      <h2>アーキテクチャビューとビューポイント</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ステークホルダー</th><th>ビュー名</th><th>主要な成果物例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CEO・役員</td><td>ビジネスビュー</td><td>ビジネスプロセスモデル、組織構造図</td></tr>
+            <tr><td>CIO・IT部門長</td><td>アプリケーションビュー</td><td>アプリケーションカタログ、統合マップ</td></tr>
+            <tr><td>CDO・データ部門</td><td>データビュー</td><td>データモデル、データフロー図</td></tr>
+            <tr><td>CTO・インフラ部門</td><td>テクノロジービュー</td><td>インフラカタログ、ネットワーク図</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap03.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — Architecture Domains（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 6. ARTIFACTS -->
+    <!-- ============================================================ -->
+    <div class="section" id="artifacts">
+      <div class="section-eyebrow">Building Blocks & Principles</div>
+      <h1 class="page-title">成果物・ビルディングブロック</h1>
+      <p class="page-subtitle">ABB と SBB の違い、アーキテクチャ原則の構成要素は Level 1/2 の頻出テーマです。</p>
+
+      <h2>ABB vs SBB（試験最頻出）</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    subgraph ABB["アーキテクチャビルディングブロック（ABB）"]
+        A1["抽象的・技術中立\n例：認証サービス\n例：データウェアハウス\n例：API Gateway"]
+    end
+    subgraph SBB["ソリューションビルディングブロック（SBB）"]
+        S1["具体的・製品/技術指定\n例：AWS Cognito\n例：Snowflake\n例：Kong Gateway"]
+    end
+    ABB -->|"具体化・実装"| SBB
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>観点</th><th>ABB（Architecture BB）</th><th>SBB（Solution BB）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>抽象度</td><td>高い（ベンダー非依存）</td><td>低い（具体的製品・技術）</td></tr>
+            <tr><td>使用フェーズ</td><td>B/C/D（アーキテクチャ設計）</td><td>E/F/G（実装・移行フェーズ）</td></tr>
+            <tr><td>例</td><td>「認証サービス」</td><td>「AWS Cognito」</td></tr>
+            <tr><td>目的</td><td>要件定義・設計の共通言語</td><td>具体的実装の選定後に使用</td></tr>
+            <tr><td>再利用性</td><td>高い（組織横断で再利用可）</td><td>低い（特定技術に依存）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>アーキテクチャ原則の 4 構成要素</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    P["アーキテクチャ原則"]:::root --> N["名前\nName\n短く記憶しやすい名称"]:::n
+    P --> S["ステートメント\nStatement\n原則の1文での表現"]:::s
+    P --> R["根拠\nRationale\nなぜこの原則が必要か"]:::r
+    P --> I["示唆\nImplications\nこの原則を採用した場合の影響"]:::i
+    classDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+    classDef n fill:#1e3a5f,stroke:#60a5fa,color:#e8eaf0
+    classDef s fill:#134e4a,stroke:#14b8a6,color:#e8eaf0
+    classDef r fill:#451a03,stroke:#f59e0b,color:#e8eaf0
+    classDef i fill:#5c2210,stroke:#ff6b35,color:#e8eaf0
+        </div>
+      </div>
+
+      <div class="callout warning">
+        <i class="ti ti-alert-triangle"></i>
+        <div><strong>試験頻出：</strong>「アーキテクチャ原則には何が含まれるか」という問いへの答えは <strong>Name・Statement・Rationale・Implications の 4 つ</strong>。「Description」や「Justification」は TOGAF の正式な用語ではないため注意。</div>
+      </div>
+
+      <h2>原則の例：「データは資産である」</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>構成要素</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Name</strong></td><td>データは資産である（Data Is an Asset）</td></tr>
+            <tr><td><strong>Statement</strong></td><td>データは、適切に管理・活用される重要な企業資産である</td></tr>
+            <tr><td><strong>Rationale</strong></td><td>データに対して財務・物的資産と同様の意識を持つことで、より適切な意思決定が可能になる</td></tr>
+            <tr><td><strong>Implications</strong></td><td>データ管理への投資が必要になる。データオーナーを明確に定義する組織設計が必要となる</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap20.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — Architecture Principles（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 7. REPOSITORY -->
+    <!-- ============================================================ -->
+    <div class="section" id="repository">
+      <div class="section-eyebrow">Architecture Repository</div>
+      <h1 class="page-title">アーキテクチャリポジトリ</h1>
+      <p class="page-subtitle">組織のアーキテクチャ成果物を一元管理するための構造化されたデータストアです。</p>
+
+      <h2>リポジトリの全体構造</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    AR["アーキテクチャリポジトリ\nArchitecture Repository"]:::root
+    AR --> AL["アーキテクチャランドスケープ\nArchitecture Landscape"]:::node
+    AR --> REF["リファレンスライブラリ\nReference Library"]:::node
+    AR --> STAN["標準情報ベース\nStandards Information Base"]:::node
+    AR --> CONT["ガバナンスログ\nGovernance Log"]:::node
+    AR --> CAP["アーキテクチャ能力\nArchitecture Capability"]:::node
+    AR --> SOL["ソリューションランドスケープ\nSolution Landscape"]:::node
+    AL --> AL1["戦略アーキテクチャ\n5〜10年 / 組織全体"]
+    AL --> AL2["セグメントアーキテクチャ\n2〜5年 / ビジネスエリア単位"]
+    AL --> AL3["能力アーキテクチャ\n1〜2年 / 個別プロジェクト"]
+    classDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+    classDef node fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8
+        </div>
+      </div>
+
+      <h2>アーキテクチャランドスケープの 3 層</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>層</th><th>時間軸</th><th>粒度</th><th>説明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>戦略アーキテクチャ</strong></td><td>5〜10年</td><td>組織全体</td><td>変化の少ない大方針・長期ビジョン。経営層が参照する。</td></tr>
+            <tr><td><strong>セグメントアーキテクチャ</strong></td><td>2〜5年</td><td>事業単位・部門</td><td>事業部門横断の整合性を保つ中間層。部門長クラスが参照する。</td></tr>
+            <tr><td><strong>能力アーキテクチャ</strong></td><td>1〜2年</td><td>個別プロジェクト</td><td>具体的な実装・変更を対象とする最下層。プロジェクトチームが参照する。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">10</div>
+          <div class="bp-text"><strong>ガバナンスログはすべての決定を記録する</strong><span>Architecture Board の決定、コンプライアンスレビュー結果、例外申請の承認・却下などをすべてガバナンスログに記録する。これが組織のアーキテクチャ意思決定の「歴史書」となる。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">11</div>
+          <div class="bp-text"><strong>リポジトリはアーキテクチャの「シングルソースオブトゥルース」</strong><span>組織内で複数の「アーキテクチャ資料」が存在すると矛盾が生じる。リポジトリを唯一の信頼できる情報源として位置付け、すべての成果物をここから参照する文化を構築する。</span></div>
+        </div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap41.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — Architecture Repository（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 8. STAKEHOLDER -->
+    <!-- ============================================================ -->
+    <div class="section" id="stakeholder">
+      <div class="section-eyebrow">Stakeholder Management</div>
+      <h1 class="page-title">ステークホルダーマネジメント</h1>
+      <p class="page-subtitle">「誰の関心事（Concerns）に答えるか」が TOGAF のアーキテクチャ設計の出発点です。</p>
+
+      <h2>ステークホルダー管理マトリクス</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>象限</th><th>影響力</th><th>関心度</th><th>対応方針</th><th>例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>密接に管理</strong></td><td>高</td><td>高</td><td>継続的な関与と詳細な情報共有</td><td>CEO・CIO</td></tr>
+            <tr><td><strong>継続的な情報提供</strong></td><td>低</td><td>高</td><td>定期的なレポートと情報提供</td><td>現場マネージャー・IT運用チーム</td></tr>
+            <tr><td><strong>満足を維持</strong></td><td>高</td><td>低</td><td>重要事項のみを報告し関係を維持</td><td>規制当局・株主</td></tr>
+            <tr><td><strong>モニタリング</strong></td><td>低</td><td>低</td><td>最小限の情報提供で監視</td><td>ベンダー・エンドユーザー</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>ステークホルダーの関心事マッピング</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    EA["エンタープライズ\nアーキテクチャ"]:::root
+    subgraph EX["経営層"]
+        EX1["コスト削減・ROI"]
+        EX2["競争優位性"]
+        EX3["リスク管理・規制対応"]
+    end
+    subgraph IT["IT部門"]
+        IT1["技術的負債の解消"]
+        IT2["システム信頼性・セキュリティ"]
+        IT3["保守性・拡張性"]
+    end
+    subgraph BZ["ビジネス部門"]
+        BZ1["業務効率化"]
+        BZ2["データアクセス"]
+        BZ3["プロセス改善"]
+    end
+    subgraph US["エンドユーザー"]
+        US1["使いやすい UI"]
+        US2["システム速度"]
+        US3["データの正確性"]
+    end
+    EA --> EX & IT & BZ & US
+    classDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+        </div>
+      </div>
+
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">12</div>
+          <div class="bp-text"><strong>ビューはステークホルダーの関心事に基づいて設計する</strong><span>TOGAF では「ビューポイント」はステークホルダーの「Concerns（関心事）」を満たすために存在する。アーキテクトは受け取り手が誰か、何に関心があるかを常に意識してアーキテクチャ成果物を作成する。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">13</div>
+          <div class="bp-text"><strong>全ステークホルダーを早期に特定する</strong><span>フェーズ A でステークホルダーを網羅的に特定することが重要。後から新しいステークホルダーが発見されると、要件の追加・変更が発生しアーキテクチャ全体に影響が及ぶ。</span></div>
+        </div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap21.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — Stakeholder Management（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 9. GOVERNANCE -->
+    <!-- ============================================================ -->
+    <div class="section" id="governance">
+      <div class="section-eyebrow">Governance & Compliance</div>
+      <h1 class="page-title">ガバナンスとコンプライアンス</h1>
+      <p class="page-subtitle">TOGAF では「ガバナンスなきアーキテクチャは設計書に過ぎない」。実装との整合性を保つ仕組みが不可欠です。</p>
+
+      <h2>アーキテクチャガバナンス組織階層</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    BOARD["経営委員会・取締役会"]:::top --> IT_GOV["IT投資委員会"]:::mid
+    IT_GOV --> ARCH_BOARD["アーキテクチャボード\nArchitecture Board"]:::key
+    ARCH_BOARD --> PROJ["プロジェクト・プログラム"]:::low
+    subgraph ROLES["アーキテクチャボードの役割"]
+        R1["アーキテクチャ方針の策定・維持"]
+        R2["コンプライアンスレビューの実施"]
+        R3["例外申請の承認・却下"]
+        R4["アーキテクチャ原則の管理"]
+        R5["アーキテクチャ成果物の承認"]
+    end
+    ARCH_BOARD --> ROLES
+    classDef top fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8
+    classDef mid fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8
+    classDef key fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0
+    classDef low fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8
+        </div>
+      </div>
+
+      <h2>アーキテクチャコンプライアンスの 4 種類</h2>
+      <div class="card-grid">
+        <div class="card" style="border-color:var(--c-green-800)">
+          <div class="card-icon"><i class="ti ti-check" style="color:var(--color-text-success)"></i></div>
+          <div class="card-title" style="color:var(--color-text-success)">Conformant（適合）</div>
+          <div class="card-desc">アーキテクチャに完全準拠。そのまま進行可能。</div>
+        </div>
+        <div class="card" style="border-color:var(--c-amber-800)">
+          <div class="card-icon"><i class="ti ti-alert-triangle" style="color:var(--color-text-warning)"></i></div>
+          <div class="card-title" style="color:var(--color-text-warning)">Partially Conformant（部分適合）</div>
+          <div class="card-desc">一部準拠。改善計画の策定が必要。</div>
+        </div>
+        <div class="card" style="border-color:var(--c-coral-800)">
+          <div class="card-icon"><i class="ti ti-x" style="color:var(--color-text-danger)"></i></div>
+          <div class="card-title" style="color:var(--color-text-danger)">Non-Conformant（不適合）</div>
+          <div class="card-desc">アーキテクチャに準拠していない。例外申請またはアーキテクチャ変更が必要。</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="ti ti-minus" style="color:var(--color-text-tertiary)"></i></div>
+          <div class="card-title" style="color:var(--color-text-tertiary)">Irrelevant（対象外）</div>
+          <div class="card-desc">このアーキテクチャの適用対象外。対象外として記録する。</div>
+        </div>
+      </div>
+
+      <h2>アーキテクチャコントラクト</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+    A["アーキテクチャチーム"] <-->|"アーキテクチャコントラクト\nArchitecture Contract"| B["実装チーム\n（プロジェクト）"]
+    subgraph CONT["コントラクトの主な内容"]
+        C1["アーキテクチャ要件・制約"]
+        C2["適合性の基準"]
+        C3["成果物の承認基準"]
+        C4["変更管理プロセス"]
+        C5["ガバナンス要件"]
+    end
+    B --> CONT
+        </div>
+      </div>
+
+      <div class="bp-list">
+        <div class="bp-item">
+          <div class="bp-num">14</div>
+          <div class="bp-text"><strong>アーキテクチャボードは「承認機関」であり「相談機関」でもある</strong><span>ボードは単に成果物を承認するだけでなく、プロジェクトがアーキテクチャ原則に沿った判断を早期に相談できる場としても機能させることが重要。問題が大きくなる前に介入できる体制を作る。</span></div>
+        </div>
+        <div class="bp-item">
+          <div class="bp-num">15</div>
+          <div class="bp-text"><strong>例外申請プロセスを明確に定義する</strong><span>Non-Conformant（不適合）のプロジェクトが発生した場合の例外申請プロセスを事前に定義する。曖昧なプロセスはアーキテクチャの形骸化を招く。期限付きの例外許可と改善計画の提出を義務付けるのが効果的。</span></div>
+        </div>
+      </div>
+
+      <div class="source-list">
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap44.html" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 — Architecture Governance（公式）
+        </a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 10. STRATEGY -->
+    <!-- ============================================================ -->
+    <div class="section" id="strategy">
+      <div class="section-eyebrow">Exam Strategy</div>
+      <h1 class="page-title">合格戦略とベストプラクティス</h1>
+      <p class="page-subtitle">Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。</p>
+
+      <h2>Level 1 出題傾向（目安）</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>テーマ</th><th>比率目安</th><th>重点ポイント</th></tr></thead>
+          <tbody>
+            <tr><td>ADM の各フェーズ理解</td><td><strong>35%</strong></td><td>フェーズの目的・順序・入出力</td></tr>
+            <tr><td>アーキテクチャドメイン BDAT</td><td><strong>20%</strong></td><td>各ドメインの定義と依存関係</td></tr>
+            <tr><td>TOGAF の基本概念・用語</td><td><strong>20%</strong></td><td>ABB/SBB、原則の4構成要素</td></tr>
+            <tr><td>アーキテクチャリポジトリ</td><td><strong>10%</strong></td><td>6つの構成要素・3層ランドスケープ</td></tr>
+            <tr><td>ガバナンス・コンプライアンス</td><td><strong>10%</strong></td><td>コンプライアンス4種・ボードの役割</td></tr>
+            <tr><td>ステークホルダーマネジメント</td><td><strong>5%</strong></td><td>Concerns・ビュー・ビューポイント</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Level 2 問題の解き方フレームワーク</h2>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart TD
+    Q["問題文を読む"] --> S["シナリオの状況を把握\n何の組織か？\n何の問題か？\n現在のフェーズはどこか？"]
+    S --> R["TOGAF のどの概念が\n適用されるか特定する"]
+    R --> C["各選択肢を評価\nTOGAFのBPに合致するか？\nADMの順序を守っているか？\nガバナンスを尊重しているか？"]
+    C --> A["最適な選択肢を選ぶ\n（公式ドキュメントで確認）"]
+    subgraph TRAP["陥りやすい罠"]
+        T1["直感に頼りすぎる"]
+        T2["ADM フェーズの順序を無視"]
+        T3["ステークホルダー関与を軽視"]
+        T4["ガバナンスをスキップする答えを選ぶ"]
+    end
+    A -.->|"要注意"| TRAP
+        </div>
+      </div>
+
+      <h2>合格のための 10 箇条</h2>
+      <div class="bp-list">
+        <div class="bp-item"><div class="bp-num">01</div><div class="bp-text"><strong>ADM のフローを完全暗記する</strong><span>準備フェーズ → A → B → C → D → E → F → G → H → A（反復）。この順序と各フェーズの目的を体で覚えること。</span></div></div>
+        <div class="bp-item"><div class="bp-num">02</div><div class="bp-text"><strong>各フェーズの入出力を理解する</strong><span>どのフェーズで何を作成し、何を次のフェーズに渡すか。SoAW・アーキテクチャビジョン・ギャップ分析・ロードマップなどの成果物の流れを把握する。</span></div></div>
+        <div class="bp-item"><div class="bp-num">03</div><div class="bp-text"><strong>BDAT の依存関係を体系的に理解する</strong><span>B → D/A → T の依存方向を常に意識する。ビジネス要件が未確定な状態でテクノロジーを決定することは TOGAF の原則違反。</span></div></div>
+        <div class="bp-item"><div class="bp-num">04</div><div class="bp-text"><strong>ギャップ分析の手法をマスターする</strong><span>AS-IS と TO-BE の差分特定は最頻出テーマ。「廃止・新規・維持・改善」の 4 分類を即座に判断できるようにする。</span></div></div>
+        <div class="bp-item"><div class="bp-num">05</div><div class="bp-text"><strong>ABB と SBB の違いを完全理解する</strong><span>「抽象（ABB）vs 具体（SBB）」「設計フェーズ vs 実装フェーズ」という対比を試験問題のコンテキストで即座に判別できるようにする。</span></div></div>
+        <div class="bp-item"><div class="bp-num">06</div><div class="bp-text"><strong>ガバナンスプロセスを重視する</strong><span>TOGAF は必ずガバナンス（Architecture Board 経由）を通すことを前提とする。「直接実装する」「ガバナンスをスキップする」選択肢は基本的に不正解。</span></div></div>
+        <div class="bp-item"><div class="bp-num">07</div><div class="bp-text"><strong>Level 2 の公式ドキュメントを事前整理する</strong><span>タブインデックスを貼り、ADM フェーズ・コンプライアンス定義・ガバナンス構造を素早く参照できるようにする。持込可でも検索時間は 1〜2 分が限界。</span></div></div>
+        <div class="bp-item"><div class="bp-num">08</div><div class="bp-text"><strong>模擬試験を最低 200 問解く</strong><span>問題のパターンと罠を把握するためには実践量が不可欠。Whizlabs・ExamTopics 等の模擬試験で間違えた問題を徹底的に復習する。</span></div></div>
+        <div class="bp-item"><div class="bp-num">09</div><div class="bp-text"><strong>ステークホルダー視点で考える</strong><span>誰の Concerns（関心事）に答えているかを常に考える。「このビューは誰のためのものか」という問いが解答の手がかりになる。</span></div></div>
+        <div class="bp-item"><div class="bp-num">10</div><div class="bp-text"><strong>TOGAF の「考え方」を内在化する</strong><span>暗記でなく、「なぜそうするのか」の論理を理解する。TOGAF は「体系的・反復的・ガバナンス重視」という思想を一貫して持っている。</span></div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 11. ROADMAP -->
+    <!-- ============================================================ -->
+    <div class="section" id="roadmap">
+      <div class="section-eyebrow">Study Plan</div>
+      <h1 class="page-title">7 週間学習ロードマップ</h1>
+      <p class="page-subtitle">効率的に合格を目指すための週次学習目標とリソース優先順位を示します。</p>
+
+      <h2>週次学習計画</h2>
+      <div class="week-grid">
+        <div class="week-item">
+          <div class="week-num">Week 1</div>
+          <div>
+            <div class="week-title">TOGAF 概要・BDAT ドメイン</div>
+            <div class="week-detail">TOGAF とは何か・歴史・普及背景。4 つのアーキテクチャドメイン（B/D/A/T）の定義と依存関係を理解する。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-teal">基礎</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 2</div>
+          <div>
+            <div class="week-title">ADM 前半（準備〜フェーズ D）</div>
+            <div class="week-detail">準備フェーズ・A・B・C・D の目的、入出力、主要成果物を各フェーズのベストプラクティスとともに習得する。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-teal">ADM</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 3</div>
+          <div>
+            <div class="week-title">ADM 後半（フェーズ E〜H・要求管理）</div>
+            <div class="week-detail">実装計画・ガバナンス・変更管理の各フェーズ。要求管理が全フェーズを横断する理由を理解する。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-teal">ADM</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 4</div>
+          <div>
+            <div class="week-title">成果物・リポジトリ・原則</div>
+            <div class="week-detail">ABB/SBB の違い、アーキテクチャリポジトリの 6 構成要素と 3 層ランドスケープ、アーキテクチャ原則の 4 要素を習得する。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-amber">中級</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 5</div>
+          <div>
+            <div class="week-title">ガバナンス・ステークホルダー</div>
+            <div class="week-detail">Architecture Board の役割、コンプライアンス 4 種（Conformant/Partially/Non/Irrelevant）、アーキテクチャコントラクト、ステークホルダー管理マトリクスを習得する。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-amber">中級</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 6</div>
+          <div>
+            <div class="week-title">模擬試験① + 弱点分析</div>
+            <div class="week-detail">100 問以上の模擬試験を実施。間違えた問題の根拠を必ず確認し、弱点分野の再学習を行う。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-coral">実践</span></div>
+        </div>
+        <div class="week-item">
+          <div class="week-num">Week 7</div>
+          <div>
+            <div class="week-title">模擬試験② + 直前対策</div>
+            <div class="week-detail">150 問以上の模擬試験。キーワード・用語の最終確認。Level 2 受験者はドキュメントのタブ整理を完成させる。</div>
+          </div>
+          <div class="week-tag"><span class="tag tag-coral">仕上げ</span></div>
+        </div>
+      </div>
+
+      <h2>学習リソース優先順位</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>優先度</th><th>リソース</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="color:var(--color-text-danger)">Must</strong></td><td>TOGAF Standard Version 10（公式）</td><td>Level 2 持込用・根拠確認</td></tr>
+            <tr><td><strong style="color:var(--color-text-danger)">Must</strong></td><td>公式サンプル試験問題（The Open Group）</td><td>問題形式・難易度の把握</td></tr>
+            <tr><td><strong style="color:var(--color-text-danger)">Must</strong></td><td>認定トレーニングプログラム（ATC）</td><td>体系的な知識習得</td></tr>
+            <tr><td><strong style="color:var(--color-text-warning)">Should</strong></td><td>Whizlabs / ExamTopics 模擬試験</td><td>問題パターンと弱点把握</td></tr>
+            <tr><td><strong style="color:var(--color-text-warning)">Should</strong></td><td>Udemy / Coursera 動画コース</td><td>視覚的な理解補助</td></tr>
+            <tr><td><strong style="color:var(--color-text-success)">Nice</strong></td><td>TOGAF Wiki・コミュニティ</td><td>実践者の経験談・補足情報</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 12. REFERENCES -->
+    <!-- ============================================================ -->
+    <div class="section" id="references">
+      <div class="section-eyebrow">References</div>
+      <h1 class="page-title">参考文献・公式 URL</h1>
+      <p class="page-subtitle">本ガイドで参照した公式ソースと学習リソースの一覧です。</p>
+
+      <h2>TOGAF 公式</h2>
+      <div class="source-list">
+        <a class="source-item" href="https://www.opengroup.org/togaf" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 公式サイト（The Open Group）
+        </a>
+        <a class="source-item" href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 9.2 公式ドキュメント（ADM全フェーズ）
+        </a>
+        <a class="source-item" href="https://www.opengroup.org/certifications/togaf" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 認定資格プログラム（試験詳細・サンプル問題）
+        </a>
+        <a class="source-item" href="https://www.opengroup.org/certifications/professional-register" target="_blank">
+          <i class="ti ti-external-link"></i> TOGAF 認定者検索（Professional Register）
+        </a>
+      </div>
+
+      <h2>EA フレームワーク関連</h2>
+      <div class="source-list">
+        <a class="source-item" href="https://www.opengroup.org/architecture" target="_blank">
+          <i class="ti ti-external-link"></i> The Open Group Architecture Forum
+        </a>
+        <a class="source-item" href="https://www.zachman.com/about-the-zachman-framework" target="_blank">
+          <i class="ti ti-external-link"></i> Zachman Framework 公式
+        </a>
+        <a class="source-item" href="https://www.cio.gov/" target="_blank">
+          <i class="ti ti-external-link"></i> FEAF（米国連邦政府 EA）
+        </a>
+      </div>
+
+      <h2>試験申込・受験</h2>
+      <div class="source-list">
+        <a class="source-item" href="https://home.pearsonvue.com/opengroup" target="_blank">
+          <i class="ti ti-external-link"></i> Pearson VUE — 試験申込ポータル
+        </a>
+        <a class="source-item" href="https://home.pearsonvue.com/Test-takers/Find-a-test-center.aspx" target="_blank">
+          <i class="ti ti-external-link"></i> 試験センター検索（日本）
+        </a>
+        <a class="source-item" href="https://home.pearsonvue.com/opengroup/onvue" target="_blank">
+          <i class="ti ti-external-link"></i> オンライン受験（OnVUE）
+        </a>
+      </div>
+
+      <h2>学習プラットフォーム</h2>
+      <div class="source-list">
+        <a class="source-item" href="https://www.udemy.com/topic/togaf/" target="_blank">
+          <i class="ti ti-external-link"></i> Udemy — TOGAF 試験対策コース
+        </a>
+        <a class="source-item" href="https://www.coursera.org/" target="_blank">
+          <i class="ti ti-external-link"></i> Coursera — Enterprise Architecture
+        </a>
+        <a class="source-item" href="https://www.linkedin.com/learning/topics/togaf" target="_blank">
+          <i class="ti ti-external-link"></i> LinkedIn Learning — TOGAF
+        </a>
+        <a class="source-item" href="https://www.whizlabs.com/togaf/" target="_blank">
+          <i class="ti ti-external-link"></i> Whizlabs — TOGAF 模擬試験
+        </a>
+      </div>
+
+      <h2>推薦書籍</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>タイトル</th><th>著者</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td><strong>TOGAF Standard, Version 10</strong></td><td>The Open Group</td><td>最新公式テキスト（Level 2 持込）</td></tr>
+            <tr><td>TOGAF Version 9.1 Pocket Guide</td><td>Andrew Josey</td><td>試験直前の要点整理</td></tr>
+            <tr><td>Enterprise Architecture As Strategy</td><td>Ross, Weill, Robertson</td><td>EA の戦略的価値を理解する背景学習</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warning">
+        <i class="ti ti-alert-triangle"></i>
+        <div><strong>免責事項：</strong>TOGAF® は The Open Group の登録商標です。本ドキュメントは The Open Group の公式資料ではありません。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（opengroup.org/togaf）でご確認ください。</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#2d1b5e',
+      primaryTextColor: '#e8eaf0',
+      primaryBorderColor: '#7c4dff',
+      lineColor: '#6b7494',
+      secondaryColor: '#134e4a',
+      tertiaryColor: '#1a1e2a',
+      background: '#13161e',
+      mainBkg: '#1a1e2a',
+      nodeBorder: '#2a2f42',
+      clusterBkg: '#13161e',
+      titleColor: '#e8eaf0',
+      edgeLabelBackground: '#1a1e2a',
+      fontFamily: 'Inter, Noto Sans JP, system-ui, sans-serif',
+      fontSize: '13px'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 16
+    }
+  });
+
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+</script>
+</body>
+</html>

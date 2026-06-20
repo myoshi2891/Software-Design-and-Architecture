@@ -21,7 +21,7 @@ allowed-tools:
 静的 HTML の Mermaid 描画崩れを直すときは、**ボイラープレート（render ループ・SVG 後処理・中央寄せ CSS）を手書きで再生成しないこと**。以下の再利用スクリプトで機械的処理を一括適用できる。
 
 1. **図ソースを JS テンプレートリテラルで定義**（LLM の判断が必要なのはここだけ）:
-   各図を 1 ステートメント 1 行・カラム 0・改行は `<br/>` で `const DIAGRAMS = { 'diag-1': \`flowchart TD ...\` }` として HTML の `<script>` 内に書く。
+   各図を 1 ステートメント 1 行・カラム 0・改行は `<br/>` で `const DIAGRAMS = { 'diag-1': 'flowchart TD ...' }` として HTML の `<script>` 内に書く。
 2. **描画パイプラインを冪等適用**:
 
    ```bash

@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥒 BDD完全ガイド — Behavior-Driven Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<style>
+:root{
+  --bg-deep:#07111e;--bg-surface:#0d1926;--bg-card:#112135;--bg-card-hover:#142840;--bg-code:#060d16;
+  --g:#3fb950;--gd:#0d2b15;--g2:rgba(63,185,80,.08);
+  --b:#58a6ff;--bd:#0e2140;--b2:rgba(88,166,255,.08);
+  --o:#e07b39;--od:#2d1508;--o2:rgba(224,123,57,.08);
+  --r:#f85149;--rd:#2d0e0d;--r2:rgba(248,81,73,.08);
+  --p:#bc8cff;--pd:#231545;--p2:rgba(188,140,255,.08);
+  --y:#d4a017;
+  --t1:#e6edf3;--t2:#8b949e;--t3:#6e7681;
+  --border:#1e3247;--sw:280px;
+  --fs:'Inter',-apple-system,sans-serif;--fm:'JetBrains Mono','Fira Code',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg-deep);color:var(--t1);font-family:var(--fs);font-size:15px;line-height:1.75;display:flex;overflow-x:hidden}
+#pb{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--g),var(--b));z-index:999;width:0;transition:width .1s linear}
+#sb{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg-surface);border-right:1px solid var(--border);overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+#sb::-webkit-scrollbar{width:3px}
+#sb::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sb-head{padding:18px 18px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg-surface);z-index:10}
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:3px}
+.sb-logo .ico{font-size:20px}
+.sb-logo .txt{font-size:12px;font-weight:700;color:var(--g);font-family:var(--fm);letter-spacing:.05em}
+.sb-sub{font-size:9px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase}
+.sb-nav{padding:10px 0;flex:1}
+.sb-grp{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);padding:10px 18px 4px}
+.nav-a{display:flex;align-items:center;gap:8px;padding:5px 18px;cursor:pointer;border-left:2px solid transparent;transition:all .18s;text-decoration:none;color:var(--t2);font-size:12px}
+.nav-a:hover{color:var(--t1);background:var(--g2)}
+.nav-a.active{color:var(--g);border-left-color:var(--g);background:rgba(63,185,80,.07)}
+.nav-a .nn{font-family:var(--fm);font-size:10px;color:var(--t3);min-width:18px}
+.nav-a.active .nn{color:var(--g)}
+#main{margin-left:var(--sw);flex:1;min-height:100vh;overflow-y:auto;height:100vh}
+#main::-webkit-scrollbar{width:5px}
+#main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.hero{background:linear-gradient(140deg,var(--bg-surface) 0%,#091622 100%);border-bottom:1px solid var(--border);padding:60px 60px 52px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40%;right:-5%;width:480px;height:480px;background:radial-gradient(circle,rgba(63,185,80,.07) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--gd);color:var(--g);border:1px solid rgba(63,185,80,.25);padding:3px 12px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
+.hero-h1{font-size:40px;font-weight:800;line-height:1.12;letter-spacing:-.025em;margin-bottom:14px;background:linear-gradient(135deg,#e6edf3 0%,#8b949e 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-h1 .ag{background:linear-gradient(135deg,var(--g),#5af078);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:15.5px;color:var(--t2);max-width:560px;line-height:1.65;margin-bottom:26px}
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);background:rgba(255,255,255,.03);border:1px solid var(--border);padding:4px 10px;border-radius:6px}
+.cw{max-width:100%;margin:0 auto;padding:0 48px 80px}
+.sec{margin-top:68px;scroll-margin-top:28px}
+.sec-hd{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.sec-num{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--g);background:var(--gd);border:1px solid rgba(63,185,80,.2);padding:2px 8px;border-radius:4px;letter-spacing:.04em;white-space:nowrap}
+.sec-title{font-size:22px;font-weight:700;letter-spacing:-.015em}
+.sub{margin-top:36px}
+.sub-title{font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sub-title::before{content:'';display:block;width:3px;height:15px;background:var(--g);border-radius:2px;flex-shrink:0}
+p{color:var(--t2);margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--t1);font-weight:600}
+.lead{font-size:15.5px;color:var(--t1);line-height:1.72}
+.co{border-radius:8px;padding:14px 18px;margin:18px 0;border-left:3px solid;display:flex;gap:11px;align-items:flex-start}
+.co-i{background:var(--b2);border-color:var(--b)}
+.co-s{background:var(--g2);border-color:var(--g)}
+.co-w{background:var(--o2);border-color:var(--o)}
+.co-d{background:var(--r2);border-color:var(--r)}
+.co-ico{font-size:16px;line-height:1.4;flex-shrink:0}
+.co-body{flex:1}
+.co-ttl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.co-i .co-ttl{color:var(--b)}.co-s .co-ttl{color:var(--g)}.co-w .co-ttl{color:var(--o)}.co-d .co-ttl{color:var(--r)}
+.co p{font-size:13.5px;margin:0}
+.cg{display:grid;gap:14px;margin:18px 0}
+.cg2{grid-template-columns:1fr 1fr}
+.cg3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:all .2s}
+.card:hover{border-color:rgba(63,185,80,.3);background:var(--bg-card-hover);transform:translateY(-1px)}
+.card .ci{font-size:22px;margin-bottom:9px}
+.card .ct{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:5px}
+.card .cd{font-size:13px;color:var(--t2);line-height:1.5;margin:0}
+.card.gc{border-color:rgba(63,185,80,.2)}.card.bc{border-color:rgba(88,166,255,.2)}.card.rc{border-color:rgba(248,81,73,.2)}.card.oc{border-color:rgba(224,123,57,.2)}.card.pc{border-color:rgba(188,140,255,.2)}
+.mbox{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px 16px;margin:18px auto;overflow-x:auto;display:block;max-width:100%;width:100%}
+.mbox{position:relative}.mbox svg{max-width:100% !important;height:auto !important;display:block;margin:0 auto !important}
+.cb{margin:16px 0;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.cb-hd{background:#0e1f33;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.cb-lang{font-family:var(--fm);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.cb-lang.gl{color:var(--g)}.cb-lang.pl{color:var(--b)}.cb-lang.yl{color:var(--o)}.cb-lang.jl{color:#f0a92b}.cb-lang.bl{color:#8b949e}
+.cb-dots{display:flex;gap:5px}
+.cb-dots span{width:10px;height:10px;border-radius:50%}
+.cb-dots span:nth-child(1){background:var(--r)}
+.cb-dots span:nth-child(2){background:var(--y)}
+.cb-dots span:nth-child(3){background:var(--g)}
+.cb-body{background:var(--bg-code);overflow-x:auto}
+.cb-body pre{margin:0!important;border-radius:0!important;background:transparent!important;padding:16px!important;font-size:12.5px!important;line-height:1.6!important;font-family:var(--fm)!important}
+.cb-body pre code{font-size:12.5px!important}
+.tw{overflow-x:auto;margin:16px 0;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#0d1f35}
+th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--border)}
+td{padding:9px 14px;color:var(--t2);border-bottom:1px solid rgba(30,50,71,.6);vertical-align:top;line-height:1.55}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(63,185,80,.025);color:var(--t1)}
+td code{background:var(--bg-code);padding:1px 5px;border-radius:3px;font-family:var(--fm);font-size:11.5px;color:var(--g)}
+.b-given{background:rgba(88,166,255,.12);color:var(--b);border:1px solid rgba(88,166,255,.25);padding:2px 9px;border-radius:100px;font-family:var(--fm);font-size:11px;font-weight:700}
+.b-when{background:rgba(224,123,57,.12);color:var(--o);border:1px solid rgba(224,123,57,.25);padding:2px 9px;border-radius:100px;font-family:var(--fm);font-size:11px;font-weight:700}
+.b-then{background:rgba(63,185,80,.12);color:var(--g);border:1px solid rgba(63,185,80,.25);padding:2px 9px;border-radius:100px;font-family:var(--fm);font-size:11px;font-weight:700}
+.b-and{background:rgba(188,140,255,.12);color:var(--p);border:1px solid rgba(188,140,255,.25);padding:2px 9px;border-radius:100px;font-family:var(--fm);font-size:11px;font-weight:700}
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.comp-c{border-radius:8px;padding:14px}
+.comp-good{background:var(--g2);border:1px solid rgba(63,185,80,.2)}
+.comp-bad{background:var(--r2);border:1px solid rgba(248,81,73,.2)}
+.comp-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}
+.comp-good .comp-lbl{color:var(--g)}.comp-bad .comp-lbl{color:var(--r)}
+.comp-c p{font-size:13px;margin:0;color:var(--t2)}
+.sl{list-style:none;margin:16px 0}
+.sl li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.sl li:last-child{border-bottom:none}
+.sl-n{min-width:28px;height:28px;background:var(--gd);color:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;text-align:center;padding:2px}
+.sl-c strong{display:block;font-size:13.5px;margin-bottom:2px;color:var(--t1)}
+.sl-c p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--fm);font-size:11px;font-weight:600}
+.tg{background:var(--gd);color:var(--g)}
+.tb{background:var(--bd);color:var(--b)}
+.to{background:var(--od);color:var(--o)}
+.tr2{background:var(--rd);color:var(--r)}
+.tp{background:var(--pd);color:var(--p)}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+.rc2{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:11px 13px;text-decoration:none;display:block;transition:all .2s}
+.rc2:hover{border-color:var(--b);background:var(--bg-card-hover)}
+.rl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.06em;margin-bottom:3px}
+.ru{font-family:var(--fm);font-size:11px;color:var(--b);word-break:break-all}
+:not(pre)>code{background:rgba(88,166,255,.1);color:var(--b);padding:1px 6px;border-radius:4px;font-family:var(--fm);font-size:.875em}
+a{color:var(--b);text-decoration:none}
+a:hover{text-decoration:underline}
+.footer{background:var(--bg-surface);border-top:1px solid var(--border);padding:24px 48px;text-align:center;color:var(--t3);font-size:12px}
+ul.bp{list-style:none;margin:14px 0}
+ul.bp li{display:flex;gap:9px;padding:7px 0;font-size:13.5px;color:var(--t2);border-bottom:1px solid rgba(30,50,71,.5)}
+ul.bp li:last-child{border-bottom:none}
+.ok{color:var(--g)}.ng{color:var(--r)}
+.fp{font-family:var(--fm);font-size:11px;color:var(--t3);background:var(--bg-code);border:1px solid var(--border);padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px}
+@keyframes fiu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.sec{animation:fiu .35s ease both}
+/* Mermaid text contrast and visibility adjustments */
+.mbox svg text,
+.mbox svg text tspan,
+.mbox svg .nodeLabel,
+.mbox svg .nodeLabel *,
+.mbox svg .edgeLabel span,
+.mbox svg .edgeLabel div {
+  color: #e6edf3 !important;
+}
+.mbox svg text,
+.mbox svg text tspan {
+  fill: #e6edf3 !important;
+}
+.mbox svg .edgePath .path {
+  stroke: #8b949e !important;
+}
+.mbox svg .edgeLabel rect {
+  fill: var(--bg-card) !important;
+}
+.mbox svg .edgeLabel span,
+.mbox svg .edgeLabel div {
+  color: var(--t1) !important;
+}
+</style>
+</head>
+<body>
+<div id="pb"></div>
+<aside id="sb">
+  <div class="sb-head">
+    <div class="sb-logo"><span class="ico">🥒</span><span class="txt">BDD GUIDE</span></div>
+    <div class="sb-sub">Behavior-Driven Development</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-grp">基礎概念</div>
+    <a class="nav-a active" href="#s1"><span class="nn">01</span>BDDとは何か</a>
+    <a class="nav-a" href="#s2"><span class="nn">02</span>Given-When-Then</a>
+    <a class="nav-a" href="#s3"><span class="nn">03</span>Gherkin記法</a>
+    <a class="nav-a" href="#s4"><span class="nn">04</span>BDDの開発フロー</a>
+    <div class="sb-grp">ツール &amp; 実装</div>
+    <a class="nav-a" href="#s5"><span class="nn">05</span>ツールチェーン選定</a>
+    <a class="nav-a" href="#s6"><span class="nn">06</span>Cucumber実装</a>
+    <a class="nav-a" href="#s7"><span class="nn">07</span>pytest-bdd実装</a>
+    <a class="nav-a" href="#s8"><span class="nn">08</span>ステップ定義</a>
+    <a class="nav-a" href="#s9"><span class="nn">09</span>フィクスチャ管理</a>
+    <div class="sb-grp">高度な実践</div>
+    <a class="nav-a" href="#s10"><span class="nn">10</span>BDD×TDD二重ループ</a>
+    <a class="nav-a" href="#s11"><span class="nn">11</span>ATDD</a>
+    <a class="nav-a" href="#s12"><span class="nn">12</span>APIテスト</a>
+    <a class="nav-a" href="#s13"><span class="nn">13</span>UIテスト</a>
+    <div class="sb-grp">品質 &amp; 運用</div>
+    <a class="nav-a" href="#s14"><span class="nn">14</span>シナリオ設計</a>
+    <a class="nav-a" href="#s15"><span class="nn">15</span>CI/CDパイプライン</a>
+    <a class="nav-a" href="#s16"><span class="nn">16</span>実践：EC事例</a>
+    <a class="nav-a" href="#s17"><span class="nn">17</span>ベストプラクティス</a>
+    <a class="nav-a" href="#s18"><span class="nn">18</span>アンチパターン</a>
+    <a class="nav-a" href="#s19"><span class="nn">19</span>参考文献</a>
+  </nav>
+</aside>
+<main id="main">
+<div class="hero">
+  <div class="hero-badge">🥒 Complete Reference Guide</div>
+  <h1 class="hero-h1"><span class="ag">BDD</span> 完全ガイド<br>Behavior-Driven Development</h1>
+  <p class="hero-desc">振る舞い駆動開発の全体像を初学者にもわかりやすくステップバイステップで解説。<strong>Given-When-Then構文</strong>から<strong>CI/CD統合</strong>まで、Gherkin・pytest-bdd・Cucumberの実装例とベストプラクティスを網羅した完全リファレンスです。</p>
+  <div class="hero-chips">
+    <span class="chip">📅 2026年版</span>
+    <span class="chip">🐍 Python / pytest-bdd</span>
+    <span class="chip">☕ Java / Cucumber</span>
+    <span class="chip">⚙️ GitHub Actions統合</span>
+    <span class="chip">🎭 Playwright E2E</span>
+    <span class="chip">📊 Allureレポート</span>
+  </div>
+</div>
+<div class="cw">
+
+<!-- S1 -->
+<section class="sec" id="s1">
+<div class="sec-hd"><span class="sec-num">01</span><h2 class="sec-title">BDDとは何か？</h2></div>
+<p class="lead"><strong>Behavior-Driven Development（振る舞い駆動開発）</strong>は Dan North が 2006 年に提唱した開発手法です。TDD を発展させ、<strong>ビジネス関係者・開発者・テスターが共通言語でシステムの振る舞いを先に定義し、それを実行可能な仕様として自動テストに落とし込む</strong>アプローチです。</p>
+<div class="co co-s"><span class="co-ico">💡</span><div class="co-body"><div class="co-ttl">核心思想</div><p>「テストは技術者のためだけのものではない。ビジネス側と技術側が同じ言葉でシステムの期待する振る舞いを記述し、その仕様そのものが自動テストとして動き続ける」</p></div></div>
+<div class="sub"><div class="sub-title">1.1 BDDが解決する4つの問題</div>
+<div class="mbox"><div id="m-problems"></div></div>
+<div class="cg cg2" style="margin-top:16px">
+<div class="card rc"><div class="ct">❌ 導入前：要件の認識齟齬</div><div class="cd">PO・開発者・QA が同じ文書を読んでも異なる解釈をする。認識合わせのコストが膨大になる。</div></div>
+<div class="card gc"><div class="ct">✅ 導入後：共通言語で合意</div><div class="cd">Gherkin シナリオが「唯一の真実」として機能。全員が同じ具体例に基づいて議論できる。</div></div>
+<div class="card rc"><div class="ct">❌ 導入前：仕様書が陳腐化</div><div class="cd">Word の要件定義書はコードと乖離し続ける。「誰も読まないドキュメント問題」が慢性化。</div></div>
+<div class="card gc"><div class="ct">✅ 導入後：生きた仕様書</div><div class="cd">シナリオがそのまま自動テストとして動き続ける。コードとドキュメントが常に一致する。</div></div>
+</div></div>
+<div class="sub"><div class="sub-title">1.2 TDD・BDD・ATDDの位置づけ</div>
+<p>3 つの手法は互いを補完する入れ子構造になっています。<strong>BDD は ATDD の実践手法</strong>であり、<strong>TDD を補完する外側のループ</strong>として機能します。</p>
+<div class="mbox"><div id="m-levels"></div></div>
+<div class="cg cg3" style="margin-top:16px">
+<div class="card bc"><div class="ci">🔵</div><div class="ct">ATDD（最外層）</div><div class="cd">受け入れテスト駆動開発。顧客視点で受け入れ基準を定義する最外側のループ</div></div>
+<div class="card gc"><div class="ci">🟢</div><div class="ct">BDD（中間層）</div><div class="cd">Gherkin 記法でシナリオを記述。ビジネスと技術の橋渡しをする</div></div>
+<div class="card"><div class="ci">🔴</div><div class="ct">TDD（最内層）</div><div class="cd">コードレベルのユニットテスト。開発者中心の最も細かいループ</div></div>
+</div></div>
+<div class="sub"><div class="sub-title">1.3 BDDが特に効果的な状況</div>
+<div class="cg cg2">
+<div class="card gc"><div class="ct">✅ 適したチーム構成</div><ul class="bp" style="margin-top:8px"><li><span class="ok">●</span>PO・BA・開発者・QA が混在するチーム</li><li><span class="ok">●</span>ビジネス側が仕様に積極的に関与する</li><li><span class="ok">●</span>認識齟齬・手戻りが頻発している</li><li><span class="ok">●</span>アジャイル・スクラムを実践している</li></ul></div>
+<div class="card gc"><div class="ct">✅ 適したプロジェクト特性</div><ul class="bp" style="margin-top:8px"><li><span class="ok">●</span>複雑なビジネスルールが多数ある</li><li><span class="ok">●</span>受け入れ基準が曖昧になりやすい</li><li><span class="ok">●</span>長期保守される基幹システム</li><li><span class="ok">●</span>リグレッションが頻発している</li></ul></div>
+</div></div>
+</section>
+
+<!-- S2 -->
+<section class="sec" id="s2">
+<div class="sec-hd"><span class="sec-num">02</span><h2 class="sec-title">BDDの基本：Given-When-Then構文</h2></div>
+<p class="lead"><strong>Given-When-Then（GWT）</strong>は BDD シナリオを記述するための構造化された構文です。「前提条件・操作・期待結果」の 3 ステップでシステムの振る舞いを誰でも読める形で表現します。</p>
+<div class="mbox"><div id="m-gwt"></div></div>
+<div class="sub"><div class="sub-title">2.1 各キーワードの役割</div>
+<div class="cg cg3">
+<div class="card bc"><div class="ci"><span class="b-given">Given</span></div><div class="ct" style="margin-top:8px">前提条件（Context）</div><div class="cd">テスト開始時のシステム状態。「〜の状態において」「〜である場合」を記述。例：<em>顧客がログインしている</em></div></div>
+<div class="card oc"><div class="ci"><span class="b-when">When</span></div><div class="ct" style="margin-top:8px">操作・イベント（Action）</div><div class="cd">ユーザーまたはシステムのアクション。「〜したとき」「〜が発生したとき」を記述。例：<em>商品をカートに追加する</em></div></div>
+<div class="card gc"><div class="ci"><span class="b-then">Then</span></div><div class="ct" style="margin-top:8px">期待される結果（Outcome）</div><div class="cd">システムが示すべき振る舞い。「〜になるはずである」「〜が表示されるはずである」を記述。例：<em>合計金額が表示される</em></div></div>
+</div></div>
+<div class="sub"><div class="sub-title">2.2 And / But キーワード</div>
+<p><span class="b-and">And</span> と <span class="b-and">But</span> は前のステップと同種のステップを継続するために使います。</p>
+<div class="co co-i"><span class="co-ico">📖</span><div class="co-body"><div class="co-ttl">記述例</div><p><span class="b-given">Given</span> 顧客の口座残高が <strong>10,000円</strong> である<br><span class="b-and">And</span> 本人確認が完了している<br><span class="b-when">When</span> 顧客が <strong>3,000円</strong> を引き出す<br><span class="b-then">Then</span> 口座残高は <strong>7,000円</strong> になる<br><span class="b-and">And</span> 取引明細に「出金 3,000円」が記録される</p></div></div></div>
+<div class="sub"><div class="sub-title">2.3 良いGWTと悪いGWTの比較</div>
+<div class="comp">
+<div class="comp-c comp-good"><div class="comp-lbl">✅ 良い GWT</div><p><span class="b-given">Given</span> 顧客「山田太郎」がログインしている<br><span class="b-when">When</span> 商品「Tシャツ」を <strong>1</strong> 点カートに追加する<br><span class="b-then">Then</span> カートに <strong>1</strong> 点の商品が入っている<br><span class="b-and">And</span> カートの合計金額は <strong>1,000円</strong> である</p><ul class="bp" style="margin-top:10px"><li><span class="ok">✓</span> 具体的な名前と数値</li><li><span class="ok">✓</span> 1シナリオ1ふるまい</li><li><span class="ok">✓</span> ビジネス語彙のみ使用</li></ul></div>
+<div class="comp-c comp-bad"><div class="comp-lbl">❌ 悪い GWT</div><p><span class="b-given">Given</span> システムが正常な状態<br><span class="b-when">When</span> ボタンをクリックする<br><span class="b-then">Then</span> データが保存される</p><ul class="bp" style="margin-top:10px"><li><span class="ng">✗</span> 「正常な状態」が曖昧</li><li><span class="ng">✗</span> どのボタンか不明</li><li><span class="ng">✗</span> 検証基準がない</li></ul></div>
+</div></div>
+<div class="sub"><div class="sub-title">2.4 ユーザーストーリーとGWTの関係</div>
+<p>ユーザーストーリーは「何を・なぜ」を表現し、BDD シナリオはそれを「具体的な例」に変換します。1 ストーリーから正常系・異常系の複数シナリオが生まれます。</p>
+<div class="mbox"><div id="m-story"></div></div></div>
+</section>
+
+<!-- S3 -->
+<section class="sec" id="s3">
+<div class="sec-hd"><span class="sec-num">03</span><h2 class="sec-title">Gherkin記法の完全解説</h2></div>
+<p class="lead"><strong>Gherkin</strong> は BDD シナリオを記述するための構造化された自然言語記法です。英語・日本語など多言語に対応し、Cucumber をはじめ多くの BDD フレームワークが採用しています。</p>
+<div class="sub"><div class="sub-title">3.1 全キーワード体系</div>
+<div class="mbox"><div id="m-keywords"></div></div>
+<div class="tw"><table>
+<thead><tr><th>キーワード</th><th>用途</th><th>使用場所</th><th>補足</th></tr></thead>
+<tbody>
+<tr><td><code>Feature</code></td><td>テストする機能の説明</td><td>ファイル先頭（1つだけ）</td><td>ユーザーストーリーを記述することが多い</td></tr>
+<tr><td><code>Background</code></td><td>全シナリオ共通の前提条件</td><td>Feature 直後</td><td>Given・And・But ステップのみ使用可</td></tr>
+<tr><td><code>Scenario</code></td><td>1 つの具体的なテストケース</td><td>Feature 内</td><td>明確で具体的なタイトルをつける</td></tr>
+<tr><td><code>Scenario Outline</code></td><td>パラメータ化されたシナリオ</td><td>Feature 内</td><td>Examples テーブルと必ずセットで使う</td></tr>
+<tr><td><code>Given / When / Then</code></td><td>前提条件 / 操作 / 期待結果</td><td>Scenario 内</td><td>それぞれ独立した役割を持つ</td></tr>
+<tr><td><code>And / But</code></td><td>前のステップと同種のステップを継続</td><td>Scenario 内</td><td>Given-And-And の形でも使用可</td></tr>
+<tr><td><code>Examples</code></td><td>Scenario Outline のパラメータテーブル</td><td>Outline 直後</td><td>複数の Examples ブロックも記述可能</td></tr>
+<tr><td><code>@タグ</code></td><td>シナリオの分類・フィルタリング</td><td>Feature/Scenario 前</td><td>例：@smoke @regression @wip @api</td></tr>
+<tr><td><code>DocString</code></td><td>複数行テキスト（3 つのダブルクォート）</td><td>ステップ直後（インデント）</td><td>JSON・SQL・XML 等の長いデータに使用</td></tr>
+<tr><td><code>| テーブル |</code></td><td>DataTable：表形式データ</td><td>ステップ直後（インデント）</td><td>複数のパラメータを整理して渡す</td></tr>
+</tbody>
+</table></div></div>
+<div class="sub"><div class="sub-title">3.2 Featureファイルの完全記述例</div>
+<div class="fp">features/shopping_cart.feature</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang gl">Gherkin</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-gherkin">@shopping @cart
+Feature: ショッピングカートの操作
+  登録済みの顧客として
+  カートに商品を追加・削除したい
+  まとめて購入を確定できるから
+
+  Background:
+    Given 以下の商品がカタログに登録されている
+      | 商品ID   | 商品名   | 価格 | 在庫数 |
+      | prod_001 | Tシャツ  | 1000 | 10     |
+      | prod_002 | ジーンズ | 5000 | 3      |
+      | prod_003 | キャップ | 2000 | 0      |
+    And 顧客「山田太郎（cust_001）」がログインしている
+
+  @smoke
+  Scenario: 商品をカートに追加する
+    Given カートが空の状態である
+    When 商品「Tシャツ」を 1 点カートに追加する
+    Then カートには 1 点の商品が入っている
+    And カートの合計金額は 1,000円 である
+
+  @negative
+  Scenario: 在庫切れの商品はカートに追加できない
+    Given カートが空の状態である
+    When 商品「キャップ」をカートに追加しようとする
+    Then 「在庫切れのため追加できません」というエラーが表示される
+    And カートの中身は変わらない
+
+  @parameterized
+  Scenario Outline: 異なる数量で商品をカートに追加する
+    Given カートが空の状態である
+    When 商品「Tシャツ」を &lt;数量&gt; 点カートに追加する
+    Then カートの合計金額は &lt;合計金額&gt; 円である
+    Examples:
+      | 数量 | 合計金額 |
+      | 1    | 1000     |
+      | 2    | 2000     |
+      | 5    | 5000     |
+
+  @api
+  Scenario: APIを通じて注文を作成する
+    Given カートに商品「Tシャツ」が 1 点入っている
+    When 以下のJSONで注文を送信する（DocString）
+      """json
+      {
+        "shipping_address": { "postal_code": "150-0001", "prefecture": "東京都" },
+        "payment_method": "credit_card"
+      }
+      """
+    Then レスポンスステータスは 201 である
+    And レスポンスに "order_id" フィールドが含まれている</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">3.3 タグの活用戦略</div>
+<div class="cg cg3">
+<div class="card"><div class="ci"><span class="tag tg">@smoke</span></div><div class="ct" style="margin-top:8px">スモークテスト</div><div class="cd">最小限の動作確認。PR 時に高速実行（5 分以内）。最重要シナリオに付与する。</div></div>
+<div class="card"><div class="ci"><span class="tag tb">@regression</span></div><div class="ct" style="margin-top:8px">リグレッション</div><div class="cd">マージ前の全機能確認。CI/CD パイプラインで実行する全シナリオ対象。</div></div>
+<div class="card"><div class="ci"><span class="tag to">@wip</span></div><div class="ct" style="margin-top:8px">開発中（WIP）</div><div class="cd">作業中シナリオ。CI では除外。完成したら削除する一時的タグ。</div></div>
+<div class="card"><div class="ci"><span class="tag tr2">@negative</span></div><div class="ct" style="margin-top:8px">異常系テスト</div><div class="cd">エラー・例外シナリオのグルーピング。@smoke とは分離して管理する。</div></div>
+<div class="card"><div class="ci"><span class="tag tb">@api</span></div><div class="ct" style="margin-top:8px">APIテスト</div><div class="cd">HTTP レベルのテストシナリオ。API サーバーが起動している環境で実行。</div></div>
+<div class="card"><div class="ci"><span class="tag tp">@e2e</span></div><div class="ct" style="margin-top:8px">E2Eテスト</div><div class="cd">ブラウザ操作を伴うフルスタックテスト。本番近似環境でのみ実行。</div></div>
+</div></div>
+</section>
+
+<!-- S4 -->
+<section class="sec" id="s4">
+<div class="sec-hd"><span class="sec-num">04</span><h2 class="sec-title">BDDの開発フロー</h2></div>
+<p class="lead">BDD は単なるテスト技法ではなく、<strong>要件定義から実装・ドキュメント化まで</strong>をカバーする開発プロセスです。「発見→定式化→自動化→検証→生きた仕様書」の 5 ステップで進みます。</p>
+<div class="sub"><div class="sub-title">4.1 BDD全体開発サイクル</div>
+<div class="mbox"><div id="m-cycle"></div></div>
+<ol class="sl">
+<li><span class="sl-n">1</span><div class="sl-c"><strong>Discovery（発見）— Three Amigos ミーティング</strong><p>PO・開発者・QA が集まり、機能の振る舞いを議論。「具体的な例」を出し合うことで認識のズレを発見する。所要時間：30〜60 分/ストーリー</p></div></li>
+<li><span class="sl-n">2</span><div class="sl-c"><strong>Formulation（定式化）— Gherkin 記述</strong><p>議論から生まれた具体例を Gherkin 記法で記述。あいまいさをなくし、全員が「Yes, that's right」と言える仕様書を作る。</p></div></li>
+<li><span class="sl-n">3</span><div class="sl-c"><strong>Automation（自動化）— ステップ定義</strong><p>Gherkin シナリオをステップコードにバインドして FAIL する自動テストを作る。「レッド」状態から開発を始める。</p></div></li>
+<li><span class="sl-n">4</span><div class="sl-c"><strong>Validate（検証）— 実装とテスト通過</strong><p>シナリオをパスする実装を行い「グリーン」にする。ビジネス側が実行結果を確認し受け入れる。</p></div></li>
+<li><span class="sl-n">5</span><div class="sl-c"><strong>Living Documentation（生きた仕様書）</strong><p>シナリオは常に実行可能な最新の仕様書として機能し続ける。コードとドキュメントの乖離が構造的に発生しない。</p></div></li>
+</ol></div>
+<div class="sub"><div class="sub-title">4.2 Three Amigos ミーティング</div>
+<div class="mbox"><div id="m-amigos"></div></div>
+<div class="co co-i"><span class="co-ico">💬</span><div class="co-body"><div class="co-ttl">Three Amigos の進め方（30〜60 分）</div><p>① PO がビジネスルールと目的を説明 → ② QA がエッジケース・異常系を提案 → ③ 開発者が技術的制約を共有 → ④ 3 者合意の Gherkin シナリオを作成 → ⑤ Feature ファイルをリポジトリにコミット</p></div></div></div>
+<div class="sub"><div class="sub-title">4.3 スプリントへのBDD組み込み方</div>
+<div class="mbox"><div id="m-sprint"></div></div></div>
+</section>
+
+<!-- S5 -->
+<section class="sec" id="s5">
+<div class="sec-hd"><span class="sec-num">05</span><h2 class="sec-title">ツールチェーンの選定</h2></div>
+<div class="sub"><div class="sub-title">5.1 言語別 BDD フレームワーク比較</div>
+<div class="tw"><table>
+<thead><tr><th>言語</th><th>推奨フレームワーク</th><th>特徴</th><th>適した場面</th></tr></thead>
+<tbody>
+<tr><td>🐍 <strong>Python</strong></td><td><code>pytest-bdd</code> / Behave</td><td>pytest エコシステムと統合。フィクスチャが強力</td><td>データサイエンス・Web API・自動化スクリプト</td></tr>
+<tr><td>☕ <strong>Java</strong></td><td>Cucumber-JVM / Serenity BDD</td><td>エンタープライズ向け。Spring との統合が容易</td><td>大規模 Web アプリ・マイクロサービス</td></tr>
+<tr><td>🟨 <strong>JavaScript</strong></td><td>Cucumber.js / jest-cucumber</td><td>Node.js 環境。Playwright/Cypress との統合</td><td>フロントエンド・フルスタック JS</td></tr>
+<tr><td>🔵 <strong>.NET</strong></td><td>SpecFlow</td><td>.NET エコシステムにネイティブ統合</td><td>C#/ASP.NET アプリケーション</td></tr>
+<tr><td>💎 <strong>Ruby</strong></td><td>Cucumber（オリジナル）</td><td>BDD の原点。最も成熟したエコシステム</td><td>Ruby on Rails・レガシー移行</td></tr>
+</tbody>
+</table></div></div>
+<div class="sub"><div class="sub-title">5.2 Python 推奨ツールスタック</div>
+<div class="mbox"><div id="m-tools"></div></div>
+<div class="co co-s"><span class="co-ico">⭐</span><div class="co-body"><div class="co-ttl">pytest-bdd を推奨する理由</div><p>① pytest の強力なフィクスチャシステムとフル統合 ② conftest.py による共通設定の管理 ③ パラメータ化テストとの組み合わせ ④ CI ツールとの親和性（GitHub Actions, CircleCI 等）⑤ Allure レポートとのシームレスな統合</p></div></div></div>
+<div class="sub"><div class="sub-title">5.3 インストールコマンド</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang bl">Bash</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-bash"># コア依存関係
+pip install pytest pytest-bdd
+
+# API テスト
+pip install httpx requests
+
+# UI テスト（Playwright）
+pip install playwright pytest-playwright
+playwright install chromium
+
+# テストデータ生成
+pip install factory-boy
+
+# レポート生成
+pip install allure-pytest pytest-html
+
+# DB 統合テスト
+pip install testcontainers sqlalchemy</code></pre></div></div></div>
+</section>
+
+<!-- S6 -->
+<section class="sec" id="s6">
+<div class="sec-hd"><span class="sec-num">06</span><h2 class="sec-title">Cucumber 完全実装ガイド（Java）</h2></div>
+<div class="sub"><div class="sub-title">6.1 Cucumber のアーキテクチャ</div>
+<div class="mbox"><div id="m-cucumber-arch"></div></div></div>
+<div class="sub"><div class="sub-title">6.2 ステップ定義の実装（Java）</div>
+<div class="fp">src/test/java/steps/ShoppingCartSteps.java</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang jl">Java</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-java">package steps;
+
+import io.cucumber.java.ja.*;
+import io.cucumber.java.*;
+import static org.assertj.core.api.Assertions.*;
+
+public class ShoppingCartSteps {
+
+    private ShoppingCart cart;
+    private ProductCatalog catalog;
+    private Exception lastException;
+
+    @Before
+    public void setUp() {
+        catalog = new InMemoryProductCatalog();
+        cart = new ShoppingCart(catalog);
+    }
+
+    @After
+    public void tearDown() { cart = null; }
+
+    // ─── Given ステップ ───
+    @Given("カートが空の状態である")
+    public void カートが空の状態である() {
+        assertThat(cart.isEmpty()).isTrue();
+    }
+
+    @Given("顧客{string}がログインしている")
+    public void 顧客がログインしている(String customerName) {
+        AuthContext.login(customerName);
+    }
+
+    // ─── When ステップ ───
+    @When("商品{string}を {int} 点カートに追加する")
+    public void 商品をカートに追加する(String productName, int quantity) {
+        try {
+            Product product = catalog.findByName(productName);
+            cart.addItem(product.getId(), quantity);
+        } catch (Exception e) {
+            lastException = e;
+        }
+    }
+
+    // ─── Then ステップ ───
+    @Then("カートには {int} 点の商品が入っている")
+    public void カートには点の商品が入っている(int expectedCount) {
+        assertThat(cart.getTotalQuantity()).isEqualTo(expectedCount);
+    }
+
+    @Then("カートの合計金額は {int}円 である")
+    public void カートの合計金額は円である(int expectedTotal) {
+        assertThat(cart.getTotal()).isEqualTo(expectedTotal);
+    }
+
+    @Then("{string}というエラーが表示される")
+    public void エラーが表示される(String expectedMessage) {
+        assertThat(lastException).isNotNull();
+        assertThat(lastException.getMessage()).contains(expectedMessage);
+    }
+}</code></pre></div></div></div>
+</section>
+
+<!-- S7 -->
+<section class="sec" id="s7">
+<div class="sec-hd"><span class="sec-num">07</span><h2 class="sec-title">pytest-bdd 完全実装ガイド</h2></div>
+<div class="sub"><div class="sub-title">7.1 推奨プロジェクト構成</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang bl">Project Structure</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-bash">my_project/
+├── features/                   # Gherkin Feature ファイル
+│   ├── shopping_cart.feature
+│   ├── order.feature
+│   └── payment.feature
+├── tests/
+│   └── bdd/
+│       ├── conftest.py         # フィクスチャ・フック定義
+│       ├── steps/
+│       │   ├── __init__.py
+│       │   ├── cart_steps.py
+│       │   ├── order_steps.py
+│       │   └── common_steps.py
+│       └── test_scenarios.py   # シナリオのバインディング
+├── src/
+│   ├── domain/
+│   │   ├── cart.py
+│   │   └── product.py
+│   └── application/
+│       └── cart_service.py
+└── pyproject.toml</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">7.2 conftest.py — フィクスチャ定義</div>
+<div class="fp">tests/bdd/conftest.py</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang pl">Python</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-python">import pytest
+from dataclasses import dataclass, field
+from typing import Optional, Any
+import httpx
+from src.domain.cart import ShoppingCart
+from src.infrastructure.in_memory_catalog import InMemoryProductCatalog
+
+
+@dataclass
+class ScenarioContext:
+    """ステップ間で状態を共有するコンテキストクラス"""
+    last_error:    Optional[Exception] = None
+    last_response: Optional[httpx.Response] = None
+    data:          dict = field(default_factory=dict)
+
+    def set(self, key: str, value: Any) -> None:
+        self.data[key] = value
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.data.get(key, default)
+
+    def reset(self) -> None:
+        self.last_error = None
+        self.last_response = None
+        self.data.clear()
+
+
+@pytest.fixture
+def product_catalog():
+    return InMemoryProductCatalog()
+
+
+@pytest.fixture
+def shopping_cart(product_catalog):
+    return ShoppingCart(catalog=product_catalog)
+
+
+@pytest.fixture
+def context() -> ScenarioContext:
+    """各シナリオ用コンテキスト（function スコープ）"""
+    ctx = ScenarioContext()
+    yield ctx
+    ctx.reset()  # テスト後に自動リセット
+
+
+@pytest.fixture(scope="session")
+def db_engine():
+    """DB エンジン（セッション全体で 1 回のみ作成）"""
+    from sqlalchemy import create_engine
+    from src.infrastructure.db import Base
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    yield engine
+    engine.dispose()
+
+
+@pytest.fixture
+def db_session(db_engine):
+    """DB セッション（各テストごとにロールバック）"""
+    from sqlalchemy.orm import sessionmaker
+    Session = sessionmaker(bind=db_engine)
+    session = Session()
+    yield session
+    session.rollback()  # テスト後ロールバックでクリーンな状態を保証
+    session.close()
+
+
+# ─── BDD フック ───
+def pytest_bdd_before_scenario(request, feature, scenario):
+    print(f"\n📋 シナリオ開始: {scenario.name}")
+
+def pytest_bdd_after_scenario(request, feature, scenario):
+    print(f"✅ シナリオ完了: {scenario.name}")
+
+def pytest_bdd_step_error(request, feature, scenario, step, step_func, step_func_args, exception):
+    print(f"❌ ステップ失敗: {step.name} — {exception}")</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">7.3 cart_steps.py — ステップ定義</div>
+<div class="fp">tests/bdd/steps/cart_steps.py</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang pl">Python</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-python">import pytest
+from pytest_bdd import given, when, then, parsers
+from src.domain.cart import ShoppingCart, InsufficientStockError
+from decimal import Decimal
+
+
+# ─────────── Given ステップ ───────────
+
+@given("カートが空の状態である")
+def cart_is_empty(shopping_cart):
+    assert shopping_cart.is_empty, "カートは空でなければなりません"
+
+
+@given(parsers.parse("カートに商品「{product_name}」が{quantity:d}点入っている"))
+def cart_has_items(product_name, quantity, shopping_cart, product_catalog):
+    product = product_catalog.find_by_name(product_name)
+    shopping_cart.add_item(product.id, quantity)
+
+
+@given("カートに以下の商品が入っている")
+def cart_has_multiple_items(shopping_cart, product_catalog, datatable):
+    for row in datatable:
+        product = product_catalog.find_by_name(row["商品名"])
+        shopping_cart.add_item(product.id, int(row["数量"]))
+
+
+# ─────────── When ステップ ───────────
+
+@when(parsers.parse("商品「{product_name}」を{quantity:d}点カートに追加する"))
+def add_item_to_cart(product_name, quantity, shopping_cart, product_catalog, context):
+    context.last_error = None
+    try:
+        product = product_catalog.find_by_name(product_name)
+        shopping_cart.add_item(product.id, quantity)
+    except InsufficientStockError as e:
+        context.last_error = e
+
+
+@when(parsers.parse("商品「{product_name}」をカートに追加しようとする"))
+def try_add_out_of_stock(product_name, shopping_cart, product_catalog, context):
+    context.last_error = None
+    try:
+        product = product_catalog.find_by_name(product_name)
+        shopping_cart.add_item(product.id, 1)
+    except InsufficientStockError as e:
+        context.last_error = e
+
+
+@when(parsers.parse("カートから「{product_name}」を削除する"))
+def remove_item_from_cart(product_name, shopping_cart, product_catalog):
+    product = product_catalog.find_by_name(product_name)
+    shopping_cart.remove_item(product.id)
+
+
+# ─────────── Then ステップ ───────────
+
+@then(parsers.parse("カートには{expected_count:d}点の商品が入っている"))
+def cart_has_count(expected_count, shopping_cart):
+    assert shopping_cart.total_quantity == expected_count, (
+        f"期待: {expected_count}点, 実際: {shopping_cart.total_quantity}点"
+    )
+
+
+@then(parsers.parse("カートの合計金額は{expected_total:d}円である"))
+def cart_total_is(expected_total, shopping_cart):
+    assert shopping_cart.total == Decimal(str(expected_total)), (
+        f"期待: {expected_total}円, 実際: {shopping_cart.total}円"
+    )
+
+
+@then(parsers.parse("「{expected_message}」というエラーが表示される"))
+def error_message_displayed(expected_message, context):
+    assert context.last_error is not None, "エラーが発生しませんでした"
+    assert expected_message in str(context.last_error), (
+        f"期待: '{expected_message}'\n実際: '{context.last_error}'"
+    )
+
+
+@then("カートの中身は変わらない")
+def cart_is_unchanged(shopping_cart, context):
+    expected = context.get("initial_cart")
+    assert shopping_cart.items == expected, "カートの状態が変わっています"</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">7.4 test_scenarios.py — シナリオバインディング</div>
+<div class="fp">tests/bdd/test_scenarios.py</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang pl">Python</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-python">import pytest
+from pytest_bdd import scenario
+from decimal import Decimal
+
+
+@scenario("../../features/shopping_cart.feature", "商品をカートに追加する")
+def test_add_item_to_cart():
+    pass
+
+
+@scenario("../../features/shopping_cart.feature", "在庫切れの商品はカートに追加できない")
+def test_cannot_add_out_of_stock():
+    pass
+
+
+@scenario("../../features/shopping_cart.feature", "カートから商品を削除する")
+def test_remove_item_from_cart():
+    pass
+
+
+# ── Scenario Outline は parametrize と組み合わせる ──
+@pytest.mark.parametrize("数量,合計金額", [
+    ("1", "1000"), ("2", "2000"), ("5", "5000"), ("10", "10000"),
+])
+def test_add_different_quantities(数量, 合計金額, shopping_cart, product_catalog):
+    assert shopping_cart.is_empty
+    product = product_catalog.find_by_name("Tシャツ")
+    shopping_cart.add_item(product.id, int(数量))
+    assert shopping_cart.total == Decimal(合計金額)</code></pre></div></div></div>
+</section>
+
+<!-- S8 -->
+<section class="sec" id="s8">
+<div class="sec-hd"><span class="sec-num">08</span><h2 class="sec-title">ステップ定義のベストプラクティス</h2></div>
+<div class="sub"><div class="sub-title">8.1 良いステップ定義の設計原則</div>
+<div class="comp">
+<div class="comp-c comp-good"><div class="comp-lbl">✅ 良いステップ定義</div><ul class="bp"><li><span class="ok">✓</span>再利用可能な汎用ステップを書く</li><li><span class="ok">✓</span>1ステップ = 1つの明確な操作</li><li><span class="ok">✓</span>ビジネス語彙を使った命名</li><li><span class="ok">✓</span>parsers.parse でパラメータ対応</li><li><span class="ok">✓</span>例外もキャッチして context に保存</li><li><span class="ok">✓</span>アサーションは Then ステップのみ</li></ul></div>
+<div class="comp-c comp-bad"><div class="comp-lbl">❌ 避けるべき書き方</div><ul class="bp"><li><span class="ng">✗</span>UI 操作の詳細をステップに直接書く</li><li><span class="ng">✗</span>1ステップで複数のことを検証</li><li><span class="ng">✗</span>技術的詳細（URL・セレクター）を露出</li><li><span class="ng">✗</span>ステップ間でグローバル変数を使う</li><li><span class="ng">✗</span>Given 内でアサーションを行う</li><li><span class="ng">✗</span>重複ステップを複数ファイルに定義</li></ul></div>
+</div></div>
+<div class="sub"><div class="sub-title">8.2 DataTable と DocString の活用</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang pl">Python</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-python">import json
+from decimal import Decimal
+
+
+# ─── DataTable：表形式データの処理 ───
+
+@given("以下の商品がカタログに登録されている")
+def products_in_catalog(datatable, product_catalog):
+    for row in datatable:
+        product = Product(
+            id=row["商品ID"], name=row["商品名"],
+            price=Decimal(row["価格"]), stock=int(row["在庫数"]),
+        )
+        product_catalog.register(product)
+
+
+# ─── DocString：複数行テキスト（JSON 等）の処理 ───
+
+@when("以下のJSONで注文を送信する（DocString）")
+def send_order_with_json(docstring, context, api_client):
+    try:
+        body = json.loads(docstring)
+    except json.JSONDecodeError as e:
+        raise AssertionError(f"不正な JSON: {e}")
+    context.last_response = api_client.post("/v1/orders", json=body)
+
+
+@then(parsers.parse("レスポンスステータスは {status_code:d} である"))
+def response_status_is(status_code, context):
+    actual = context.last_response.status_code
+    assert actual == status_code, (
+        f"期待: HTTP {status_code}, 実際: HTTP {actual}\n"
+        f"Body: {context.last_response.text}"
+    )</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">8.3 ステップの分類と配置戦略</div>
+<div class="tw"><table>
+<thead><tr><th>ファイル名</th><th>対象</th><th>含むステップ例</th></tr></thead>
+<tbody>
+<tr><td><code>common_steps.py</code></td><td>全 Feature 共通</td><td>ログイン/ログアウト・時刻設定・メール確認</td></tr>
+<tr><td><code>cart_steps.py</code></td><td>カートドメイン</td><td>商品追加・削除・合計金額確認</td></tr>
+<tr><td><code>order_steps.py</code></td><td>注文ドメイン</td><td>注文作成・ステータス確認・キャンセル</td></tr>
+<tr><td><code>api_steps.py</code></td><td>API 共通</td><td>HTTP リクエスト送信・ステータス検証</td></tr>
+<tr><td><code>ui_steps.py</code></td><td>UI 共通</td><td>ページ遷移・要素表示確認・フォーム入力</td></tr>
+</tbody>
+</table></div></div>
+</section>
+
+<!-- S9 -->
+<section class="sec" id="s9">
+<div class="sec-hd"><span class="sec-num">09</span><h2 class="sec-title">フィクスチャとコンテキスト管理</h2></div>
+<div class="sub"><div class="sub-title">9.1 フィクスチャのスコープ選択指針</div>
+<div class="tw"><table>
+<thead><tr><th>スコープ</th><th>生存期間</th><th>推奨用途</th><th>BDD での使用</th></tr></thead>
+<tbody>
+<tr><td><code>session</code></td><td>セッション全体で 1 回</td><td>DB エンジン・ブラウザ起動・重い初期化</td><td>⚠️ 限定的に使用</td></tr>
+<tr><td><code>module</code></td><td>ファイル単位</td><td>モジュール共通の設定オブジェクト</td><td>⚠️ 限定的に使用</td></tr>
+<tr><td><code>function</code>（デフォルト）</td><td>各テスト関数ごと</td><td>ほぼすべてのフィクスチャ</td><td>✅ BDD での標準</td></tr>
+<tr><td><code>class</code></td><td>クラス単位</td><td>クラス内テストで状態共有が必要な場合</td><td>⚠️ 稀に使用</td></tr>
+</tbody>
+</table></div>
+<div class="co co-s"><span class="co-ico">💡</span><div class="co-body"><div class="co-ttl">BDD のベストプラクティス</div><p>BDD シナリオには原則として <code>function</code> スコープを使用します。各シナリオが独立して実行できることが最重要であり、前のシナリオの状態が次のシナリオに漏れ出ることを防ぎます。<code>session</code> スコープは DB 接続など「重い初期化」に限定してください。</p></div></div></div>
+<div class="sub"><div class="sub-title">9.2 DB トランザクション管理パターン</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang pl">Python</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-python">import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.infrastructure.db import Base
+
+
+@pytest.fixture(scope="session")
+def db_engine():
+    """セッション全体で 1 回のみ作成（重いため）"""
+    engine = create_engine("sqlite:///:memory:", echo=False)
+    Base.metadata.create_all(engine)
+    yield engine
+    engine.dispose()
+
+
+@pytest.fixture
+def db_session(db_engine):
+    """
+    各テストごとにネストトランザクションを作成し、
+    テスト後に必ずロールバックして DB をクリーンに保つ
+    """
+    connection = db_engine.connect()
+    transaction = connection.begin()
+    Session = sessionmaker(bind=connection)
+    session = Session()
+
+    yield session
+
+    session.close()
+    transaction.rollback()  # テスト後に必ずロールバック
+    connection.close()
+
+
+@pytest.fixture
+def api_client(app, db_session):
+    """FastAPI テストクライアント。db_session を差し込む。"""
+    from fastapi.testclient import TestClient
+    app.dependency_overrides[get_db] = lambda: db_session
+    with TestClient(app) as client:
+        yield client
+    app.dependency_overrides.clear()</code></pre></div></div></div>
+</section>
+
+<!-- S10 -->
+<section class="sec" id="s10">
+<div class="sec-hd"><span class="sec-num">10</span><h2 class="sec-title">BDD と TDD の二重ループ</h2></div>
+<p class="lead">BDD と TDD は対立するものではなく、<strong>外側（BDD）と内側（TDD）の二重ループ</strong>として連携します。外側の BDD ループが「何を作るか」を規定し、内側の TDD ループが「どう作るか」を駆動します。</p>
+<div class="mbox"><div id="m-doubleloop"></div></div>
+<div class="sub"><div class="sub-title">10.1 二重ループの実践フロー</div>
+<ol class="sl">
+<li><span class="sl-n">1</span><div class="sl-c"><strong>BDD RED — Gherkin シナリオを書く</strong><p>新機能の Gherkin シナリオを作成。ステップ定義がないため「PENDING」か「FAIL」になる</p></div></li>
+<li><span class="sl-n">2</span><div class="sl-c"><strong>TDD RED — ユニットテストを書く</strong><p>シナリオを実現するためのユースケース・ドメインモデルのユニットテストを書く（実装なし）</p></div></li>
+<li><span class="sl-n">3</span><div class="sl-c"><strong>TDD GREEN — 最小実装で PASS</strong><p>ユニットテストをパスする最小限の実装コードを書く。過剰実装しない</p></div></li>
+<li><span class="sl-n">4</span><div class="sl-c"><strong>TDD REFACTOR — コードを整理</strong><p>テストを壊さずにコードを改善。2〜4 を繰り返してドメインモデルを育てる</p></div></li>
+<li><span class="sl-n">5</span><div class="sl-c"><strong>BDD GREEN — シナリオが PASS</strong><p>ステップ定義を完成させてシナリオを実行。すべて GREEN になったら次のシナリオへ</p></div></li>
+<li><span class="sl-n">6</span><div class="sl-c"><strong>BDD REFACTOR — シナリオを整理</strong><p>重複シナリオの統合・Background の整理・タグの見直しを行う</p></div></li>
+</ol>
+<div class="co co-i"><span class="co-ico">📌</span><div class="co-body"><div class="co-ttl">重要な原則</div><p>BDD シナリオが「FAIL（赤）」の間は、TDD ループで着実に実装を積み重ねます。BDD シナリオが「PASS（緑）」になるまで TDD ループを繰り返すのが二重ループの本質です。「BDD を後から書く」アプローチは BDD ではありません。</p></div></div></div>
+</section>
+
+<!-- S11 -->
+<section class="sec" id="s11">
+<div class="sec-hd"><span class="sec-num">11</span><h2 class="sec-title">受け入れテスト自動化（ATDD）</h2></div>
+<div class="sub"><div class="sub-title">11.1 ATDD フロー</div>
+<div class="mbox"><div id="m-atdd"></div></div></div>
+<div class="sub"><div class="sub-title">11.2 受け入れ基準の Gherkin 化例（クーポン機能）</div>
+<div class="fp">features/coupon.feature</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang gl">Gherkin</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-gherkin">Feature: クーポンコードの適用
+  顧客として、クーポンコードを適用して割引を受けたい
+  理由：お得に買い物できるから
+
+  Background:
+    Given 以下のクーポンがシステムに登録されている
+      | コード   | 割引タイプ | 割引値 | 最低注文額 | 有効期限   |
+      | SAVE10  | 定率       | 10     | 0          | 2027-12-31 |
+      | FLAT500 | 定額       | 500    | 3000       | 2027-12-31 |
+      | EXPIRED | 定率       | 20     | 0          | 2020-01-01 |
+    And 顧客がカートに合計 5,000円 の商品を入れている
+
+  # ─── 正常系 ───
+  Scenario: 定率クーポンを適用すると割引される
+    When クーポンコード「SAVE10」をカートに適用する
+    Then カートの割引額は 500円 である
+    And カートの合計金額は 4,500円 である
+
+  Scenario: 定額クーポンを適用すると割引される
+    When クーポンコード「FLAT500」をカートに適用する
+    Then カートの割引額は 500円 である
+    And カートの合計金額は 4,500円 である
+
+  # ─── 異常系 ───
+  Scenario: 存在しないクーポンコードは適用できない
+    When クーポンコード「INVALID」を適用しようとする
+    Then 「無効なクーポンコードです」というエラーが表示される
+
+  Scenario: 有効期限切れクーポンは適用できない
+    When クーポンコード「EXPIRED」を適用しようとする
+    Then 「有効�          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: "--health-cmd pg_isready --health-interval 10s"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pytest pytest-bdd httpx sqlalchemy psycopg2-binary
+      - name: Run API BDD tests
+        env:
+          DATABASE_URL: postgresql://test:test@localhost/test_db
+        run: pytest tests/bdd/ -m "api" -v --tb=short
+
+  bdd-e2e:
+    name: BDD E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: bdd-api
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Install Playwright
+        run: |
+          pip install playwright pytest-playwright pytest-bdd
+          playwright install chromium --with-deps
+      - name: Run E2E BDD tests
+        run: pytest tests/bdd/ -m "e2e" --video=on --screenshot=on-failure -v</code></pre></div></div></div>
+</section>
+
+<!-- S16 -->
+<section class="sec" id="s16">
+<div class="sec-hd"><span class="sec-num">16</span><h2 class="sec-title">実践：EC サイト完全事例</h2></div>
+<div class="sub"><div class="sub-title">16.1 チェックアウトフローの完全シナリオ</div>
+<div class="fp">features/checkout_flow.feature</div>
+<div class="cb"><div class="cb-hd"><span class="cb-lang gl">Gherkin</span><div class="cb-dots"><span></span><span></span><span></span></div></div>
+<div class="cb-body"><pre><code class="language-gherkin">@checkout @e2e
+Feature: チェックアウトフロー
+  登録済み顧客として
+  カートの商品をまとめて注文したい
+  スムーズに購入を完了させるから
+
+  Background:
+    Given 顧客「山田太郎（yamada@example.com）」がログインしている
+    And 商品「Tシャツ（prod_001）1,000円」が在庫に 10 点ある
+    And 商品「ジーンズ（prod_002）5,000円」が在庫に 3 点ある
+
+  @smoke @happy_path
+  Scenario: 標準的なチェックアウトを完了する
+    Given カートに以下の商品が入っている
+      | 商品名   | 数量 |
+      | Tシャツ  | 2    |
+      | ジーンズ | 1    |
+    When 顧客が以下の配送先を入力する
+      | 郵便番号 | 150-0001    |
+      | 都道府県 | 東京都      |
+      | 市区町村 | 渋谷区      |
+      | 番地     | 神宮前1-1-1 |
+    And 支払い方法として「クレジットカード」を選択する
+    And 「注文を確定する」ボタンを押す
+    Then 注文確認ページが表示される
+    And 注文番号が発行されている
+    And 注文の合計金額は 7,000円 である
+    And 確認メールが「yamada@example.com」に送信される
+    And 在庫数が以下のように更新されている
+      | 商品名   | 残在庫数 |
+      | Tシャツ  | 8        |
+      | ジーンズ | 2        |
+
+  @negative
+  Scenario: 在庫数を超えた数量では注文できない
+    Given カートに「Tシャツ」が 10 点入っている
+    When さらに「Tシャツ」を 1 点追加しようとする
+    Then 「在庫が不足しています（残り10点）」というエラーが表示される
+    And カートの商品数は変わらない
+
+  Scenario: クーポン適用後に注文を確定できる
+    Given カートに「Tシャツ」が 5 点入っている
+    And 10%OFF クーポン「SAVE10」が有効である
+    When クーポンコード「SAVE10」を適用する
+    And 注文を確定する
+    Then 注文の小計は 5,000円 である
+    And 割引額は 500円 である
+    And 注文の合計金額は 4,500円 である</code></pre></div></div></div>
+<div class="sub"><div class="sub-title">16.2 EC サイトのシナリオカバレッジマップ</div>
+<div class="tw"><table>
+<thead><tr><th>機能領域</th><th>シナリオ数目安</th><th>主なシナリオ</th><th>タグ</th></tr></thead>
+<tbody>
+<tr><td>🔍 商品カタログ</td><td>5〜8</td><td>一覧表示・検索・カテゴリ絞込</td><td><span class="tag tg">@catalog</span></td></tr>
+<tr><td>🛒 ショッピングカート</td><td>8〜12</td><td>追加・削除・変更・クーポン適用</td><td><span class="tag tg">@cart</span></td></tr>
+<tr><td>💳 注文・決済</td><td>10〜15</td><td>確定・クレカ決済・確認メール</td><td><span class="tag tb">@checkout</span></td></tr>
+<tr><td>👤 マイアカウント</td><td>6〜10</td><td>ログイン・注文履歴・会員情報変更</td><td><span class="tag tp">@account</span></td></tr>
+<tr><td>⚙️ 管理機能</td><td>8〜12</td><td>在庫管理・注文管理・商品登録</td><td><span class="tag to">@admin</span></td></tr>
+</tbody>
+</table></div></div>
+</section>
+
+<!-- S17 -->
+<section class="sec" id="s17">
+<div class="sec-hd"><span class="sec-num">17</span><h2 class="sec-title">BDD ベストプラクティス総まとめ</h2></div>
+<div class="sub"><div class="sub-title">17.1 シナリオ設計ベストプラクティス一覧</div>
+<div class="tw"><table>
+<thead><tr><th>カテゴリ</th><th>ベストプラクティス</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>記述スタイル</td><td>宣言的に書く（「何を」のみ）</td><td>UI 変更の影響を受けない</td></tr>
+<tr><td>粒度</td><td>1 シナリオ = 1 ビジネスルール</td><td>失敗原因を特定しやすい</td></tr>
+<tr><td>命名</td><td>ビジネス語彙で具体的に書く</td><td>非エンジニアにも理解できる</td></tr>
+<tr><td>データ</td><td>具体的な数値・名前を使う</td><td>曖昧さをなくし期待値を明確に</td></tr>
+<tr><td>独立性</td><td>Background に最小限の前提のみ</td><td>シナリオ間の依存を排除</td></tr>
+<tr><td>タグ</td><td>@smoke/@regression/@wip で分類</td><td>必要なシナリオだけを幕別実行</td></tr>
+<tr><td>シナリオ数</td><td>Feature あたり 5〜10 個が目安</td><td>多すぎると保守困難</td></tr>
+<tr><td>パラメータ化</td><td>類似シナリオは Scenario Outline で集約</td><td>重複を排除し保守性向上</td></tr>
+</tbody>
+</table></div></div>
+<div class="sub"><div class="sub-title">17.2 BDD 成熟度モデル</div>
+<div class="mbox"><div id="m-maturity"></div></div>
+<div class="tw"><table>
+<thead><tr><th>レベル</th><th>状態</th><th>特徴</th><th>次へのステップ</th></tr></thead>
+<tbody>
+<tr><td><span class="tag tr2">Level 0</span></td><td>手動テストのみ</td><td>受け入れ基準が暗黙知</td><td>Gherkin 記法を学ぶ</td></tr>
+<tr><td><span class="tag to">Level 1</span></td><td>シナリオの文書化</td><td>Gherkin を書くが自動化なし</td><td>pytest-bdd でステップ実装</td></tr>
+<tr><td><span class="tag" style="background:rgba(212,160,23,.15);color:#d4a017">Level 2</span></td><td>基本的な自動化</td><td>ハッピーパスが自動化済み</td><td>CI/CD への統合</td></tr>
+<tr><td><span class="tag tg">Level 3</span></td><td>CI 統合</td><td>全シナリオを CI で自動実行</td><td>Allure レポート・異常系強化</td></tr>
+<tr><td><span class="tag tb">Level 4</span></td><td>Living Documentation</td><td>シナリオが常に最新の仕様書</td><td>PO をシナリオ作成に参加させる</td></tr>
+<tr><td><span class="tag tp">Level 5</span></td><td>BDD 文化の定着</td><td>PO がシナリオを書く文化</td><td>継続的改善・Example Mapping 定着</td></tr>
+</tbody>
+</table></div></div>
+<div class="sub"><div class="sub-title">17.3 BDD 導入ロードマップ</div>
+<ol class="sl">
+<li><span class="sl-n">Week 1-2</span><div class="sl-c"><strong>基礎習得フェーズ</strong><p>Gherkin 記法の学習 → pytest-bdd 基本実装 → Three Amigos の初回セッション実践</p></div></li>
+<li><span class="sl-n">Week 3-6</span><div class="sl-c"><strong>試験的導入フェーズ</strong><p>1 機能をBDD で実装 → GitHub Actions への CI 統合 → Allure レポート設定</p></div></li>
+<li><span class="sl-n">Week 7-14</span><div class="sl-c"><strong>チーム展開フェーズ</strong><p>全新機能を BDD で開発 → Example Mapping の定期実践 → Living Documentation 整備</p></div></li>
+<li><span class="sl-n">Week 15+</span><div class="sl-c"><strong>成熟化フェーズ</strong><p>PO がシナリオを書く文化醸成 → Playwright UI テストへの拡張 → BDD 全体方針の定期レビュー</p></div></li>
+</ol></div>
+</section>
+
+<!-- S18 -->
+<section class="sec" id="s18">
+<div class="sec-hd"><span class="sec-num">18</span><h2 class="sec-title">BDD のアンチパターン</h2></div>
+<div class="sub"><div class="sub-title">18.1 主要アンチパターン一覧</div>
+<div class="cg cg2">
+<div class="card rc"><div class="ct">❌ 実装詳細の露出</div><div class="cd" style="margin-top:6px">「id=submit-btn のボタンをクリック」「POST /api/v1/orders を送信」など技術的詳細をステップに書く。UI 変更のたびにシナリオが壊れる。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：「注文を確定する」のようにビジネス語彙で記述する</div></div>
+<div class="card rc"><div class="ct">❌ God Scenario（神シナリオ）</div><div class="cd" style="margin-top:6px">ログイン→検索→カート→決済→メール→在庫確認を 1 シナリオで検証。30 ステップ超のモンスターシナリオ。デバッグ不能。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：1 シナリオ 1 振る舞いに分割。ステップ数 5〜10 個を目安に</div></div>
+<div class="card rc"><div class="ct">❌ シナリオ間の依存</div><div class="cd" style="margin-top:6px">「前のシナリオで作った注文を参照する」のように実行順序に依存。並列実行や順序変更で壊れる。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：Background と Given で毎回データをセットアップする</div></div>
+<div class="card rc"><div class="ct">❌ 技術者だけが書くシナリオ</div><div class="cd" style="margin-top:6px">PO や QA が参加せず開発者だけが Feature を書く。ビジネス要件からずれた「コードのテスト」になってしまう。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：Three Amigos を実践。PO・開発者・QA の 3 者で作成する</div></div>
+<div class="card rc"><div class="ct">❌ 過剰なシナリオ数</div><div class="cd" style="margin-top:6px">すべての入力組み合わせをシナリオ化。類似シナリオが何十個も存在し保守コストが爆発する。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：Scenario Outline で集約。網羅的テストはユニットテストに委譲</div></div>
+<div class="card rc"><div class="ct">❌ 失敗シナリオの放置</div><div class="cd" style="margin-top:6px">「後で直す」と失敗シナリオをコミットし続ける。Broken Window 効果でチーム全体のテスト品質が低下する。</div><div class="cd" style="color:var(--g);margin-top:8px">✅ 解決：失敗シナリオは即座に修正。一時的に @skip を使いチケット起票</div></div>
+</div></div>
+<div class="sub"><div class="sub-title">18.2 BDD 健全性チェックフロー</div>
+<div class="mbox"><div id="m-health"></div></div></div>
+</section>
+
+<!-- S19 -->
+<section class="sec" id="s19">
+<div class="sec-hd"><span class="sec-num">19</span><h2 class="sec-title">参考文献・ソース一覧</h2></div>
+<div class="sub"><div class="sub-title">19.1 必読書籍</div>
+<div class="tw"><table>
+<thead><tr><th>タイトル</th><th>著者</th><th>難易度</th><th>概要</th></tr></thead>
+<tbody>
+<tr><td><strong>The Cucumber Book（第 2 版）</strong></td><td>Aslak Hellesøy, Matt Wynne</td><td>★★★☆☆</td><td>BDD・Cucumber の決定版バイブル</td></tr>
+<tr><td><strong>BDD in Action</strong></td><td>John Ferguson Smart</td><td>★★★★☆</td><td>BDD の実践的実装・Serenity BDD 解説</td></tr>
+<tr><td><strong>Specification by Example</strong></td><td>Gojko Adzic</td><td>★★★★☆</td><td>仕様の例示化・受け入れテストの本質</td></tr>
+<tr><td><strong>Writing Great Specifications</strong></td><td>Kamil Nicieja</td><td>★★★☆☆</td><td>良い Gherkin シナリオの書き方</td></tr>
+<tr><td><strong>Growing Object-Oriented Software, Guided by Tests</strong></td><td>Freeman &amp; Pryce</td><td>★★★★☆</td><td>Outside-in TDD/BDD の実践（GOOS 本）</td></tr>
+<tr><td><strong>Fifty Quick Ideas to Improve Your Tests</strong></td><td>Gojko Adzic, David Evans</td><td>★★★☆☆</td><td>テスト改善の実践的アドバイス集</td></tr>
+</tbody>
+</table></div></div>
+<div class="sub"><div class="sub-title">19.2 BDD・Gherkin コア概念</div>
+<div class="rg">
+<a class="rc2" href="https://dannorth.net/introducing-bdd/" target="_blank" rel="noopener"><div class="rl">BDD の起源（Dan North 原文）</div><div class="ru">https://dannorth.net/introducing-bdd/</div></a>
+<a class="rc2" href="https://cucumber.io/docs/" target="_blank" rel="noopener"><div class="rl">Cucumber 公式ドキュメント</div><div class="ru">https://cucumber.io/docs/</div></a>
+<a class="rc2" href="https://cucumber.io/docs/gherkin/reference/" target="_blank" rel="noopener"><div class="rl">Gherkin 記法リファレンス</div><div class="ru">https://cucumber.io/docs/gherkin/reference/</div></a>
+<a class="rc2" href="https://martinfowler.com/bliki/GivenWhenThen.html" target="_blank" rel="noopener"><div class="rl">Given-When-Then（Martin Fowler）</div><div class="ru">https://martinfowler.com/bliki/GivenWhenThen.html</div></a>
+<a class="rc2" href="https://cucumber.io/blog/bdd/example-mapping-introduction/" target="_blank" rel="noopener"><div class="rl">Example Mapping 入門（Cucumber Blog）</div><div class="ru">https://cucumber.io/blog/bdd/example-mapping-introduction/</div></a>
+<a class="rc2" href="https://www.agilealliance.org/glossary/bdd/" target="_blank" rel="noopener"><div class="rl">BDD 解説（Agile Alliance）</div><div class="ru">https://www.agilealliance.org/glossary/bdd/</div></a>
+</div></div>
+<div class="sub"><div class="sub-title">19.3 Python BDD フレームワーク</div>
+<div class="rg">
+<a class="rc2" href="https://pytest-bdd.readthedocs.io/" target="_blank" rel="noopener"><div class="rl">pytest-bdd 公式ドキュメント</div><div class="ru">https://pytest-bdd.readthedocs.io/</div></a>
+<a class="rc2" href="https://github.com/pytest-dev/pytest-bdd" target="_blank" rel="noopener"><div class="rl">pytest-bdd GitHub</div><div class="ru">https://github.com/pytest-dev/pytest-bdd</div></a>
+<a class="rc2" href="https://behave.readthedocs.io/" target="_blank" rel="noopener"><div class="rl">Behave 公式ドキュメント</div><div class="ru">https://behave.readthedocs.io/</div></a>
+<a class="rc2" href="https://docs.pytest.org/" target="_blank" rel="noopener"><div class="rl">pytest 公式ドキュメント</div><div class="ru">https://docs.pytest.org/</div></a>
+</div></div>
+<div class="sub"><div class="sub-title">19.4 テストレポート・CI/CD</div>
+<div class="rg">
+<a class="rc2" href="https://allurereport.org/" target="_blank" rel="noopener"><div class="rl">Allure Framework 公式</div><div class="ru">https://allurereport.org/</div></a>
+<a class="rc2" href="https://reports.cucumber.io/" target="_blank" rel="noopener"><div class="rl">Cucumber Reports</div><div class="ru">https://reports.cucumber.io/</div></a>
+<a class="rc2" href="https://docs.github.com/en/actions" target="_blank" rel="noopener"><div class="rl">GitHub Actions 公式</div><div class="ru">https://docs.github.com/en/actions</div></a>
+<a class="rc2" href="https://www.picklesdoc.com/" target="_blank" rel="noopener"><div class="rl">Pickles（Living Documentation）</div><div class="ru">https://www.picklesdoc.com/</div></a>
+</div></div>
+<div class="sub"><div class="sub-title">19.5 UI テスト統合</div>
+<div class="rg">
+<a class="rc2" href="https://playwright.dev/python/" target="_blank" rel="noopener"><div class="rl">Playwright 公式（Python）</div><div class="ru">https://playwright.dev/python/</div></a>
+<a class="rc2" href="https://playwright.dev/python/docs/test-runners" target="_blank" rel="noopener"><div class="rl">pytest-playwright</div><div class="ru">https://playwright.dev/python/docs/test-runners</div></a>
+<a class="rc2" href="https://playwright.dev/docs/pom" target="_blank" rel="noopener"><div class="rl">Page Object Model（Playwright）</div><div class="ru">https://playwright.dev/docs/pom</div></a>
+<a class="rc2" href="https://cucumber.io/docs/guides/browser-automation/" target="_blank" rel="noopener"><div class="rl">Selenium + Cucumber</div><div class="ru">https://cucumber.io/docs/guides/browser-automation/</div></a>
+</div></div>
+<div class="sub"><div class="sub-title">19.6 BDD 実践・コミュニティ</div>
+<div class="rg">
+<a class="rc2" href="https://school.cucumber.io/" target="_blank" rel="noopener"><div class="rl">Cucumber School（公式学習）</div><div class="ru">https://school.cucumber.io/</div></a>
+<a class="rc2" href="https://cucumber.io/docs/guides/10-minute-tutorial/" target="_blank" rel="noopener"><div class="rl">BDD 10 分チュートリアル（Cucumber）</div><div class="ru">https://cucumber.io/docs/guides/10-minute-tutorial/</div></a>
+<a class="rc2" href="https://gojko.net/" target="_blank" rel="noopener"><div class="rl">Gojko Adzic Blog</div><div class="ru">https://gojko.net/</div></a>
+<a class="rc2" href="https://serenity-bdd.github.io/" target="_blank" rel="noopener"><div class="rl">Serenity BDD（Java）</div><div class="ru">https://serenity-bdd.github.io/</div></a>
+<a class="rc2" href="https://specflow.org/" target="_blank" rel="noopener"><div class="rl">SpecFlow（.NET BDD）</div><div class="ru">https://specflow.org/</div></a>
+<a class="rc2" href="https://www.agilealliance.org/glossary/atdd/" target="_blank" rel="noopener"><div class="rl">ATDD（Agile Alliance）</div><div class="ru">https://www.agilealliance.org/glossary/atdd/</div></a>
+</div></div>
+</section>
+
+</div><!-- .cw -->
+<div class="footer">📅 2026年版 — BDD 完全ガイド &nbsp;|&nbsp; Dan North（2006）の原著から最新の pytest-bdd / Playwright 実践まで網羅 &nbsp;|&nbsp; Version 1.0</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gherkin.min.js"></script>
+<script>hljs.highlightAll();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+const DIAGRAMS = {
+'m-problems':`flowchart LR
+    subgraph BEFORE["BDD 導入前の問題"]
+        P1["❌ 要件の認識齟齬\nPO・開発者・QA が\n異なる解釈をする"]
+        P2["❌ テストが後付け\n実装後にテストを書く\n設計品質が上がらない"]
+        P3["❌ 仕様書が陳腐化\nコードと仕様書が乖離\n誰も読まない文書に"]
+        P4["❌ 受け入れ基準が曖昧\n完了の定義がなく\n手戻りが多発する"]
+    end
+    subgraph AFTER["BDD 導入後の効果"]
+        S1["✅ 共通言語で合意\nGherkin で全員が\n同じ仕様を理解する"]
+        S2["✅ 仕様→実装の順序\n振る舞いを先に定義\n設計品質が向上する"]
+        S3["✅ 生きた仕様書\nシナリオがそのまま\n実行可能なテストになる"]
+        S4["✅ 受け入れ基準が明確\nシナリオ通過で完了\n全員が納得できる"]
+    end
+    P1 --> S1
+    P2 --> S2
+    P3 --> S3
+    P4 --> S4
+    style P1 fill:#4a1212,color:#f85149,stroke:#f85149
+    style P2 fill:#4a1212,color:#f85149,stroke:#f85149
+    style P3 fill:#4a1212,color:#f85149,stroke:#f85149
+    style P4 fill:#4a1212,color:#f85149,stroke:#f85149
+    style S1 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style S2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style S3 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style S4 fill:#0d2b15,color:#3fb950,stroke:#3fb950`,
+
+'m-levels':`graph TD
+    ATDD["🔵 ATDD\n受け入れテスト駆動開発\n顧客視点で受け入れ基準を定義\n最外側のループ"]
+    BDD["🟢 BDD\n振る舞い駆動開発\nGherkin 記法でシナリオを記述\nビジネスと技術の橋渡し"]
+    TDD["🔴 TDD\nテスト駆動開発\nコードレベルのユニットテスト\n開発者中心の内側ループ"]
+    ATDD -->|"外側のループ"| BDD
+    BDD -->|"外側のループ"| TDD
+    TDD -->|"内側ループ（繰り返し）"| TDD
+    style ATDD fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style BDD fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style TDD fill:#4a1212,color:#f85149,stroke:#f85149`,
+
+'m-gwt':`graph TD
+    GWT["🎯 Given-When-Then 構文"]
+    GIVEN["📋 Given（前提条件）\nテスト開始時の初期状態\n例：顧客がログインしている"]
+    WHEN["⚡ When（操作・イベント）\nユーザーまたはシステムのアクション\n例：商品をカートに追加する"]
+    THEN["✅ Then（期待される結果）\nシステムが示すべき振る舞い\n例：合計金額が表示される"]
+    AND["🔗 And / But（継続）\n前のステップと同種の記述\n例：And メールが送信される"]
+    GWT --> GIVEN & WHEN & THEN
+    THEN --> AND
+    style GIVEN fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style WHEN fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style THEN fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style AND fill:#231545,color:#bc8cff,stroke:#bc8cff`,
+
+'m-story':`flowchart LR
+    subgraph US["📖 ユーザーストーリー"]
+        STORY["As a 登録済みの顧客として\nI want カートに商品を追加したい\nSo that まとめて購入できるから"]
+    end
+    subgraph SCENARIOS["🥒 BDD シナリオ（具体化）"]
+        SC1["Scenario: 商品をカートに追加する\n  Given 顧客がログインしている\n  When 商品を1点追加する\n  Then 合計金額が表示される"]
+        SC2["Scenario: 在庫切れ商品は追加できない\n  Given 商品の在庫が0点である\n  When 商品を追加しようとする\n  Then 在庫切れエラーが表示される"]
+    end
+    US -->|"具体化"| SCENARIOS
+    style US fill:#0e2140,stroke:#58a6ff
+    style SCENARIOS fill:#0d2b15,stroke:#3fb950`,
+
+'m-keywords':`graph TD
+    GHK["🥒 Gherkin キーワード体系"]
+    FEAT["Feature\nテストする機能を説明"]
+    BG["Background\n全シナリオ共通の前提条件"]
+    SC["Scenario\n1つの具体的なテストケース"]
+    SO["Scenario Outline\nパラメータ化シナリオ"]
+    STEPS["ステップキーワード"]
+    GWN["Given / When / Then"]
+    AND2["And / But（継続）"]
+    EX["Examples\nパラメータテーブル"]
+    TAG["@タグ\nシナリオの分類・フィルタリング"]
+    DS["DocString\n複数行テキスト"]
+    DT["DataTable\n表形式データ"]
+    GHK --> FEAT & BG & SC & SO & TAG
+    SC --> STEPS & DS & DT
+    SO --> STEPS & EX
+    STEPS --> GWN & AND2
+    style GHK fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style FEAT fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style SC fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style SO fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style TAG fill:#231545,color:#bc8cff,stroke:#bc8cff`,
+
+'m-cycle':`flowchart TD
+    D["🔍 1. Discovery\nThree Amigos ミーティング\nPO・開発者・QA が振る舞いを議論"]
+    F["📝 2. Formulation\nGherkin 記法でシナリオを記述\n具体的な例で仕様を明確化"]
+    A["⚙️ 3. Automation\nシナリオをステップ定義に変換\n失敗するテストが先にある"]
+    V["✅ 4. Validate\nシナリオをパスする実装を行う\nビジネス側が結果を確認する"]
+    L["📚 5. Living Documentation\nシナリオは常に最新の仕様書\nコードとドキュメントが常に一致"]
+    D --> F --> A --> V --> L
+    L -->|"次の機能へ"| D
+    style D fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style A fill:#4a1212,color:#f85149,stroke:#f85149
+    style V fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style L fill:#111827,color:#8b949e,stroke:#30363d`,
+
+'m-amigos':`graph TD
+    PO["🎯 Product Owner\nビジネス要件・優先度\n何を作るかを定義"]
+    DEV["💻 Developer\n技術的実現可能性\nどう作るかを検討"]
+    QA["🔍 QA / Tester\n品質・リスク・エッジケース\n何が壊れうるかを考える"]
+    MTG["📋 Three Amigos Meeting\n具体的なシナリオを一緒に作成\n認識のズレを最も安く解決する場"]
+    OUT["📄 合意されたシナリオ\n全員が Yes と言える仕様\nFeature ファイルにコミット"]
+    PO --> MTG
+    DEV --> MTG
+    QA --> MTG
+    MTG --> OUT
+    style PO fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style DEV fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style QA fill:#4a1212,color:#f85149,stroke:#f85149
+    style MTG fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style OUT fill:#111827,color:#e6edf3,stroke:#30363d`,
+
+'m-sprint':`sequenceDiagram
+    participant PO as Product Owner
+    participant DEV as 開発者
+    participant QA as QA
+    participant CI as CI/CD
+    Note over PO,CI: スプリント計画フェーズ
+    PO->>DEV: ユーザーストーリーを共有
+    PO->>QA: ストーリーを共有
+    Note over PO,CI: Three Amigos セッション
+    PO->>PO: ビジネスルールを説明
+    QA->>QA: エッジケースを提案
+    DEV->>DEV: 技術的考慮を共有
+    PO->>CI: Feature ファイルをコミット
+    Note over PO,CI: 開発フェーズ（BDD × TDD）
+    DEV->>CI: ステップ定義を作成（Red）
+    DEV->>CI: 実装コードを作成（Green）
+    DEV->>CI: リファクタリング（Refactor）
+    Note over PO,CI: 受け入れフェーズ
+    CI-->>QA: テスト結果レポート
+    QA->>PO: 結果を共有
+    PO-->>DEV: 承認 または フィードバック`,
+
+'m-tools':`graph TD
+    GH["📄 Gherkin\nFeature ファイル記述"]
+    PBDD["🥒 pytest-bdd\nステップ定義・シナリオ実行"]
+    PT["🧪 pytest\nテストランナー・フィクスチャ"]
+    HTTPX["🌐 httpx\nAPI テスト"]
+    PW["🎭 Playwright\nUI テスト（E2E）"]
+    FB["🏭 factory-boy\nテストデータ生成"]
+    AL["📊 Allure\nテストレポート生成"]
+    TC["🐳 TestContainers\nDB 統合テスト"]
+    GH --> PBDD --> PT
+    PT --> HTTPX & PW & FB & TC & AL
+    style GH fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style PBDD fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style PT fill:#4a1212,color:#f85149,stroke:#f85149
+    style AL fill:#2a1a00,color:#d4a017,stroke:#d4a017`,
+
+'m-cucumber-arch':`graph TD
+    FF["📄 Feature ファイル\n.feature 形式\nGherkin 記法で記述"]
+    SD["⚙️ Step Definitions\n各ステップの実装コード\nアノテーションでマッチング"]
+    SUP["🛠️ Support / Hooks\nBefore・After・BeforeAll\n共通処理・フィクスチャ"]
+    APP["💻 Application Code\nテスト対象のアプリケーション"]
+    RPT["📊 Test Report\nAllure / Cucumber HTML"]
+    FF -->|"マッチング"| SD
+    SD -->|"呼び出し"| APP
+    SUP -->|"前後処理"| SD
+    SD --> RPT
+    APP --> RPT
+    style FF fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style SD fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style SUP fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style APP fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style RPT fill:#111827,color:#e6edf3,stroke:#30363d`,
+
+'m-doubleloop':`flowchart TD
+    subgraph OUTER["🔵 外側ループ — BDD / 受け入れテスト"]
+        BR["🔴 BDD RED\nGherkin シナリオを書く\n全シナリオが FAIL"]
+        BG["🟢 BDD GREEN\n全シナリオが PASS\n内側ループ繰り返し後"]
+        BF["🔵 BDD REFACTOR\nシナリオを整理・改善"]
+    end
+    subgraph INNER["🔴 内側ループ — TDD / ユニットテスト"]
+        TR["🔴 TDD RED\nユニットテストを書く\nFAIL 状態"]
+        TG["🟢 TDD GREEN\n最小実装で PASS"]
+        TF["🔵 TDD REFACTOR\nコードを整理・改善"]
+    end
+    BR --> TR
+    TR --> TG --> TF
+    TF -->|"まだシナリオ FAIL"| TR
+    TF -->|"シナリオ PASS"| BG
+    BG --> BF
+    BF -->|"次のシナリオへ"| BR
+    style OUTER fill:#07111e,stroke:#58a6ff
+    style INNER fill:#07111e,stroke:#f85149
+    style BR fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style BG fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style TR fill:#4a1212,color:#f85149,stroke:#f85149
+    style TG fill:#0d2b15,color:#3fb950,stroke:#3fb950`,
+
+'m-atdd':`flowchart TD
+    REQ["📋 要件（ユーザーストーリー）"]
+    ACC["✅ 受け入れ基準の定義\nThree Amigos"]
+    GHK2["🥒 Gherkin シナリオ作成\n具体的な例で仕様を記述"]
+    AUTO["⚙️ 自動受け入れテスト\nシナリオが実行可能に"]
+    IMPL["💻 実装\nテストをパスする"]
+    DONE["🎉 受け入れ\n全シナリオが PASS"]
+    REQ --> ACC --> GHK2 --> AUTO --> IMPL --> DONE
+    DONE -->|"次のストーリーへ"| REQ
+    style REQ fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style ACC fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style GHK2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style AUTO fill:#4a1212,color:#f85149,stroke:#f85149
+    style DONE fill:#111827,color:#e6edf3,stroke:#30363d`,
+
+'m-ui-arch':`graph TD
+    FEAT2["🥒 Gherkin Feature\nビジネスシナリオを記述\nUI 実装詳細は書かない"]
+    STEP2["⚙️ Step Definitions\nPage Object Model を呼び出す\nUI 操作の抽象化レイヤー"]
+    POM["📄 Page Object Model\n各ページの UI 操作をメソッドで定義\nセレクターを隠蔽する"]
+    PW2["🎭 Playwright / Selenium\n実際のブラウザ操作\n最下層の実装詳細"]
+    FEAT2 --> STEP2 --> POM --> PW2
+    style FEAT2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style STEP2 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style POM fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style PW2 fill:#4a1212,color:#f85149,stroke:#f85149`,
+
+'m-cicd':`flowchart TD
+    subgraph LOCAL["💻 ローカル開発"]
+        L1["Feature ファイル編集"]
+        L2["@wip タグでシナリオ実行"]
+        L3["全シナリオ PASS を確認"]
+        L1 --> L2 --> L3
+    end
+    subgraph CI["🔄 CI パイプライン（PR 時）"]
+        C1["コードチェックアウト"]
+        C2["依存関係インストール"]
+        C3["ユニットテスト（TDD）"]
+        C4["BDD 受け入れ（@smoke）"]
+        C5["BDD リグレッション（全シナリオ）"]
+        C6["Allure レポート生成"]
+        C1 --> C2 --> C3 --> C4 --> C5 --> C6
+    end
+    subgraph CD["🚀 CD パイプライン（main マージ）"]
+        D1["ステージング環境デプロイ"]
+        D2["E2E BDD テスト（@e2e）"]
+        D3["レポートをステークホルダーへ共有"]
+        D4["本番環境デプロイ"]
+        D1 --> D2 --> D3 --> D4
+    end
+    LOCAL --> CI --> CD
+    style LOCAL fill:#0d2b15,stroke:#3fb950
+    style CI fill:#0e2140,stroke:#58a6ff
+    style CD fill:#2a1a00,stroke:#d4a017`,
+
+'m-maturity':`graph TD
+    L0["Level 0\n手動テストのみ\n受け入れ基準が暗黙知"]
+    L1["Level 1\nシナリオの文書化\nGherkin を書くが自動化なし"]
+    L2["Level 2\n基本的な自動化\nハッピーパスが自動化済み"]
+    L3["Level 3\nCI 統合\n全シナリオを CI で自動実行"]
+    L4["Level 4\nLiving Documentation\nシナリオが常に最新の仕様書"]
+    L5["Level 5\nBDD 文化の定着\nPO がシナリオを書く文化"]
+    L0 --> L1 --> L2 --> L3 --> L4 --> L5
+    style L0 fill:#4a1212,color:#f85149,stroke:#f85149
+    style L1 fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style L2 fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style L3 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style L4 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style L5 fill:#231545,color:#bc8cff,stroke:#bc8cff`,
+
+'m-health':`flowchart TD
+    CHK["🔍 BDD 健全性チェック開始"]
+    Q1{"Three Amigos が\nシナリオ作成に参加？"}
+    Q2{"ビジネス語彙で\n書かれている？"}
+    Q3{"1 シナリオのステップ数\nが 10 以下？"}
+    Q4{"シナリオが独立して\n実行できる？"}
+    Q5{"CI で自動実行\nされている？"}
+    Q6{"失敗シナリオを\n即座に修正している？"}
+    OK["✅ 健全な BDD プロジェクト\nLiving Documentation として機能"]
+    F1["👥 Three Amigos を導入する"]
+    F2["📝 シナリオをリファクタリング"]
+    F3["✂️ シナリオを分割する"]
+    F4["🔒 独立フィクスチャを使用"]
+    F5["⚙️ CI/CD に統合する"]
+    F6["🔧 Broken Window を放置しない"]
+    CHK --> Q1
+    Q1 -->|"No"| F1
+    Q1 -->|"Yes"| Q2
+    Q2 -->|"No"| F2
+    Q2 -->|"Yes"| Q3
+    Q3 -->|"No"| F3
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"No"| F4
+    Q4 -->|"Yes"| Q5
+    Q5 -->|"No"| F5
+    Q5 -->|"Yes"| Q6
+    Q6 -->|"No"| F6
+    Q6 -->|"Yes"| OK
+    style OK fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style F1 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F2 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F3 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F4 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F5 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F6 fill:#0e2140,color:#58a6ff,stroke:#58a6ff`
+};
+
+mermaid.initialize({
+  startOnLoad: false,
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  sequence: { useMaxWidth: true },
+  securityLevel: 'loose',
+  theme: 'base',
+  themeVariables: {
+    darkMode: true,
+    background: '#112135',
+    primaryColor: '#0d2b15',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#3fb950',
+    lineColor: '#58a6ff',
+    secondaryColor: '#0e2140',
+    tertiaryColor: '#231545',
+    fontFamily: "Inter, sans-serif",
+    fontSize: '13px',
+    nodeBorder: '#1e3247',
+    clusterBkg: '#0d1926',
+    clusterBorder: '#1e3247',
+    titleColor: '#e6edf3',
+    edgeLabelBackground: '#112135',
+    actorBkg: '#112135',
+    actorBorder: '#58a6ff',
+    actorTextColor: '#e6edf3',
+    actorLineColor: '#58a6ff',
+    signalColor: '#58a6ff',
+    signalTextColor: '#e6edf3',
+    labelBoxBkgColor: '#112135',
+    labelBoxBorderColor: '#1e3247',
+    labelTextColor: '#e6edf3',
+    loopTextColor: '#e6edf3',
+    noteBorderColor: '#3fb950',
+    noteBkgColor: '#0d2b15',
+    noteTextColor: '#e6edf3',
+    activationBorderColor: '#3fb950',
+    activationBkgColor: '#0d2b15',
+  }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Inject Mermaid source via textContent (avoids HTML parsing conflicts)
+  for (const [id, code] of Object.entries(DIAGRAMS)) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = code; el.className = 'mermaid'; }
+  }
+  try { await mermaid.run(); } catch(e) { console.warn('Mermaid render error:', e); }
+
+  // Normalize SVG sizes: remove fixed width/height attrs, rely on viewBox + CSS
+  document.querySelectorAll('.mbox svg').forEach(svg => {
+    const vb = svg.getAttribute('viewBox');
+    if (!vb) {
+      const w = svg.getAttribute('width') || svg.getBoundingClientRect().width || 800;
+      const h = svg.getAttribute('height') || svg.getBoundingClientRect().height || 400;
+      svg.setAttribute('viewBox', `0 0 ${parseFloat(w)} ${parseFloat(h)}`);
+    }
+    svg.removeAttribute('width');
+    svg.removeAttribute('height');
+    svg.style.height = 'auto';
+    svg.style.overflow = 'visible';
+    svg.style.marginBottom = '10px';
+    svg.style.maxWidth = '100%';
+    svg.style.display = 'block';
+    svg.style.marginLeft = 'auto';
+    svg.style.marginRight = 'auto';
+
+    const currentVb = svg.getAttribute('viewBox');
+    if (currentVb) {
+      const parts = currentVb.split(/\s+/).map(Number);
+      if (parts.length === 4 && parts.every(Number.isFinite)) {
+        const [,, w,] = parts;
+        svg.style.width = w + 'px';
+      } else {
+        svg.style.width = '100%';
+      }
+    } else {
+      svg.style.width = '100%';
+    }
+  });
+
+  const main = document.getElementById('main');
+
+  // Progress bar
+  const pb = document.getElementById('pb');
+  main.addEventListener('scroll', () => {
+    const t = main.scrollTop, h = main.scrollHeight - main.clientHeight;
+    pb.style.width = h > 0 ? (t / h * 100) + '%' : '0';
+  });
+
+  // Sidebar active link via IntersectionObserver
+  const sections = document.querySelectorAll('.sec');
+  const navLinks = document.querySelectorAll('.nav-a');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.getAttribute('id');
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { root: main, rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => obs.observe(s));
+
+  // Smooth scroll
+  navLinks.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+});
+</script>
+</body>
+</html>
