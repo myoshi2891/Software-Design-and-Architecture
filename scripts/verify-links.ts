@@ -145,6 +145,7 @@ async function run(): Promise<void> {
 
   const isDryRun = process.argv.includes('--dry-run');
   let hasErrors = false;
+  const allDeadLinks: { file: string; errorDetails: string[] }[] = [];
 
   for (const file of files) {
     console.log(`>>> START: ${file}`);
@@ -177,8 +178,22 @@ async function run(): Promise<void> {
     if (deadLinks.length > 0) {
       console.error(`Error checking ${file}: Dead links found: ${deadLinks.join(', ')}`);
       hasErrors = true;
+      allDeadLinks.push({ file, errorDetails: deadLinks });
     } else {
       console.log(`>>> SUCCESS: ${file} (checked ${checkedUrls.length} links)`);
+    }
+  }
+
+  // エラーレポートをファイルに書き出す
+  if (allDeadLinks.length > 0) {
+    const logContent = allDeadLinks.map(item => {
+      return `File: ${item.file}\n` + item.errorDetails.map(err => `  - ${err}`).join('\n');
+    }).join('\n\n');
+    fs.writeFileSync('./link-check-errors.log', logContent, 'utf-8');
+    console.log('\n>>> Detailed error log written to ./link-check-errors.log');
+  } else {
+    if (fs.existsSync('./link-check-errors.log')) {
+      fs.unlinkSync('./link-check-errors.log');
     }
   }
 
