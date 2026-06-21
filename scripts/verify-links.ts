@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
 
 interface IgnorePattern {
   pattern: string;
@@ -32,13 +33,13 @@ function shouldIgnore(url: string): boolean {
 function extractUrls(content: string): string[] {
   // 1. 複数行コードブロック (``` ... ```) を除外
   let cleanContent = content.replace(/```[\s\S]*?```/g, '');
-  
+
   // 2. インラインコードブロック (`...`) を除外
   cleanContent = cleanContent.replace(/`[^`\n]*`/g, '');
 
   // 3. URLとして有効な文字セットのみにマッチさせる正規表現
   const urlRegex = /https?:\/\/[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/]+(?:\?[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/?#]*)?/g;
-  
+
   const urls: string[] = [];
   let match;
   while ((match = urlRegex.exec(cleanContent)) !== null) {
@@ -57,74 +58,73 @@ function extractUrls(content: string): string[] {
 }
 
 /**
- * URLのステータスを確認する（HEADで失敗した場合はGETで再試行、10秒タイムアウト）
+ * curlを使用してURLのステータスを確認する
+ * BunのネイティブfetchはTLS/HTTP2ネゴシエーションで Malformed_HTTP_Response を返すことがあるため、
+ * curlを使うことでその問題を回避する。
  */
-async function verifyUrl(url: string, timeoutMs: number = 10000): Promise<{ ok: boolean; status: number; error?: string }> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status: number; error?: string } {
+  const userAgent =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
-  };
+  // まず HEAD リクエストで試みる
+  const headResult = spawnSync(
+    'curl',
+    [
+      '-s',
+      '-L',
+      '-o', '/dev/null',
+      '-w', '%{http_code}',
+      '--max-time', String(timeoutSec),
+      '--http1.1',
+      '-A', userAgent,
+      '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      '-X', 'HEAD',
+      url,
+    ],
+    { encoding: 'utf-8', timeout: (timeoutSec + 5) * 1000 }
+  );
 
-  try {
-    let res = await fetch(url, {
-      method: 'HEAD',
-      signal: controller.signal,
-      headers
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      const getController = new AbortController();
-      const getTimeoutId = setTimeout(() => getController.abort(), timeoutMs);
-      try {
-        res = await fetch(url, {
-          method: 'GET',
-          signal: getController.signal,
-          headers
-        });
-        clearTimeout(getTimeoutId);
-      } catch (getErr: any) {
-        clearTimeout(getTimeoutId);
-        return {
-          ok: false,
-          status: 0,
-          error: getErr.name === 'AbortError' ? 'Timeout' : getErr.message
-        };
-      }
-    }
-
-    return {
-      ok: res.ok,
-      status: res.status
-    };
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    // HEAD がthrow（タイムアウト・ネットワークエラー）した場合もGETで再試行
-    const getController = new AbortController();
-    const getTimeoutId = setTimeout(() => getController.abort(), timeoutMs);
-    try {
-      const res = await fetch(url, {
-        method: 'GET',
-        signal: getController.signal,
-        headers
-      });
-      clearTimeout(getTimeoutId);
-      return {
-        ok: res.ok,
-        status: res.status
-      };
-    } catch (getErr: any) {
-      clearTimeout(getTimeoutId);
-      return {
-        ok: false,
-        status: 0,
-        error: getErr.name === 'AbortError' ? 'Timeout' : getErr.message
-      };
-    }
+  if (headResult.error) {
+    // curlコマンド自体が実行できなかった場合
+    return { ok: false, status: 0, error: `curl error: ${headResult.error.message}` };
   }
+
+  const headStatus = parseInt(headResult.stdout.trim(), 10);
+
+  // HEAD が成功 (2xx or 3xx) なら OK
+  if (!isNaN(headStatus) && headStatus >= 200 && headStatus < 400) {
+    return { ok: true, status: headStatus };
+  }
+
+  // HEAD が失敗 (405 Method Not Allowed 含む) の場合は GET で再試行
+  const getResult = spawnSync(
+    'curl',
+    [
+      '-s',
+      '-L',
+      '-o', '/dev/null',
+      '-w', '%{http_code}',
+      '--max-time', String(timeoutSec),
+      '--http1.1',
+      '-A', userAgent,
+      '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      url,
+    ],
+    { encoding: 'utf-8', timeout: (timeoutSec + 5) * 1000 }
+  );
+
+  if (getResult.error) {
+    return { ok: false, status: 0, error: `curl error: ${getResult.error.message}` };
+  }
+
+  const getStatus = parseInt(getResult.stdout.trim(), 10);
+
+  if (isNaN(getStatus) || getStatus === 0) {
+    return { ok: false, status: 0, error: 'curl returned status 0 (connection failed or timeout)' };
+  }
+
+  const ok = getStatus >= 200 && getStatus < 400;
+  return { ok, status: getStatus };
 }
 
 /**
@@ -164,7 +164,7 @@ async function run(): Promise<void> {
         console.log(`    Link: ${url} -> skipped (dry-run)`);
       } else {
         console.log(`  Checking: ${url} ...`);
-        const result = await verifyUrl(url);
+        const result = verifyUrl(url);
         if (result.ok) {
           console.log(`    Link: ${url} -> ok (${result.status})`);
         } else {
@@ -186,9 +186,11 @@ async function run(): Promise<void> {
 
   // エラーレポートをファイルに書き出す
   if (allDeadLinks.length > 0) {
-    const logContent = allDeadLinks.map(item => {
-      return `File: ${item.file}\n` + item.errorDetails.map(err => `  - ${err}`).join('\n');
-    }).join('\n\n');
+    const logContent = allDeadLinks
+      .map((item) => {
+        return `File: ${item.file}\n` + item.errorDetails.map((err) => `  - ${err}`).join('\n');
+      })
+      .join('\n\n');
     fs.writeFileSync('./link-check-errors.log', logContent, 'utf-8');
     console.log('\n>>> Detailed error log written to ./link-check-errors.log');
   } else {
