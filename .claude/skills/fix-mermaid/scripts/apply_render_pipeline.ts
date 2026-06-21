@@ -61,7 +61,7 @@ const RENDER_LOOP = `            // --- mermaid render pipeline (apply_render_pi
                     } catch (err) {
                         el.innerHTML =
                             '<pre style="color:#ff8888;white-space:pre-wrap">' +
-                            (err && (err as any).message ? (err as any).message : String(err)) +
+                            (err && err.message ? err.message : String(err)) +
                             '</pre>';
                     }
                 }
