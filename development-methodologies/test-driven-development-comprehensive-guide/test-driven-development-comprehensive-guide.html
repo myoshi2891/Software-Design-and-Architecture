@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDD（テスト駆動開発）完全ガイド</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg-primary: #0f0f10;
+  --bg-secondary: #18181b;
+  --bg-tertiary: #1e1e22;
+  --bg-card: #1c1c20;
+  --text-primary: #e8e6df;
+  --text-secondary: #e0dbce;
+  --text-tertiary: #b7b4af;
+  --border-subtle: rgba(255,255,255,0.07);
+  --border-mid: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.18);
+  --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-400: #7F77DD; --purple-600: #534AB7; --purple-800: #3C3489;
+  --teal-50: #E1F5EE; --teal-200: #5DCAA5; --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+  --coral-50: #FAECE7; --coral-200: #F0997B; --coral-400: #D85A30; --coral-600: #993C1D; --coral-800: #712B13;
+  --amber-50: #FAEEDA; --amber-200: #EF9F27; --amber-400: #BA7517; --amber-600: #854F0B;
+  --red-50: #FCEBEB; --red-200: #F09595; --red-400: #E24B4A; --red-600: #A32D2D;
+  --green-50: #EAF3DE; --green-200: #97C459; --green-400: #639922; --green-600: #3B6D11;
+  --blue-50: #E6F1FB; --blue-200: #85B7EB; --blue-400: #378ADD; --blue-600: #185FA5;
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", Consolas, monospace;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+a { color: var(--purple-400); text-decoration: none; }
+a:hover { color: var(--purple-200); }
+code {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  color: var(--teal-200);
+}
+pre {
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #c9c7c0;
+}
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+h1 { font-size: 28px; font-weight: 500; color: var(--text-primary); line-height: 1.3; }
+h2 { font-size: 20px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+h3 { font-size: 16px; font-weight: 500; color: var(--text-primary); }
+h4 { font-size: 1rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+p { color: var(--text-secondary); line-height: 1.75; }
+p + p { margin-top: 12px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 500;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  border-bottom: 0.5px solid var(--border-mid);
+}
+table td {
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+table tr:last-child td { border-bottom: none; }
+table tr:hover td { background: rgba(255,255,255,0.02); }
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 256px;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border-right: 0.5px solid var(--border-subtle);
+  padding: 28px 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 24px;
+  border-bottom: 0.5px solid var(--border-subtle);
+  margin-bottom: 16px;
+}
+.sidebar-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--purple-400);
+}
+.sidebar-logo-badge i { font-size: 16px; }
+.nav-section-label {
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  padding: 12px 20px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--purple-400); border-left-color: var(--purple-400); background: rgba(127,119,221,0.06); }
+.nav-item i { font-size: 1rem; flex-shrink: 0; }
+.main {
+  margin-left: 256px;
+  max-width: none;
+  padding: 64px 56px;
+}
+.page-header {
+  margin-bottom: 64px;
+  padding-bottom: 40px;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+.page-header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--purple-400);
+  margin-bottom: 16px;
+}
+.page-header h1 { margin-bottom: 16px; }
+.page-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+}
+.meta-chip i { font-size: 1rem; }
+.section {
+  margin-bottom: 72px;
+  padding-top: 8px;
+}
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.section-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+.section-header h2 { flex: 1; }
+.card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.card-header i { font-size: 18px; }
+.card h3 { font-size: 1rem; }
+.callout {
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin: 20px 0;
+  display: flex;
+  gap: 14px;
+  font-size: 1rem;
+  align-items: flex-start;
+}
+.callout i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.callout-info { background: rgba(127,119,221,0.08); border: 0.5px solid rgba(127,119,221,0.2); }
+.callout-info i { color: var(--purple-400); }
+.callout-info p { color: var(--purple-200); }
+.callout-tip { background: rgba(29,158,117,0.08); border: 0.5px solid rgba(29,158,117,0.2); }
+.callout-tip i { color: var(--teal-200); }
+.callout-tip p { color: var(--teal-200); }
+.callout-warn { background: rgba(186,117,23,0.08); border: 0.5px solid rgba(186,117,23,0.2); }
+.callout-warn i { color: var(--amber-200); }
+.callout-warn p { color: var(--amber-200); }
+.callout-body { flex: 1; }
+.callout-body strong { font-weight: 500; display: block; margin-bottom: 4px; }
+.phase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+.phase-card {
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 0.5px solid;
+  position: relative;
+  overflow: hidden;
+}
+.phase-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.phase-red { background: rgba(226,75,74,0.07); border-color: rgba(226,75,74,0.2); }
+.phase-red::before { background: var(--red-400); }
+.phase-green { background: rgba(99,153,34,0.07); border-color: rgba(99,153,34,0.2); }
+.phase-green::before { background: var(--green-400); }
+.phase-blue { background: rgba(55,138,221,0.07); border-color: rgba(55,138,221,0.2); }
+.phase-blue::before { background: var(--blue-400); }
+.phase-label {
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.phase-red .phase-label { color: var(--red-400); }
+.phase-green .phase-label { color: var(--green-400); }
+.phase-blue .phase-label { color: var(--blue-400); }
+.phase-card h3 { font-size: 1rem; margin-bottom: 10px; }
+.phase-card ul { list-style: none; }
+.phase-card ul li {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.phase-card ul li::before {
+  content: '—';
+  opacity: 0.4;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.mermaid-wrap {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+.mermaid-wrap .mermaid { text-align: center; }
+.mermaid-caption {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  margin-top: 12px;
+}
+.rule-list { list-style: none; counter-reset: rule-counter; }
+.rule-list li {
+  counter-increment: rule-counter;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+.rule-list li:last-child { border-bottom: none; }
+.rule-number {
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-mid);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.rule-list li strong { display: block; font-weight: 500; color: var(--text-primary); font-size: 1rem; margin-bottom: 4px; }
+.rule-list li p { font-size: 1rem; margin: 0; }
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 0.5px solid;
+}
+.tag-purple { background: rgba(127,119,221,0.1); border-color: rgba(127,119,221,0.25); color: var(--purple-400); }
+.tag-teal { background: rgba(29,158,117,0.1); border-color: rgba(29,158,117,0.25); color: var(--teal-200); }
+.tag-coral { background: rgba(216,90,48,0.1); border-color: rgba(216,90,48,0.25); color: var(--coral-200); }
+.tag-amber { background: rgba(186,117,23,0.1); border-color: rgba(186,117,23,0.25); color: var(--amber-200); }
+.tag-blue { background: rgba(55,138,221,0.1); border-color: rgba(55,138,221,0.25); color: var(--blue-200); }
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.toc-item:hover { border-color: var(--border-mid); color: var(--text-primary); }
+.toc-item .toc-num {
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 20px;
+}
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--purple-400);
+  background: rgba(127,119,221,0.08);
+  border: 0.5px solid rgba(127,119,221,0.2);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  margin: 4px 4px 4px 0;
+  transition: all 0.15s;
+}
+.source-link:hover { background: rgba(127,119,221,0.14); color: var(--purple-200); }
+.source-link i { font-size: 1rem; }
+.sources-section {
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-subtle);
+}
+.sources-section h4 { margin-bottom: 12px; font-size: 1rem; }
+.divider {
+  border: none;
+  border-top: 0.5px solid var(--border-subtle);
+  margin: 48px 0;
+}
+.step-list { list-style: none; counter-reset: steps; }
+.step-list li {
+  counter-increment: steps;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.step-list li::before {
+  content: counter(steps);
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-tertiary);
+  border: 0.5px solid var(--border-mid);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+.step-list li strong { display: block; font-weight: 500; color: var(--text-primary); font-size: 1rem; margin-bottom: 4px; }
+.step-list li p { font-size: 1rem; margin: 0; }
+.priority-stack { list-style: none; }
+.priority-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  border: 0.5px solid;
+}
+.pi-1 { background: rgba(29,158,117,0.07); border-color: rgba(29,158,117,0.2); }
+.pi-2 { background: rgba(55,138,221,0.07); border-color: rgba(55,138,221,0.2); }
+.pi-3 { background: rgba(186,117,23,0.07); border-color: rgba(186,117,23,0.2); }
+.pi-4 { background: rgba(216,90,48,0.07); border-color: rgba(216,90,48,0.2); }
+.pi-5 { background: rgba(83,74,183,0.07); border-color: rgba(83,74,183,0.2); }
+.pi-num {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.pi-1 .pi-num { background: var(--teal-400); color: var(--teal-50); }
+.pi-2 .pi-num { background: var(--blue-400); color: var(--blue-50); }
+.pi-3 .pi-num { background: var(--amber-400); color: var(--amber-50); }
+.pi-4 .pi-num { background: var(--coral-400); color: var(--coral-50); }
+.pi-5 .pi-num { background: var(--purple-600); color: var(--purple-50); }
+.pi-text strong { display: block; font-weight: 500; font-size: 1rem; color: var(--text-primary); }
+.pi-text span { font-size: 1rem; color: var(--text-secondary); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.col-card {
+  background: var(--bg-card);
+  border: 0.5px solid;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.col-good { border-color: rgba(29,158,117,0.25); }
+.col-bad { border-color: rgba(226,75,74,0.25); }
+.col-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.col-good .col-header { color: var(--green-400); }
+.col-bad .col-header { color: var(--red-400); }
+.col-card ul { list-style: none; }
+.col-card ul li {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 5px 0;
+  border-bottom: 0.5px solid var(--border-subtle);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.col-card ul li:last-child { border-bottom: none; }
+.col-good ul li::before { content: '✓'; color: var(--green-400); font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+.col-bad ul li::before { content: '✗'; color: var(--red-400); font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+.pyramid-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+.pyramid { width: 100%; max-width: 560px; }
+.pyramid-tier {
+  border-radius: var(--radius-md);
+  padding: 16px 24px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.tier-e2e { background: rgba(226,75,74,0.1); border: 0.5px solid rgba(226,75,74,0.2); }
+.tier-int { background: rgba(186,117,23,0.1); border: 0.5px solid rgba(186,117,23,0.2); }
+.tier-unit { background: rgba(29,158,117,0.1); border: 0.5px solid rgba(29,158,117,0.2); }
+.tier-label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.tier-e2e .tier-label { color: var(--red-200); }
+.tier-int .tier-label { color: var(--amber-200); }
+.tier-unit .tier-label { color: var(--teal-200); }
+.tier-meta { font-size: 1rem; color: var(--text-tertiary); margin-bottom: 6px; }
+.tier-tools { font-size: 1rem; color: var(--text-tertiary); }
+.tier-badge {
+  position: absolute;
+  top: 12px; right: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+.tier-unit .tier-badge { background: rgba(29,158,117,0.15); color: var(--teal-200); }
+.tier-int .tier-badge { background: rgba(186,117,23,0.15); color: var(--amber-200); }
+.tier-e2e .tier-badge { background: rgba(226,75,74,0.15); color: var(--red-200); }
+.double-card { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.mock-type-card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.mock-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.best-practice-table {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 0.5px solid var(--border-subtle);
+  margin: 20px 0;
+}
+.source-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--border-subtle);
+  font-size: 1rem;
+}
+.source-row:last-child { border-bottom: none; }
+.source-row i { color: var(--purple-400); font-size: 16px; flex-shrink: 0; }
+.source-row a { color: var(--purple-400); font-size: 1rem; }
+.source-row .source-desc { color: var(--text-tertiary); font-size: 1rem; }
+.antipattern-card {
+  background: var(--bg-card);
+  border: 0.5px solid rgba(226,75,74,0.2);
+  border-left: 3px solid var(--red-400);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.antipattern-card h4 { color: var(--red-200); font-size: 1rem; margin-bottom: 8px; }
+.antipattern-fix {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--border-subtle);
+  font-size: 1rem;
+  color: var(--teal-200);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.antipattern-fix i { flex-shrink: 0; margin-top: 2px; }
+.roadmap-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 4px;
+}
+.roadmap-label {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  padding: 8px 0;
+  padding-right: 12px;
+}
+.roadmap-bar-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.roadmap-bar {
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tdd-flow-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+.flow-node-sm {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+}
+.fn-red { background: rgba(226,75,74,0.15); color: var(--red-200); }
+.fn-green { background: rgba(99,153,34,0.15); color: var(--green-200); }
+.fn-blue { background: rgba(55,138,221,0.15); color: var(--blue-200); }
+.flow-arrow-sm { color: var(--text-tertiary); font-size: 1rem; }
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+.book-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.book-icon {
+  width: 36px;
+  height: 44px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.book-info strong { font-size: 1rem; font-weight: 500; display: block; margin-bottom: 4px; }
+.book-info .book-author { font-size: 1rem; color: var(--text-tertiary); }
+.book-info .book-level { font-size: 1rem; color: var(--purple-400); margin-top: 4px; }
+.level-dots { display: inline-flex; gap: 2px; }
+.level-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+.level-dots span.filled { background: var(--purple-400); }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 32px 20px; }
+  .phase-grid { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+  .double-card { grid-template-columns: 1fr; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar" role="navigation" aria-label="セクションナビゲーション">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-badge">
+      <i class="ti ti-test-pipe" aria-hidden="true"></i>
+      TDD 完全ガイド
+    </div>
+  </div>
+  <div class="nav-section-label">基礎</div>
+  <a href="#s1" class="nav-item active"><i class="ti ti-info-circle" aria-hidden="true"></i>TDDとは何か</a>
+  <a href="#s2" class="nav-item"><i class="ti ti-refresh" aria-hidden="true"></i>Red-Green-Refactor</a>
+  <a href="#s3" class="nav-item"><i class="ti ti-list-numbers" aria-hidden="true"></i>ステップバイステップ実践</a>
+  <a href="#s4" class="nav-item"><i class="ti ti-stack" aria-hidden="true"></i>テストの種類と役割</a>
+  <div class="nav-section-label">設計</div>
+  <a href="#s5" class="nav-item"><i class="ti ti-ruler" aria-hidden="true"></i>ユニットテスト設計原則</a>
+  <a href="#s6" class="nav-item"><i class="ti ti-theater" aria-hidden="true"></i>モックとスタブの活用</a>
+  <a href="#s7" class="nav-item"><i class="ti ti-layout-columns" aria-hidden="true"></i>AAAパターン</a>
+  <div class="nav-section-label">実装例</div>
+  <a href="#s8" class="nav-item"><i class="ti ti-building-arch" aria-hidden="true"></i>ドメインロジック編</a>
+  <a href="#s9" class="nav-item"><i class="ti ti-api" aria-hidden="true"></i>APIエンドポイント編</a>
+  <a href="#s10" class="nav-item"><i class="ti ti-database" aria-hidden="true"></i>データベース層編</a>
+  <div class="nav-section-label">応用</div>
+  <a href="#s11" class="nav-item"><i class="ti ti-users" aria-hidden="true"></i>BDDとの連携</a>
+  <a href="#s12" class="nav-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>テストカバレッジ</a>
+  <a href="#s13" class="nav-item"><i class="ti ti-git-branch" aria-hidden="true"></i>CI/CDパイプライン</a>
+  <a href="#s14" class="nav-item"><i class="ti ti-barrier-block" aria-hidden="true"></i>障壁と解決策</a>
+  <a href="#s15" class="nav-item"><i class="ti ti-building-factory-2" aria-hidden="true"></i>レガシーコード</a>
+  <div class="nav-section-label">まとめ</div>
+  <a href="#s16" class="nav-item"><i class="ti ti-trophy" aria-hidden="true"></i>ベストプラクティス</a>
+  <a href="#s17" class="nav-item"><i class="ti ti-alert-triangle" aria-hidden="true"></i>アンチパターン</a>
+  <a href="#s18" class="nav-item"><i class="ti ti-books" aria-hidden="true"></i>参考文献</a>
+</nav>
+
+<main class="main">
+
+  <header class="page-header">
+    <div class="page-header-eyebrow">
+      <i class="ti ti-test-pipe" aria-hidden="true"></i>
+      Software Architecture Guide
+    </div>
+    <h1>TDD（テスト駆動開発）完全ガイド</h1>
+    <p style="font-size: 16px; color: var(--text-secondary); margin-top: 12px; max-width: 580px;">
+      Test-Driven Development の基礎から実践まで。Red-Green-Refactor サイクルを軸に、
+      初学者が段階的にマスターできるよう設計した総合リファレンスです。
+    </p>
+    <div class="page-header-meta">
+      <span class="meta-chip"><i class="ti ti-calendar" aria-hidden="true"></i>2026年6月更新</span>
+      <span class="meta-chip"><i class="ti ti-code" aria-hidden="true"></i>Python / pytest</span>
+      <span class="meta-chip"><i class="ti ti-clock" aria-hidden="true"></i>読了目安 45〜60分</span>
+      <span class="meta-chip"><i class="ti ti-star" aria-hidden="true"></i>初学者〜中級者向け</span>
+    </div>
+    <div class="tag-grid" style="margin-top: 20px;">
+      <span class="tag tag-purple"><i class="ti ti-test-pipe"></i>TDD</span>
+      <span class="tag tag-teal"><i class="ti ti-check"></i>Red-Green-Refactor</span>
+      <span class="tag tag-coral"><i class="ti ti-code"></i>pytest</span>
+      <span class="tag tag-blue"><i class="ti ti-git-branch"></i>CI/CD</span>
+      <span class="tag tag-amber"><i class="ti ti-users"></i>BDD</span>
+    </div>
+  </header>
+
+  <!-- === S1: TDDとは === -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <div class="section-number">01</div>
+      <h2>TDDとは何か？</h2>
+    </div>
+
+    <p>
+      <strong style="color: var(--text-primary);">Test-Driven Development（テスト駆動開発）</strong>は、
+      Kent Beckが2002年の著書「Test-Driven Development: By Example」で体系化した開発手法です。
+      「テストを先に書いてから実装する」という一見逆説的なアプローチにより、
+      設計品質・保守性・開発速度を同時に向上させます。
+    </p>
+
+    <div class="callout callout-info">
+      <i class="ti ti-bulb" aria-hidden="true"></i>
+      <div class="callout-body">
+        <strong>核心思想</strong>
+        <p>テストは品質チェックツールではなく、<em style="color: var(--purple-200);">設計ツール</em>である。テストを先に書くことで、より良いAPI設計と疎結合なコードが自然に生まれる。</p>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">1.1 TDDが解決する問題</h3>
+    <div class="two-col">
+      <div class="col-card col-bad">
+        <div class="col-header"><i class="ti ti-x" aria-hidden="true"></i>TDD導入前の問題</div>
+        <ul>
+          <li>バグを後から発見し修正コストが高い</li>
+          <li>「動いたら完成」思考でリファクタリングが怖い</li>
+          <li>設計が場当たり的で密結合・保守困難</li>
+          <li>ドキュメントがなくコードの意図が不明</li>
+          <li>変更への恐怖で何が壊れるかわからない</li>
+        </ul>
+      </div>
+      <div class="col-card col-good">
+        <div class="col-header"><i class="ti ti-check" aria-hidden="true"></i>TDD導入後の効果</div>
+        <ul>
+          <li>バグを実装と同時に即座に発見・検証できる</li>
+          <li>テストが変更を保護しリファクタリングが安全</li>
+          <li>設計が自然に改善（テストしやすい＝良い設計）</li>
+          <li>テストが仕様書になりコードの意図が明確</li>
+          <li>テストスイートが安全網となり変更への自信が生まれる</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">1.2 Uncle Bobの3つのルール</h3>
+    <p style="margin-bottom: 16px;">Robert C. Martin（Uncle Bob）は TDD を次の3ルールで定義しています。</p>
+    <ol class="rule-list">
+      <li>
+        <div class="rule-number">1</div>
+        <div>
+          <strong>失敗するテストを先に書く</strong>
+          <p>失敗するユニットテストを書くまで、プロダクションコードを書いてはならない。</p>
+        </div>
+      </li>
+      <li>
+        <div class="rule-number">2</div>
+        <div>
+          <strong>テストは必要最小限だけ書く</strong>
+          <p>コンパイルエラーも失敗とみなす。テストが失敗するのに十分な量だけ書く。</p>
+        </div>
+      </li>
+      <li>
+        <div class="rule-number">3</div>
+        <div>
+          <strong>実装も最小限にとどめる</strong>
+          <p>現在失敗しているテストを通過させるのに十分な量だけプロダクションコードを書く。</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="margin: 28px 0 16px;">1.3 TDDが適しているシーン</h3>
+    <p>TDDは「ビジネスロジックが複雑」かつ「変更頻度が高い」領域で特に効果を発揮します。</p>
+    <div class="tag-grid" style="margin-top: 14px;">
+      <span class="tag tag-teal"><i class="ti ti-check"></i>金融計算ロジック</span>
+      <span class="tag tag-teal"><i class="ti ti-check"></i>ECサイト注文処理</span>
+      <span class="tag tag-teal"><i class="ti ti-check"></i>認証認可ロジック</span>
+      <span class="tag tag-teal"><i class="ti ti-check"></i>複雑な割引計算</span>
+      <span class="tag tag-amber"><i class="ti ti-clock"></i>APIエンドポイント</span>
+      <span class="tag tag-coral"><i class="ti ti-x"></i>静的コンテンツ表示</span>
+    </div>
+
+    <div class="sources-section" style="margin-top: 24px;">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://www.agilealliance.org/glossary/tdd/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Agile Alliance — TDD定義
+      </a>
+      <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — TestDrivenDevelopment
+      </a>
+      <a href="https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Uncle Bob — TDDの3つのルール
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S2: Red-Green-Refactor === -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <div class="section-number">02</div>
+      <h2>Red-Green-Refactor サイクル</h2>
+    </div>
+
+    <p>TDDの中核は「Red → Green → Refactor」の3フェーズを繰り返す短いサイクルです。1サイクルの目安は<strong style="color: var(--text-primary);">5〜15分</strong>。小刻みに繰り返すことで設計が自然に洗練されていきます。</p>
+
+    <div class="phase-grid" style="margin-top: 24px;">
+      <div class="phase-card phase-red">
+        <div class="phase-label">🔴 Red フェーズ</div>
+        <h3>失敗するテストを書く</h3>
+        <ul>
+          <li>何を作りたいかを言語化する</li>
+          <li>テストから見た理想のAPIを設計する</li>
+          <li>テストが<em>必ず失敗</em>することを確認する</li>
+          <li>失敗メッセージがわかりやすいか確認</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-green">
+        <div class="phase-label">🟢 Green フェーズ</div>
+        <h3>テストを通す最小実装</h3>
+        <ul>
+          <li>テストを通すだけのコードを書く</li>
+          <li>美しいコードでなくてよい</li>
+          <li>ハードコードも一時的に許容する</li>
+          <li>全テストがグリーンになることを確認</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-blue">
+        <div class="phase-label">🔵 Refactor フェーズ</div>
+        <h3>コードを整理・改善する</h3>
+        <ul>
+          <li>コードの重複を排除（DRY原則）</li>
+          <li>命名を改善（意図を表す名前に）</li>
+          <li>関数・クラスを適切に分割する</li>
+          <li>テストが全部グリーンを維持確認</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <div class="callout-body">
+        <strong>Green フェーズの罠</strong>
+        <p>「きれいなコードを書きながら Green にしよう」という誘惑は危険です。まず動かすことを優先し、美しさは Refactor フェーズで実現します。この順序を守ることが TDD の本質です。</p>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">2.1 理想的な時間配分</h3>
+    <p style="margin-bottom: 16px;">1サイクルを10〜15分とした場合の目安です。</p>
+    <div class="card">
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 5px;">
+            <span style="color: var(--red-200);">🔴 Red — テスト記述</span>
+            <span style="color: var(--text-tertiary);">25%</span>
+          </div>
+          <div style="background: var(--bg-tertiary); border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="width: 25%; height: 100%; background: var(--red-400); border-radius: 4px;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 5px;">
+            <span style="color: var(--green-200);">🟢 Green — 最小実装</span>
+            <span style="color: var(--text-tertiary);">30%</span>
+          </div>
+          <div style="background: var(--bg-tertiary); border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="width: 30%; height: 100%; background: var(--green-400); border-radius: 4px;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 5px;">
+            <span style="color: var(--blue-200);">🔵 Refactor — 整理</span>
+            <span style="color: var(--text-tertiary);">45%</span>
+          </div>
+          <div style="background: var(--bg-tertiary); border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="width: 45%; height: 100%; background: var(--blue-400); border-radius: 4px;"></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 1rem; color: var(--text-tertiary); margin-top: 14px;">Refactor フェーズに最も時間をかけることが高品質なコードを生み出す鍵です。</p>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">2.2 全体フローの可視化</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    START(["機能要件を確認する"])
+    RED["🔴 RED フェーズ<br>失敗するテストを書く<br>テストを実行 → FAIL確認"]
+    GREEN["🟢 GREEN フェーズ<br>テストを通す最小限のコードを書く<br>テストを実行 → PASS確認"]
+    REFACTOR["🔵 REFACTOR フェーズ<br>コードを整理・改善する<br>テストを実行 → PASS維持確認"]
+    NEXT{"次の機能が<br>あるか？"}
+    END(["実装完了"])
+
+    START --> RED
+    RED --> GREEN
+    GREEN --> REFACTOR
+    REFACTOR --> NEXT
+    NEXT -->|"Yes"| RED
+    NEXT -->|"No"| END
+
+    style RED fill:#3d1515,color:#f09595,stroke:#a32d2d
+    style GREEN fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style REFACTOR fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style START fill:#2a2638,color:#afa9ec,stroke:#534ab7
+    style END fill:#1e2a1e,color:#c0dd97,stroke:#3b6d11
+      </div>
+      <p class="mermaid-caption">Red-Green-Refactor サイクルの全体フロー</p>
+    </div>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — TDD解説
+      </a>
+      <a href="https://www.agilealliance.org/glossary/tdd/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Agile Alliance — TDD用語集
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S3: ステップバイステップ === -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <h2>TDDのステップバイステップ実践</h2>
+    </div>
+
+    <p>初学者がつまずきやすい「何から始めるか」を明確にするため、具体的な手順を整理します。</p>
+
+    <h3 style="margin: 28px 0 16px;">3.1 実践の9ステップ</h3>
+    <ol class="step-list">
+      <li>
+        <div>
+          <strong>要件を小さなタスクに分解する</strong>
+          <p>「注文を作成できる」→「空の注文を作成できる」「商品を追加できる」「合計金額を計算できる」のように細分化します。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>最初のテストを選ぶ</strong>
+          <p>最もシンプルなハッピーパスの最小単位から始めます。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>テストを書く（RED）</strong>
+          <p><code>import → テスト関数定義 → Arrange → Act → Assert</code> の順で書きます。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>テスト実行・失敗確認（RED確認）</strong>
+          <p>エラーメッセージを読み、意図した理由で失敗しているか確認します。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>最小限の実装（GREEN）</strong>
+          <p>テストが通るだけのコードを書きます。美しさは後回しです。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>テスト実行・成功確認（GREEN確認）</strong>
+          <p>全テストがグリーンになることを確認します。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>リファクタリング（REFACTOR）</strong>
+          <p>コードを改善します。テストコードも改善の対象です。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>テスト実行・グリーン維持確認</strong>
+          <p>リファクタリング後も全テストがグリーンのままであることを確認します。</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>次のテストケースへ</strong>
+          <p>エッジケース・異常系を追加し、ステップ2から繰り返します。</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="margin: 28px 0 16px;">3.2 テストケースの優先順序（Kent Beck のアドバイス）</h3>
+    <p style="margin-bottom: 16px;">どのテストから書くかは TDD 習熟の重要ポイントです。</p>
+    <ul class="priority-stack">
+      <li class="priority-item pi-1">
+        <div class="pi-num">1</div>
+        <div class="pi-text">
+          <strong>最もシンプルなハッピーパス</strong>
+          <span>正しい入力で正しい結果が返る — ここから始めることで基本構造を設計できる</span>
+        </div>
+      </li>
+      <li class="priority-item pi-2">
+        <div class="pi-num">2</div>
+        <div class="pi-text">
+          <strong>次にシンプルなバリエーション</strong>
+          <span>別の正しい入力パターンでカバレッジを広げる</span>
+        </div>
+      </li>
+      <li class="priority-item pi-3">
+        <div class="pi-num">3</div>
+        <div class="pi-text">
+          <strong>エッジケース（境界値）</strong>
+          <span>0・空文字・最大値・最小値 — バグが最も潜みやすい箇所</span>
+        </div>
+      </li>
+      <li class="priority-item pi-4">
+        <div class="pi-num">4</div>
+        <div class="pi-text">
+          <strong>異常系・エラーケース</strong>
+          <span>無効な入力・存在しないリソース — 例外処理の設計が自然に決まる</span>
+        </div>
+      </li>
+      <li class="priority-item pi-5">
+        <div class="pi-num">5</div>
+        <div class="pi-text">
+          <strong>複合条件</strong>
+          <span>複数条件が絡むケース — 最後に取り組む</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    T1["1. ハッピーパス<br>正常系の最小単位"] --> T2["2. バリエーション<br>別の正常パターン"] --> T3["3. エッジケース<br>境界値テスト"] --> T4["4. 異常系<br>エラーケース"] --> T5["5. 複合条件<br>複数条件の組み合わせ"]
+
+    style T1 fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style T2 fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style T3 fill:#3a2a0a,color:#fac775,stroke:#854f0b
+    style T4 fill:#3d1515,color:#f09595,stroke:#a32d2d
+    style T5 fill:#2a2638,color:#afa9ec,stroke:#534ab7
+      </div>
+      <p class="mermaid-caption">テストケースを書く優先順序（左から始めるのが原則）</p>
+    </div>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://www.agilealliance.org/glossary/tdd/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Agile Alliance — TDD実践ガイド
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S4: テストの種類 === -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <div class="section-number">04</div>
+      <h2>テストの種類と役割</h2>
+    </div>
+
+    <p>TDDで書くテストは主にユニットテストですが、テスト全体の体系を理解することが重要です。</p>
+
+    <h3 style="margin: 28px 0 16px;">4.1 テストピラミッド</h3>
+    <div class="pyramid-wrap">
+      <div class="pyramid">
+        <div class="pyramid-tier tier-e2e">
+          <span class="tier-badge">少数・高コスト</span>
+          <div class="tier-label">E2Eテスト（UI/システムテスト）</div>
+          <div class="tier-meta">実行時間：分単位 ／ ユーザー視点のシナリオ全体を検証</div>
+          <div class="tier-tools">ツール：Playwright / Cypress / Selenium</div>
+        </div>
+        <div class="pyramid-tier tier-int">
+          <span class="tier-badge">中程度・中コスト</span>
+          <div class="tier-label">統合テスト（Integration Tests）</div>
+          <div class="tier-meta">実行時間：秒単位 ／ サービス間の連携を検証</div>
+          <div class="tier-tools">ツール：pytest + TestContainers / REST Assured</div>
+        </div>
+        <div class="pyramid-tier tier-unit">
+          <span class="tier-badge">多数・低コスト ← TDDの主戦場</span>
+          <div class="tier-label">ユニットテスト（Unit Tests）</div>
+          <div class="tier-meta">実行時間：ミリ秒単位 ／ 関数・クラス・メソッド単位</div>
+          <div class="tier-tools">ツール：pytest / Jest / JUnit ／ 外部依存はモック化</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <div class="callout-body">
+        <strong>ピラミッドの原則</strong>
+        <p>ユニットテストを最も多く書き、E2Eテストは最小限に抑えます。上に行くほどコストが高く実行が遅くなります。TDDの主役はユニットテストです。</p>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">4.2 TDDで主に書くテストの分類</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    subgraph UT["ユニットテスト（TDDの主体）"]
+        direction TB
+        UT1["純粋関数のテスト<br>入力→出力の検証"]
+        UT2["ドメインエンティティ<br>ビジネスルールの検証"]
+        UT3["値オブジェクト<br>計算・バリデーション"]
+        UT4["ユースケース<br>モックを使った協調テスト"]
+    end
+
+    subgraph IT["統合テスト（TDDで補完）"]
+        direction TB
+        IT1["リポジトリの統合テスト<br>実際のDB操作の検証"]
+        IT2["外部APIクライアント<br>HTTP通信の検証"]
+    end
+
+    style UT fill:#152b15,stroke:#3b6d11,color:#c0dd97
+    style IT fill:#3a2a0a,stroke:#854f0b,color:#fac775
+      </div>
+      <p class="mermaid-caption">TDDで書くテストの分類</p>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">4.3 テストの速度と信頼性のトレードオフ</h3>
+    <div class="best-practice-table">
+      <table>
+        <thead>
+          <tr>
+            <th>テスト種別</th>
+            <th>実行速度</th>
+            <th>信頼性</th>
+            <th>TDDでの位置づけ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>純粋関数ユニットテスト</td>
+            <td><span style="color: var(--teal-200);">超高速（ms）</span></td>
+            <td><span style="color: var(--teal-200);">非常に高い</span></td>
+            <td>TDDの理想ゾーン</td>
+          </tr>
+          <tr>
+            <td>ドメインロジックテスト</td>
+            <td><span style="color: var(--teal-200);">高速（ms）</span></td>
+            <td><span style="color: var(--teal-200);">高い</span></td>
+            <td>TDDの理想ゾーン</td>
+          </tr>
+          <tr>
+            <td>インメモリリポジトリテスト</td>
+            <td><span style="color: var(--teal-200);">高速（ms）</span></td>
+            <td><span style="color: var(--green-200);">高い</span></td>
+            <td>TDDで積極活用</td>
+          </tr>
+          <tr>
+            <td>DB統合テスト</td>
+            <td><span style="color: var(--amber-200);">中速（秒）</span></td>
+            <td><span style="color: var(--teal-200);">高い</span></td>
+            <td>統合テストとして分離</td>
+          </tr>
+          <tr>
+            <td>E2Eテスト</td>
+            <td><span style="color: var(--red-200);">遅い（分）</span></td>
+            <td><span style="color: var(--teal-200);">最高</span></td>
+            <td>最小限に絞る</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — テストピラミッド
+      </a>
+      <a href="https://martinfowler.com/bliki/UnitTest.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — Unit Test
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S5: ユニットテスト設計原則 === -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <div class="section-number">05</div>
+      <h2>ユニットテストの設計原則</h2>
+    </div>
+
+    <h3 style="margin: 0 0 16px;">5.1 F.I.R.S.T. 原則</h3>
+    <p style="margin-bottom: 20px;">良いユニットテストが満たすべき5つの性質です。</p>
+
+    <div class="two-col" style="margin-bottom: 16px;">
+      <div class="card">
+        <div class="card-header">
+          <span style="font-size: 22px; font-weight: 500; color: var(--red-400);">F</span>
+          <div>
+            <h3>Fast（速い）</h3>
+            <p style="font-size: 1rem; margin: 0;">ミリ秒で完了すること</p>
+          </div>
+        </div>
+        <p style="font-size: 1rem;">DBやネットワークに依存しない。何千件でも高速に実行できる設計にする。</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span style="font-size: 22px; font-weight: 500; color: var(--blue-400);">I</span>
+          <div>
+            <h3>Independent（独立）</h3>
+            <p style="font-size: 1rem; margin: 0;">テスト間の依存関係がない</p>
+          </div>
+        </div>
+        <p style="font-size: 1rem;">任意の順序で実行でき、並列実行も可能な独立したテスト設計にする。</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span style="font-size: 22px; font-weight: 500; color: var(--green-400);">R</span>
+          <div>
+            <h3>Repeatable（再現可能）</h3>
+            <p style="font-size: 1rem; margin: 0;">同じ入力で常に同じ結果</p>
+          </div>
+        </div>
+        <p style="font-size: 1rem;">日時・乱数・外部APIに依存しない。どの環境でも同じ結果を返す。</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span style="font-size: 22px; font-weight: 500; color: var(--amber-200);">S</span>
+          <div>
+            <h3>Self-validating（自己検証）</h3>
+            <p style="font-size: 1rem; margin: 0;">Pass/Failが自動的に判定</p>
+          </div>
+        </div>
+        <p style="font-size: 1rem;">手動での結果確認が不要。boolean アサーションで自動的に判定される。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span style="font-size: 22px; font-weight: 500; color: var(--purple-400);">T</span>
+        <div>
+          <h3>Timely（タイムリー）</h3>
+          <p style="font-size: 1rem; margin: 0;">プロダクションコードの直前に書く</p>
+        </div>
+      </div>
+      <p style="font-size: 1rem;">TDDではテストを先に書く。後回しにせず、実装と同タイミングで書くことで設計品質が保たれる。</p>
+    </div>
+
+    <h3 style="margin: 32px 0 16px;">5.2 テスト命名規則</h3>
+    <div class="two-col">
+      <div class="col-card col-good">
+        <div class="col-header"><i class="ti ti-check" aria-hidden="true"></i>良いテスト名</div>
+        <ul>
+          <li><code>test_注文に商品を追加すると合計金額が増える</code></li>
+          <li><code>test_在庫が0の商品はカートに追加できない</code></li>
+          <li><code>test_未認証ユーザーが注文すると401エラー</code></li>
+          <li><code>should_calculate_total_when_items_added</code></li>
+          <li><code>given_empty_cart_when_checkout_then_error</code></li>
+        </ul>
+      </div>
+      <div class="col-card col-bad">
+        <div class="col-header"><i class="ti ti-x" aria-hidden="true"></i>悪いテスト名</div>
+        <ul>
+          <li><code>test_001</code></li>
+          <li><code>test_order</code></li>
+          <li><code>test_it_works</code></li>
+          <li><code>check</code></li>
+          <li><code>order_test_1</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h3 style="margin-bottom: 12px;">推奨命名パターン</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="padding: 10px 14px; background: var(--bg-tertiary); border-radius: var(--radius-sm); font-size: 1rem;">
+          <strong style="color: var(--text-primary);">パターン1：日本語で意図を明確に</strong><br>
+          <code style="font-size: 1rem;">test_[条件]_[操作]_[期待結果]</code>
+        </div>
+        <div style="padding: 10px 14px; background: var(--bg-tertiary); border-radius: var(--radius-sm); font-size: 1rem;">
+          <strong style="color: var(--text-primary);">パターン2：Given-When-Then形式</strong><br>
+          <code style="font-size: 1rem;">given_[状態]_when_[操作]_then_[結果]</code>
+        </div>
+        <div style="padding: 10px 14px; background: var(--bg-tertiary); border-radius: var(--radius-sm); font-size: 1rem;">
+          <strong style="color: var(--text-primary);">パターン3：should形式</strong><br>
+          <code style="font-size: 1rem;">should_[期待する振る舞い]</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://agileinaflash.blogspot.com/2009/02/first.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>F.I.R.S.T. 原則（Agile in a Flash）
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S6: モックとスタブ === -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <div class="section-number">06</div>
+      <h2>モックとスタブの活用</h2>
+    </div>
+
+    <p>テストダブル（Test Double）は本物の依存の代替物です。種類を正しく使い分けることが重要です。</p>
+
+    <h3 style="margin: 28px 0 16px;">6.1 テストダブルの5種類</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    TD["テストダブル（Test Double）<br>本物の依存の代替物"]
+
+    TD --> DUMMY["Dummy<br>渡されるが使われない<br>例：null やダミーオブジェクト"]
+    TD --> STUB["Stub<br>固定値を返す偽物<br>例：常に true を返す"]
+    TD --> FAKE["Fake<br>動作する軽量実装<br>例：InMemoryRepository"]
+    TD --> SPY["Spy<br>呼び出しを記録する Stub<br>例：何回呼ばれたか記録"]
+    TD --> MOCK["Mock<br>期待値を事前設定<br>例：特定の引数で呼ばれることを期待"]
+
+    style DUMMY fill:#2c2c2a,color:#b4b2a9,stroke:#5f5e5a
+    style STUB fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style FAKE fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style SPY fill:#3a2a0a,color:#fac775,stroke:#854f0b
+    style MOCK fill:#3d1515,color:#f09595,stroke:#a32d2d
+      </div>
+      <p class="mermaid-caption">テストダブルの5種類と使い分け</p>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">6.2 モックを使う・使わない場面</h3>
+    <div class="two-col">
+      <div class="col-card col-good">
+        <div class="col-header"><i class="ti ti-check" aria-hidden="true"></i>モックを使うべき場面</div>
+        <ul>
+          <li>外部APIの呼び出し（Stripe / SendGrid / Slack API）</li>
+          <li>データベースの操作（ユニットテスト内）</li>
+          <li>時刻・乱数・UUIDの生成（再現性確保）</li>
+          <li>メール送信・通知（副作用を持つ処理）</li>
+          <li>非決定的な外部サービス</li>
+        </ul>
+      </div>
+      <div class="col-card col-bad">
+        <div class="col-header"><i class="ti ti-x" aria-hidden="true"></i>モックを使わない場面</div>
+        <ul>
+          <li>ドメインエンティティ（純粋なビジネスロジック）</li>
+          <li>値オブジェクト（計算・バリデーション）</li>
+          <li>ファクトリ関数（オブジェクト生成）</li>
+          <li>状態がないユーティリティ（純粋関数）</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">6.3 モックの実装例（Python / pytest）</h3>
+    <pre><code>import pytest
+from unittest.mock import MagicMock
+from datetime import datetime
+
+
+class OrderService:
+    def __init__(self, order_repository, email_service, clock=None):
+        self._repo = order_repository
+        self._email = email_service
+        self._clock = clock or datetime.utcnow
+
+    def place_order(self, customer_id: str, items: list) -> dict:
+        order = {
+            "id": "order_123",
+            "customer_id": customer_id,
+            "items": items,
+            "created_at": self._clock().isoformat(),
+            "status": "confirmed"
+        }
+        self._repo.save(order)
+        self._email.send_order_confirmation(
+            to=f"{customer_id}@example.com",
+            order_id=order["id"]
+        )
+        return order
+
+
+class TestOrderServiceWithMock:
+
+    @pytest.fixture
+    def mock_repo(self):
+        return MagicMock()
+
+    @pytest.fixture
+    def mock_email(self):
+        mock = MagicMock()
+        mock.send_order_confirmation.return_value = True
+        return mock
+
+    @pytest.fixture
+    def fixed_clock(self):
+        # 時刻を固定して再現性を確保
+        return lambda: datetime(2024, 1, 15, 10, 30, 0)
+
+    @pytest.fixture
+    def order_service(self, mock_repo, mock_email, fixed_clock):
+        return OrderService(
+            order_repository=mock_repo,
+            email_service=mock_email,
+            clock=fixed_clock,
+        )
+
+    def test_注文確定後にリポジトリに保存される(self, order_service, mock_repo):
+        # Act
+        order_service.place_order(
+            customer_id="cust_001",
+            items=[{"product_id": "prod_001", "quantity": 2}]
+        )
+        # Assert: save が1回呼ばれたことを検証
+        mock_repo.save.assert_called_once()
+        saved_order = mock_repo.save.call_args[0][0]
+        assert saved_order["customer_id"] == "cust_001"
+        assert saved_order["status"] == "confirmed"
+
+    def test_作成日時が固定時刻で設定される(self, order_service):
+        result = order_service.place_order(customer_id="cust_001", items=[])
+        assert result["created_at"] == "2024-01-15T10:30:00"</code></pre>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — Mocks Aren't Stubs
+      </a>
+      <a href="https://martinfowler.com/bliki/TestDouble.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — Test Doubles
+      </a>
+      <a href="https://pytest-mock.readthedocs.io/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>pytest-mock 公式ドキュメント
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S7: AAAパターン === -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <div class="section-number">07</div>
+      <h2>AAAパターン（Arrange-Act-Assert）</h2>
+    </div>
+
+    <p>テストコードの基本構造として世界標準的に使われているパターンです。読みやすく、一目でテストの意図が伝わります。</p>
+
+    <div class="phase-grid">
+      <div class="phase-card phase-blue">
+        <div class="phase-label">📦 Arrange（準備）</div>
+        <h3>テストに必要な状態を設定</h3>
+        <ul>
+          <li>テスト対象オブジェクトの生成</li>
+          <li>依存関係（モック等）の設定</li>
+          <li>入力データの準備</li>
+          <li>複雑な場合は Fixture に切り出す</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-red">
+        <div class="phase-label">⚡ Act（実行）</div>
+        <h3>テスト対象の処理を実行</h3>
+        <ul>
+          <li>通常は1行だけ</li>
+          <li>テストしたい操作を実行</li>
+          <li>戻り値を変数に保存</li>
+          <li>複数の Act は危険信号</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-green">
+        <div class="phase-label">✅ Assert（検証）</div>
+        <h3>期待する結果を検証</h3>
+        <ul>
+          <li>戻り値の検証</li>
+          <li>副作用（DB・メール）の検証</li>
+          <li>例外の検証</li>
+          <li>1テスト1アサーション推奨</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">7.1 AAAパターンの完全実装例</h3>
+    <pre><code>import pytest
+from decimal import Decimal
+
+
+class ShoppingCart:
+    def __init__(self):
+        self._items: list[dict] = []
+
+    def add_item(self, product_id: str, name: str, price: Decimal, quantity: int):
+        if quantity <= 0:
+            raise ValueError("数量は1以上でなければなりません")
+        if price < 0:
+            raise ValueError("価格は0以上でなければなりません")
+        self._items.append({"product_id": product_id, "name": name,
+                            "price": price, "quantity": quantity})
+
+    def total(self) -> Decimal:
+        return sum(item["price"] * item["quantity"] for item in self._items)
+
+    @property
+    def is_empty(self) -> bool:
+        return len(self._items) == 0
+
+
+class TestShoppingCart:
+
+    # ─── シンプルなケースから始める ───
+
+    def test_新規カートは空である(self):
+        # Arrange
+        cart = ShoppingCart()
+        # Act
+        result = cart.is_empty
+        # Assert
+        assert result is True
+
+    def test_商品を追加すると合計金額が増える(self):
+        # Arrange
+        cart = ShoppingCart()
+        price = Decimal("1000")
+        quantity = 2
+        # Act
+        cart.add_item("prod_001", "Tシャツ", price, quantity)
+        # Assert
+        assert cart.total() == Decimal("2000")
+
+    # ─── エッジケース・異常系 ───
+
+    def test_数量0で商品追加するとValueErrorが発生する(self):
+        # Arrange
+        cart = ShoppingCart()
+        # Act & Assert
+        with pytest.raises(ValueError, match="数量は1以上でなければなりません"):
+            cart.add_item("prod_001", "Tシャツ", Decimal("1000"), 0)</code></pre>
+
+    <div class="callout callout-tip">
+      <i class="ti ti-bulb" aria-hidden="true"></i>
+      <div class="callout-body">
+        <strong>コメントで区切る</strong>
+        <p>コード内の <code># Arrange</code> / <code># Act</code> / <code># Assert</code> コメントは、特に初学者がテストを読む際の道標になります。チームで統一することを推奨します。</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S8: ドメインロジック === -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <div class="section-number">08</div>
+      <h2>TDDの実装例：ドメインロジック編</h2>
+    </div>
+
+    <p>注文ドメインを題材に、TDDサイクルを実際に回す流れを示します。</p>
+
+    <h3 style="margin: 28px 0 16px;">8.1 TDDの実践フロー（シーケンス図）</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant DEV as 開発者
+    participant TEST as テストコード
+    participant PROD as プロダクションコード
+    participant CI as テストランナー
+
+    Note over DEV,CI: 🔴 RED フェーズ
+    DEV->>TEST: test_空の注文に商品を追加できる を書く
+    DEV->>CI: pytest を実行
+    CI-->>DEV: FAIL（OrderクラスがImportError）
+
+    Note over DEV,CI: 🟢 GREEN フェーズ
+    DEV->>PROD: class Order を最小限実装
+    DEV->>CI: pytest を実行
+    CI-->>DEV: PASS
+
+    Note over DEV,CI: 🔵 REFACTOR フェーズ
+    DEV->>PROD: コードを整理・改善する
+    DEV->>CI: pytest を実行
+    CI-->>DEV: PASS（全テスト）
+
+    Note over DEV,CI: 次のテストへ（繰り返し）
+    DEV->>TEST: test_確定済み注文に商品追加するとエラー を書く
+    DEV->>CI: pytest を実行
+    CI-->>DEV: FAIL（期待通り）
+    DEV->>PROD: confirm() メソッドにバリデーション追加
+    DEV->>CI: pytest を実行
+    CI-->>DEV: PASS（全テスト）
+      </div>
+      <p class="mermaid-caption">開発者・テストコード・プロダクションコードの三者間の TDD シーケンス</p>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">8.2 ドメインロジックの完全実装例</h3>
+    <pre><code>from dataclasses import dataclass, field
+from enum import Enum
+from uuid import uuid4
+
+
+class OrderStatus(Enum):
+    PENDING   = "pending"
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
+
+
+@dataclass(frozen=True)
+class Money:
+    amount: int
+    currency: str
+
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError(f"金額は0以上: {self.amount}")
+
+    def __add__(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError(f"通貨不一致: {self.currency} vs {other.currency}")
+        return Money(self.amount + other.amount, self.currency)
+
+    def __mul__(self, factor: int) -> "Money":
+        return Money(self.amount * factor, self.currency)
+
+
+@dataclass
+class OrderLine:
+    product_id: str
+    product_name: str
+    unit_price: Money
+    quantity: int
+
+    @property
+    def subtotal(self) -> Money:
+        return self.unit_price * self.quantity
+
+
+@dataclass
+class Order:
+    id: str
+    customer_id: str
+    _lines: list[OrderLine] = field(default_factory=list)
+    _status: OrderStatus = OrderStatus.PENDING
+
+    @classmethod
+    def create(cls, customer_id: str) -> "Order":
+        """ファクトリメソッド"""
+        return cls(id=str(uuid4()), customer_id=customer_id)
+
+    def add_line(self, product_id: str, product_name: str,
+                 unit_price: Money, quantity: int) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("確定済みの注文は変更できません")
+        if quantity <= 0:
+            raise ValueError(f"数量は1以上でなければなりません: {quantity}")
+        self._lines.append(OrderLine(product_id, product_name, unit_price, quantity))
+
+    def confirm(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("保留中の注文のみ確定できます")
+        if not self._lines:
+            raise ValueError("商品が1件もありません")
+        self._status = OrderStatus.CONFIRMED
+
+    @property
+    def status(self) -> OrderStatus:
+        return self._status
+
+    @property
+    def is_empty(self) -> bool:
+        return len(self._lines) == 0
+
+    @property
+    def total(self) -> Money:
+        if self.is_empty:
+            return Money(0, "JPY")
+        totals = [line.subtotal for line in self._lines]
+        result = totals[0]
+        for t in totals[1:]:
+            result = result + t
+        return result
+
+
+# ─── TDD テストコード ───
+
+class TestOrderCreation:
+    def test_注文を作成すると保留中ステータスになる(self):
+        order = Order.create(customer_id="cust_123")
+        assert order.status == OrderStatus.PENDING
+
+    def test_作成した注文は空の明細を持つ(self):
+        order = Order.create(customer_id="cust_123")
+        assert order.is_empty is True
+
+
+class TestOrderConfirmation:
+    def test_商品があれば注文を確定できる(self):
+        order = Order.create(customer_id="cust_123")
+        order.add_line("prod_001", "Tシャツ", Money(1000, "JPY"), 1)
+        order.confirm()
+        assert order.status == OrderStatus.CONFIRMED
+
+    def test_空の注文は確定できない(self):
+        order = Order.create(customer_id="cust_123")
+        with pytest.raises(ValueError, match="商品が1件もありません"):
+            order.confirm()
+
+    def test_確定済み注文には商品を追加できない(self):
+        order = Order.create(customer_id="cust_123")
+        order.add_line("prod_001", "Tシャツ", Money(1000, "JPY"), 1)
+        order.confirm()
+        with pytest.raises(ValueError, match="確定済みの注文は変更できません"):
+            order.add_line("prod_002", "ジーンズ", Money(5000, "JPY"), 1)</code></pre>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S9: APIエンドポイント === -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <div class="section-number">09</div>
+      <h2>TDDの実装例：APIエンドポイント編</h2>
+    </div>
+
+    <p>FastAPI を題材に、APIエンドポイントを TDD で設計・実装する方法を示します。テストを先に書くことで、リクエスト形式・レスポンス形式・ステータスコードが自然に設計されます。</p>
+
+    <h3 style="margin: 28px 0 16px;">9.1 API テストの TDD フロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    RED["🔴 RED フェーズ<br>APIテストを先に書く<br>・エンドポイントのURL設計<br>・リクエスト形式の設計<br>・レスポンス形式の設計<br>・ステータスコードの設計"]
+    GREEN["🟢 GREEN フェーズ<br>エンドポイントを実装<br>・ルーティング設定<br>・リクエストのバリデーション<br>・ユースケースの呼び出し<br>・レスポンスの整形"]
+    REFACTOR["🔵 REFACTOR フェーズ<br>コードを整理<br>・バリデーションロジックの整理<br>・エラーハンドリングの統一<br>・レスポンス形式の共通化"]
+
+    RED --> GREEN --> REFACTOR
+
+    style RED fill:#3d1515,color:#f09595,stroke:#a32d2d
+    style GREEN fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style REFACTOR fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">9.2 FastAPI エンドポイントの TDD 実装例</h3>
+    <pre><code>import pytest
+from fastapi.testclient import TestClient
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from unittest.mock import MagicMock
+from typing import List
+from dataclasses import dataclass
+
+
+# ─── スキーマ定義 ───
+
+class OrderItemRequest(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    quantity:   int = Field(..., ge=1)
+
+class CreateOrderRequest(BaseModel):
+    customer_id: str                    = Field(..., min_length=1)
+    items:       List[OrderItemRequest] = Field(..., min_items=1)
+
+class EntityNotFoundError(Exception):
+    pass
+
+
+def create_app(place_order_use_case) -> FastAPI:
+    """アプリケーションファクトリ（テスト時に依存を注入可能）"""
+    app = FastAPI()
+
+    @app.post("/v1/orders", status_code=201)
+    async def create_order(request: CreateOrderRequest):
+        @dataclass
+        class PlaceOrderCommand:
+            customer_id: str
+            items: list
+
+        try:
+            command = PlaceOrderCommand(
+                customer_id=request.customer_id,
+                items=[{"product_id": i.product_id, "quantity": i.quantity}
+                       for i in request.items],
+            )
+            result = place_order_use_case.execute(command)
+            return result
+        except EntityNotFoundError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+
+    return app
+
+
+# ─── 🔴 RED: まずテストを書く ───
+
+class TestCreateOrderEndpoint:
+
+    @pytest.fixture
+    def mock_use_case(self):
+        mock = MagicMock()
+        mock.execute.return_value = {
+            "order_id": "order_abc123",
+            "status": "confirmed",
+            "total_amount": 2000,
+            "currency": "JPY",
+        }
+        return mock
+
+    @pytest.fixture
+    def client(self, mock_use_case):
+        app = create_app(place_order_use_case=mock_use_case)
+        return TestClient(app), mock_use_case
+
+    def test_有効なリクエストで201が返る(self, client):
+        test_client, _ = client
+        response = test_client.post("/v1/orders", json={
+            "customer_id": "cust_123",
+            "items": [{"product_id": "prod_001", "quantity": 2}]
+        })
+        assert response.status_code == 201
+
+    def test_customer_idが空のとき422が返る(self, client):
+        test_client, _ = client
+        response = test_client.post("/v1/orders", json={
+            "customer_id": "",
+            "items": [{"product_id": "prod_001", "quantity": 1}]
+        })
+        assert response.status_code == 422
+
+    def test_itemsが空リストのとき422が返る(self, client):
+        test_client, _ = client
+        response = test_client.post("/v1/orders", json={
+            "customer_id": "cust_123",
+            "items": []
+        })
+        assert response.status_code == 422
+
+    def test_存在しない顧客のとき404が返る(self, client):
+        test_client, mock_uc = client
+        mock_uc.execute.side_effect = EntityNotFoundError("顧客が見つかりません")
+        response = test_client.post("/v1/orders", json={
+            "customer_id": "unknown_customer",
+            "items": [{"product_id": "prod_001", "quantity": 1}]
+        })
+        assert response.status_code == 404</code></pre>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S10: DB層 === -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2>TDDの実装例：データベース層編</h2>
+    </div>
+
+    <p>リポジトリパターンを使い、ユニットテストではインメモリ実装、統合テストでは実際のDBを使う二段構えの戦略を紹介します。</p>
+
+    <h3 style="margin: 28px 0 16px;">10.1 リポジトリのTDD戦略</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    INT["インターフェース<br>OrderRepository（抽象）"]
+    IM["InMemoryOrderRepository<br>テスト用・超高速"]
+    SA["SQLAlchemyOrderRepository<br>本番用・実際のDB"]
+
+    INT --> IM
+    INT --> SA
+
+    UT["ユニットテスト"] -->|使用| IM
+    IT["統合テスト"] -->|使用| SA
+
+    style INT fill:#2a2638,color:#afa9ec,stroke:#534ab7
+    style IM fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style SA fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style UT fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style IT fill:#3a2a0a,color:#fac775,stroke:#854f0b
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">10.2 InMemoryRepository の実装例</h3>
+    <pre><code>from abc import ABC, abstractmethod
+from typing import Optional
+from copy import deepcopy
+import pytest
+
+
+class OrderRepository(ABC):
+    @abstractmethod
+    def save(self, order: dict) -> None: ...
+
+    @abstractmethod
+    def find_by_id(self, order_id: str) -> Optional[dict]: ...
+
+    @abstractmethod
+    def find_by_customer_id(self, customer_id: str) -> list[dict]: ...
+
+
+class InMemoryOrderRepository(OrderRepository):
+    """テスト専用のインメモリリポジトリ実装"""
+
+    def __init__(self):
+        self._store: dict[str, dict] = {}
+
+    def save(self, order: dict) -> None:
+        self._store[order["id"]] = deepcopy(order)
+
+    def find_by_id(self, order_id: str) -> Optional[dict]:
+        record = self._store.get(order_id)
+        return deepcopy(record) if record else None
+
+    def find_by_customer_id(self, customer_id: str) -> list[dict]:
+        return [deepcopy(o) for o in self._store.values()
+                if o.get("customer_id") == customer_id]
+
+
+class TestOrderRepository:
+    """インターフェースの契約テスト"""
+
+    @pytest.fixture
+    def repo(self) -> OrderRepository:
+        return InMemoryOrderRepository()
+
+    @pytest.fixture
+    def sample_order(self) -> dict:
+        return {"id": "order_001", "customer_id": "cust_001", "status": "pending"}
+
+    def test_注文を保存して取得できる(self, repo, sample_order):
+        repo.save(sample_order)
+        result = repo.find_by_id(sample_order["id"])
+        assert result is not None
+        assert result["id"] == sample_order["id"]
+
+    def test_存在しないIDで検索するとNoneが返る(self, repo):
+        result = repo.find_by_id("non_existent_id")
+        assert result is None
+
+    def test_顧客IDで注文一覧を取得できる(self, repo):
+        repo.save({"id": "order_001", "customer_id": "cust_001", "status": "pending"})
+        repo.save({"id": "order_002", "customer_id": "cust_001", "status": "confirmed"})
+        repo.save({"id": "order_003", "customer_id": "cust_002", "status": "pending"})
+        results = repo.find_by_customer_id("cust_001")
+        assert len(results) == 2
+
+    def test_保存データを変更しても元データは変わらない(self, repo, sample_order):
+        """deepcopy による変更防止のテスト"""
+        repo.save(sample_order)
+        sample_order["status"] = "cancelled"
+        result = repo.find_by_id(sample_order["id"])
+        assert result["status"] == "pending"</code></pre>
+
+    <div class="callout callout-tip">
+      <i class="ti ti-bulb" aria-hidden="true"></i>
+      <div class="callout-body">
+        <strong>deepcopy の重要性</strong>
+        <p>InMemoryRepository では必ず <code>deepcopy</code> を使いましょう。参照を共有してしまうと、テスト外でデータが変更されてしまい、テストが不安定になります。</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S11: BDD === -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2>BDD（振る舞い駆動開発）との連携</h2>
+    </div>
+
+    <p>BDD は TDD の外側のループです。ビジネス視点のシナリオを Gherkin 記法で書き、開発者と非技術者が共有できる「生きた仕様書」を作ります。</p>
+
+    <h3 style="margin: 28px 0 16px;">11.1 TDD と BDD の関係</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TB
+    BDD["BDD（振る舞い駆動開発）<br>ビジネス視点のシナリオを先に書く<br>Gherkin記法（Given/When/Then）<br>ステークホルダーと合意形成"]
+
+    TDD["TDD（テスト駆動開発）<br>開発者視点の実装テストを先に書く<br>Pythonコードでテストを書く<br>Red-Green-Refactorサイクル"]
+
+    BDD -->|"外側のループ（受け入れテスト）"| TDD
+    TDD -->|"内側のループ（ユニットテスト）"| TDD
+
+    style BDD fill:#2a2638,color:#afa9ec,stroke:#534ab7
+    style TDD fill:#152b15,color:#c0dd97,stroke:#3b6d11
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">11.2 Gherkin 記法の例</h3>
+    <pre><code># ─── BDDシナリオ（Gherkin記法）───
+
+Feature: ショッピングカートの操作
+
+  Scenario: 顧客が商品をカートに追加する
+    Given 顧客がカートを持っている
+    When 顧客が「Tシャツ（1000円）」を2枚カートに追加する
+    Then カートの合計金額は2000円になる
+
+  Scenario: 在庫がない商品はカートに追加できない
+    Given 「ジーンズ」の在庫が0件である
+    When 顧客が「ジーンズ」をカートに追加しようとする
+    Then エラーメッセージ「在庫がありません」が表示される</code></pre>
+
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="card">
+        <h3 style="margin-bottom: 8px;">BDD の主なメリット</h3>
+        <ul style="list-style: none; font-size: 1rem; color: var(--text-secondary);">
+          <li style="padding: 5px 0; border-bottom: 0.5px solid var(--border-subtle);">非技術者と開発者が同じ仕様を共有できる</li>
+          <li style="padding: 5px 0; border-bottom: 0.5px solid var(--border-subtle);">受け入れテストとして機能する</li>
+          <li style="padding: 5px 0;">コードの意図がビジネス言語で表現される</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom: 8px;">主なBDDツール</h3>
+        <ul style="list-style: none; font-size: 1rem; color: var(--text-secondary);">
+          <li style="padding: 5px 0; border-bottom: 0.5px solid var(--border-subtle);"><code>pytest-bdd</code>：Python向け</li>
+          <li style="padding: 5px 0; border-bottom: 0.5px solid var(--border-subtle);"><code>Cucumber</code>：Java/Ruby等</li>
+          <li style="padding: 5px 0;"><code>Behave</code>：Python 向け BDD フレームワーク</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://www.agilealliance.org/glossary/bdd/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Agile Alliance — BDD
+      </a>
+      <a href="https://cucumber.io/docs/bdd/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Cucumber 公式ドキュメント
+      </a>
+      <a href="https://martinfowler.com/bliki/GivenWhenThen.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — GivenWhenThen
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S12: カバレッジ === -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2>テストカバレッジの考え方</h2>
+    </div>
+
+    <p>カバレッジは高ければ良いわけではありません。目的・用途を正しく理解することが重要です。</p>
+
+    <h3 style="margin: 28px 0 16px;">12.1 カバレッジの種類</h3>
+    <div class="best-practice-table">
+      <table>
+        <thead>
+          <tr>
+            <th>種類</th>
+            <th>計測内容</th>
+            <th>目安</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ライン（行）カバレッジ</td>
+            <td>各行が実行されたか</td>
+            <td>80%以上</td>
+            <td>最も基本的な指標</td>
+          </tr>
+          <tr>
+            <td>ブランチ（分岐）カバレッジ</td>
+            <td>if/else の両方が実行されたか</td>
+            <td>70%以上</td>
+            <td>条件分岐のカバー率</td>
+          </tr>
+          <tr>
+            <td>ファンクションカバレッジ</td>
+            <td>各関数が呼ばれたか</td>
+            <td>90%以上</td>
+            <td>未使用コードの検出</td>
+          </tr>
+          <tr>
+            <td>ミューテーションカバレッジ</td>
+            <td>コードを変えてもテストが検知するか</td>
+            <td>60%以上</td>
+            <td><span style="color: var(--purple-400);">テストの品質を測る最高指標</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">12.2 正しい使い方 vs 誤った使い方</h3>
+    <div class="two-col">
+      <div class="col-card col-good">
+        <div class="col-header"><i class="ti ti-check" aria-hidden="true"></i>正しい使い方</div>
+        <ul>
+          <li>テストの穴を発見するツールとして使う</li>
+          <li>チームのベースラインとして設定（例：80%以上維持）</li>
+          <li>コアビジネスロジックは90%以上を目指す</li>
+          <li>段階的に引き上げる（60% → 70% → 80%）</li>
+        </ul>
+      </div>
+      <div class="col-card col-bad">
+        <div class="col-header"><i class="ti ti-x" aria-hidden="true"></i>誤った使い方</div>
+        <ul>
+          <li>カバレッジ100%を絶対目標にする</li>
+          <li>カバレッジ率＝品質と誤解する</li>
+          <li>インフラ層・設定ファイルも同じ基準を適用</li>
+          <li>アサーションなしのテストでカバレッジを上げる</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">12.3 pytest-cov での設定例</h3>
+    <pre><code># pyproject.toml
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/__init__.py",
+    "*/settings.py",
+    "*/config.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@abstractmethod",
+]
+show_missing = true</code></pre>
+
+    <pre><code># 実行コマンド例
+
+# カバレッジレポートを生成（HTML + ターミナル）
+pytest --cov=src --cov-report=html --cov-report=term-missing
+
+# カバレッジが80%未満の場合にCIを失敗させる
+pytest --cov=src --cov-fail-under=80
+
+# ブランチカバレッジも計測する
+pytest --cov=src --cov-branch --cov-report=html</code></pre>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://pytest-cov.readthedocs.io/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>pytest-cov 公式ドキュメント
+      </a>
+      <a href="https://mutmut.readthedocs.io/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>mutmut — ミューテーションテスト
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S13: CI/CD === -->
+  <section class="section" id="s13">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2>CI/CDパイプラインとTDD</h2>
+    </div>
+
+    <p>TDDとCI/CDを統合することで、コードが常に動く状態を自動的に保証できます。</p>
+
+    <h3 style="margin: 28px 0 16px;">13.1 TDDとCI/CDの統合フロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    subgraph LOCAL["💻 ローカル開発（常時実行）"]
+        L1["コードを変更"] --> L2["pytest でテスト実行"] --> L3["全テスト通過確認"] --> L4["コミット"]
+    end
+
+    subgraph CI["🔄 CI パイプライン（push時に自動実行）"]
+        C1["コードチェックアウト"] --> C2["依存関係インストール"] --> C3["Linting（ruff / flake8）"] --> C4["型チェック（mypy）"] --> C5["ユニットテスト（並列実行）"] --> C6["統合テスト（TestContainers）"] --> C7["カバレッジチェック（80%以上）"] --> C8["セキュリティスキャン"]
+    end
+
+    subgraph CD["🚀 CD パイプライン（main merge時）"]
+        D1["Dockerイメージビルド"] --> D2["ステージング環境デプロイ"] --> D3["E2Eテスト実行"] --> D4["本番環境デプロイ"]
+    end
+
+    LOCAL --> CI --> CD
+
+    style LOCAL fill:#152b15,stroke:#3b6d11,color:#c0dd97
+    style CI fill:#0e1f38,stroke:#185fa5,color:#b5d4f4
+    style CD fill:#3a2a0a,stroke:#854f0b,color:#fac775
+      </div>
+      <p class="mermaid-caption">ローカル開発 → CI → CD の統合フロー</p>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">13.2 GitHub Actions 設定例</h3>
+    <pre><code># .github/workflows/test.yml
+
+name: TDD Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run linting and type check
+        run: |
+          ruff check .
+          mypy src/
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest tests/unit/ \
+            --cov=src \
+            --cov-branch \
+            --cov-report=xml \
+            --cov-fail-under=80 \
+            -v --tb=short -n auto
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://test_user:test_pass@localhost/test_db
+        run: |
+          pytest tests/integration/ -v --tb=short --timeout=60</code></pre>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://docs.github.com/en/actions" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>GitHub Actions 公式ドキュメント
+      </a>
+      <a href="https://martinfowler.com/articles/continuousIntegration.html" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Martin Fowler — Continuous Integration
+      </a>
+      <a href="https://codecov.io/" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Codecov — カバレッジレポート
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S14: 障壁 === -->
+  <section class="section" id="s14">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2>TDDを阻む壁とその解決策</h2>
+    </div>
+
+    <h3 style="margin: 0 0 20px;">14.1 よくある障壁と解決策</h3>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-clock" aria-hidden="true" style="margin-right:6px;"></i>障壁1：最初は遅く感じる</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">「テストを書く時間がもったいない」「コードを直接書いた方が速い」という感覚に陥りがちです。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-bulb" aria-hidden="true"></i>
+        <span>短期的なコストと長期的な利益のトレードオフを意識する。バグ修正コストが激減し、慣れると開発速度が逆転します。最初の2週間が正念場です。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-help" aria-hidden="true" style="margin-right:6px;"></i>障壁2：何をテストすればいいかわからない</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">テストケースの選定が難しく、どこから始めればいいかわからなくなります。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-bulb" aria-hidden="true"></i>
+        <span>まず1つのハッピーパスだけ書く。次にエッジケース、最後に異常系の順で積み上げます（セクション3参照）。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-plug" aria-hidden="true" style="margin-right:6px;"></i>障壁3：外部依存のテストが難しい</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">DBやAPIがないとテストできないと思い込み、テストが書けなくなります。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-bulb" aria-hidden="true"></i>
+        <span>依存性注入でモック化する。InMemoryRepository を作り、インターフェースに依存する設計にします（セクション10参照）。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-building-factory-2" aria-hidden="true" style="margin-right:6px;"></i>障壁4：レガシーコードにはテストが書けない</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">既存の密結合コードにはテストが書きにくく、どこから手を付けていいかわかりません。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-bulb" aria-hidden="true"></i>
+        <span>Characterization Test（特性描写テスト）から始める。まず現在の動作を記録し、少しずつリファクタリングします（セクション15参照）。</span>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">14.2 テストしやすい設計のポイント</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    subgraph HARD["テストしにくい設計"]
+        H1["グローバル変数・シングルトン<br>状態が共有されてテスト間干渉"]
+        H2["直接インスタンス化<br>new DBRepository() 内部で生成"]
+        H3["時刻・乱数に直接依存<br>datetime.now() を直接呼び出す"]
+        H4["巨大なメソッド<br>1メソッドが100行を超える"]
+    end
+
+    subgraph EASY["テストしやすい設計"]
+        E1["依存性注入（DI）<br>依存を外から注入する"]
+        E2["インターフェースへの依存<br>具体クラスに依存しない"]
+        E3["時刻・乱数を注入<br>clock 引数で受け取る"]
+        E4["小さなメソッドへの分割<br>単一責任原則に従う"]
+    end
+
+    H1 --> E1
+    H2 --> E2
+    H3 --> E3
+    H4 --> E4
+
+    style HARD fill:#3d1515,stroke:#a32d2d,color:#f09595
+    style EASY fill:#152b15,stroke:#3b6d11,color:#c0dd97
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S15: レガシーコード === -->
+  <section class="section" id="s15">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2>レガシーコードへのTDD導入</h2>
+    </div>
+
+    <p>テストのない既存コードへの TDD 導入は段階的に行います。一気にやろうとせず、安全網を少しずつ広げることが重要です。</p>
+
+    <h3 style="margin: 28px 0 16px;">15.1 レガシーコードへのアプローチ</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    LEGACY["レガシーコード<br>テストがない既存コード"]
+    STEP1["Step 1: Characterization Test<br>現在の動作をそのまま記録する<br>正しいかどうかは問わない<br>まず安全網を作る"]
+    STEP2["Step 2: Seam（縫い目）の発見<br>テスト可能な分離点を見つける<br>・コンストラクタインジェクション<br>・メソッドパラメータ化"]
+    STEP3["Step 3: 最小限のリファクタリング<br>動作を変えずに構造を改善<br>・長いメソッドの分割<br>・依存性の外部化"]
+    STEP4["Step 4: 新しい機能はTDDで追加<br>修正部分は必ずTDDで書く<br>Boy Scout Rule（来た時より綺麗に）"]
+
+    LEGACY --> STEP1 --> STEP2 --> STEP3 --> STEP4
+
+    style LEGACY fill:#3d1515,color:#f09595,stroke:#a32d2d
+    style STEP1 fill:#3a2a0a,color:#fac775,stroke:#854f0b
+    style STEP2 fill:#2a1a10,color:#f0997b,stroke:#993c1d
+    style STEP3 fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style STEP4 fill:#152b15,color:#c0dd97,stroke:#3b6d11
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">15.2 Characterization Test の例</h3>
+    <pre><code>class LegacyOrderCalculator:
+    """テストがない複雑なレガシーコード"""
+    def calculate_final_price(self, base_price, quantity, customer_type, is_sale):
+        price = base_price * quantity
+        if customer_type == "premium":
+            price = price * 0.9
+        elif customer_type == "vip":
+            price = price * 0.8
+        if is_sale:
+            price = price * 0.95
+        if price > 10000:
+            price = price - 500
+        return round(price)
+
+
+class TestLegacyOrderCalculatorCharacterization:
+    """
+    Step 1: Characterization Test
+    既存の動作を変えずに記録するテスト。
+    まず実際に実行して結果を確認し、その値を Expected にする。
+    正しいかどうかは後で判断する。
+    """
+
+    @pytest.fixture
+    def calc(self):
+        return LegacyOrderCalculator()
+
+    def test_通常顧客セールなし(self, calc):
+        # 実際に実行して確認した値: 1000 * 2 = 2000
+        result = calc.calculate_final_price(
+            base_price=1000, quantity=2,
+            customer_type="normal", is_sale=False
+        )
+        assert result == 2000
+
+    def test_プレミアム顧客セールなし(self, calc):
+        # 1000 * 2 * 0.9 = 1800（10%OFF）
+        result = calc.calculate_final_price(
+            base_price=1000, quantity=2,
+            customer_type="premium", is_sale=False
+        )
+        assert result == 1800
+
+    def test_VIP顧客セールあり10000円超(self, calc):
+        # 1000 * 15 * 0.8 * 0.95 = 11400 → 11400 - 500 = 10900
+        result = calc.calculate_final_price(
+            base_price=1000, quantity=15,
+            customer_type="vip", is_sale=True
+        )
+        assert result == 10900
+    # これで動作が記録できた → 安全にリファクタリングできる</code></pre>
+
+    <div class="sources-section">
+      <h4><i class="ti ti-link" style="font-size:1rem;margin-right:6px;" aria-hidden="true"></i>参照ソース</h4>
+      <a href="https://michaelfeathers.silvrback.com/characterization-testing" target="_blank" class="source-link">
+        <i class="ti ti-external-link" aria-hidden="true"></i>Michael Feathers — Characterization Testing
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S16: ベストプラクティス === -->
+  <section class="section" id="s16">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2>TDDのベストプラクティス総まとめ</h2>
+    </div>
+
+    <div class="best-practice-table">
+      <table>
+        <thead>
+          <tr>
+            <th>カテゴリ</th>
+            <th>ベストプラクティス</th>
+            <th>理由</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: var(--red-200);">テストの書き方</td>
+            <td>まず失敗を確認してから GREEN にする</td>
+            <td>誤って通過するテストを防ぐ</td>
+          </tr>
+          <tr>
+            <td style="color: var(--red-200);">テストの書き方</td>
+            <td>1テスト1アサーション（関連は複数可）</td>
+            <td>失敗時に原因が特定しやすい</td>
+          </tr>
+          <tr>
+            <td style="color: var(--red-200);">テストの書き方</td>
+            <td>テスト名は仕様書として読める日本語に</td>
+            <td>コードの意図を伝えるドキュメントになる</td>
+          </tr>
+          <tr>
+            <td style="color: var(--blue-200);">設計</td>
+            <td>依存性注入でモック可能に設計する</td>
+            <td>テストから良い設計が自然に生まれる</td>
+          </tr>
+          <tr>
+            <td style="color: var(--blue-200);">設計</td>
+            <td>時刻・乱数を外部注入する</td>
+            <td>テストの再現性を確保する</td>
+          </tr>
+          <tr>
+            <td style="color: var(--teal-200);">サイクル</td>
+            <td>サイクルを小さく保つ（5〜15分）</td>
+            <td>こまめにコミット・フィードバックが得られる</td>
+          </tr>
+          <tr>
+            <td style="color: var(--teal-200);">リファクタリング</td>
+            <td>GREEN 後に必ずリファクタリングする</td>
+            <td>技術的負債を蓄積させない</td>
+          </tr>
+          <tr>
+            <td style="color: var(--amber-200);">カバレッジ</td>
+            <td>ドメイン層は 90% 以上を目指す</td>
+            <td>ビジネスロジックを徹底的に保護する</td>
+          </tr>
+          <tr>
+            <td style="color: var(--purple-400);">CI</td>
+            <td>push のたびに全テスト実行</td>
+            <td>常に動くコードを維持する</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">16.1 TDD 習熟度モデル</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    LV0["Level 0<br>テストなし<br>手動テスト"]
+    LV1["Level 1<br>テスト後付け<br>実装後に追加"]
+    LV2["Level 2<br>Red-Green 意識<br>先にテストを書く"]
+    LV3["Level 3<br>フル RGR サイクル<br>設計を駆動"]
+    LV4["Level 4<br>Inside-Out TDD<br>疎結合設計"]
+    LV5["Level 5<br>TDD as Culture<br>チーム全体"]
+
+    LV0 --> LV1 --> LV2 --> LV3 --> LV4 --> LV5
+
+    style LV0 fill:#3d1515,color:#f09595,stroke:#a32d2d
+    style LV1 fill:#3a2a0a,color:#fac775,stroke:#854f0b
+    style LV2 fill:#2a1a10,color:#f0997b,stroke:#993c1d
+    style LV3 fill:#152b15,color:#c0dd97,stroke:#3b6d11
+    style LV4 fill:#0e1f38,color:#b5d4f4,stroke:#185fa5
+    style LV5 fill:#2a2638,color:#afa9ec,stroke:#534ab7
+      </div>
+      <p class="mermaid-caption">TDD 習熟度モデル（左から右へ段階的に成長する）</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S17: アンチパターン === -->
+  <section class="section" id="s17">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2>TDDのアンチパターン</h2>
+    </div>
+
+    <p>TDDを「やっているつもり」でも陥りがちな失敗パターンを紹介します。</p>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-alert-circle" aria-hidden="true" style="margin-right:6px;"></i>アンチパターン1：テストを後から書く（Test After）</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">実装してからテストを追加する。テストが設計を改善しないため、高カバレッジでも品質が低い。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span>必ず先にテストを書く。実装前にAPIを設計する習慣をつける。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-alert-circle" aria-hidden="true" style="margin-right:6px;"></i>アンチパターン2：テストが壊れやすい（Fragile Tests）</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">実装の詳細（内部メソッド・プライベート変数）に依存しすぎたテスト。実装変更のたびにテストが壊れる。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span>振る舞い（ブラックボックス）をテストする。インターフェースと出力だけをアサートする。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-alert-circle" aria-hidden="true" style="margin-right:6px;"></i>アンチパターン3：アサーションなしのテスト</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);"><code>assert</code> が1つもないテスト。例外が起きなければOKとするテスト。カバレッジが上がるが何も保証しない。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span>必ず期待値を明示的にアサートする。<code>assert</code> 文なしのテストはテストではない。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-alert-circle" aria-hidden="true" style="margin-right:6px;"></i>アンチパターン4：テストが遅すぎる（Slow Tests）</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">実際のDBや外部APIを使うユニットテスト。1テストに数秒〜数十秒かかると開発中に実行しなくなる。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span>ユニットテストは必ずモック/InMemory を使う。実DBは統合テストで別途実行する。</span>
+      </div>
+    </div>
+
+    <div class="antipattern-card">
+      <h4><i class="ti ti-alert-circle" aria-hidden="true" style="margin-right:6px;"></i>アンチパターン5：テスト間の依存（Interdependent Tests）</h4>
+      <p style="font-size: 1rem; color: var(--text-secondary);">テストの実行順序に依存している。あるテストが別のテストの副作用に依存し、単独で実行すると失敗する。</p>
+      <div class="antipattern-fix">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span>各テストで独立したフィクスチャを使う。前後処理でクリーンな状態に戻す（<code>@pytest.fixture</code>）。</span>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">17.1 TDD 健全性チェックリスト</h3>
+    <div class="best-practice-table">
+      <table>
+        <thead>
+          <tr>
+            <th>チェック項目</th>
+            <th>Yes なら</th>
+            <th>No なら</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>テストはプロダクションコードより先に書かれているか？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">Test-First の習慣を徹底する</span></td>
+          </tr>
+          <tr>
+            <td>各テストが独立して単独で実行できるか？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">グローバル状態を排除する</span></td>
+          </tr>
+          <tr>
+            <td>ユニットテストがミリ秒で完了するか？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">モック/InMemory を活用する</span></td>
+          </tr>
+          <tr>
+            <td>テスト名がコードの仕様書として読めるか？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">テスト名を日本語で改善する</span></td>
+          </tr>
+          <tr>
+            <td>全テストが CI で自動実行されているか？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">GitHub Actions で CI を設定する</span></td>
+          </tr>
+          <tr>
+            <td>ドメイン層のカバレッジが 80% 以上か？</td>
+            <td><span style="color: var(--teal-200);">健全</span></td>
+            <td><span style="color: var(--red-200);">未カバーのロジックにテストを追加する</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- === S18: 参考文献 === -->
+  <section class="section" id="s18">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <h2>参考文献・ソース一覧</h2>
+    </div>
+
+    <h3 style="margin: 0 0 16px;">18.1 必読書籍</h3>
+    <div class="book-grid">
+      <div class="book-card">
+        <div class="book-icon" style="background: rgba(127,119,221,0.15);">
+          <i class="ti ti-book" style="color: var(--purple-400);" aria-hidden="true"></i>
+        </div>
+        <div class="book-info">
+          <strong>Test-Driven Development: By Example</strong>
+          <div class="book-author">Kent Beck（2002）</div>
+          <div class="book-level">
+            <span class="level-dots">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span>
+              <span></span><span></span>
+            </span>
+            TDD 原典・必読
+          </div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-icon" style="background: rgba(29,158,117,0.15);">
+          <i class="ti ti-book" style="color: var(--teal-200);" aria-hidden="true"></i>
+        </div>
+        <div class="book-info">
+          <strong>Clean Code</strong>
+          <div class="book-author">Robert C. Martin（Uncle Bob）</div>
+          <div class="book-level">
+            <span class="level-dots">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span>
+              <span></span><span></span>
+            </span>
+            テストしやすいコードの書き方
+          </div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-icon" style="background: rgba(216,90,48,0.15);">
+          <i class="ti ti-book" style="color: var(--coral-200);" aria-hidden="true"></i>
+        </div>
+        <div class="book-info">
+          <strong>Working Effectively with Legacy Code</strong>
+          <div class="book-author">Michael C. Feathers</div>
+          <div class="book-level">
+            <span class="level-dots">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span>
+              <span class="filled"></span><span></span>
+            </span>
+            レガシーコードへの TDD 導入
+          </div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-icon" style="background: rgba(55,138,221,0.15);">
+          <i class="ti ti-book" style="color: var(--blue-200);" aria-hidden="true"></i>
+        </div>
+        <div class="book-info">
+          <strong>The Art of Unit Testing（第3版）</strong>
+          <div class="book-author">Roy Osherove</div>
+          <div class="book-level">
+            <span class="level-dots">
+              <span class="filled"></span><span class="filled"></span><span class="filled"></span>
+              <span></span><span></span>
+            </span>
+            ユニットテストの実践ガイド
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">18.2 TDDコア概念</h3>
+    <div class="card">
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://www.agilealliance.org/glossary/tdd/" target="_blank">Agile Alliance — TDD定義</a>
+          <div class="source-desc">TDD の公式定義と原則</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" target="_blank">Martin Fowler — TestDrivenDevelopment</a>
+          <div class="source-desc">Martin Fowler による TDD 解説</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html" target="_blank">Uncle Bob — TDDの3つのルール</a>
+          <div class="source-desc">Robert C. Martin による TDD ルールの定義</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank">Martin Fowler — テストピラミッド</a>
+          <div class="source-desc">ユニット・統合・E2Eテストのバランス</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/bliki/UnitTest.html" target="_blank">Martin Fowler — Unit Test</a>
+          <div class="source-desc">ユニットテストの定義と種類</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank">Martin Fowler — Mocks Aren't Stubs</a>
+          <div class="source-desc">テストダブルの種類と使い分け</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">18.3 BDD関連</h3>
+    <div class="card">
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://www.agilealliance.org/glossary/bdd/" target="_blank">Agile Alliance — BDD</a>
+          <div class="source-desc">振る舞い駆動開発の公式定義</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://cucumber.io/docs/bdd/" target="_blank">Cucumber 公式ドキュメント</a>
+          <div class="source-desc">BDD ツールの主要プラットフォーム</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/bliki/GivenWhenThen.html" target="_blank">Martin Fowler — GivenWhenThen</a>
+          <div class="source-desc">Given-When-Then 記法の解説</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">18.4 Pythonテストツール</h3>
+    <div class="card">
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://docs.pytest.org/" target="_blank">pytest 公式ドキュメント</a>
+          <div class="source-desc">Python 最標準テストフレームワーク</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://pytest-cov.readthedocs.io/" target="_blank">pytest-cov — カバレッジ計測</a>
+          <div class="source-desc">pytest カバレッジプラグイン</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://pytest-mock.readthedocs.io/" target="_blank">pytest-mock — モック</a>
+          <div class="source-desc">pytest 向けモックプラグイン</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://pytest-bdd.readthedocs.io/" target="_blank">pytest-bdd — BDD統合</a>
+          <div class="source-desc">pytest と Gherkin の統合</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://hypothesis.readthedocs.io/" target="_blank">Hypothesis — プロパティベーステスト</a>
+          <div class="source-desc">自動でテストケースを生成するツール</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://mutmut.readthedocs.io/" target="_blank">mutmut — ミューテーションテスト</a>
+          <div class="source-desc">テストの品質を測るミューテーションツール</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 28px 0 16px;">18.5 CI/CDとTDD</h3>
+    <div class="card">
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://martinfowler.com/articles/continuousIntegration.html" target="_blank">Martin Fowler — Continuous Integration</a>
+          <div class="source-desc">CI の原則と実践</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://docs.github.com/en/actions" target="_blank">GitHub Actions 公式ドキュメント</a>
+          <div class="source-desc">CI/CD パイプラインの設定</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://agileinaflash.blogspot.com/2009/02/first.html" target="_blank">F.I.R.S.T. 原則（Agile in a Flash）</a>
+          <div class="source-desc">良いユニットテストの5原則</div>
+        </div>
+      </div>
+      <div class="source-row">
+        <i class="ti ti-external-link" aria-hidden="true"></i>
+        <div>
+          <a href="https://michaelfeathers.silvrback.com/characterization-testing" target="_blank">Michael Feathers — Characterization Testing</a>
+          <div class="source-desc">レガシーコードへのテスト導入手法</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 32px; border-color: var(--border-mid);">
+      <p style="font-size: 1rem; color: var(--text-tertiary); margin: 0;">
+        本ガイドは 2026年6月時点の情報に基づいています。各ツールのバージョンや仕様は変更される場合がありますので、実践前に必ず公式ドキュメントをご確認ください。
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#1c1c20',
+    primaryColor: '#2a2638',
+    primaryTextColor: '#e8e6df',
+    primaryBorderColor: '#534ab7',
+    lineColor: '#6b6965',
+    secondaryColor: '#1e1e22',
+    tertiaryColor: '#18181b',
+    edgeLabelBackground: '#1c1c20',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    fontSize: '13px',
+    nodeBorder: '#534ab7',
+    mainBkg: '#2a2638',
+    clusterBkg: '#1e1e22',
+    clusterBorder: '#534ab7',
+    titleColor: '#e8e6df',
+    labelBackground: '#1c1c20',
+    actorBorder: '#534ab7',
+    actorBkg: '#2a2638',
+    actorTextColor: '#e8e6df',
+    signalColor: '#9b9890',
+    signalTextColor: '#e8e6df',
+    labelBoxBkgColor: '#1e1e22',
+    labelBoxBorderColor: '#534ab7',
+    labelTextColor: '#e8e6df',
+    loopTextColor: '#9b9890',
+    noteBorderColor: '#534ab7',
+    noteBkgColor: '#2a2638',
+    noteTextColor: '#e8e6df',
+    activationBorderColor: '#7f77dd',
+    activationBkgColor: '#2a2638',
+    sequenceNumberColor: '#afa9ec',
+  },
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+  sequence: { useMaxWidth: true, actorMargin: 60, messageAlign: 'center' },
+});
+
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('.section');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+navItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(item.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
