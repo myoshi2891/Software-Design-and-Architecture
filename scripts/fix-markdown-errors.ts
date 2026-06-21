@@ -129,13 +129,13 @@ async function fixMarkdown(filePath: string): Promise<void> {
         collapsedLines.push(line);
     }
 
-    let content = collapsedLines.join('\n');
-    if (!content.endsWith('\n')) {
-        content += '\n';
+    let finalContent = collapsedLines.join('\n');
+    if (!finalContent.endsWith('\n')) {
+        finalContent += '\n';
     } else {
-        content = content.replace(/\n+$/, '\n');
+        finalContent = finalContent.replace(/\n+$/, '\n');
     }
-    await writeFile(filePath, content, 'utf8');
+    await writeFile(filePath, finalContent, 'utf8');
 }
 
 const targetFile = process.argv[2];

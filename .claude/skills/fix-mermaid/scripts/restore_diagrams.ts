@@ -113,8 +113,19 @@ if (import.meta.main) {
         diagrams = JSON.parse(diagramsMatch[1]);
     } catch {
         try {
-            // JSオブジェクトリテラル形式（テンプレートリテラル等を含む）のパースにフォールバック
-            diagrams = new Function(`return (${diagramsMatch[1]})`)();
+            // JSオブジェクトリテラル形式（テンプレートリテラル等を含む）のパースに正規表現でフォールバック
+            const parsed: Record<string, string> = {};
+            const entryRe = /['"`]?([a-zA-Z0-9_-]+)['"`]?\s*:\s*(['"`])([\s\S]*?)\2/g;
+            let match;
+            while ((match = entryRe.exec(diagramsMatch[1])) !== null) {
+                const key = match[1];
+                const value = match[3];
+                parsed[key] = value;
+            }
+            if (Object.keys(parsed).length === 0) {
+                throw new Error('No entries parsed from DIAGRAMS block.');
+            }
+            diagrams = parsed;
         } catch (evalErr) {
             console.error('❌ DIAGRAMS が JSON または JS オブジェクトリテラルとしてパースできません。');
             console.error(evalErr);

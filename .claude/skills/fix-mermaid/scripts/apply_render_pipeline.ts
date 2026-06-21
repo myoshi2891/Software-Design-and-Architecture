@@ -115,18 +115,24 @@ export function ensureInitFlags(html: string): string {
     }
     // initialize 呼び出し内のオプションブロックを抽出し、その中だけで securityLevel をチェック・注入する
     const initMatch = out.match(/mermaid\.initialize\(\s*\{([\s\S]*?)\}\s*\)/);
-    if (initMatch) {
+    if (initMatch && initMatch.index !== undefined) {
         const initBlock = initMatch[1];
         if (!/securityLevel\s*:/.test(initBlock)) {
+            let updatedBlock = initBlock;
             if (/startOnLoad:\s*false\s*,/.test(initBlock)) {
-                const updatedBlock = initBlock.replace(
+                updatedBlock = initBlock.replace(
                     /(startOnLoad:\s*false\s*,)/,
                     "$1\n                securityLevel: 'loose',",
                 );
-                out = out.replace(initBlock, updatedBlock);
             } else {
-                const updatedBlock = " securityLevel: 'loose'," + initBlock;
-                out = out.replace(initBlock, updatedBlock);
+                updatedBlock = " securityLevel: 'loose'," + initBlock;
+            }
+            const matchStr = initMatch[0];
+            const blockIndex = matchStr.indexOf(initBlock);
+            if (blockIndex !== -1) {
+                const updatedMatchStr = matchStr.slice(0, blockIndex) + updatedBlock + matchStr.slice(blockIndex + initBlock.length);
+                const startIdx = initMatch.index;
+                out = out.slice(0, startIdx) + updatedMatchStr + out.slice(startIdx + matchStr.length);
             }
         }
     }
