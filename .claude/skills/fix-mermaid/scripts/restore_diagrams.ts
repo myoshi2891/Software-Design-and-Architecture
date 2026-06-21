@@ -50,11 +50,12 @@ export function restoreDiagrams(
 ): { diagrams: Record<string, string>; warnings: string[] } {
     const restored: Record<string, string> = {};
     const warnings: string[] = [];
+    let currentMdBlocks = [...mdBlocks];
     for (const [id, brokenCode] of Object.entries(diagrams)) {
         const keywords = extractKeywords(brokenCode);
         let bestMatch: string | null = null;
         let maxScore = -1;
-        for (const block of mdBlocks) {
+        for (const block of currentMdBlocks) {
             let score = 0;
             const normalizedBlock = block.replace(/\s+/g, '');
             for (const kw of keywords) {
@@ -67,6 +68,8 @@ export function restoreDiagrams(
         }
         if (bestMatch && maxScore > 0) {
             restored[id] = bestMatch;
+            // 一致したブロックをリストから除外して重複使用を防ぐ
+            currentMdBlocks = currentMdBlocks.filter(block => block !== bestMatch);
         } else {
             warnings.push(`一致なし: ${id} (keywords: ${keywords.slice(0, 3).join(', ')})`);
             restored[id] = brokenCode; // フォールバック: 元のまま残す
@@ -109,8 +112,14 @@ if (import.meta.main) {
     try {
         diagrams = JSON.parse(diagramsMatch[1]);
     } catch {
-        console.error('❌ DIAGRAMS が JSON.parse できません。JSON 形式の DIAGRAMS のみ対応します。');
-        process.exit(1);
+        try {
+            // JSオブジェクトリテラル形式（テンプレートリテラル等を含む）のパースにフォールバック
+            diagrams = new Function(`return (${diagramsMatch[1]})`)();
+        } catch (evalErr) {
+            console.error('❌ DIAGRAMS が JSON または JS オブジェクトリテラルとしてパースできません。');
+            console.error(evalErr);
+            process.exit(1);
+        }
     }
 
     const { diagrams: restored, warnings } = restoreDiagrams(diagrams, mdBlocks);

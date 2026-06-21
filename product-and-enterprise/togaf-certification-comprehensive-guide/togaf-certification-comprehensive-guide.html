@@ -801,52 +801,52 @@
 
     <div class="nav-section">
       <div class="nav-label">はじめに</div>
-      <button class="nav-item active" onclick="show('overview')">
+      <button class="nav-item active" onclick="show('overview', event)">
         <i class="ti ti-building-arch"></i> TOGAFとは
       </button>
-      <button class="nav-item" onclick="show('exam')">
+      <button class="nav-item" onclick="show('exam', event)">
         <i class="ti ti-certificate"></i> 試験概要
       </button>
     </div>
 
     <div class="nav-section">
       <div class="nav-label">コア概念</div>
-      <button class="nav-item" onclick="show('adm')">
+      <button class="nav-item" onclick="show('adm', event)">
         <i class="ti ti-refresh"></i> ADM サイクル
       </button>
-      <button class="nav-item" onclick="show('phases')">
+      <button class="nav-item" onclick="show('phases', event)">
         <i class="ti ti-list-details"></i> 各フェーズ詳解
       </button>
-      <button class="nav-item" onclick="show('bdat')">
+      <button class="nav-item" onclick="show('bdat', event)">
         <i class="ti ti-layout-grid"></i> BDATドメイン
       </button>
-      <button class="nav-item" onclick="show('artifacts')">
+      <button class="nav-item" onclick="show('artifacts', event)">
         <i class="ti ti-file-description"></i> 成果物・BB
       </button>
     </div>
 
     <div class="nav-section">
       <div class="nav-label">応用</div>
-      <button class="nav-item" onclick="show('repository')">
+      <button class="nav-item" onclick="show('repository', event)">
         <i class="ti ti-database"></i> アーキテクチャリポジトリ
       </button>
-      <button class="nav-item" onclick="show('stakeholder')">
+      <button class="nav-item" onclick="show('stakeholder', event)">
         <i class="ti ti-users"></i> ステークホルダー
       </button>
-      <button class="nav-item" onclick="show('governance')">
+      <button class="nav-item" onclick="show('governance', event)">
         <i class="ti ti-shield-check"></i> ガバナンス
       </button>
     </div>
 
     <div class="nav-section">
       <div class="nav-label">試験対策</div>
-      <button class="nav-item" onclick="show('strategy')">
+      <button class="nav-item" onclick="show('strategy', event)">
         <i class="ti ti-target"></i> 合格戦略
       </button>
-      <button class="nav-item" onclick="show('roadmap')">
+      <button class="nav-item" onclick="show('roadmap', event)">
         <i class="ti ti-map"></i> 学習ロードマップ
       </button>
-      <button class="nav-item" onclick="show('references')">
+      <button class="nav-item" onclick="show('references', event)">
         <i class="ti ti-link"></i> 参考文献・URL
       </button>
     </div>
@@ -1980,103 +1980,80 @@ A -.->|"要注意"| TRAP`,
     }
   });
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    // display:none のセクションは Mermaid のレイアウト計算（getBBox）が NaN になるため、
-    // 一時的にすべて可視状態にしてから描画し、完了後に元の状態へ戻す
-    const hiddenSections = [];
-    document.querySelectorAll('.section:not(.active)').forEach(s => {
-      hiddenSections.push(s);
-      s.style.visibility = 'hidden';
-      s.style.position   = 'absolute';
-      s.style.display    = 'block';
-    });
-
-    try {
-      await mermaid.run();
-    } catch (e) {
-      console.warn('Mermaid render error:', e);
-    }
-
-    // 一時的な可視化を元に戻す
-    hiddenSections.forEach(s => {
-      s.style.visibility = '';
-      s.style.position   = '';
-      s.style.display    = '';
-    });
-
-    // SVG の固定 width/height を除去して viewBox ベースの中央寄せ表示に切り替え
-    document.querySelectorAll('.mermaid-wrap svg').forEach(svg => {
-      const vb = svg.getAttribute('viewBox');
-      if (!vb) {
-        const w = parseFloat(svg.getAttribute('width')) || 800;
-        const h = parseFloat(svg.getAttribute('height')) || 400;
-        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      }
-      svg.removeAttribute('width');
-      svg.removeAttribute('height');
-      svg.style.height      = 'auto';
-      svg.style.overflow    = 'visible';
-      svg.style.maxWidth    = '100%';
-      svg.style.display     = 'block';
-      svg.style.marginLeft  = 'auto';
-      svg.style.marginRight = 'auto';
-    });
-  });
-
-  function show(id) {
+  function show(id, event) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) {
+      event.currentTarget.classList.add('active');
+    }
     window.scrollTo({ top: 0 });
   }
 
-            // --- mermaid render pipeline (apply_render_pipeline.ts) ---
-            function applySvgFixups(svgEl, src) {
-                svgEl.removeAttribute('width');
-                svgEl.removeAttribute('height');
-                svgEl.style.height = 'auto';
-                svgEl.style.maxWidth = '100%';
-                svgEl.style.overflow = 'visible';
-                svgEl.style.marginBottom = '10px';
-                const viewBox = svgEl.getAttribute('viewBox');
-                if (!viewBox) return;
-                const parts = viewBox.split(/\s+/).map(Number);
-                if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
-                const trimmed = src.trim();
-                const isSequenceOrState =
-                    trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
-                const extraHeight = isSequenceOrState ? 110 : 15;
-                const [x, y, w, h] = parts;
-                // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
-                svgEl.style.width = w + 'px';
-                svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
-            }
+  // --- mermaid render pipeline (apply_render_pipeline.ts) ---
+  function applySvgFixups(svgEl, src) {
+      svgEl.removeAttribute('width');
+      svgEl.removeAttribute('height');
+      svgEl.style.height = 'auto';
+      svgEl.style.maxWidth = '100%';
+      svgEl.style.overflow = 'visible';
+      svgEl.style.marginBottom = '10px';
+      const viewBox = svgEl.getAttribute('viewBox');
+      if (!viewBox) return;
+      const parts = viewBox.split(/\s+/).map(Number);
+      if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+      const trimmed = src.trim();
+      const isSequenceOrState =
+          trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+      const extraHeight = isSequenceOrState ? 110 : 15;
+      const [x, y, w, h] = parts;
+      // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+      svgEl.style.width = w + 'px';
+      svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+  }
 
-            (async () => {
-                if (document.fonts && document.fonts.ready) {
-                    try {
-                        await document.fonts.ready;
-                    } catch (_e) {
-                        /* フォント待機に失敗しても描画は継続する */
-                    }
-                }
-                for (const [id, src] of Object.entries(DIAGRAMS)) {
-                    const el = document.getElementById(id);
-                    if (!el) continue;
-                    try {
-                        const { svg } = await mermaid.render('svg-' + id, src);
-                        el.innerHTML = svg;
-                        const svgEl = el.querySelector('svg');
-                        if (svgEl) applySvgFixups(svgEl, src);
-                    } catch (err) {
-                        el.innerHTML =
-                            '<pre style="color:#ff8888;white-space:pre-wrap">' +
-                            (err && err.message ? err.message : String(err)) +
-                            '</pre>';
-                    }
-                }
-            })();
+  (async () => {
+      if (document.fonts && document.fonts.ready) {
+          try {
+              await document.fonts.ready;
+          } catch (_e) {
+              /* フォント待機に失敗しても描画は継続する */
+          }
+      }
+
+      // display:none のセクションは Mermaid のレイアウト計算（getBBox）が NaN になるため、
+      // 一時的にすべて可視状態にしてから描画し、完了後に元の状態へ戻す
+      const hiddenSections = [];
+      document.querySelectorAll('.section:not(.active)').forEach(s => {
+          hiddenSections.push(s);
+          s.style.visibility = 'hidden';
+          s.style.position   = 'absolute';
+          s.style.display    = 'block';
+      });
+
+      for (const [id, src] of Object.entries(DIAGRAMS)) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          try {
+              const { svg } = await mermaid.render('svg-' + id, src);
+              el.innerHTML = svg;
+              const svgEl = el.querySelector('svg');
+              if (svgEl) applySvgFixups(svgEl, src);
+          } catch (err) {
+              el.innerHTML =
+                  '<pre style="color:#ff8888;white-space:pre-wrap">' +
+                  (err && err.message ? err.message : String(err)) +
+                  '</pre>';
+          }
+      }
+
+      // 一時的な可視化を元に戻す
+      hiddenSections.forEach(s => {
+          s.style.visibility = '';
+          s.style.position   = '';
+          s.style.display    = '';
+      });
+  })();
         </script>
 </body>
 </html>
