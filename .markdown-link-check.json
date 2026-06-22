@@ -167,6 +167,9 @@
     },
     {
       "pattern": "^https://vitejs\\.dev"
+    },
+    {
+      "pattern": "^https?://(www\\.)?steveblank\\.com"
     }
   ],
   "replacementPatterns": [],
