@@ -15,7 +15,7 @@ describe("Ext", () => {
     render(
       <Ext href="https://example.com" className="source-item">
         リンク
-      </Ext>,
+      </Ext>
     );
     expect(screen.getByRole("link", { name: "リンク" })).toHaveClass("source-item");
   });
