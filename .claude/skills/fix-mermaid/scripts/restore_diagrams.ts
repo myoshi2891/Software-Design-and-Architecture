@@ -11,8 +11,10 @@
 import fs from 'fs';
 
 /**
- * Markdown 内の ```mermaid ブロックを抽出する。
- * @returns {string[]} 各ブロックの中身(trim 済み)
+ * Extracts mermaid code blocks from Markdown content.
+ *
+ * @param md - The Markdown content to parse
+ * @returns An array of the trimmed content of each mermaid block
  */
 export function extractMdMermaidBlocks(md: string): string[] {
     const blocks: string[] = [];
@@ -25,8 +27,12 @@ export function extractMdMermaidBlocks(md: string): string[] {
 }
 
 /**
- * 壊れた図ソースから検索キーワードを抽出する。
- * クォート内の文字列を優先し、無ければ英字 5 文字以上の語を使う。
+ * Extracts search keywords from broken diagram source code.
+ *
+ * Prioritizes quoted strings longer than 3 characters. If none are found, falls back to English words of 5 or more characters.
+ *
+ * @param brokenCode - The diagram source code to search for keywords
+ * @returns An array of extracted keywords
  */
 function extractKeywords(brokenCode: string): string[] {
     const keywords: string[] = [];
@@ -42,7 +48,13 @@ function extractKeywords(brokenCode: string): string[] {
 }
 
 /**
- * 壊れた DIAGRAMS と MD ブロック群から、各図に最も一致するブロックを選び復元する。
+ * Restores broken diagrams by matching them with source blocks.
+ *
+ * For each broken diagram, identifies the best matching source block. If a match is found, the diagram is replaced with the source block; otherwise, the original diagram is kept and a warning is recorded.
+ *
+ * @param diagrams - Broken diagram definitions keyed by ID
+ * @param mdBlocks - Candidate diagram blocks from source markdown
+ * @returns An object containing `diagrams` with the restored definitions and `warnings` listing any unmatched entries
  */
 export function restoreDiagrams(
     diagrams: Record<string, string>,

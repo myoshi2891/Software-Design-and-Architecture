@@ -2,16 +2,11 @@ import { readFile, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 
 /**
- * Format a Markdown file in-place to enforce link separation, heading spacing, blank-line normalization, and a single trailing newline.
+ * Formats a Markdown file in-place, enforcing consistent link separation, heading spacing, blank-line collapsing, and trailing newline conventions.
  *
- * The formatter:
- * - Splits concatenated links by inserting a newline between `)[` → `)\n[`.
- * - Preserves YAML front matter and fenced code blocks verbatim.
- * - Ensures headings (`#`–`######` followed by a space) are preceded by a blank line (MD022).
- * - Collapses runs of three or more consecutive newlines into exactly two newlines (MD012).
- * - Normalizes the end of the file to exactly one final newline (MD047).
+ * The function preserves YAML front matter and fenced code blocks without modification. Outside of these protected regions, it applies formatting rules including separating concatenated links, ensuring headings are preceded by blank lines, collapsing excess blank lines, and normalizing the file to end with exactly one newline.
  *
- * @param {string} filePath - Path to the Markdown file to format (will be overwritten).
+ * @param filePath - Path to the Markdown file. The file will be overwritten with the formatted content.
  */
 async function formatMarkdown(filePath: string): Promise<void> {
     try {

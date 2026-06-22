@@ -90,8 +90,12 @@ const CENTERING_MARKER = 'mermaid-center (apply_render_pipeline.ts)';
 // --- 各ステップ (純粋関数・冪等) --------------------------------------------
 
 /**
- * 各 `<div class="mermaid">…</div>` を `<div class="mermaid" id="diag-N"></div>` に置換する。
- * 既に id 付き (`class="mermaid" id=...`) の div は正規表現にマッチしないため自然に冪等。
+ * Adds sequential numeric IDs to Mermaid diagram divs.
+ *
+ * Replaces each `<div class="mermaid">...</div>` with `<div class="mermaid" id="diag-N"></div>`. Divs that already have an ID are unchanged, ensuring idempotency.
+ *
+ * @param html - The HTML string to process
+ * @returns An object containing the modified HTML and the count of IDs assigned
  */
 export function injectIds(html: string): { html: string; count: number } {
     let count = 0;
@@ -106,7 +110,11 @@ export function injectIds(html: string): { html: string; count: number } {
 }
 
 /**
- * `startOnLoad: true` を false にし、未指定なら `securityLevel: 'loose'` を付与する。
+ * Disables Mermaid autoload and enforces a security level configuration.
+ *
+ * Ensures the `mermaid.initialize()` block sets `startOnLoad: false` and includes `securityLevel: 'loose'`.
+ *
+ * @returns HTML with updated Mermaid configuration
  */
 export function ensureInitFlags(html: string): string {
     let out = html;
@@ -148,8 +156,11 @@ export function ensureInitFlags(html: string): string {
 }
 
 /**
- * applySvgFixups + render ループを mermaid.initialize 後の </script> 直前に注入する。
- * 既に注入済み (マーカー検出) なら不変。
+ * Injects a render loop for SVG generation before the closing script tag.
+ *
+ * @returns The HTML with the render loop injected, or unchanged if already present.
+ * @throws If `mermaid.initialize(` is not found in the HTML.
+ * @throws If `</script>` is not found after `mermaid.initialize(`.
  */
 export function injectRenderLoop(html: string): string {
     if (html.includes(RENDER_LOOP_MARKER)) return html;
@@ -165,8 +176,12 @@ export function injectRenderLoop(html: string): string {
 }
 
 /**
- * 中央寄せ CSS を最初の </style> 直前に注入する。既に注入済みなら不変。
- * </style> が無い場合は </head> 直前に <style> ごと挿入する。
+ * Injects CSS to center Mermaid diagrams in HTML.
+ *
+ * If the CSS has already been injected, the HTML is returned unchanged.
+ * The CSS is inserted before the first `</style>` tag if present, or before `</head>` if not.
+ *
+ * @throws Error if neither `</style>` nor `</head>` tag is found.
  */
 export function injectCenteringCss(html: string): string {
     if (html.includes(CENTERING_MARKER)) return html;
@@ -183,7 +198,12 @@ export function injectCenteringCss(html: string): string {
 }
 
 /**
- * 全ステップを冪等に適用する。
+ * Applies Mermaid rendering pipeline transformations to HTML and reports each step.
+ *
+ * Transforms HTML by injecting sequential IDs into mermaid divs, ensuring Mermaid initialization flags are set correctly, injecting the render loop, and adding centering CSS. If `const DIAGRAMS` is not defined, an empty stub is injected before the initialize call and a warning is added to the report. All transformations are idempotent.
+ *
+ * @param html - The HTML content to transform
+ * @returns An object with the transformed HTML and an array of strings documenting which transformations were applied or were already in place
  */
 export function applyPipeline(html: string): { html: string; report: string[] } {
     const report: string[] = [];

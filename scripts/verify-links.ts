@@ -28,7 +28,10 @@ function shouldIgnore(url: string): boolean {
 }
 
 /**
- * MarkdownコンテンツからURLを抽出する（コードブロック内は除外）
+ * Extracts URLs from Markdown content, excluding code blocks.
+ *
+ * @param content - The Markdown content to extract URLs from
+ * @returns An array of extracted URLs
  */
 function extractUrlsFromMarkdown(content: string): string[] {
   // 1. 複数行コードブロック (``` ... ```) を除外
@@ -41,7 +44,9 @@ function extractUrlsFromMarkdown(content: string): string[] {
 }
 
 /**
- * HTMLコンテンツからURLを抽出する（<script>, <style>ブロック内は除外）
+ * Extracts HTTP/HTTPS URLs from HTML content, excluding script and style blocks.
+ *
+ * @returns An array of extracted URLs
  */
 function extractUrlsFromHtml(content: string): string[] {
   // <script> ブロック内を除外（DIAGRAMSオブジェクトやJSコードのURL含む）
@@ -54,7 +59,10 @@ function extractUrlsFromHtml(content: string): string[] {
 }
 
 /**
- * テキストからURLを抽出する共通処理
+ * Extracts HTTP and HTTPS URLs from text, cleaning trailing punctuation and deduplicating results.
+ *
+ * @param text - The text to search for URLs
+ * @returns An array of unique URLs found in the text
  */
 function extractRawUrls(text: string): string[] {
   const urlRegex = /https?:\/\/[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/]+(?:\?[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/?#]*)?/g;
@@ -77,7 +85,11 @@ function extractRawUrls(text: string): string[] {
 }
 
 /**
- * ファイル種別に応じてURLを抽出する
+ * Extracts URLs from content, selecting the appropriate parser based on file extension.
+ *
+ * @param file - The file path
+ * @param content - The file content to extract URLs from
+ * @returns An array of extracted URLs
  */
 function extractUrls(file: string, content: string): string[] {
   if (file.endsWith('.html')) {
@@ -87,7 +99,11 @@ function extractUrls(file: string, content: string): string[] {
 }
 
 /**
- * curlをPromiseラッパーで非同期実行する
+ * Spawns a curl process and returns its output.
+ *
+ * @param args - Command-line arguments to pass to curl
+ * @param timeoutSec - Maximum execution time in seconds; the process is killed if it exceeds `timeoutSec + 2` seconds
+ * @returns An object with the trimmed stdout on success, or an `error` if curl timed out, encountered a process error, or exited with a non-zero code and stdout did not contain a three-digit HTTP status code
  */
 function curlAsync(
   args: string[],
@@ -126,7 +142,12 @@ function curlAsync(
 }
 
 /**
- * curlを使用してURLのステータスを非同期で確認する
+ * Verifies if a URL is accessible by making HTTP requests.
+ *
+ * Attempts a HEAD request first, and falls back to GET if HEAD fails or returns a non-2xx/3xx status.
+ * A URL is considered accessible if the final response status code is between 200–399 (inclusive).
+ *
+ * @returns An object with `ok` (true if the URL is accessible), `status` (the HTTP response code, or 0 on error), and optionally `error` (a message describing any verification failure)
  */
 async function verifyUrl(
   url: string,
@@ -178,7 +199,13 @@ async function verifyUrl(
 }
 
 /**
- * 並列度を制限して非同期タスクを実行するセマフォユーティリティ
+ * Executes an array of async tasks with limited concurrency.
+ *
+ * Results are returned in the same order as the input tasks.
+ *
+ * @param tasks - Array of async task functions to execute
+ * @param concurrency - Maximum number of tasks to run in parallel
+ * @returns Array of results preserving the original task order
  */
 async function runWithConcurrency<T>(
   tasks: (() => Promise<T>)[],
@@ -187,6 +214,9 @@ async function runWithConcurrency<T>(
   const results: T[] = new Array(tasks.length);
   let index = 0;
 
+  /**
+   * Executes tasks from a shared queue and stores results in their original positions.
+   */
   async function worker(): Promise<void> {
     while (index < tasks.length) {
       const current = index++;
@@ -200,7 +230,13 @@ async function runWithConcurrency<T>(
 }
 
 /**
- * リポジトリ内のすべてのMarkdown・HTMLファイルをスキャンしてリンクを検証する
+ * Scans Markdown and HTML files in the repository and verifies all discovered links.
+ *
+ * Supports a `--dry-run` flag to list links without verification. Caches verification results
+ * across files to avoid redundant checks. Writes a detailed error report to `./link-check-errors.log`
+ * if dead links are found, and deletes the log file if all links are valid.
+ *
+ * @throws If dead links are found in one or more files.
  */
 async function run(): Promise<void> {
   const files: string[] = [];
