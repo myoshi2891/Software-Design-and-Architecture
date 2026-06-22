@@ -66,18 +66,22 @@ function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status:
   const userAgent =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
+  const commonArgs = [
+    '-s',
+    '-L',
+    '-o', '/dev/null',
+    '-w', '%{http_code}',
+    '--max-time', String(timeoutSec),
+    '--http1.1',
+    '-A', userAgent,
+    '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  ];
+
   // まず HEAD リクエストで試みる
   const headResult = spawnSync(
     'curl',
     [
-      '-s',
-      '-L',
-      '-o', '/dev/null',
-      '-w', '%{http_code}',
-      '--max-time', String(timeoutSec),
-      '--http1.1',
-      '-A', userAgent,
-      '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      ...commonArgs,
       '-X', 'HEAD',
       url,
     ],
@@ -100,14 +104,7 @@ function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status:
   const getResult = spawnSync(
     'curl',
     [
-      '-s',
-      '-L',
-      '-o', '/dev/null',
-      '-w', '%{http_code}',
-      '--max-time', String(timeoutSec),
-      '--http1.1',
-      '-A', userAgent,
-      '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      ...commonArgs,
       url,
     ],
     { encoding: 'utf-8', timeout: (timeoutSec + 5) * 1000 }
