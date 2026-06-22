@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヘキサゴナルアーキテクチャ完全ガイド</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-background-primary: #0d1117;
+  --color-background-secondary: #161b22;
+  --color-background-tertiary: #1c2128;
+  --color-background-info: #0c2a4a;
+  --color-background-danger: #3d1a1a;
+  --color-background-success: #0d2b1d;
+  --color-background-warning: #2d200a;
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #c4d2e2;
+  --color-text-tertiary: #aab6c6;
+  --color-text-info: #79c0ff;
+  --color-text-danger: #ff7b72;
+  --color-text-success: #56d364;
+  --color-text-warning: #e3b341;
+  --color-border-primary: #30363d;
+  --color-border-secondary: #21262d;
+  --color-border-tertiary: #161b22;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  --c-purple-50: #f3f0ff; --c-purple-100: #e9e3ff; --c-purple-200: #d3c8ff;
+  --c-purple-400: #a78bfa; --c-purple-500: #8b5cf6; --c-purple-600: #7c3aed;
+  --c-purple-700: #6d28d9; --c-purple-800: #4c1d95; --c-purple-900: #2e1065;
+
+  --c-teal-50: #f0fdfa; --c-teal-100: #ccfbf1; --c-teal-200: #99f6e4;
+  --c-teal-400: #2dd4bf; --c-teal-500: #14b8a6; --c-teal-600: #0d9488;
+  --c-teal-700: #0f766e; --c-teal-800: #115e59; --c-teal-900: #134e4a;
+
+  --c-coral-50: #fff7ed; --c-coral-100: #ffedd5; --c-coral-200: #fed7aa;
+  --c-coral-400: #fb923c; --c-coral-500: #f97316; --c-coral-600: #ea580c;
+  --c-coral-700: #c2410c; --c-coral-800: #9a3412; --c-coral-900: #7c2d12;
+
+  --c-pink-50: #fdf2f8; --c-pink-400: #f472b6; --c-pink-600: #db2777;
+  --c-pink-800: #9d174d;
+
+  --c-blue-400: #60a5fa; --c-blue-600: #2563eb; --c-blue-800: #1e3a8a;
+  --c-green-400: #4ade80; --c-green-600: #16a34a; --c-green-800: #14532d;
+  --c-amber-400: #fbbf24; --c-amber-600: #d97706; --c-amber-800: #78350f;
+  --c-red-400: #f87171; --c-red-600: #dc2626; --c-red-800: #7f1d1d;
+  --c-gray-400: #9ca3af; --c-gray-600: #4b5563; --c-gray-800: #1f2937;
+
+  --sidebar-width: 260px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  font-weight: 400;
+  display: flex;
+  min-height: 100vh;
+}
+
+#sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: var(--color-background-secondary);
+  border-right: 1px solid var(--color-border-primary);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.sidebar-logo-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--c-purple-800);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-purple-200);
+  font-size: 1rem;
+}
+
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.sidebar-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
+
+.sidebar-nav { padding: 8px 0; flex: 1; }
+
+.nav-section-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 12px 16px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+}
+
+.nav-item.active {
+  color: var(--c-purple-400);
+  border-left-color: var(--c-purple-500);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.nav-item i { font-size: 1rem; flex-shrink: 0; }
+.nav-item .nav-num { font-size: 1rem; color: var(--color-text-tertiary); min-width: 16px; }
+
+#content {
+  flex: 1;
+  max-width: 100%;
+  padding: 40px 48px;
+  overflow-x: hidden;
+}
+
+.page-hero {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--c-purple-800);
+  color: var(--c-purple-200);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 16px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.page-lead {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+}
+
+.meta-chip i { font-size: 1rem; }
+
+section { margin-bottom: 56px; scroll-margin-top: 24px; }
+
+h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+h2 .section-num {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-purple-400);
+  background: rgba(124, 58, 237, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 28px 0 12px;
+}
+
+p { margin-bottom: 14px; color: var(--color-text-secondary); font-size: 1rem; }
+
+.callout {
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+.callout.info {
+  background: var(--color-background-info);
+  border-color: var(--c-blue-600);
+  color: var(--color-text-info);
+}
+
+.callout.success {
+  background: var(--color-background-success);
+  border-color: var(--c-green-600);
+  color: var(--color-text-success);
+}
+
+.callout.warning {
+  background: var(--color-background-warning);
+  border-color: var(--c-amber-600);
+  color: var(--color-text-warning);
+}
+
+.callout.danger {
+  background: var(--color-background-danger);
+  border-color: var(--c-red-600);
+  color: var(--color-text-danger);
+}
+
+pre {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--c-purple-200);
+  line-height: 1.7;
+}
+
+.inline-code {
+  background: var(--color-background-tertiary);
+  color: var(--c-teal-400);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.mermaid-wrap {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.mermaid-label {
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mermaid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mermaid svg { max-width: 100%; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  margin: 16px 0;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border-primary);
+}
+
+thead { background: var(--color-background-tertiary); }
+
+th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+td {
+  padding: 10px 14px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-secondary);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--color-background-secondary); }
+
+td strong { color: var(--color-text-primary); font-weight: 500; }
+td code { font-size: 1rem; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.tag.green { background: var(--color-background-success); color: var(--color-text-success); }
+.tag.blue { background: var(--color-background-info); color: var(--color-text-info); }
+.tag.red { background: var(--color-background-danger); color: var(--color-text-danger); }
+.tag.orange { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag.purple { background: rgba(124,58,237,0.15); color: var(--c-purple-400); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+.card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.card p { margin-bottom: 0; font-size: 1rem; }
+
+.card.driving { border-color: rgba(45, 212, 191, 0.3); }
+.card.driven { border-color: rgba(96, 165, 250, 0.3); }
+.card.core { border-color: rgba(167, 139, 250, 0.3); }
+
+.card-icon-driving { color: var(--c-teal-400); }
+.card-icon-driven { color: var(--c-blue-400); }
+.card-icon-core { color: var(--c-purple-400); }
+
+.step-list { list-style: none; counter-reset: steps; margin: 16px 0; }
+
+.step-item {
+  counter-increment: steps;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  background: var(--c-purple-800);
+  color: var(--c-purple-200);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-body { flex: 1; }
+
+.step-body strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+
+.step-body p { font-size: 1rem; margin-bottom: 0; }
+
+.source-list { list-style: none; margin: 12px 0; }
+
+.source-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border-secondary);
+  font-size: 1rem;
+}
+
+.source-item:last-child { border-bottom: none; }
+
+.source-item i { color: var(--c-teal-400); font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+
+.source-item a {
+  color: var(--color-text-info);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.source-item a:hover { text-decoration: underline; }
+
+.source-desc { color: var(--color-text-tertiary); margin-top: 2px; }
+
+.checklist { list-style: none; margin: 12px 0; }
+
+.check-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.check-item:last-child { border-bottom: none; }
+.check-item i { color: var(--color-text-success); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+
+.antipattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+
+.ap-card {
+  background: var(--color-background-danger);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.ap-fix {
+  background: var(--color-background-success);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.ap-title {
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ap-card .ap-title { color: var(--color-text-danger); }
+.ap-fix .ap-title { color: var(--color-text-success); }
+
+.ap-card p, .ap-fix p { font-size: 1rem; margin-bottom: 0; line-height: 1.5; }
+
+.phase-list { list-style: none; margin: 16px 0; }
+
+.phase-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+
+.phase-badge {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.phase-badge.p0 { background: var(--c-gray-800); color: var(--c-gray-400); }
+.phase-badge.p1 { background: var(--color-background-danger); color: var(--color-text-danger); }
+.phase-badge.p2 { background: var(--color-background-warning); color: var(--color-text-warning); }
+.phase-badge.p3 { background: var(--color-background-success); color: var(--color-text-success); }
+.phase-badge.p4 { background: var(--color-background-info); color: var(--color-text-info); }
+.phase-badge.p5 { background: rgba(124,58,237,0.15); color: var(--c-purple-400); }
+
+.phase-body { flex: 1; }
+.phase-body strong { font-size: 1rem; color: var(--color-text-primary); display: block; margin-bottom: 2px; }
+.phase-body p { font-size: 1rem; margin-bottom: 0; }
+
+.decision-table td:nth-child(1) { color: var(--color-text-primary); font-weight: 500; font-size: 1rem; width: 45%; }
+.decision-table td:nth-child(2) { font-size: 1rem; }
+
+.ref-section { margin-bottom: 24px; }
+.ref-section h3 { margin-top: 16px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+
+.summary-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.summary-card .sc-icon {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.summary-card .sc-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.summary-card .sc-desc {
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+}
+
+.level-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.level-row:last-child { border-bottom: none; }
+
+.level-badge {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 64px;
+  text-align: center;
+}
+
+.level-body { flex: 1; }
+.level-body strong { font-size: 1rem; color: var(--color-text-primary); display: block; }
+.level-body p { font-size: 1rem; margin-bottom: 0; color: var(--color-text-tertiary); }
+
+.scrolltop {
+  display: none;
+}
+
+.code-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  padding: 8px 16px 0;
+  border-top-left-radius: var(--border-radius-md);
+  border-top-right-radius: var(--border-radius-md);
+  margin-bottom: -8px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-bottom: none;
+  margin-top: 16px;
+}
+
+.code-block {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  body { flex-direction: column; }
+  #sidebar { width: 100%; height: auto; position: static; }
+  #content { padding: 24px 20px; }
+  .grid-2, .antipattern-grid, .summary-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ti ti-hexagon"></i></div>
+      <div class="sidebar-title">Hexagonal Architecture</div>
+    </div>
+    <div class="sidebar-subtitle">完全ガイド — 初学者向け解説</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">はじめに</div>
+    <a class="nav-item" href="#s1"><i class="ti ti-info-circle"></i><span class="nav-num">01</span>概要・背景</a>
+    <a class="nav-item" href="#s2"><i class="ti ti-plug"></i><span class="nav-num">02</span>ポートとアダプター</a>
+    <a class="nav-item" href="#s3"><i class="ti ti-topology-star-3"></i><span class="nav-num">03</span>全体像・依存の方向</a>
+    <div class="nav-section-label">設計詳解</div>
+    <a class="nav-item" href="#s4"><i class="ti ti-arrow-right-circle"></i><span class="nav-num">04</span>ドライビング側</a>
+    <a class="nav-item" href="#s5"><i class="ti ti-arrow-left-circle"></i><span class="nav-num">05</span>ドリブン側</a>
+    <a class="nav-item" href="#s6"><i class="ti ti-circle-dot"></i><span class="nav-num">06</span>アプリケーションコア</a>
+    <a class="nav-item" href="#s7"><i class="ti ti-arrows-exchange"></i><span class="nav-num">07</span>依存性逆転・注入</a>
+    <div class="nav-section-label">実践</div>
+    <a class="nav-item" href="#s8"><i class="ti ti-test-pipe"></i><span class="nav-num">08</span>テスト戦略</a>
+    <a class="nav-item" href="#s9"><i class="ti ti-layout"></i><span class="nav-num">09</span>比較・統合</a>
+    <a class="nav-item" href="#s10"><i class="ti ti-folder"></i><span class="nav-num">10</span>ディレクトリ構成</a>
+    <a class="nav-item" href="#s11"><i class="ti ti-stairs"></i><span class="nav-num">11</span>段階的導入</a>
+    <a class="nav-item" href="#s12"><i class="ti ti-shopping-cart"></i><span class="nav-num">12</span>ECサイト実装例</a>
+    <div class="nav-section-label">まとめ</div>
+    <a class="nav-item" href="#s13"><i class="ti ti-alert-triangle"></i><span class="nav-num">13</span>アンチパターン</a>
+    <a class="nav-item" href="#s14"><i class="ti ti-star"></i><span class="nav-num">14</span>ベストプラクティス</a>
+    <a class="nav-item" href="#s15"><i class="ti ti-books"></i><span class="nav-num">15</span>参考文献</a>
+  </div>
+</nav>
+
+<main id="content">
+
+  <div class="page-hero">
+    <div class="hero-badge"><i class="ti ti-hexagon"></i> Architecture Pattern</div>
+    <div class="page-title">ヘキサゴナルアーキテクチャ<br>完全ガイド</div>
+    <p class="page-lead">
+      ビジネスロジックを技術的詳細から完全に切り離し、テスト容易性・技術的独立性・対称性を実現するソフトウェアアーキテクチャパターン。初学者が「なぜそう設計するのか」から理解できる構成で解説します。
+    </p>
+    <div class="meta-row">
+      <div class="meta-chip"><i class="ti ti-user"></i> Alistair Cockburn (2005)</div>
+      <div class="meta-chip"><i class="ti ti-tag"></i> Ports &amp; Adapters Pattern</div>
+      <div class="meta-chip"><i class="ti ti-code"></i> Python 実装例付き</div>
+      <div class="meta-chip"><i class="ti ti-clock"></i> 読了 60〜90分</div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 1 ========== -->
+  <section id="s1">
+    <h2><span class="section-num">01</span> ヘキサゴナルアーキテクチャとは何か？</h2>
+
+    <h3>1.1 定義と一言サマリー</h3>
+    <p>
+      ヘキサゴナルアーキテクチャ（Hexagonal Architecture）は、2005年に <strong>Alistair Cockburn</strong> が提唱したアーキテクチャパターンです。正式名称は <strong>「ポート＆アダプターパターン（Ports and Adapters）」</strong> とも呼ばれます。
+    </p>
+    <div class="callout info">
+      <i class="ti ti-bulb callout-icon"></i>
+      <div>「アプリケーションのビジネスロジック（コア）を、データベース・UI・外部APIといった技術的詳細から完全に切り離し、どの方向からでも等しくテスト・利用できる構造を作る」パターンです。六角形という名前は、アプリケーションの各接続点（ポート）を視覚的に表現するためのもので、六角形の各辺がひとつのポートを表します。</div>
+    </div>
+
+    <h3>1.2 このアーキテクチャが解決する問題</h3>
+    <p>従来のレイヤードアーキテクチャでは、ビジネスロジックが技術的詳細に汚染される問題が起きていました。具体的にはどんな問題なのか確認しましょう。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-git-branch"></i> 問題と解決策の対応図</div>
+      <div class="mermaid">
+graph LR
+  subgraph P["❌ 従来の問題"]
+    P1["ビジネスロジックが<br>フレームワークに依存"]
+    P2["テストに実DBが必要<br>→ 遅い・壊れやすい"]
+    P3["UIを変えると<br>コアも修正が必要"]
+    P4["外部APIとの結合が強く<br>差し替えが困難"]
+  end
+  subgraph S["✅ ヘキサゴナルが解決"]
+    S1["コアはフレームワーク非依存<br>純粋なコードのみ"]
+    S2["インメモリ実装で<br>DBなしでもテスト可能"]
+    S3["UIはアダプターを変えるだけ<br>コアには無変更"]
+    S4["ポート経由で差し替え可能<br>実装を交換するだけ"]
+  end
+  P1 --> S1
+  P2 --> S2
+  P3 --> S3
+  P4 --> S4
+      </div>
+    </div>
+
+    <h3>1.3 三つの設計目標</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-test-pipe card-icon-core"></i> テスト容易性</div>
+        <p>ビジネスロジックをDB・UI・外部APIなしで完全にテストできる。インメモリ実装に差し替えれば本物のインフラは不要。</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-replace card-icon-driving"></i> 技術的独立性</div>
+        <p>DB・フレームワーク・UIは交換可能なプラグインに過ぎない。コアへの影響ゼロで入れ替えができる。</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 12px;">
+      <div class="card-title"><i class="ti ti-arrows-left-right card-icon-driven"></i> 対称性</div>
+      <p>HTTP・CLI・イベントキューなど、どのインターフェースからでも同じ方法でアプリを起動できる。特定のUIに縛られない設計。</p>
+    </div>
+
+    <h3>1.4 アーキテクチャの歴史的位置づけ</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-timeline"></i> アーキテクチャパターンの進化</div>
+      <div class="mermaid">
+graph TD
+  T1["<strong>2000年代初期: 伝統的なレイヤードアーキテクチャ</strong><br>Presentation → Business → Data"]
+  T2["<strong>2005年: Alistair Cockburn がヘキサゴナルを提唱</strong><br>「Ports and Adapters」パターン"]
+  T3["<strong>2008年: Jeffrey Palermo がオニオンアーキテクチャを提唱</strong><br>ヘキサゴナルを発展させた同心円モデル"]
+  T4["<strong>2012年: Robert C. Martin がクリーンアーキテクチャを発表</strong><br>ヘキサゴナル・オニオンを統合・体系化"]
+  T5["<strong>2020年代: マイクロサービスとの組み合わせが主流</strong><br>各サービス内部にヘキサゴナルを適用"]
+
+  T1 --> T2
+  T2 --> T3
+  T3 --> T4
+  T4 --> T5
+
+  style T1 fill:#161b22,stroke:#30363d,color:#e6edf3
+  style T2 fill:#161b22,stroke:#30363d,color:#e6edf3
+  style T3 fill:#161b22,stroke:#30363d,color:#e6edf3
+  style T4 fill:#161b22,stroke:#30363d,color:#e6edf3
+  style T5 fill:#161b22,stroke:#30363d,color:#e6edf3
+      </div>
+    </div>
+
+    <div class="callout success">
+      <i class="ti ti-link callout-icon"></i>
+      <div><strong>一次ソース：</strong> <a href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/" style="color:inherit">Alistair Cockburn 原著論文（Web Archive）</a> — ヘキサゴナルアーキテクチャの提唱者による公式定義。</div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 2 ========== -->
+  <section id="s2">
+    <h2><span class="section-num">02</span> コア概念：ポートとアダプター</h2>
+
+    <h3>2.1 ポート（Port）とは何か</h3>
+    <p>
+      <strong>ポート</strong>とはアプリケーションコアが外部世界と通信するための<strong>インターフェース（契約）</strong>です。ポートはコアが「何が必要か」を宣言しますが、「どう実現するか」は知りません。これがポートの最重要特性です。
+    </p>
+
+    <div class="grid-2">
+      <div class="card driving">
+        <div class="card-title"><i class="ti ti-door-enter card-icon-driving"></i> ドライビングポート（Inbound Port）</div>
+        <p>外部からアプリを駆動する<strong>入口</strong>。「アプリが提供するもの」を定義します。<br><br>例：注文を作成する、商品を検索する</p>
+      </div>
+      <div class="card driven">
+        <div class="card-title"><i class="ti ti-door-exit card-icon-driven"></i> ドリブンポート（Outbound Port）</div>
+        <p>アプリが外部リソースを使うための<strong>出口</strong>。「アプリが必要とするもの」を定義します。<br><br>例：注文を保存する、メールを送る</p>
+      </div>
+    </div>
+
+    <h3>2.2 アダプター（Adapter）とは何か</h3>
+    <p>
+      <strong>アダプター</strong>はポートの<strong>具体的な実装</strong>です。外部の技術的詳細（HTTP・SQL・メール等）をポートのインターフェースに変換する橋渡し役です。アダプターを差し替えることで、コアに一切触れずにインフラを交換できます。
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>種類</th><th>役割</th><th>実装例</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag green">ドライビングアダプター</span></td>
+          <td>外部入力をポートの呼び出しに変換</td>
+          <td>REST Controller / CLI / gRPC / Queue Consumer</td>
+        </tr>
+        <tr>
+          <td><span class="tag blue">ドリブンアダプター</span></td>
+          <td>ポートの呼び出しを外部操作に変換</td>
+          <td>SQLAlchemy Repository / Redis / Stripe / SendGrid</td>
+        </tr>
+        <tr>
+          <td><span class="tag green">テスト用アダプター</span></td>
+          <td>テスト時にインフラを置き換える</td>
+          <td>InMemoryRepository / FakeEmailAdapter</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>2.3 ポートとアダプターの関係図</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-git-commit"></i> データフローと変換の流れ</div>
+      <div class="mermaid">
+flowchart LR
+  USER["👤 ユーザー"] -->|"HTTPリクエスト"| DA["🟢 REST アダプター\nドライビングアダプター"]
+  DA -->|"インターフェース呼び出し"| DP["🟢 ドライビングポート\ninterface OrderUseCase"]
+  DP --> CORE["🔷 アプリケーションコア\nOrderService\nビジネスロジック"]
+  CORE --> DRP["🔵 ドリブンポート\ninterface OrderRepository"]
+  DRP -->|"インターフェース呼び出し"| DRA["🔵 SQLアダプター\nドリブンアダプター"]
+  DRA -->|"SQL実行"| DB[("🗄️ データベース")]
+      </div>
+    </div>
+
+    <h3>2.4 ポート命名のベストプラクティス</h3>
+    <div class="callout warning">
+      <i class="ti ti-alert-triangle callout-icon"></i>
+      <div>ポートの名前は<strong>ビジネス語彙</strong>で命名するのが鉄則です。技術用語（SQL・HTTP・Redis）をポート名に含めてはいけません。ポートはコアの「意図」を表現するものであり、「実装手段」を表現するものではないからです。</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>種類</th><th>良い命名 ✅</th><th>悪い命名 ❌</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ドライビングポート</td>
+          <td><code>PlaceOrderPort</code><br><code>SearchProductsPort</code></td>
+          <td><code>OrderController</code><br><code>IOrder</code></td>
+        </tr>
+        <tr>
+          <td>ドリブンポート</td>
+          <td><code>SaveOrderPort</code><br><code>SendEmailPort</code></td>
+          <td><code>OrderRepository</code><br><code>DatabasePort</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== SECTION 3 ========== -->
+  <section id="s3">
+    <h2><span class="section-num">03</span> アーキテクチャ全体像と依存の方向</h2>
+
+    <h3>3.1 六角形の全体構造</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-topology-star-3"></i> ヘキサゴン全体像（簡略版）</div>
+      <div class="mermaid">
+flowchart LR
+  subgraph EXT_L["外部（左：ドライビング側）"]
+    HTTP["🌐 HTTPクライアント"]
+    CLI2["💻 CLI"]
+    TEST2["🧪 テスト"]
+  end
+  subgraph HEX["🔷 ヘキサゴン"]
+    subgraph DA2["ドライビングアダプター"]
+      RC["REST Controller"]
+      CC["CLI Handler"]
+    end
+    subgraph DP2["ドライビングポート"]
+      PO2["PlaceOrderPort"]
+      SP2["SearchProductPort"]
+    end
+    subgraph CORE2["アプリケーションコア"]
+      OS["OrderService"]
+      PS["ProductService"]
+      OE["Order エンティティ"]
+    end
+    subgraph DRP2["ドリブンポート"]
+      OR2["SaveOrderPort"]
+      LR2["LoadProductPort"]
+      EM2["SendEmailPort"]
+    end
+    subgraph DRA2["ドリブンアダプター"]
+      SQ["SQL Repo"]
+      EML2["Email Adapter"]
+    end
+  end
+  subgraph EXT_R["外部（右：ドリブン側）"]
+    DB2[("PostgreSQL")]
+    SG2["SendGrid"]
+  end
+  HTTP & CLI2 & TEST2 --> RC & CC
+  RC & CC --> PO2 & SP2
+  PO2 & SP2 --> OS & PS
+  OS --> OR2 & EM2
+  PS --> LR2
+  OR2 --> SQ
+  LR2 --> SQ
+  EM2 --> EML2
+  SQ --> DB2
+  EML2 --> SG2
+      </div>
+    </div>
+
+    <h3>3.2 依存の黄金律（最重要ルール）</h3>
+    <div class="callout danger">
+      <i class="ti ti-alert-octagon callout-icon"></i>
+      <div>
+        <strong>コアは絶対に外側を知ってはいけない。</strong><br>
+        依存の方向は「外から内へ」だけです。アダプターはポートに依存する。コアはポートを定義する。しかし、コアはアダプターの存在を知らない。この非対称性がヘキサゴナルアーキテクチャの核心です。
+      </div>
+    </div>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrows-right"></i> 依存の方向（右向きのみ許可）</div>
+      <div class="mermaid">
+flowchart LR
+  F["フレームワーク・DB・外部API\n最も変わりやすい"] -->|"実装する"| A["アダプター層\n技術的詳細の変換"]
+  A -->|"実装・呼び出す"| P["ポート層\nインターフェース・契約"]
+  P -->|"コアに所有される"| C["アプリケーションコア\n最も変わらない"]
+  C -.->|"❌ 知らない"| P
+  P -.->|"❌ 知らない"| A
+  A -.->|"❌ 知らない"| F
+      </div>
+    </div>
+
+    <h3>3.3 依存の方向をコードで確認</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> Python — 依存関係の正しい例</div>
+    <pre class="code-block"><code><span style="color:#8b949e"># ─── アプリケーションコア（外部依存ゼロ）───</span>
+<span style="color:#8b949e"># domain/entities/order.py</span>
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">Order</span>:
+    <span style="color:#a5d6ff">"""純粋なビジネスエンティティ。フレームワーク依存なし。"""</span>
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__init__</span>(<span style="color:#ffa657">self</span>, order_id: <span style="color:#79c0ff">str</span>, customer_id: <span style="color:#79c0ff">str</span>):
+        <span style="color:#ffa657">self</span>.order_id = order_id
+        <span style="color:#ffa657">self</span>.status = <span style="color:#a5d6ff">"pending"</span>
+
+<span style="color:#8b949e"># ─── ドリブンポート（コアに所属）───</span>
+<span style="color:#8b949e"># application/ports/outbound/order_repository_port.py</span>
+<span style="color:#c9d1d9">from</span> abc <span style="color:#c9d1d9">import</span> ABC, abstractmethod
+<span style="color:#c9d1d9">from</span> domain.entities.order <span style="color:#c9d1d9">import</span> Order  <span style="color:#8b949e"># ✅ ドメインのみimport</span>
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">OrderRepositoryPort</span>(ABC):
+    <span style="color:#a5d6ff">"""何が必要か（保存する）を宣言する。どう実現するかは知らない。"""</span>
+    @abstractmethod
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">save</span>(<span style="color:#ffa657">self</span>, order: Order) -> <span style="color:#79c0ff">None</span>: ...
+
+<span style="color:#8b949e"># ─── ドリブンアダプター（外側に所属）───</span>
+<span style="color:#8b949e"># adapters/outbound/persistence/sql_order_repository.py</span>
+<span style="color:#c9d1d9">from</span> sqlalchemy.orm <span style="color:#c9d1d9">import</span> Session
+<span style="color:#c9d1d9">from</span> application.ports.outbound.order_repository_port <span style="color:#c9d1d9">import</span> OrderRepositoryPort
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">SQLOrderRepository</span>(OrderRepositoryPort):
+    <span style="color:#a5d6ff">"""OrderRepositoryPort のSQL実装。コアはこのクラスを知らない。"""</span>
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__init__</span>(<span style="color:#ffa657">self</span>, session: Session):
+        <span style="color:#ffa657">self</span>._session = session
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">save</span>(<span style="color:#ffa657">self</span>, order: Order) -> <span style="color:#79c0ff">None</span>:
+        model = <span style="color:#ffa657">self</span>._to_model(order)  <span style="color:#8b949e"># SQL固有のマッピング</span>
+        <span style="color:#ffa657">self</span>._session.merge(model)
+        <span style="color:#ffa657">self</span>._session.flush()</code></pre>
+  </section>
+
+  <!-- ========== SECTION 4 ========== -->
+  <section id="s4">
+    <h2><span class="section-num">04</span> ドライビング側（Driving Side）の設計</h2>
+
+    <h3>4.1 ドライビングアダプターの役割</h3>
+    <p>ドライビングアダプターは「外部からの入力をコアが理解できる形に変換する」役割を担います。HTTP・CLI・gRPC・メッセージキューなど、どんな入力形式でも同じポートを呼び出せます。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrow-right-circle"></i> ドライビング側の構造</div>
+      <div class="mermaid">
+flowchart TD
+  subgraph ACTORS["外部アクター"]
+    UA["👤 エンドユーザー"]
+    AA["👨‍💼 管理者"]
+    TA["🧪 テストスイート"]
+    SA["🤖 他システム"]
+  end
+  subgraph DA3["ドライビングアダプター（具体的実装）"]
+    REST3["REST API Controller"]
+    GRAPHQL3["GraphQL Resolver"]
+    CLI3["CLI Handler"]
+    CONSUMER3["Queue Consumer"]
+  end
+  subgraph DP3["ドライビングポート（インターフェース）"]
+    UC1_3["PlaceOrderUseCase"]
+    UC2_3["GetOrderUseCase"]
+    UC3_3["SearchProductsUseCase"]
+  end
+  UA --> REST3 & GRAPHQL3
+  AA --> CLI3
+  SA --> CONSUMER3
+  TA --> UC1_3
+  REST3 --> UC1_3 & UC2_3
+  GRAPHQL3 --> UC3_3
+  CLI3 --> UC1_3
+  CONSUMER3 --> UC1_3
+      </div>
+    </div>
+
+    <h3>4.2 ドライビングポートの定義（Python）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> application/ports/inbound/place_order_use_case.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">from</span> abc <span style="color:#c9d1d9">import</span> ABC, abstractmethod
+<span style="color:#c9d1d9">from</span> dataclasses <span style="color:#c9d1d9">import</span> dataclass
+<span style="color:#c9d1d9">from</span> decimal <span style="color:#c9d1d9">import</span> Decimal
+
+@dataclass(frozen=<span style="color:#79c0ff">True</span>)
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PlaceOrderCommand</span>:
+    <span style="color:#a5d6ff">"""注文作成コマンド（入力DTO）。イミュータブル設計。"""</span>
+    customer_id: <span style="color:#79c0ff">str</span>
+    items: list[dict]  <span style="color:#8b949e"># [{"product_id": str, "quantity": int}]</span>
+
+@dataclass(frozen=<span style="color:#79c0ff">True</span>)
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PlaceOrderResult</span>:
+    <span style="color:#a5d6ff">"""注文作成結果（出力DTO）"""</span>
+    order_id: <span style="color:#79c0ff">str</span>
+    status: <span style="color:#79c0ff">str</span>
+    total_amount: Decimal
+    currency: <span style="color:#79c0ff">str</span>
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PlaceOrderUseCase</span>(ABC):
+    <span style="color:#a5d6ff">"""
+    注文作成ユースケースポート（ドライビングポート）。
+    このインターフェースがドライビングアダプターとコアを繋ぐ契約。
+    """</span>
+    @abstractmethod
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">execute</span>(<span style="color:#ffa657">self</span>, command: PlaceOrderCommand) -> PlaceOrderResult: ...</code></pre>
+
+    <h3>4.3 REST アダプターの実装（FastAPI）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> adapters/inbound/rest/order_router.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">from</span> fastapi <span style="color:#c9d1d9">import</span> APIRouter, Depends, HTTPException, status
+<span style="color:#c9d1d9">from</span> pydantic <span style="color:#c9d1d9">import</span> BaseModel
+
+router = APIRouter(prefix=<span style="color:#a5d6ff">"/api/v1/orders"</span>, tags=[<span style="color:#a5d6ff">"orders"</span>])
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PlaceOrderRequest</span>(BaseModel):
+    items: list[dict]
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PlaceOrderResponse</span>(BaseModel):
+    order_id: <span style="color:#79c0ff">str</span>
+    status: <span style="color:#79c0ff">str</span>
+    total_amount: <span style="color:#79c0ff">float</span>
+    currency: <span style="color:#79c0ff">str</span>
+
+@router.post(<span style="color:#a5d6ff">"/"</span>, response_model=PlaceOrderResponse, status_code=<span style="color:#79c0ff">201</span>)
+<span style="color:#c9d1d9">async def</span> <span style="color:#d2a8ff">place_order</span>(
+    request: PlaceOrderRequest,
+    use_case: PlaceOrderUseCase = Depends(get_place_order_use_case),
+) -> PlaceOrderResponse:
+    <span style="color:#a5d6ff">"""
+    ドライビングアダプターの責務（3つだけ）：
+    1. HTTP リクエスト → ポートの Command に変換
+    2. ポート（ユースケース）を呼び出す
+    3. 結果 → HTTP レスポンスに変換
+    ビジネスロジックは一切持たない！
+    """</span>
+    <span style="color:#c9d1d9">try</span>:
+        command = PlaceOrderCommand(
+            customer_id=<span style="color:#a5d6ff">"CUST-001"</span>,  <span style="color:#8b949e"># 実際はAuthから取得</span>
+            items=request.items,
+        )
+        result = use_case.execute(command)
+        <span style="color:#c9d1d9">return</span> PlaceOrderResponse(
+            order_id=result.order_id,
+            status=result.status,
+            total_amount=<span style="color:#79c0ff">float</span>(result.total_amount),
+            currency=result.currency,
+        )
+    <span style="color:#c9d1d9">except</span> ValueError <span style="color:#c9d1d9">as</span> e:
+        <span style="color:#c9d1d9">raise</span> HTTPException(status_code=<span style="color:#79c0ff">422</span>, detail=<span style="color:#79c0ff">str</span>(e))</code></pre>
+
+    <div class="callout info">
+      <i class="ti ti-bulb callout-icon"></i>
+      <div>アダプターの責務は「変換だけ」です。もしアダプターの中でif文を使ったビジネス判断をしているなら、それはコアに移動すべきロジックです。</div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 5 ========== -->
+  <section id="s5">
+    <h2><span class="section-num">05</span> ドリブン側（Driven Side）の設計</h2>
+
+    <h3>5.1 ドリブンアダプターのポイント：差し替え可能性</h3>
+    <p>ドリブン側の最大の強みは、<strong>同じポートに対して複数の実装を用意できること</strong>です。本番用の実装とテスト用の実装を持ち、DIコンテナで切り替えるだけです。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrow-left-circle"></i> ドリブン側の構造（差し替え可能性）</div>
+      <div class="mermaid">
+flowchart LR
+  subgraph PORTS["ドリブンポート（コアに所属）"]
+    RP2["SaveOrderPort"]
+    LP2["LoadProductPort"]
+    EP2["SendEmailPort"]
+  end
+  subgraph ADAPTERS["ドリブンアダプター（外側に所属）"]
+    SQL2["SQLAlchemy実装\n（本番用）"]
+    MONGO2["PyMongo実装\n（代替DB）"]
+    INMEM2["InMemory実装\n（テスト用）"]
+    SG3["SendGrid実装\n（本番用）"]
+    FAKE3["Fake実装\n（テスト用）"]
+  end
+  RP2 --> SQL2
+  RP2 --> MONGO2
+  RP2 --> INMEM2
+  EP2 --> SG3
+  EP2 --> FAKE3
+      </div>
+    </div>
+
+    <h3>5.2 テスト用インメモリアダプター</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> adapters/outbound/persistence/in_memory_order_repository.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">from</span> application.ports.outbound.order_repository_port <span style="color:#c9d1d9">import</span> OrderRepositoryPort
+<span style="color:#c9d1d9">from</span> domain.entities.order <span style="color:#c9d1d9">import</span> Order
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">InMemoryOrderRepository</span>(OrderRepositoryPort):
+    <span style="color:#a5d6ff">"""
+    テスト専用のインメモリ実装。
+    DBなしで高速なユニットテストを可能にする。
+    同じポートを実装するため、本番コードと完全に差し替え可能。
+    """</span>
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__init__</span>(<span style="color:#ffa657">self</span>):
+        <span style="color:#ffa657">self</span>._store: dict[<span style="color:#79c0ff">str</span>, Order] = {}
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">save</span>(<span style="color:#ffa657">self</span>, order: Order) -> <span style="color:#79c0ff">None</span>:
+        <span style="color:#ffa657">self</span>._store[order.order_id] = order  <span style="color:#8b949e"># メモリに保存</span>
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">find_by_id</span>(<span style="color:#ffa657">self</span>, order_id: <span style="color:#79c0ff">str</span>) -> Order | <span style="color:#79c0ff">None</span>:
+        <span style="color:#c9d1d9">return</span> <span style="color:#ffa657">self</span>._store.get(order_id)
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">count</span>(<span style="color:#ffa657">self</span>) -> <span style="color:#79c0ff">int</span>:  <span style="color:#8b949e"># テスト用ヘルパー</span>
+        <span style="color:#c9d1d9">return</span> <span style="color:#79c0ff">len</span>(<span style="color:#ffa657">self</span>._store)</code></pre>
+
+    <div class="callout success">
+      <i class="ti ti-check callout-icon"></i>
+      <div><strong>ベストプラクティス：</strong> すべてのドリブンポートに対してInMemory/Fake実装を必ず用意してください。これがヘキサゴナルアーキテクチャのテスト速度向上の核心です。</div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 6 ========== -->
+  <section id="s6">
+    <h2><span class="section-num">06</span> アプリケーションコア（ドメイン）の設計</h2>
+
+    <h3>6.1 コアの内部構造</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-circle-dot"></i> アプリケーションコアの内部構造</div>
+      <div class="mermaid">
+flowchart TD
+  subgraph DOMAIN["🔴 ドメイン層（最も安定）"]
+    ENTITIES2["エンティティ（Entity）\nOrder / Product / Customer"]
+    VALUE_OBJ2["値オブジェクト（Value Object）\nMoney / Email / Address"]
+    DOMAIN_SVC2["ドメインサービス\nPricingService（複数Entity横断ロジック）"]
+    DOMAIN_EVT2["ドメインイベント\nOrderPlaced / PaymentCompleted"]
+  end
+  subgraph APP["🟡 アプリケーション層"]
+    USE_CASES2["ユースケース（Use Case）\nPlaceOrderService / CancelOrderService"]
+    IN_PORTS2["インバウンドポート定義\nPlaceOrderUseCase（ABC）"]
+    OUT_PORTS2["アウトバウンドポート定義\nOrderRepositoryPort（ABC）"]
+  end
+  USE_CASES2 --> ENTITIES2
+  USE_CASES2 --> DOMAIN_SVC2
+  USE_CASES2 --> OUT_PORTS2
+      </div>
+    </div>
+
+    <h3>6.2 ドメインエンティティの実装（外部依存ゼロ）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> domain/entities/order.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">from</span> dataclasses <span style="color:#c9d1d9">import</span> dataclass, field
+<span style="color:#c9d1d9">from</span> decimal <span style="color:#c9d1d9">import</span> Decimal
+<span style="color:#c9d1d9">from</span> enum <span style="color:#c9d1d9">import</span> Enum
+<span style="color:#c9d1d9">import</span> uuid  <span style="color:#8b949e"># ← 標準ライブラリのみ。フレームワーク依存ゼロ！</span>
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">OrderStatus</span>(Enum):
+    PENDING   = <span style="color:#a5d6ff">"pending"</span>
+    CONFIRMED = <span style="color:#a5d6ff">"confirmed"</span>
+    CANCELLED = <span style="color:#a5d6ff">"cancelled"</span>
+
+@dataclass(frozen=<span style="color:#79c0ff">True</span>)
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">Money</span>:
+    <span style="color:#a5d6ff">"""金額の値オブジェクト（イミュータブル）"""</span>
+    amount: Decimal
+    currency: <span style="color:#79c0ff">str</span> = <span style="color:#a5d6ff">"JPY"</span>
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__post_init__</span>(<span style="color:#ffa657">self</span>):
+        <span style="color:#c9d1d9">if</span> <span style="color:#ffa657">self</span>.amount < <span style="color:#79c0ff">0</span>:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">f"金額は0以上: {self.amount}"</span>)
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__add__</span>(<span style="color:#ffa657">self</span>, other: <span style="color:#a5d6ff">"Money"</span>) -> <span style="color:#a5d6ff">"Money"</span>:
+        <span style="color:#c9d1d9">if</span> <span style="color:#ffa657">self</span>.currency != other.currency:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">"通貨が一致しません"</span>)
+        <span style="color:#c9d1d9">return</span> Money(<span style="color:#ffa657">self</span>.amount + other.amount, <span style="color:#ffa657">self</span>.currency)
+
+@dataclass
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">Order</span>:
+    <span style="color:#a5d6ff">"""注文エンティティ（集約ルート）"""</span>
+    order_id: <span style="color:#79c0ff">str</span>
+    customer_id: <span style="color:#79c0ff">str</span>
+    _lines: list = field(default_factory=list, repr=<span style="color:#79c0ff">False</span>)
+    _status: OrderStatus = field(default=OrderStatus.PENDING, repr=<span style="color:#79c0ff">False</span>)
+    _events: list = field(default_factory=list, repr=<span style="color:#79c0ff">False</span>)
+
+    @classmethod
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">create</span>(cls, customer_id: <span style="color:#79c0ff">str</span>) -> <span style="color:#a5d6ff">"Order"</span>:
+        <span style="color:#c9d1d9">return</span> cls(order_id=<span style="color:#79c0ff">str</span>(uuid.uuid4()), customer_id=customer_id)
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">confirm</span>(<span style="color:#ffa657">self</span>) -> <span style="color:#79c0ff">None</span>:
+        <span style="color:#8b949e"># ビジネスルールをここに集約する</span>
+        <span style="color:#c9d1d9">if</span> <span style="color:#ffa657">self</span>._status != OrderStatus.PENDING:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">"保留中の注文のみ確定できます"</span>)
+        <span style="color:#c9d1d9">if</span> <span style="color:#c9d1d9">not</span> <span style="color:#ffa657">self</span>._lines:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">"明細が1件もありません"</span>)
+        <span style="color:#ffa657">self</span>._status = OrderStatus.CONFIRMED
+        <span style="color:#ffa657">self</span>._events.append({"type": <span style="color:#a5d6ff">"OrderConfirmed"</span>, "order_id": <span style="color:#ffa657">self</span>.order_id})</code></pre>
+
+    <div class="callout warning">
+      <i class="ti ti-alert-triangle callout-icon"></i>
+      <div><strong>重要：</strong> <code>domain/</code> ディレクトリ内には <code>sqlalchemy</code>・<code>fastapi</code>・<code>django</code>・<code>requests</code> などの外部ライブラリを一切 import してはいけません。CIで自動チェックすることを推奨します（セクション13参照）。</div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 7 ========== -->
+  <section id="s7">
+    <h2><span class="section-num">07</span> 依存性逆転と依存性注入</h2>
+
+    <h3>7.1 依存性逆転原則（DIP）とは</h3>
+    <p>「上位モジュールは下位モジュールに依存してはならない。両方とも抽象に依存すべきだ」という原則です。ヘキサゴナルアーキテクチャはこの原則を徹底的に適用します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrows-exchange"></i> DIP なし vs DIP あり</div>
+      <div class="mermaid">
+flowchart LR
+  subgraph BAD["❌ DIP なし（具体に依存）"]
+    UC_BAD["PlaceOrderService"] -->|"直接依存・直接生成"| REPO_BAD["MySQLOrderRepository\n（具体実装）"]
+  end
+  subgraph GOOD["✅ DIP あり（抽象に依存）"]
+    UC_GOOD["PlaceOrderService"] -->|"依存（抽象のみ）"| PORT_GOOD["OrderRepositoryPort\n（インターフェース）"]
+    MYSQL_GOOD["MySQLOrderRepository"] -->|"実装"| PORT_GOOD
+    INMEM_GOOD["InMemoryOrderRepository"] -->|"実装"| PORT_GOOD
+    DI_CONTAINER2["DIコンテナ"] -->|"本番時に注入"| MYSQL_GOOD
+    DI_CONTAINER2 -->|"テスト時に注入"| INMEM_GOOD
+  end
+      </div>
+    </div>
+
+    <h3>7.2 Composition Root（配線の場所）</h3>
+    <p>すべての依存関係を組み立てる<strong>唯一の場所</strong>です。アプリケーション起動時に一度だけ実行されます。コードのどこで <code>new</code>（インスタンス生成）するかを一箇所に集中させることが核心です。</p>
+
+    <ul class="phase-list">
+      <li class="phase-item">
+        <span class="phase-badge p0">Step 1</span>
+        <div class="phase-body">
+          <strong>インフラリソースを準備</strong>
+          <p>DBセッション・HTTP クライアント・設定値の読み込み</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p2">Step 2</span>
+        <div class="phase-body">
+          <strong>ドリブンアダプターを生成</strong>
+          <p>SQLOrderRepository(session) / SendGridEmailAdapter(api_key) など</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p3">Step 3</span>
+        <div class="phase-body">
+          <strong>ユースケースにアダプターを注入</strong>
+          <p>PlaceOrderService(order_repo=sql_repo, email=sendgrid, ...)</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p4">Step 4</span>
+        <div class="phase-body">
+          <strong>ドライビングアダプターにユースケースを注入</strong>
+          <p>OrderRouter(use_case=place_order_service)</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p5">Step 5</span>
+        <div class="phase-body">
+          <strong>アプリケーション起動</strong>
+          <p>依存が全て組み立てられた状態でサーバーを起動</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="code-label"><i class="ti ti-file-code"></i> infrastructure/di_container.py（本番用 vs テスト用）</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">create_production_container</span>():
+    <span style="color:#a5d6ff">"""本番用の Composition Root。具体クラスを知っているのはここだけ。"""</span>
+    engine = create_engine(os.environ[<span style="color:#a5d6ff">"DATABASE_URL"</span>])
+    session = sessionmaker(bind=engine)()
+
+    order_repo = SQLOrderRepository(session)          <span style="color:#8b949e"># 本番用SQL実装</span>
+    email      = SendGridEmailAdapter(api_key=...)    <span style="color:#8b949e"># 本番用メール</span>
+    event_pub  = KafkaEventPublisher(...)             <span style="color:#8b949e"># 本番用イベント</span>
+
+    <span style="color:#c9d1d9">return</span> PlaceOrderService(
+        order_repository=order_repo,  <span style="color:#8b949e"># ← インターフェースに注入</span>
+        email_notification=email,
+        event_publisher=event_pub,
+    )
+
+<span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">create_test_container</span>():
+    <span style="color:#a5d6ff">"""テスト用。インメモリ実装に差し替えるだけ。DBなし・外部APIなし。"""</span>
+    <span style="color:#c9d1d9">return</span> PlaceOrderService(
+        order_repository=InMemoryOrderRepository(),  <span style="color:#8b949e"># ← テスト用に差し替え</span>
+        email_notification=FakeEmailAdapter(),
+        event_publisher=InMemoryEventPublisher(),
+    )</code></pre>
+
+    <div class="callout success">
+      <i class="ti ti-link callout-icon"></i>
+      <div><strong>参考：</strong> <a href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/" style="color:inherit">FastAPI 公式 — Dependency Injection</a> — FastAPI でのDI実装パターン</div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 8 ========== -->
+  <section id="s8">
+    <h2><span class="section-num">08</span> テスト戦略</h2>
+
+    <h3>8.1 ヘキサゴナルのテストピラミッド</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-triangle"></i> テストピラミッド（下が多い・上が少ない）</div>
+      <div class="mermaid">
+flowchart TD
+  E2E2["E2E テスト（少数）\n実際のインフラで全体フロー確認\n遅い・コスト高"]
+  INT2["統合テスト（中程度）\n実際のアダプターをコアと接続\nTestContainers で自動化"]
+  ADT["アダプターテスト（中程度）\nドライビング：HTTPリクエスト検証\nドリブン：SQLクエリ正確性"]
+  UCT["ユニットテスト：コア（多数・最重要）\nインメモリアダプターでコアをテスト\nDB・外部API不要 → 超高速"]
+  DT["ユニットテスト：ドメイン（最多）\nエンティティ・値オブジェクト\n外部依存ゼロ → 最もシンプル"]
+  DT --> UCT --> ADT --> INT2 --> E2E2
+      </div>
+    </div>
+
+    <h3>8.2 ドメインのユニットテスト（外部依存ゼロ）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> tests/unit/domain/test_order.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">import</span> pytest
+<span style="color:#c9d1d9">from</span> domain.entities.order <span style="color:#c9d1d9">import</span> Order, OrderStatus, Money
+<span style="color:#c9d1d9">from</span> decimal <span style="color:#c9d1d9">import</span> Decimal
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">TestOrder</span>:
+    <span style="color:#a5d6ff">"""ドメインのテスト。外部依存ゼロ・ミリ秒で実行。"""</span>
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">test_注文作成時はペンディング状態になる</span>(<span style="color:#ffa657">self</span>):
+        order = Order.create(customer_id=<span style="color:#a5d6ff">"CUST-001"</span>)
+        <span style="color:#c9d1d9">assert</span> order.status == OrderStatus.PENDING
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">test_明細が空のとき確定するとエラーになる</span>(<span style="color:#ffa657">self</span>):
+        order = Order.create(customer_id=<span style="color:#a5d6ff">"CUST-001"</span>)
+        <span style="color:#c9d1d9">with</span> pytest.raises(ValueError, match=<span style="color:#a5d6ff">"明細が1件もありません"</span>):
+            order.confirm()
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">test_合計金額が正しく計算される</span>(<span style="color:#ffa657">self</span>):
+        order = Order.create(customer_id=<span style="color:#a5d6ff">"CUST-001"</span>)
+        order.add_line(<span style="color:#a5d6ff">"P001"</span>, <span style="color:#a5d6ff">"Tシャツ"</span>,  Money(Decimal(<span style="color:#a5d6ff">"1000"</span>)), <span style="color:#79c0ff">2</span>)
+        order.add_line(<span style="color:#a5d6ff">"P002"</span>, <span style="color:#a5d6ff">"ジーンズ"</span>, Money(Decimal(<span style="color:#a5d6ff">"5000"</span>)), <span style="color:#79c0ff">1</span>)
+        <span style="color:#c9d1d9">assert</span> order.total_amount == Money(Decimal(<span style="color:#a5d6ff">"7000"</span>))</code></pre>
+
+    <h3>8.3 ユースケースのユニットテスト（インメモリ使用）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> tests/unit/application/test_place_order_service.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">TestPlaceOrderService</span>:
+    @pytest.fixture
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">setup</span>(<span style="color:#ffa657">self</span>):
+        <span style="color:#a5d6ff">"""テスト用DIセットアップ（インメモリ実装を注入）"""</span>
+        order_repo    = InMemoryOrderRepository()   <span style="color:#8b949e"># DB不要</span>
+        product_query = MagicMock()                  <span style="color:#8b949e"># 商品クエリはモック</span>
+        product_query.find_by_id.return_value = Product(
+            product_id=<span style="color:#a5d6ff">"P001"</span>, name=<span style="color:#a5d6ff">"Tシャツ"</span>,
+            price=Decimal(<span style="color:#a5d6ff">"1000"</span>), stock_count=<span style="color:#79c0ff">10</span>
+        )
+        email     = MagicMock()
+        event_pub = MagicMock()
+
+        service = PlaceOrderService(
+            order_repository=order_repo,
+            product_query=product_query,
+            email_notification=email,
+            event_publisher=event_pub,
+        )
+        <span style="color:#c9d1d9">return</span> service, order_repo, email, event_pub
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">test_有効な注文が正常に作成される</span>(<span style="color:#ffa657">self</span>, setup):
+        service, order_repo, _, _ = setup
+        command = PlaceOrderCommand(
+            customer_id=<span style="color:#a5d6ff">"CUST-001"</span>,
+            items=[{<span style="color:#a5d6ff">"product_id"</span>: <span style="color:#a5d6ff">"P001"</span>, <span style="color:#a5d6ff">"quantity"</span>: <span style="color:#79c0ff">2</span>}],
+        )
+        result = service.execute(command)
+
+        <span style="color:#c9d1d9">assert</span> result.status == <span style="color:#a5d6ff">"confirmed"</span>
+        <span style="color:#c9d1d9">assert</span> result.total_amount == Decimal(<span style="color:#a5d6ff">"2000"</span>)
+        <span style="color:#c9d1d9">assert</span> order_repo.count() == <span style="color:#79c0ff">1</span>  <span style="color:#8b949e"># DBに保存された</span></code></pre>
+
+    <div class="callout info">
+      <i class="ti ti-link callout-icon"></i>
+      <div><strong>参考：</strong> <a href="https://martinfowler.com/bliki/TestPyramid.html" style="color:inherit">Martin Fowler — テストピラミッド</a> / <a href="https://martinfowler.com/bliki/InMemoryTestDouble.html" style="color:inherit">InMemory Test Doubles</a></div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 9 ========== -->
+  <section id="s9">
+    <h2><span class="section-num">09</span> 他のアーキテクチャパターンとの比較・統合</h2>
+
+    <h3>9.1 レイヤードアーキテクチャとの比較</h3>
+    <table>
+      <thead>
+        <tr><th>観点</th><th>レイヤードアーキテクチャ</th><th>ヘキサゴナルアーキテクチャ</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>依存の方向</strong></td>
+          <td>上から下（UI → Biz → DB）</td>
+          <td>外から内（アダプター → ポート → コア）</td>
+        </tr>
+        <tr>
+          <td><strong>コアのDB依存</strong></td>
+          <td>直接依存する場合が多い</td>
+          <td>ポート経由で完全に独立</td>
+        </tr>
+        <tr>
+          <td><strong>テスト容易性</strong></td>
+          <td>実DBが必要になりがち</td>
+          <td>インメモリで高速テスト可能</td>
+        </tr>
+        <tr>
+          <td><strong>インターフェース切替</strong></td>
+          <td>コアの修正が必要な場合がある</td>
+          <td>アダプターを追加するだけ</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>9.2 クリーンアーキテクチャとの関係</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-layout"></i> クリーンアーキテクチャとの対応関係</div>
+      <div class="mermaid">
+flowchart LR
+  subgraph CLEAN2["🏛️ クリーンアーキテクチャ（同心円）"]
+    C1_2["Frameworks & Drivers（最外層）"]
+    C2_2["Interface Adapters"]
+    C3_2["Application Business Rules\nUse Cases"]
+    C4_2["Enterprise Business Rules\nEntities"]
+  end
+  subgraph HEXA3["🔷 ヘキサゴナル（六角形）"]
+    H1_3["外部アクター・インフラ"]
+    H2_3["アダプター層\nDriving + Driven"]
+    H3_3["ポート\nInbound + Outbound"]
+    H4_3["アプリケーションコア\nUseCase + Domain"]
+  end
+  C1_2 <-->|"対応"| H1_3
+  C2_2 <-->|"対応"| H2_3
+  C3_2 <-->|"対応"| H3_3
+  C4_2 <-->|"対応"| H4_3
+      </div>
+    </div>
+
+    <h3>9.3 DDD（ドメイン駆動設計）との統合</h3>
+    <p>DDDとヘキサゴナルアーキテクチャは非常に相性が良く、実際の開発では組み合わせて使われることが多いです。</p>
+
+    <table>
+      <thead>
+        <tr><th>DDD の概念</th><th>ヘキサゴナルでの対応</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Bounded Context（境界づけられたコンテキスト）</strong></td>
+          <td>1つの Bounded Context ≈ 1つのヘキサゴン</td>
+        </tr>
+        <tr>
+          <td><strong>Ubiquitous Language（ユビキタス言語）</strong></td>
+          <td>ポート名・ドメイン名に反映する</td>
+        </tr>
+        <tr>
+          <td><strong>Context Map の ACL（腐敗防止層）</strong></td>
+          <td>ドリブンアダプターが ACL の役割を担う</td>
+        </tr>
+        <tr>
+          <td><strong>Entity / Value Object / Aggregate</strong></td>
+          <td>domain/ 層にそのまま配置する</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <i class="ti ti-link callout-icon"></i>
+      <div><strong>参考：</strong> <a href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/" style="color:inherit">Herberto Graça — DDD + Hexagonal 詳細解説</a> / <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" style="color:inherit">Uncle Bob — Clean Architecture 原著ブログ</a></div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 10 ========== -->
+  <section id="s10">
+    <h2><span class="section-num">10</span> ディレクトリ構成とパッケージ設計</h2>
+
+    <h3>10.1 推奨ディレクトリ構成</h3>
+    <div class="code-label"><i class="ti ti-folder"></i> プロジェクト全体のディレクトリ構成</div>
+    <pre class="code-block"><code>my_app/
+├── domain/                            <span style="color:#8b949e"># ドメイン層（外部依存ゼロ）</span>
+│   ├── entities/
+│   │   ├── order.py                   <span style="color:#8b949e"># Order エンティティ（集約ルート）</span>
+│   │   └── product.py
+│   ├── value_objects/
+│   │   ├── money.py                   <span style="color:#8b949e"># Money 値オブジェクト</span>
+│   │   └── email.py
+│   ├── services/
+│   │   └── pricing_service.py         <span style="color:#8b949e"># ドメインサービス（複数Entity横断）</span>
+│   └── exceptions.py
+│
+├── application/                       <span style="color:#8b949e"># アプリケーション層</span>
+│   ├── ports/
+│   │   ├── inbound/                   <span style="color:#8b949e"># ドライビングポート（ABC）</span>
+│   │   │   ├── place_order_use_case.py
+│   │   │   └── get_order_use_case.py
+│   │   └── outbound/                  <span style="color:#8b949e"># ドリブンポート（ABC）</span>
+│   │       ├── order_repository_port.py
+│   │       ├── email_notification_port.py
+│   │       └── event_publisher_port.py
+│   └── use_cases/                     <span style="color:#8b949e"># ユースケース実装</span>
+│       ├── place_order_service.py
+│       └── get_order_service.py
+│
+├── adapters/                          <span style="color:#8b949e"># アダプター層（外側）</span>
+│   ├── inbound/                       <span style="color:#8b949e"># ドライビングアダプター</span>
+│   │   ├── rest/
+│   │   │   ├── order_router.py        <span style="color:#8b949e"># FastAPI Router</span>
+│   │   │   └── schemas.py             <span style="color:#8b949e"># HTTP専用 Pydantic スキーマ</span>
+│   │   ├── cli/
+│   │   │   └── order_commands.py
+│   │   └── messaging/
+│   │       └── order_consumer.py      <span style="color:#8b949e"># Kafka Consumer</span>
+│   └── outbound/                      <span style="color:#8b949e"># ドリブンアダプター</span>
+│       ├── persistence/
+│       │   ├── sql_order_repository.py    <span style="color:#8b949e"># 本番用SQL実装</span>
+│       │   └── in_memory_order_repository.py  <span style="color:#8b949e"># テスト用</span>
+│       ├── email/
+│       │   ├── sendgrid_email_adapter.py  <span style="color:#8b949e"># 本番用</span>
+│       │   └── fake_email_adapter.py      <span style="color:#8b949e"># テスト用</span>
+│       └── events/
+│           ├── kafka_event_publisher.py
+│           └── in_memory_event_publisher.py
+│
+├── infrastructure/                    <span style="color:#8b949e"># インフラ設定・配線</span>
+│   ├── di_container.py                <span style="color:#8b949e"># Composition Root（DI配線）</span>
+│   ├── database.py
+│   └── config.py
+│
+├── tests/
+│   ├── unit/
+│   │   ├── domain/                    <span style="color:#8b949e"># ドメインのユニットテスト</span>
+│   │   └── application/               <span style="color:#8b949e"># ユースケースのユニットテスト</span>
+│   ├── integration/
+│   │   └── adapters/                  <span style="color:#8b949e"># アダプターの統合テスト</span>
+│   └── e2e/
+│       └── test_order_flow.py
+│
+└── main.py                            <span style="color:#8b949e"># エントリポイント</span></code></pre>
+
+    <h3>10.2 パッケージ間の依存関係ルール</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrow-right"></i> パッケージ依存の方向（許可・禁止）</div>
+      <div class="mermaid">
+flowchart TD
+  DOMAIN3["domain/"]
+  APP3["application/"]
+  ADAPTER3["adapters/"]
+  INFRA3["infrastructure/"]
+  MAIN3["main.py"]
+  APP3 -->|"✅ 依存可"| DOMAIN3
+  ADAPTER3 -->|"✅ 依存可"| APP3
+  ADAPTER3 -->|"✅ 依存可"| DOMAIN3
+  INFRA3 -->|"✅ 依存可"| ADAPTER3
+  MAIN3 -->|"✅ 全体を組み立て"| INFRA3
+  DOMAIN3 -.->|"❌ 絶対禁止"| APP3
+  APP3 -.->|"❌ 絶対禁止"| ADAPTER3
+  APP3 -.->|"❌ 絶対禁止"| INFRA3
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 11 ========== -->
+  <section id="s11">
+    <h2><span class="section-num">11</span> 段階的導入ガイド</h2>
+
+    <h3>11.1 既存コードへの段階的移行</h3>
+    <p>ヘキサゴナルアーキテクチャは一度に全部導入する必要はありません。フェーズを分けて段階的に移行できます。</p>
+
+    <ul class="phase-list">
+      <li class="phase-item">
+        <span class="phase-badge p0">Phase 0</span>
+        <div class="phase-body">
+          <strong>現状把握（1週間）</strong>
+          <p>既存コードのアーキテクチャを分析し、最も問題の大きい依存を特定します。</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p1">Phase 1</span>
+        <div class="phase-body">
+          <strong>ドメインの分離（1〜2週間）</strong>
+          <p>ビジネスロジックをフレームワークから抽出し、純粋な Pythonクラスとして再実装。<code>domain/</code> ディレクトリを作成します。</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p2">Phase 2</span>
+        <div class="phase-body">
+          <strong>ドリブンポートの定義（1週間）</strong>
+          <p>既存の Repository・外部サービス呼び出しをインターフェース（ABC）として定義します。</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p3">Phase 3</span>
+        <div class="phase-body">
+          <strong>ドライビングポートの定義（1週間）</strong>
+          <p>ユースケースをインターフェースとして定義し、ビジネスロジックをユースケースクラスに移動します。</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p4">Phase 4</span>
+        <div class="phase-body">
+          <strong>アダプターの実装（2〜3週間）</strong>
+          <p>既存の実装をアダプターとして再配置。テスト用インメモリアダプターを作成し、Composition Rootを整備します。</p>
+        </div>
+      </li>
+      <li class="phase-item">
+        <span class="phase-badge p5">Phase 5</span>
+        <div class="phase-body">
+          <strong>テストの整備（継続的）</strong>
+          <p>ドメインのユニットテストを充実させ、インメモリアダプターで高速テストを追加します。</p>
+        </div>
+      </li>
+    </ul>
+
+    <h3>11.2 移行チェックリスト</h3>
+    <ul class="checklist">
+      <li class="check-item"><i class="ti ti-check"></i><span><code>domain/</code> に SQLAlchemy・FastAPI の import がない</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>ユースケースが具体的なリポジトリクラスを import していない</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>各ポートが ABC（抽象基底クラス）として定義されている</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>テスト用インメモリアダプターが存在する</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>ドメインのユニットテストが DB なしで動作する</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>ユースケースのユニットテストが DB なしで動作する</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>Composition Root が一箇所にまとまっている</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>アダプターを差し替えても di_container.py だけの変更で済む</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>循環依存が存在しない（pylint / isort で確認）</span></li>
+      <li class="check-item"><i class="ti ti-check"></i><span>ポートはビジネス語彙で命名されている（技術用語でない）</span></li>
+    </ul>
+  </section>
+
+  <!-- ========== SECTION 12 ========== -->
+  <section id="s12">
+    <h2><span class="section-num">12</span> 実践：ECサイト完全実装例</h2>
+
+    <h3>12.1 ECサイトのヘキサゴン全体図</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-shopping-cart"></i> ECサイトのヘキサゴナルアーキテクチャ全体像</div>
+      <div class="mermaid">
+flowchart LR
+  subgraph EXT_L2["外部アクター（左）"]
+    WEB["🌐 Webブラウザ"]
+    MOB["📱 モバイルアプリ"]
+    ADM["💻 管理者CLI"]
+  end
+  subgraph HEX2["🔷 ECサイト ヘキサゴン"]
+    subgraph DA4["ドライビングアダプター"]
+      REST4["REST API"]
+      CLI4["CLI"]
+      MSG4["Message Consumer"]
+    end
+    subgraph DP4["ドライビングポート"]
+      PO4["PlaceOrderUseCase"]
+      SP4["SearchProductsUseCase"]
+      AU4["AuthenticateUserUseCase"]
+    end
+    subgraph CORE4["アプリケーションコア"]
+      OC4["注文ドメイン\nOrder / Money"]
+      PC4["商品ドメイン\nProduct / Category"]
+    end
+    subgraph DRP4["ドリブンポート"]
+      OR4["OrderRepositoryPort"]
+      EM4["EmailNotificationPort"]
+      PAY4["PaymentGatewayPort"]
+      EVT4["EventPublisherPort"]
+    end
+    subgraph DRA4["ドリブンアダプター"]
+      SQL4["PostgreSQL\nアダプター"]
+      STRIPE4["Stripe\nアダプター"]
+      EMAIL4["SendGrid\nアダプター"]
+      KAFKA4["Kafka\nアダプター"]
+    end
+  end
+  subgraph EXT_R2["外部インフラ（右）"]
+    PG4[("PostgreSQL")]
+    STRIPE_EXT2["Stripe API"]
+    SG_EXT2["SendGrid API"]
+    KF_EXT2["Kafka"]
+  end
+  WEB & MOB --> REST4
+  ADM --> CLI4
+  REST4 & CLI4 --> PO4 & SP4 & AU4
+  PO4 & SP4 & AU4 --> OC4 & PC4
+  OC4 --> OR4 & EM4 & PAY4 & EVT4
+  OR4 --> SQL4
+  EM4 --> EMAIL4
+  PAY4 --> STRIPE4
+  EVT4 --> KAFKA4
+  SQL4 --> PG4
+  STRIPE4 --> STRIPE_EXT2
+  EMAIL4 --> SG_EXT2
+  KAFKA4 --> KF_EXT2
+      </div>
+    </div>
+
+    <h3>12.2 決済フローのシーケンス図</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label"><i class="ti ti-arrows-exchange-2"></i> 注文確定・決済フロー</div>
+      <div class="mermaid">
+sequenceDiagram
+  participant B as 🌐 ブラウザ
+  participant R as REST アダプター
+  participant U as PlaceOrderService（コア）
+  participant O as Order エンティティ
+  participant OR as OrderRepositoryPort
+  participant PP as PaymentGatewayPort
+  participant EP as EmailNotificationPort
+  participant SA as SQL アダプター
+  participant STA as Stripe アダプター
+  participant SGA as SendGrid アダプター
+
+  B->>R: POST /api/v1/orders
+  R->>R: HTTP → PlaceOrderCommand に変換
+  R->>U: execute(PlaceOrderCommand)
+  U->>O: Order.create(customer_id)
+  U->>O: add_line(product, qty)
+  U->>O: confirm()
+  U->>PP: charge(amount, payment_info)
+  PP->>STA: Stripe API 呼び出し
+  STA-->>PP: 決済成功
+  U->>OR: save(order)
+  OR->>SA: SQL INSERT
+  SA-->>OR: 保存完了
+  U->>EP: send_order_confirmation(...)
+  EP->>SGA: SendGrid API 呼び出し
+  U-->>R: PlaceOrderResult
+  R->>R: Result → HTTP レスポンスに変換
+  R-->>B: 201 Created
+      </div>
+    </div>
+
+    <h3>12.3 決済ポートと Stripe アダプターの実装</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> application/ports/outbound/payment_gateway_port.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">from</span> abc <span style="color:#c9d1d9">import</span> ABC, abstractmethod
+<span style="color:#c9d1d9">from</span> decimal <span style="color:#c9d1d9">import</span> Decimal
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">PaymentGatewayPort</span>(ABC):
+    <span style="color:#a5d6ff">"""
+    決済ゲートウェイポート。
+    コアは Stripe を知らない。「決済できる何か」だけを知っている。
+    """</span>
+    @abstractmethod
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">charge</span>(<span style="color:#ffa657">self</span>, amount: Decimal, ...) -> PaymentResult: ...
+
+<span style="color:#8b949e"># ─── Stripe アダプター（外側に所属）───</span>
+<span style="color:#c9d1d9">import</span> stripe
+
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">StripePaymentAdapter</span>(PaymentGatewayPort):
+    <span style="color:#a5d6ff">"""Stripe 固有の詳細をここに完全に隠蔽する。"""</span>
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">charge</span>(<span style="color:#ffa657">self</span>, amount: Decimal, ...) -> PaymentResult:
+        <span style="color:#c9d1d9">try</span>:
+            charge = stripe.PaymentIntent.create(
+                amount=<span style="color:#79c0ff">int</span>(amount * <span style="color:#79c0ff">100</span>),  <span style="color:#8b949e"># Stripe は cents 単位</span>
+                currency=<span style="color:#a5d6ff">"jpy"</span>,
+                confirm=<span style="color:#79c0ff">True</span>,
+            )
+            <span style="color:#c9d1d9">return</span> PaymentResult(transaction_id=charge.id, status=<span style="color:#a5d6ff">"succeeded"</span>)
+        <span style="color:#c9d1d9">except</span> stripe.error.CardError <span style="color:#c9d1d9">as</span> e:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">f"カード決済エラー: {e.user_message}"</span>) <span style="color:#c9d1d9">from</span> e
+
+<span style="color:#8b949e"># ─── テスト用フェイクアダプター ───</span>
+<span style="color:#c9d1d9">class</span> <span style="color:#79c0ff">FakePaymentAdapter</span>(PaymentGatewayPort):
+    <span style="color:#a5d6ff">"""実際の Stripe を呼ばずに決済をシミュレート可能。"""</span>
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">__init__</span>(<span style="color:#ffa657">self</span>, should_succeed: <span style="color:#79c0ff">bool</span> = <span style="color:#79c0ff">True</span>):
+        <span style="color:#ffa657">self</span>._should_succeed = should_succeed
+        <span style="color:#ffa657">self</span>.charged_requests = []
+
+    <span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">charge</span>(<span style="color:#ffa657">self</span>, amount: Decimal, ...) -> PaymentResult:
+        <span style="color:#ffa657">self</span>.charged_requests.append(amount)
+        <span style="color:#c9d1d9">if</span> <span style="color:#c9d1d9">not</span> <span style="color:#ffa657">self</span>._should_succeed:
+            <span style="color:#c9d1d9">raise</span> ValueError(<span style="color:#a5d6ff">"テスト用決済失敗"</span>)
+        <span style="color:#c9d1d9">return</span> PaymentResult(transaction_id=<span style="color:#a5d6ff">"fake_txn_1"</span>, status=<span style="color:#a5d6ff">"succeeded"</span>)</code></pre>
+  </section>
+
+  <!-- ========== SECTION 13 ========== -->
+  <section id="s13">
+    <h2><span class="section-num">13</span> アンチパターンと落とし穴</h2>
+
+    <h3>13.1 主要なアンチパターン</h3>
+
+    <div class="antipattern-grid">
+      <div class="ap-card">
+        <div class="ap-title"><i class="ti ti-x"></i> コアがアダプターを知っている</div>
+        <p><code>domain/</code> や <code>application/</code> で SQLAlchemy・FastAPI を import している。ポートの意味がなくなる。</p>
+      </div>
+      <div class="ap-fix">
+        <div class="ap-title"><i class="ti ti-check"></i> 解決策</div>
+        <p><code>domain/</code> の import を Python linter でチェックし、CIに組み込む。次の自動チェックスクリプトを使用する。</p>
+      </div>
+
+      <div class="ap-card">
+        <div class="ap-title"><i class="ti ti-x"></i> ポートが技術用語で命名されている</div>
+        <p><code>SQLRepositoryPort</code> / <code>HTTPClientPort</code> のようにインフラ名を含む命名はNG。</p>
+      </div>
+      <div class="ap-fix">
+        <div class="ap-title"><i class="ti ti-check"></i> 解決策</div>
+        <p>ポート名はビジネスユースケースまたは能力を動詞で表現。<code>SaveOrderPort</code> / <code>LoadProductsPort</code></p>
+      </div>
+
+      <div class="ap-card">
+        <div class="ap-title"><i class="ti ti-x"></i> アダプターにビジネスロジックが漏れる</div>
+        <p>REST Controller の中で <code>if order.total > 10000: apply_discount()</code> を実行している。</p>
+      </div>
+      <div class="ap-fix">
+        <div class="ap-title"><i class="ti ti-check"></i> 解決策</div>
+        <p>アダプターは「変換だけ」。ビジネスロジックは一行も持たない。ロジックはコアに移動する。</p>
+      </div>
+
+      <div class="ap-card">
+        <div class="ap-title"><i class="ti ti-x"></i> Composition Root が分散する</div>
+        <p>各モジュールが自分で <code>new</code> して依存を生成している。依存の管理が追跡不能になる。</p>
+      </div>
+      <div class="ap-fix">
+        <div class="ap-title"><i class="ti ti-check"></i> 解決策</div>
+        <p><code>main.py</code> または <code>di_container.py</code> の1箇所でのみ依存を構築する。</p>
+      </div>
+    </div>
+
+    <h3>13.2 コア汚染チェックスクリプト（CI/CD組み込み用）</h3>
+    <div class="code-label"><i class="ti ti-file-code"></i> scripts/check_core_dependencies.py</div>
+    <pre class="code-block"><code><span style="color:#c9d1d9">import</span> ast, sys
+<span style="color:#c9d1d9">from</span> pathlib <span style="color:#c9d1d9">import</span> Path
+
+FORBIDDEN_IN_CORE = [
+    <span style="color:#a5d6ff">"sqlalchemy"</span>, <span style="color:#a5d6ff">"fastapi"</span>, <span style="color:#a5d6ff">"django"</span>, <span style="color:#a5d6ff">"flask"</span>,
+    <span style="color:#a5d6ff">"stripe"</span>, <span style="color:#a5d6ff">"sendgrid"</span>, <span style="color:#a5d6ff">"redis"</span>, <span style="color:#a5d6ff">"kafka"</span>, <span style="color:#a5d6ff">"requests"</span>, <span style="color:#a5d6ff">"httpx"</span>,
+]
+CORE_DIRS = [<span style="color:#a5d6ff">"domain"</span>, <span style="color:#a5d6ff">"application"</span>]
+
+<span style="color:#c9d1d9">def</span> <span style="color:#d2a8ff">check_file</span>(filepath: Path) -> list[<span style="color:#79c0ff">str</span>]:
+    violations = []
+    tree = ast.parse(filepath.read_text(encoding=<span style="color:#a5d6ff">"utf-8"</span>))
+    <span style="color:#c9d1d9">for</span> node <span style="color:#c9d1d9">in</span> ast.walk(tree):
+        <span style="color:#c9d1d9">if</span> isinstance(node, (ast.Import, ast.ImportFrom)):
+            module = node.module <span style="color:#c9d1d9">if</span> isinstance(node, ast.ImportFrom) <span style="color:#c9d1d9">else</span> <span style="color:#a5d6ff">""</span>
+            <span style="color:#c9d1d9">for</span> forbidden <span style="color:#c9d1d9">in</span> FORBIDDEN_IN_CORE:
+                <span style="color:#c9d1d9">if</span> (module <span style="color:#c9d1d9">or</span> <span style="color:#a5d6ff">""</span>).startswith(forbidden):
+                    violations.append(
+                        <span style="color:#a5d6ff">f"❌ {filepath}:{node.lineno} — '{module}' はコアに禁止"</span>
+                    )
+    <span style="color:#c9d1d9">return</span> violations
+
+violations = []
+<span style="color:#c9d1d9">for</span> d <span style="color:#c9d1d9">in</span> CORE_DIRS:
+    <span style="color:#c9d1d9">for</span> f <span style="color:#c9d1d9">in</span> Path(d).rglob(<span style="color:#a5d6ff">"*.py"</span>):
+        violations.extend(check_file(f))
+
+<span style="color:#c9d1d9">if</span> violations:
+    [<span style="color:#79c0ff">print</span>(v) <span style="color:#c9d1d9">for</span> v <span style="color:#c9d1d9">in</span> violations]; sys.exit(<span style="color:#79c0ff">1</span>)
+<span style="color:#c9d1d9">else</span>:
+    <span style="color:#79c0ff">print</span>(<span style="color:#a5d6ff">"✅ コアの純粋性が保たれています"</span>)</code></pre>
+  </section>
+
+  <!-- ========== SECTION 14 ========== -->
+  <section id="s14">
+    <h2><span class="section-num">14</span> ベストプラクティス総まとめ</h2>
+
+    <h3>14.1 設計の黄金律（7つのルール）</h3>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-purple-400)"><i class="ti ti-arrow-right"></i></div>
+        <div class="sc-label">ルール1：依存は外から内へ</div>
+        <div class="sc-desc">アダプター → ポート → コア。コアは外を知らない。</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-teal-400)"><i class="ti ti-vocabulary"></i></div>
+        <div class="sc-label">ルール2：ビジネス語彙で命名</div>
+        <div class="sc-desc">PlaceOrderPort ✅ / SQLRepositoryPort ❌</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-coral-400)"><i class="ti ti-test-pipe"></i></div>
+        <div class="sc-label">ルール3：Fake/InMemory を用意</div>
+        <div class="sc-desc">すべてのポートにテスト用実装を必ず用意する。</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-blue-400)"><i class="ti ti-arrows-exchange"></i></div>
+        <div class="sc-label">ルール4：アダプターは変換だけ</div>
+        <div class="sc-desc">HTTP → Command、Result → HTTP の変換のみ。</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-green-400)"><i class="ti ti-map-pin"></i></div>
+        <div class="sc-label">ルール5：Composition Root を1箇所に</div>
+        <div class="sc-desc">di_container.py でのみ依存を組み立てる。</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-icon" style="color:var(--c-amber-400)"><i class="ti ti-device-analytics"></i></div>
+        <div class="sc-label">ルール6：CIでコアを守る</div>
+        <div class="sc-desc">linter・自動チェックで外部 import 侵入を防ぐ。</div>
+      </div>
+    </div>
+
+    <h3>14.2 意思決定テーブル</h3>
+    <table class="decision-table">
+      <thead>
+        <tr><th>問い</th><th>答え</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ポートはどこに置くべきか</td><td><code>application/ports/</code> に置く（コアの一部）</td></tr>
+        <tr><td>アダプターはどこに置くべきか</td><td><code>adapters/</code> に置く（コアの外側）</td></tr>
+        <tr><td>コアは外部 import を持っていいか</td><td>絶対に持ってはいけない</td></tr>
+        <tr><td>ドリブンポートは誰が実装するか</td><td>ドリブンアダプターが実装する</td></tr>
+        <tr><td>ドライビングポートは誰が実装するか</td><td>ユースケース（コア）が実装する</td></tr>
+        <tr><td>テストにはどのアダプターを使うか</td><td>InMemory / Fake 実装を使う</td></tr>
+        <tr><td>新しい DB に切り替えるには</td><td>新しいドリブンアダプターを作るだけ</td></tr>
+        <tr><td>新しい入力インターフェースを追加するには</td><td>新しいドライビングアダプターを作るだけ</td></tr>
+        <tr><td>ビジネスロジックはどこに置くか</td><td><code>domain/</code> または <code>application/use_cases/</code> のみ</td></tr>
+        <tr><td>依存性注入はどこで行うか</td><td>Composition Root（<code>di_container.py</code>）のみ</td></tr>
+      </tbody>
+    </table>
+
+    <h3>14.3 成熟度モデル</h3>
+    <div class="level-row">
+      <span class="level-badge" style="background:var(--c-red-800);color:var(--c-red-400)">Level 0</span>
+      <div class="level-body">
+        <strong>モノリシックなスパゲッティ</strong>
+        <p>DB・UI・ビジネスロジックが混在。テストには全インフラが必要。</p>
+      </div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" style="background:var(--color-background-warning);color:var(--color-text-warning)">Level 1</span>
+      <div class="level-body">
+        <strong>レイヤー分離</strong>
+        <p>Controller / Service / Repository の分離。ただし具体クラスに直接依存。</p>
+      </div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" style="background:rgba(251,191,36,0.15);color:var(--c-amber-400)">Level 2</span>
+      <div class="level-body">
+        <strong>ポートの定義開始</strong>
+        <p>Repository をインターフェース化。InMemory 実装でユニットテスト可能に。</p>
+      </div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" style="background:var(--color-background-success);color:var(--color-text-success)">Level 3</span>
+      <div class="level-body">
+        <strong>完全なポート＆アダプター</strong>
+        <p>すべての外部依存がポート経由。ドライビング・ドリブン両側が分離。</p>
+      </div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" style="background:var(--color-background-info);color:var(--color-text-info)">Level 4</span>
+      <div class="level-body">
+        <strong>コアの純粋性保証</strong>
+        <p>CIでコアの汚染を自動検出。全ポートにテスト用実装あり。</p>
+      </div>
+    </div>
+    <div class="level-row">
+      <span class="level-badge" style="background:rgba(124,58,237,0.15);color:var(--c-purple-400)">Level 5</span>
+      <div class="level-body">
+        <strong>複数コンテキストへの適用</strong>
+        <p>マイクロサービスの各サービスにヘキサゴナルを適用。DDDと統合。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 15 ========== -->
+  <section id="s15">
+    <h2><span class="section-num">15</span> 参考文献・ソース一覧</h2>
+
+    <div class="ref-section">
+      <h3>一次ソース（原典・提唱者）</h3>
+      <ul class="source-list">
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/" target="_blank">Alistair Cockburn — Hexagonal Architecture（原著論文）</a>
+            <div class="source-desc">ヘキサゴナルアーキテクチャの提唱者による公式定義。ポート・アダプター・対称性の概念が初めて説明された文書。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)" target="_blank">Wikipedia — Hexagonal Architecture（Software）</a>
+            <div class="source-desc">用語の整理と歴史的背景のまとめ。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h3>アーキテクチャ関連</h3>
+      <ul class="source-list">
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank">Robert C. Martin — The Clean Architecture</a>
+            <div class="source-desc">ヘキサゴナルを発展させたクリーンアーキテクチャの原著ブログ。同心円モデルとの対応関係を理解するのに必須。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/" target="_blank">Jeffrey Palermo — The Onion Architecture</a>
+            <div class="source-desc">ヘキサゴナルを発展させたオニオンアーキテクチャ。依存の方向の考え方が共通。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/" target="_blank">Herberto Graça — Ports &amp; Adapters Architecture（DDD + Hexagonal 詳細）</a>
+            <div class="source-desc">DDDとヘキサゴナルの統合を詳しく解説したブログ。実践的な視点から非常に参考になる。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://martinfowler.com/articles/dipInTheWild.html" target="_blank">Martin Fowler — DIP in the Wild</a>
+            <div class="source-desc">依存性逆転原則の実際の適用例を解説。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h3>書籍</h3>
+      <table>
+        <thead>
+          <tr><th>タイトル</th><th>著者</th><th>特徴</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Clean Architecture</strong></td>
+            <td>Robert C. Martin</td>
+            <td>ヘキサゴナルを発展させたアーキテクチャの体系書</td>
+          </tr>
+          <tr>
+            <td><strong>Architecture Patterns with Python</strong></td>
+            <td>Harry Percival, Bob Gregory</td>
+            <td>Pythonでのヘキサゴナル実践（無料公開）</td>
+          </tr>
+          <tr>
+            <td><strong>Get Your Hands Dirty on Clean Architecture</strong></td>
+            <td>Tom Hombergs</td>
+            <td>ヘキサゴナルの Java 実践ガイド（入門に最適）</td>
+          </tr>
+          <tr>
+            <td><strong>Domain-Driven Design</strong></td>
+            <td>Eric Evans</td>
+            <td>DDD × ヘキサゴナルの統合に必須</td>
+          </tr>
+          <tr>
+            <td><strong>Implementing Domain-Driven Design</strong></td>
+            <td>Vaughn Vernon</td>
+            <td>DDD 実践でのポート＆アダプター</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ref-section">
+      <h3>Python 実装リファレンス</h3>
+      <ul class="source-list">
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://docs.python.org/ja/3/library/abc.html" target="_blank">Python 公式 — abc（抽象基底クラス）</a>
+            <div class="source-desc">ポートを定義するための ABC の使い方。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/" target="_blank">FastAPI 公式 — Dependency Injection</a>
+            <div class="source-desc">FastAPI で DI を使ってアダプターを注入する方法。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://testcontainers-python.readthedocs.io/" target="_blank">TestContainers Python</a>
+            <div class="source-desc">実際の DB を使った統合テストを自動化するライブラリ。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://github.com/cosmicpython/book" target="_blank">Cosmic Python — Architecture Patterns with Python（GitHub）</a>
+            <div class="source-desc">書籍のサンプルコードリポジトリ。Python での実践例として非常に参考になる。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h3>テスト戦略</h3>
+      <ul class="source-list">
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank">Martin Fowler — テストピラミッド</a>
+            <div class="source-desc">ユニット・統合・E2Eテストの比率についての指針。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://martinfowler.com/bliki/InMemoryTestDouble.html" target="_blank">Martin Fowler — InMemory Test Doubles</a>
+            <div class="source-desc">インメモリアダプターを使ったテスト戦略の解説。</div>
+          </div>
+        </li>
+        <li class="source-item">
+          <i class="ti ti-external-link"></i>
+          <div>
+            <a href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank">Martin Fowler — Mocks Aren't Stubs</a>
+            <div class="source-desc">Mock・Stub・Fake の違いを理解するための必読記事。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout info">
+      <i class="ti ti-calendar callout-icon"></i>
+      <div>本ドキュメントは2024年時点の情報を基に作成されています。各ツール・フレームワークの仕様は変更される場合がありますので、実装前に公式ドキュメントを必ずご確認ください。</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#161b22',
+    primaryColor: '#4c1d95',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#6d28d9',
+    lineColor: '#6e7681',
+    secondaryColor: '#0d2b1d',
+    tertiaryColor: '#0c2a4a',
+    edgeLabelBackground: '#1c2128',
+    clusterBkg: '#1c2128',
+    clusterBorder: '#30363d',
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontSize: '13px',
+  }
+});
+
+const navItems = document.querySelectorAll('.nav-item[href]');
+const sections = document.querySelectorAll('section[id]');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(sec => {
+    const top = sec.getBoundingClientRect().top;
+    if (top <= 80) current = sec.id;
+  });
+  navItems.forEach(item => {
+    item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+</script>
+</body>
+</html>
