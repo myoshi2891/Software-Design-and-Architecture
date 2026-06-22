@@ -19,15 +19,13 @@ function getDiagramType(inner: string): string {
 }
 
 /**
- * Fixes indentation and broken statement lines inside a Mermaid diagram block.
+ * Corrects formatting issues in a Mermaid diagram block.
  *
- * Normalizes newlines, repairs mindmap indentation or merges incorrectly broken lines
- * for other diagram types, and returns the corrected content along with a count
- * of modified lines.
+ * For mindmap diagrams, aligns indentation across all lines. For other diagram
+ * types, merges indented lines that are continuations of incomplete statements.
  *
  * @param inner - The raw content of a Mermaid diagram block
- * @param report - Optional array that will be appended with a summary line when changes are made.
- *                 Each appended entry has the form `[<diagramType>]: <N> line(s) modified`.
+ * @param report - Optional array that will be appended with a summary in the form `[<diagramType>]: <N> line(s) modified`
  * @returns An object containing `fixedContent` (the corrected diagram text) and `fixedCount` (the number of lines modified)
  */
 export function fixMermaidContent(inner: string, report?: string[]): { fixedContent: string; fixedCount: number } {

@@ -1,6 +1,9 @@
 import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 
+/**
+ * Formats a Markdown file to fix common lint issues and overwrites the original file.
+ */
 async function fixMarkdown(filePath: string): Promise<void> {
     const content = await readFile(filePath, 'utf8');
     const lines = content.split('\n');
