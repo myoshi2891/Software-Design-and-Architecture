@@ -1,5 +1,5 @@
 ---
-name: qa-studies-markdown-formatter
+name: markdown-formatter
 description: >
   Comprehensive guide and rules for formatting Markdown files to comply with the project's `.markdownlint.json` configuration.
   Addresses common errors like MD031, MD022, MD032, and MD047.

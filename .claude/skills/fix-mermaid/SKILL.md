@@ -296,9 +296,9 @@ vi.mock("@/components/MermaidDiagram", () => ({
 }));
 ```
 
-## Mermaid v11 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
+## 【移行後/将来用】Mermaid v11 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
 
-本リポジトリは `mermaid@^11.15.0` を使用し、図は共通コンポーネント [`components/MermaidDiagram.tsx`](../../../components/MermaidDiagram.tsx)（`'use client'`）で描画する。`mermaid.render()` が返す SVG 文字列を `dangerouslySetInnerHTML` で注入し、ページ固有スタイルは [`components/MermaidDiagram.module.css`](../../../components/MermaidDiagram.module.css) に置く。
+将来的な Next.js (App Router) 移行後は、`mermaid@^11.15.0` を使用し、図は共通コンポーネント `components/MermaidDiagram.tsx`（`'use client'`）で描画します。`mermaid.render()` が返す SVG 文字列を `dangerouslySetInnerHTML` で注入し、ページ固有スタイルは `components/MermaidDiagram.module.css` に置きます。
 
 レンダリングの正準ロジック（`mermaid.initialize` 設定・`applySvgFixups`・render ループ・中央寄せ CSS）は再利用スクリプト [`scripts/apply_render_pipeline.ts`](scripts/apply_render_pipeline.ts) に集約されている。新たに不具合を直す際は **手書きで再現せず、このスクリプトを正として適用**すること（冒頭「🚀 まず再利用スクリプトを使う」を参照）。
 
