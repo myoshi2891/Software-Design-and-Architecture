@@ -27,6 +27,7 @@ GEMINI.md で定義されたコミット前チェックリストを順次実行�
 ### Step 1: リンク有効性検証（必須）
 
 ```bash
+set -e
 bun run check-links
 ```
 
@@ -35,6 +36,7 @@ bun run check-links
 ### Step 2: マークダウンのフォーマットとリント（必須）
 
 ```bash
+set -e
 # 変更した Markdown ファイルに対して実行
 bun run format-markdown <file_path>
 bun run fix-markdown <file_path>
@@ -47,6 +49,7 @@ bun run fix-markdown <file_path>
 `web-next/` ディレクトリが存在する場合のみ実行：
 
 ```bash
+set -e
 if [ -d "web-next" ]; then
   cd web-next && bun run build
 fi
@@ -59,6 +62,7 @@ fi
 `web-next/` ディレクトリが存在する場合のみ実行：
 
 ```bash
+set -e
 if [ -d "web-next" ]; then
   cd web-next && bun run test
 fi
@@ -71,6 +75,7 @@ vitest が実行される。全テスト PASS を確認する。
 `scraper/` ディレクトリが存在する場合のみ実行：
 
 ```bash
+set -e
 if [ -d "scraper" ]; then
   cd scraper && uv run pytest
 fi
