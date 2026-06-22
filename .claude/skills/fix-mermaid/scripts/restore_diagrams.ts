@@ -116,11 +116,28 @@ if (import.meta.main) {
             // JSオブジェクトリテラル形式（テンプレートリテラル等を含む）のパースに正規表現でフォールバック
             const parsed: Record<string, string> = {};
             const entryRe = /['"`]?([a-zA-Z0-9_-]+)['"`]?\s*:\s*(['"`])([\s\S]*?)\2/g;
+            const unescapeString = (str: string, quote: string): string => {
+                return str.replace(/\\([\s\S])/g, (match, char) => {
+                    if (quote === "'" && char === '"') return match;
+                    if (quote === '"' && char === "'") return match;
+                    switch (char) {
+                        case 'n': return '\n';
+                        case 'r': return '\r';
+                        case 't': return '\t';
+                        case 'b': return '\b';
+                        case 'f': return '\f';
+                        case 'v': return '\v';
+                        case '0': return '\0';
+                        default: return char;
+                    }
+                });
+            };
             let match;
             while ((match = entryRe.exec(diagramsMatch[1])) !== null) {
                 const key = match[1];
+                const quote = match[2];
                 const value = match[3];
-                parsed[key] = value;
+                parsed[key] = unescapeString(value, quote);
             }
             if (Object.keys(parsed).length === 0) {
                 throw new Error('No entries parsed from DIAGRAMS block.');

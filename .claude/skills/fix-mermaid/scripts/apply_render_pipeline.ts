@@ -110,27 +110,35 @@ export function injectIds(html: string): { html: string; count: number } {
  */
 export function ensureInitFlags(html: string): string {
     let out = html;
-    if (/startOnLoad:\s*true/.test(out)) {
-        out = out.replace(/startOnLoad:\s*true\s*,?/, "startOnLoad: false,");
-    }
-    // initialize 呼び出し内のオプションブロックを抽出し、その中だけで securityLevel をチェック・注入する
+    // initialize 呼び出し内のオプションブロックを抽出し、その中だけで startOnLoad と securityLevel をチェック・更新・注入する
     const initMatch = out.match(/mermaid\.initialize\(\s*\{([\s\S]*?)\}\s*\)/);
     if (initMatch && initMatch.index !== undefined) {
-        const initBlock = initMatch[1];
+        let initBlock = initMatch[1];
+        let hasChanges = false;
+
+        // startOnLoad: true の置換を initBlock に対してのみ行う
+        if (/startOnLoad:\s*true/.test(initBlock)) {
+            initBlock = initBlock.replace(/startOnLoad:\s*true\s*,?/, "startOnLoad: false,");
+            hasChanges = true;
+        }
+
         if (!/securityLevel\s*:/.test(initBlock)) {
-            let updatedBlock = initBlock;
             if (/startOnLoad:\s*false\s*,/.test(initBlock)) {
-                updatedBlock = initBlock.replace(
+                initBlock = initBlock.replace(
                     /(startOnLoad:\s*false\s*,)/,
                     "$1\n                securityLevel: 'loose',",
                 );
             } else {
-                updatedBlock = " securityLevel: 'loose'," + initBlock;
+                initBlock = " securityLevel: 'loose'," + initBlock;
             }
+            hasChanges = true;
+        }
+
+        if (hasChanges) {
             const matchStr = initMatch[0];
-            const blockIndex = matchStr.indexOf(initBlock);
+            const blockIndex = matchStr.indexOf(initMatch[1]);
             if (blockIndex !== -1) {
-                const updatedMatchStr = matchStr.slice(0, blockIndex) + updatedBlock + matchStr.slice(blockIndex + initBlock.length);
+                const updatedMatchStr = matchStr.slice(0, blockIndex) + initBlock + matchStr.slice(blockIndex + initMatch[1].length);
                 const startIdx = initMatch.index;
                 out = out.slice(0, startIdx) + updatedMatchStr + out.slice(startIdx + matchStr.length);
             }
