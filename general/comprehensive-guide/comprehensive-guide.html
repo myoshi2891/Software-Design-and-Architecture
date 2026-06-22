@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT業界 主流設計手法・駆動開発 完全ガイド</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --color-background-primary: #0f1117;
+    --color-background-secondary: #161b27;
+    --color-background-tertiary: #1e2535;
+    --color-background-info: #1a2440;
+    --color-background-danger: #2a1a1a;
+    --color-background-success: #152218;
+    --color-background-warning: #251e10;
+
+    --color-text-primary: #e8eaf0;
+    --color-text-secondary: #bac5db;
+    --color-text-tertiary: #95a6d3;
+    --color-text-info: #7ab3f0;
+    --color-text-danger: #f07a7a;
+    --color-text-success: #7adfa8;
+    --color-text-warning: #f0c97a;
+
+    --color-border-primary: #2e3650;
+    --color-border-secondary: #3a4468;
+    --color-border-tertiary: #4a5680;
+
+    --font-sans: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+
+    --c-purple-800: #2d1f4e;
+    --c-purple-200: #c4b0f5;
+    --c-purple-100: #e8e0ff;
+    --c-teal-800: #0f2e2e;
+    --c-teal-200: #7dd8d8;
+    --c-teal-100: #d0f5f5;
+    --c-coral-800: #3a1a1a;
+    --c-coral-200: #f5a07a;
+    --c-coral-100: #fde8dc;
+    --c-blue-800: #0f1e3a;
+    --c-blue-200: #7ab3f0;
+    --c-blue-100: #dceeff;
+    --c-green-800: #0f2818;
+    --c-green-200: #7adfa8;
+    --c-green-100: #d0f5e2;
+    --c-amber-800: #2e1f08;
+    --c-amber-200: #f0c97a;
+    --c-amber-100: #fdefd0;
+    --c-red-800: #2e0f0f;
+    --c-red-200: #f07a7a;
+    --c-red-100: #fde0e0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .page-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  .page-header {
+    border-bottom: 1px solid var(--color-border-primary);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+
+  .page-eyebrow {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-eyebrow i { font-size: 1rem; }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  /* TOC */
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .toc-item:hover {
+    border-color: var(--color-border-secondary);
+    color: var(--color-text-primary);
+  }
+
+  .toc-item i { font-size: 1rem; flex-shrink: 0; }
+
+  .toc-badge {
+    margin-left: auto;
+    font-size: 1rem;
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2 i { font-size: 18px; }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-top: 28px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3 i { font-size: 1rem; }
+
+  p {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    margin-bottom: 14px;
+    line-height: 1.75;
+  }
+
+  /* Callout */
+  .callout {
+    border-radius: var(--border-radius-md);
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 1rem;
+  }
+
+  .callout i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout-text { line-height: 1.6; }
+
+  .callout-info {
+    background: var(--color-background-info);
+    border: 1px solid #1e3a6a;
+    color: var(--color-text-info);
+  }
+
+  .callout-success {
+    background: var(--color-background-success);
+    border: 1px solid #1a3d28;
+    color: var(--color-text-success);
+  }
+
+  .callout-warning {
+    background: var(--color-background-warning);
+    border: 1px solid #3d3010;
+    color: var(--color-text-warning);
+  }
+
+  .callout-danger {
+    background: var(--color-background-danger);
+    border: 1px solid #4a1a1a;
+    color: var(--color-text-danger);
+  }
+
+  /* Code blocks */
+  pre {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    background: var(--color-background-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--c-purple-200);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .code-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 14px 0;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-border-primary);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+
+  thead th {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    font-weight: 500;
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border-primary);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-primary);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  tbody tr:hover td { background: var(--color-background-secondary); }
+
+  /* Tag chips */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .chip-purple { background: var(--c-purple-800); color: var(--c-purple-200); border: 1px solid #4a2a8a; }
+  .chip-teal   { background: var(--c-teal-800);   color: var(--c-teal-200);   border: 1px solid #1a5050; }
+  .chip-coral  { background: var(--c-coral-800);  color: var(--c-coral-200);  border: 1px solid #6a3020; }
+  .chip-blue   { background: var(--c-blue-800);   color: var(--c-blue-200);   border: 1px solid #1a3a6a; }
+  .chip-green  { background: var(--c-green-800);  color: var(--c-green-200);  border: 1px solid #1a4a28; }
+  .chip-amber  { background: var(--c-amber-800);  color: var(--c-amber-200);  border: 1px solid #5a3a10; }
+  .chip-red    { background: var(--c-red-800);    color: var(--c-red-200);    border: 1px solid #5a1010; }
+
+  /* Mermaid diagrams */
+  .mermaid-wrap {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 24px 16px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+
+  .mermaid-wrap .mermaid { display: flex; justify-content: center; }
+
+  .diagram-caption {
+    font-size: 1rem;
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* Step timeline */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-background-tertiary);
+    border: 1px solid var(--color-border-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .step-line {
+    flex: 1;
+    width: 1px;
+    background: var(--color-border-primary);
+    margin: 4px 0;
+  }
+
+  .step:last-child .step-line { display: none; }
+
+  .step-content {
+    padding: 4px 0 24px;
+    flex: 1;
+  }
+
+  .step-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+  }
+
+  .step-body {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Card grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .card {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 16px;
+  }
+
+  .card-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+  }
+
+  .card-body {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+
+  /* Cert cards */
+  .cert-card {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    margin: 14px 0;
+  }
+
+  .cert-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .cert-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .cert-logo-purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+  .cert-logo-blue   { background: var(--c-blue-800);   color: var(--c-blue-200); }
+  .cert-logo-teal   { background: var(--c-teal-800);   color: var(--c-teal-200); }
+  .cert-logo-amber  { background: var(--c-amber-800);  color: var(--c-amber-200); }
+
+  .cert-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .cert-org {
+    font-size: 1rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .cert-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .cert-stat {
+    background: var(--color-background-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 12px;
+  }
+
+  .cert-stat-label {
+    font-size: 1rem;
+    color: var(--color-text-tertiary);
+    margin-bottom: 3px;
+    font-weight: 500;
+  }
+
+  .cert-stat-value {
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  /* Source links */
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 13px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    color: var(--color-text-info);
+    font-size: 1rem;
+    transition: border-color 0.15s;
+  }
+
+  .source-item:hover { border-color: var(--color-border-secondary); }
+
+  .source-item i { font-size: 1rem; flex-shrink: 0; }
+
+  .source-label {
+    color: var(--color-text-tertiary);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Comparison table special */
+  .method-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* Back to top */
+  .back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-tertiary);
+    font-size: 1rem;
+    text-decoration: none;
+    margin-top: 12px;
+    transition: color 0.15s;
+  }
+
+  .back-top:hover { color: var(--color-text-secondary); }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--color-border-primary);
+    margin: 40px 0;
+  }
+
+  /* Roadmap */
+  .roadmap-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .roadmap-period {
+    width: 90px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .roadmap-period-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .roadmap-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .roadmap-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+  }
+
+  .roadmap-item i { font-size: 1rem; flex-shrink: 0; }
+
+  /* Priority badge */
+  .priority-1 { color: var(--c-coral-200); }
+  .priority-2 { color: var(--c-amber-200); }
+  .priority-3 { color: var(--c-teal-200); }
+
+  /* Career stage roadmap */
+  .career-roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .career-stage {
+    display: flex;
+    gap: 16px;
+  }
+
+  .career-stage-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 44px;
+  }
+
+  .career-stage-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    z-index: 1;
+    border: 2px solid;
+  }
+
+  .career-stage-line {
+    flex: 1;
+    width: 2px;
+    min-height: 20px;
+    margin: 6px 0;
+  }
+
+  .career-stage:last-child .career-stage-line { display: none; }
+
+  .career-stage-body {
+    flex: 1;
+    padding-bottom: 28px;
+  }
+
+  .career-stage-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+    margin-top: 8px;
+  }
+
+  .career-stage-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .career-stage-years {
+    font-size: 1rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .career-stage-desc {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .career-cert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .career-cert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: var(--border-radius-md);
+    border: 1px solid;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .career-cert-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .career-cert-content { flex: 1; }
+
+  .career-cert-name {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .career-cert-purpose {
+    font-size: 1rem;
+    opacity: 0.75;
+  }
+
+  .career-cert-badge {
+    flex-shrink: 0;
+    font-size: 1rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+
+  /* Entry stage — coral/red */
+  .stage-entry .career-stage-icon { background: var(--c-coral-800); border-color: #8a3a20; color: var(--c-coral-200); }
+  .stage-entry .career-stage-line { background: linear-gradient(to bottom, #6a3020, var(--color-border-primary)); }
+  .stage-entry .career-stage-title { color: var(--c-coral-200); }
+  .stage-entry .career-stage-years { background: var(--c-coral-800); color: var(--c-coral-200); }
+  .stage-entry .career-cert-item { background: #2a1a12; border-color: #6a3020; color: var(--c-coral-100); }
+  .stage-entry .career-cert-icon { color: var(--c-coral-200); }
+  .stage-entry .career-cert-badge { background: var(--c-coral-800); color: var(--c-coral-200); }
+
+  /* Middle stage — amber */
+  .stage-middle .career-stage-icon { background: var(--c-amber-800); border-color: #7a4a10; color: var(--c-amber-200); }
+  .stage-middle .career-stage-line { background: linear-gradient(to bottom, #5a3a10, var(--color-border-primary)); }
+  .stage-middle .career-stage-title { color: var(--c-amber-200); }
+  .stage-middle .career-stage-years { background: var(--c-amber-800); color: var(--c-amber-200); }
+  .stage-middle .career-cert-item { background: #1e1808; border-color: #6a4a10; color: var(--c-amber-100); }
+  .stage-middle .career-cert-icon { color: var(--c-amber-200); }
+  .stage-middle .career-cert-badge { background: var(--c-amber-800); color: var(--c-amber-200); }
+
+  /* Senior stage — teal */
+  .stage-senior .career-stage-icon { background: var(--c-teal-800); border-color: #1a6060; color: var(--c-teal-200); }
+  .stage-senior .career-stage-line { display: none; }
+  .stage-senior .career-stage-title { color: var(--c-teal-200); }
+  .stage-senior .career-stage-years { background: var(--c-teal-800); color: var(--c-teal-200); }
+  .stage-senior .career-cert-item { background: #0a2020; border-color: #1a5a5a; color: var(--c-teal-100); }
+  .stage-senior .career-cert-icon { color: var(--c-teal-200); }
+  .stage-senior .career-cert-badge { background: var(--c-teal-800); color: var(--c-teal-200); }
+
+  /* Do / Dont list */
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .do-box, .dont-box {
+    border-radius: var(--border-radius-md);
+    padding: 14px;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .do-box {
+    background: var(--color-background-success);
+    border: 1px solid #1a4a2a;
+    color: var(--color-text-success);
+  }
+
+  .dont-box {
+    background: var(--color-background-danger);
+    border: 1px solid #4a1a1a;
+    color: var(--color-text-danger);
+  }
+
+  .do-box .box-header, .dont-box .box-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+
+  .do-box ul, .dont-box ul {
+    padding-left: 16px;
+  }
+
+  .do-box li, .dont-box li {
+    margin-bottom: 4px;
+  }
+
+  /* Syntax highlight helpers */
+  .kw { color: var(--c-purple-200); }
+  .cm { color: var(--color-text-tertiary); font-style: italic; }
+  .st { color: var(--c-teal-200); }
+  .fn { color: var(--c-coral-200); }
+  .nu { color: var(--c-amber-200); }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- Page Header -->
+<header class="page-header" id="top">
+  <div class="page-eyebrow">
+    <i class="ti ti-layout-grid"></i>
+    ソフトウェア設計 完全ガイド
+  </div>
+  <h1>IT業界 主流設計手法・駆動開発<br>完全リファレンス</h1>
+  <p class="page-subtitle">TDD / BDD / DDD / EDA / Clean Architecture / Microservicesなど主要手法を初学者からシニアエンジニアまで対応した詳細解説。国際資格ガイド付き。</p>
+
+  <div class="toc-grid">
+    <a href="#tdd" class="toc-item"><i class="ti ti-test-pipe" style="color:var(--c-purple-200)"></i> TDD<span class="toc-badge">テスト駆動</span></a>
+    <a href="#bdd" class="toc-item"><i class="ti ti-message-dots" style="color:var(--c-teal-200)"></i> BDD<span class="toc-badge">振る舞い駆動</span></a>
+    <a href="#ddd" class="toc-item"><i class="ti ti-cube" style="color:var(--c-coral-200)"></i> DDD<span class="toc-badge">ドメイン駆動</span></a>
+    <a href="#fdd" class="toc-item"><i class="ti ti-list-check" style="color:var(--c-blue-200)"></i> FDD<span class="toc-badge">フィーチャー駆動</span></a>
+    <a href="#atdd" class="toc-item"><i class="ti ti-checkbox" style="color:var(--c-green-200)"></i> ATDD<span class="toc-badge">受け入れテスト</span></a>
+    <a href="#eda" class="toc-item"><i class="ti ti-bolt" style="color:var(--c-amber-200)"></i> EDA<span class="toc-badge">イベント駆動</span></a>
+    <a href="#api-first" class="toc-item"><i class="ti ti-api" style="color:var(--c-purple-200)"></i> API-First<span class="toc-badge">設計</span></a>
+    <a href="#clean" class="toc-item"><i class="ti ti-layers-difference" style="color:var(--c-teal-200)"></i> Clean Arch<span class="toc-badge">アーキテクチャ</span></a>
+    <a href="#microservices" class="toc-item"><i class="ti ti-topology-star-3" style="color:var(--c-coral-200)"></i> マイクロサービス<span class="toc-badge"></span></a>
+    <a href="#comparison" class="toc-item"><i class="ti ti-table" style="color:var(--c-blue-200)"></i> 比較ガイド<span class="toc-badge"></span></a>
+    <a href="#certs" class="toc-item"><i class="ti ti-certificate" style="color:var(--c-amber-200)"></i> 国際資格<span class="toc-badge">TOGAF / AWS</span></a>
+    <a href="#roadmap" class="toc-item"><i class="ti ti-map" style="color:var(--c-green-200)"></i> 学習ロードマップ<span class="toc-badge"></span></a>
+  </div>
+</header>
+
+<!-- TDD -->
+<section class="section" id="tdd">
+  <h2><i class="ti ti-test-pipe" style="color:var(--c-purple-200)"></i> TDD — テスト駆動開発</h2>
+
+  <div class="callout callout-info">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-text"><strong>一言で言うと：</strong>「まず失敗するテストを書き、次にそのテストを通す最小限のコードを書き、最後にコードを整理する」サイクルを繰り返す開発手法。</div>
+  </div>
+
+  <p>TDD（Test-Driven Development）はKent Beckが普及させた開発哲学です。テストコードを実装より先に書くことで、設計の品質を自然に高め、バグの早期発見とリファクタリングの安心感を得られます。</p>
+
+  <h3><i class="ti ti-refresh" style="color:var(--c-purple-200)"></i> Red-Green-Refactor サイクル</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    A([🔴 RED\nテスト失敗]) --> B([🟢 GREEN\nテスト通過])
+    B --> C([🔵 REFACTOR\n整理])
+    C --> A
+
+    style A fill:#2a1a1a,stroke:#f07a7a,color:#f07a7a
+    style B fill:#152218,stroke:#7adfa8,color:#7adfa8
+    style C fill:#1a2440,stroke:#7ab3f0,color:#7ab3f0
+    </div>
+    <div class="diagram-caption">TDD の基本サイクル。このループを小刻みに繰り返す。</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-red-800);border-color:#6a2020;color:var(--c-red-200)">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title" style="color:var(--c-red-200)">RED — 失敗するテストを書く</div>
+        <div class="step-body">まだ存在しない関数・クラスのテストを先に書く。この時点でテストは必ず失敗する（エラーになる）。失敗を確認することで「テストが機能している」ことを証明する。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-green-800);border-color:#1a5a30;color:var(--c-green-200)">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title" style="color:var(--c-green-200)">GREEN — テストを通す最小コードを書く</div>
+        <div class="step-body">テストが通る最小限の実装だけ書く。汚くてもOK。「完璧な実装」を目指さない。この段階では「動く」ことだけを目標にする。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-blue-800);border-color:#1a4a7a;color:var(--c-blue-200)">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title" style="color:var(--c-blue-200)">REFACTOR — コードを整理する</div>
+        <div class="step-body">テストが通った状態を保ちながら、コードを綺麗にする。重複を取り除き、命名を改善し、設計を洗練させる。テストがセーフティネットになるため安心して変更できる。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3><i class="ti ti-code" style="color:var(--c-purple-200)"></i> AAAパターン（推奨構造）</h3>
+  <p>テストコードの標準構造として <strong>Arrange / Act / Assert</strong> の3段階で書く。</p>
+
+  <div class="code-label">Python — AAAパターン</div>
+  <pre><span class="kw">def</span> <span class="fn">test_user_registration</span>():
+    <span class="cm"># ── Arrange（準備）──────────────────────</span>
+    user_data = {<span class="st">"email"</span>: <span class="st">"test@example.com"</span>, <span class="st">"password"</span>: <span class="st">"SecurePass123"</span>}
+    user_service = UserService()
+
+    <span class="cm"># ── Act（実行）──────────────────────────</span>
+    result = user_service.register(user_data)
+
+    <span class="cm"># ── Assert（検証）───────────────────────</span>
+    <span class="kw">assert</span> result.success == <span class="kw">True</span>
+    <span class="kw">assert</span> result.user.email == <span class="st">"test@example.com"</span></pre>
+
+  <h3><i class="ti ti-star" style="color:var(--c-purple-200)"></i> ベストプラクティス</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>原則</th><th>説明</th><th>悪い例</th><th>良い例</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-purple">単一責任</span></td><td>1テスト＝1概念のみ検証</td><td><code>test_user()</code>で複数機能</td><td><code>test_login_fails_wrong_password()</code></td></tr>
+        <tr><td><span class="chip chip-purple">命名仕様</span></td><td>テスト名が仕様書として読める</td><td><code>test_001()</code></td><td><code>test_order_total_includes_tax()</code></td></tr>
+        <tr><td><span class="chip chip-purple">独立性</span></td><td>テスト同士の順序依存なし</td><td>他テストのデータに依存</td><td>各テストで自前のデータ作成</td></tr>
+        <tr><td><span class="chip chip-purple">同等品質</span></td><td>テストコードも本番同品質</td><td>テストの手抜きコード</td><td>リファクタ対象に含める</td></tr>
+        <tr><td><span class="chip chip-purple">高速性</span></td><td>ユニットテストは数ミリ秒以内</td><td>DBアクセスをテスト内に直書き</td><td>モック・スタブを活用</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-scale" style="color:var(--c-purple-200)"></i> メリットとデメリット</h3>
+  <div class="card-grid">
+    <div class="card" style="border-color:#1a4a2a">
+      <div class="card-icon" style="color:var(--c-green-200)"><i class="ti ti-circle-check"></i></div>
+      <div class="card-title">メリット</div>
+      <div class="card-body">
+        バグの早期発見。設計品質の自然な向上。リファクタリングの安心感。テストが仕様書として機能する。デバッグ時間の大幅削減。
+      </div>
+    </div>
+    <div class="card" style="border-color:#4a2020">
+      <div class="card-icon" style="color:var(--c-red-200)"><i class="ti ti-alert-triangle"></i></div>
+      <div class="card-title">注意点</div>
+      <div class="card-body">
+        初期の開発速度が落ちる感覚がある。テストの書き方習得コスト。外部依存（DB・API）のテストが難しい。チーム全員の習慣化が必要。
+      </div>
+    </div>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-purple-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://www.agilealliance.org/glossary/tdd/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Agile Alliance — TDD定義<span class="source-label">英語</span></a>
+    <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Martin Fowler — Test Driven Development<span class="source-label">英語</span></a>
+    <a href="https://docs.pytest.org/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> pytest 公式ドキュメント<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- BDD -->
+<section class="section" id="bdd">
+  <h2><i class="ti ti-message-dots" style="color:var(--c-teal-200)"></i> BDD — 振る舞い駆動開発</h2>
+
+  <div class="callout callout-info">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-text"><strong>TDDとの違い：</strong> TDDは「コードのテスト」。BDDは「ビジネス要件をテスト可能な仕様として、非エンジニアでも読める自然言語で記述する」手法。</div>
+  </div>
+
+  <p>BDD（Behavior-Driven Development）はDan Northが2006年にTDDから発展させた手法です。<strong>Gherkin記法</strong>（Given/When/Then）を使い、ビジネスとエンジニアが共通の言語で仕様を記述します。</p>
+
+  <h3><i class="ti ti-file-text" style="color:var(--c-teal-200)"></i> Gherkin記法</h3>
+
+  <div class="code-label">Feature ファイル（.feature）</div>
+  <pre><span class="kw">Feature:</span> ユーザーログイン機能
+  ユーザーとして
+  システムにログインしたい
+  なぜなら自分のデータにアクセスしたいから
+
+  <span class="kw">Scenario:</span> 正しい認証情報でのログイン
+    <span class="kw">Given</span> ユーザーが登録されている
+    <span class="kw">And</span>   メールアドレスは <span class="st">"user@example.com"</span> である
+    <span class="kw">When</span>  ユーザーが正しいパスワードでログインする
+    <span class="kw">Then</span>  ダッシュボードにリダイレクトされる
+    <span class="kw">And</span>   <span class="st">"ようこそ"</span> というメッセージが表示される
+
+  <span class="kw">Scenario:</span> 間違ったパスワードでのログイン
+    <span class="kw">Given</span> ユーザーが登録されている
+    <span class="kw">When</span>  ユーザーが間違ったパスワードでログインする
+    <span class="kw">Then</span>  エラーメッセージ <span class="st">"パスワードが正しくありません"</span> が表示される
+    <span class="kw">And</span>   ログインページに留まる</pre>
+
+  <h3><i class="ti ti-layers" style="color:var(--c-teal-200)"></i> Given / When / Then の役割</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    G["🔵 Given\n前提条件\n（システムの状態・初期設定）"] --> W["🟡 When\nトリガー\n（ユーザーのアクション）"]
+    W --> T["🟢 Then\n期待結果\n（システムの振る舞い）"]
+
+    style G fill:#1a2440,stroke:#7ab3f0,color:#7ab3f0
+    style W fill:#251e10,stroke:#f0c97a,color:#f0c97a
+    style T fill:#152218,stroke:#7adfa8,color:#7adfa8
+    </div>
+  </div>
+
+  <div class="do-dont">
+    <div class="do-box">
+      <div class="box-header"><i class="ti ti-check"></i> DO — やるべきこと</div>
+      <ul>
+        <li>非技術者でも読める文章で書く</li>
+        <li>具体的な値（"user@example.com"）を使う</li>
+        <li>1シナリオ＝1ビジネスルール</li>
+        <li>過去形・現在形で結果を明示する</li>
+      </ul>
+    </div>
+    <div class="dont-box">
+      <div class="box-header"><i class="ti ti-x"></i> DON'T — 避けること</div>
+      <ul>
+        <li>技術的詳細をFeatureファイルに書く</li>
+        <li>UI操作手順を細かく書きすぎる</li>
+        <li>1シナリオに複数のGivenを詰め込む</li>
+        <li>実装言語依存の表現を使う</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-teal-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://cucumber.io/docs/bdd/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Cucumber — BDD公式ドキュメント<span class="source-label">英語</span></a>
+    <a href="https://cucumber.io/docs/gherkin/reference/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Gherkin 記法リファレンス<span class="source-label">英語</span></a>
+    <a href="https://martinfowler.com/bliki/GivenWhenThen.html" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Martin Fowler — Given When Then<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- DDD -->
+<section class="section" id="ddd">
+  <h2><i class="ti ti-cube" style="color:var(--c-coral-200)"></i> DDD — ドメイン駆動設計</h2>
+
+  <div class="callout callout-info">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-text"><strong>核心思想：</strong> ビジネスの専門家とエンジニアが「同じ言葉（ユビキタス言語）」を使って会話し、その言葉をそのままコードに反映させる。Eric Evans が2003年に提唱。</div>
+  </div>
+
+  <p>DDD（Domain-Driven Design）は、複雑なビジネスロジックを扱うシステムに特に有効な設計哲学です。<strong>戦略的設計</strong>（全体をどう分割するか）と<strong>戦術的設計</strong>（コードをどう書くか）の2層から成ります。</p>
+
+  <h3><i class="ti ti-map" style="color:var(--c-coral-200)"></i> 全体構造</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    subgraph SD["🗺️ 戦略的設計 Strategic Design"]
+        BC["Bounded Context\n境界づけられたコンテキスト"]
+        UL["Ubiquitous Language\nユビキタス言語"]
+        CM["Context Map\nコンテキストマップ"]
+        SUB["Subdomain\nサブドメイン"]
+    end
+
+    subgraph TD2["⚙️ 戦術的設計 Tactical Design"]
+        ENT["Entity\nエンティティ"]
+        VO["Value Object\n値オブジェクト"]
+        AGG["Aggregate\n集約"]
+        DS["Domain Service\nドメインサービス"]
+        REPO["Repository\nリポジトリ"]
+        DE["Domain Event\nドメインイベント"]
+    end
+
+    SD --> TD2
+
+    style SD fill:#1e1a2a,stroke:#4a2a8a
+    style TD2 fill:#1e1a1a,stroke:#6a3020
+    </div>
+  </div>
+
+  <h3><i class="ti ti-language" style="color:var(--c-coral-200)"></i> ユビキタス言語</h3>
+  <p>ビジネス側とエンジニア側が同じ用語を使うことで認識のズレをなくします。コードの変数名・クラス名もこの言語に揃えます。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>チーム</th><th>従来のバラバラな言葉</th><th>ユビキタス言語（統一）</th></tr></thead>
+      <tbody>
+        <tr><td>営業</td><td>顧客、発注、商品</td><td rowspan="3" style="color:var(--color-text-primary);font-weight:500">Customer（顧客）<br>Order（注文）<br>Product（商品）<br><br>コードにもそのまま反映</td></tr>
+        <tr><td>開発</td><td>User, Order, Item</td></tr>
+        <tr><td>物流</td><td>荷受け人、出荷指示、荷物</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-box-multiple" style="color:var(--c-coral-200)"></i> Bounded Context（境界づけられたコンテキスト）</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    subgraph OC["注文コンテキスト"]
+        direction TB
+        O["Order\nOrderItem\nOrderStatus"]
+    end
+    subgraph IC["在庫コンテキスト"]
+        direction TB
+        I["Inventory\nStockLevel\nWarehouse"]
+    end
+    subgraph DC["配送コンテキスト"]
+        direction TB
+        D["Shipment\nDeliveryRoute\nCarrier"]
+    end
+    OC -->|"商品=注文内容"| IC
+    IC -->|"商品=在庫管理対象"| DC
+
+    style OC fill:#1f1a3a,stroke:#7060b0
+    style IC fill:#0f2e2e,stroke:#408080
+    style DC fill:#3a1a1a,stroke:#904040
+    </div>
+    <div class="diagram-caption">同じ「商品」でもコンテキストによって意味が異なる。それぞれ独立したモデルを持つ。</div>
+  </div>
+
+  <h3><i class="ti ti-code" style="color:var(--c-coral-200)"></i> 戦術的設計：実装パターン</h3>
+
+  <div class="code-label">Entity — IDで同一性を判断するオブジェクト</div>
+  <pre><span class="kw">class</span> <span class="fn">Order</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, order_id: OrderId, customer_id: CustomerId):
+        self._id = order_id          <span class="cm"># IDで同一性を判断</span>
+        self._items: list[OrderItem] = []
+        self._status = OrderStatus.PENDING
+
+    <span class="kw">def</span> <span class="fn">add_item</span>(self, product: Product, quantity: int) -> None:
+        <span class="kw">if</span> self._status != OrderStatus.PENDING:
+            <span class="kw">raise</span> DomainException(<span class="st">"確定済み注文には商品を追加できません"</span>)
+        self._items.append(OrderItem(product, quantity))</pre>
+
+  <div class="code-label">Value Object — 値で同一性を判断するイミュータブルなオブジェクト</div>
+  <pre><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+<span class="kw">@dataclass</span>(frozen=<span class="kw">True</span>)  <span class="cm"># イミュータブル（変更不可）</span>
+<span class="kw">class</span> <span class="fn">Money</span>:
+    amount: int
+    currency: str
+
+    <span class="kw">def</span> <span class="fn">add</span>(self, other: <span class="st">"Money"</span>) -> <span class="st">"Money"</span>:
+        <span class="kw">if</span> self.currency != other.currency:
+            <span class="kw">raise</span> ValueError(<span class="st">"通貨単位が一致しません"</span>)
+        <span class="kw">return</span> Money(self.amount + other.amount, self.currency)</pre>
+
+  <h3><i class="ti ti-star" style="color:var(--c-coral-200)"></i> ベストプラクティス</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>カテゴリ</th><th>ベストプラクティス</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-coral">モデリング</span></td><td>ドメインエキスパートと定期的な Event Storming セッションを行う</td></tr>
+        <tr><td><span class="chip chip-coral">言語</span></td><td>コードの変数名・クラス名をユビキタス言語と一致させる</td></tr>
+        <tr><td><span class="chip chip-coral">集約設計</span></td><td>集約は小さく保つ（5〜10オブジェクト以下を目安）</td></tr>
+        <tr><td><span class="chip chip-coral">境界</span></td><td>Bounded Context を1つのマイクロサービスに対応させる</td></tr>
+        <tr><td><span class="chip chip-coral">テスト</span></td><td>ドメインロジックのユニットテストを徹底する（フレームワーク依存なし）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-coral-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://www.domainlanguage.com/ddd/reference/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> DDD Reference — Eric Evans 公式<span class="source-label">英語</span></a>
+    <a href="https://martinfowler.com/bliki/BoundedContext.html" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Martin Fowler — Bounded Context<span class="source-label">英語</span></a>
+    <a href="https://www.eventstorming.com/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> EventStorming.com — Alberto Brandolini<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- FDD -->
+<section class="section" id="fdd">
+  <h2><i class="ti ti-list-check" style="color:var(--c-blue-200)"></i> FDD — フィーチャー駆動開発</h2>
+
+  <p>FDD（Feature-Driven Development）は、ユーザーに価値を提供する「機能（フィーチャー）」単位で開発を進める手法です。Peter Coad と Jeff De Luca が1997年に提唱しました。</p>
+
+  <h3><i class="ti ti-timeline" style="color:var(--c-blue-200)"></i> 5つのプロセス</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    P1["Process 1\n全体モデルの開発\n(一度だけ)"] --> P2
+    P2["Process 2\nフィーチャーリスト\n構築 (一度だけ)"] --> P3
+    P3["Process 3\n計画策定"] --> P4
+    P4["Process 4\nフィーチャー設計"] --> P5
+    P5["Process 5\nフィーチャー構築"]
+    P5 -.->|"次のフィーチャーへ"| P3
+
+    style P1 fill:#1a2440,stroke:#7ab3f0,color:#9ab8e0
+    style P2 fill:#1a2440,stroke:#7ab3f0,color:#9ab8e0
+    style P3 fill:#152218,stroke:#7adfa8,color:#7adfa8
+    style P4 fill:#152218,stroke:#7adfa8,color:#7adfa8
+    style P5 fill:#152218,stroke:#7adfa8,color:#7adfa8
+    </div>
+  </div>
+
+  <h3><i class="ti ti-pencil" style="color:var(--c-blue-200)"></i> フィーチャーの記述形式</h3>
+  <p>フィーチャーは <strong>「&lt;動作&gt; &lt;結果&gt; &lt;オブジェクト&gt;」</strong> の形式で記述します。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>種別</th><th>例</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-green">良い例</span></td><td>「顧客の注文履歴を表示する」</td><td>動作・結果・オブジェクトが明確</td></tr>
+        <tr><td><span class="chip chip-green">良い例</span></td><td>「商品の在庫数を更新する」</td><td>ビジネス価値が伝わる</td></tr>
+        <tr><td><span class="chip chip-red">悪い例</span></td><td>「データベースから取得する」</td><td>技術的詳細で、ビジネス価値が不明</td></tr>
+        <tr><td><span class="chip chip-red">悪い例</span></td><td>「ユーザー管理」</td><td>動作・結果が不明確で粒度が粗い</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-warning">
+    <i class="ti ti-clock"></i>
+    <div class="callout-text"><strong>重要：</strong> フィーチャー1つは<strong>2週間以内</strong>で完成できる粒度に分解する。それより大きい場合はサブフィーチャーに分割すること。</div>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ATDD -->
+<section class="section" id="atdd">
+  <h2><i class="ti ti-checkbox" style="color:var(--c-green-200)"></i> ATDD — 受け入れテスト駆動開発</h2>
+
+  <p>ATDD（Acceptance Test-Driven Development）は、顧客・ビジネス側が定義する「受け入れ基準」をテストとして先に書き、それを満たすよう開発する手法です。</p>
+
+  <h3><i class="ti ti-triangle" style="color:var(--c-green-200)"></i> テストピラミッド：TDD・BDD・ATDDの関係</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    A["🔺 ATDD — 受け入れテスト\n（顧客視点・少量・遅い）"]
+    B["🔷 BDD — シナリオテスト\n（振る舞い・中量）"]
+    C["🟩 TDD — ユニットテスト\n（コード・大量・速い）"]
+
+    A --> B --> C
+
+    style A fill:#3a1a1a,stroke:#904040,color:#f07a7a
+    style B fill:#251e10,stroke:#f0c97a,color:#f0c97a
+    style C fill:#152218,stroke:#7adfa8,color:#7adfa8
+    </div>
+    <div class="diagram-caption">上層ほど抽象度が高く実行が遅い。下層ほど具体的で高速。数のバランスも逆三角形にならないよう注意。</div>
+  </div>
+
+  <h3><i class="ti ti-steps" style="color:var(--c-green-200)"></i> ATDD実践フロー</h3>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-green-800);border-color:#1a5a30;color:var(--c-green-200)">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">受け入れ基準をビジネス側が定義</div>
+        <div class="step-body">「商品をカートに追加できる」機能の基準として、「カートに追加後バッジ数が増える」「同じ商品2回追加で数量2になる」「在庫なし商品は追加できない」などを箇条書きで列挙する。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-green-800);border-color:#1a5a30;color:var(--c-green-200)">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">受け入れテストをコード化</div>
+        <div class="step-body">Selenium / Playwright / Cypress などを使い、受け入れ基準を自動テストとして実装する。この時点でテストは失敗する（まだ実装がないため）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-green-800);border-color:#1a5a30;color:var(--c-green-200)">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">開発者がテストを通るよう実装</div>
+        <div class="step-body">TDD/BDDを活用しながら、受け入れテストが通るまで実装を進める。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num" style="background:var(--c-green-800);border-color:#1a5a30;color:var(--c-green-200)">4</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">ビジネス側が承認</div>
+        <div class="step-body">全受け入れテストが通過したことをビジネス側が確認・承認する。「完成の定義（Definition of Done）」が明確になる。</div>
+      </div>
+    </div>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- EDA -->
+<section class="section" id="eda">
+  <h2><i class="ti ti-bolt" style="color:var(--c-amber-200)"></i> EDA — イベント駆動アーキテクチャ</h2>
+
+  <div class="callout callout-info">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-text"><strong>核心：</strong> コンポーネント間の通信を「イベント」という不変の事実メッセージで行う。Producer は Consumer の存在を知らず、疎結合が実現する。</div>
+  </div>
+
+  <h3><i class="ti ti-topology-ring" style="color:var(--c-amber-200)"></i> 構成要素フロー</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    P["📤 Producer\n（注文サービス等）\nイベントを発行"] --> EB["🔀 Event Broker\nApache Kafka\nAWS EventBridge 等"]
+    EB --> C1["📦 在庫サービス\n(Consumer)"]
+    EB --> C2["🚚 配送サービス\n(Consumer)"]
+    EB --> C3["🔔 通知サービス\n(Consumer)"]
+
+    style P fill:#251e10,stroke:#f0c97a,color:#f0c97a
+    style EB fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style C1 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8
+    style C2 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8
+    style C3 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8
+    </div>
+    <div class="diagram-caption">Producerは誰が受信するか知らない。Brokerが適切なConsumerに配信する。</div>
+  </div>
+
+  <h3><i class="ti ti-code" style="color:var(--c-amber-200)"></i> イベント設計の原則</h3>
+
+  <div class="code-label">Python — 良いイベント設計</div>
+  <pre><span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="fn">OrderPlacedEvent</span>:
+    <span class="st">"""注文が確定したことを表すイベント（過去形で命名）"""</span>
+    event_id: str           <span class="cm"># 一意のイベントID</span>
+    occurred_at: datetime   <span class="cm"># 発生日時</span>
+    order_id: str           <span class="cm"># 何の注文か</span>
+    customer_id: str        <span class="cm"># 誰の注文か</span>
+    total_amount: int       <span class="cm"># 合計金額</span>
+    items: list[dict]       <span class="cm"># 注文内容（自己完結した情報）</span>
+
+    <span class="cm"># ✅ 過去形で命名 → OrderPlaced（注文が完了した）</span>
+    <span class="cm"># ✅ イベントに必要な情報を自己完結的に含める</span>
+    <span class="cm"># ❌ IDだけ持ち Consumer が DB照会するのはアンチパターン</span></pre>
+
+  <h3><i class="ti ti-star" style="color:var(--c-amber-200)"></i> ベストプラクティス</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>原則</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-amber">べき等性</span></td><td>同じイベントを2回受信しても結果が変わらないよう設計する</td></tr>
+        <tr><td><span class="chip chip-amber">スキーマ管理</span></td><td>Schema Registry でバージョン管理し、互換性を保つ</td></tr>
+        <tr><td><span class="chip chip-amber">DLQ</span></td><td>Dead Letter Queue で処理失敗イベントを退避し、後処理できるようにする</td></tr>
+        <tr><td><span class="chip chip-amber">追跡性</span></td><td>Correlation ID で一連のイベントをトレースできるようにする</td></tr>
+        <tr><td><span class="chip chip-amber">順序保証</span></td><td>同一パーティション内で順序が必要な場合は設計で考慮する</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-amber-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://kafka.apache.org/documentation/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Apache Kafka 公式ドキュメント<span class="source-label">英語</span></a>
+    <a href="https://cloudevents.io/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> CloudEvents 仕様（CNCF）<span class="source-label">英語</span></a>
+    <a href="https://aws.amazon.com/event-driven-architecture/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> AWS — Event-Driven Architecture<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- API-First -->
+<section class="section" id="api-first">
+  <h2><i class="ti ti-api" style="color:var(--c-purple-200)"></i> API-First 設計</h2>
+
+  <p>実装より先に<strong>APIの設計仕様（契約）を定義</strong>し、その契約を中心に開発を進める手法。フロントエンドとバックエンドが並行開発できるため、チーム生産性が大幅に向上します。</p>
+
+  <h3><i class="ti ti-timeline" style="color:var(--c-purple-200)"></i> 開発フロー</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    A["📝 API設計\n(OpenAPI YAML)"] --> B["👥 チームレビュー"]
+    B --> C["🤖 モック自動生成"]
+    C --> FE["🖥️ フロントエンド\n(モックで開発)"]
+    C --> BE["⚙️ バックエンド\n(仕様に従い実装)"]
+    FE --> INT["🔗 統合テスト"]
+    BE --> INT
+
+    style A fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style B fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style C fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style FE fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style BE fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style INT fill:#152218,stroke:#1a5a30,color:#7adfa8
+    </div>
+  </div>
+
+  <h3><i class="ti ti-code" style="color:var(--c-purple-200)"></i> OpenAPI（Swagger）仕様例</h3>
+
+  <div class="code-label">openapi.yaml — 注文API定義</div>
+  <pre><span class="kw">openapi:</span> <span class="st">3.0.3</span>
+<span class="kw">info:</span>
+  <span class="kw">title:</span> ECサイト注文API
+  <span class="kw">version:</span> <span class="st">1.0.0</span>
+
+<span class="kw">paths:</span>
+  <span class="kw">/orders:</span>
+    <span class="kw">post:</span>
+      <span class="kw">summary:</span> 注文を作成する
+      <span class="kw">requestBody:</span>
+        <span class="kw">required:</span> <span class="kw">true</span>
+      <span class="kw">responses:</span>
+        <span class="st">'201':</span>
+          <span class="kw">description:</span> 注文作成成功
+        <span class="st">'400':</span>
+          <span class="kw">description:</span> リクエスト不正</pre>
+
+  <h3><i class="ti ti-route" style="color:var(--c-purple-200)"></i> RESTful URL 設計ルール</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>メソッド</th><th>URL</th><th>操作</th><th>ステータス</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-green">GET</span></td><td><code>/products</code></td><td>商品一覧取得</td><td>200</td></tr>
+        <tr><td><span class="chip chip-green">GET</span></td><td><code>/products/{id}</code></td><td>特定商品取得</td><td>200 / 404</td></tr>
+        <tr><td><span class="chip chip-blue">POST</span></td><td><code>/products</code></td><td>商品新規作成</td><td>201</td></tr>
+        <tr><td><span class="chip chip-amber">PUT</span></td><td><code>/products/{id}</code></td><td>全体更新</td><td>200</td></tr>
+        <tr><td><span class="chip chip-amber">PATCH</span></td><td><code>/products/{id}</code></td><td>部分更新</td><td>200</td></tr>
+        <tr><td><span class="chip chip-coral">DELETE</span></td><td><code>/products/{id}</code></td><td>削除</td><td>204</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-purple-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://swagger.io/specification/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> OpenAPI Specification（Swagger）<span class="source-label">英語</span></a>
+    <a href="https://cloud.google.com/apis/design" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Google API Design Guide<span class="source-label">英語</span></a>
+    <a href="https://restfulapi.net/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> REST API Design Best Practices<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- Clean Architecture -->
+<section class="section" id="clean">
+  <h2><i class="ti ti-layers-difference" style="color:var(--c-teal-200)"></i> クリーンアーキテクチャ</h2>
+
+  <div class="callout callout-info">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-text"><strong>設計哲学：</strong> ビジネスロジックを技術詳細（DB・フレームワーク・UI）から分離。「依存の方向は常に内側へ」という原則で、テスト容易性と保守性を最大化する。Robert C. Martin（Uncle Bob）提唱。</div>
+  </div>
+
+  <h3><i class="ti ti-circles-relation" style="color:var(--c-teal-200)"></i> 4層アーキテクチャ</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    FW["🔧 Frameworks & Drivers\n（最外層）\nDjango / FastAPI / PostgreSQL / Redis"]
+    IA["🔄 Interface Adapters\nController / Presenter / Repository Impl"]
+    UC["📋 Use Cases\nアプリケーション固有ビジネスロジック\nPlaceOrderUseCase / RegisterUserUseCase"]
+    ENT["🎯 Entities\n（最内層）\n企業ビジネスルールの核心\nOrder / User / Product"]
+
+    FW --> IA --> UC --> ENT
+
+    style FW fill:#3a1a1a,stroke:#904040,color:#c07070
+    style IA fill:#251e10,stroke:#806020,color:#c0a060
+    style UC fill:#0f2e2e,stroke:#408080,color:#70c0c0
+    style ENT fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    </div>
+    <div class="diagram-caption">依存の方向は外 → 内のみ。内側は外側の存在を知らない。</div>
+  </div>
+
+  <h3><i class="ti ti-code" style="color:var(--c-teal-200)"></i> Python実装例</h3>
+
+  <div class="code-label">Entities層（最内側・フレームワーク依存ゼロ）</div>
+  <pre><span class="kw">class</span> <span class="fn">Order</span>:
+    <span class="st">"""純粋なビジネスエンティティ（フレームワーク依存なし）"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, order_id: str, customer_id: str):
+        self.order_id = order_id
+        self.customer_id = customer_id
+        self.items = []
+
+    <span class="kw">def</span> <span class="fn">add_item</span>(self, item: OrderItem) -> None:
+        self.items.append(item)</pre>
+
+  <div class="code-label">Use Cases層（インターフェースに依存・実装詳細を知らない）</div>
+  <pre><span class="kw">class</span> <span class="fn">PlaceOrderUseCase</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        self,
+        order_repository: OrderRepositoryInterface,  <span class="cm"># インターフェースに依存</span>
+        payment_gateway: PaymentGatewayInterface,    <span class="cm"># 実装詳細に依存しない</span>
+    ):
+        self.order_repository = order_repository
+        self.payment_gateway = payment_gateway
+
+    <span class="kw">def</span> <span class="fn">execute</span>(self, command: PlaceOrderCommand) -> PlaceOrderResult:
+        order = Order(order_id=generate_id(), customer_id=command.customer_id)
+        self.payment_gateway.charge(order)
+        self.order_repository.save(order)
+        <span class="kw">return</span> PlaceOrderResult(order_id=order.order_id)</pre>
+
+  <div class="code-label">Frameworks層（最外側・具体的なDB実装）</div>
+  <pre><span class="kw">class</span> <span class="fn">SQLAlchemyOrderRepository</span>(OrderRepositoryInterface):
+    <span class="kw">def</span> <span class="fn">save</span>(self, order: Order) -> None:
+        db_record = OrderModel.from_entity(order)
+        self.session.add(db_record)
+        self.session.commit()</pre>
+
+  <h3><i class="ti ti-link" style="color:var(--c-teal-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Uncle Bob — The Clean Architecture（原著）<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- Microservices -->
+<section class="section" id="microservices">
+  <h2><i class="ti ti-topology-star-3" style="color:var(--c-coral-200)"></i> マイクロサービスアーキテクチャ</h2>
+
+  <p>アプリケーションを<strong>小さく独立したサービス群に分割</strong>し、それぞれが独立してデプロイ・スケール可能なアーキテクチャ。</p>
+
+  <h3><i class="ti ti-arrows-diff" style="color:var(--c-coral-200)"></i> モノリス vs マイクロサービス</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph LR
+    subgraph MON["🏠 モノリス"]
+        ALL["注文・在庫・決済・通知・\nユーザー管理 —— 全部1アプリ"]
+    end
+
+    subgraph MSV["🌐 マイクロサービス"]
+        S1["注文 SVC"]
+        S2["在庫 SVC"]
+        S3["決済 SVC"]
+        S4["通知 SVC"]
+        S5["User SVC"]
+    end
+
+    MON -->|"成長とともに限界が見える"| MSV
+
+    style MON fill:#2a1a1a,stroke:#904040
+    style MSV fill:#0f2828,stroke:#408080
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>モノリス</th><th>マイクロサービス</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-green">メリット</span></td><td>シンプル・開発初期が速い・デプロイが単純</td><td>独立デプロイ・独立スケール・技術選択の自由</td></tr>
+        <tr><td><span class="chip chip-red">デメリット</span></td><td>スケール困難・変更の影響が全体に及ぶ</td><td>複雑性増大・運用コスト・分散システムの難しさ</td></tr>
+        <tr><td><span class="chip chip-amber">適するケース</span></td><td>小規模・スタートアップ・初期フェーズ</td><td>大規模チーム・高スループット・独立デプロイが必要</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-star" style="color:var(--c-coral-200)"></i> 設計原則とアンチパターン</h3>
+
+  <div class="do-dont">
+    <div class="do-box">
+      <div class="box-header"><i class="ti ti-check"></i> 推奨事項</div>
+      <ul>
+        <li>DDDのBounded Contextと1対1対応</li>
+        <li>各サービスが独自のDBを持つ</li>
+        <li>独立したCI/CDパイプライン</li>
+        <li>/health エンドポイントを実装</li>
+        <li>分散トレーシング（Jaeger/Zipkin）導入</li>
+        <li>API Gatewayで外部窓口を一元管理</li>
+      </ul>
+    </div>
+    <div class="dont-box">
+      <div class="box-header"><i class="ti ti-x"></i> アンチパターン</div>
+      <ul>
+        <li>サービス間でDBを直接共有する</li>
+        <li>頻繁な同期API呼び出し（Chatty）</li>
+        <li>密結合なDistributed Monolith</li>
+        <li>小規模プロジェクトへの過剰適用</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-coral-200)"></i> 公式ソース</h3>
+  <div class="source-list">
+    <a href="https://martinfowler.com/articles/microservices.html" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Martin Fowler — Microservices（原著）<span class="source-label">英語</span></a>
+    <a href="https://12factor.net/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> The Twelve-Factor App<span class="source-label">英語</span></a>
+    <a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Microsoft — Architecture Patterns<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- Comparison -->
+<section class="section" id="comparison">
+  <h2><i class="ti ti-table" style="color:var(--c-blue-200)"></i> 手法比較・使い分けガイド</h2>
+
+  <h3><i class="ti ti-sitemap" style="color:var(--c-blue-200)"></i> プロジェクト特性別推奨手法</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>プロジェクト特性</th><th>推奨手法</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>複雑なビジネスロジック</td>
+          <td><span class="chip chip-coral">DDD</span> <span class="chip chip-purple">TDD</span></td>
+          <td>ドメインの複雑さに対処</td>
+        </tr>
+        <tr>
+          <td>大規模チーム開発</td>
+          <td><span class="chip chip-coral">DDD</span> <span class="chip chip-purple">Microservices</span></td>
+          <td>チーム独立性の確保</td>
+        </tr>
+        <tr>
+          <td>要件が不明確</td>
+          <td><span class="chip chip-teal">BDD</span> <span class="chip chip-green">ATDD</span></td>
+          <td>ステークホルダーとの合意形成</td>
+        </tr>
+        <tr>
+          <td>高品質・高信頼性</td>
+          <td><span class="chip chip-purple">TDD</span> <span class="chip chip-green">ATDD</span></td>
+          <td>テスト網羅性の確保</td>
+        </tr>
+        <tr>
+          <td>リアルタイム・高スループット</td>
+          <td><span class="chip chip-amber">EDA</span> <span class="chip chip-coral">Microservices</span></td>
+          <td>非同期処理による性能確保</td>
+        </tr>
+        <tr>
+          <td>中小規模・スタートアップ</td>
+          <td><span class="chip chip-teal">Clean Arch</span> <span class="chip chip-purple">TDD</span></td>
+          <td>シンプルさと品質のバランス</td>
+        </tr>
+        <tr>
+          <td>外部APIとの連携が多い</td>
+          <td><span class="chip chip-blue">API-First</span> <span class="chip chip-purple">TDD</span></td>
+          <td>契約駆動で並行開発・モック活用</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-layers" style="color:var(--c-blue-200)"></i> フルスタック推奨構成</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    A["🗺️ 戦略：DDD\nドメインモデリング"] --> B
+    B["🏗️ 戦術：Clean Architecture\n層の分離・依存逆転"] --> C
+    C["✅ 品質：TDD + BDD\nテスト駆動・振る舞い駆動"] --> D
+    D["📡 通信：EDA（サービス間）\n+ API-First（外部向け）"] --> E
+    E["🌐 展開：Microservices\n（スケール要件がある場合のみ）"]
+
+    style A fill:#3a1a1a,stroke:#904040,color:#f07a7a
+    style B fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style C fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style D fill:#251e10,stroke:#806020,color:#f0c97a
+    style E fill:#152218,stroke:#1a5a30,color:#7adfa8
+    </div>
+    <div class="diagram-caption">大規模プロダクトへの推奨スタック。全部を同時に導入する必要はない。段階的に取り込む。</div>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- Certifications -->
+<section class="section" id="certs">
+  <h2><i class="ti ti-certificate" style="color:var(--c-amber-200)"></i> 国際資格・認定試験ガイド</h2>
+
+  <p>ソフトウェアアーキテクトとしてのキャリアを築く上で、国際資格は客観的な実力証明になります。以下は主要資格の詳細です。</p>
+
+  <!-- TOGAF -->
+  <h3><i class="ti ti-building" style="color:var(--c-amber-200)"></i> TOGAF — エンタープライズアーキテクチャの世界標準</h3>
+
+  <div class="cert-card">
+    <div class="cert-header">
+      <div class="cert-logo cert-logo-amber"><i class="ti ti-building-arch"></i></div>
+      <div>
+        <div class="cert-name">TOGAF 10 Certification</div>
+        <div class="cert-org">The Open Group — 世界206カ国・10万人以上の認定者（2023年時点）</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>Level 1（Foundation）</th><th>Level 2（Practitioner）</th></tr></thead>
+        <tbody>
+          <tr><td>対象</td><td>TOGAFの理解・知識</td><td>TOGAFの実践・適用能力</td></tr>
+          <tr><td>問題数</td><td>40問（多肢選択）</td><td>8問（複合選択式）</td></tr>
+          <tr><td>合格点</td><td>55%（22/40問）</td><td>60%（60/100点）</td></tr>
+          <tr><td>試験時間</td><td>60分</td><td>90分</td></tr>
+          <tr><td>受験料</td><td>約 $320 USD</td><td>Combined で約 $495 USD</td></tr>
+          <tr><td>有効期限</td><td>無期限</td><td>無期限</td></tr>
+          <tr><td>難易度</td><td>★★★☆☆</td><td>★★★★☆</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="margin-top:20px"><i class="ti ti-route" style="color:var(--c-amber-200)"></i> TOGAF ADM（アーキテクチャ開発メソッド）</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    PREP["準備フェーズ\n(Architecture Change Management)"] --> A
+    A["フェーズA\nアーキテクチャビジョン"] --> B & C & D
+    B["フェーズB\nビジネスアーキテクチャ"]
+    C["フェーズC\n情報システムアーキテクチャ\n(データ + アプリ)"]
+    D["フェーズD\nテクノロジーアーキテクチャ"]
+    B --> EF
+    C --> EF
+    D --> EF
+    EF["フェーズE/F\n機会・ソリューション\n移行計画"] --> GH
+    GH["フェーズG/H\n実装ガバナンス・変更管理"]
+    GH -.->|"継続的改善"| A
+
+    style PREP fill:#251e10,stroke:#806020,color:#c0a060
+    style A fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style B fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style C fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style D fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style EF fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style GH fill:#152218,stroke:#1a5a30,color:#7adfa8
+    </div>
+    <div class="diagram-caption">TOGAF ADMは繰り返し（イテレーティブ）に適用される。</div>
+  </div>
+
+  <!-- AWS -->
+  <h3 style="margin-top:32px"><i class="ti ti-cloud" style="color:var(--c-amber-200)"></i> AWS 認定ソリューションアーキテクト</h3>
+
+  <div class="cert-card">
+    <div class="cert-header">
+      <div class="cert-logo cert-logo-amber"><i class="ti ti-cloud-computing"></i></div>
+      <div>
+        <div class="cert-name">AWS Certified Solutions Architect</div>
+        <div class="cert-org">Amazon Web Services — 業界最高の認知度を持つクラウドアーキテクチャ資格</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>SAA-C03（Associate）</th><th>SAP-C02（Professional）</th></tr></thead>
+        <tbody>
+          <tr><td>対象スキル</td><td>AWSを使ったアーキテクチャ設計</td><td>複雑なAWSアーキテクチャの設計・評価</td></tr>
+          <tr><td>問題数</td><td>65問</td><td>75問</td></tr>
+          <tr><td>合格スコア</td><td>720/1000</td><td>750/1000</td></tr>
+          <tr><td>試験時間</td><td>130分</td><td>180分</td></tr>
+          <tr><td>受験料</td><td>$150 USD</td><td>$300 USD</td></tr>
+          <tr><td>有効期限</td><td>3年</td><td>3年</td></tr>
+          <tr><td>前提</td><td>クラウド基礎 + AWS経験推奨</td><td>SAA取得推奨</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="margin-top:20px"><i class="ti ti-chart-donut" style="color:var(--c-amber-200)"></i> SAA-C03 出題領域</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+pie title SAA-C03 出題比率
+    "安全なアーキテクチャ設計 (30%)" : 30
+    "弾力性の高いアーキテクチャ (26%)" : 26
+    "高性能アーキテクチャ設計 (24%)" : 24
+    "コスト最適化設計 (20%)" : 20
+    </div>
+  </div>
+
+  <!-- GCP -->
+  <h3 style="margin-top:32px"><i class="ti ti-brand-google" style="color:var(--c-teal-200)"></i> Google Cloud Professional Cloud Architect</h3>
+
+  <div class="cert-card">
+    <div class="cert-header">
+      <div class="cert-logo cert-logo-teal"><i class="ti ti-brand-google"></i></div>
+      <div>
+        <div class="cert-name">GCP Professional Cloud Architect</div>
+        <div class="cert-org">Google Cloud</div>
+      </div>
+    </div>
+    <div class="cert-stats">
+      <div class="cert-stat"><div class="cert-stat-label">問題数</div><div class="cert-stat-value">50〜60問</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">試験時間</div><div class="cert-stat-value">120分</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">受験料</div><div class="cert-stat-value">$200 USD</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">合格スコア</div><div class="cert-stat-value">非公開（約70%）</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">有効期限</div><div class="cert-stat-value">2年</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">難易度</div><div class="cert-stat-value">★★★★☆</div></div>
+    </div>
+  </div>
+
+  <!-- Azure -->
+  <h3 style="margin-top:20px"><i class="ti ti-brand-azure" style="color:var(--c-blue-200)"></i> Microsoft Azure Solutions Architect Expert（AZ-305）</h3>
+
+  <div class="cert-card">
+    <div class="cert-header">
+      <div class="cert-logo cert-logo-blue"><i class="ti ti-brand-azure"></i></div>
+      <div>
+        <div class="cert-name">Microsoft Certified: Azure Solutions Architect Expert</div>
+        <div class="cert-org">Microsoft — AZ-104（Administrator）取得推奨</div>
+      </div>
+    </div>
+    <div class="cert-stats">
+      <div class="cert-stat"><div class="cert-stat-label">問題数</div><div class="cert-stat-value">40〜60問</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">合格スコア</div><div class="cert-stat-value">700/1000</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">試験時間</div><div class="cert-stat-value">120分</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">受験料</div><div class="cert-stat-value">$165 USD</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">有効期限</div><div class="cert-stat-value">1年（無料更新可）</div></div>
+      <div class="cert-stat"><div class="cert-stat-label">難易度</div><div class="cert-stat-value">★★★★☆</div></div>
+    </div>
+  </div>
+
+  <!-- Scrum -->
+  <h3 style="margin-top:20px"><i class="ti ti-repeat" style="color:var(--c-purple-200)"></i> スクラム関連資格</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>資格名</th><th>発行元</th><th>合格点</th><th>特徴</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-purple">PSM I</span></td><td>Scrum.org</td><td>85%</td><td>スクラムの基礎知識。オープンブック不可。</td></tr>
+        <tr><td><span class="chip chip-purple">PSM II</span></td><td>Scrum.org</td><td>85%</td><td>スクラムの実践・応用シナリオ問題。</td></tr>
+        <tr><td><span class="chip chip-purple">PSM III</span></td><td>Scrum.org</td><td>85%</td><td>スクラムマスターとしての最高レベル。</td></tr>
+        <tr><td><span class="chip chip-amber">SAFe Architect</span></td><td>Scaled Agile</td><td>75%</td><td>企業規模アジャイルの設計思想。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-stairs-up" style="color:var(--c-amber-200)"></i> キャリアステージ別・優先取得ロードマップ</h3>
+
+  <p style="font-size:1rem;color:var(--color-text-secondary);margin-bottom:4px">キャリア経験年数に応じた資格取得の優先順位。下のステージから順番に積み上げていくことが重要です。</p>
+
+  <div class="career-roadmap">
+
+    <!-- Stage 1: Entry -->
+    <div class="career-stage stage-entry">
+      <div class="career-stage-spine">
+        <div class="career-stage-icon"><i class="ti ti-seedling"></i></div>
+        <div class="career-stage-line"></div>
+      </div>
+      <div class="career-stage-body">
+        <div class="career-stage-header">
+          <div class="career-stage-title">エントリーレベル</div>
+          <div class="career-stage-years">経験 0〜2 年</div>
+        </div>
+        <div class="career-stage-desc">クラウドとアジャイルの基礎を固める段階。まずクラウド資格でインフラ理解を得て、開発プロセスの土台を作る。</div>
+        <div class="career-cert-list">
+          <div class="career-cert-item">
+            <i class="ti ti-cloud-computing career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">AWS SAA-C03 または Azure AZ-104</div>
+              <div class="career-cert-purpose">クラウドアーキテクチャの基礎を習得。まずどちらか1つを選んで取得。</div>
+            </div>
+            <div class="career-cert-badge">優先①</div>
+          </div>
+          <div class="career-cert-item">
+            <i class="ti ti-repeat career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">PSM I（Professional Scrum Master I）</div>
+              <div class="career-cert-purpose">アジャイル・スクラムの基礎知識。チーム開発の共通言語を習得。</div>
+            </div>
+            <div class="career-cert-badge">優先②</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Middle -->
+    <div class="career-stage stage-middle">
+      <div class="career-stage-spine">
+        <div class="career-stage-icon"><i class="ti ti-plant-2"></i></div>
+        <div class="career-stage-line"></div>
+      </div>
+      <div class="career-stage-body">
+        <div class="career-stage-header">
+          <div class="career-stage-title">ミドルレベル</div>
+          <div class="career-stage-years">経験 3〜5 年</div>
+        </div>
+        <div class="career-stage-desc">クラウドアーキテクチャの高度な設計力とエンタープライズアーキテクチャの基礎を習得する段階。</div>
+        <div class="career-cert-list">
+          <div class="career-cert-item">
+            <i class="ti ti-cloud career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">AWS SAP-C02 または Google Cloud PCA</div>
+              <div class="career-cert-purpose">複雑なクラウドアーキテクチャの設計・評価スキル。Associate 取得後の自然なステップアップ。</div>
+            </div>
+            <div class="career-cert-badge">優先①</div>
+          </div>
+          <div class="career-cert-item">
+            <i class="ti ti-building career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">TOGAF Level 1（Foundation）</div>
+              <div class="career-cert-purpose">エンタープライズアーキテクチャの共通フレームワークを習得。大規模組織での設計に対応できるようになる。</div>
+            </div>
+            <div class="career-cert-badge">優先②</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Senior -->
+    <div class="career-stage stage-senior">
+      <div class="career-stage-spine">
+        <div class="career-stage-icon"><i class="ti ti-trees"></i></div>
+        <div class="career-stage-line"></div>
+      </div>
+      <div class="career-stage-body">
+        <div class="career-stage-header">
+          <div class="career-stage-title">シニアレベル</div>
+          <div class="career-stage-years">経験 5 年以上</div>
+        </div>
+        <div class="career-stage-desc">組織・エンタープライズ規模の設計とガバナンスを担う段階。必要に応じてセキュリティ資格も追加。</div>
+        <div class="career-cert-list">
+          <div class="career-cert-item">
+            <i class="ti ti-certificate career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">TOGAF Level 2（Practitioner）</div>
+              <div class="career-cert-purpose">TOGAFの実践的な適用能力を証明。エンタープライズアーキテクトとして必須の資格。</div>
+            </div>
+            <div class="career-cert-badge">優先①</div>
+          </div>
+          <div class="career-cert-item">
+            <i class="ti ti-sitemap career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">SAFe Architect</div>
+              <div class="career-cert-purpose">企業規模アジャイル（Scaled Agile Framework）における設計の役割と責任を習得。</div>
+            </div>
+            <div class="career-cert-badge">優先②</div>
+          </div>
+          <div class="career-cert-item">
+            <i class="ti ti-shield-lock career-cert-icon"></i>
+            <div class="career-cert-content">
+              <div class="career-cert-name">CISSP（必要に応じて）</div>
+              <div class="career-cert-purpose">セキュリティアーキテクチャの最高位資格。セキュリティ専門にシフトする場合に取得。</div>
+            </div>
+            <div class="career-cert-badge">任意</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 読み方ガイド -->
+  <div class="callout callout-info" style="margin-top:4px">
+    <i class="ti ti-info-circle"></i>
+    <div class="callout-text">上から順番に取得するのが基本ですが、現在のキャリアステージに合わせてスタート地点を選んでください。「優先①→優先②」の順で取得することを推奨します。</div>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-amber-200)"></i> 資格公式ソース</h3>
+  <div class="source-list">
+    <a href="https://www.opengroup.org/togaf" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> TOGAF 公式（The Open Group）<span class="source-label">英語</span></a>
+    <a href="https://aws.amazon.com/certification/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> AWS 認定資格 公式<span class="source-label">英語</span></a>
+    <a href="https://cloud.google.com/learn/certification" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Google Cloud 認定 公式<span class="source-label">英語</span></a>
+    <a href="https://learn.microsoft.com/en-us/credentials/certifications/azure-solutions-architect/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Microsoft Azure 認定 公式<span class="source-label">英語</span></a>
+    <a href="https://www.scrum.org/professional-scrum-master-assessments" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Scrum.org — PSM 資格<span class="source-label">英語</span></a>
+    <a href="https://scaledagileframework.com/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> SAFe 公式<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- Roadmap -->
+<section class="section" id="roadmap">
+  <h2><i class="ti ti-map" style="color:var(--c-green-200)"></i> 学習ロードマップ</h2>
+
+  <p>初学者から実践投入までの推奨学習順序です。各フェーズをスキップせず、確実に積み上げることが重要です。</p>
+
+  <div class="roadmap-row">
+    <div class="roadmap-period"><div class="roadmap-period-label">Month 1-2</div></div>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><i class="ti ti-book priority-1"></i> TDD実践（書籍：Kent Beck — Test-Driven Development: By Example）</div>
+      <div class="roadmap-item"><i class="ti ti-book priority-1"></i> クリーンコード（書籍：Robert Martin — Clean Code）</div>
+      <div class="roadmap-item"><i class="ti ti-brand-git" style="color:var(--c-green-200)"></i> Git / GitHub の基本習得</div>
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-period"><div class="roadmap-period-label">Month 3-4</div></div>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><i class="ti ti-math priority-2"></i> SOLID原則の理解と実践</div>
+      <div class="roadmap-item"><i class="ti ti-template priority-2"></i> GoF デザインパターン（主要23パターン）</div>
+      <div class="roadmap-item"><i class="ti ti-message-dots priority-2"></i> BDD実践（Cucumber / pytest-bdd）</div>
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-period"><div class="roadmap-period-label">Month 5-6</div></div>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><i class="ti ti-layers-difference priority-1"></i> クリーンアーキテクチャ（書籍：Robert Martin）</div>
+      <div class="roadmap-item"><i class="ti ti-cube priority-1"></i> DDD入門（書籍：Eric Evans — Domain-Driven Design）</div>
+      <div class="roadmap-item"><i class="ti ti-api priority-2"></i> REST API設計・OpenAPI仕様習得</div>
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-period"><div class="roadmap-period-label">Month 7-9</div></div>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><i class="ti ti-topology-star-3 priority-2"></i> マイクロサービス実装（書籍：Sam Newman — Building Microservices）</div>
+      <div class="roadmap-item"><i class="ti ti-bolt priority-2"></i> EDA理解（Kafka 基礎・CloudEvents 仕様）</div>
+      <div class="roadmap-item"><i class="ti ti-cloud priority-1"></i> <strong>AWS SAA 受験</strong></div>
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-period"><div class="roadmap-period-label">Month 10-12</div></div>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><i class="ti ti-certificate priority-1"></i> <strong>TOGAF Level 1 受験</strong></div>
+      <div class="roadmap-item"><i class="ti ti-briefcase priority-3"></i> 実プロジェクトへの段階的適用</div>
+      <div class="roadmap-item"><i class="ti ti-arrows-up" style="color:var(--c-teal-200)"></i> 振り返りと次の専門領域選定</div>
+    </div>
+  </div>
+
+  <h3><i class="ti ti-books" style="color:var(--c-green-200)"></i> 推奨書籍一覧</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>タイトル</th><th>著者</th><th>対象手法</th><th>難易度</th></tr></thead>
+      <tbody>
+        <tr><td>Test-Driven Development: By Example</td><td>Kent Beck</td><td><span class="chip chip-purple">TDD</span></td><td>★★★☆☆</td></tr>
+        <tr><td>Clean Code</td><td>Robert C. Martin</td><td><span class="chip chip-teal">コード品質</span></td><td>★★★☆☆</td></tr>
+        <tr><td>Clean Architecture</td><td>Robert C. Martin</td><td><span class="chip chip-teal">アーキテクチャ</span></td><td>★★★★☆</td></tr>
+        <tr><td>Domain-Driven Design</td><td>Eric Evans</td><td><span class="chip chip-coral">DDD</span></td><td>★★★★★</td></tr>
+        <tr><td>Implementing Domain-Driven Design</td><td>Vaughn Vernon</td><td><span class="chip chip-coral">DDD実践</span></td><td>★★★★☆</td></tr>
+        <tr><td>Building Microservices</td><td>Sam Newman</td><td><span class="chip chip-purple">Microservices</span></td><td>★★★★☆</td></tr>
+        <tr><td>Designing Data-Intensive Applications</td><td>Martin Kleppmann</td><td><span class="chip chip-amber">システム設計</span></td><td>★★★★★</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><i class="ti ti-link" style="color:var(--c-green-200)"></i> 学習プラットフォーム</h3>
+  <div class="source-list">
+    <a href="https://www.coursera.org/specializations/software-design-architecture" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> Coursera — Software Architecture 特化コース<span class="source-label">英語</span></a>
+    <a href="https://www.opengroup.org/certifications/togaf" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> The Open Group — TOGAF公式学習<span class="source-label">英語</span></a>
+    <a href="https://docs.pytest.org/" class="source-item" target="_blank" rel="noopener noreferrer"><i class="ti ti-external-link"></i> pytest 公式ドキュメント<span class="source-label">英語</span></a>
+  </div>
+  <a href="#top" class="back-top"><i class="ti ti-arrow-up"></i> 目次に戻る</a>
+</section>
+
+<!-- Footer -->
+<footer style="border-top:1px solid var(--color-border-primary);padding-top:24px;margin-top:48px">
+  <div style="font-size:1rem;color:var(--color-text-tertiary);line-height:1.7">
+    本ドキュメントは2024年時点の公開情報を基に作成。試験情報・受験料は変更される場合があるため、受験前に各公式サイトをご確認ください。
+    <br>参考：Agile Alliance / Martin Fowler Blog / The Open Group / AWS / Google Cloud / Microsoft Learn / Scrum.org
+  </div>
+</footer>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#161b27',
+      primaryColor: '#2d1f4e',
+      primaryTextColor: '#e8eaf0',
+      primaryBorderColor: '#4a2a8a',
+      lineColor: '#4a5680',
+      secondaryColor: '#0f2e2e',
+      tertiaryColor: '#1e2535',
+      edgeLabelBackground: '#161b27',
+      fontSize: '14px'
+    },
+    flowchart: { curve: 'basis', htmlLabels: true },
+    gantt: { fontSize: 13 },
+    pie: { textPosition: 0.75 }
+  });
+</script>
+</body>
+</html>

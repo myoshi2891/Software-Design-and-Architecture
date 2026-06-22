@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏛️ クリーンアーキテクチャ 完全ガイド</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg:#080c14; --surface:#0f1623; --card:#141d2b; --card-h:#1a2538;
+      --bdr:rgba(99,102,241,.13); --bdr-s:rgba(99,102,241,.28);
+      --indigo:#818cf8; --indigo-d:#6366f1;
+      --cyan:#22d3ee; --amber:#fbbf24; --pink:#f472b6; --green:#4ade80;
+      --le:#f87171; --lu:#fb923c; --la:#fbbf24; --lf:#94a3b8;
+      --t1:#f1f5f9; --t2:#afbfd5; --t3:#a8bbd5; --t4:#9cbbe5;
+      --sw:272px; --fh:'Space Grotesk',sans-serif; --fb:'Inter',sans-serif; --fc:'JetBrains Mono',monospace;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--t1);font-family:var(--fb);font-size:1rem;line-height:1.75;overflow-x:hidden}
+    /* SIDEBAR */
+    .sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--bdr);overflow-y:auto;z-index:200;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--bdr-s) transparent}
+    .sidebar::-webkit-scrollbar{width:3px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--bdr-s);border-radius:2px}
+    .sb-logo{padding:22px 18px 16px;border-bottom:1px solid var(--bdr)}
+    .sb-logo-icon{font-size:26px;display:block;margin-bottom:5px}
+    .sb-logo-title{font-family:var(--fh);font-size:1rem;font-weight:700;color:var(--indigo);text-transform:uppercase;letter-spacing:.1em}
+    .sb-logo-sub{font-size:1rem;color:var(--t3);margin-top:2px}
+    .sb-nav{padding:10px 0 24px}
+    .sb-label{padding:14px 18px 5px;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t4)}
+    .sb-nav a{display:flex;align-items:flex-start;gap:8px;padding:6px 18px;color:var(--t3);text-decoration:none;font-size:1rem;line-height:1.4;border-left:2px solid transparent;transition:all .15s}
+    .sb-nav a:hover{color:var(--t2);background:rgba(99,102,241,.07)}
+    .sb-nav a.active{color:var(--indigo);background:rgba(129,140,248,.1);border-left-color:var(--indigo)}
+    .nav-em{font-size:1rem;flex-shrink:0;margin-top:1px}
+    /* MAIN */
+    .main{margin-left:var(--sw)}
+    /* HERO */
+    .hero{padding:72px 64px;background:radial-gradient(ellipse 80% 60% at 60% -10%,rgba(99,102,241,.12) 0%,transparent 70%);border-bottom:1px solid var(--bdr);display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.22);border-radius:100px;font-size:1rem;font-weight:700;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+    .hero-title{font-family:var(--fh);font-size:40px;font-weight:800;line-height:1.15;margin-bottom:14px}
+    .hero-title em{font-style:normal;background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-desc{font-size:1rem;color:var(--t2);line-height:1.8;margin-bottom:24px;max-width:520px}
+    .hero-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .hero-tag{padding:4px 12px;border-radius:8px;font-size:1rem;font-weight:500}
+    .ht-i{background:rgba(99,102,241,.12);color:var(--indigo);border:1px solid rgba(99,102,241,.2)}
+    .ht-c{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
+    .ht-a{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.2)}
+    .ht-g{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+    .hero-visual{display:flex;align-items:center;justify-content:center}
+    .hero-svg-wrap{width:380px;height:380px}
+    @keyframes p-fw{0%,100%{opacity:.5}50%{opacity:.22}}
+    @keyframes p-ad{0%,100%{opacity:.65}50%{opacity:.32}}
+    @keyframes p-uc{0%,100%{opacity:.82}50%{opacity:.50}}
+    @keyframes p-en{0%,100%{opacity:1}50%{opacity:.70}}
+    .r-fw{animation:p-fw 3.6s ease-in-out infinite}
+    .r-ad{animation:p-ad 3.6s ease-in-out infinite .5s}
+    .r-uc{animation:p-uc 3.6s ease-in-out infinite 1s}
+    .r-en{animation:p-en 3.6s ease-in-out infinite 1.5s}
+    /* CONTENT */
+    .content{max-width:100%;margin:0 auto;padding:64px 64px 120px}
+    .section{margin-bottom:88px;scroll-margin-top:24px}
+    .section-hdr{display:flex;align-items:center;gap:14px;margin-bottom:30px;padding-bottom:14px;border-bottom:1px solid var(--bdr)}
+    .sec-num{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;font-family:var(--fh);font-size:1rem;font-weight:700;flex-shrink:0}
+    .n-i{background:rgba(99,102,241,.15);color:var(--indigo);border:1px solid rgba(99,102,241,.28)}
+    .n-c{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.22)}
+    .n-a{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.22)}
+    .n-p{background:rgba(244,114,182,.1);color:var(--pink);border:1px solid rgba(244,114,182,.22)}
+    .n-g{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.22)}
+    .n-r{background:rgba(248,113,113,.1);color:var(--le);border:1px solid rgba(248,113,113,.22)}
+    .section-hdr h2{font-family:var(--fh);font-size:24px;font-weight:700;color:var(--t1)}
+    h3.sub{font-family:var(--fh);font-size:16px;font-weight:600;color:var(--t1);margin:28px 0 12px;display:flex;align-items:center;gap:8px}
+    h3.sub::before{content:'';display:inline-block;width:3px;height:15px;background:var(--indigo);border-radius:2px;flex-shrink:0}
+    p{margin-bottom:14px;color:var(--t2)}
+    ul,ol{padding-left:20px;margin-bottom:14px}
+    li{margin-bottom:6px;color:var(--t2)}
+    strong{color:var(--t1);font-weight:600}
+    /* CALLOUTS */
+    .callout{padding:14px 18px;border-radius:10px;border-left:3px solid;margin:18px 0}
+    .co-i{background:rgba(129,140,248,.07);border-color:var(--indigo)}
+    .co-s{background:rgba(74,222,128,.07);border-color:var(--green)}
+    .co-w{background:rgba(251,191,36,.07);border-color:var(--amber)}
+    .co-d{background:rgba(248,113,113,.07);border-color:var(--le)}
+    .callout-title{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+    .co-i .callout-title{color:var(--indigo)}
+    .co-s .callout-title{color:var(--green)}
+    .co-w .callout-title{color:var(--amber)}
+    .co-d .callout-title{color:var(--le)}
+    .callout p{margin:0;font-size:1rem}
+    /* LAYER BADGES */
+    .lb{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:100px;font-size:1rem;font-weight:700;margin-bottom:10px}
+    .lb-en{background:rgba(248,113,113,.1);color:var(--le);border:1px solid rgba(248,113,113,.22)}
+    .lb-uc{background:rgba(251,146,60,.1);color:var(--lu);border:1px solid rgba(251,146,60,.22)}
+    .lb-ad{background:rgba(251,191,36,.1);color:var(--la);border:1px solid rgba(251,191,36,.22)}
+    .lb-fw{background:rgba(148,163,184,.1);color:var(--lf);border:1px solid rgba(148,163,184,.22)}
+    /* CARDS / GRIDS */
+    .card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:22px 24px;margin-bottom:18px;transition:border-color .2s}
+    .card:hover{border-color:var(--bdr-s)}
+    .layer-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+    .lc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+    .lc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .lc-en::before{background:var(--le)}
+    .lc-uc::before{background:var(--lu)}
+    .lc-ad::before{background:var(--la)}
+    .lc-fw::before{background:var(--lf)}
+    .lc-title{font-family:var(--fh);font-size:1rem;font-weight:700;margin-bottom:8px}
+    .lc-en .lc-title{color:var(--le)}
+    .lc-uc .lc-title{color:var(--lu)}
+    .lc-ad .lc-title{color:var(--la)}
+    .lc-fw .lc-title{color:var(--lf)}
+    .lc ul{padding-left:15px;margin:0}
+    .lc li{font-size:1rem;color:var(--t2);margin-bottom:3px}
+    .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+    .feat-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:18px 20px}
+    .feat-icon{font-size:22px;margin-bottom:8px}
+    .feat-title{font-family:var(--fh);font-size:1rem;font-weight:700;color:var(--t1);margin-bottom:6px}
+    .feat-desc{font-size:1rem;color:var(--t2);line-height:1.6;margin:0}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+    .cmp-bad{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.18);border-radius:10px;padding:16px 18px}
+    .cmp-good{background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);border-radius:10px;padding:16px 18px}
+    .cmp-title{font-family:var(--fh);font-size:1rem;font-weight:700;margin-bottom:8px}
+    .cmp-bad .cmp-title{color:var(--le)}
+    .cmp-good .cmp-title{color:var(--green)}
+    .cmp p{font-size:1rem;color:var(--t2);margin:0;line-height:1.6}
+    /* MERMAID */
+    .diagram-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:28px 16px 20px;margin:18px 0;overflow-x:auto}
+    .diagram-label{font-size:1rem;color:var(--t4);text-align:center;margin-top:14px;font-style:italic}
+    .mermaid{display:flex;justify-content:center}
+    /* CODE BLOCKS */
+    .code-block{position:relative;margin:18px 0}
+    .code-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#1b2333;border:1px solid var(--bdr);border-bottom:none;border-radius:10px 10px 0 0}
+    .code-lang{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t4)}
+    .code-file{font-family:var(--fc);font-size:1rem;color:var(--t3)}
+    .code-block pre{margin:0}
+    .code-block pre code.hljs{font-family:var(--fc);font-size:1rem;line-height:1.65;border-radius:0 0 10px 10px;border:1px solid var(--bdr);border-top:none}
+    /* TABLES */
+    .tbl-wrap{overflow-x:auto;margin:18px 0;border-radius:10px;border:1px solid var(--bdr)}
+    table{width:100%;border-collapse:collapse;font-size:1rem}
+    thead{background:rgba(99,102,241,.07)}
+    th{padding:11px 16px;font-family:var(--fh);font-size:1rem;font-weight:700;color:var(--indigo);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap}
+    td{padding:10px 16px;color:var(--t2);border-bottom:1px solid var(--bdr);vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(99,102,241,.03)}
+    td strong{color:var(--t1)}
+    td code{font-family:var(--fc);font-size:1rem;background:rgba(99,102,241,.12);padding:1px 6px;border-radius:4px;color:var(--indigo)}
+    .bad-c{color:var(--le)}
+    .good-c{color:var(--green)}
+    /* DIR TREE */
+    .dir-tree{background:#0b1019;border:1px solid var(--bdr);border-radius:10px;padding:20px 24px;font-family:var(--fc);font-size:1rem;line-height:1.85;overflow-x:auto;white-space:pre;margin:18px 0}
+    .df{color:var(--t2)} .dc{color:var(--t4)} .dl{color:var(--indigo);font-weight:700}
+    .dl-en{color:var(--le)} .dl-uc{color:var(--lu)} .dl-ad{color:var(--la)} .dl-fw{color:var(--lf)}
+    /* AP CARDS */
+    .ap-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:14px}
+    .ap-hdr{display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(248,113,113,.07);border-bottom:1px solid rgba(248,113,113,.14)}
+    .ap-icon{font-size:17px}
+    .ap-title{font-family:var(--fh);font-size:1rem;font-weight:700;color:var(--le)}
+    .ap-body{padding:14px 18px}
+    .ap-problem{font-size:1rem;color:var(--t2);margin-bottom:12px;padding-left:12px;border-left:2px solid rgba(248,113,113,.35);line-height:1.65}
+    .ap-fix{font-size:1rem;color:var(--t1);padding:9px 13px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:8px}
+    .ap-fix::before{content:'✅ 解決策: ';font-weight:700;color:var(--green)}
+    /* MATURITY */
+    .maturity{display:flex;flex-direction:column;gap:4px;margin:18px 0}
+    .mat-row{display:flex;gap:16px;align-items:stretch}
+    .mat-ind{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0}
+    .mat-dot{width:13px;height:13px;border-radius:50%;margin-top:18px;flex-shrink:0}
+    .mat-line{width:2px;flex:1;background:var(--bdr);margin:0 auto}
+    .mat-row:last-child .mat-line{display:none}
+    .mat-body{flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;margin-bottom:4px}
+    .mat-lv{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+    .mat-title{font-family:var(--fh);font-size:1rem;font-weight:600;color:var(--t1);margin-bottom:3px}
+    .mat-desc{font-size:1rem;color:var(--t2)}
+    /* SOLID */
+    .solid-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:18px 0}
+    .solid-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:16px 10px;text-align:center}
+    .solid-letter{font-family:var(--fh);font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
+    .solid-name{font-size:1rem;font-weight:600;color:var(--t2);margin-bottom:4px}
+    .solid-desc{font-size:1rem;color:var(--t3);line-height:1.45}
+    /* REF */
+    .ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+    .ref-card{display:block;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:13px 16px;text-decoration:none;transition:all .2s}
+    .ref-card:hover{border-color:var(--bdr-s);background:var(--card-h)}
+    .ref-title{font-size:1rem;font-weight:600;color:var(--indigo);margin-bottom:4px}
+    .ref-url{font-family:var(--fc);font-size:1rem;color:var(--t4);word-break:break-all}
+    /* FOOTER */
+    footer{border-top:1px solid var(--bdr);padding:36px 64px;text-align:center;color:var(--t3);font-size:1rem}
+    footer a{color:var(--indigo);text-decoration:none}
+    footer a:hover{text-decoration:underline}
+    /* RESPONSIVE */
+    @media(max-width:1140px){.hero{grid-template-columns:1fr}.hero-visual{display:none}.solid-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:820px){:root{--sw:0px}.sidebar{display:none}.content{padding:40px 24px 80px}.layer-grid,.compare-grid,.ref-grid{grid-template-columns:1fr}.solid-grid{grid-template-columns:repeat(2,1fr)}.hero{padding:40px 24px}.feat-grid{grid-template-columns:1fr}}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--bdr-s);border-radius:3px}
+          /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
+        .mermaid-wrap,
+        .diagram-wrap .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .mermaid-wrap svg,
+        .diagram-wrap .mermaid svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sb-logo">
+    <span class="sb-logo-icon">🏛️</span>
+    <div class="sb-logo-title">Clean Architecture</div>
+    <div class="sb-logo-sub">完全ガイド — Python 実装例付き</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-label">導入</div>
+    <a href="#intro"><span class="nav-em">💡</span>クリーンアーキテクチャとは</a>
+    <a href="#layers"><span class="nav-em">🔵</span>4つの同心円レイヤー</a>
+    <div class="sb-label">依存性の原則</div>
+    <a href="#dip"><span class="nav-em">🔄</span>依存性の逆転原則（DIP）</a>
+    <a href="#di"><span class="nav-em">💉</span>依存性注入（DI）</a>
+    <div class="sb-label">各レイヤー詳解</div>
+    <a href="#entities"><span class="nav-em">🏛️</span>Entities 層</a>
+    <a href="#usecases"><span class="nav-em">⚙️</span>Use Cases 層</a>
+    <a href="#adapters"><span class="nav-em">🔌</span>Interface Adapters 層</a>
+    <a href="#frameworks"><span class="nav-em">🔧</span>Frameworks &amp; Drivers 層</a>
+    <div class="sb-label">設計・テスト</div>
+    <a href="#directory"><span class="nav-em">📁</span>ディレクトリ構成</a>
+    <a href="#testing"><span class="nav-em">🧪</span>テスト戦略</a>
+    <a href="#solid"><span class="nav-em">📐</span>SOLID 原則</a>
+    <div class="sb-label">ベストプラクティス</div>
+    <a href="#antipatterns"><span class="nav-em">⛔</span>アンチパターン</a>
+    <a href="#bestpractices"><span class="nav-em">✅</span>ベストプラクティス</a>
+    <a href="#references"><span class="nav-em">📚</span>参考文献</a>
+  </div>
+</nav>
+
+<main class="main">
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">🏛️ Robert C. Martin / 2012</div>
+    <h1 class="hero-title">クリーンアーキテクチャ<br><em>Complete Guide</em></h1>
+    <p class="hero-desc">ビジネスロジックを技術的詳細から切り離し、フレームワーク・DB・UI に支配されない堅牢なシステム設計を、具体的な Python コードとフロー図で徹底解説します。</p>
+    <div class="hero-tags">
+      <span class="hero-tag ht-i">フレームワーク非依存</span>
+      <span class="hero-tag ht-c">高テスト容易性</span>
+      <span class="hero-tag ht-a">DB 非依存</span>
+      <span class="hero-tag ht-g">UI 非依存</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-svg-wrap">
+      <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="eg" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="8" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="gfill" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#f87171" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#f87171" stop-opacity=".06"/>
+          </radialGradient>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 Z" fill="#475569"/>
+          </marker>
+        </defs>
+        <circle class="r-fw" cx="190" cy="190" r="172" fill="rgba(148,163,184,.04)" stroke="#475569" stroke-width="1.2" stroke-dasharray="7 4"/>
+        <circle class="r-ad" cx="190" cy="190" r="132" fill="rgba(251,191,36,.05)" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <circle class="r-uc" cx="190" cy="190" r="88" fill="rgba(251,146,60,.07)" stroke="#c2410c" stroke-width="2"/>
+        <circle cx="190" cy="190" r="46" fill="url(#gfill)" stroke="#f87171" stroke-width="2.5" class="r-en" filter="url(#eg)"/>
+        <text x="190" y="32" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="1rem" font-weight="600" fill="#64748b">🔧 Frameworks &amp; Drivers</text>
+        <text x="190" y="74" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="1rem" font-weight="600" fill="#ca8a04">🔌 Interface Adapters</text>
+        <text x="190" y="122" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="1rem" font-weight="600" fill="#c2410c">⚙️ Use Cases</text>
+        <text x="190" y="183" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="1.2rem" font-weight="700" fill="#f87171">🏛️ Entities</text>
+        <text x="190" y="197" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="1rem" fill="rgba(248,113,113,.7)">ビジネスルール</text>
+        <line x1="358" y1="52" x2="358" y2="328" stroke="#2d3a4a" stroke-width="1.5" marker-end="url(#arr)"/>
+        <g transform="translate(374,190) rotate(-90)">
+          <text x="0" y="0" text-anchor="middle" font-family="Inter,sans-serif" font-size="1rem" fill="#475569">依存の方向（外→内）</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- S1: INTRO -->
+<section id="intro" class="section">
+  <div class="section-hdr"><div class="sec-num n-i">01</div><h2>クリーンアーキテクチャとは何か？</h2></div>
+  <div class="callout co-i">
+    <div class="callout-title">💡 核心思想</div>
+    <p><strong>ビジネスロジック（ドメイン）</strong>を、フレームワーク・DB・UI などの<strong>技術的詳細</strong>から完全に分離する。ビジネスルールはシステムの最も価値ある資産であり、技術スタックの変化に左右されてはならない。</p>
+  </div>
+  <p>Robert C. Martin（Uncle Bob）が 2012 年のブログ記事と 2017 年の著書 <em>Clean Architecture: A Craftsman's Guide</em> で提唱したアーキテクチャ原則です。ヘキサゴナルアーキテクチャ・オニオンアーキテクチャ・BCE パターンなどの先行思想を統合・体系化したものです。</p>
+  <h3 class="sub">クリーンアーキテクチャが解決する問題</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-1"></div>
+    <div class="diagram-label">図1-1　導入前後の比較</div>
+  </div>
+  <h3 class="sub">4 つの特性</h3>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">🔧</div><div class="feat-title">フレームワーク非依存</div><p class="feat-desc">Spring・Django・FastAPI などはツールに過ぎない。フレームワークに支配されず、ビジネスロジックが中心となる。フレームワークは交換可能なプラグイン。</p></div>
+    <div class="feat-card"><div class="feat-icon">🧪</div><div class="feat-title">テスト容易性</div><p class="feat-desc">ビジネスルールを DB・UI・外部サービス一切なしでユニットテストできる。依存性注入でモックを自然に差し替えられる。</p></div>
+    <div class="feat-card"><div class="feat-icon">🖥️</div><div class="feat-title">UI 非依存</div><p class="feat-desc">UI はビジネスロジックを知らない。Web を CLI や API に差し替えても、コアロジックは一切変わらない。</p></div>
+    <div class="feat-card"><div class="feat-icon">🗄️</div><div class="feat-title">データベース非依存</div><p class="feat-desc">DB はストレージの一手段。Oracle → PostgreSQL への移行も、Repository の実装を差し替えるだけで済む。</p></div>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p>「技術スタックを変えてもビジネスロジックが動き続けるか？」という問いを常に念頭に置く。フレームワークや DB の名前がコアコードに登場したら、設計を見直すサインです。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" style="color:var(--indigo)">The Clean Architecture — Robert C. Martin (2012)</a></p>
+</section>
+
+<!-- S2: LAYERS -->
+<section id="layers" class="section">
+  <div class="section-hdr"><div class="sec-num n-c">02</div><h2>4 つの同心円（レイヤー）</h2></div>
+  <p>クリーンアーキテクチャは <strong>4 つの同心円</strong>で構成されます。最も内側の円が最も安定したビジネスルール、最も外側が変化しやすい技術的詳細です。<strong>依存は常に内側だけを向きます。</strong></p>
+  <div class="layer-grid">
+    <div class="lc lc-en"><div class="lc-title">🏛️ Entities（最内側）</div><ul><li>エンタープライズ全体のビジネスルール</li><li>最も変化しないドメインの概念</li><li>フレームワーク依存ゼロの純粋クラス</li><li>Entity / Value Object / Domain Exception</li></ul></div>
+    <div class="lc lc-uc"><div class="lc-title">⚙️ Use Cases（アプリケーション層）</div><ul><li>アプリケーション固有のビジネスフロー</li><li>Entities を調整するオーケストレーター</li><li>Repository・外部サービスの抽象インターフェース</li><li>Input/Output DTO（Command/Result）</li></ul></div>
+    <div class="lc lc-ad"><div class="lc-title">🔌 Interface Adapters</div><ul><li>Controller / Presenter / Gateway</li><li>外部形式（HTTP/JSON）↔ ドメイン形式の変換</li><li>DB・外部 API のアダプター実装</li><li>Repository インターフェースの具体実装</li></ul></div>
+    <div class="lc lc-fw"><div class="lc-title">🔧 Frameworks &amp; Drivers（最外側）</div><ul><li>Web フレームワーク / DB / UI / デバイス</li><li>最も変化しやすい技術的詳細</li><li>Composition Root（全依存の組み立て）</li><li>設定・初期化・マイグレーション</li></ul></div>
+  </div>
+  <h3 class="sub">依存の方向：必ず内側のみ</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-2"></div>
+    <div class="diagram-label">図2-1　依存の方向は常に内側のみ</div>
+  </div>
+  <h3 class="sub">境界を越えるデータの流れ</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-3"></div>
+    <div class="diagram-label">図2-2　HTTP リクエストからレスポンスまでのデータフロー</div>
+  </div>
+  <div class="callout co-w"><div class="callout-title">⚠️ The Dependency Rule（絶対ルール）</div><p>ソースコードの依存は、内側の円のみを指すことができる。外側の円の名前（クラス名・関数名）は、内側のコードに現れてはならない。これが Clean Architecture の唯一の絶対ルールです。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" style="color:var(--indigo)">The Clean Architecture — blog.cleancoder.com</a></p>
+</section>
+
+<!-- S3: DIP -->
+<section id="dip" class="section">
+  <div class="section-hdr"><div class="sec-num n-a">03</div><h2>依存性の逆転原則（DIP）</h2></div>
+  <p><strong>Dependency Inversion Principle（DIP）</strong>は、クリーンアーキテクチャの核心技術です。外側レイヤー（詳細）が内側の<strong>抽象インターフェース</strong>を実装することで、Use Case が DB の具体実装を知らずに済みます。</p>
+  <div class="compare-grid">
+    <div class="cmp-bad cmp"><div class="cmp-title">❌ DIP なし（Bad）</div><p>Use Case が SQLAlchemy の Session を直接受け取る。DB を変えると Use Case のコードも修正が必要。テスト時に実際の DB が必要になる。</p></div>
+    <div class="cmp-good cmp"><div class="cmp-title">✅ DIP あり（Good）</div><p>Use Case は抽象インターフェース（OrderRepository）のみを知る。具体的な DB 実装は外側レイヤーが担い、Use Case のコードは一切変更不要。</p></div>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-4"></div>
+    <div class="diagram-label">図3-1　DIP 適用前後の比較</div>
+  </div>
+  <h3 class="sub">Python 実装例：インターフェースと具体実装</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">application/interfaces/order_repository.py + adapters/repositories/</span></div>
+    <pre><code class="language-python"># ─── Use Cases 層（内側）：インターフェース定義 ───
+from abc import ABC, abstractmethod
+from typing import Optional
+
+class OrderRepository(ABC):
+    # 抽象インターフェース。Use Cases 層に置く。フレームワークを知らない。
+    @abstractmethod
+    def find_by_id(self, order_id: str) -> Optional["Order"]: ...
+
+    @abstractmethod
+    def save(self, order: "Order") -> None: ...
+
+class PlaceOrderUseCase:
+    # Use Case は抽象（インターフェース）にのみ依存する。
+    def __init__(self, order_repository: OrderRepository):  # ← 抽象に依存
+        self._repo = order_repository
+
+    def execute(self, command: "PlaceOrderCommand") -> "PlaceOrderResult":
+        order = Order.create(customer_id=command.customer_id)
+        self._repo.save(order)
+        return PlaceOrderResult(order_id=order.id)
+
+# ─── Frameworks 層（外側）：具体的な実装 ───
+from sqlalchemy.orm import Session
+
+class SQLAlchemyOrderRepository(OrderRepository):
+    # 外側レイヤーが内側のインターフェースを実装する
+    def __init__(self, session: Session):
+        self._session = session
+
+    def find_by_id(self, order_id: str) -> Optional["Order"]:
+        record = self._session.query(OrderModel).filter_by(id=order_id).first()
+        return self._to_domain(record) if record else None
+
+    def save(self, order: "Order") -> None:
+        self._session.merge(self._to_model(order))
+        self._session.commit()
+
+# ─── テスト用インメモリ実装（DB なしで Use Case をテスト！）───
+class InMemoryOrderRepository(OrderRepository):
+    def __init__(self):
+        self._store: dict[str, "Order"] = {}
+
+    def find_by_id(self, order_id: str) -> Optional["Order"]:
+        return self._store.get(order_id)
+
+    def save(self, order: "Order") -> None:
+        self._store[order.id] = order</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p>Repository インターフェースは <strong>Use Cases 層（application/interfaces/）</strong> に配置する。「DB を知るのは外側レイヤーだけ」が鉄則。テスト用に <code>InMemoryRepository</code> を必ず用意し、Use Case のユニットテストを DB なしで書けることを確認する。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://martinfowler.com/articles/dipInTheWild.html" style="color:var(--indigo)">Dependency Inversion Principle — Martin Fowler</a></p>
+</section>
+
+<!-- S4: ENTITIES -->
+<section id="entities" class="section">
+  <div class="section-hdr"><div class="sec-num n-r">04</div><h2>Entities（エンティティ）層</h2></div>
+  <span class="lb lb-en">🏛️ Entities 層 — 最内側・最安定</span>
+  <p>エンティティ層はシステムの<strong>最も内側かつ最も安定した</strong>層です。エンタープライズ全体のビジネスルールを純粋な Python クラスとして表現します。外部ライブラリの import は原則禁止です。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-5"></div>
+    <div class="diagram-label">図4-1　Entities 層に置くもの・置かないもの</div>
+  </div>
+  <h3 class="sub">Python 実装例：Value Object と Entity（Aggregate Root）</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">domain/value_objects/money.py &amp; domain/entities/order.py</span></div>
+    <pre><code class="language-python">from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Optional
+from uuid import uuid4
+
+
+# ──────────── Value Object ────────────
+@dataclass(frozen=True)   # frozen=True で不変性を保証
+class Money:
+    # 金額の Value Object。ビジネスルールをここに閉じ込める。
+    # 外部ライブラリ一切なし。標準ライブラリのみ使用。
+    amount: int
+    currency: str = "JPY"
+
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError("金額は 0 以上でなければなりません")
+
+    def add(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError("通貨単位が一致しません")
+        return Money(self.amount + other.amount, self.currency)
+
+    def multiply(self, factor: int) -> "Money":
+        return Money(self.amount * factor, self.currency)
+
+    def __add__(self, other: "Money") -> "Money":  return self.add(other)
+    def __radd__(self, other: object) -> "Money":
+        if other == 0: return self
+        return NotImplemented
+    def __mul__(self, factor: int) -> "Money":  return self.multiply(factor)
+
+
+# ──────────── Domain Enum ────────────
+class OrderStatus(Enum):
+    PENDING   = "pending"
+    CONFIRMED = "confirmed"
+    SHIPPED   = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+
+
+# ──────────── Aggregate Root（Entity）────────────
+@dataclass
+class Order:
+    # 注文エンティティ（Aggregate Root）
+    # このクラスにフレームワークの痕跡は一切ない。
+    # ビジネスルールだけを持つ純粋なクラス。
+    id:         str
+    customer_id: str
+    _lines:     list        = field(default_factory=list)
+    _status:    OrderStatus = OrderStatus.PENDING
+    created_at: datetime    = field(default_factory=datetime.utcnow)
+
+    @classmethod
+    def create(cls, customer_id: str) -> "Order":
+        return cls(id=str(uuid4()), customer_id=customer_id)
+
+    # ── ビジネスルール：明細追加 ──
+    def add_line(self, product_id: str, product_name: str,
+                 price: Money, qty: int) -> None:
+        self._assert_editable()
+        if qty <= 0:
+            raise ValueError("数量は 1 以上でなければなりません")
+        self._lines.append({
+            "product_id": product_id, "name": product_name,
+            "price": price, "qty": qty
+        })
+
+    # ── ビジネスルール：注文確定 ──
+    def confirm(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("保留中の注文のみ確定できます")
+        if not self._lines:
+            raise ValueError("商品が 1 件もありません")
+        self._status = OrderStatus.CONFIRMED
+
+    # ── ビジネスルール：キャンセル ──
+    def cancel(self) -> None:
+        if self._status in (OrderStatus.SHIPPED, OrderStatus.DELIVERED):
+            raise ValueError("発送済み・配達済みの注文はキャンセルできません")
+        self._status = OrderStatus.CANCELLED
+
+    @property
+    def status(self) -> OrderStatus: return self._status
+
+    @property
+    def total(self) -> Money:
+        return sum(
+            (line["price"].multiply(line["qty"]) for line in self._lines),
+            Money(0)
+        )
+
+    def _assert_editable(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("確定済みの注文は変更できません")</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス — Rich Domain Model</div><p><code>order.confirm()</code> のようにビジネス操作を Entity のメソッドとして定義し、getter/setter だけの「貧血モデル（Anemic Domain Model）」を避ける。Entity が自身の不変条件（明細なし・発送後キャンセル不可 etc.）を守る責務を持つ。Value Object は <code>frozen=True</code> で不変を保証する。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://martinfowler.com/bliki/AnemicDomainModel.html" style="color:var(--indigo)">Anemic Domain Model（アンチパターン）— Martin Fowler</a></p>
+</section>
+
+<!-- S5: USE CASES -->
+<section id="usecases" class="section">
+  <div class="section-hdr"><div class="sec-num n-a">05</div><h2>Use Cases（ユースケース）層</h2></div>
+  <span class="lb lb-uc">⚙️ Use Cases 層 — アプリケーション層</span>
+  <p>ユースケース層は<strong>アプリケーション固有のビジネスフロー</strong>をオーケストレートします。Entity を操作し、Repository・外部サービスのインターフェースを呼び出します。HTTP の詳細も DB の実装も知りません。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-6"></div>
+    <div class="diagram-label">図5-1　Use Case の Input / Output 設計</div>
+  </div>
+  <h3 class="sub">Python 実装例：PlaceOrderUseCase</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">application/use_cases/place_order.py</span></div>
+    <pre><code class="language-python">from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from typing import Optional
+
+
+# ──── Input / Output DTO ────
+@dataclass(frozen=True)
+class PlaceOrderCommand:
+    # 注文作成コマンド（Use Case への入力）
+    customer_id: str
+    items: list[dict]    # [{"product_id": ..., "quantity": ...}]
+
+@dataclass(frozen=True)
+class PlaceOrderResult:
+    # 注文作成結果（Use Case からの出力）
+    order_id:     str
+    status:       str
+    total_amount: int
+    currency:     str
+
+
+# ──── Repository / 外部サービスの抽象インターフェース ────
+class OrderRepository(ABC):
+    @abstractmethod
+    def save(self, order: Order) -> None: ...
+    @abstractmethod
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+
+class ProductRepository(ABC):
+    @abstractmethod
+    def find_by_id(self, product_id: str) -> Optional[Product]: ...
+
+class CustomerRepository(ABC):
+    @abstractmethod
+    def find_by_id(self, customer_id: str) -> Optional[Customer]: ...
+
+class EventPublisher(ABC):
+    @abstractmethod
+    def publish(self, event: object) -> None: ...
+
+
+# ──── Use Case 実装 ────
+class PlaceOrderUseCase:
+    # 注文作成ユースケース
+    # ビジネスフローをオーケストレートする。
+    # 具体的な DB・メール送信方法は知らない。
+    def __init__(
+        self,
+        order_repository:    OrderRepository,
+        product_repository:  ProductRepository,
+        customer_repository: CustomerRepository,
+        event_publisher:     EventPublisher,
+    ):
+        self._order_repo    = order_repository
+        self._product_repo  = product_repository
+        self._customer_repo = customer_repository
+        self._event_pub     = event_publisher
+
+    def execute(self, command: PlaceOrderCommand) -> PlaceOrderResult:
+        # 1. 顧客の存在・有効性確認
+        customer = self._customer_repo.find_by_id(command.customer_id)
+        if not customer:
+            raise EntityNotFoundError(f"顧客が見つかりません: {command.customer_id}")
+        if not customer.is_active:
+            raise BusinessRuleError("このアカウントは現在ご利用できません")
+
+        # 2. 注文 Entity の生成
+        order = Order.create(customer_id=command.customer_id)
+
+        # 3. 各商品を注文明細に追加
+        for item in command.items:
+            product = self._product_repo.find_by_id(item["product_id"])
+            if not product:
+                raise EntityNotFoundError(f"商品が見つかりません: {item['product_id']}")
+            if not product.has_stock(item["quantity"]):
+                raise BusinessRuleError(f"在庫が不足しています: {product.name}")
+            order.add_line(product.id, product.name, product.price, item["quantity"])
+
+        # 4. 注文確定（Entity のビジネスルールを実行）
+        order.confirm()
+
+        # 5. 永続化
+        self._order_repo.save(order)
+
+        # 6. ドメインイベント発行
+        self._event_pub.publish(
+            OrderPlacedEvent(order_id=order.id, customer_id=order.customer_id)
+        )
+
+        return PlaceOrderResult(
+            order_id=order.id,
+            status=order.status.value,
+            total_amount=order.total.amount,
+            currency=order.total.currency,
+        )
+
+class EntityNotFoundError(Exception): pass
+class BusinessRuleError(Exception):   pass</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p><strong>1 Use Case = 1 ビジネスアクション</strong>。<code>PlaceOrderUseCase</code>・<code>CancelOrderUseCase</code>・<code>GetOrderUseCase</code> のように明確に分割する。Use Case に HTTP リクエストオブジェクトを渡さない。必ず <code>Command</code> / <code>Query</code> DTO に変換してから渡す。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/" style="color:var(--indigo)">Ports &amp; Adapters Architecture — herbertograca.com</a></p>
+</section>
+
+<!-- S6: ADAPTERS -->
+<section id="adapters" class="section">
+  <div class="section-hdr"><div class="sec-num n-p">06</div><h2>Interface Adapters（インターフェースアダプター）層</h2></div>
+  <span class="lb lb-ad">🔌 Interface Adapters 層</span>
+  <p>アダプター層は<strong>外部の世界（HTTP・DB・CLI）</strong>と<strong>内側の世界（Use Case・Entity）</strong>を変換する橋渡し役です。<strong>ビジネスロジックは一切置きません。</strong></p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-7"></div>
+    <div class="diagram-label">図6-1　Interface Adapters 層の 3 つの役割</div>
+  </div>
+  <h3 class="sub">Controller の実装例（FastAPI）</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">adapters/controllers/order_controller.py</span></div>
+    <pre><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from typing import List
+import logging
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/v1/orders", tags=["orders"])
+
+# ──── HTTP 層の DTO（外側の詳細）────
+class OrderItemInput(BaseModel):
+    product_id: str = Field(..., min_length=1)
+    quantity:   int = Field(..., ge=1)
+
+class CreateOrderRequest(BaseModel):
+    customer_id: str                  = Field(..., min_length=1)
+    items:       List[OrderItemInput] = Field(..., min_items=1)
+
+class OrderResponse(BaseModel):
+    order_id: str; status: str; total_amount: int; currency: str; message: str
+
+# ──── Controller ────
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=OrderResponse)
+async def create_order(
+    request: CreateOrderRequest,
+    use_case: PlaceOrderUseCase = Depends(get_place_order_use_case),
+):
+    # Controller の責務：変換のみ。ビジネスロジックは何も書かない！
+    try:
+        # 1. HTTP リクエスト → Command（Use Case の入力）
+        command = PlaceOrderCommand(
+            customer_id=request.customer_id,
+            items=[{"product_id": i.product_id, "quantity": i.quantity}
+                   for i in request.items],
+        )
+        # 2. Use Case の実行（ビジネスロジックは全て Use Case が担う）
+        result = use_case.execute(command)
+        # 3. Output DTO → HTTP レスポンス
+        return OrderResponse(
+            order_id=result.order_id, status=result.status,
+            total_amount=result.total_amount, currency=result.currency,
+            message="注文が確定されました",
+        )
+    except EntityNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except BusinessRuleError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        logger.error(f"予期しないエラー: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="内部エラーが発生しました")</code></pre>
+  </div>
+  <h3 class="sub">Repository Adapter（SQLAlchemy）</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">adapters/repositories/sqlalchemy_order_repo.py</span></div>
+    <pre><code class="language-python">from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, Integer, DateTime
+
+# ──── DB モデル（外側の詳細・ドメインとは別物）────
+class Base(DeclarativeBase): pass
+
+class OrderModel(Base):
+    __tablename__ = "orders"
+    id:           Mapped[str]      = mapped_column(String(36), primary_key=True)
+    customer_id:  Mapped[str]      = mapped_column(String(36), nullable=False)
+    status:       Mapped[str]      = mapped_column(String(20), nullable=False)
+    total_amount: Mapped[int]      = mapped_column(Integer,    nullable=False)
+    created_at:   Mapped[datetime] = mapped_column(DateTime,   nullable=False)
+
+# ──── Repository Adapter ────
+class SQLAlchemyOrderRepository(OrderRepository):
+    # DBモデル ↔ ドメインエンティティの変換を担当
+    def __init__(self, session: Session):
+        self._session = session
+
+    def find_by_id(self, order_id: str) -> Optional[Order]:
+        record = (self._session.query(OrderModel)
+                               .filter(OrderModel.id == order_id).first())
+        return self._to_domain(record) if record else None
+
+    def save(self, order: Order) -> None:
+        self._session.merge(self._to_model(order))
+        self._session.flush()
+
+    def _to_domain(self, record: OrderModel) -> Order:
+        # DB レコード → ドメインエンティティ変換
+        return Order.from_persistence(
+            id=record.id, customer_id=record.customer_id,
+            status=OrderStatus(record.status), created_at=record.created_at
+        )
+
+    def _to_model(self, order: Order) -> OrderModel:
+        # ドメインエンティティ → DB レコード変換
+        return OrderModel(
+            id=order.id, customer_id=order.customer_id,
+            status=order.status.value, total_amount=order.total.amount,
+            created_at=order.created_at,
+        )</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p>Controller には<strong>変換ロジックのみ</strong>。ビジネスロジックを 1 行も書かない。<code>if status == "vip":</code> のような判定が Controller に現れたら、Use Case か Entity に移動する。DB モデルとドメインエンティティは<strong>必ず別クラスで定義</strong>し、Mapper メソッドで橋渡しする。</p></div>
+</section>
+
+<!-- S7: FRAMEWORKS -->
+<section id="frameworks" class="section">
+  <div class="section-hdr"><div class="sec-num n-g">07</div><h2>Frameworks &amp; Drivers（フレームワーク）層</h2></div>
+  <span class="lb lb-fw">🔧 Frameworks &amp; Drivers 層 — 最外側</span>
+  <p>最外層はフレームワーク・DB・UIなどの<strong>技術的詳細</strong>を扱います。この層が変わっても、内側のビジネスロジックは一切影響を受けません。最も重要な役割が <strong>Composition Root（依存性の組み立て）</strong>です。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-8"></div>
+    <div class="diagram-label">図7-1　Composition Root での依存性組み立て順序</div>
+  </div>
+  <h3 class="sub">Composition Root 実装例（FastAPI + Depends）</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">main.py（Composition Root）</span></div>
+    <pre><code class="language-python">import os
+from fastapi import FastAPI, Depends
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+
+# ──── DB 設定（環境変数は外側レイヤーのみ読む）────
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL が環境変数に設定されていません")
+
+engine       = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+
+def get_db() -> Session:
+    # DB セッションの依存性プロバイダー
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# ──── 依存性の組み立て（Composition Root）────
+def get_order_repository(db: Session = Depends(get_db)) -> OrderRepository:
+    return SQLAlchemyOrderRepository(session=db)
+
+def get_product_repository(db: Session = Depends(get_db)) -> ProductRepository:
+    return SQLAlchemyProductRepository(session=db)
+
+def get_customer_repository(db: Session = Depends(get_db)) -> CustomerRepository:
+    return SQLAlchemyCustomerRepository(session=db)
+
+def get_event_publisher() -> EventPublisher:
+    return KafkaEventPublisher(bootstrap_servers="localhost:9092")
+
+def get_place_order_use_case(
+    order_repo:    OrderRepository    = Depends(get_order_repository),
+    product_repo:  ProductRepository  = Depends(get_product_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    event_pub:     EventPublisher     = Depends(get_event_publisher),
+) -> PlaceOrderUseCase:
+    # Use Case への全依存を注入して生成する
+    return PlaceOrderUseCase(
+        order_repository=order_repo,
+        product_repository=product_repo,
+        customer_repository=customer_repo,
+        event_publisher=event_pub,
+    )
+
+# ──── FastAPI アプリケーション ────
+def create_app() -> FastAPI:
+    app = FastAPI(title="ECサイト注文 API", version="1.0.0")
+    app.include_router(router)
+    return app
+
+app = create_app()</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p>全ての依存性の組み立ては <strong>Composition Root（main.py）の 1 箇所だけ</strong>で行う。Use Case が <code>SessionLocal()</code> を自分で生成してはいけない。<code>os.environ</code> の読み込みも外側レイヤーのみ。内側レイヤーは設定値を知らない。</p></div>
+</section>
+
+<!-- S8: DI -->
+<section id="di" class="section">
+  <div class="section-hdr"><div class="sec-num n-i">08</div><h2>依存性注入（Dependency Injection）</h2></div>
+  <p><strong>依存性注入（DI）</strong>は、オブジェクトが自分の依存を自分で生成せず、外部から受け取るパターンです。クリーンアーキテクチャにおける DI は、テスト可能性と交換可能性の鍵です。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-9"></div>
+    <div class="diagram-label">図8-1　DI の 3 パターンとコンストラクタ DI の優位性</div>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-10"></div>
+    <div class="diagram-label">図8-2　同一 Use Case コードを本番・テストで差し替えられる</div>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p><strong>コンストラクタ DI を第一選択</strong>とする。依存がコンストラクタに明記されることで、クラスの責務が可視化される。FastAPI の <code>Depends()</code>・Spring の <code>@Autowired</code> など、フレームワークの DI 機能を Composition Root の実装に活用する。</p></div>
+</section>
+
+<!-- S9: DIRECTORY -->
+<section id="directory" class="section">
+  <div class="section-hdr"><div class="sec-num n-c">09</div><h2>ディレクトリ構成とパッケージ設計</h2></div>
+  <p>クリーンアーキテクチャの<strong>レイヤー構造がそのままディレクトリ構造</strong>になります。フォルダを開けばどのレイヤーのコードかが一目でわかる構成が理想です。</p>
+  <div class="dir-tree"><span class="dl">my_app/</span>
+│
+├── <span class="dl-en">domain/</span>                           <span class="dc"># 🏛️ Entities 層（最内側）</span>
+│   ├── entities/
+│   │   ├── <span class="df">order.py</span>                  <span class="dc"># Order, OrderLine, OrderStatus</span>
+│   │   ├── <span class="df">product.py</span>                <span class="dc"># Product</span>
+│   │   └── <span class="df">customer.py</span>               <span class="dc"># Customer</span>
+│   ├── value_objects/
+│   │   ├── <span class="df">money.py</span>                  <span class="dc"># Money（不変・値比較）</span>
+│   │   └── <span class="df">address.py</span>                <span class="dc"># Address</span>
+│   └── <span class="df">exceptions.py</span>                 <span class="dc"># BusinessRuleError 等</span>
+│
+├── <span class="dl-uc">application/</span>                      <span class="dc"># ⚙️ Use Cases 層</span>
+│   ├── use_cases/
+│   │   ├── <span class="df">place_order.py</span>            <span class="dc"># PlaceOrderUseCase</span>
+│   │   ├── <span class="df">cancel_order.py</span>           <span class="dc"># CancelOrderUseCase</span>
+│   │   └── <span class="df">get_order.py</span>              <span class="dc"># GetOrderUseCase</span>
+│   ├── interfaces/                   <span class="dc"># リポジトリ・サービスの抽象 ← ここが鍵！</span>
+│   │   ├── <span class="df">order_repository.py</span>       <span class="dc"># OrderRepository (ABC)</span>
+│   │   ├── <span class="df">product_repository.py</span>
+│   │   └── <span class="df">event_publisher.py</span>
+│   └── dtos/
+│       ├── <span class="df">commands.py</span>               <span class="dc"># PlaceOrderCommand 等</span>
+│       └── <span class="df">results.py</span>                <span class="dc"># PlaceOrderResult 等</span>
+│
+├── <span class="dl-ad">adapters/</span>                         <span class="dc"># 🔌 Interface Adapters 層</span>
+│   ├── controllers/
+│   │   └── <span class="df">order_controller.py</span>       <span class="dc"># FastAPI Router</span>
+│   ├── presenters/
+│   │   └── <span class="df">order_presenter.py</span>        <span class="dc"># Result → JSON 変換</span>
+│   └── repositories/
+│       ├── <span class="df">sqlalchemy_order_repo.py</span>  <span class="dc"># 本番 DB 実装</span>
+│       └── <span class="df">in_memory_order_repo.py</span>   <span class="dc"># テスト用実装</span>
+│
+├── <span class="dl-fw">infrastructure/</span>                   <span class="dc"># 🔧 Frameworks &amp; Drivers 層</span>
+│   ├── database/
+│   │   ├── <span class="df">models.py</span>                 <span class="dc"># SQLAlchemy モデル定義</span>
+│   │   ├── <span class="df">session.py</span>                <span class="dc"># DB セッション設定</span>
+│   │   └── migrations/               <span class="dc"># Alembic マイグレーション</span>
+│   └── messaging/
+│       └── <span class="df">kafka_publisher.py</span>
+│
+├── <span class="df">main.py</span>                           <span class="dc"># Composition Root（全依存の組み立て）</span>
+└── tests/
+    ├── unit/
+    │   ├── domain/                   <span class="dc"># Entity ユニットテスト（最速・最重要）</span>
+    │   └── application/              <span class="dc"># Use Case ユニットテスト（DB 不要）</span>
+    ├── integration/
+    │   └── adapters/                 <span class="dc"># Repository 統合テスト</span>
+    └── e2e/
+        └── api/                      <span class="dc"># API E2E テスト</span></div>
+  <h3 class="sub">パッケージ間の依存関係</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-11"></div>
+    <div class="diagram-label">図9-1　パッケージ間の依存関係（赤破線は禁止方向）</div>
+  </div>
+  <div class="callout co-i"><div class="callout-title">💡 命名の慣習</div><p>プロジェクトによって <code>domain/</code> を <code>core/</code>、<code>application/</code> を <code>usecases/</code>、<code>infrastructure/</code> を <code>frameworks/</code> と命名することもあります。名前より<strong>レイヤーの責務と依存方向</strong>が正しく守られているかが重要です。</p></div>
+</section>
+
+<!-- S10: TESTING -->
+<section id="testing" class="section">
+  <div class="section-hdr"><div class="sec-num n-g">10</div><h2>クリーンアーキテクチャのテスト戦略</h2></div>
+  <p>クリーンアーキテクチャの最大の恩恵の一つが<strong>テスト容易性</strong>です。ビジネスロジックを DB・フレームワークから分離したことで、大多数のテストを高速なユニットテストとして書けます。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-12"></div>
+    <div class="diagram-label">図10-1　テストピラミッド（ユニットテストが最多・最重要）</div>
+  </div>
+  <h3 class="sub">テスト種別・実行時間比較</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>テスト種別</th><th>対象レイヤー</th><th>DB 必要</th><th>100件の実行時間</th><th>信頼性</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Entity ユニット</strong></td><td><code>domain/</code></td><td class="good-c">不要</td><td class="good-c">約 0.5 秒</td><td class="good-c">非常に高い</td></tr>
+        <tr><td><strong>Use Case ユニット</strong></td><td><code>application/</code></td><td class="good-c">不要</td><td class="good-c">約 1.2 秒</td><td class="good-c">非常に高い</td></tr>
+        <tr><td><strong>Repository 統合</strong></td><td><code>adapters/</code></td><td class="bad-c">必要</td><td>約 15 秒</td><td>中程度</td></tr>
+        <tr><td><strong>API E2E</strong></td><td>全層</td><td class="bad-c">必要</td><td class="bad-c">約 55 秒</td><td>低め</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub">ユニットテスト実装例（pytest）</h3>
+  <div class="code-block">
+    <div class="code-hdr"><span class="code-lang">Python</span><span class="code-file">tests/unit/domain/test_order.py &amp; tests/unit/application/test_place_order.py</span></div>
+    <pre><code class="language-python">import pytest
+
+
+# ────── Domain 層テスト（モック不要・DB 不要）──────
+class TestOrder:
+
+    def test_新規作成したら保留中になること(self):
+        order = Order.create(customer_id="cust_123")
+        assert order.status == OrderStatus.PENDING
+
+    def test_明細追加後に確定できること(self):
+        order = Order.create(customer_id="cust_123")
+        order.add_line("prod_001", "Tシャツ", Money(1000), 2)
+        order.confirm()
+        assert order.status == OrderStatus.CONFIRMED
+
+    def test_明細なしで確定するとエラーになること(self):
+        order = Order.create(customer_id="cust_123")
+        with pytest.raises(ValueError, match="商品が 1 件もありません"):
+            order.confirm()
+
+    def test_発送済み注文のキャンセルはエラーになること(self):
+        order = Order.create(customer_id="cust_123")
+        order.add_line("prod_001", "Tシャツ", Money(1000), 1)
+        order.confirm()
+        order._status = OrderStatus.SHIPPED  # テスト用に強制変更
+        with pytest.raises(ValueError, match="発送済み"):
+            order.cancel()
+
+    def test_合計金額が正しく計算されること(self):
+        order = Order.create(customer_id="cust_123")
+        order.add_line("prod_001", "Tシャツ",  Money(1000), 2)
+        order.add_line("prod_002", "ジーンズ", Money(5000), 1)
+        assert order.total == Money(7000)
+
+
+# ────── Use Case 層テスト（InMemoryRepo 使用・DB 不要）──────
+class TestPlaceOrderUseCase:
+
+    @pytest.fixture
+    def setup(self):
+        order_repo    = InMemoryOrderRepository()
+        product_repo  = InMemoryProductRepository(products=[
+            Product(id="prod_001", name="Tシャツ", price=Money(1000), stock=10),
+        ])
+        customer_repo = InMemoryCustomerRepository(customers=[
+            Customer(id="active_cust",   is_active=True),
+            Customer(id="inactive_cust", is_active=False),
+        ])
+        event_pub = InMemoryEventPublisher()
+        use_case = PlaceOrderUseCase(
+            order_repository=order_repo, product_repository=product_repo,
+            customer_repository=customer_repo, event_publisher=event_pub,
+        )
+        return use_case, order_repo, event_pub
+
+    def test_有効なコマンドで注文が作成されること(self, setup):
+        use_case, order_repo, _ = setup
+        result = use_case.execute(PlaceOrderCommand(
+            customer_id="active_cust",
+            items=[{"product_id": "prod_001", "quantity": 2}],
+        ))
+        assert result.status == "confirmed"
+        assert result.total_amount == 2000
+
+    def test_注文確定後にイベントが発行されること(self, setup):
+        use_case, _, event_pub = setup
+        use_case.execute(PlaceOrderCommand(
+            customer_id="active_cust",
+            items=[{"product_id": "prod_001", "quantity": 1}],
+        ))
+        assert len(event_pub.published_events) == 1
+        assert isinstance(event_pub.published_events[0], OrderPlacedEvent)
+
+    def test_存在しない顧客で注文するとエラーになること(self, setup):
+        use_case, _, _ = setup
+        with pytest.raises(EntityNotFoundError, match="顧客が見つかりません"):
+            use_case.execute(PlaceOrderCommand(
+                customer_id="ghost_cust",
+                items=[{"product_id": "prod_001", "quantity": 1}],
+            ))
+
+    def test_無効な顧客で注文するとビジネスエラーになること(self, setup):
+        use_case, _, _ = setup
+        with pytest.raises(BusinessRuleError, match="ご利用できません"):
+            use_case.execute(PlaceOrderCommand(
+                customer_id="inactive_cust",
+                items=[{"product_id": "prod_001", "quantity": 1}],
+            ))</code></pre>
+  </div>
+  <div class="callout co-s"><div class="callout-title">📌 ベストプラクティス</div><p>テストで DB を必要としないことを最初の目標にする。<code>InMemoryRepository</code> を必ず実装し、全 Use Case のテストを DB なしで書ける状態にする。統合テストは <strong>TestContainers</strong> を使って本物の DB コンテナを使用し、環境依存を排除する。</p></div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://martinfowler.com/articles/practical-test-pyramid.html" style="color:var(--indigo)">The Practical Test Pyramid — Martin Fowler</a> ／ <a href="https://testcontainers.com/" style="color:var(--indigo)">TestContainers</a></p>
+</section>
+
+<!-- S11: SOLID -->
+<section id="solid" class="section">
+  <div class="section-hdr"><div class="sec-num n-i">11</div><h2>SOLID 原則とクリーンアーキテクチャ</h2></div>
+  <p>クリーンアーキテクチャは <strong>SOLID 原則</strong>を実践的に体現したアーキテクチャです。各原則がどのレイヤーでどう活かされるか理解することが、設計力向上の近道です。</p>
+  <div class="solid-grid">
+    <div class="solid-card"><div class="solid-letter" style="color:#f87171">S</div><div class="solid-name">単一責任原則</div><div class="solid-desc">1 クラス＝1 変更理由</div></div>
+    <div class="solid-card"><div class="solid-letter" style="color:#fb923c">O</div><div class="solid-name">開放閉鎖原則</div><div class="solid-desc">拡張に開き・修正に閉じる</div></div>
+    <div class="solid-card"><div class="solid-letter" style="color:#fbbf24">L</div><div class="solid-name">リスコフ置換原則</div><div class="solid-desc">サブクラスは代替可能</div></div>
+    <div class="solid-card"><div class="solid-letter" style="color:#4ade80">I</div><div class="solid-name">インターフェース分離</div><div class="solid-desc">小さなインターフェース</div></div>
+    <div class="solid-card"><div class="solid-letter" style="color:#818cf8">D</div><div class="solid-name">依存性逆転原則</div><div class="solid-desc">抽象に依存する</div></div>
+  </div>
+  <h3 class="sub">SOLID とクリーンアーキテクチャの対応</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>原則</th><th>クリーンアーキテクチャでの実現</th><th>悪い例</th><th>良い例</th></tr></thead>
+      <tbody>
+        <tr><td><strong>S — 単一責任</strong></td><td>Controller は変換のみ、UseCase はフロー管理のみ、Entity はビジネスルールのみ</td><td class="bad-c">Controller にビジネスロジックが混在</td><td class="good-c">責務ごとにクラス分離</td></tr>
+        <tr><td><strong>O — 開放閉鎖</strong></td><td>新決済手段の追加 → 新クラスを追加するだけ、既存 UseCase は修正不要</td><td class="bad-c"><code>if payment == "credit":</code> を毎回追加</td><td class="good-c">PaymentGateway Interface を実装</td></tr>
+        <tr><td><strong>L — リスコフ置換</strong></td><td>InMemoryRepo と SQLAlchemyRepo が完全に交換可能</td><td class="bad-c">テスト用クラスが一部メソッドを未実装</td><td class="good-c">全メソッドを正しく実装</td></tr>
+        <tr><td><strong>I — インターフェース分離</strong></td><td>OrderReadRepository と OrderWriteRepository に分割</td><td class="bad-c">読み取り専用クラスに save() が必要になる</td><td class="good-c">用途別に小さいインターフェース</td></tr>
+        <tr><td><strong>D — 依存性逆転</strong></td><td>UseCase が OrderRepository 抽象に依存、SQLAlchemy は外側で実装</td><td class="bad-c">UseCase が Session を直接生成</td><td class="good-c">コンストラクタで抽象を受け取る</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub">開放閉鎖原則（OCP）の具体例</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-13"></div>
+    <div class="diagram-label">図11-1　OCP 違反 vs 準拠（新機能追加時の影響範囲の違い）</div>
+  </div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" style="color:var(--indigo)">SOLID Relevance — Uncle Bob (2020)</a></p>
+</section>
+
+<!-- S12: ANTI-PATTERNS -->
+<section id="antipatterns" class="section">
+  <div class="section-hdr"><div class="sec-num n-r">12</div><h2>アンチパターン</h2></div>
+  <p>クリーンアーキテクチャを導入する際によく犯す失敗パターンを紹介します。アンチパターンを知ることで、設計の健全性を保てます。</p>
+
+  <div class="ap-card">
+    <div class="ap-hdr"><span class="ap-icon">💧</span><div class="ap-title">Anti-Pattern 1：Leaky Abstraction（漏れた抽象）</div></div>
+    <div class="ap-body">
+      <div class="ap-problem">Use Case が SQLAlchemy の <code>Session</code> を直接コンストラクタで受け取っている。フレームワークの詳細が Use Case 層に漏れている状態。テスト時に必ず本物の DB が必要になる。</div>
+      <div class="ap-fix">Repository インターフェースを経由する。<code>def __init__(self, repo: OrderRepository)</code> — Use Case は抽象のみを知る。具体的な DB 実装は外側レイヤーに閉じる。</div>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-hdr"><span class="ap-icon">🩸</span><div class="ap-title">Anti-Pattern 2：Anemic Domain Model（貧血モデル）</div></div>
+    <div class="ap-body">
+      <div class="ap-problem">Entity が getter / setter しか持たず、ビジネスロジックが全て Service 層に書かれている。「クリーンアーキテクチャを導入した」と言いながら、ドメイン層に何もない状態。</div>
+      <div class="ap-fix"><code>order.confirm()</code> のようにビジネス操作を Entity のメソッドとして定義する。Entity が自身の不変条件（空注文は確定不可・発送後はキャンセル不可 etc.）を守る Rich Domain Model を目指す。</div>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-hdr"><span class="ap-icon">🏋️</span><div class="ap-title">Anti-Pattern 3：Fat Entity（太りすぎた Entity）</div></div>
+    <div class="ap-body">
+      <div class="ap-problem">Entity に HTTP レスポンス生成・メール送信・ログ出力・外部 API 呼び出しを何でも詰め込んでいる。単一責任原則（SRP）の違反。Entity が外部ライブラリを import し始めたら危険信号。</div>
+      <div class="ap-fix">Entity はビジネスルールのみを持つ。副作用（メール送信・通知等）は Domain Event として Use Case 層が処理する。Entity のテストは new Order() だけで完結すべき。</div>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-hdr"><span class="ap-icon">🌩️</span><div class="ap-title">Anti-Pattern 4：God Use Case（神ユースケース）</div></div>
+    <div class="ap-body">
+      <div class="ap-problem">1 つの UseCase が注文・在庫・決済・通知・配送をすべて処理する巨大クラスになっている。変更の影響範囲が爆発的に広がり、テストも書きにくくなる。</div>
+      <div class="ap-fix">1 UseCase = 1 ビジネスアクション。<code>PlaceOrderUseCase</code> / <code>ProcessPaymentUseCase</code> / <code>NotifyCustomerUseCase</code> のように分割し、Domain Event で疎結合に連携させる。</div>
+    </div>
+  </div>
+
+  <div class="ap-card">
+    <div class="ap-hdr"><span class="ap-icon">⏭️</span><div class="ap-title">Anti-Pattern 5：Layer Skipping（レイヤースキップ）</div></div>
+    <div class="ap-body">
+      <div class="ap-problem">Controller が Use Case を飛ばして Repository を直接呼び出している。「この処理は単純だから」という理由でショートカットを取りがち。ビジネスロジックが Controller に漏れる温床になる。</div>
+      <div class="ap-fix">必ず <code>Controller → UseCase → Repository</code> の順を守る。Use Case が「簡単すぎる」と感じても、将来の変更に備えて経由する設計を維持する。</div>
+    </div>
+  </div>
+
+  <h3 class="sub">設計の健全性チェックフロー</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-14"></div>
+    <div class="diagram-label">図12-1　設計の健全性チェックフロー（全て Yes → 合格）</div>
+  </div>
+</section>
+
+<!-- S13: BEST PRACTICES -->
+<section id="bestpractices" class="section">
+  <div class="section-hdr"><div class="sec-num n-g">13</div><h2>ベストプラクティス総まとめ</h2></div>
+  <h3 class="sub">レイヤー別ベストプラクティス</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>レイヤー</th><th>やるべきこと ✅</th><th>やってはいけないこと ❌</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lb lb-en">Entities</span></td>
+          <td>ビジネスルールを Entity に集約<br>Value Object は <code>frozen=True</code><br>ファクトリメソッドで生成</td>
+          <td class="bad-c">フレームワークの import<br>DB カラム定義の記述<br>副作用を持つ処理</td>
+        </tr>
+        <tr>
+          <td><span class="lb lb-uc">Use Cases</span></td>
+          <td>インターフェースのみに依存<br>Input/Output DTO で境界を明確化<br>1 UseCase = 1 アクション</td>
+          <td class="bad-c">HTTP リクエストを直接受け取る<br>具体的な DB 操作を書く<br>FW 固有の機能を使う</td>
+        </tr>
+        <tr>
+          <td><span class="lb lb-ad">Adapters</span></td>
+          <td>ドメインモデルと DB モデルを分離<br>Mapper メソッドで変換を明確に<br>エラーを HTTP ステータスに変換</td>
+          <td class="bad-c">ビジネスロジックを置く<br>Entity を直接 DB に保存<br>UseCase を飛ばして DB アクセス</td>
+        </tr>
+        <tr>
+          <td><span class="lb lb-fw">Frameworks</span></td>
+          <td>設定・初期化・ルーティングのみ<br>Composition Root で全依存を組み立て<br>環境変数の読み込み</td>
+          <td class="bad-c">ビジネスロジックを混入<br>UseCase から DB セッションを生成<br>外側の詳細を内側で参照</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">クリーンアーキテクチャの成熟度モデル</h3>
+  <div class="maturity">
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#ef4444"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#ef4444">Level 0</div><div class="mat-title">スパゲッティ</div><div class="mat-desc">ビジネスロジックが Controller に、DB アクセスが View に散乱。全てが密結合。</div></div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#f97316"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#f97316">Level 1</div><div class="mat-title">レイヤードアーキテクチャ</div><div class="mat-desc">Controller / Service / Repository の分離はできているが、DB 構造がドメインを支配している。テストに DB が必要。</div></div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#fbbf24"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#fbbf24">Level 2</div><div class="mat-title">ドメイン分離</div><div class="mat-desc">Entity と Value Object を導入。ビジネスルールをドメイン層に集約。DB 依存は残るが、少し改善。</div></div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#4ade80"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#4ade80">Level 3</div><div class="mat-title">インターフェース導入</div><div class="mat-desc">Repository Interface と Use Case を分離。DB なしでユニットテストが可能に。クリーンアーキテクチャの真価が発揮され始める。</div></div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#818cf8"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#818cf8">Level 4</div><div class="mat-title">完全なクリーンアーキテクチャ</div><div class="mat-desc">全層の依存が内側のみ。フレームワーク交換可能。Composition Root で全依存を組み立て。テストピラミッドが健全。</div></div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-ind"><div class="mat-dot" style="background:#22d3ee"></div><div class="mat-line"></div></div>
+      <div class="mat-body"><div class="mat-lv" style="color:#22d3ee">Level 5</div><div class="mat-title">CA + DDD + EDA</div><div class="mat-desc">Bounded Context + Domain Events + Event-Driven Architecture。マイクロサービスへの展開も容易。</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub">クリーンアーキテクチャをいつ適用するか？</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid" id="diag-15"></div>
+    <div class="diagram-label">図13-1　適用判断のデシジョンツリー</div>
+  </div>
+  <p style="font-size:1rem;color:var(--t4)">📖 出典：<a href="https://github.com/cosmicpython/book" style="color:var(--indigo)">Architecture Patterns with Python (Cosmic Python)</a></p>
+</section>
+
+<!-- S14: REFERENCES -->
+<section id="references" class="section">
+  <div class="section-hdr"><div class="sec-num n-i">14</div><h2>参考文献・ソース一覧</h2></div>
+  <h3 class="sub">📚 必読書籍</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>タイトル</th><th>著者</th><th>難易度</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Clean Architecture: A Craftsman's Guide</strong></td><td>Robert C. Martin</td><td>★★★★☆</td><td>CA 原典。Uncle Bob による決定版。</td></tr>
+        <tr><td><strong>Domain-Driven Design</strong></td><td>Eric Evans</td><td>★★★★★</td><td>DDD と CA の組み合わせに必須。</td></tr>
+        <tr><td><strong>Architecture Patterns with Python</strong></td><td>Harry Percival / Bob Gregory</td><td>★★★☆☆</td><td>Python での CA・DDD 実践書。</td></tr>
+        <tr><td><strong>Implementing Domain-Driven Design</strong></td><td>Vaughn Vernon</td><td>★★★★☆</td><td>DDD の実践的実装（CA 適用例多数）。</td></tr>
+        <tr><td><strong>Clean Code</strong></td><td>Robert C. Martin</td><td>★★★☆☆</td><td>コード品質とアーキテクチャの基礎。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="sub">🌐 公式ドキュメント・重要 URL</h3>
+  <div class="ref-grid">
+    <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">The Clean Architecture（原典）</div>
+      <div class="ref-url">blog.cleancoder.com — Uncle Bob 原文ブログ (2012)</div>
+    </a>
+    <a href="https://martinfowler.com/eaaCatalog/repository.html" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">Repository Pattern — Martin Fowler</div>
+      <div class="ref-url">martinfowler.com/eaaCatalog/repository.html</div>
+    </a>
+    <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">Anemic Domain Model（アンチパターン）</div>
+      <div class="ref-url">martinfowler.com — Martin Fowler</div>
+    </a>
+    <a href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">Ports &amp; Adapters Architecture</div>
+      <div class="ref-url">herbertograca.com — 詳細解説</div>
+    </a>
+    <a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">The Onion Architecture</div>
+      <div class="ref-url">jeffreypalermo.com — Jeffrey Palermo (2008)</div>
+    </a>
+    <a href="https://martinfowler.com/articles/practical-test-pyramid.html" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">The Practical Test Pyramid</div>
+      <div class="ref-url">martinfowler.com — テスト戦略の詳細</div>
+    </a>
+    <a href="https://github.com/cosmicpython/book" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">Cosmic Python（Architecture Patterns with Python）</div>
+      <div class="ref-url">github.com/cosmicpython/book — サンプルコード</div>
+    </a>
+    <a href="https://testcontainers.com/" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">TestContainers — 統合テスト用</div>
+      <div class="ref-url">testcontainers.com — Docker ベースのテスト環境</div>
+    </a>
+    <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">SOLID Relevance — Uncle Bob (2020)</div>
+      <div class="ref-url">blog.cleancoder.com — SOLID 原則の現代的解説</div>
+    </a>
+    <a href="https://docs.pytest.org/" class="ref-card" target="_blank" rel="noopener noreferrer">
+      <div class="ref-title">Pytest 公式ドキュメント</div>
+      <div class="ref-url">docs.pytest.org — Python テストフレームワーク</div>
+    </a>
+  </div>
+</section>
+
+</div><!-- .content -->
+</main>
+
+<footer>
+  <p>🏛️ <strong>クリーンアーキテクチャ 完全ガイド</strong> — Python 実装例付き</p>
+  <p style="margin-top:6px">原典：<a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank" rel="noopener noreferrer">The Clean Architecture by Robert C. Martin (2012)</a> ／ <a href="https://www.goodreads.com/book/show/18043011-clean-architecture" target="_blank" rel="noopener noreferrer">Clean Architecture: A Craftsman's Guide (2017)</a></p>
+</footer>
+
+<script>
+const DIAGRAMS = {
+  'diag-1': `graph LR
+    subgraph BAD["導入前: 技術への強い依存"]
+        P1["DB の構造が<br/>ドメインモデルを決める"]
+        P2["FW 変更でコアロジックも修正"]
+        P3["テストに DB が必要"]
+        P4["ビジネスロジックが FW に混在"]
+    end
+    subgraph GOOD["導入後: ビジネスロジックが独立"]
+        S1["DB はプラグイン<br/>交換可能な詳細"]
+        S2["FW 変更でもコアは無傷"]
+        S3["DB なしでユニットテスト可能"]
+        S4["ビジネスルールは純粋クラス"]
+    end
+    P1-->S1
+    P2-->S2
+    P3-->S3
+    P4-->S4
+    style P1 fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style P2 fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style P3 fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style P4 fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style S1 fill:#14532d,stroke:#22c55e,color:#86efac
+    style S2 fill:#14532d,stroke:#22c55e,color:#86efac
+    style S3 fill:#14532d,stroke:#22c55e,color:#86efac
+    style S4 fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-2': `flowchart LR
+    FW["Frameworks and Drivers"]
+    AD["Interface Adapters"]
+    UC["Use Cases"]
+    EN["Entities"]
+    FW --> AD
+    AD --> UC
+    UC --> EN
+    EN -. "知らない" .-> FW
+    UC -. "知らない" .-> FW
+    style FW fill:#1e293b,stroke:#94a3b8,color:#94a3b8
+    style AD fill:#292219,stroke:#ca8a04,color:#fbbf24
+    style UC fill:#2a1810,stroke:#c2410c,color:#fb923c
+    style EN fill:#2c1111,stroke:#dc2626,color:#f87171`,
+
+  'diag-3': `sequenceDiagram
+    participant HTTP as HTTP Request
+    participant CTRL as Controller
+    participant UC as Use Case
+    participant REPO as Repository Interface
+    participant IMPL as Repository Impl
+    participant DB as Database
+    HTTP->>CTRL: JSON リクエスト
+    CTRL->>CTRL: JSON → Input DTO 変換
+    CTRL->>UC: execute(InputDTO)
+    UC->>REPO: find_by_id(id)
+    REPO->>IMPL: (IF 経由)
+    IMPL->>DB: SELECT ...
+    DB-->>IMPL: DBレコード
+    IMPL-->>UC: Domain Entity
+    UC->>UC: ビジネスロジック実行
+    UC-->>CTRL: OutputDTO
+    CTRL-->>HTTP: JSON レスポンス`,
+
+  'diag-4': `graph TD
+    subgraph BAD["依存性の逆転なし"]
+        UC_BAD["Use Case (上位レベル)"]
+        REPO_BAD["SQLAlchemy Repository (下位・具体)"]
+        UC_BAD -->|"直接依存 NG"| REPO_BAD
+    end
+    subgraph GOOD["依存性の逆転あり"]
+        UC_G["Use Case (上位レベル)"]
+        IF_G["OrderRepository Interface (抽象)<br/>Use Cases 層に属する"]
+        REPO_G["SQLAlchemy Repository (具体実装)<br/>Frameworks 層に属する"]
+        UC_G -->|"依存 (抽象のみ)"| IF_G
+        REPO_G -->|"implements"| IF_G
+    end
+    style UC_BAD fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style REPO_BAD fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style UC_G fill:#14532d,stroke:#22c55e,color:#86efac
+    style IF_G fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style REPO_G fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-5': `graph TD
+    EL["Entities 層の設計ルール"]
+    EL --> WHAT["何を置くか"]
+    EL --> NOPE["何を置かないか"]
+    WHAT --> W1["エンタープライズ全体のビジネスルール"]
+    WHAT --> W2["Entity (識別子を持つオブジェクト)"]
+    WHAT --> W3["Value Object (不変・値で同一性を判断)"]
+    WHAT --> W4["Domain Exception (ビジネス上の例外)"]
+    NOPE --> F1["SQLAlchemy, Django 等の import"]
+    NOPE --> F2["HTTP リクエスト・レスポンス"]
+    NOPE --> F3["DB カラム定義・FW デコレーター"]
+    NOPE --> F4["外部ライブラリへの依存"]
+    style EL fill:#2c1111,stroke:#f87171,color:#f87171
+    style WHAT fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style NOPE fill:#3b1f1f,stroke:#ef4444,color:#fca5a5
+    style W1 fill:#141d2b,stroke:#334155,color:#94a3b8
+    style W2 fill:#141d2b,stroke:#334155,color:#94a3b8
+    style W3 fill:#141d2b,stroke:#334155,color:#94a3b8
+    style W4 fill:#141d2b,stroke:#334155,color:#94a3b8
+    style F1 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5
+    style F2 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5
+    style F3 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5
+    style F4 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5`,
+
+  'diag-6': `graph LR
+    subgraph "入力 (Input DTO)"
+        CMD["PlaceOrderCommand<br/>{customer_id, items}"]
+    end
+    subgraph "Use Case (境界)"
+        IN["Input Port (インターフェース)"]
+        IMPL["PlaceOrderUseCase (実装)"]
+        OUT["Output Port"]
+    end
+    subgraph "出力 (Output DTO)"
+        RES["PlaceOrderResult<br/>{order_id, status, total}"]
+    end
+    CMD --> IN --> IMPL --> OUT --> RES
+    style CMD fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style IN  fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style IMPL fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style OUT fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style RES fill:#1e293b,stroke:#94a3b8,color:#94a3b8`,
+
+  'diag-7': `graph TD
+    AD["Interface Adapters 層の構成要素"]
+    AD --> CTRL["Controllers<br/>外部入力 - Use Case Input DTO"]
+    AD --> PRES["Presenters<br/>Use Case Output - UI 形式"]
+    AD --> GATE["Repository 実装 / Gateways<br/>外部 DB・サービスへのアダプター"]
+    CTRL --> C1["HTTP リクエスト - Command"]
+    CTRL --> C2["CLI 引数 - Command"]
+    PRES --> P1["Result - JSON"]
+    PRES --> P2["Result - HTML テンプレート変数"]
+    GATE --> G1["SQLAlchemy 実装"]
+    GATE --> G2["Stripe API 呼び出し実装"]
+    style AD   fill:#292219,stroke:#fbbf24,color:#fbbf24
+    style CTRL fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style PRES fill:#1a1a3a,stroke:#818cf8,color:#a5b4fc
+    style GATE fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-8': `graph TD
+    CR["Composition Root<br/>アプリケーション起動時に全依存を組み立てる"]
+    CR --> S1["1 DB セッションの生成<br/>session = SessionLocal()"]
+    CR --> S2["2 Repository の生成<br/>repo = SQLAlchemyOrderRepository(session)"]
+    CR --> S3["3 Use Case の生成<br/>uc = PlaceOrderUseCase(repo, ...)"]
+    CR --> S4["4 Controller の生成<br/>router に UseCase を注入"]
+    CR --> S5["5 FastAPI アプリへの登録<br/>app.include_router(router)"]
+    style CR fill:#2c1111,stroke:#f87171,color:#f87171
+    style S1 fill:#1e293b,stroke:#475569,color:#94a3b8
+    style S2 fill:#1e293b,stroke:#60a5fa,color:#93c5fd
+    style S3 fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style S4 fill:#292219,stroke:#fbbf24,color:#fbbf24
+    style S5 fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-9': `graph TD
+    DI["依存性注入の 3 パターン"]
+    DI --> C["コンストラクタインジェクション<br/>def __init__(self, repo: OrderRepository)<br/>推奨"]
+    DI --> P["プロパティインジェクション<br/>use_case.repository = repo<br/>オプション依存に使用"]
+    DI --> M["メソッドインジェクション<br/>def execute(cmd, repo: OrderRepository)<br/>特定メソッドのみ依存が異なる場合"]
+    C --> BEST["コンストラクタ DI のメリット<br/>・依存が必須であることが明確<br/>・テスト時にモック注入が容易<br/>・不完全なオブジェクトが生まれない"]
+    style DI   fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style C    fill:#14532d,stroke:#22c55e,color:#86efac
+    style P    fill:#292219,stroke:#fbbf24,color:#fbbf24
+    style M    fill:#1e293b,stroke:#60a5fa,color:#93c5fd
+    style BEST fill:#0d2414,stroke:#22c55e,color:#86efac`,
+
+  'diag-10': `graph LR
+    subgraph "本番環境"
+        PUC["PlaceOrderUseCase<br/>(同一コード)"]
+        PR["SQLAlchemyOrderRepository<br/>(本番 DB)"]
+        PUC --> PR
+    end
+    subgraph "テスト環境"
+        TUC["PlaceOrderUseCase<br/>(同一コード)"]
+        TR["InMemoryOrderRepository<br/>(DB 不要)"]
+        TE["MockEventPublisher<br/>(Kafka 不要)"]
+        TUC --> TR
+        TUC --> TE
+    end
+    style PUC fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style TUC fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style PR  fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style TR  fill:#14532d,stroke:#22c55e,color:#86efac
+    style TE  fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-11': `graph TD
+    DOM["domain/<br/>(Entities 層)"]
+    APP["application/<br/>(Use Cases 層)"]
+    ADP["adapters/<br/>(Interface Adapters 層)"]
+    INF["infrastructure/<br/>(Frameworks 層)"]
+    MAIN["main.py<br/>(Composition Root)"]
+    APP --> DOM
+    ADP --> APP
+    ADP --> DOM
+    INF --> ADP
+    MAIN --> INF
+    DOM -. "禁止" .-> APP
+    DOM -. "禁止" .-> INF
+    APP -. "禁止" .-> ADP
+    APP -. "禁止" .-> INF
+    style DOM fill:#2c1111,stroke:#f87171,color:#f87171
+    style APP fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style ADP fill:#292219,stroke:#fbbf24,color:#fbbf24
+    style INF fill:#1e293b,stroke:#94a3b8,color:#94a3b8
+    style MAIN fill:#0d1117,stroke:#6366f1,color:#818cf8`,
+
+  'diag-12': `flowchart TD
+    E2E["E2E テスト (少数)<br/>HTTP 経由で実際のシナリオを検証<br/>ツール: pytest + httpx / Playwright<br/>最も遅い・最も壊れやすい"]
+    INT["統合テスト (中程度)<br/>DB・外部サービスを含めたテスト<br/>ツール: pytest + TestContainers<br/>Repository 実装の検証"]
+    UNIT["ユニットテスト (多数)<br/>Domain + Use Case を DB なしでテスト<br/>ツール: pytest のみ<br/>最も重要・最速 (ミリ秒単位)"]
+    UNIT --> INT --> E2E
+    style E2E  fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style INT  fill:#3b2800,stroke:#fbbf24,color:#fde68a
+    style UNIT fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-13': `flowchart TD
+    subgraph BAD_OCP["OCP 違反 (修正に開いている)"]
+        UC2["PlaceOrderUseCase\nif payment == 'credit': stripe_charge()\nelif payment == 'paypal': paypal_charge()\nelif payment == 'new': ..."]
+    end
+    subgraph GOOD_OCP["OCP 準拠 (拡張に開いている)"]
+        IF2["PaymentGateway\n(インターフェース)"]
+        ST2["StripeGateway\n(実装 A)"]
+        PP2["PayPalGateway\n(実装 B)"]
+        NM2["NewMethodGateway\n(実装 C: 追加するだけ)"]
+        UC3["PlaceOrderUseCase\ngateway.charge(order)"]
+        ST2 --> IF2
+        PP2 --> IF2
+        NM2 --> IF2
+        UC3 --> IF2
+    end
+    style UC2 fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
+    style IF2 fill:#2a1810,stroke:#fb923c,color:#fb923c
+    style UC3 fill:#14532d,stroke:#22c55e,color:#86efac
+    style NM2 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style ST2 fill:#14532d,stroke:#22c55e,color:#86efac
+    style PP2 fill:#14532d,stroke:#22c55e,color:#86efac`,
+
+  'diag-14': `flowchart TD
+    START["健全性チェック開始"]
+    Q1{"domain/ に SQLAlchemy, FastAPI 等の<br/>import があるか？"}
+    Q2{"Use Case が HTTP リクエストオブジェクトを<br/>直接受け取っているか？"}
+    Q3{"DB なしで Use Case の<br/>ユニットテストが書けるか？"}
+    Q4{"Entity にビジネスメソッドがあるか？<br/>(getter/setter のみでない？)"}
+    Q5{"Controller にビジネスロジックが<br/>含まれていないか？"}
+    HEALTHY["健全なクリーンアーキテクチャ！"]
+    FIX1["外部 import を取り除く<br/>標準ライブラリのみに限定"]
+    FIX2["Input DTO を定義する<br/>Command / Query で境界を設ける"]
+    FIX3["InMemory Repository を導入<br/>Interface から設計し直す"]
+    FIX4["ロジックを Entity へ移動<br/>Rich Domain Model に移行"]
+    FIX5["ロジックを UseCase へ移動<br/>Controller は変換のみにする"]
+    START --> Q1
+    Q1 -->|"Yes (ある)"| FIX1
+    Q1 -->|"No"| Q2
+    Q2 -->|"Yes"| FIX2
+    Q2 -->|"No"| Q3
+    Q3 -->|"No (書けない)"| FIX3
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"No (setter のみ)"| FIX4
+    Q4 -->|"Yes"| Q5
+    Q5 -->|"No (含んでいる)"| FIX5
+    Q5 -->|"Yes"| HEALTHY
+    style HEALTHY fill:#14532d,stroke:#22c55e,color:#86efac
+    style FIX1 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style FIX2 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style FIX3 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style FIX4 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style FIX5 fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style START fill:#1a2538,stroke:#818cf8,color:#c7d2fe`,
+
+  'diag-15': `flowchart TD
+    START["クリーンアーキテクチャを適用するか判断"]
+    Q1{"ビジネスロジックが<br/>複雑か？"}
+    Q2{"プロジェクトが<br/>1 年以上続く予定か？"}
+    Q3{"チームが 5 人以上か<br/>または今後拡大予定か？"}
+    Q4{"複数の FE / 複数チャンネル<br/>(Web/モバイル/API) があるか？"}
+    FULL["フルCA 推奨<br/>全レイヤーを導入する"]
+    PART["部分適用<br/>Domain + UseCase 層のみ<br/>Adapter/FW は軽量に"]
+    SIMPLE["シンプルアーキテクチャ<br/>MVC または軽量レイヤード<br/>過剰設計を避ける"]
+    START --> Q1
+    Q1 -->|"No"| SIMPLE
+    Q1 -->|"Yes"| Q2
+    Q2 -->|"No"| PART
+    Q2 -->|"Yes"| Q3
+    Q3 -->|"No"| PART
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"Yes"| FULL
+    Q4 -->|"No"| PART
+    style FULL   fill:#14532d,stroke:#22c55e,color:#86efac
+    style PART   fill:#292219,stroke:#fbbf24,color:#fbbf24
+    style SIMPLE fill:#1e3a5f,stroke:#60a5fa,color:#93c5fd
+    style START  fill:#1a2538,stroke:#818cf8,color:#c7d2fe`
+};
+
+// ── Mermaid 初期化 ──
+mermaid.initialize({
+  startOnLoad: false,
+                securityLevel: 'loose',
+  theme: 'dark',
+  themeVariables: {
+    darkMode: true,
+    background: '#141d2b',
+    primaryColor: '#6366f1',
+    primaryTextColor: '#f1f5f9',
+    primaryBorderColor: '#1e2d45',
+    lineColor: '#94a3b8',
+    secondaryColor: '#1a2538',
+    tertiaryColor: '#141d2b',
+    edgeLabelBackground: '#1a2538',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '0.8125rem'
+  }
+});
+
+// ── highlight.js 初期化 ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('pre code').forEach(el => {
+    hljs.highlightElement(el);
+  });
+});
+
+// ── サイドバー IntersectionObserver ──
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const sections = document.querySelectorAll('section.section');
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  },
+  { rootMargin: '-15% 0px -70% 0px' }
+);
+
+sections.forEach(s => observer.observe(s));
+
+            // --- mermaid render pipeline (apply_render_pipeline.ts) ---
+            function applySvgFixups(svgEl, src) {
+                svgEl.removeAttribute('width');
+                svgEl.removeAttribute('height');
+                svgEl.style.height = 'auto';
+                svgEl.style.maxWidth = '100%';
+                svgEl.style.overflow = 'visible';
+                svgEl.style.marginBottom = '10px';
+                const viewBox = svgEl.getAttribute('viewBox');
+                if (!viewBox) return;
+                const parts = viewBox.split(/\s+/).map(Number);
+                if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+                const trimmed = src.trim();
+                const isSequenceOrState =
+                    trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+                const extraHeight = isSequenceOrState ? 110 : 15;
+                const [x, y, w, h] = parts;
+                // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+                svgEl.style.width = w + 'px';
+                svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+            }
+
+            (async () => {
+                if (document.fonts && document.fonts.ready) {
+                    try {
+                        await document.fonts.ready;
+                    } catch (_e) {
+                        /* フォント待機に失敗しても描画は継続する */
+                    }
+                }
+                for (const [id, src] of Object.entries(DIAGRAMS)) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    try {
+                        const { svg } = await mermaid.render('svg-' + id, src);
+                        el.innerHTML = svg;
+                        const svgEl = el.querySelector('svg');
+                        if (svgEl) applySvgFixups(svgEl, src);
+                    } catch (err) {
+                        el.innerHTML =
+                            '<pre style="color:#ff8888;white-space:pre-wrap">' +
+                            (err && err.message ? err.message : String(err)) +
+                            '</pre>';
+                    }
+                }
+            })();
+        </script>
+</body>
+</html>

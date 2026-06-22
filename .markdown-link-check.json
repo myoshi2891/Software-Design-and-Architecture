@@ -155,6 +155,21 @@
     },
     {
       "pattern": "^https://azure\\.microsoft\\.com/en-us/products/category/integration"
+    },
+    {
+      "pattern": "^https://realpython\\.com"
+    },
+    {
+      "pattern": "^https://(www\\.)?whizlabs\\.com"
+    },
+    {
+      "pattern": "^https://waic\\.jp"
+    },
+    {
+      "pattern": "^https://vitejs\\.dev"
+    },
+    {
+      "pattern": "^https?://(www\\.)?steveblank\\.com"
     }
   ],
   "replacementPatterns": [],
