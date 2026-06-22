@@ -105,9 +105,18 @@ function curlAsync(
 
     child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
     child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
-    child.on('close', () => {
+    child.on('close', (code: number | null) => {
       clearTimeout(timer);
-      resolve({ stdout: stdout.trim() });
+      const trimmedStdout = stdout.trim();
+      const hasValidStatus = /^[1-9]\d{2}$/.test(trimmedStdout);
+      if (code !== 0 && !hasValidStatus) {
+        resolve({
+          stdout: '0',
+          error: new Error(`curl exited with code ${code ?? 'null'}: ${stderr}`),
+        });
+        return;
+      }
+      resolve({ stdout: trimmedStdout });
     });
     child.on('error', (err: Error) => {
       clearTimeout(timer);
