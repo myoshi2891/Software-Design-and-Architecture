@@ -158,6 +158,15 @@
     },
     {
       "pattern": "^https://realpython\\.com"
+    },
+    {
+      "pattern": "^https://(www\\.)?whizlabs\\.com"
+    },
+    {
+      "pattern": "^https://waic\\.jp"
+    },
+    {
+      "pattern": "^https://vitejs\\.dev"
     }
   ],
   "replacementPatterns": [],

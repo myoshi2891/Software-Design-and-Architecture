@@ -94,21 +94,24 @@ function curlAsync(
   timeoutSec: number
 ): Promise<{ stdout: string; error?: Error }> {
   return new Promise((resolve) => {
-    const timer = setTimeout(() => {
-      child.kill();
-      resolve({ stdout: '0', error: new Error(`curl timed out after ${timeoutSec}s`) });
-    }, (timeoutSec + 2) * 1000);
-
     const child = spawn('curl', args);
     let stdout = '';
+    let stderr = '';
+
+    const timer = setTimeout(() => {
+      child.kill();
+      resolve({ stdout: '0', error: new Error(`curl timed out after ${timeoutSec}s: ${stderr}`) });
+    }, (timeoutSec + 2) * 1000);
+
     child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
+    child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
     child.on('close', () => {
       clearTimeout(timer);
       resolve({ stdout: stdout.trim() });
     });
     child.on('error', (err: Error) => {
       clearTimeout(timer);
-      resolve({ stdout: '0', error: err });
+      resolve({ stdout: '0', error: new Error(`${err.message}: ${stderr}`) });
     });
   });
 }
