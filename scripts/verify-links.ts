@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
+import { spawn } from 'child_process';
 
 interface IgnorePattern {
   pattern: string;
@@ -30,26 +30,45 @@ function shouldIgnore(url: string): boolean {
 /**
  * MarkdownコンテンツからURLを抽出する（コードブロック内は除外）
  */
-function extractUrls(content: string): string[] {
+function extractUrlsFromMarkdown(content: string): string[] {
   // 1. 複数行コードブロック (``` ... ```) を除外
   let cleanContent = content.replace(/```[\s\S]*?```/g, '');
 
   // 2. インラインコードブロック (`...`) を除外
   cleanContent = cleanContent.replace(/`[^`\n]*`/g, '');
 
-  // 3. URLとして有効な文字セットのみにマッチさせる正規表現
+  return extractRawUrls(cleanContent);
+}
+
+/**
+ * HTMLコンテンツからURLを抽出する（<script>, <style>ブロック内は除外）
+ */
+function extractUrlsFromHtml(content: string): string[] {
+  // <script> ブロック内を除外（DIAGRAMSオブジェクトやJSコードのURL含む）
+  let cleanContent = content.replace(/<script[\s\S]*?<\/script>/gi, '');
+
+  // <style> ブロック内を除外
+  cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/gi, '');
+
+  return extractRawUrls(cleanContent);
+}
+
+/**
+ * テキストからURLを抽出する共通処理
+ */
+function extractRawUrls(text: string): string[] {
   const urlRegex = /https?:\/\/[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/]+(?:\?[a-zA-Z0-9.\-_~%!$&'()*+,;=:@/?#]*)?/g;
 
   const urls: string[] = [];
   let match;
-  while ((match = urlRegex.exec(cleanContent)) !== null) {
+  while ((match = urlRegex.exec(text)) !== null) {
     let url = match[0];
     url = url.replace(/[|`\]\s]+$/, '');
     if (url.endsWith('.') || url.endsWith(',') || url.endsWith(')')) {
       const openCount = (url.match(/\(/g) || []).length;
       const closeCount = (url.match(/\)/g) || []).length;
       if (closeCount > openCount) {
-        url = url.replace(/[.,\)]+$/, '');
+        url = url.replace(/[.,)]+$/, '');
       }
     }
     urls.push(url);
@@ -58,11 +77,49 @@ function extractUrls(content: string): string[] {
 }
 
 /**
- * curlを使用してURLのステータスを確認する
- * BunのネイティブfetchはTLS/HTTP2ネゴシエーションで Malformed_HTTP_Response を返すことがあるため、
- * curlを使うことでその問題を回避する。
+ * ファイル種別に応じてURLを抽出する
  */
-function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status: number; error?: string } {
+function extractUrls(file: string, content: string): string[] {
+  if (file.endsWith('.html')) {
+    return extractUrlsFromHtml(content);
+  }
+  return extractUrlsFromMarkdown(content);
+}
+
+/**
+ * curlをPromiseラッパーで非同期実行する
+ */
+function curlAsync(
+  args: string[],
+  timeoutSec: number
+): Promise<{ stdout: string; error?: Error }> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      child.kill();
+      resolve({ stdout: '0', error: new Error(`curl timed out after ${timeoutSec}s`) });
+    }, (timeoutSec + 2) * 1000);
+
+    const child = spawn('curl', args);
+    let stdout = '';
+    child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
+    child.on('close', () => {
+      clearTimeout(timer);
+      resolve({ stdout: stdout.trim() });
+    });
+    child.on('error', (err: Error) => {
+      clearTimeout(timer);
+      resolve({ stdout: '0', error: err });
+    });
+  });
+}
+
+/**
+ * curlを使用してURLのステータスを非同期で確認する
+ */
+async function verifyUrl(
+  url: string,
+  timeoutSec: number = 10
+): Promise<{ ok: boolean; status: number; error?: string }> {
   const userAgent =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -78,43 +135,27 @@ function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status:
   ];
 
   // まず HEAD リクエストで試みる
-  const headResult = spawnSync(
-    'curl',
-    [
-      ...commonArgs,
-      '-X', 'HEAD',
-      url,
-    ],
-    { encoding: 'utf-8', timeout: (timeoutSec + 5) * 1000 }
-  );
+  const headResult = await curlAsync([...commonArgs, '-X', 'HEAD', url], timeoutSec);
 
   if (headResult.error) {
-    // curlコマンド自体が実行できなかった場合
     return { ok: false, status: 0, error: `curl error: ${headResult.error.message}` };
   }
 
-  const headStatus = parseInt(headResult.stdout.trim(), 10);
+  const headStatus = parseInt(headResult.stdout, 10);
 
   // HEAD が成功 (2xx or 3xx) なら OK
   if (!isNaN(headStatus) && headStatus >= 200 && headStatus < 400) {
     return { ok: true, status: headStatus };
   }
 
-  // HEAD が失敗 (405 Method Not Allowed 含む) の場合は GET で再試行
-  const getResult = spawnSync(
-    'curl',
-    [
-      ...commonArgs,
-      url,
-    ],
-    { encoding: 'utf-8', timeout: (timeoutSec + 5) * 1000 }
-  );
+  // HEAD が失敗の場合は GET で再試行
+  const getResult = await curlAsync([...commonArgs, url], timeoutSec);
 
   if (getResult.error) {
     return { ok: false, status: 0, error: `curl error: ${getResult.error.message}` };
   }
 
-  const getStatus = parseInt(getResult.stdout.trim(), 10);
+  const getStatus = parseInt(getResult.stdout, 10);
 
   if (isNaN(getStatus) || getStatus === 0) {
     return { ok: false, status: 0, error: 'curl returned status 0 (connection failed or timeout)' };
@@ -125,7 +166,29 @@ function verifyUrl(url: string, timeoutSec: number = 15): { ok: boolean; status:
 }
 
 /**
- * リポジトリ内のすべてのMarkdownファイルをスキャンしてリンクを検証する
+ * 並列度を制限して非同期タスクを実行するセマフォユーティリティ
+ */
+async function runWithConcurrency<T>(
+  tasks: (() => Promise<T>)[],
+  concurrency: number
+): Promise<T[]> {
+  const results: T[] = new Array(tasks.length);
+  let index = 0;
+
+  async function worker(): Promise<void> {
+    while (index < tasks.length) {
+      const current = index++;
+      results[current] = await tasks[current]();
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, tasks.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
+
+/**
+ * リポジトリ内のすべてのMarkdown・HTMLファイルをスキャンしてリンクを検証する
  */
 async function run(): Promise<void> {
   const files: string[] = [];
@@ -141,34 +204,55 @@ async function run(): Promise<void> {
   }
 
   const isDryRun = process.argv.includes('--dry-run');
+  const CONCURRENCY = 10; // 同時チェック数の上限
   let hasErrors = false;
   const allDeadLinks: { file: string; errorDetails: string[] }[] = [];
+
+  // グローバルURLキャッシュ（複数ファイルに同一URLが出現する場合に重複チェックを省く）
+  const urlCache = new Map<string, { ok: boolean; status: number; error?: string }>();
 
   for (const file of files) {
     console.log(`>>> START: ${file}`);
     const content = fs.readFileSync(file, 'utf-8');
-    const urls = extractUrls(content);
-    const checkedUrls: string[] = [];
+    const urls = extractUrls(file, content).filter((url) => !shouldIgnore(url));
     const deadLinks: string[] = [];
 
-    for (const url of urls) {
-      if (shouldIgnore(url)) {
-        console.log(`  Ignore: ${url}`);
-        continue;
+    if (isDryRun) {
+      for (const url of urls) {
+        console.log(`  Link: ${url} -> skipped (dry-run)`);
       }
-      checkedUrls.push(url);
-      if (isDryRun) {
-        console.log(`    Link: ${url} -> skipped (dry-run)`);
+      console.log(`>>> DRY-RUN: ${file} (found ${urls.length} links)`);
+      continue;
+    }
+
+    console.log(`  Checking ${urls.length} URLs (concurrency: ${CONCURRENCY}) ...`);
+
+    const tasks = urls.map((url) => async () => {
+      // キャッシュヒット
+      if (urlCache.has(url)) {
+        const cached = urlCache.get(url)!;
+        console.log(`  Cached: ${url} -> ${cached.ok ? 'ok' : 'dead'} (${cached.status})`);
+        return { url, result: cached };
+      }
+
+      const result = await verifyUrl(url);
+      urlCache.set(url, result);
+
+      if (result.ok) {
+        console.log(`  OK: ${url} (${result.status})`);
       } else {
-        console.log(`  Checking: ${url} ...`);
-        const result = verifyUrl(url);
-        if (result.ok) {
-          console.log(`    Link: ${url} -> ok (${result.status})`);
-        } else {
-          const errorMsg = result.error ? ` (${result.error})` : '';
-          console.log(`    Link: ${url} -> dead/error [Status: ${result.status}]${errorMsg}`);
-          deadLinks.push(`${url} [Status: ${result.status}]${errorMsg}`);
-        }
+        const errorMsg = result.error ? ` (${result.error})` : '';
+        console.log(`  DEAD: ${url} [Status: ${result.status}]${errorMsg}`);
+      }
+      return { url, result };
+    });
+
+    const checked = await runWithConcurrency(tasks, CONCURRENCY);
+
+    for (const { url, result } of checked) {
+      if (!result.ok) {
+        const errorMsg = result.error ? ` (${result.error})` : '';
+        deadLinks.push(`${url} [Status: ${result.status}]${errorMsg}`);
       }
     }
 
@@ -177,7 +261,7 @@ async function run(): Promise<void> {
       hasErrors = true;
       allDeadLinks.push({ file, errorDetails: deadLinks });
     } else {
-      console.log(`>>> SUCCESS: ${file} (checked ${checkedUrls.length} links)`);
+      console.log(`>>> SUCCESS: ${file} (checked ${urls.length} links)`);
     }
   }
 

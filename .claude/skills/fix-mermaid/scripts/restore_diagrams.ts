@@ -118,8 +118,6 @@ if (import.meta.main) {
             const entryRe = /['"`]?([a-zA-Z0-9_-]+)['"`]?\s*:\s*(['"`])([\s\S]*?)\2/g;
             const unescapeString = (str: string, quote: string): string => {
                 return str.replace(/\\([\s\S])/g, (match, char) => {
-                    if (quote === "'" && char === '"') return match;
-                    if (quote === '"' && char === "'") return match;
                     switch (char) {
                         case 'n': return '\n';
                         case 'r': return '\r';
