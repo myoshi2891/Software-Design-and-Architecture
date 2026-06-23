@@ -2424,7 +2424,7 @@ graph TD
 | リソース | URL |
 |---------|-----|
 | **Storybook 公式ドキュメント** | https://storybook.js.org/docs |
-| **Storybook — コンポーネントストーリーフォーマット** | https://storybook.js.org/docs/writing-stories/introduction |
+| **Storybook — コンポーネントストーリーフォーマット** | https://storybook.js.org/docs/writing-stories |
 | **Design Tokens W3C 仕様** | https://www.w3.org/TR/design-tokens/ |
 | **Brad Frost — Atomic Design オンライン書籍（無料）** | https://atomicdesign.bradfrost.com/table-of-contents/ |
 | **Chromatic（ビジュアルテスト）** | https://www.chromatic.com/ |

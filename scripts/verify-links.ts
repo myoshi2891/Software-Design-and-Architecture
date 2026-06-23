@@ -55,6 +55,12 @@ function extractUrlsFromHtml(content: string): string[] {
   // <style> ブロック内を除外
   cleanContent = cleanContent.replace(/<style[\s\S]*?<\/style>/gi, '');
 
+  // <code> ブロック内を除外
+  cleanContent = cleanContent.replace(/<code[\s\S]*?<\/code>/gi, '');
+
+  // <pre> ブロック内を除外
+  cleanContent = cleanContent.replace(/<pre[\s\S]*?<\/pre>/gi, '');
+
   return extractRawUrls(cleanContent);
 }
 

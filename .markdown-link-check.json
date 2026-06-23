@@ -170,6 +170,12 @@
     },
     {
       "pattern": "^https?://(www\\.)?steveblank\\.com"
+    },
+    {
+      "pattern": "^https://vitest\\.dev"
+    },
+    {
+      "pattern": "^https?://([a-zA-Z0-9-]+\\.)?example\\.com"
     }
   ],
   "replacementPatterns": [],
