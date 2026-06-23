@@ -1093,6 +1093,11 @@ body.has-common-header {
   margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 10px);
 }
 
+body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
 .ch-disclaimer {
   position: fixed;
   top: var(--ch-height);

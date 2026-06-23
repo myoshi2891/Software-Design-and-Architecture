@@ -125,5 +125,4 @@ export const navLinks: readonly NavLink[] = [
       },
     ],
   },
-  { name: "総合ガイド", href: "/general/comprehensive-guide" },
 ];

@@ -3,7 +3,7 @@
 
 /**
  * 固定する契約:
- * - navLinks は 7 要素（Home leaf / dropdown 5 / 総合ガイド leaf）。
+ * - navLinks は 6 要素（Home leaf / dropdown 5）。
  * - dropdown 要素は children を持ち、leaf 要素は href を持つ。
  * - すべての href / children.href は "/" 始まりの絶対パス。
  * - 移行済みページ（event-driven / general comprehensive-guide）を含む。
@@ -29,8 +29,8 @@ function collectHrefs(links: readonly NavLink[]): string[] {
 }
 
 describe("nav-links structure", () => {
-  it("defines 7 top-level entries", () => {
-    expect(navLinks.length).toBe(7);
+  it("defines 6 top-level entries", () => {
+    expect(navLinks.length).toBe(6);
   });
 
   it("contains exactly 5 dropdown groups", () => {

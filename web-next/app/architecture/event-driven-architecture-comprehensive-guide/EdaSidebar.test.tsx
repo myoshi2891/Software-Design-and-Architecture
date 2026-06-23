@@ -93,10 +93,23 @@ describe("EdaSidebar", () => {
 
   it("section が交差すると対応する nav 項目だけが active になる", () => {
     const { container } = render(<EdaSidebar groups={GROUPS} />);
+
+    // 初期状態で #sec-1 がアクティブであることを確認
+    const activeInitial = container.querySelectorAll("a.sl.active");
+    expect(activeInitial).toHaveLength(1);
+    expect(activeInitial[0]?.getAttribute("href")).toBe("#sec-1");
+
+    // sec-3 が交差する
     intersect("sec-3");
-    const active = container.querySelectorAll("a.sl.active");
-    expect(active).toHaveLength(1);
-    expect(active[0]?.getAttribute("href")).toBe("#sec-3");
+
+    // 新しいアクティブ項目が #sec-3 であることを確認
+    const activeAfter = container.querySelectorAll("a.sl.active");
+    expect(activeAfter).toHaveLength(1);
+    expect(activeAfter[0]?.getAttribute("href")).toBe("#sec-3");
+
+    // 以前のアクティブ項目 (#sec-1) がアクティブクラスを失っていることを検証
+    const prevActive = container.querySelector("a.sl[href='#sec-1']");
+    expect(prevActive?.classList.contains("active")).toBe(false);
   });
 
   it("スクロール量に応じて進捗バーの scaleX を更新する", () => {
