@@ -77,3 +77,17 @@ bun run check-links
 - **プレースホルダーの活用**: テスト用データやコード例では、実在しない架空の値（例: `user@example.com`）やプレースホルダー（例: `YOUR_API_KEY`）を使用すること。
 - **環境変数の利用**: 認証キーなどはコード内にハードコードせず、環境変数から読み込むように設計すること。
 - **コミット前の検証**: コミットを行う前に `git diff` を確認し、個人の環境名や絶対パス、認証情報が含まれていないか確認すること。
+
+---
+
+## 参考文献・ソース一覧
+
+- **TDDワークフロー**: [tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md)
+- **Next.js**: [Next.js Documentation](https://nextjs.org/docs)
+- **React**: [React 19 Documentation](https://react.dev)
+- **Vitest**: [Vitest](https://vitest.dev)
+- **Testing Library**: [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Biome**: [Biome Analyzer](https://biomejs.dev)
+- **Tabler Icons**: [Tabler Icons React](https://tabler.io/icons)
+- **Mermaid**: [Mermaid.js](https://mermaid.js.org)
+

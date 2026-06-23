@@ -305,7 +305,7 @@ bun run build       # Next.js production build
 - `git commit` 前に PII チェック（`.claude/rules/no-absolute-paths.md`）:
 
   ```bash
-  git diff --cached | grep -E '^\+[^+]' | grep -E '(/Users/|/home/|C:\\Users\\)' | grep -vE 'johndoe'
+  git diff --cached | grep -E '^\+[^+]' | grep -E '(/Users/|/home/|C:\\Users\\)'
   ```
 
 ---
@@ -334,3 +334,16 @@ bun run build       # Next.js production build
 - **外部フォントを `<link>` で読み込まない** — `next/font/google` のみ（`layout.tsx`）
 - **Playwright MCP を使わない** — 視覚確認はユーザーが手動で実施
 - **コミット対象に絶対パス / ユーザー名を含めない** — `.claude/rules/no-absolute-paths.md`
+
+---
+
+## 参考文献・ソース一覧
+
+- **TDDコミットワークフロー**: [tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md) - テスト駆動開発での実装とコミット手順を定義
+- **移行の参照実装**:
+  - [page.tsx](./web-next/app/general/comprehensive-guide/page.tsx) - 最初のガイド移行ページ実装
+  - [globals.css](./web-next/app/globals.css) - グローバルCSSと共通デザイン定義
+- **Mermaid.js**: [Mermaid Documentation](https://mermaid.js.org) - クライアント側ダイアグラム描画ツール
+- **React 19**: [React 19 Documentation](https://react.dev) - UIライブラリ
+- **Tabler Icons**: [@tabler/icons-react](https://tabler.io/icons) - 使用するSVGアイコンコンポーネントライブラリ
+

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、本リポジトリでコードを作業する際に Claude Code (claude.ai/code) へガイドラインを提供します。
 
 ## このリポジトリの性質
 

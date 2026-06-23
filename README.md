@@ -108,3 +108,17 @@ Markdownのスタイルを統一するために `markdownlint` を使用して�
 ## ライセンス
 
 本プロジェクトは個人学習用の資料です。掲載されている情報の利用により生じた、いかなる損害についても一切の責任を負いません。内容の正確性、完全性、最新性については、利用者自身で確認した上で利用してください。
+
+---
+
+## References/Sources List
+
+- **Next.js**: [Next.js Documentation](https://nextjs.org/docs)
+- **React**: [React 19 Documentation](https://react.dev)
+- **TypeScript**: [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- **Biome**: [Biome Analyzer](https://biomejs.dev)
+- **Vitest**: [Vitest](https://vitest.dev)
+- **Testing Library**: [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Mermaid**: [Mermaid.js](https://mermaid.js.org)
+- **Tabler Icons**: [Tabler Icons React](https://tabler.io/icons)
+
