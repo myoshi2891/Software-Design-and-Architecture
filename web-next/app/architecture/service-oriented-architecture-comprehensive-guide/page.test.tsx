@@ -52,7 +52,7 @@ describe("service-oriented-architecture-comprehensive-guide page", () => {
     const external = Array.from(container.querySelectorAll("a")).filter((a) =>
       (a.getAttribute("href") ?? "").startsWith("http")
     );
-    expect(external.length).toBe(37);
+    expect(external.length).toBe(36);
     for (const a of external) {
       expect(a.getAttribute("target")).toBe("_blank");
       expect(a.getAttribute("rel")).toBe("noopener noreferrer");

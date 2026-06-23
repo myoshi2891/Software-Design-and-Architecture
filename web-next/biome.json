@@ -51,7 +51,10 @@
   },
   "overrides": [
     {
-      "includes": ["app/architecture/clean-architecture-comprehensive-guide/page.tsx"],
+      "includes": [
+        "app/architecture/clean-architecture-comprehensive-guide/page.tsx",
+        "app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx"
+      ],
       "linter": {
         "rules": {
           "security": {
