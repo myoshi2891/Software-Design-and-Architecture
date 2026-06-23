@@ -48,20 +48,5 @@
         "organizeImports": "on"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "app/architecture/clean-architecture-comprehensive-guide/page.tsx",
-        "app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx"
-      ],
-      "linter": {
-        "rules": {
-          "security": {
-            "noDangerouslySetInnerHtml": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

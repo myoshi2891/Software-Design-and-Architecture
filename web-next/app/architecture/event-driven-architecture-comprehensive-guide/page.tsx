@@ -1,4 +1,3 @@
-// biome-ignore-all lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
@@ -1097,7 +1096,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   <span className="cb-lang">Python</span>events/order_placed.py
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_ORDER_PLACED }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_ORDER_PLACED }}
+                />
+              </pre>
             </div>
           </div>
           <div className="ref-box">
@@ -1632,7 +1636,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   <span className="cb-lang">Python</span>kafka/producer.py — プロデューサー
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_KAFKA_PRODUCER }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_KAFKA_PRODUCER }}
+                />
+              </pre>
             </div>
             <div className="cb">
               <div className="cb-header">
@@ -1645,7 +1654,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   <span className="cb-lang">Python</span>kafka/consumer.py — べき等なコンシューマー
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_KAFKA_CONSUMER }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_KAFKA_CONSUMER }}
+                />
+              </pre>
             </div>
           </div>
           <div className="mbox best">
@@ -1735,7 +1749,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   <span className="cb-lang">HCL</span>eventbridge/main.tf
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_EVENTBRIDGE_TF }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_EVENTBRIDGE_TF }}
+                />
+              </pre>
             </div>
           </div>
           <div className="mbox best">
@@ -1804,7 +1823,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   <span className="cb-lang">Python</span>domain/order_aggregate.py
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_ORDER_AGGREGATE }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_ORDER_AGGREGATE }}
+                />
+              </pre>
             </div>
           </div>
           <div className="subsec">
@@ -1980,7 +2004,12 @@ export default function EventDrivenArchitectureGuidePage() {
                   ジッターデコレーター
                 </div>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_RETRY }} />
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_RETRY }}
+                />
+              </pre>
             </div>
           </div>
           <div className="ref-box">

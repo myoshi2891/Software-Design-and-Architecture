@@ -1,5 +1,3 @@
-// biome-ignore-all lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
-
 import {
   IconAlertCircle,
   IconAlertOctagon,
@@ -1522,8 +1520,12 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
               WSDLは「サービスの設計図」です。実装より先にWSDLを定義することをコントラクトファースト開発といい、SOAの基本的なベストプラクティスです。
             </p>
             <div className="xml-block">
-              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
-              <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.wsdl }} /></pre>
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.wsdl }}
+                />
+              </pre>
             </div>
           </div>
 
@@ -1532,8 +1534,12 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
               <IconFileCode size={18} /> SOAPメッセージの構造
             </h3>
             <div className="xml-block">
-              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
-              <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.soap }} /></pre>
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.soap }}
+                />
+              </pre>
             </div>
           </div>
 
@@ -2100,8 +2106,12 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">app/services/order_service.py</span>
               </div>
-              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
-              <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.fastapi }} /></pre>
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.fastapi }}
+                />
+              </pre>
             </div>
           </div>
 
@@ -2114,8 +2124,12 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                 <span className="code-lang">Java</span>
                 <span className="code-file">src/main/java/com/example/routes/OrderRoute.java</span>
               </div>
-              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
-              <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.camel }} /></pre>
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.camel }}
+                />
+              </pre>
             </div>
             <div className="callout callout-tip">
               <IconCheck size={18} />
@@ -2338,8 +2352,12 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                 <span className="code-lang">YAML</span>
                 <span className="code-file">config/sla-definitions.yaml</span>
               </div>
-              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
-              <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.sla }} /></pre>
+              <pre>
+                <code
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.sla }}
+                />
+              </pre>
             </div>
           </div>
         </section>
