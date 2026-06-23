@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { DisclaimerBanner } from "@/components/site/DisclaimerBanner";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import { jetbrainsMono, notoSansJp } from "@/lib/fonts";
 import "./globals.css";
 
@@ -25,7 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${notoSansJp.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
+      <body className="has-common-header">
+        <SiteHeader />
+        <DisclaimerBanner />
+        {children}
+      </body>
     </html>
   );
 }

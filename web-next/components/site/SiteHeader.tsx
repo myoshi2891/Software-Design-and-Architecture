@@ -1,0 +1,114 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { type NavLink, navLinks } from "./nav-links";
+import { SiteHeaderClient } from "./SiteHeaderClient";
+
+const GITHUB_URL = "https://github.com/myoshi2891/Software-Design-and-Architecture";
+
+/**
+ * usePathname は Client 専用のため、SiteHeader は Client Component とし、
+ * 現在地を usePathname() で取得する。テストは pathname プロップで上書き可能。
+ */
+function isActivePath(href: string, pathname: string): boolean {
+  return href === pathname;
+}
+
+function isParentActive(link: NavLink, pathname: string): boolean {
+  if (!("children" in link)) return false;
+  return link.children.some((c) => isActivePath(c.href, pathname));
+}
+
+/**
+ * グローバルナビ付き共通ヘッダーを描画する。
+ *
+ * 現在地（pathnameProp 優先、無ければ router、最終フォールバック "/"）に応じて
+ * 該当リンクへ ch-active / aria-current="page" を付与し、子が active な
+ * dropdown トグルにも ch-active を波及させる。末尾に GitHub 外部リンクを置く。
+ *
+ * @param pathnameProp - router 由来パスを上書きするオプション値。
+ */
+export function SiteHeader({ pathname: pathnameProp }: { pathname?: string } = {}) {
+  const fromHook = usePathname();
+  const pathname = pathnameProp ?? fromHook ?? "/";
+
+  return (
+    <SiteHeaderClient>
+      <nav id="common-header" aria-label="Main Navigation" className="ch-nav">
+        <Link className="ch-brand" href="/general/comprehensive-guide">
+          設計手法ガイド
+        </Link>
+        <button
+          type="button"
+          className="ch-hamburger"
+          aria-controls="ch-menu"
+          aria-expanded="false"
+          aria-label="Toggle menu"
+        >
+          <span className="ch-bar" />
+          <span className="ch-bar" />
+          <span className="ch-bar" />
+        </button>
+        <ul id="ch-menu" className="ch-links">
+          {navLinks.map((link) => {
+            if ("children" in link) {
+              const parentActive = isParentActive(link, pathname);
+              return (
+                <li key={link.name} className="ch-dropdown">
+                  <button
+                    type="button"
+                    className={`ch-dropdown-toggle${parentActive ? " ch-active" : ""}`}
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <span>{link.name}</span>
+                  </button>
+                  <ul className="ch-submenu">
+                    {link.children.map((c) => {
+                      const active = isActivePath(c.href, pathname);
+                      return (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            className={active ? "ch-active" : undefined}
+                            aria-current={active ? "page" : undefined}
+                          >
+                            {c.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              );
+            }
+            const active = isActivePath(link.href, pathname);
+            return (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  className={active ? "ch-active" : undefined}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            );
+          })}
+          <li>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub（新しいタブで開く）"
+            >
+              GitHub
+              <span aria-hidden="true">{"↗"}</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </SiteHeaderClient>
+  );
+}
