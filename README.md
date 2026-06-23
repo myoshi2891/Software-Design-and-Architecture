@@ -63,6 +63,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/clean-architecture-comprehensive-guide`](web-next/app/architecture/clean-architecture-comprehensive-guide/page.tsx)
     — クリーンアーキテクチャ完全ガイドを移植（14 セクション・Mermaid 15 図・table 4・コードブロック 7）。
     固定サイドバー・進捗バー・scroll-spy を [`CleanArchitectureSidebar.tsx`](web-next/app/architecture/clean-architecture-comprehensive-guide/CleanArchitectureSidebar.tsx) でクライアント描画
+  - [`/architecture/service-oriented-architecture-comprehensive-guide`](web-next/app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx)
+    — SOA 完全ガイドを移植（17 セクション・Mermaid 20 図・table 8・コードブロック 5）。
+    固定サイドバー・進捗バー・scroll-spy を [`SoaSidebar.tsx`](web-next/app/architecture/service-oriented-architecture-comprehensive-guide/SoaSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
@@ -124,4 +127,3 @@ Markdownのスタイルを統一するために `markdownlint` を使用して�
 - **Testing Library**: [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - **Mermaid**: [Mermaid.js](https://mermaid.js.org)
 - **Tabler Icons**: [Tabler Icons React](https://tabler.io/icons)
-

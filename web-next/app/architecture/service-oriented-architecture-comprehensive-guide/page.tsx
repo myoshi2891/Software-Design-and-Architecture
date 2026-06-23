@@ -63,8 +63,8 @@ import {
   IconUpload,
   IconUserShield,
   IconWaveSine,
-  IconWorld
-} from '@tabler/icons-react';
+  IconWorld,
+} from "@tabler/icons-react";
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
@@ -1080,17 +1080,9 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             </div>
             <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
               参考：
-              <Ext href="https://camel.apache.org/manual/latest/index.html">
-                Apache Camel 公式
-              </Ext>
-              、
-              <Ext href="https://wso2.com/integration/">
-                WSO2 Enterprise Integrator
-              </Ext>
-              、
-              <Ext href="https://www.ibm.com/products/app-connect">
-                IBM App Connect
-              </Ext>
+              <Ext href="https://camel.apache.org/manual/latest/index.html">Apache Camel 公式</Ext>
+              、<Ext href="https://wso2.com/integration/">WSO2 Enterprise Integrator</Ext>、
+              <Ext href="https://www.ibm.com/products/app-connect">IBM App Connect</Ext>
             </p>
           </div>
         </section>
@@ -1577,13 +1569,8 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             </div>
             <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
               出典：
-              <Ext href="https://www.w3.org/TR/wsdl20/">
-                WSDL 2.0 仕様（W3C）
-              </Ext>
-              、
-              <Ext href="https://www.w3.org/TR/soap12/">
-                SOAP 1.2 仕様（W3C）
-              </Ext>
+              <Ext href="https://www.w3.org/TR/wsdl20/">WSDL 2.0 仕様（W3C）</Ext>、
+              <Ext href="https://www.w3.org/TR/soap12/">SOAP 1.2 仕様（W3C）</Ext>
             </p>
           </div>
         </section>
@@ -1742,9 +1729,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             </div>
             <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
               出典：
-              <Ext href="https://www.oasis-open.org/committees/uddi-spec/">
-                UDDI 仕様（OASIS）
-              </Ext>
+              <Ext href="https://www.oasis-open.org/committees/uddi-spec/">UDDI 仕様（OASIS）</Ext>
             </p>
           </div>
         </section>
@@ -1869,13 +1854,8 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             </div>
             <p style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
               出典：
-              <Ext href="https://www.oasis-open.org/standards#wssv1.1">
-                WS-Security（OASIS）
-              </Ext>
-              、
-              <Ext href="https://www.oasis-open.org/standards#samlv2.0">
-                SAML 2.0（OASIS）
-              </Ext>
+              <Ext href="https://www.oasis-open.org/standards#wssv1.1">WS-Security（OASIS）</Ext>、
+              <Ext href="https://www.oasis-open.org/standards#samlv2.0">SAML 2.0（OASIS）</Ext>
             </p>
           </div>
         </section>
@@ -2718,8 +2698,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">OASIS SOA Reference Model</div>
-                    <Ext href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm"
-                      className="ref-url">
+                    <Ext
+                      href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm"
+                      className="ref-url"
+                    >
                       https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm
                     </Ext>
                   </div>
@@ -2737,8 +2719,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Thomas Erl SOA公式（serviceorientation.com）</div>
-                    <Ext href="https://www.serviceorientation.com/"
-                      className="ref-url">
+                    <Ext href="https://www.serviceorientation.com/" className="ref-url">
                       https://www.serviceorientation.com/
                     </Ext>
                   </div>
@@ -2747,8 +2728,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">TOGAF SOA Reference Architecture</div>
-                    <Ext href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/"
-                      className="ref-url">
+                    <Ext
+                      href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/"
+                      className="ref-url"
+                    >
                       https://pubs.opengroup.org/architecture/togaf9-doc/arch/
                     </Ext>
                   </div>
@@ -2783,8 +2766,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">WS-Security（OASIS）</div>
-                    <Ext href="https://www.oasis-open.org/standards#wssv1.1"
-                      className="ref-url">
+                    <Ext href="https://www.oasis-open.org/standards#wssv1.1" className="ref-url">
                       https://www.oasis-open.org/standards#wssv1.1
                     </Ext>
                   </div>
@@ -2793,8 +2775,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">WS-AtomicTransaction（OASIS）</div>
-                    <Ext href="https://www.oasis-open.org/committees/ws-tx/"
-                      className="ref-url">
+                    <Ext href="https://www.oasis-open.org/committees/ws-tx/" className="ref-url">
                       https://www.oasis-open.org/committees/ws-tx/
                     </Ext>
                   </div>
@@ -2803,8 +2784,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">SAML 2.0（OASIS）</div>
-                    <Ext href="https://www.oasis-open.org/standards#samlv2.0"
-                      className="ref-url">
+                    <Ext href="https://www.oasis-open.org/standards#samlv2.0" className="ref-url">
                       https://www.oasis-open.org/standards#samlv2.0
                     </Ext>
                   </div>
@@ -2813,8 +2793,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Enterprise Integration Patterns（Webサイト版）</div>
-                    <Ext href="https://www.enterpriseintegrationpatterns.com/"
-                      className="ref-url">
+                    <Ext href="https://www.enterpriseintegrationpatterns.com/" className="ref-url">
                       https://www.enterpriseintegrationpatterns.com/
                     </Ext>
                   </div>
@@ -2831,8 +2810,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Apache Camel 公式ドキュメント</div>
-                    <Ext href="https://camel.apache.org/manual/latest/index.html"
-                      className="ref-url">
+                    <Ext
+                      href="https://camel.apache.org/manual/latest/index.html"
+                      className="ref-url"
+                    >
                       https://camel.apache.org/manual/latest/index.html
                     </Ext>
                   </div>
@@ -2859,8 +2840,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">IBM App Connect 公式</div>
-                    <Ext href="https://www.ibm.com/products/app-connect"
-                      className="ref-url">
+                    <Ext href="https://www.ibm.com/products/app-connect" className="ref-url">
                       https://www.ibm.com/products/app-connect
                     </Ext>
                   </div>
@@ -2869,8 +2849,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Spring Integration（Java）</div>
-                    <Ext href="https://spring.io/projects/spring-integration"
-                      className="ref-url">
+                    <Ext href="https://spring.io/projects/spring-integration" className="ref-url">
                       https://spring.io/projects/spring-integration
                     </Ext>
                   </div>
@@ -2887,8 +2866,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">AWS Application Integration</div>
-                    <Ext href="https://aws.amazon.com/products/application-integration/"
-                      className="ref-url">
+                    <Ext
+                      href="https://aws.amazon.com/products/application-integration/"
+                      className="ref-url"
+                    >
                       https://aws.amazon.com/products/application-integration/
                     </Ext>
                   </div>
@@ -2897,8 +2878,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Azure Integration Services</div>
-                    <Ext href="https://azure.microsoft.com/en-us/products/category/integration"
-                      className="ref-url">
+                    <Ext
+                      href="https://azure.microsoft.com/en-us/products/category/integration"
+                      className="ref-url"
+                    >
                       https://azure.microsoft.com/en-us/products/category/integration
                     </Ext>
                   </div>
@@ -2907,8 +2890,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Google Cloud Integration Connectors</div>
-                    <Ext href="https://cloud.google.com/integration-connectors/docs/overview"
-                      className="ref-url">
+                    <Ext
+                      href="https://cloud.google.com/integration-connectors/docs/overview"
+                      className="ref-url"
+                    >
                       https://cloud.google.com/integration-connectors/docs/overview
                     </Ext>
                   </div>
@@ -2925,8 +2910,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Martin Fowler — Microservices（SOA比較含む）</div>
-                    <Ext href="https://martinfowler.com/articles/microservices.html"
-                      className="ref-url">
+                    <Ext
+                      href="https://martinfowler.com/articles/microservices.html"
+                      className="ref-url"
+                    >
                       https://martinfowler.com/articles/microservices.html
                     </Ext>
                   </div>
@@ -2935,8 +2922,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">AWS: SOA vs Microservices 違い</div>
-                    <Ext href="https://aws.amazon.com/compare/the-difference-between-soa-microservices/"
-                      className="ref-url">
+                    <Ext
+                      href="https://aws.amazon.com/compare/the-difference-between-soa-microservices/"
+                      className="ref-url"
+                    >
                       https://aws.amazon.com/compare/the-difference-between-soa-microservices/
                     </Ext>
                   </div>
@@ -2945,8 +2934,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">IBM SOA ベストプラクティス</div>
-                    <Ext href="https://www.ibm.com/think/topics/soa"
-                      className="ref-url">
+                    <Ext href="https://www.ibm.com/think/topics/soa" className="ref-url">
                       https://www.ibm.com/think/topics/soa
                     </Ext>
                   </div>
@@ -2955,8 +2943,10 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                   <IconLink size={15} />
                   <div>
                     <div className="ref-title">Gartner SOA Research</div>
-                    <Ext href="https://www.gartner.com/en/information-technology/insights/service-oriented-architecture"
-                      className="ref-url">
+                    <Ext
+                      href="https://www.gartner.com/en/information-technology/insights/service-oriented-architecture"
+                      className="ref-url"
+                    >
                       https://www.gartner.com/en/information-technology/insights/service-oriented-architecture
                     </Ext>
                   </div>
