@@ -6,10 +6,12 @@
  * （Tailwind ツールチェーン自体は postcss に配線済みで、将来のページで利用可能）。
  */
 
-@keyframes p-fw { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.22; } }
-@keyframes p-ad { 0%, 100% { opacity: 0.65; } 50% { opacity: 0.32; } }
-@keyframes p-uc { 0%, 100% { opacity: 0.82; } 50% { opacity: 0.50; } }
-@keyframes p-en { 0%, 100% { opacity: 1.0; } 50% { opacity: 0.70; } }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes p-fw { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.22; } }
+  @keyframes p-ad { 0%, 100% { opacity: 0.65; } 50% { opacity: 0.32; } }
+  @keyframes p-uc { 0%, 100% { opacity: 0.82; } 50% { opacity: 0.50; } }
+  @keyframes p-en { 0%, 100% { opacity: 1.0; } 50% { opacity: 0.70; } }
+}
 
 :root {
   --color-background-primary: #0f1117;
@@ -1540,10 +1542,19 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .section {
   .hero-visual { display: flex; align-items: center; justify-content: center; }
   .hero-svg-wrap { width: 380px; height: 380px; }
 
-  .r-fw { animation: p-fw 3.6s ease-in-out infinite; }
-  .r-ad { animation: p-ad 3.6s ease-in-out infinite .5s; }
-  .r-uc { animation: p-uc 3.6s ease-in-out infinite 1s; }
-  .r-en { animation: p-en 3.6s ease-in-out infinite 1.5s; }
+  .r-fw,
+  .r-ad,
+  .r-uc,
+  .r-en {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .r-fw { animation: p-fw 3.6s ease-in-out infinite; }
+    .r-ad { animation: p-ad 3.6s ease-in-out infinite .5s; }
+    .r-uc { animation: p-uc 3.6s ease-in-out infinite 1s; }
+    .r-en { animation: p-en 3.6s ease-in-out infinite 1.5s; }
+  }
 
   .content { max-width: 100%; margin: 0 auto; padding: 64px 64px 120px; }
   .section { margin-bottom: 88px; scroll-margin-top: 24px; }
