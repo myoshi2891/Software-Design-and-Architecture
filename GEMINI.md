@@ -47,7 +47,11 @@ bun run check-links
 ### 3. Web アプリ (`web-next/`) の開発
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
-- 移行済み: `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
+- 移行済み:
+  - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
+  - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`EdaSidebar.tsx`）に分離。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は
   `.claude/skills/nextjs-page-migration/SKILL.md` を参照。

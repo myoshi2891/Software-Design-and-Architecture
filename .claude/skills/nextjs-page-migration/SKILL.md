@@ -61,6 +61,24 @@ i18n / shiki は**存在しない**。これらを前提にしないこと。
 ページのスタイルは `globals.css` 内のスコープクラス（`.comprehensive-guide { … }`）に
 ネストして記述する（CSS Modules や shiki は不使用）。
 
+**ページ固有トークン名前空間の温存**: ソース HTML が独自のデザイントークン
+（例: EDA ガイドの `--ac`（シアン系アクセント）/ `--bg` / `--sf` / `--gn` / `--or` 等、
+参照実装の `--color-*` / `--c-*` とは別系統）を持つ場合、それらを既存の `--color-*` へ
+**強制リマップしない**。スコープクラス内のローカル変数として温存し、ページ固有の
+ビジュアルアイデンティティを維持する:
+
+```css
+.event-driven-architecture-comprehensive-guide {
+  --ac: #22d3ee;   /* このページ専用。:root の共通トークンは汚染しない */
+  --bg: #0a0e14;
+  --sf: #131a24;
+}
+```
+
+`body{display:flex}` 等の body 依存レイアウトは、`body` を直接いじらず
+スコープクラス自身 + `.main` / `.sidebar` の margin で再現する（他ページへ波及させない）。
+既存のダーク背景（`html,body`）と矛盾しないことを確認する。
+
 ---
 
 ## TDD コミットワークフロー（最重要）
@@ -114,6 +132,47 @@ vi.mock("@/components/MermaidDiagram", () => ({
   スコープクラスにスタイルを移植する
 - 元 HTML の `<style>` を `globals.css` の `:root` トークン + スコープクラスへ移植
 
+#### インタラクティブ chrome（固定サイドバー・進捗バー・scroll-spy）
+
+ソースが固定サイドバー nav・スクロール進捗バー・現在地ハイライト等の
+**クライアント interactivity**（インライン `<script>` の `scroll` / `IntersectionObserver`）を
+持つ場合、**chrome だけをクライアントコンポーネント化し、本文（section 群）は
+Server Component の children のまま**にする。本文を `"use client"` 化しないのが原則。
+
+- `page.tsx`（server）: ルート `<div className="<scope>">` 配下に
+  `<XxxSidebar groups={NAV_GROUPS} />` と `<main className="main"> …本文 section… </main>` を置く。
+  nav 定義は **props（`{ id, num, label }[]` をグループ化した配列）として server から渡す**
+  （本文の section id と nav の href を 1 箇所で対応付け、ズレを防ぐ）。
+- `XxxSidebar.tsx`（`"use client"`）: 進捗バーと nav のみ描画。本文は監視対象として
+  `document.querySelectorAll("section.section")` で **DOM 経由参照**する（本文を import しない）。
+  - 進捗バー: `scroll` で `scrollY / (scrollHeight - innerHeight)` を `transform: scaleX()` に反映。
+  - scroll-spy: `IntersectionObserver`（`rootMargin: "-20% 0px -60% 0px"`）で可視 section を追跡し、
+    対応する nav 項目に `.active` を付与（`useState` で activeId 管理、初期値は先頭項目）。
+  - `useEffect` のクリーンアップで `removeEventListener` / `observer.disconnect()` を必ず行う。
+
+**テストでの IntersectionObserver スタブ**: jsdom は IO 未実装。2 段構えにする:
+
+1. `tests/setup.ts` に**レンダリングを通すための最小スタブ**（`observe` は no-op の `vi.fn()`）を
+   グローバル登録（IO を使う全テストのクラッシュを防ぐ）。
+2. scroll-spy の **active 切替ロジック自体**を検証するテストでは、テストローカルで
+   **コールバックを捕捉するスタブ**へ差し替え、任意の交差イベントを手動ディスパッチする:
+
+   ```tsx
+   let ioCallback: ((e: IntersectionObserverEntry[]) => void) | null = null;
+   class CapturingIO implements IntersectionObserver {
+     /* root/rootMargin/thresholds + observe/unobserve/disconnect/takeRecords = vi.fn() */
+     constructor(cb: (e: IntersectionObserverEntry[]) => void) { ioCallback = cb; }
+   }
+   // beforeEach で globalThis.IntersectionObserver = CapturingIO、本文 section を body に挿入。
+   // act(() => ioCallback?.([{ isIntersecting: true, target } as IntersectionObserverEntry]))
+   ```
+
+   進捗バーは `Object.defineProperty` で `scrollHeight` / `innerHeight` / `scrollY` を
+   モックし、`scroll` イベント dispatch 後の `style.transform` を検証する。
+
+> サイドバーのテストは `XxxSidebar.test.tsx` として実装ファイルと同階層に置く
+> （契約テスト `page.test.tsx` とは別ファイル）。
+
 #### JSX 変換 Pitfalls
 
 | 問題 | NG | OK |
@@ -132,6 +191,10 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 元 HTML は Tabler webfont（`<i class="ti ti-xxx">`）。本リポジトリは webfont を読まないため
 **`@tabler/icons-react` の SVG コンポーネント**へ変換する。
+
+> **Tabler 変換は webfont クラス（`<i class="ti …">`）の場合のみ**。ソースが Unicode
+> emoji（⚡🧩📋 等）をテキストとして直接埋め込んでいる場合は、**JSX テキストとして
+> そのまま残してよい**（emoji → Tabler 変換は不要・非推奨）。
 
 - `ti-test-pipe` → `<IconTestPipe />`、`ti-arrow-up` → `<IconArrowUp />`（PascalCase 化）
 - 色: 元 `style="color:var(--c-x)"` → `color="var(--c-x)"` prop
@@ -170,6 +233,24 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 ハイライト用クラス（`globals.css` に定義済み）: `kw`（キーワード）/ `cm`（コメント・斜体）/
 `st`（文字列）/ `fn`（関数名）/ `nu`（数値）。
+
+##### 実行時ハイライタ由来ソース（highlight.js / Prism）の扱い
+
+ソースが手書き span ではなく、**実行時ハイライタ**（`<code class="language-python">` に
+素のコード + highlight.js/Prism を `<script>` で実行）で着色している場合がある。
+本リポジトリは実行時ハイライタを使わない方針なので、**手書き span へ変換する**:
+
+1. `language-xxx` で言語を特定（python / bash / hcl 等）。
+2. 各ブロックのトークンを手作業で `kw/st/fn/cm/nu` クラスの span に分類し、
+   `dangerouslySetInnerHTML` のテンプレートリテラルへ転写する（上記の手書き span 手順と同じ）。
+3. 言語別の着色方針:
+   - Python: `def/class/return/import/if/for/with/async/await` → `kw`、関数名 → `fn`、
+     `"..."` / `'...'` / f-string → `st`、`# …` → `cm`、数値リテラル → `nu`
+   - Bash/HCL: `resource/variable/module` やコマンド名 → `kw`、`"..."` → `st`、`# …` → `cm`
+4. `<script>` で読み込んでいた highlight.js/Prism の CDN link・初期化コードは**移植しない**。
+
+> faithful 転写の対象はあくまで**コードの中身**。着色（どの span を当てるか）は
+> リポジトリ方針への適合作業であり、原文の着色 DOM を 1:1 で再現する必要はない。
 
 #### Mermaid ダイアグラム
 

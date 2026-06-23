@@ -53,9 +53,13 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-- 移行済みページ: [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
-  — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
-  Mermaid 図・コードハイライト・国際資格ガイド）
+- 移行済みページ:
+  - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
+    — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
+    Mermaid 図・コードハイライト・国際資格ガイド）
+  - [`/architecture/event-driven-architecture-comprehensive-guide`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/page.tsx)
+    — EDA 完全ガイドを移植（16 セクション・Mermaid 18 図・table 7・コードブロック 6）。
+    固定サイドバー・進捗バー・scroll-spy を [`EdaSidebar.tsx`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/EdaSidebar.tsx) でクライアント描画
 - Mermaid 図はクライアント描画（[`components/MermaidDiagram.tsx`](web-next/components/MermaidDiagram.tsx)）、
   外部リンクは [`components/Ext.tsx`](web-next/components/Ext.tsx) で `rel=noopener noreferrer` を保証
 - スタイルは [`app/globals.css`](web-next/app/globals.css) のデザイントークン + ページスコープクラス、
