@@ -43,8 +43,11 @@ function intersect(id: string): void {
 }
 
 describe("CleanArchitectureSidebar", () => {
+  let originalIntersectionObserver: typeof IntersectionObserver;
+
   beforeEach(() => {
     ioCallback = null;
+    originalIntersectionObserver = globalThis.IntersectionObserver;
     globalThis.IntersectionObserver = CapturingIO as unknown as typeof IntersectionObserver;
     document.body.insertAdjacentHTML(
       "beforeend",
@@ -59,6 +62,7 @@ describe("CleanArchitectureSidebar", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.restoreAllMocks();
+    globalThis.IntersectionObserver = originalIntersectionObserver;
   });
 
   it("グループ見出しと nav リンクをソース順で描画する", () => {
