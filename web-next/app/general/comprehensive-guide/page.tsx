@@ -2,39 +2,61 @@ import {
   IconAlertTriangle,
   IconApi,
   IconArrowsDiff,
+  IconArrowsUp,
   IconArrowUp,
   IconBolt,
+  IconBook,
+  IconBooks,
   IconBoxMultiple,
+  IconBrandAzure,
+  IconBrandGit,
+  IconBrandGoogle,
+  IconBriefcase,
+  IconBuilding,
+  IconBuildingArch,
   IconBulb,
   IconCertificate,
+  IconChartDonut,
   IconCheck,
   IconCheckbox,
   IconCircleCheck,
   IconCirclesRelation,
   IconClock,
+  IconCloud,
+  IconCloudComputing,
   IconCode,
   IconCube,
   IconExternalLink,
   IconFileText,
+  IconInfoCircle,
   IconLanguage,
   IconLayersDifference,
   IconLayoutGrid,
   IconLink,
   IconListCheck,
   IconMap,
+  IconMath,
   IconMessageDots,
   IconPencil,
+  IconPlant2,
   IconRefresh,
+  IconRepeat,
   IconRoute,
   IconScale,
+  IconSeedling,
+  IconShieldLock,
+  IconSitemap,
   IconStack2,
   IconStairs,
+  IconStairsUp,
   IconStar,
   IconTable,
+  IconTemplate,
   IconTestPipe,
   IconTimeline,
   IconTopologyRing,
   IconTopologyStar3,
+  IconTrees,
   IconTriangle,
   IconX,
 } from "@tabler/icons-react";
@@ -1492,7 +1514,878 @@ export default function ComprehensiveGuidePage() {
 
         <div className="divider" />
 
-        {/* SECTIONS_PLACEHOLDER */}
+        {/* Comparison */}
+        <section className="section" id="comparison">
+          <h2>
+            <IconTable size={18} color="var(--c-blue-200)" /> 手法比較・使い分けガイド
+          </h2>
+
+          <h3>
+            <IconSitemap size={16} color="var(--c-blue-200)" /> プロジェクト特性別推奨手法
+          </h3>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>プロジェクト特性</th>
+                  <th>推奨手法</th>
+                  <th>理由</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>複雑なビジネスロジック</td>
+                  <td>
+                    <span className="chip chip-coral">DDD</span>{" "}
+                    <span className="chip chip-purple">TDD</span>
+                  </td>
+                  <td>ドメインの複雑さに対処</td>
+                </tr>
+                <tr>
+                  <td>大規模チーム開発</td>
+                  <td>
+                    <span className="chip chip-coral">DDD</span>{" "}
+                    <span className="chip chip-purple">Microservices</span>
+                  </td>
+                  <td>チーム独立性の確保</td>
+                </tr>
+                <tr>
+                  <td>要件が不明確</td>
+                  <td>
+                    <span className="chip chip-teal">BDD</span>{" "}
+                    <span className="chip chip-green">ATDD</span>
+                  </td>
+                  <td>ステークホルダーとの合意形成</td>
+                </tr>
+                <tr>
+                  <td>高品質・高信頼性</td>
+                  <td>
+                    <span className="chip chip-purple">TDD</span>{" "}
+                    <span className="chip chip-green">ATDD</span>
+                  </td>
+                  <td>テスト網羅性の確保</td>
+                </tr>
+                <tr>
+                  <td>リアルタイム・高スループット</td>
+                  <td>
+                    <span className="chip chip-amber">EDA</span>{" "}
+                    <span className="chip chip-coral">Microservices</span>
+                  </td>
+                  <td>非同期処理による性能確保</td>
+                </tr>
+                <tr>
+                  <td>中小規模・スタートアップ</td>
+                  <td>
+                    <span className="chip chip-teal">Clean Arch</span>{" "}
+                    <span className="chip chip-purple">TDD</span>
+                  </td>
+                  <td>シンプルさと品質のバランス</td>
+                </tr>
+                <tr>
+                  <td>外部APIとの連携が多い</td>
+                  <td>
+                    <span className="chip chip-blue">API-First</span>{" "}
+                    <span className="chip chip-purple">TDD</span>
+                  </td>
+                  <td>契約駆動で並行開発・モック活用</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconStack2 size={16} color="var(--c-blue-200)" /> フルスタック推奨構成
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`graph TD
+    A["🗺️ 戦略：DDD\\nドメインモデリング"] --> B
+    B["🏗️ 戦術：Clean Architecture\\n層の分離・依存逆転"] --> C
+    C["✅ 品質：TDD + BDD\\nテスト駆動・振る舞い駆動"] --> D
+    D["📡 通信：EDA（サービス間）\\n+ API-First（外部向け）"] --> E
+    E["🌐 展開：Microservices\\n（スケール要件がある場合のみ）"]
+
+    style A fill:#3a1a1a,stroke:#904040,color:#f07a7a
+    style B fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style C fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style D fill:#251e10,stroke:#806020,color:#f0c97a
+    style E fill:#152218,stroke:#1a5a30,color:#7adfa8`}
+            />
+            <div className="diagram-caption">
+              大規模プロダクトへの推奨スタック。全部を同時に導入する必要はない。段階的に取り込む。
+            </div>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* Certifications */}
+        <section className="section" id="certs">
+          <h2>
+            <IconCertificate size={18} color="var(--c-amber-200)" /> 国際資格・認定試験ガイド
+          </h2>
+
+          <p>
+            ソフトウェアアーキテクトとしてのキャリアを築く上で、国際資格は客観的な実力証明になります。以下は主要資格の詳細です。
+          </p>
+
+          {/* TOGAF */}
+          <h3>
+            <IconBuilding size={16} color="var(--c-amber-200)" /> TOGAF —
+            エンタープライズアーキテクチャの世界標準
+          </h3>
+
+          <div className="cert-card">
+            <div className="cert-header">
+              <div className="cert-logo cert-logo-amber">
+                <IconBuildingArch size={20} />
+              </div>
+              <div>
+                <div className="cert-name">TOGAF 10 Certification</div>
+                <div className="cert-org">
+                  The Open Group — 世界206カ国・10万人以上の認定者（2023年時点）
+                </div>
+              </div>
+            </div>
+
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>Level 1（Foundation）</th>
+                    <th>Level 2（Practitioner）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>対象</td>
+                    <td>TOGAFの理解・知識</td>
+                    <td>TOGAFの実践・適用能力</td>
+                  </tr>
+                  <tr>
+                    <td>問題数</td>
+                    <td>40問（多肢選択）</td>
+                    <td>8問（複合選択式）</td>
+                  </tr>
+                  <tr>
+                    <td>合格点</td>
+                    <td>55%（22/40問）</td>
+                    <td>60%（60/100点）</td>
+                  </tr>
+                  <tr>
+                    <td>試験時間</td>
+                    <td>60分</td>
+                    <td>90分</td>
+                  </tr>
+                  <tr>
+                    <td>受験料</td>
+                    <td>約 $320 USD</td>
+                    <td>Combined で約 $495 USD</td>
+                  </tr>
+                  <tr>
+                    <td>有効期限</td>
+                    <td>無期限</td>
+                    <td>無期限</td>
+                  </tr>
+                  <tr>
+                    <td>難易度</td>
+                    <td>★★★☆☆</td>
+                    <td>★★★★☆</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h3 style={{ marginTop: 20 }}>
+            <IconRoute size={16} color="var(--c-amber-200)" /> TOGAF
+            ADM（アーキテクチャ開発メソッド）
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`flowchart TD
+    PREP["準備フェーズ\\n(Architecture Change Management)"] --> A
+    A["フェーズA\\nアーキテクチャビジョン"] --> B & C & D
+    B["フェーズB\\nビジネスアーキテクチャ"]
+    C["フェーズC\\n情報システムアーキテクチャ\\n(データ + アプリ)"]
+    D["フェーズD\\nテクノロジーアーキテクチャ"]
+    B --> EF
+    C --> EF
+    D --> EF
+    EF["フェーズE/F\\n機会・ソリューション\\n移行計画"] --> GH
+    GH["フェーズG/H\\n実装ガバナンス・変更管理"]
+    GH -.->|"継続的改善"| A
+
+    style PREP fill:#251e10,stroke:#806020,color:#c0a060
+    style A fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style B fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style C fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style D fill:#1a2440,stroke:#3a5a8a,color:#7ab3f0
+    style EF fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style GH fill:#152218,stroke:#1a5a30,color:#7adfa8`}
+            />
+            <div className="diagram-caption">
+              TOGAF ADMは繰り返し（イテレーティブ）に適用される。
+            </div>
+          </div>
+
+          {/* AWS */}
+          <h3 style={{ marginTop: 32 }}>
+            <IconCloud size={16} color="var(--c-amber-200)" /> AWS 認定ソリューションアーキテクト
+          </h3>
+
+          <div className="cert-card">
+            <div className="cert-header">
+              <div className="cert-logo cert-logo-amber">
+                <IconCloudComputing size={20} />
+              </div>
+              <div>
+                <div className="cert-name">AWS Certified Solutions Architect</div>
+                <div className="cert-org">
+                  Amazon Web Services — 業界最高の認知度を持つクラウドアーキテクチャ資格
+                </div>
+              </div>
+            </div>
+
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>SAA-C03（Associate）</th>
+                    <th>SAP-C02（Professional）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>対象スキル</td>
+                    <td>AWSを使ったアーキテクチャ設計</td>
+                    <td>複雑なAWSアーキテクチャの設計・評価</td>
+                  </tr>
+                  <tr>
+                    <td>問題数</td>
+                    <td>65問</td>
+                    <td>75問</td>
+                  </tr>
+                  <tr>
+                    <td>合格スコア</td>
+                    <td>720/1000</td>
+                    <td>750/1000</td>
+                  </tr>
+                  <tr>
+                    <td>試験時間</td>
+                    <td>130分</td>
+                    <td>180分</td>
+                  </tr>
+                  <tr>
+                    <td>受験料</td>
+                    <td>$150 USD</td>
+                    <td>$300 USD</td>
+                  </tr>
+                  <tr>
+                    <td>有効期限</td>
+                    <td>3年</td>
+                    <td>3年</td>
+                  </tr>
+                  <tr>
+                    <td>前提</td>
+                    <td>クラウド基礎 + AWS経験推奨</td>
+                    <td>SAA取得推奨</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h3 style={{ marginTop: 20 }}>
+            <IconChartDonut size={16} color="var(--c-amber-200)" /> SAA-C03 出題領域
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`pie title SAA-C03 出題比率
+    "安全なアーキテクチャ設計 (30%)" : 30
+    "弾力性の高いアーキテクチャ (26%)" : 26
+    "高性能アーキテクチャ設計 (24%)" : 24
+    "コスト最適化設計 (20%)" : 20`}
+            />
+          </div>
+
+          {/* GCP */}
+          <h3 style={{ marginTop: 32 }}>
+            <IconBrandGoogle size={16} color="var(--c-teal-200)" /> Google Cloud Professional Cloud
+            Architect
+          </h3>
+
+          <div className="cert-card">
+            <div className="cert-header">
+              <div className="cert-logo cert-logo-teal">
+                <IconBrandGoogle size={20} />
+              </div>
+              <div>
+                <div className="cert-name">GCP Professional Cloud Architect</div>
+                <div className="cert-org">Google Cloud</div>
+              </div>
+            </div>
+            <div className="cert-stats">
+              <div className="cert-stat">
+                <div className="cert-stat-label">問題数</div>
+                <div className="cert-stat-value">50〜60問</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">試験時間</div>
+                <div className="cert-stat-value">120分</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">受験料</div>
+                <div className="cert-stat-value">$200 USD</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">合格スコア</div>
+                <div className="cert-stat-value">非公開（約70%）</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">有効期限</div>
+                <div className="cert-stat-value">2年</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">難易度</div>
+                <div className="cert-stat-value">★★★★☆</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Azure */}
+          <h3 style={{ marginTop: 20 }}>
+            <IconBrandAzure size={16} color="var(--c-blue-200)" /> Microsoft Azure Solutions
+            Architect Expert（AZ-305）
+          </h3>
+
+          <div className="cert-card">
+            <div className="cert-header">
+              <div className="cert-logo cert-logo-blue">
+                <IconBrandAzure size={20} />
+              </div>
+              <div>
+                <div className="cert-name">
+                  Microsoft Certified: Azure Solutions Architect Expert
+                </div>
+                <div className="cert-org">Microsoft — AZ-104（Administrator）取得推奨</div>
+              </div>
+            </div>
+            <div className="cert-stats">
+              <div className="cert-stat">
+                <div className="cert-stat-label">問題数</div>
+                <div className="cert-stat-value">40〜60問</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">合格スコア</div>
+                <div className="cert-stat-value">700/1000</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">試験時間</div>
+                <div className="cert-stat-value">120分</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">受験料</div>
+                <div className="cert-stat-value">$165 USD</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">有効期限</div>
+                <div className="cert-stat-value">1年（無料更新可）</div>
+              </div>
+              <div className="cert-stat">
+                <div className="cert-stat-label">難易度</div>
+                <div className="cert-stat-value">★★★★☆</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrum */}
+          <h3 style={{ marginTop: 20 }}>
+            <IconRepeat size={16} color="var(--c-purple-200)" /> スクラム関連資格
+          </h3>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>資格名</th>
+                  <th>発行元</th>
+                  <th>合格点</th>
+                  <th>特徴</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="chip chip-purple">PSM I</span>
+                  </td>
+                  <td>Scrum.org</td>
+                  <td>85%</td>
+                  <td>スクラムの基礎知識。オープンブック不可。</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-purple">PSM II</span>
+                  </td>
+                  <td>Scrum.org</td>
+                  <td>85%</td>
+                  <td>スクラムの実践・応用シナリオ問題。</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-purple">PSM III</span>
+                  </td>
+                  <td>Scrum.org</td>
+                  <td>85%</td>
+                  <td>スクラムマスターとしての最高レベル。</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">SAFe Architect</span>
+                  </td>
+                  <td>Scaled Agile</td>
+                  <td>75%</td>
+                  <td>企業規模アジャイルの設計思想。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconStairsUp size={16} color="var(--c-amber-200)" />{" "}
+            キャリアステージ別・優先取得ロードマップ
+          </h3>
+
+          <p
+            style={{
+              fontSize: "1rem",
+              color: "var(--color-text-secondary)",
+              marginBottom: 4,
+            }}
+          >
+            キャリア経験年数に応じた資格取得の優先順位。下のステージから順番に積み上げていくことが重要です。
+          </p>
+
+          <div className="career-roadmap">
+            {/* Stage 1: Entry */}
+            <div className="career-stage stage-entry">
+              <div className="career-stage-spine">
+                <div className="career-stage-icon">
+                  <IconSeedling size={18} />
+                </div>
+                <div className="career-stage-line" />
+              </div>
+              <div className="career-stage-body">
+                <div className="career-stage-header">
+                  <div className="career-stage-title">エントリーレベル</div>
+                  <div className="career-stage-years">経験 0〜2 年</div>
+                </div>
+                <div className="career-stage-desc">
+                  クラウドとアジャイルの基礎を固める段階。まずクラウド資格でインフラ理解を得て、開発プロセスの土台を作る。
+                </div>
+                <div className="career-cert-list">
+                  <div className="career-cert-item">
+                    <IconCloudComputing size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">AWS SAA-C03 または Azure AZ-104</div>
+                      <div className="career-cert-purpose">
+                        クラウドアーキテクチャの基礎を習得。まずどちらか1つを選んで取得。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先①</div>
+                  </div>
+                  <div className="career-cert-item">
+                    <IconRepeat size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">PSM I（Professional Scrum Master I）</div>
+                      <div className="career-cert-purpose">
+                        アジャイル・スクラムの基礎知識。チーム開発の共通言語を習得。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先②</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Stage 2: Middle */}
+            <div className="career-stage stage-middle">
+              <div className="career-stage-spine">
+                <div className="career-stage-icon">
+                  <IconPlant2 size={18} />
+                </div>
+                <div className="career-stage-line" />
+              </div>
+              <div className="career-stage-body">
+                <div className="career-stage-header">
+                  <div className="career-stage-title">ミドルレベル</div>
+                  <div className="career-stage-years">経験 3〜5 年</div>
+                </div>
+                <div className="career-stage-desc">
+                  クラウドアーキテクチャの高度な設計力とエンタープライズアーキテクチャの基礎を習得する段階。
+                </div>
+                <div className="career-cert-list">
+                  <div className="career-cert-item">
+                    <IconCloud size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">AWS SAP-C02 または Google Cloud PCA</div>
+                      <div className="career-cert-purpose">
+                        複雑なクラウドアーキテクチャの設計・評価スキル。Associate
+                        取得後の自然なステップアップ。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先①</div>
+                  </div>
+                  <div className="career-cert-item">
+                    <IconBuilding size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">TOGAF Level 1（Foundation）</div>
+                      <div className="career-cert-purpose">
+                        エンタープライズアーキテクチャの共通フレームワークを習得。大規模組織での設計に対応できるようになる。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先②</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Stage 3: Senior */}
+            <div className="career-stage stage-senior">
+              <div className="career-stage-spine">
+                <div className="career-stage-icon">
+                  <IconTrees size={18} />
+                </div>
+                <div className="career-stage-line" />
+              </div>
+              <div className="career-stage-body">
+                <div className="career-stage-header">
+                  <div className="career-stage-title">シニアレベル</div>
+                  <div className="career-stage-years">経験 5 年以上</div>
+                </div>
+                <div className="career-stage-desc">
+                  組織・エンタープライズ規模の設計とガバナンスを担う段階。必要に応じてセキュリティ資格も追加。
+                </div>
+                <div className="career-cert-list">
+                  <div className="career-cert-item">
+                    <IconCertificate size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">TOGAF Level 2（Practitioner）</div>
+                      <div className="career-cert-purpose">
+                        TOGAFの実践的な適用能力を証明。エンタープライズアーキテクトとして必須の資格。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先①</div>
+                  </div>
+                  <div className="career-cert-item">
+                    <IconSitemap size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">SAFe Architect</div>
+                      <div className="career-cert-purpose">
+                        企業規模アジャイル（Scaled Agile Framework）における設計の役割と責任を習得。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">優先②</div>
+                  </div>
+                  <div className="career-cert-item">
+                    <IconShieldLock size={16} className="career-cert-icon" />
+                    <div className="career-cert-content">
+                      <div className="career-cert-name">CISSP（必要に応じて）</div>
+                      <div className="career-cert-purpose">
+                        セキュリティアーキテクチャの最高位資格。セキュリティ専門にシフトする場合に取得。
+                      </div>
+                    </div>
+                    <div className="career-cert-badge">任意</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 読み方ガイド */}
+          <div className="callout callout-info" style={{ marginTop: 4 }}>
+            <IconInfoCircle size={16} />
+            <div className="callout-text">
+              上から順番に取得するのが基本ですが、現在のキャリアステージに合わせてスタート地点を選んでください。「優先①→優先②」の順で取得することを推奨します。
+            </div>
+          </div>
+
+          <h3>
+            <IconLink size={16} color="var(--c-amber-200)" /> 資格公式ソース
+          </h3>
+          <div className="source-list">
+            <Ext href="https://www.opengroup.org/togaf" className="source-item">
+              <IconExternalLink size={16} /> TOGAF 公式（The Open Group）
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://aws.amazon.com/certification/" className="source-item">
+              <IconExternalLink size={16} /> AWS 認定資格 公式
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://cloud.google.com/learn/certification" className="source-item">
+              <IconExternalLink size={16} /> Google Cloud 認定 公式
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext
+              href="https://learn.microsoft.com/en-us/credentials/certifications/azure-solutions-architect/"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Microsoft Azure 認定 公式
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext
+              href="https://www.scrum.org/professional-scrum-master-assessments"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Scrum.org — PSM 資格
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://scaledagileframework.com/" className="source-item">
+              <IconExternalLink size={16} /> SAFe 公式
+              <span className="source-label">英語</span>
+            </Ext>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* Roadmap */}
+        <section className="section" id="roadmap">
+          <h2>
+            <IconMap size={18} color="var(--c-green-200)" /> 学習ロードマップ
+          </h2>
+
+          <p>
+            初学者から実践投入までの推奨学習順序です。各フェーズをスキップせず、確実に積み上げることが重要です。
+          </p>
+
+          <div className="roadmap-row">
+            <div className="roadmap-period">
+              <div className="roadmap-period-label">Month 1-2</div>
+            </div>
+            <div className="roadmap-items">
+              <div className="roadmap-item">
+                <IconBook size={16} className="priority-1" /> TDD実践（書籍：Kent Beck — Test-Driven
+                Development: By Example）
+              </div>
+              <div className="roadmap-item">
+                <IconBook size={16} className="priority-1" /> クリーンコード（書籍：Robert Martin —
+                Clean Code）
+              </div>
+              <div className="roadmap-item">
+                <IconBrandGit size={16} color="var(--c-green-200)" /> Git / GitHub の基本習得
+              </div>
+            </div>
+          </div>
+
+          <div className="roadmap-row">
+            <div className="roadmap-period">
+              <div className="roadmap-period-label">Month 3-4</div>
+            </div>
+            <div className="roadmap-items">
+              <div className="roadmap-item">
+                <IconMath size={16} className="priority-2" /> SOLID原則の理解と実践
+              </div>
+              <div className="roadmap-item">
+                <IconTemplate size={16} className="priority-2" /> GoF
+                デザインパターン（主要23パターン）
+              </div>
+              <div className="roadmap-item">
+                <IconMessageDots size={16} className="priority-2" /> BDD実践（Cucumber /
+                pytest-bdd）
+              </div>
+            </div>
+          </div>
+
+          <div className="roadmap-row">
+            <div className="roadmap-period">
+              <div className="roadmap-period-label">Month 5-6</div>
+            </div>
+            <div className="roadmap-items">
+              <div className="roadmap-item">
+                <IconLayersDifference size={16} className="priority-1" />{" "}
+                クリーンアーキテクチャ（書籍：Robert Martin）
+              </div>
+              <div className="roadmap-item">
+                <IconCube size={16} className="priority-1" /> DDD入門（書籍：Eric Evans —
+                Domain-Driven Design）
+              </div>
+              <div className="roadmap-item">
+                <IconApi size={16} className="priority-2" /> REST API設計・OpenAPI仕様習得
+              </div>
+            </div>
+          </div>
+
+          <div className="roadmap-row">
+            <div className="roadmap-period">
+              <div className="roadmap-period-label">Month 7-9</div>
+            </div>
+            <div className="roadmap-items">
+              <div className="roadmap-item">
+                <IconTopologyStar3 size={16} className="priority-2" />{" "}
+                マイクロサービス実装（書籍：Sam Newman — Building Microservices）
+              </div>
+              <div className="roadmap-item">
+                <IconBolt size={16} className="priority-2" /> EDA理解（Kafka 基礎・CloudEvents
+                仕様）
+              </div>
+              <div className="roadmap-item">
+                <IconCloud size={16} className="priority-1" /> <strong>AWS SAA 受験</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="roadmap-row">
+            <div className="roadmap-period">
+              <div className="roadmap-period-label">Month 10-12</div>
+            </div>
+            <div className="roadmap-items">
+              <div className="roadmap-item">
+                <IconCertificate size={16} className="priority-1" />{" "}
+                <strong>TOGAF Level 1 受験</strong>
+              </div>
+              <div className="roadmap-item">
+                <IconBriefcase size={16} className="priority-3" /> 実プロジェクトへの段階的適用
+              </div>
+              <div className="roadmap-item">
+                <IconArrowsUp size={16} color="var(--c-teal-200)" /> 振り返りと次の専門領域選定
+              </div>
+            </div>
+          </div>
+
+          <h3>
+            <IconBooks size={16} color="var(--c-green-200)" /> 推奨書籍一覧
+          </h3>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>タイトル</th>
+                  <th>著者</th>
+                  <th>対象手法</th>
+                  <th>難易度</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Test-Driven Development: By Example</td>
+                  <td>Kent Beck</td>
+                  <td>
+                    <span className="chip chip-purple">TDD</span>
+                  </td>
+                  <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                  <td>Clean Code</td>
+                  <td>Robert C. Martin</td>
+                  <td>
+                    <span className="chip chip-teal">コード品質</span>
+                  </td>
+                  <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                  <td>Clean Architecture</td>
+                  <td>Robert C. Martin</td>
+                  <td>
+                    <span className="chip chip-teal">アーキテクチャ</span>
+                  </td>
+                  <td>★★★★☆</td>
+                </tr>
+                <tr>
+                  <td>Domain-Driven Design</td>
+                  <td>Eric Evans</td>
+                  <td>
+                    <span className="chip chip-coral">DDD</span>
+                  </td>
+                  <td>★★★★★</td>
+                </tr>
+                <tr>
+                  <td>Implementing Domain-Driven Design</td>
+                  <td>Vaughn Vernon</td>
+                  <td>
+                    <span className="chip chip-coral">DDD実践</span>
+                  </td>
+                  <td>★★★★☆</td>
+                </tr>
+                <tr>
+                  <td>Building Microservices</td>
+                  <td>Sam Newman</td>
+                  <td>
+                    <span className="chip chip-purple">Microservices</span>
+                  </td>
+                  <td>★★★★☆</td>
+                </tr>
+                <tr>
+                  <td>Designing Data-Intensive Applications</td>
+                  <td>Martin Kleppmann</td>
+                  <td>
+                    <span className="chip chip-amber">システム設計</span>
+                  </td>
+                  <td>★★★★★</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconLink size={16} color="var(--c-green-200)" /> 学習プラットフォーム
+          </h3>
+          <div className="source-list">
+            <Ext
+              href="https://www.coursera.org/specializations/software-design-architecture"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Coursera — Software Architecture 特化コース
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://www.opengroup.org/certifications/togaf" className="source-item">
+              <IconExternalLink size={16} /> The Open Group — TOGAF公式学習
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://docs.pytest.org/" className="source-item">
+              <IconExternalLink size={16} /> pytest 公式ドキュメント
+              <span className="source-label">英語</span>
+            </Ext>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        {/* Footer */}
+        <footer
+          style={{
+            borderTop: "1px solid var(--color-border-primary)",
+            paddingTop: 24,
+            marginTop: 48,
+          }}
+        >
+          <div
+            style={{
+              fontSize: "1rem",
+              color: "var(--color-text-tertiary)",
+              lineHeight: 1.7,
+            }}
+          >
+            本ドキュメントは2024年時点の公開情報を基に作成。試験情報・受験料は変更される場合があるため、受験前に各公式サイトをご確認ください。
+            <br />
+            参考：Agile Alliance / Martin Fowler Blog / The Open Group / AWS / Google Cloud /
+            Microsoft Learn / Scrum.org
+          </div>
+        </footer>
       </div>
     </div>
   );

@@ -69,8 +69,12 @@ describe("comprehensive-guide page", () => {
 
   it("内部リンクに .html を含む旧 URL がない", () => {
     const { container } = render(<Page />);
+    // 外部リンク（http〜）は martinfowler.com/...TestDrivenDevelopment.html のように
+    // 正規の .html リソースを指すため対象外。検証は内部リンク（# / 相対パス）に限定する。
     for (const a of container.querySelectorAll("a")) {
-      expect(a.getAttribute("href") ?? "").not.toContain(".html");
+      const href = a.getAttribute("href") ?? "";
+      if (href.startsWith("http")) continue;
+      expect(href).not.toContain(".html");
     }
   });
 
