@@ -28,7 +28,10 @@ export const navLinks: readonly NavLink[] = [
   {
     name: "アーキテクチャ",
     children: [
-      { name: "クリーンアーキテクチャ", href: "/architecture/clean-architecture-comprehensive-guide" },
+      {
+        name: "クリーンアーキテクチャ",
+        href: "/architecture/clean-architecture-comprehensive-guide",
+      },
       {
         name: "イベント駆動アーキテクチャ",
         href: "/architecture/event-driven-architecture-comprehensive-guide",
@@ -51,7 +54,10 @@ export const navLinks: readonly NavLink[] = [
   {
     name: "設計原則",
     children: [
-      { name: "API ファースト設計", href: "/design-principles/api-first-design-comprehensive-guide" },
+      {
+        name: "API ファースト設計",
+        href: "/design-principles/api-first-design-comprehensive-guide",
+      },
       {
         name: "コンポーネント指向開発",
         href: "/design-principles/component-oriented-development-comprehensive-guide",
