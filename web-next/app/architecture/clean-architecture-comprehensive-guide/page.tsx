@@ -971,6 +971,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                   application/interfaces/order_repository.py + adapters/repositories/
                 </span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code1 }} /></pre>
             </div>
             <div className="callout co-s">
@@ -1040,6 +1041,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                   domain/value_objects/money.py &amp; domain/entities/order.py
                 </span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code2 }} /></pre>
             </div>
             <div className="callout co-s">
@@ -1103,6 +1105,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">application/use_cases/place_order.py</span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code3 }} /></pre>
             </div>
             <div className="callout co-s">
@@ -1162,6 +1165,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">adapters/controllers/order_controller.py</span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code4 }} /></pre>
             </div>
             <h3 className="sub">Repository Adapter（SQLAlchemy）</h3>
@@ -1170,6 +1174,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">adapters/repositories/sqlalchemy_order_repo.py</span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code5 }} /></pre>
             </div>
             <div className="callout co-s">
@@ -1220,6 +1225,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">main.py（Composition Root）</span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code6 }} /></pre>
             </div>
             <div className="callout co-s">
@@ -1497,6 +1503,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                   tests/unit/domain/test_order.py &amp; tests/unit/application/test_place_order.py
                 </span>
               </div>
+              {/* biome-ignore format: HTML pre tags are sensitive to whitespace */}
               <pre><code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code7 }} /></pre>
             </div>
             <div className="callout co-s">
