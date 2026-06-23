@@ -1,6 +1,7 @@
 import {
   IconAlertTriangle,
   IconApi,
+  IconArrowsDiff,
   IconArrowUp,
   IconBolt,
   IconBoxMultiple,
@@ -9,6 +10,7 @@ import {
   IconCheck,
   IconCheckbox,
   IconCircleCheck,
+  IconCirclesRelation,
   IconClock,
   IconCode,
   IconCube,
@@ -23,6 +25,7 @@ import {
   IconMessageDots,
   IconPencil,
   IconRefresh,
+  IconRoute,
   IconScale,
   IconStack2,
   IconStairs,
@@ -30,6 +33,7 @@ import {
   IconTable,
   IconTestPipe,
   IconTimeline,
+  IconTopologyRing,
   IconTopologyStar3,
   IconTriangle,
   IconX,
@@ -942,6 +946,544 @@ export default function ComprehensiveGuidePage() {
                 </div>
               </div>
             </div>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* EDA */}
+        <section className="section" id="eda">
+          <h2>
+            <IconBolt size={18} color="var(--c-amber-200)" /> EDA — イベント駆動アーキテクチャ
+          </h2>
+
+          <div className="callout callout-info">
+            <IconBulb size={16} />
+            <div className="callout-text">
+              <strong>核心：</strong>{" "}
+              コンポーネント間の通信を「イベント」という不変の事実メッセージで行う。Producer は
+              Consumer の存在を知らず、疎結合が実現する。
+            </div>
+          </div>
+
+          <h3>
+            <IconTopologyRing size={16} color="var(--c-amber-200)" /> 構成要素フロー
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`flowchart TD
+    P["📤 Producer\\n（注文サービス等）\\nイベントを発行"] --> EB["🔀 Event Broker\\nApache Kafka\\nAWS EventBridge 等"]
+    EB --> C1["📦 在庫サービス\\n(Consumer)"]
+    EB --> C2["🚚 配送サービス\\n(Consumer)"]
+    EB --> C3["🔔 通知サービス\\n(Consumer)"]
+
+    style P fill:#251e10,stroke:#f0c97a,color:#f0c97a
+    style EB fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style C1 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8
+    style C2 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8
+    style C3 fill:#0f2e2e,stroke:#7dd8d8,color:#7dd8d8`}
+            />
+            <div className="diagram-caption">
+              Producerは誰が受信するか知らない。Brokerが適切なConsumerに配信する。
+            </div>
+          </div>
+
+          <h3>
+            <IconCode size={16} color="var(--c-amber-200)" /> イベント設計の原則
+          </h3>
+
+          <div className="code-label">Python — 良いイベント設計</div>
+          <pre
+            dangerouslySetInnerHTML={{
+              __html: `<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="fn">OrderPlacedEvent</span>:
+    <span class="st">"""注文が確定したことを表すイベント（過去形で命名）"""</span>
+    event_id: str           <span class="cm"># 一意のイベントID</span>
+    occurred_at: datetime   <span class="cm"># 発生日時</span>
+    order_id: str           <span class="cm"># 何の注文か</span>
+    customer_id: str        <span class="cm"># 誰の注文か</span>
+    total_amount: int       <span class="cm"># 合計金額</span>
+    items: list[dict]       <span class="cm"># 注文内容（自己完結した情報）</span>
+
+    <span class="cm"># ✅ 過去形で命名 → OrderPlaced（注文が完了した）</span>
+    <span class="cm"># ✅ イベントに必要な情報を自己完結的に含める</span>
+    <span class="cm"># ❌ IDだけ持ち Consumer が DB照会するのはアンチパターン</span>`,
+            }}
+          />
+
+          <h3>
+            <IconStar size={16} color="var(--c-amber-200)" /> ベストプラクティス
+          </h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>原則</th>
+                  <th>説明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">べき等性</span>
+                  </td>
+                  <td>同じイベントを2回受信しても結果が変わらないよう設計する</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">スキーマ管理</span>
+                  </td>
+                  <td>Schema Registry でバージョン管理し、互換性を保つ</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">DLQ</span>
+                  </td>
+                  <td>Dead Letter Queue で処理失敗イベントを退避し、後処理できるようにする</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">追跡性</span>
+                  </td>
+                  <td>Correlation ID で一連のイベントをトレースできるようにする</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">順序保証</span>
+                  </td>
+                  <td>同一パーティション内で順序が必要な場合は設計で考慮する</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconLink size={16} color="var(--c-amber-200)" /> 公式ソース
+          </h3>
+          <div className="source-list">
+            <Ext href="https://kafka.apache.org/documentation/" className="source-item">
+              <IconExternalLink size={16} /> Apache Kafka 公式ドキュメント
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://cloudevents.io/" className="source-item">
+              <IconExternalLink size={16} /> CloudEvents 仕様（CNCF）
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://aws.amazon.com/event-driven-architecture/" className="source-item">
+              <IconExternalLink size={16} /> AWS — Event-Driven Architecture
+              <span className="source-label">英語</span>
+            </Ext>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* API-First */}
+        <section className="section" id="api-first">
+          <h2>
+            <IconApi size={18} color="var(--c-purple-200)" /> API-First 設計
+          </h2>
+
+          <p>
+            実装より先に<strong>APIの設計仕様（契約）を定義</strong>
+            し、その契約を中心に開発を進める手法。フロントエンドとバックエンドが並行開発できるため、チーム生産性が大幅に向上します。
+          </p>
+
+          <h3>
+            <IconTimeline size={16} color="var(--c-purple-200)" /> 開発フロー
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`flowchart LR
+    A["📝 API設計\\n(OpenAPI YAML)"] --> B["👥 チームレビュー"]
+    B --> C["🤖 モック自動生成"]
+    C --> FE["🖥️ フロントエンド\\n(モックで開発)"]
+    C --> BE["⚙️ バックエンド\\n(仕様に従い実装)"]
+    FE --> INT["🔗 統合テスト"]
+    BE --> INT
+
+    style A fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5
+    style B fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style C fill:#1e2535,stroke:#5c6680,color:#9aa3b5
+    style FE fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style BE fill:#0f2e2e,stroke:#408080,color:#7dd8d8
+    style INT fill:#152218,stroke:#1a5a30,color:#7adfa8`}
+            />
+          </div>
+
+          <h3>
+            <IconCode size={16} color="var(--c-purple-200)" /> OpenAPI（Swagger）仕様例
+          </h3>
+
+          <div className="code-label">openapi.yaml — 注文API定義</div>
+          <pre
+            dangerouslySetInnerHTML={{
+              __html: `<span class="kw">openapi:</span> <span class="st">3.0.3</span>
+<span class="kw">info:</span>
+  <span class="kw">title:</span> ECサイト注文API
+  <span class="kw">version:</span> <span class="st">1.0.0</span>
+
+<span class="kw">paths:</span>
+  <span class="kw">/orders:</span>
+    <span class="kw">post:</span>
+      <span class="kw">summary:</span> 注文を作成する
+      <span class="kw">requestBody:</span>
+        <span class="kw">required:</span> <span class="kw">true</span>
+      <span class="kw">responses:</span>
+        <span class="st">'201':</span>
+          <span class="kw">description:</span> 注文作成成功
+        <span class="st">'400':</span>
+          <span class="kw">description:</span> リクエスト不正`,
+            }}
+          />
+
+          <h3>
+            <IconRoute size={16} color="var(--c-purple-200)" /> RESTful URL 設計ルール
+          </h3>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>メソッド</th>
+                  <th>URL</th>
+                  <th>操作</th>
+                  <th>ステータス</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="chip chip-green">GET</span>
+                  </td>
+                  <td>
+                    <code>/products</code>
+                  </td>
+                  <td>商品一覧取得</td>
+                  <td>200</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-green">GET</span>
+                  </td>
+                  <td>
+                    <code>/products/{"{id}"}</code>
+                  </td>
+                  <td>特定商品取得</td>
+                  <td>200 / 404</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-blue">POST</span>
+                  </td>
+                  <td>
+                    <code>/products</code>
+                  </td>
+                  <td>商品新規作成</td>
+                  <td>201</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">PUT</span>
+                  </td>
+                  <td>
+                    <code>/products/{"{id}"}</code>
+                  </td>
+                  <td>全体更新</td>
+                  <td>200</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">PATCH</span>
+                  </td>
+                  <td>
+                    <code>/products/{"{id}"}</code>
+                  </td>
+                  <td>部分更新</td>
+                  <td>200</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-coral">DELETE</span>
+                  </td>
+                  <td>
+                    <code>/products/{"{id}"}</code>
+                  </td>
+                  <td>削除</td>
+                  <td>204</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconLink size={16} color="var(--c-purple-200)" /> 公式ソース
+          </h3>
+          <div className="source-list">
+            <Ext href="https://swagger.io/specification/" className="source-item">
+              <IconExternalLink size={16} /> OpenAPI Specification（Swagger）
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://cloud.google.com/apis/design" className="source-item">
+              <IconExternalLink size={16} /> Google API Design Guide
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://restfulapi.net/" className="source-item">
+              <IconExternalLink size={16} /> REST API Design Best Practices
+              <span className="source-label">英語</span>
+            </Ext>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* Clean Architecture */}
+        <section className="section" id="clean">
+          <h2>
+            <IconLayersDifference size={18} color="var(--c-teal-200)" /> クリーンアーキテクチャ
+          </h2>
+
+          <div className="callout callout-info">
+            <IconBulb size={16} />
+            <div className="callout-text">
+              <strong>設計哲学：</strong>{" "}
+              ビジネスロジックを技術詳細（DB・フレームワーク・UI）から分離。「依存の方向は常に内側へ」という原則で、テスト容易性と保守性を最大化する。Robert
+              C. Martin（Uncle Bob）提唱。
+            </div>
+          </div>
+
+          <h3>
+            <IconCirclesRelation size={16} color="var(--c-teal-200)" /> 4層アーキテクチャ
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`graph TD
+    FW["🔧 Frameworks & Drivers\\n（最外層）\\nDjango / FastAPI / PostgreSQL / Redis"]
+    IA["🔄 Interface Adapters\\nController / Presenter / Repository Impl"]
+    UC["📋 Use Cases\\nアプリケーション固有ビジネスロジック\\nPlaceOrderUseCase / RegisterUserUseCase"]
+    ENT["🎯 Entities\\n（最内層）\\n企業ビジネスルールの核心\\nOrder / User / Product"]
+
+    FW --> IA --> UC --> ENT
+
+    style FW fill:#3a1a1a,stroke:#904040,color:#c07070
+    style IA fill:#251e10,stroke:#806020,color:#c0a060
+    style UC fill:#0f2e2e,stroke:#408080,color:#70c0c0
+    style ENT fill:#2d1f4e,stroke:#7060b0,color:#c4b0f5`}
+            />
+            <div className="diagram-caption">
+              依存の方向は外 → 内のみ。内側は外側の存在を知らない。
+            </div>
+          </div>
+
+          <h3>
+            <IconCode size={16} color="var(--c-teal-200)" /> Python実装例
+          </h3>
+
+          <div className="code-label">Entities層（最内側・フレームワーク依存ゼロ）</div>
+          <pre
+            dangerouslySetInnerHTML={{
+              __html: `<span class="kw">class</span> <span class="fn">Order</span>:
+    <span class="st">"""純粋なビジネスエンティティ（フレームワーク依存なし）"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, order_id: str, customer_id: str):
+        self.order_id = order_id
+        self.customer_id = customer_id
+        self.items = []
+
+    <span class="kw">def</span> <span class="fn">add_item</span>(self, item: OrderItem) -> None:
+        self.items.append(item)`,
+            }}
+          />
+
+          <div className="code-label">
+            Use Cases層（インターフェースに依存・実装詳細を知らない）
+          </div>
+          <pre
+            dangerouslySetInnerHTML={{
+              __html: `<span class="kw">class</span> <span class="fn">PlaceOrderUseCase</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        self,
+        order_repository: OrderRepositoryInterface,  <span class="cm"># インターフェースに依存</span>
+        payment_gateway: PaymentGatewayInterface,    <span class="cm"># 実装詳細に依存しない</span>
+    ):
+        self.order_repository = order_repository
+        self.payment_gateway = payment_gateway
+
+    <span class="kw">def</span> <span class="fn">execute</span>(self, command: PlaceOrderCommand) -> PlaceOrderResult:
+        order = Order(order_id=generate_id(), customer_id=command.customer_id)
+        self.payment_gateway.charge(order)
+        self.order_repository.save(order)
+        <span class="kw">return</span> PlaceOrderResult(order_id=order.order_id)`,
+            }}
+          />
+
+          <div className="code-label">Frameworks層（最外側・具体的なDB実装）</div>
+          <pre
+            dangerouslySetInnerHTML={{
+              __html: `<span class="kw">class</span> <span class="fn">SQLAlchemyOrderRepository</span>(OrderRepositoryInterface):
+    <span class="kw">def</span> <span class="fn">save</span>(self, order: Order) -> None:
+        db_record = OrderModel.from_entity(order)
+        self.session.add(db_record)
+        self.session.commit()`,
+            }}
+          />
+
+          <h3>
+            <IconLink size={16} color="var(--c-teal-200)" /> 公式ソース
+          </h3>
+          <div className="source-list">
+            <Ext
+              href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Uncle Bob — The Clean Architecture（原著）
+              <span className="source-label">英語</span>
+            </Ext>
+          </div>
+          <a href="#top" className="back-top">
+            <IconArrowUp size={16} /> 目次に戻る
+          </a>
+        </section>
+
+        <div className="divider" />
+
+        {/* Microservices */}
+        <section className="section" id="microservices">
+          <h2>
+            <IconTopologyStar3 size={18} color="var(--c-coral-200)" />{" "}
+            マイクロサービスアーキテクチャ
+          </h2>
+
+          <p>
+            アプリケーションを<strong>小さく独立したサービス群に分割</strong>
+            し、それぞれが独立してデプロイ・スケール可能なアーキテクチャ。
+          </p>
+
+          <h3>
+            <IconArrowsDiff size={16} color="var(--c-coral-200)" /> モノリス vs マイクロサービス
+          </h3>
+
+          <div className="mermaid-wrap">
+            <MermaidDiagram
+              chart={`graph LR
+    subgraph MON["🏠 モノリス"]
+        ALL["注文・在庫・決済・通知・\\nユーザー管理 —— 全部1アプリ"]
+    end
+
+    subgraph MSV["🌐 マイクロサービス"]
+        S1["注文 SVC"]
+        S2["在庫 SVC"]
+        S3["決済 SVC"]
+        S4["通知 SVC"]
+        S5["User SVC"]
+    end
+
+    MON -->|"成長とともに限界が見える"| MSV
+
+    style MON fill:#2a1a1a,stroke:#904040
+    style MSV fill:#0f2828,stroke:#408080`}
+            />
+          </div>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th />
+                  <th>モノリス</th>
+                  <th>マイクロサービス</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="chip chip-green">メリット</span>
+                  </td>
+                  <td>シンプル・開発初期が速い・デプロイが単純</td>
+                  <td>独立デプロイ・独立スケール・技術選択の自由</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-red">デメリット</span>
+                  </td>
+                  <td>スケール困難・変更の影響が全体に及ぶ</td>
+                  <td>複雑性増大・運用コスト・分散システムの難しさ</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="chip chip-amber">適するケース</span>
+                  </td>
+                  <td>小規模・スタートアップ・初期フェーズ</td>
+                  <td>大規模チーム・高スループット・独立デプロイが必要</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>
+            <IconStar size={16} color="var(--c-coral-200)" /> 設計原則とアンチパターン
+          </h3>
+
+          <div className="do-dont">
+            <div className="do-box">
+              <div className="box-header">
+                <IconCheck size={16} /> 推奨事項
+              </div>
+              <ul>
+                <li>DDDのBounded Contextと1対1対応</li>
+                <li>各サービスが独自のDBを持つ</li>
+                <li>独立したCI/CDパイプライン</li>
+                <li>/health エンドポイントを実装</li>
+                <li>分散トレーシング（Jaeger/Zipkin）導入</li>
+                <li>API Gatewayで外部窓口を一元管理</li>
+              </ul>
+            </div>
+            <div className="dont-box">
+              <div className="box-header">
+                <IconX size={16} /> アンチパターン
+              </div>
+              <ul>
+                <li>サービス間でDBを直接共有する</li>
+                <li>頻繁な同期API呼び出し（Chatty）</li>
+                <li>密結合なDistributed Monolith</li>
+                <li>小規模プロジェクトへの過剰適用</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>
+            <IconLink size={16} color="var(--c-coral-200)" /> 公式ソース
+          </h3>
+          <div className="source-list">
+            <Ext
+              href="https://martinfowler.com/articles/microservices.html"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Martin Fowler — Microservices（原著）
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext href="https://12factor.net/" className="source-item">
+              <IconExternalLink size={16} /> The Twelve-Factor App
+              <span className="source-label">英語</span>
+            </Ext>
+            <Ext
+              href="https://docs.microsoft.com/en-us/azure/architecture/patterns/"
+              className="source-item"
+            >
+              <IconExternalLink size={16} /> Microsoft — Architecture Patterns
+              <span className="source-label">英語</span>
+            </Ext>
           </div>
           <a href="#top" className="back-top">
             <IconArrowUp size={16} /> 目次に戻る
