@@ -1103,6 +1103,10 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
   height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
 }
 
+body.has-common-header .event-driven-architecture-comprehensive-guide .section {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
+
 .ch-disclaimer {
   position: fixed;
   top: var(--ch-height);
@@ -1701,6 +1705,10 @@ body.has-common-header .clean-architecture-comprehensive-guide .sidebar {
 
 body.has-common-header .clean-architecture-comprehensive-guide .progress-bar {
   top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .clean-architecture-comprehensive-guide .section {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
 
 @media(max-width: 1140px) {
