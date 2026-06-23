@@ -1410,9 +1410,11 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
   --t3: #a8bbd5;
   --t4: #9cbbe5;
   --sw: 272px;
-  --fh: 'Space Grotesk', sans-serif;
-  --fb: 'Inter', sans-serif;
-  --fc: 'JetBrains Mono', monospace;
+  --fs: var(--font-sans);
+  --fm: var(--font-mono);
+  --fh: 'Space Grotesk', var(--font-sans), sans-serif;
+  --fb: var(--font-sans);
+  --fc: var(--font-mono);
 
   background: var(--bg);
   color: var(--t1);
@@ -1483,7 +1485,7 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
   }
   .nav-em { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
 
-  .main { margin-left: var(--sw); }
+  .main { margin-left: var(--sw); flex: 1; max-width: calc(100% - var(--sw)); overflow-x: hidden; }
 
   .hero {
     padding: 72px 64px;
@@ -1703,6 +1705,7 @@ body.has-common-header .clean-architecture-comprehensive-guide .progress-bar {
     --sw: 0px;
   }
   .clean-architecture-comprehensive-guide .sidebar { display: none; }
+  .clean-architecture-comprehensive-guide .main { margin-left: 0; max-width: 100%; }
   .clean-architecture-comprehensive-guide .content { padding: 40px 24px 80px; }
   .clean-architecture-comprehensive-guide .layer-grid,
   .clean-architecture-comprehensive-guide .compare-grid,
