@@ -1539,7 +1539,7 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
   .r-uc { animation: p-uc 3.6s ease-in-out infinite 1s; }
   .r-en { animation: p-en 3.6s ease-in-out infinite 1.5s; }
 
-  .content { max-width: 1080px; margin: 0 auto; padding: 64px 64px 120px; }
+  .content { max-width: 100%; margin: 0 auto; padding: 64px 64px 120px; }
   .section { margin-bottom: 88px; scroll-margin-top: 24px; }
   .section-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; padding-bottom: 14px; border-bottom: 1px solid var(--bdr); }
   .sec-num { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; font-family: var(--fh); font-size: 1rem; font-weight: 700; flex-shrink: 0; }
@@ -1611,13 +1611,22 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .sidebar {
 
   .diagram-wrap { background: var(--card); border: 1px solid var(--bdr); border-radius: 12px; padding: 28px 16px 20px; margin: 18px 0; overflow-x: auto; }
   .diagram-label { font-size: 1rem; color: var(--t4); text-align: center; margin-top: 14px; font-style: italic; }
+  .mermaid { display: flex; justify-content: center; }
+  .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
   .code-block { position: relative; margin: 18px 0; }
   .code-hdr { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #1b2333; border: 1px solid var(--bdr); border-bottom: none; border-radius: 10px 10px 0 0; }
   .code-lang { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--t4); }
   .code-file { font-family: var(--fc); font-size: 1rem; color: var(--t3); }
   .code-block pre { margin: 0; }
-  .code-block pre code { font-family: var(--fc); font-size: 1rem; line-height: 1.65; border-radius: 0 0 10px 10px; border: 1px solid var(--bdr); border-top: none; padding: 16px 18px; display: block; overflow-x: auto; background: none; }
+  .code-block pre code { font-family: var(--fc); font-size: 1rem; line-height: 1.65; border-radius: 0 0 10px 10px; border: 1px solid var(--bdr); border-top: none; padding: 16px 18px; display: block; overflow-x: auto; background: #282c34; }
+
+  /* 手書き span ハイライト（highlight.js 非依存） */
+  .kw { color: #c4b5fd; }
+  .st { color: #6ee7b7; }
+  .fn { color: #7ab3f0; }
+  .cm { color: var(--t3); font-style: italic; }
+  .nu { color: #fcd34d; }
 
   .tbl-wrap { overflow-x: auto; margin: 18px 0; border-radius: 10px; border: 1px solid var(--bdr); }
   table { width: 100%; border-collapse: collapse; font-size: 1rem; }
