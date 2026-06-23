@@ -426,17 +426,27 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
                 style={{ minWidth: "800px" }}
                 chart={`timeline
     title SOAの歴史的背景
-    1990年代後半 : エンタープライズシステム<br>の複雑化
-                 : スパゲッティ統合<br>（Point-to-Point）が限界に
-    1996年       : Gartner が SOA という<br>概念を初めて定義
-    2000年代初頭 : XML・SOAP・WSDLなど<br>Webサービス技術が標準化
-                 : W3C・OASIS による<br>仕様策定が進む
-    2003〜2006年 : ESB（Enterprise Service Bus）<br>製品が台頭
-                 : IBM WebSphere・Oracle<br>SOA Suite・TIBCO普及
-    2006〜2010年 : SOAが大企業の<br>標準アーキテクチャとして確立
-                 : TOGAF・SOA参照モデルの整備
-    2011〜現在   : マイクロサービスへの<br>移行が始まる
-                 : SOAはエンタープライズ統合基盤<br>として継続活用`}
+    1990年代後半 : "エンタープライズシステム
+の複雑化"
+                 : "スパゲッティ統合
+（Point-to-Point）が限界に"
+    1996年       : "Gartner が SOA という
+概念を初めて定義"
+    2000年代初頭 : "XML・SOAP・WSDLなど
+Webサービス技術が標準化"
+                 : "W3C・OASIS による
+仕様策定が進む"
+    2003〜2006年 : "ESB（Enterprise Service Bus）
+製品が台頭"
+                 : "IBM WebSphere・Oracle
+SOA Suite・TIBCO普及"
+    2006〜2010年 : "SOAが大企業の
+標準アーキテクチャとして確立"
+                 : "TOGAF・SOA参照モデルの整備"
+    2011〜現在   : "マイクロサービスへの
+移行が始まる"
+                 : "SOAはエンタープライズ統合基盤
+として継続活用"`}
               />
               <div className="mermaid-label">diagram / timeline</div>
             </div>

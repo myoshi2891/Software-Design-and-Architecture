@@ -44,6 +44,7 @@ export default function MermaidDiagram({ chart, id, style, className }: Props) {
           startOnLoad: false,
           theme: "dark",
           themeVariables: THEME_VARIABLES,
+          htmlLabels: true,
           flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: true },
           sequence: { useMaxWidth: true },
           gantt: { fontSize: 13 },
