@@ -133,3 +133,11 @@ pytest が実行される。全テスト PASS を確認する。
 - このスキルは `invocation: explicit` — `/pre-commit-check` での手動呼び出しのみ
 - テストの書き直しや設定ファイルの変更は行わない
 - 失敗時は原因の特定と報告のみ行い、修正はユーザーの指示を待つ
+
+## 参考文献・ソース一覧
+
+- 開発規約: [GEMINI.md](../../../GEMINI.md)
+- プロジェクト情報: [README.md](../../../README.md)
+- TDDワークフロー規約: [tdd-commit-workflow.md](../../rules/tdd-commit-workflow.md)
+- 絶対パス禁止規約: [no-absolute-paths.md](../../rules/no-absolute-paths.md)
+- ドキュメント同期スキル: [check-docs-sync](../check-docs-sync/SKILL.md)

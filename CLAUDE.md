@@ -68,3 +68,11 @@ HTML → page.tsx の移行は `.claude/skills/nextjs-page-migration/SKILL.md` �
 - ファイル名は `kebab-case-comprehensive-guide.md` 形式。関連資産はトピック名ディレクトリにまとめる。
 - 各ガイド末尾に「参考文献・ソース一覧」を明記。作成者情報はフッターに統一形式で記載。
 - CI: GitHub Actions が push / PR / 毎週月曜にリンクチェックを実行。
+
+## 参考文献・ソース一覧
+
+- 開発規約: [GEMINI.md](./GEMINI.md)
+- プロジェクト情報: [README.md](./README.md)
+- TDDワークフロー規約: [.claude/rules/tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md)
+- 絶対パス禁止規約: [.claude/rules/no-absolute-paths.md](./.claude/rules/no-absolute-paths.md)
+- Next.jsページ移行スキル: [.claude/skills/nextjs-page-migration/SKILL.md](./.claude/skills/nextjs-page-migration/SKILL.md)
