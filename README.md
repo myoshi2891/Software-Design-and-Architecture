@@ -60,6 +60,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/event-driven-architecture-comprehensive-guide`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/page.tsx)
     — EDA 完全ガイドを移植（16 セクション・Mermaid 18 図・table 7・コードブロック 6）。
     固定サイドバー・進捗バー・scroll-spy を [`EdaSidebar.tsx`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/EdaSidebar.tsx) でクライアント描画
+  - [`/architecture/clean-architecture-comprehensive-guide`](web-next/app/architecture/clean-architecture-comprehensive-guide/page.tsx)
+    — クリーンアーキテクチャ完全ガイドを移植（14 セクション・Mermaid 15 図・table 4・コードブロック 7）。
+    固定サイドバー・進捗バー・scroll-spy を [`CleanArchitectureSidebar.tsx`](web-next/app/architecture/clean-architecture-comprehensive-guide/CleanArchitectureSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、

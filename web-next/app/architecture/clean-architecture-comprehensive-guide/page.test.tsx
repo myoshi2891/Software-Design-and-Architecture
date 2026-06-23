@@ -8,23 +8,6 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 import Page from "./page";
 
-const SECTION_IDS = [
-  "intro",
-  "layers",
-  "dip",
-  "di",
-  "entities",
-  "usecases",
-  "adapters",
-  "frameworks",
-  "directory",
-  "testing",
-  "solid",
-  "antipatterns",
-  "bestpractices",
-  "references",
-];
-
 describe("clean-architecture-comprehensive-guide page", () => {
   it("h1 見出しが完全リファレンスのタイトルである", () => {
     const { container } = render(<Page />);

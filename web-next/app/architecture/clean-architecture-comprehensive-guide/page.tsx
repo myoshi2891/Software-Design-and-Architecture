@@ -127,26 +127,26 @@ const CODE_BLOCKS = {
     <span class="kw text-info">def</span> <span class="fn">__mul__</span>(<span class="kw text-info">self</span>, factor: int) -&gt; <span class="st">"Money"</span>:  <span class="kw text-info">return</span> <span class="kw text-info">self</span>.<span class="fn">multiply</span>(factor)
 
 
-<span class=\"cm\"># ──────────── Domain Enum ────────────</span>
-<span class=\"kw\">class</span> <span class=\"fn\">OrderStatus</span>(Enum):
-    PENDING   = <span class=\"st\">\"pending\"</span>
-    CONFIRMED = <span class=\"st\">\"confirmed\"</span>
-    SHIPPED   = <span class=\"st\">\"shipped\"</span>
-    DELIVERED = <span class=\"st\">\"delivered\"</span>
-    CANCELLED = <span class=\"st\">\"cancelled\"</span>
+<span class="cm"># ──────────── Domain Enum ────────────</span>
+<span class="kw">class</span> <span class="fn">OrderStatus</span>(Enum):
+    PENDING   = <span class="st">"pending"</span>
+    CONFIRMED = <span class="st">"confirmed"</span>
+    SHIPPED   = <span class="st">"shipped"</span>
+    DELIVERED = <span class="st">"delivered"</span>
+    CANCELLED = <span class="st">"cancelled"</span>
 
 
-<span class=\"cm\"># ──────────── Aggregate Root（Entity）────────────</span>
+<span class="cm"># ──────────── Aggregate Root（Entity）────────────</span>
 @dataclass
-<span class=\"kw text-info\">class</span> Order:
-    <span class=\"cm\"># 注文エンティティ（Aggregate Root）</span>
-    <span class=\"cm\"># このクラスにフレームワークの痕跡は一切ない。</span>
-    <span class=\"cm\"># ビジネスルールだけを持つ純粋なクラス。</span>
+<span class="kw text-info">class</span> Order:
+    <span class="cm"># 注文エンティティ（Aggregate Root）</span>
+    <span class="cm"># このクラスにフレームワークの痕跡は一切ない。</span>
+    <span class="cm"># ビジネスルールだけを持つ純粋なクラス。</span>
     id:         str
     customer_id: str
-    _lines:     list        = <span class=\"fn\">field</span>(default_factory=list)
+    _lines:     list        = <span class="fn">field</span>(default_factory=list)
     _status:    OrderStatus = OrderStatus.PENDING
-    created_at: datetime    = <span class=\"fn\">field</span>(default_factory=datetime.utcnow)
+    created_at: datetime    = <span class="fn">field</span>(default_factory=datetime.utcnow)
 
     @classmethod
     <span class="kw text-info">def</span> <span class="fn">create</span>(cls, customer_id: str) -&gt; <span class="st">"Order"</span>:
@@ -540,8 +540,7 @@ export default function CleanArchitectureComprehensiveGuide() {
             </h1>
             <p className="hero-desc">
               ビジネスロジックを技術的詳細から切り離し、フレームワーク・DB・UI
-              に支配されない堅牢なシステム設計を、具体的な Python
-              コードとフロー図で徹底解説します。
+              に支配されない堅牢なシステム設計を、具体的な Python コードとフロー図で徹底解説します。
             </p>
             <div className="hero-tags">
               <span className="hero-tag ht-i">フレームワーク非依存</span>
@@ -553,6 +552,7 @@ export default function CleanArchitectureComprehensiveGuide() {
           <div className="hero-visual">
             <div className="hero-svg-wrap">
               <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+                <title>Clean Architecture Layers</title>
                 <defs>
                   <filter id="eg" x="-60%" y="-60%" width="220%" height="220%">
                     <feGaussianBlur stdDeviation="8" result="b" />
@@ -565,22 +565,130 @@ export default function CleanArchitectureComprehensiveGuide() {
                     <stop offset="0%" stopColor="#f87171" stopOpacity={0.35} />
                     <stop offset="100%" stopColor="#f87171" stopOpacity={0.06} />
                   </radialGradient>
-                  <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+                  <marker
+                    id="arr"
+                    markerWidth="7"
+                    markerHeight="7"
+                    refX="3.5"
+                    refY="3.5"
+                    orient="auto"
+                  >
                     <path d="M0,0 L7,3.5 L0,7 Z" fill="#475569" />
                   </marker>
                 </defs>
-                <circle className="r-fw" cx={190} cy={190} r={172} fill="rgba(148,163,184,.04)" stroke="#475569" strokeWidth="1.2" strokeDasharray="7 4" />
-                <circle className="r-ad" cx={190} cy={190} r={132} fill="rgba(251,191,36,.05)" stroke="#ca8a04" strokeWidth="1.5" strokeDasharray="5 3" />
-                <circle className="r-uc" cx={190} cy={190} r={88} fill="rgba(251,146,60,.07)" stroke="#c2410c" strokeWidth={2} />
-                <circle cx={190} cy={190} r={46} fill="url(#gfill)" stroke="#f87171" strokeWidth="2.5" className="r-en" filter="url(#eg)" />
-                <text x={190} y={32} textAnchor="middle" fontFamily="Space Grotesk,sans-serif" fontSize="1rem" fontWeight={600} fill="#64748b">🔧 Frameworks &amp; Drivers</text>
-                <text x={190} y={74} textAnchor="middle" fontFamily="Space Grotesk,sans-serif" fontSize="1rem" fontWeight={600} fill="#ca8a04">🔌 Interface Adapters</text>
-                <text x={190} y={122} textAnchor="middle" fontFamily="Space Grotesk,sans-serif" fontSize="1rem" fontWeight={600} fill="#c2410c">⚙️ Use Cases</text>
-                <text x={190} y={183} textAnchor="middle" fontFamily="Space Grotesk,sans-serif" fontSize="1.2rem" fontWeight={700} fill="#f87171">🏛️ Entities</text>
-                <text x={190} y={197} textAnchor="middle" fontFamily="Space Grotesk,sans-serif" fontSize="1rem" fill="rgba(248,113,113,.7)">ビジネスルール</text>
-                <line x1={358} y1={52} x2={358} y2={328} stroke="#2d3a4a" strokeWidth="1.5" markerEnd="url(#arr)" />
+                <circle
+                  className="r-fw"
+                  cx={190}
+                  cy={190}
+                  r={172}
+                  fill="rgba(148,163,184,.04)"
+                  stroke="#475569"
+                  strokeWidth="1.2"
+                  strokeDasharray="7 4"
+                />
+                <circle
+                  className="r-ad"
+                  cx={190}
+                  cy={190}
+                  r={132}
+                  fill="rgba(251,191,36,.05)"
+                  stroke="#ca8a04"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 3"
+                />
+                <circle
+                  className="r-uc"
+                  cx={190}
+                  cy={190}
+                  r={88}
+                  fill="rgba(251,146,60,.07)"
+                  stroke="#c2410c"
+                  strokeWidth={2}
+                />
+                <circle
+                  cx={190}
+                  cy={190}
+                  r={46}
+                  fill="url(#gfill)"
+                  stroke="#f87171"
+                  strokeWidth="2.5"
+                  className="r-en"
+                  filter="url(#eg)"
+                />
+                <text
+                  x={190}
+                  y={32}
+                  textAnchor="middle"
+                  fontFamily="Space Grotesk,sans-serif"
+                  fontSize="1rem"
+                  fontWeight={600}
+                  fill="#64748b"
+                >
+                  🔧 Frameworks &amp; Drivers
+                </text>
+                <text
+                  x={190}
+                  y={74}
+                  textAnchor="middle"
+                  fontFamily="Space Grotesk,sans-serif"
+                  fontSize="1rem"
+                  fontWeight={600}
+                  fill="#ca8a04"
+                >
+                  🔌 Interface Adapters
+                </text>
+                <text
+                  x={190}
+                  y={122}
+                  textAnchor="middle"
+                  fontFamily="Space Grotesk,sans-serif"
+                  fontSize="1rem"
+                  fontWeight={600}
+                  fill="#c2410c"
+                >
+                  ⚙️ Use Cases
+                </text>
+                <text
+                  x={190}
+                  y={183}
+                  textAnchor="middle"
+                  fontFamily="Space Grotesk,sans-serif"
+                  fontSize="1.2rem"
+                  fontWeight={700}
+                  fill="#f87171"
+                >
+                  🏛️ Entities
+                </text>
+                <text
+                  x={190}
+                  y={197}
+                  textAnchor="middle"
+                  fontFamily="Space Grotesk,sans-serif"
+                  fontSize="1rem"
+                  fill="rgba(248,113,113,.7)"
+                >
+                  ビジネスルール
+                </text>
+                <line
+                  x1={358}
+                  y1={52}
+                  x2={358}
+                  y2={328}
+                  stroke="#2d3a4a"
+                  strokeWidth="1.5"
+                  markerEnd="url(#arr)"
+                />
                 <g transform="translate(374,190) rotate(-90)">
-                  <text x={0} y={0} textAnchor="middle" fontFamily="Inter,sans-serif" fontSize="1rem" fill="#475569">依存の方向（外→内）</text>
+                  <text
+                    x={0}
+                    y={0}
+                    textAnchor="middle"
+                    fontFamily="Inter,sans-serif"
+                    fontSize="1rem"
+                    fill="#475569"
+                  >
+                    依存の方向（外→内）
+                  </text>
                 </g>
               </svg>
             </div>
@@ -598,13 +706,13 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="callout co-i">
               <div className="callout-title">💡 核心思想</div>
               <p>
-                <strong>ビジネスロジック（ドメイン）</strong>を、フレームワーク・DB・UI
-                などの<strong>技術的詳細</strong>から完全に分離する。ビジネスルールはシステムの最も価値ある資産であり、技術スタックの変化に左右されてはならない。
+                <strong>ビジネスロジック（ドメイン）</strong>を、フレームワーク・DB・UI などの
+                <strong>技術的詳細</strong>
+                から完全に分離する。ビジネスルールはシステムの最も価値ある資産であり、技術スタックの変化に左右されてはならない。
               </p>
             </div>
             <p>
-              Robert C. Martin（Uncle
-              Bob）が 2012 年のブログ記事と 2017 年の著書{" "}
+              Robert C. Martin（Uncle Bob）が 2012 年のブログ記事と 2017 年の著書{" "}
               <em>Clean Architecture: A Craftsman's Guide</em>{" "}
               で提唱したアーキテクチャ原則です。ヘキサゴナルアーキテクチャ・オニオンアーキテクチャ・BCE
               パターンなどの先行思想を統合・体系化したものです。
@@ -655,7 +763,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <div className="feat-icon">🧪</div>
                 <div className="feat-title">テスト容易性</div>
                 <p className="feat-desc">
-                  ビジネスルールを DB・UI・外部サービス一切なしでユニットテストできる。依存性注入でモックを自然に差し替えられる。
+                  ビジネスルールを
+                  DB・UI・外部サービス一切なしでユニットテストできる。依存性注入でモックを自然に差し替えられる。
                 </p>
               </div>
               <div className="feat-card">
@@ -670,8 +779,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <div className="feat-icon">🗄️</div>
                 <div className="feat-title">データベース非依存</div>
                 <p className="feat-desc">
-                  DB はストレージの一手段。Oracle → PostgreSQL
-                  への移行も、Repository の実装を差し替えるだけで済む。
+                  DB はストレージの一手段。Oracle → PostgreSQL への移行も、Repository
+                  の実装を差し替えるだけで済む。
                 </p>
               </div>
             </div>
@@ -679,8 +788,7 @@ export default function CleanArchitectureComprehensiveGuide() {
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
                 「技術スタックを変えてもビジネスロジックが動き続けるか？」という問いを常に念頭に置く。フレームワークや
-                DB
-                の名前がコアコードに登場したら、設計を見直すサインです。
+                DB の名前がコアコードに登場したら、設計を見直すサインです。
               </p>
             </div>
             <p style={{ fontSize: "1rem", color: "var(--t4)" }}>
@@ -725,9 +833,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <div className="lc-title">🔌 Interface Adapters</div>
                 <ul>
                   <li>Controller / Presenter / Gateway</li>
-                  <li>
-                    外部形式（HTTP/JSON）↔ ドメイン形式の変換
-                  </li>
+                  <li>外部形式（HTTP/JSON）↔ ドメイン形式の変換</li>
                   <li>DB・外部 API のアダプター実装</li>
                   <li>Repository インターフェースの具体実装</li>
                 </ul>
@@ -821,18 +927,15 @@ export default function CleanArchitectureComprehensiveGuide() {
               <div className="cmp-bad cmp">
                 <div className="cmp-title">❌ DIP なし（Bad）</div>
                 <p>
-                  Use Case が SQLAlchemy の Session
-                  を直接受け取る。DB を変えると Use Case
+                  Use Case が SQLAlchemy の Session を直接受け取る。DB を変えると Use Case
                   のコードも修正が必要。テスト時に実際の DB が必要になる。
                 </p>
               </div>
               <div className="cmp-good cmp">
                 <div className="cmp-title">✅ DIP あり（Good）</div>
                 <p>
-                  Use Case
-                  は抽象インターフェース（OrderRepository）のみを知る。具体的な
-                  DB 実装は外側レイヤーが担い、Use Case
-                  のコードは一切変更不要。
+                  Use Case は抽象インターフェース（OrderRepository）のみを知る。具体的な DB
+                  実装は外側レイヤーが担い、Use Case のコードは一切変更不要。
                 </p>
               </div>
             </div>
@@ -868,12 +971,17 @@ export default function CleanArchitectureComprehensiveGuide() {
                   application/interfaces/order_repository.py + adapters/repositories/
                 </span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code1 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code1 }} />
+              </pre>
             </div>
             <div className="callout co-s">
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
-                Repository インターフェースは <strong>Use Cases 層（application/interfaces/）</strong> に配置する。「DB を知るのは外側レイヤーだけ」が鉄則。テスト用に <code>InMemoryRepository</code> を必ず用意し、Use Case のユニットテストを DB なしで書けることを確認する。
+                Repository インターフェースは{" "}
+                <strong>Use Cases 層（application/interfaces/）</strong> に配置する。「DB
+                を知るのは外側レイヤーだけ」が鉄則。テスト用に <code>InMemoryRepository</code>{" "}
+                を必ず用意し、Use Case のユニットテストを DB なしで書けることを確認する。
               </p>
             </div>
             <p style={{ fontSize: "1rem", color: "var(--t4)" }}>
@@ -924,13 +1032,9 @@ export default function CleanArchitectureComprehensiveGuide() {
     style F3 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5
     style F4 fill:#1f1010,stroke:#7f1d1d,color:#fca5a5`}
               />
-              <div className="diagram-label">
-                図4-1　Entities 層に置くもの・置かないもの
-              </div>
+              <div className="diagram-label">図4-1　Entities 層に置くもの・置かないもの</div>
             </div>
-            <h3 className="sub">
-              Python 実装例：Value Object と Entity（Aggregate Root）
-            </h3>
+            <h3 className="sub">Python 実装例：Value Object と Entity（Aggregate Root）</h3>
             <div className="code-block">
               <div className="code-hdr">
                 <span className="code-lang">Python</span>
@@ -938,19 +1042,17 @@ export default function CleanArchitectureComprehensiveGuide() {
                   domain/value_objects/money.py &amp; domain/entities/order.py
                 </span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code2 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code2 }} />
+              </pre>
             </div>
             <div className="callout co-s">
-              <div className="callout-title">
-                📌 ベストプラクティス — Rich Domain Model
-              </div>
+              <div className="callout-title">📌 ベストプラクティス — Rich Domain Model</div>
               <p>
                 <code>order.confirm()</code> のようにビジネス操作を Entity
-                のメソッドとして定义し、getter/setter
-                だけの「貧血モデル（Anemic Domain Model）」を避ける。Entity
-                が自身の不変条件（明細なし・発送後キャンセル不可
-                etc.）を守る責務を持つ。Value Object は{" "}
-                <code>frozen=True</code> で不変を保証する。
+                のメソッドとして定义し、getter/setter だけの「貧血モデル（Anemic Domain
+                Model）」を避ける。Entity が自身の不変条件（明細なし・発送後キャンセル不可
+                etc.）を守る責務を持つ。Value Object は <code>frozen=True</code> で不変を保証する。
               </p>
             </div>
             <p style={{ fontSize: "1rem", color: "var(--t4)" }}>
@@ -971,8 +1073,9 @@ export default function CleanArchitectureComprehensiveGuide() {
             <p>
               ユースケース層は
               <strong>アプリケーション固有のビジネスフロー</strong>
-              をオーケストレートします。Entity を操作し、Repository・外部サービスのインターフェースを呼び出します。HTTP
-              の詳細も DB の実装も知りません。
+              をオーケストレートします。Entity
+              を操作し、Repository・外部サービスのインターフェースを呼び出します。HTTP の詳細も DB
+              の実装も知りません。
             </p>
             <div className="diagram-wrap">
               <MermaidDiagram
@@ -996,9 +1099,7 @@ export default function CleanArchitectureComprehensiveGuide() {
     style OUT fill:#2a1810,stroke:#fb923c,color:#fb923c
     style RES fill:#1e293b,stroke:#94a3b8,color:#94a3b8`}
               />
-              <div className="diagram-label">
-                図5-1　Use Case の Input / Output 設計
-              </div>
+              <div className="diagram-label">図5-1　Use Case の Input / Output 設計</div>
             </div>
             <h3 className="sub">Python 実装例：PlaceOrderUseCase</h3>
             <div className="code-block">
@@ -1006,12 +1107,17 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">application/use_cases/place_order.py</span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code3 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code3 }} />
+              </pre>
             </div>
             <div className="callout co-s">
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
-                <strong>1 Use Case = 1 ビジネスアクション</strong>。<code>PlaceOrderUseCase</code>・<code>CancelOrderUseCase</code>・<code>GetOrderUseCase</code> のように明確に分割する。Use Case に HTTP リクエストオブジェクトを渡さない。必ず <code>Command</code> / <code>Query</code> DTO に変換してから渡す。
+                <strong>1 Use Case = 1 ビジネスアクション</strong>。<code>PlaceOrderUseCase</code>・
+                <code>CancelOrderUseCase</code>・<code>GetOrderUseCase</code>{" "}
+                のように明確に分割する。Use Case に HTTP リクエストオブジェクトを渡さない。必ず{" "}
+                <code>Command</code> / <code>Query</code> DTO に変換してから渡す。
               </p>
             </div>
             <p style={{ fontSize: "1rem", color: "var(--t4)" }}>
@@ -1054,9 +1160,7 @@ export default function CleanArchitectureComprehensiveGuide() {
     style PRES fill:#1a1a3a,stroke:#818cf8,color:#a5b4fc
     style GATE fill:#14532d,stroke:#22c55e,color:#86efac`}
               />
-              <div className="diagram-label">
-                図6-1　Interface Adapters 層の 3 つの役割
-              </div>
+              <div className="diagram-label">図6-1　Interface Adapters 層の 3 つの役割</div>
             </div>
             <h3 className="sub">Controller の実装例（FastAPI）</h3>
             <div className="code-block">
@@ -1064,22 +1168,27 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">adapters/controllers/order_controller.py</span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code4 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code4 }} />
+              </pre>
             </div>
             <h3 className="sub">Repository Adapter（SQLAlchemy）</h3>
             <div className="code-block">
               <div className="code-hdr">
                 <span className="code-lang">Python</span>
-                <span className="code-file">
-                  adapters/repositories/sqlalchemy_order_repo.py
-                </span>
+                <span className="code-file">adapters/repositories/sqlalchemy_order_repo.py</span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code5 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code5 }} />
+              </pre>
             </div>
             <div className="callout co-s">
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
-                Controller には<strong>変換ロジックのみ</strong>。ビジネスロジックを 1 行も書かない。<code>if status == "vip":</code> のような判定が Controller に現れたら、Use Case か Entity に移動する。DB モデルとドメインエンティティは<strong>必ず別クラスで定義</strong>し、Mapper メソッドで橋渡しする。
+                Controller には<strong>変換ロジックのみ</strong>。ビジネスロジックを 1
+                行も書かない。<code>if status == "vip":</code> のような判定が Controller
+                に現れたら、Use Case か Entity に移動する。DB モデルとドメインエンティティは
+                <strong>必ず別クラスで定義</strong>し、Mapper メソッドで橋渡しする。
               </p>
             </div>
           </section>
@@ -1092,7 +1201,8 @@ export default function CleanArchitectureComprehensiveGuide() {
             </div>
             <span className="lb lb-fw">🔧 Frameworks &amp; Drivers 層 — 最外側</span>
             <p>
-              最外層はフレームワーク・DB・UIなどの<strong>技術的詳細</strong>を扱います。この層が変わっても、内側のビジネスロジックは一切影響を受けません。最も重要な役割が{" "}
+              最外層はフレームワーク・DB・UIなどの<strong>技術的詳細</strong>
+              を扱います。この層が変わっても、内側のビジネスロジックは一切影響を受けません。最も重要な役割が{" "}
               <strong>Composition Root（依存性の組み立て）</strong>です。
             </p>
             <div className="diagram-wrap">
@@ -1112,9 +1222,7 @@ export default function CleanArchitectureComprehensiveGuide() {
     style S4 fill:#292219,stroke:#fbbf24,color:#fbbf24
     style S5 fill:#14532d,stroke:#22c55e,color:#86efac`}
               />
-              <div className="diagram-label">
-                図7-1　Composition Root での依存性組み立て順序
-              </div>
+              <div className="diagram-label">図7-1　Composition Root での依存性組み立て順序</div>
             </div>
             <h3 className="sub">Composition Root 実装例（FastAPI + Depends）</h3>
             <div className="code-block">
@@ -1122,12 +1230,17 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <span className="code-lang">Python</span>
                 <span className="code-file">main.py（Composition Root）</span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code6 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code6 }} />
+              </pre>
             </div>
             <div className="callout co-s">
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
-                全ての依存性の組み立ては <strong>Composition Root（main.py）の 1 箇所だけ</strong>で行う。Use Case が <code>SessionLocal()</code> を自分で生成してはいけない。<code>os.environ</code> の読み込みも外側レイヤーのみ。内側レイヤーは設定値を知らない。
+                全ての依存性の組み立ては <strong>Composition Root（main.py）の 1 箇所だけ</strong>
+                で行う。Use Case が <code>SessionLocal()</code> を自分で生成してはいけない。
+                <code>os.environ</code>{" "}
+                の読み込みも外側レイヤーのみ。内側レイヤーは設定値を知らない。
               </p>
             </div>
           </section>
@@ -1194,8 +1307,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                 <strong>コンストラクタ DI を第一選択</strong>
                 とする。依存がコンストラクタに明記されることで、クラスの責務が可視化される。FastAPI
                 の <code>Depends()</code>・Spring の <code>@Autowired</code>
-                など、フレームワークの DI 機能を Composition Root
-                の実装に活用する。
+                など、フレームワークの DI 機能を Composition Root の実装に活用する。
               </p>
             </div>
           </section>
@@ -1289,17 +1401,14 @@ export default function CleanArchitectureComprehensiveGuide() {
     style INF fill:#1e293b,stroke:#94a3b8,color:#94a3b8
     style MAIN fill:#0d1117,stroke:#6366f1,color:#818cf8`}
               />
-              <div className="diagram-label">
-                図9-1　パッケージ間の依存関係（赤破線は禁止方向）
-              </div>
+              <div className="diagram-label">図9-1　パッケージ間の依存関係（赤破線は禁止方向）</div>
             </div>
             <div className="callout co-i">
               <div className="callout-title">💡 命名の慣習</div>
               <p>
-                プロジェクトによって <code>domain/</code> を <code>core/</code>
-                、<code>application/</code> を <code>usecases/</code>
-                、<code>infrastructure/</code> を <code>frameworks/</code>{" "}
-                と命名することもあります。名前より
+                プロジェクトによって <code>domain/</code> を <code>core/</code>、
+                <code>application/</code> を <code>usecases/</code>、<code>infrastructure/</code> を{" "}
+                <code>frameworks/</code> と命名することもあります。名前より
                 <strong>レイヤーの責務と依存方向</strong>
                 が正しく守られているかが重要です。
               </p>
@@ -1315,7 +1424,8 @@ export default function CleanArchitectureComprehensiveGuide() {
             <p>
               クリーンアーキテクチャの最大の恩恵の一つが
               <strong>テスト容易性</strong>
-              です。ビジネスロジックを DB・フレームワークから分離したことで、大多数のテストを高速なユニットテストとして書けます。
+              です。ビジネスロジックを
+              DB・フレームワークから分離したことで、大多数のテストを高速なユニットテストとして書けます。
             </p>
             <div className="diagram-wrap">
               <MermaidDiagram
@@ -1396,16 +1506,20 @@ export default function CleanArchitectureComprehensiveGuide() {
               <div className="code-hdr">
                 <span className="code-lang">Python</span>
                 <span className="code-file">
-                  tests/unit/domain/test_order.py &amp;
-                  tests/unit/application/test_place_order.py
+                  tests/unit/domain/test_order.py &amp; tests/unit/application/test_place_order.py
                 </span>
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code7 }} />
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code7 }} />
+              </pre>
             </div>
             <div className="callout co-s">
               <div className="callout-title">📌 ベストプラクティス</div>
               <p>
-                テストで DB を必要としないことを最初の目標にする。<code>InMemoryRepository</code> を必ず実装し、全 Use Case のテストを DB なしで書ける状態にする。統合テストは <strong>TestContainers</strong> を使って本物の DB コンテナを使用し、環境依存を排除する。
+                テストで DB を必要としないことを最初の目標にする。<code>InMemoryRepository</code>{" "}
+                を必ず実装し、全 Use Case のテストを DB なしで書ける状態にする。統合テストは{" "}
+                <strong>TestContainers</strong> を使って本物の DB
+                コンテナを使用し、環境依存を排除する。
               </p>
             </div>
             <p style={{ fontSize: "1rem", color: "var(--t4)" }}>
@@ -1413,10 +1527,7 @@ export default function CleanArchitectureComprehensiveGuide() {
               <Ext href="https://martinfowler.com/articles/practical-test-pyramid.html">
                 The Practical Test Pyramid — Martin Fowler
               </Ext>{" "}
-              ／{" "}
-              <Ext href="https://testcontainers.com/">
-                TestContainers
-              </Ext>
+              ／ <Ext href="https://testcontainers.com/">TestContainers</Ext>
             </p>
           </section>
 
@@ -1484,8 +1595,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                       <strong>S — 単一責任</strong>
                     </td>
                     <td>
-                      Controller は変換のみ、UseCase はフロー管理のみ、Entity
-                      はビジネスルールのみ
+                      Controller は変換のみ、UseCase はフロー管理のみ、Entity はビジネスルールのみ
                     </td>
                     <td className="bad-c">Controller にビジネスロジックが混在</td>
                     <td className="good-c">責務ごとにクラス分離</td>
@@ -1494,13 +1604,9 @@ export default function CleanArchitectureComprehensiveGuide() {
                     <td>
                       <strong>O — 開放閉鎖</strong>
                     </td>
-                    <td>
-                      新決済手段の追加 → 新クラスを追加するだけ、既存 UseCase
-                      は修正不要
-                    </td>
+                    <td>新決済手段の追加 → 新クラスを追加するだけ、既存 UseCase は修正不要</td>
                     <td className="bad-c">
-                      <code>if payment == "credit": stripe_charge()</code>{" "}
-                      を毎回追加
+                      <code>if payment == "credit": stripe_charge()</code> を毎回追加
                     </td>
                     <td className="good-c">PaymentGateway Interface を実装</td>
                   </tr>
@@ -1524,10 +1630,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                     <td>
                       <strong>D — 依存性逆転</strong>
                     </td>
-                    <td>
-                      UseCase が OrderRepository 抽象に依存、SQLAlchemy
-                      は外側で実装
-                    </td>
+                    <td>UseCase が OrderRepository 抽象に依存、SQLAlchemy は外側で実装</td>
                     <td className="bad-c">UseCase が Session を直接生成</td>
                     <td className="good-c">コンストラクタで抽象を受け取る</td>
                   </tr>
@@ -1585,21 +1688,18 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="ap-card">
               <div className="ap-hdr">
                 <span className="ap-icon">💧</span>
-                <div className="ap-title">
-                  Anti-Pattern 1：Leaky Abstraction（漏れた抽象）
-                </div>
+                <div className="ap-title">Anti-Pattern 1：Leaky Abstraction（漏れた抽象）</div>
               </div>
               <div className="ap-body">
                 <div className="ap-problem">
                   Use Case が SQLAlchemy の <code>Session</code>{" "}
-                  を直接コンストラクタで受け取っている。フレームワークの詳細が Use
-                  Case 層に漏れている状態。テスト時に必ず本物の DB が必要になる。
+                  を直接コンストラクタで受け取っている。フレームワークの詳細が Use Case
+                  層に漏れている状態。テスト時に必ず本物の DB が必要になる。
                 </div>
                 <div className="ap-fix">
-                  Repository
-                  インターフェースを経由する。<code>def __init__(self, repo: OrderRepository)</code>{" "}
-                  — Use Case は抽象のみを知る。具体的な DB
-                  実装は外側レイヤーに閉じる。
+                  Repository インターフェースを経由する。
+                  <code>def __init__(self, repo: OrderRepository)</code> — Use Case
+                  は抽象のみを知る。具体的な DB 実装は外側レイヤーに閉じる。
                 </div>
               </div>
             </div>
@@ -1607,21 +1707,18 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="ap-card">
               <div className="ap-hdr">
                 <span className="ap-icon">🩸</span>
-                <div className="ap-title">
-                  Anti-Pattern 2：Anemic Domain Model（貧血モデル）
-                </div>
+                <div className="ap-title">Anti-Pattern 2：Anemic Domain Model（貧血モデル）</div>
               </div>
               <div className="ap-body">
                 <div className="ap-problem">
-                  Entity が getter / setter しか持たず、ビジネスロジックが全て
-                  Service
+                  Entity が getter / setter しか持たず、ビジネスロジックが全て Service
                   層に書かれている。「クリーンアーキテクチャを導入した」と言いながら、ドメイン層に何もない状態。
                 </div>
                 <div className="ap-fix">
                   <code>order.confirm()</code> のようにビジネス操作を Entity
                   のメソッドとして定義する。Entity
-                  が自身の不変条件（空注文は確定不可・発送後はキャンセル不可
-                  etc.）を守る Rich Domain Model を目指す。
+                  が自身の不変条件（空注文は確定不可・発送後はキャンセル不可 etc.）を守る Rich
+                  Domain Model を目指す。
                 </div>
               </div>
             </div>
@@ -1629,9 +1726,7 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="ap-card">
               <div className="ap-hdr">
                 <span className="ap-icon">🏋️</span>
-                <div className="ap-title">
-                  Anti-Pattern 3：Fat Entity（太りすぎた Entity）
-                </div>
+                <div className="ap-title">Anti-Pattern 3：Fat Entity（太りすぎた Entity）</div>
               </div>
               <div className="ap-body">
                 <div className="ap-problem">
@@ -1640,9 +1735,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                   が外部ライブラリを import し始めたら危険信号。
                 </div>
                 <div className="ap-fix">
-                  Entity はビジネスルールのみを持つ。副作用（メール送信・通知等）は
-                  Domain Event として Use Case 層が処理する。Entity
-                  のテストは new Order() だけで完結すべき。
+                  Entity はビジネスルールのみを持つ。副作用（メール送信・通知等）は Domain Event
+                  として Use Case 層が処理する。Entity のテストは new Order() だけで完結すべき。
                 </div>
               </div>
             </div>
@@ -1650,9 +1744,7 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="ap-card">
               <div className="ap-hdr">
                 <span className="ap-icon">🌩️</span>
-                <div className="ap-title">
-                  Anti-Pattern 4：God Use Case（神ユースケース）
-                </div>
+                <div className="ap-title">Anti-Pattern 4：God Use Case（神ユースケース）</div>
               </div>
               <div className="ap-body">
                 <div className="ap-problem">
@@ -1660,9 +1752,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                   が注文・在庫・決済・通知・配送をすべて処理する巨大クラスになっている。変更の影響範囲が爆発的に広がり、テストも書きにくくなる。
                 </div>
                 <div className="ap-fix">
-                  1 UseCase = 1 ビジネスアクション。<code>PlaceOrderUseCase</code>{" "}
-                  / <code>ProcessPaymentUseCase</code> /{" "}
-                  <code>NotifyCustomerUseCase</code>{" "}
+                  1 UseCase = 1 ビジネスアクション。<code>PlaceOrderUseCase</code> /{" "}
+                  <code>ProcessPaymentUseCase</code> / <code>NotifyCustomerUseCase</code>{" "}
                   のように分割し、Domain Event で疎結合に連携させる。
                 </div>
               </div>
@@ -1671,9 +1762,7 @@ export default function CleanArchitectureComprehensiveGuide() {
             <div className="ap-card">
               <div className="ap-hdr">
                 <span className="ap-icon">⏭️</span>
-                <div className="ap-title">
-                  Anti-Pattern 5：Layer Skipping（レイヤースキップ）
-                </div>
+                <div className="ap-title">Anti-Pattern 5：Layer Skipping（レイヤースキップ）</div>
               </div>
               <div className="ap-body">
                 <div className="ap-problem">
@@ -1682,8 +1771,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                   Controller に漏れる温床になる。
                 </div>
                 <div className="ap-fix">
-                  必ず <code>Controller → UseCase → Repository</code>{" "}
-                  の順を守る。Use Case{" "}
+                  必ず <code>Controller → UseCase → Repository</code> の順を守る。Use Case{" "}
                   が「簡単すぎる」と感じても、将来の変更に備えて経由する設計を維持する。
                 </div>
               </div>
@@ -1775,8 +1863,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                       インターフェースのみに依存
                       <br />
                       Input/Output DTO で境界を明確化
-                      <br />
-                      1 UseCase = 1 アクション
+                      <br />1 UseCase = 1 アクション
                     </td>
                     <td className="bad-c">
                       HTTP リクエストを直接受け取る
@@ -1841,8 +1928,7 @@ export default function CleanArchitectureComprehensiveGuide() {
                   </div>
                   <div className="mat-title">スパゲッティ</div>
                   <div className="mat-desc">
-                    ビジネスロジックが Controller に、DB アクセスが View
-                    に散乱。全てが密結合。
+                    ビジネスロジックが Controller に、DB アクセスが View に散乱。全てが密結合。
                   </div>
                 </div>
               </div>
@@ -1857,9 +1943,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                   </div>
                   <div className="mat-title">レイヤードアーキテクチャ</div>
                   <div className="mat-desc">
-                    Controller / Service / Repository
-                    の分離はできているが、DB 構造がドメインを支配している。テストに
-                    DB が必要。
+                    Controller / Service / Repository の分離はできているが、DB
+                    構造がドメインを支配している。テストに DB が必要。
                   </div>
                 </div>
               </div>
@@ -1874,7 +1959,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                   </div>
                   <div className="mat-title">ドメイン分離</div>
                   <div className="mat-desc">
-                    Entity と Value Object を導入。ビジネスルールをドメイン層に集約。DB 依存は残るが、少し改善。
+                    Entity と Value Object を導入。ビジネスルールをドメイン層に集約。DB
+                    依存は残るが、少し改善。
                   </div>
                 </div>
               </div>
@@ -1905,8 +1991,8 @@ export default function CleanArchitectureComprehensiveGuide() {
                   </div>
                   <div className="mat-title">完全なクリーンアーキテクチャ</div>
                   <div className="mat-desc">
-                    全層の依存が内側のみ。フレームワーク交換可能。Composition
-                    Root で全依存を組み立て。テストピラミッドが健全。
+                    全層の依存が内側のみ。フレームワーク交換可能。Composition Root
+                    で全依存を組み立て。テストピラミッドが健全。
                   </div>
                 </div>
               </div>
@@ -2028,85 +2114,84 @@ export default function CleanArchitectureComprehensiveGuide() {
             </div>
             <h3 className="sub">🌐 公式ドキュメント・重要 URL</h3>
             <div className="ref-grid">
-              <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" className="ref-card">
+              <Ext
+                href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+                className="ref-card"
+              >
                 <div className="ref-title">The Clean Architecture（原典）</div>
-                <div className="ref-url">
-                  blog.cleancoder.com — Uncle Bob 原文ブログ (2012)
-                </div>
+                <div className="ref-url">blog.cleancoder.com — Uncle Bob 原文ブログ (2012)</div>
               </Ext>
               <Ext href="https://martinfowler.com/eaaCatalog/repository.html" className="ref-card">
                 <div className="ref-title">Repository Pattern — Martin Fowler</div>
-                <div className="ref-url">
-                  martinfowler.com/eaaCatalog/repository.html
-                </div>
+                <div className="ref-url">martinfowler.com/eaaCatalog/repository.html</div>
               </Ext>
-              <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html" className="ref-card">
-                <div className="ref-title">
-                  Anemic Domain Model（アンチパターン）
-                </div>
+              <Ext
+                href="https://martinfowler.com/bliki/AnemicDomainModel.html"
+                className="ref-card"
+              >
+                <div className="ref-title">Anemic Domain Model（アンチパターン）</div>
                 <div className="ref-url">martinfowler.com — Martin Fowler</div>
               </Ext>
-              <Ext href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/" className="ref-card">
+              <Ext
+                href="https://herbertograca.com/2017/09/14/ports-adapters-architecture/"
+                className="ref-card"
+              >
                 <div className="ref-title">Ports &amp; Adapters Architecture</div>
                 <div className="ref-url">herbertograca.com — 詳細解説</div>
               </Ext>
-              <Ext href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/" className="ref-card">
+              <Ext
+                href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/"
+                className="ref-card"
+              >
                 <div className="ref-title">The Onion Architecture</div>
-                <div className="ref-url">
-                  jeffreypalermo.com — Jeffrey Palermo (2008)
-                </div>
+                <div className="ref-url">jeffreypalermo.com — Jeffrey Palermo (2008)</div>
               </Ext>
-              <Ext href="https://martinfowler.com/articles/practical-test-pyramid.html" className="ref-card">
+              <Ext
+                href="https://martinfowler.com/articles/practical-test-pyramid.html"
+                className="ref-card"
+              >
                 <div className="ref-title">The Practical Test Pyramid</div>
-                <div className="ref-url">
-                  martinfowler.com — テスト戦略の詳細
-                </div>
+                <div className="ref-url">martinfowler.com — テスト戦略の詳細</div>
               </Ext>
               <Ext href="https://github.com/cosmicpython/book" className="ref-card">
-                <div className="ref-title">
-                  Cosmic Python（Architecture Patterns with Python）
-                </div>
-                <div className="ref-url">
-                  github.com/cosmicpython/book — サンプルコード
-                </div>
+                <div className="ref-title">Cosmic Python（Architecture Patterns with Python）</div>
+                <div className="ref-url">github.com/cosmicpython/book — サンプルコード</div>
               </Ext>
               <Ext href="https://testcontainers.com/" className="ref-card">
                 <div className="ref-title">TestContainers — 統合テスト用</div>
-                <div className="ref-url">
-                  testcontainers.com — Docker ベースのテスト環境
-                </div>
+                <div className="ref-url">testcontainers.com — Docker ベースのテスト環境</div>
               </Ext>
-              <Ext href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" className="ref-card">
+              <Ext
+                href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html"
+                className="ref-card"
+              >
                 <div className="ref-title">SOLID Relevance — Uncle Bob (2020)</div>
-                <div className="ref-url">
-                  blog.cleancoder.com — SOLID 原則の現代的解説
-                </div>
+                <div className="ref-url">blog.cleancoder.com — SOLID 原則の現代的解説</div>
               </Ext>
               <Ext href="https://docs.pytest.org/" className="ref-card">
                 <div className="ref-title">Pytest 公式ドキュメント</div>
-                <div className="ref-url">
-                  docs.pytest.org — Python テストフレームワーク
-                </div>
+                <div className="ref-url">docs.pytest.org — Python テストフレームワーク</div>
               </Ext>
             </div>
           </section>
         </div>
         {/* .content */}
+        <footer>
+          <p>
+            🏛️ <strong>クリーンアーキテクチャ 完全ガイド</strong> — Python 実装例付き
+          </p>
+          <p style={{ marginTop: 6 }}>
+            原典：
+            <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
+              The Clean Architecture by Robert C. Martin (2012)
+            </Ext>{" "}
+            ／{" "}
+            <Ext href="https://www.goodreads.com/book/show/18043011-clean-architecture">
+              Clean Architecture: A Craftsman's Guide (2017)
+            </Ext>
+          </p>
+        </footer>
       </main>
-
-      <footer>
-        <p>🏛️ <strong>クリーンアーキテクチャ 完全ガイド</strong> — Python 実装例付き</p>
-        <p style={{ marginTop: 6 }}>
-          原典：
-          <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
-            The Clean Architecture by Robert C. Martin (2012)
-          </Ext>{" "}
-          ／{" "}
-          <Ext href="https://www.goodreads.com/book/show/18043011-clean-architecture">
-            Clean Architecture: A Craftsman's Guide (2017)
-          </Ext>
-        </p>
-      </footer>
     </div>
   );
 }
