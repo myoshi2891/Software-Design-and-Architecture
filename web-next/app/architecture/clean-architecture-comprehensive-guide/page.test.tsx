@@ -73,4 +73,19 @@ describe("clean-architecture-comprehensive-guide page", () => {
     expect(container.querySelectorAll("table")).toHaveLength(4);
     expect(container.querySelectorAll("pre")).toHaveLength(7);
   });
+
+  it("globals.css に .clean-architecture-comprehensive-guide .main のレイアウト調整が含まれている", () => {
+    const fs = require("node:fs");
+    const path = require("node:path");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
+    const cssContent = fs.readFileSync(cssPath, "utf-8");
+    
+    // .clean-architecture-comprehensive-guide のセクションを抽出してテスト
+    const cleanArchSection = cssContent.slice(cssContent.indexOf(".clean-architecture-comprehensive-guide"));
+    expect(cssContent).toContain(".clean-architecture-comprehensive-guide");
+    
+    const mainStyleRegex = /\.main\s*\{\s*margin-left:\s*var\(--sw\);\s*flex:\s*1;\s*max-width:\s*calc\(100%\s*-\s*var\(--sw\)\);\s*overflow-x:\s*hidden;\s*\}/;
+    expect(mainStyleRegex.test(cleanArchSection)).toBe(true);
+  });
 });
+
