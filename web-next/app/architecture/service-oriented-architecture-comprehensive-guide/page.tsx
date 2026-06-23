@@ -423,30 +423,23 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             <div className="mermaid-wrap">
               <MermaidDiagram
                 id="diag-1"
-                style={{ minWidth: "800px" }}
-                chart={`timeline
-    title SOAの歴史的背景
-    1990年代後半 : "エンタープライズシステム
-の複雑化"
-                 : "スパゲッティ統合
-（Point-to-Point）が限界に"
-    1996年       : "Gartner が SOA という
-概念を初めて定義"
-    2000年代初頭 : "XML・SOAP・WSDLなど
-Webサービス技術が標準化"
-                 : "W3C・OASIS による
-仕様策定が進む"
-    2003〜2006年 : "ESB（Enterprise Service Bus）
-製品が台頭"
-                 : "IBM WebSphere・Oracle
-SOA Suite・TIBCO普及"
-    2006〜2010年 : "SOAが大企業の
-標準アーキテクチャとして確立"
-                 : "TOGAF・SOA参照モデルの整備"
-    2011〜現在   : "マイクロサービスへの
-移行が始まる"
-                 : "SOAはエンタープライズ統合基盤
-として継続活用"`}
+                style={{ minWidth: "900px" }}
+                chart={`flowchart LR
+    90s("1990年代後半<br><br>・エンタープライズシステムの複雑化<br>・スパゲッティ統合（PtP）が限界に")
+    96("1996年<br><br>・GartnerがSOAの概念を初めて定義")
+    00s("2000年代初頭<br><br>・XML, SOAP, WSDLの標準化<br>・W3C, OASISの仕様策定が進む")
+    03("2003〜2006年<br><br>・ESB（Enterprise Service Bus）台頭<br>・WebSphere, Oracle SOA等普及")
+    06("2006〜2010年<br><br>・SOAが大企業の標準構造に確立<br>・TOGAF・SOA参照モデルの整備")
+    11("2011〜現在<br><br>・マイクロサービスへ移行開始<br>・エンタープライズ統合として継続活用")
+    
+    90s --> 96 --> 00s --> 03 --> 06 --> 11
+    
+    style 90s fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px
+    style 96 fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px
+    style 00s fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px
+    style 03 fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px
+    style 06 fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px
+    style 11 fill:#2d1f4e,stroke:#4a2a8a,stroke-width:2px`}
               />
               <div className="mermaid-label">diagram / timeline</div>
             </div>
