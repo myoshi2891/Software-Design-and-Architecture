@@ -47,6 +47,32 @@
 - 総合ガイド (`general/comprehensive-guide/`)
 - CSS デザインシステムガイド (`css-design-system-guide/`)
 
+## Web アプリ (`web-next/`)
+
+静的 HTML ガイドを Next.js (App Router) ページとして再実装する Web アプリです。
+Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
+Testing Library（契約テスト）を採用しています。
+
+- 移行済みページ: [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
+  — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
+  Mermaid 図・コードハイライト・国際資格ガイド）
+- Mermaid 図はクライアント描画（[`components/MermaidDiagram.tsx`](web-next/components/MermaidDiagram.tsx)）、
+  外部リンクは [`components/Ext.tsx`](web-next/components/Ext.tsx) で `rel=noopener noreferrer` を保証
+- スタイルは [`app/globals.css`](web-next/app/globals.css) のデザイントークン + ページスコープクラス、
+  アイコンは `@tabler/icons-react`
+
+```bash
+cd web-next
+bun install
+bun run dev        # http://localhost:3000/general/comprehensive-guide
+bun run test       # 契約テスト + コンポーネントテスト
+bun run lint       # Biome
+bun run typecheck  # tsc --noEmit
+bun run build      # production build
+```
+
+新規ページの移行・保守手順は `.claude/skills/nextjs-page-migration/SKILL.md` を参照してください。
+
 ## メンテナンス
 
 このプロジェクトでは、ドキュメントの品質を維持するために自動化ツールを使用しています。

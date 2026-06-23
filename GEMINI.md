@@ -44,6 +44,18 @@ bun run check-links
 - GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックを実行する。
 - 毎週月曜日にスケジュール実行を行い、リンク切れを早期に発見する。
 
+### 3. Web アプリ (`web-next/`) の開発
+
+- 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
+- 移行済み: `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
+- 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
+  Testing Library）を Red→Green→Refactor で進める。詳細手順は
+  `.claude/skills/nextjs-page-migration/SKILL.md` を参照。
+- 検証は `web-next/` 配下で `bun run lint` / `bun run typecheck` / `bun run test` /
+  `bun run build` の全通過を必須とする。Lint/Format は Biome。
+- スタイルは `app/globals.css` のデザイントークン + ページスコープクラス。アイコンは
+  `@tabler/icons-react`、Mermaid はクライアント描画、コードハイライトは手書き span を維持する。
+
 ## 📝 規約
 
 - すべてのドキュメントは日本語で記述する。
