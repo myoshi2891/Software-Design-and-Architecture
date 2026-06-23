@@ -423,6 +423,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             <div className="mermaid-wrap">
               <MermaidDiagram
                 id="diag-1"
+                style={{ minWidth: "850px" }}
                 chart={`timeline
     title SOAの歴史的背景
     1990年代後半 : エンタープライズシステムの複雑化
@@ -2185,6 +2186,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
             <div className="mermaid-wrap">
               <MermaidDiagram
                 id="diag-18"
+                style={{ minWidth: "900px" }}
                 chart={`sequenceDiagram
     participant USER as 顧客（モバイル）
     participant APIM as API管理基盤

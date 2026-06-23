@@ -1112,8 +1112,10 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .section {
   top: var(--ch-height);
   left: 0;
   right: 0;
-  background: rgba(234, 179, 8, 0.12);
-  border-bottom: 1px solid rgba(234, 179, 8, 0.25);
+  background: rgba(13, 17, 23, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(234, 179, 8, 0.35);
   z-index: 99998;
   font-family: inherit;
   text-align: center;
@@ -1308,7 +1310,7 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .section {
   transform: translateY(-8px) rotate(-45deg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .ch-hamburger {
     display: flex;
   }
@@ -2137,6 +2139,18 @@ body.has-common-header .clean-architecture-comprehensive-guide .section {
     padding: 24px 16px;
     margin: 16px 0;
     overflow-x: auto;
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
   }
 
   .mermaid-label {
