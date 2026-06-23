@@ -1,4 +1,5 @@
 "use client";
+import { IconBuilding } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
 export type NavItem = {
@@ -24,7 +25,7 @@ export default function CleanArchitectureSidebar({ groups }: Props) {
   useEffect(() => {
     const onScroll = () => {
       const docH = document.documentElement.scrollHeight - window.innerHeight;
-      const prog = docH > 0 ? window.scrollY / docH : 0;
+      const prog = Math.max(0, Math.min(1, docH > 0 ? window.scrollY / docH : 0));
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${prog})`;
       }
@@ -61,7 +62,7 @@ export default function CleanArchitectureSidebar({ groups }: Props) {
       <div className="progress-bar" ref={progressRef} />
       <aside className="sidebar">
         <div className="sb-logo">
-          <span className="sb-logo-icon">🏛️</span>
+          <IconBuilding size={20} className="sb-logo-icon" />
           <div className="sb-logo-title">Clean Architecture</div>
           <div className="sb-logo-sub">完全ガイド — Python 実装例付き</div>
         </div>

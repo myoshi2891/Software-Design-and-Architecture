@@ -1,4 +1,3 @@
-// biome-ignore-all lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
 import {
   IconAlertTriangle,
   IconApi,
@@ -265,6 +264,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Python — AAAパターン</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">def</span> <span class="fn">test_user_registration</span>():
     <span class="cm"># ── Arrange（準備）──────────────────────</span>
@@ -424,6 +424,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Feature ファイル（.feature）</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">Feature:</span> ユーザーログイン機能
   ユーザーとして
@@ -643,6 +644,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Entity — IDで同一性を判断するオブジェクト</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">class</span> <span class="fn">Order</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(self, order_id: OrderId, customer_id: CustomerId):
@@ -661,6 +663,7 @@ export default function ComprehensiveGuidePage() {
             Value Object — 値で同一性を判断するイミュータブルなオブジェクト
           </div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
 
@@ -1021,6 +1024,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Python — 良いイベント設計</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">@dataclass</span>
 <span class="kw">class</span> <span class="fn">OrderPlacedEvent</span>:
@@ -1148,6 +1152,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">openapi.yaml — 注文API定義</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">openapi:</span> <span class="st">3.0.3</span>
 <span class="kw">info:</span>
@@ -1316,6 +1321,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Entities層（最内側・フレームワーク依存ゼロ）</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">class</span> <span class="fn">Order</span>:
     <span class="st">"""純粋なビジネスエンティティ（フレームワーク依存なし）"""</span>
@@ -1333,6 +1339,7 @@ export default function ComprehensiveGuidePage() {
             Use Cases層（インターフェースに依存・実装詳細を知らない）
           </div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">class</span> <span class="fn">PlaceOrderUseCase</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(
@@ -1353,6 +1360,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="code-label">Frameworks層（最外側・具体的なDB実装）</div>
           <pre
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Static code blocks with hand-written syntax highlighting
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">class</span> <span class="fn">SQLAlchemyOrderRepository</span>(OrderRepositoryInterface):
     <span class="kw">def</span> <span class="fn">save</span>(self, order: Order) -> None:
