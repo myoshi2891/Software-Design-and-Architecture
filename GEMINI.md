@@ -52,6 +52,10 @@ bun run check-links
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`EdaSidebar.tsx`）に分離。
+- 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型、未移行ページへのリンクも意図的に含む。
+  現状 404 は許容）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  スタイルは `globals.css` の `ch-*` クラス。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は
   `.claude/skills/nextjs-page-migration/SKILL.md` を参照。

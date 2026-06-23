@@ -60,6 +60,12 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/event-driven-architecture-comprehensive-guide`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/page.tsx)
     — EDA 完全ガイドを移植（16 セクション・Mermaid 18 図・table 7・コードブロック 6）。
     固定サイドバー・進捗バー・scroll-spy を [`EdaSidebar.tsx`](web-next/app/architecture/event-driven-architecture-comprehensive-guide/EdaSidebar.tsx) でクライアント描画
+- 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
+  全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
+  [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
+  [`SiteHeader.tsx`](web-next/components/site/SiteHeader.tsx) /
+  [`SiteHeaderClient.tsx`](web-next/components/site/SiteHeaderClient.tsx)（ハンバーガー・ドロップダウン開閉）と
+  [`DisclaimerBanner.tsx`](web-next/components/site/DisclaimerBanner.tsx)（学習用注意書き・`ch-*` スタイル）で描画
 - Mermaid 図はクライアント描画（[`components/MermaidDiagram.tsx`](web-next/components/MermaidDiagram.tsx)）、
   外部リンクは [`components/Ext.tsx`](web-next/components/Ext.tsx) で `rel=noopener noreferrer` を保証
 - スタイルは [`app/globals.css`](web-next/app/globals.css) のデザイントークン + ページスコープクラス、
