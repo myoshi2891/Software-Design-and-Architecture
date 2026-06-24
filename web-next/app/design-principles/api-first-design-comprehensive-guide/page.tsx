@@ -990,7 +990,7 @@ export default function Page() {
                     Swagger: Adopting an API-First Approach
                   </Ext>{" "}
                   および{" "}
-                  <Ext href="https://stoplight.io/api-first">Stoplight: What is API-First?</Ext>{" "}
+                  <Ext href="https://stoplight.io/blog/api-first-vs-api-design-first">Stoplight: What is API-First?</Ext>{" "}
                   を参照してください。
                 </p>
               </div>
