@@ -5,8 +5,11 @@ type Props = {
 };
 
 /**
- * 外部リンク用のヘルパー。常に `target="_blank"` と
- * `rel="noopener noreferrer"` を付与してタブナッピングを防ぐ。
+ * Renders an external link.
+ *
+ * @param href - The link destination URL.
+ * @param children - The content rendered inside the anchor.
+ * @param className - CSS class names applied to the anchor.
  */
 export function Ext({ href, children, className }: Props) {
   return (

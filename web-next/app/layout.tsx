@@ -16,9 +16,10 @@ export const viewport: Viewport = {
 };
 
 /**
- * アプリ全体のルートレイアウト。`<html lang="ja">` にフォント変数を適用する。
+ * Defines the app-wide root layout.
  *
- * @param children - body 内に描画する React ノード
+ * @param children - Page content to render inside the layout
+ * @returns The root HTML structure for the application
  */
 export default function RootLayout({
   children,

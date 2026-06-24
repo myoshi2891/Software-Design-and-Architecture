@@ -22,15 +22,15 @@ const THEME_VARIABLES = {
 } as const;
 
 /**
- * Mermaid ソース文字列を受け取り、クライアント側で図を描画する。
+ * Renders a Mermaid diagram from source text on the client.
  *
- * `mermaid` を動的 import して SSR を回避し、`chart` が変わるたびに再描画する。
- * 描画に失敗した場合はコンテナにフォールバックメッセージを表示する。
+ * The diagram is re-rendered whenever `chart` changes. If Mermaid cannot be loaded or the diagram
+ * cannot be rendered, the container shows a fallback message.
  *
- * @param chart - Mermaid 記法のソース文字列
- * @param id - コンテナに付与する id 属性（任意）
- * @param style - 既定のスタイルにマージするインラインスタイル（任意）
- * @param className - "mermaid" に追加する CSS クラス（任意）
+ * @param chart - Mermaid source text
+ * @param id - The `id` attribute for the container
+ * @param style - Inline styles merged with the default container styles
+ * @param className - Additional CSS classes applied to the container
  */
 export default function MermaidDiagram({ chart, id, style, className }: Props) {
   const ref = useRef<HTMLDivElement>(null);

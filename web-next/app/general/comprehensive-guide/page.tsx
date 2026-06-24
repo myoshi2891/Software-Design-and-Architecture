@@ -64,13 +64,9 @@ import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
 
 /**
- * IT業界 主流設計手法・駆動開発 完全リファレンス。
+ * Renders a comprehensive reference page for major software design and development approaches.
  *
- * 元 `general/comprehensive-guide/comprehensive-guide.html` を忠実に移植した
- * Server Component。スタイルは globals.css の `.comprehensive-guide` スコープに移植済み。
- * - Mermaid 図はクライアント描画の {@link MermaidDiagram} に委譲（ラベル内 `\n` は `\\n` で保持）。
- * - 外部リンクは {@link Ext}（target=_blank + rel=noopener noreferrer）で統一。
- * - 手書きシンタックスハイライトは `dangerouslySetInnerHTML` で空白を保持して転写。
+ * The page covers TDD, BDD, DDD, FDD, ATDD, EDA, API-first design, Clean Architecture, microservices, a comparison guide, certification information, and a learning roadmap.
  */
 export default function ComprehensiveGuidePage() {
   return (

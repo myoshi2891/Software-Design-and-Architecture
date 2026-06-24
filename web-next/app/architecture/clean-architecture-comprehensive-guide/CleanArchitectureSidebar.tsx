@@ -17,6 +17,11 @@ type Props = {
   groups: NavGroup[];
 };
 
+/**
+ * Renders the clean architecture guide sidebar navigation.
+ *
+ * @param groups - Navigation groups to display in the sidebar
+ */
 export default function CleanArchitectureSidebar({ groups }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState<string | null>(groups[0]?.items[0]?.id ?? null);

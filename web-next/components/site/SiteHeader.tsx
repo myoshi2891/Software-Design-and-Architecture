@@ -8,26 +8,36 @@ import { SiteHeaderClient } from "./SiteHeaderClient";
 const GITHUB_URL = "https://github.com/myoshi2891/Software-Design-and-Architecture";
 
 /**
- * usePathname は Client 専用のため、SiteHeader は Client Component とし、
- * 現在地を usePathname() で取得する。テストは pathname プロップで上書き可能。
+ * Determines whether a link matches the current path.
+ *
+ * @param href - The link target to compare.
+ * @param pathname - The current path.
+ * @returns `true` if `href` exactly matches `pathname`, `false` otherwise.
  */
 function isActivePath(href: string, pathname: string): boolean {
   return href === pathname;
 }
 
+/**
+ * Determines whether any child link matches the current path.
+ *
+ * @param link - The navigation item to inspect
+ * @param pathname - The current route path
+ * @returns `true` if the link has children and one child href exactly matches `pathname`, `false` otherwise.
+ */
 function isParentActive(link: NavLink, pathname: string): boolean {
   if (!("children" in link)) return false;
   return link.children.some((c) => isActivePath(c.href, pathname));
 }
 
 /**
- * グローバルナビ付き共通ヘッダーを描画する。
+ * Renders the shared site header with global navigation.
  *
- * 現在地（pathnameProp 優先、無ければ router、最終フォールバック "/"）に応じて
- * 該当リンクへ ch-active / aria-current="page" を付与し、子が active な
- * dropdown トグルにも ch-active を波及させる。末尾に GitHub 外部リンクを置く。
+ * Uses `pathnameProp` when provided, otherwise the current router pathname, and falls back to `/`.
+ * Marks the matching navigation link as active, propagates active state to parent dropdowns, and
+ * appends an external GitHub link.
  *
- * @param pathnameProp - router 由来パスを上書きするオプション値。
+ * @param pathnameProp - Optional pathname used instead of the current router pathname.
  */
 export function SiteHeader({ pathname: pathnameProp }: { pathname?: string } = {}) {
   const fromHook = usePathname();
