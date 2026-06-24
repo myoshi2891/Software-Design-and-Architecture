@@ -176,6 +176,12 @@
     },
     {
       "pattern": "^https?://([a-zA-Z0-9-]+\\.)?example\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?every-layout\\.dev"
+    },
+    {
+      "pattern": "^https?://(www\\.)?goodreads\\.com"
     }
   ],
   "replacementPatterns": [],
