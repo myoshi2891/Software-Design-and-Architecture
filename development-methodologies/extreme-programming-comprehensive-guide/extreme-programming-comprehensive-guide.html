@@ -149,7 +149,7 @@ li { margin-bottom: 3px; }
   min-width: 0;
 }
 .content-inner {
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 28px 32px 80px;
 }
@@ -271,9 +271,18 @@ tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
   padding: 16px;
   overflow-x: auto;
   margin: 8px 0;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
-.mermaid-wrap svg { max-width: 100%; }
+.mermaid {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
 
 /* ─── Code ─── */
 pre[class*="language-"] {
@@ -1630,6 +1639,18 @@ mermaid.initialize({
     nodeTextColor: '#e2e8f0',
     fontFamily: 'JetBrains Mono, monospace',
     fontSize: '13px',
+    cScale0: '#1e293b',
+    cScale1: '#0f172a',
+    cScale2: '#1e1b4b',
+    cScale3: '#311042',
+    cScale4: '#2d0f0f',
+    cScale5: '#1c1917',
+    cScaleLabel0: '#f8fafc',
+    cScaleLabel1: '#f8fafc',
+    cScaleLabel2: '#f8fafc',
+    cScaleLabel3: '#f8fafc',
+    cScaleLabel4: '#f8fafc',
+    cScaleLabel5: '#f8fafc',
   },
   flowchart: { htmlLabels: true, curve: 'basis' },
   sequence: { useMaxWidth: true },
