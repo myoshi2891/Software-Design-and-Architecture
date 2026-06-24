@@ -77,6 +77,16 @@ describe("microservices-architecture-comprehensive-guide page", () => {
     expect(container.querySelectorAll("pre")).toHaveLength(9);
   });
 
+  it("すべてのコードブロック（pre）にハイライト用 span が含まれている", () => {
+    const { container } = render(<Page />);
+    const pres = container.querySelectorAll("pre");
+    expect(pres).toHaveLength(9);
+    for (const pre of pres) {
+      const spans = pre.querySelectorAll("span.kw, span.cm, span.st, span.fn, span.nu");
+      expect(spans.length).toBeGreaterThan(0);
+    }
+  });
+
   it("globals.css に .microservices-architecture-comprehensive-guide .main のレイアウト調整が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
