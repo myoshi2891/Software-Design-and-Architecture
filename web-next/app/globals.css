@@ -3271,6 +3271,18 @@ body.has-common-header .service-oriented-architecture-comprehensive-guide .secti
     overflow-x: auto;
   }
 
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
   .mermaid-label {
     font-size: 12px;
     color: var(--color-text-tertiary);
