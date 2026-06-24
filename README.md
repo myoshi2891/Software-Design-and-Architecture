@@ -69,6 +69,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/hexagonal-architecture-comprehensive-guide`](web-next/app/architecture/hexagonal-architecture-comprehensive-guide/page.tsx)
     — ヘキサゴナルアーキテクチャ完全ガイドを移植（15 セクション・Mermaid 14 図・table 6・コードブロック 11）。
     固定サイドバー・進捗バー・scroll-spy を [`HexagonalArchitectureSidebar.tsx`](web-next/app/architecture/hexagonal-architecture-comprehensive-guide/HexagonalArchitectureSidebar.tsx) でクライアント描画
+  - [`/architecture/microservices-architecture-comprehensive-guide`](web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx)
+    — マイクロサービス完全ガイドを移植（18 セクション・Mermaid 22 図・table 8・コードブロック 9）。
+    固定サイドバー・進捗バー・scroll-spy を [`MicroservicesArchitectureSidebar.tsx`](web-next/app/architecture/microservices-architecture-comprehensive-guide/MicroservicesArchitectureSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
