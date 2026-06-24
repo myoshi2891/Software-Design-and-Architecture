@@ -1,6 +1,5 @@
-import { Ext } from "@/components/Ext";
-import MermaidDiagram from "@/components/MermaidDiagram";
 import {
+  IconAlertOctagon,
   IconAlertTriangle,
   IconArrowLeftCircle,
   IconArrowRight,
@@ -8,12 +7,14 @@ import {
   IconArrowsExchange,
   IconArrowsExchange2,
   IconArrowsRight,
-  IconBooks,
+  IconBulb,
   IconCheck,
   IconCircleDot,
   IconClock,
   IconCode,
   IconDeviceAnalytics,
+  IconDoorEnter,
+  IconDoorExit,
   IconFileCode,
   IconFolder,
   IconGitBranch,
@@ -21,11 +22,10 @@ import {
   IconHexagon,
   IconInfoCircle,
   IconLayout,
+  IconLink,
   IconMapPin,
-  IconPlug,
+  IconReplace,
   IconShoppingCart,
-  IconStairs,
-  IconStar,
   IconTag,
   IconTestPipe,
   IconTimeline,
@@ -34,13 +34,9 @@ import {
   IconUser,
   IconVocabulary,
   IconX,
-  IconAlertOctagon,
-  IconBulb,
-  IconLink,
-  IconDoorEnter,
-  IconDoorExit,
-  IconReplace,
 } from "@tabler/icons-react";
+import { Ext } from "@/components/Ext";
+import MermaidDiagram from "@/components/MermaidDiagram";
 import HexagonalArchitectureSidebar, { type NavGroup } from "./HexagonalArchitectureSidebar";
 
 export const NAV_GROUPS: NavGroup[] = [
@@ -90,7 +86,11 @@ export default function Page() {
           <div className="hero-badge">
             <IconHexagon size={16} /> Architecture Pattern
           </div>
-          <h1 className="page-title">ヘキサゴナルアーキテクチャ<br />完全ガイド</h1>
+          <h1 className="page-title">
+            ヘキサゴナルアーキテクチャ
+            <br />
+            完全ガイド
+          </h1>
           <p className="page-lead">
             ビジネスロジックを技術的詳細から完全に切り離し、テスト容易性・技術的独立性・対称性を実現するソフトウェアアーキテクチャパターン。初学者が「なぜそう設計するのか」から理解できる構成で解説します。
           </p>
@@ -118,7 +118,9 @@ export default function Page() {
 
           <h3>1.1 定義と一言サマリー</h3>
           <p>
-            ヘキサゴナルアーキテクチャ（Hexagonal Architecture）は、2005年に <strong>Alistair Cockburn</strong> が提唱したアーキテクチャパターンです。正式名称は <strong>「ポート＆アダプターパターン（Ports and Adapters）」</strong> とも呼ばれます。
+            ヘキサゴナルアーキテクチャ（Hexagonal Architecture）は、2005年に{" "}
+            <strong>Alistair Cockburn</strong> が提唱したアーキテクチャパターンです。正式名称は{" "}
+            <strong>「ポート＆アダプターパターン（Ports and Adapters）」</strong> とも呼ばれます。
           </p>
           <div className="callout info">
             <IconBulb size={16} className="callout-icon" />
@@ -134,7 +136,7 @@ export default function Page() {
 
           <div className="mermaid-wrap">
             <div className="mermaid-label">
-              <IconGitBranch size={16} /> 問題と解決策の対応図
+              <IconGitBranch size={16} /> 問題と解決策 of 対応図
             </div>
             <MermaidDiagram
               chart={`graph LR
@@ -240,16 +242,20 @@ export default function Page() {
 
           <h3>2.1 ポート（Port）とは何か</h3>
           <p>
-            <strong>ポート</strong>とはアプリケーションコアが外部世界と通信するための<strong>インターフェース（契約）</strong>です。ポートはコアが「何が必要か」を宣言しますが、「どう実現するか」は知りません。これがポートの最重要特性です。
+            <strong>ポート</strong>とはアプリケーションコアが外部世界と通信するための
+            <strong>インターフェース（契約）</strong>
+            です。ポートはコアが「何が必要か」を宣言しますが、「どう実現するか」は知りません。これがポートの最重要特性です。
           </p>
 
           <div className="grid-2">
             <div className="card driving">
               <div className="card-title">
-                <IconDoorEnter size={20} className="card-icon-driving" /> ドライビングポート（Inbound Port）
+                <IconDoorEnter size={20} className="card-icon-driving" />{" "}
+                ドライビングポート（Inbound Port）
               </div>
               <p>
-                外部からアプリを駆動する<strong>入口</strong>。「アプリが提供するもの」を定義します。
+                外部からアプリを駆動する<strong>入口</strong>
+                。「アプリが提供するもの」を定義します。
                 <br />
                 <br />
                 例：注文を作成する、商品を検索する
@@ -257,10 +263,12 @@ export default function Page() {
             </div>
             <div className="card driven">
               <div className="card-title">
-                <IconDoorExit size={20} className="card-icon-driven" /> ドリブンポート（Outbound Port）
+                <IconDoorExit size={20} className="card-icon-driven" /> ドリブンポート（Outbound
+                Port）
               </div>
               <p>
-                アプリが外部リソースを使うための<strong>出口</strong>。「アプリが必要とするもの」を定義します。
+                アプリが外部リソースを使うための<strong>出口</strong>
+                。「アプリが必要とするもの」を定義します。
                 <br />
                 <br />
                 例：注文を保存する、メールを送る
@@ -270,7 +278,8 @@ export default function Page() {
 
           <h3>2.2 アダプター（Adapter）とは何か</h3>
           <p>
-            <strong>アダプター</strong>はポートの<strong>具体的な実装</strong>です。外部の技術的詳細（HTTP・SQL・メール等）をポートのインターフェースに変換する橋渡し役です。アダプターを差し替えることで、コアに一切触れずにインフラを交換できます。
+            <strong>アダプター</strong>はポートの<strong>具体的な実装</strong>
+            です。外部の技術的詳細（HTTP・SQL・メール等）をポートのインターフェースに変換する橋渡し役です。アダプターを差し替えることで、コアに一切触れずにインフラを交換できます。
           </p>
 
           <table>
@@ -334,7 +343,8 @@ export default function Page() {
           <div className="callout warning">
             <IconAlertTriangle size={16} className="callout-icon" />
             <div>
-              ポートの名前は<strong>ビジネス語彙</strong>で命名するのが鉄則です。技術用語（SQL・HTTP・Redis）をポート名に含めてはいけません。ポートはコアの「意図」を表現するものであり、「実装手段」を表現するものではないからです。
+              ポートの名前は<strong>ビジネス語彙</strong>
+              で命名するのが鉄則です。技術用語（SQL・HTTP・Redis）をポート名に含めてはいけません。ポートはコアの「意図」を表現するものであり、「実装手段」を表現するものではないからです。
             </div>
           </div>
 
@@ -490,6 +500,7 @@ export default function Page() {
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="cm"># ─── アプリケーションコア（外部依存ゼロ）───</span>
 <span class="cm"># domain/entities/order.py</span>
@@ -590,6 +601,7 @@ export default function Page() {
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
 <span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
@@ -625,6 +637,7 @@ export default function Page() {
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> fastapi <span class="kw">import</span> APIRouter, Depends, HTTPException, status
 <span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
@@ -685,7 +698,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
 
           <h3>5.1 ドリブンアダプターのポイント：差し替え可能性</h3>
           <p>
-            ドリブン側の最大の強みは、<strong>同じポートに対して複数の実装を用意できること</strong>です。本番用の実装とテスト用の実装を持ち、DIコンテナで切り替えるだけです。
+            ドリブン側の最大の強みは、<strong>同じポートに対して複数の実装を用意できること</strong>
+            です。本番用の実装とテスト用の実装を持ち、DIコンテナで切り替えるだけです。
           </p>
 
           <div className="mermaid-wrap">
@@ -729,6 +743,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> application.ports.outbound.order_repository_port <span class="kw">import</span> OrderRepositoryPort
 <span class="kw">from</span> domain.entities.order <span class="kw">import</span> Order
@@ -756,7 +771,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           <div className="callout success">
             <IconCheck size={16} className="callout-icon" />
             <div>
-              <strong>ベストプラクティス：</strong> すべてのドリブンポートに対してInMemory/Fake実装を必ず用意してください。これがヘキサゴナルアーキテクチャのテスト速度向上の核心です。
+              <strong>ベストプラクティス：</strong>{" "}
+              すべてのドリブンポートに対してInMemory/Fake実装を必ず用意してください。これがヘキサゴナルアーキテクチャのテスト速度向上の核心です。
             </div>
           </div>
         </section>
@@ -805,6 +821,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
 <span class="kw">from</span> decimal <span class="kw">import</span> Decimal
@@ -858,7 +875,10 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           <div className="callout warning">
             <IconAlertTriangle size={16} className="callout-icon" />
             <div>
-              <strong>重要：</strong> <code>domain/</code> ディレクトリ内には <code>sqlalchemy</code>・<code>fastapi</code>・<code>django</code>・<code>requests</code> などの外部ライブラリを一切 import してはいけません。CIで自動チェックすることを推奨します（セクション13参照）。
+              <strong>重要：</strong> <code>domain/</code> ディレクトリ内には{" "}
+              <code>sqlalchemy</code>・<code>fastapi</code>・<code>django</code>・
+              <code>requests</code> などの外部ライブラリを一切 import
+              してはいけません。CIで自動チェックすることを推奨します（セクション13参照）。
             </div>
           </div>
         </section>
@@ -903,7 +923,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
 
           <h3>7.2 Composition Root（配線の場所）</h3>
           <p>
-            すべての依存関係を組み立てる<strong>唯一の場所</strong>です。アプリケーション起動時に一度だけ実行されます。コードのどこで <code>new</code>（インスタンス生成）するかを一箇所に集中させることが核心です。
+            すべての依存関係を組み立てる<strong>唯一の場所</strong>
+            です。アプリケーション起動時に一度だけ実行されます。コードのどこで <code>new</code>
+            （インスタンス生成）するかを一箇所に集中させることが核心です。
           </p>
 
           <ul className="phase-list">
@@ -949,6 +971,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">def</span> <span class="fn">create_production_container</span>():
     <span class="st">"""本番用の Composition Root。具体クラスを知っているのはここだけ。"""</span>
@@ -1021,6 +1044,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">import</span> pytest
 <span class="kw">from</span> domain.entities.order <span class="kw">import</span> Order, OrderStatus, Money
@@ -1052,6 +1076,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">class</span> <span class="fn">TestPlaceOrderService</span>:
     @pytest.fixture
@@ -1092,8 +1117,13 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <IconLink size={16} className="callout-icon" />
             <div>
               <strong>参考：</strong>{" "}
-              <Ext href="https://martinfowler.com/bliki/TestPyramid.html">Martin Fowler — テストピラミッド</Ext> /{" "}
-              <Ext href="https://martinfowler.com/bliki/InMemoryTestDouble.html">InMemory Test Doubles</Ext>
+              <Ext href="https://martinfowler.com/bliki/TestPyramid.html">
+                Martin Fowler — テストピラミッド
+              </Ext>{" "}
+              /{" "}
+              <Ext href="https://martinfowler.com/bliki/InMemoryTestDouble.html">
+                InMemory Test Doubles
+              </Ext>
             </div>
           </div>
         </section>
@@ -1247,6 +1277,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `my_app/
 ├── domain/                            <span class="cm"># ドメイン層（外部依存ゼロ）</span>
@@ -1365,8 +1396,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <div className="phase-body">
                 <strong>ドメインの分離（1〜2週間）</strong>
                 <p>
-                  ビジネスロジックをフレームワークから抽出し、純粋な Pythonクラスとして再実装。<code>domain/</code>{" "}
-                  ディレクトリを作成します。
+                  ビジネスロジックをフレームワークから抽出し、純粋な Pythonクラスとして再実装。
+                  <code>domain/</code> ディレクトリを作成します。
                 </p>
               </div>
             </li>
@@ -1374,7 +1405,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <span className="phase-badge p2">Phase 2</span>
               <div className="phase-body">
                 <strong>ドリブンポートの定義（1週間）</strong>
-                <p>既存の Repository・外部サービス呼び出しをインターフェース（ABC）として定義します。</p>
+                <p>
+                  既存の Repository・外部サービス呼び出しをインターフェース（ABC）として定義します。
+                </p>
               </div>
             </li>
             <li className="phase-item">
@@ -1400,7 +1433,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <span className="phase-badge p5">Phase 5</span>
               <div className="phase-body">
                 <strong>テストの整備（継続的）</strong>
-                <p>ドメインのユニットテストを充実させ、インメモリアダプターで高速テストを追加します。</p>
+                <p>
+                  ドメインのユニットテストを充実させ、インメモリアダプターで高速テストを追加します。
+                </p>
               </div>
             </li>
           </ul>
@@ -1588,6 +1623,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
 <span class="kw">from</span> decimal <span class="kw">import</span> Decimal
@@ -1614,7 +1650,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             )
             <span class="kw">return</span> PaymentResult(transaction_id=charge.id, status=<span class="st">"succeeded"</span>)
         <span class="kw">except</span> stripe.error.CardError <span class="kw">as</span> e:
-            <span class="kw">raise</span> ValueError(<span class="st">"カード決済エラー: {e.user_message}"</span>) <span class="kw">from</span> e
+            <span class="kw">raise</span> ValueError("カード決済エラー: {e.user_message}") from e
 
 <span class="cm"># ─── テスト用フェイクアダプター ───</span>
 <span class="kw">class</span> <span class="fn">FakePaymentAdapter</span>(PaymentGatewayPort):
@@ -1626,8 +1662,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
     <span class="kw">def</span> <span class="fn">charge</span>(<span class="kw">self</span>, amount: Decimal, ...) -&gt; PaymentResult:
         <span class="kw">self</span>.charged_requests.append(amount)
         <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>._should_succeed:
-            <span class="kw">raise</span> ValueError(<span class="st">"テスト用決済失敗"</span>)
-        <span class="kw">return</span> PaymentResult(transaction_id=<span class="st">"fake_txn_1"</span>, status=<span class="st">"succeeded"</span>)`,
+            <span class="kw">raise</span> ValueError("テスト用決済失敗")
+        <span class="kw">return</span> PaymentResult(transaction_id="fake_txn_1", status="succeeded")`,
             }}
           />
         </section>
@@ -1646,7 +1682,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconX size={16} /> コアがアダプターを知っている
               </div>
               <p>
-                <code>domain/</code> や <code>application/</code> で SQLAlchemy・FastAPI を import している。ポートの意味がなくなる。
+                <code>domain/</code> や <code>application/</code> で SQLAlchemy・FastAPI を import
+                している。ポートの意味がなくなる。
               </p>
             </div>
             <div className="ap-fix">
@@ -1654,7 +1691,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconCheck size={16} /> 解決策
               </div>
               <p>
-                <code>domain/</code> の import を Python linter でチェックし、CIに組み込む。次の自動チェックスクリプトを使用する。
+                <code>domain/</code> の import を Python linter
+                でチェックし、CIに組み込む。次の自動チェックスクリプトを使用する。
               </p>
             </div>
 
@@ -1663,7 +1701,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconX size={16} /> ポートが技術用語で命名されている
               </div>
               <p>
-                <code>SQLRepositoryPort</code> / <code>HTTPClientPort</code> のようにインフラ名を含む命名はNG。
+                <code>SQLRepositoryPort</code> / <code>HTTPClientPort</code>{" "}
+                のようにインフラ名を含む命名はNG。
               </p>
             </div>
             <div className="ap-fix">
@@ -1671,7 +1710,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconCheck size={16} /> 解決策
               </div>
               <p>
-                ポート名はビジネスユースケースまたは能力を動詞で表現。<code>SaveOrderPort</code> / <code>LoadProductsPort</code>
+                ポート名はビジネスユースケースまたは能力を動詞で表現。<code>SaveOrderPort</code> /{" "}
+                <code>LoadProductsPort</code>
               </p>
             </div>
 
@@ -1680,7 +1720,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconX size={16} /> アダプターにビジネスロジックが漏れる
               </div>
               <p>
-                REST Controller の中で <code>if order.total &gt; 10000: apply_discount()</code> を実行している。
+                REST Controller の中で <code>if order.total &gt; 10000: apply_discount()</code>{" "}
+                を実行している。
               </p>
             </div>
             <div className="ap-fix">
@@ -1697,7 +1738,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconX size={16} /> Composition Root が分散する
               </div>
               <p>
-                各モジュールが自分で <code>new</code> して依存を生成している。依存の管理が追跡不能になる。
+                各モジュールが自分で <code>new</code>{" "}
+                して依存を生成している。依存の管理が追跡不能になる。
               </p>
             </div>
             <div className="ap-fix">
@@ -1705,7 +1747,8 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
                 <IconCheck size={16} /> 解決策
               </div>
               <p>
-                <code>main.py</code> または <code>di_container.py</code> の1箇所でのみ依存を構築する。
+                <code>main.py</code> または <code>di_container.py</code>{" "}
+                の1箇所でのみ依存を構築する。
               </p>
             </div>
           </div>
@@ -1716,6 +1759,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
           </div>
           <pre
             className="code-block"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code
             dangerouslySetInnerHTML={{
               __html: `<span class="kw">import</span> ast, sys
 <span class="kw">from</span> pathlib <span class="kw">import</span> Path
@@ -1735,9 +1779,9 @@ CORE_DIRS = [<span class="st">"domain"</span>, <span class="st">"application"</s
             <span class="kw">for</span> forbidden <span class="kw">in</span> FORBIDDEN_IN_CORE:
                 <span class="kw">if</span> (module <span class="kw">or</span> <span class="st">""</span>).startswith(forbidden):
                     violations.append(
-                        <span class="st">"❌ {filepath}:{node.lineno} — '{module}' はコアに禁止"</span>
+                        "❌ {filepath}:{node.lineno} — '{module}' はコアに禁止"
                     )
-    <span class="kw">return</span> violations
+    return violations
 
 violations = []
 for d in CORE_DIRS:
@@ -1851,7 +1895,7 @@ else:
                 <td>新しいドライビングアダプターを作るだけ</td>
               </tr>
               <tr>
-                <td>ビジネスロジックはどこに置くか</td>
+                <td>ビジネスロジックはどこに置か</td>
                 <td>
                   <code>domain/</code> または <code>application/use_cases/</code> のみ
                 </td>
@@ -1867,7 +1911,10 @@ else:
 
           <h3>14.3 成熟度モデル</h3>
           <div className="level-row">
-            <span className="level-badge" style={{ background: "var(--c-red-800)", color: "var(--c-red-400)" }}>
+            <span
+              className="level-badge"
+              style={{ background: "var(--c-red-800)", color: "var(--c-red-400)" }}
+            >
               Level 0
             </span>
             <div className="level-body">
@@ -1878,7 +1925,10 @@ else:
           <div className="level-row">
             <span
               className="level-badge"
-              style={{ background: "var(--color-background-warning)", color: "var(--color-text-warning)" }}
+              style={{
+                background: "var(--color-background-warning)",
+                color: "var(--color-text-warning)",
+              }}
             >
               Level 1
             </span>
@@ -1888,7 +1938,10 @@ else:
             </div>
           </div>
           <div className="level-row">
-            <span className="level-badge" style={{ background: "rgba(251,191,36,0.15)", color: "var(--c-amber-400)" }}>
+            <span
+              className="level-badge"
+              style={{ background: "rgba(251,191,36,0.15)", color: "var(--c-amber-400)" }}
+            >
               Level 2
             </span>
             <div className="level-body">
@@ -1899,7 +1952,10 @@ else:
           <div className="level-row">
             <span
               className="level-badge"
-              style={{ background: "var(--color-background-success)", color: "var(--color-text-success)" }}
+              style={{
+                background: "var(--color-background-success)",
+                color: "var(--color-text-success)",
+              }}
             >
               Level 3
             </span>
@@ -1911,7 +1967,10 @@ else:
           <div className="level-row">
             <span
               className="level-badge"
-              style={{ background: "var(--color-background-info)", color: "var(--color-text-info)" }}
+              style={{
+                background: "var(--color-background-info)",
+                color: "var(--color-text-info)",
+              }}
             >
               Level 4
             </span>
@@ -1921,7 +1980,10 @@ else:
             </div>
           </div>
           <div className="level-row">
-            <span className="level-badge" style={{ background: "rgba(124,58,237,0.15)", color: "var(--c-purple-400)" }}>
+            <span
+              className="level-badge"
+              style={{ background: "rgba(124,58,237,0.15)", color: "var(--c-purple-400)" }}
+            >
               Level 5
             </span>
             <div className="level-body">
@@ -2002,7 +2064,9 @@ else:
               <li className="source-item">
                 <IconExternalLinkIcon />
                 <div>
-                  <Ext href="https://martinfowler.com/articles/dipInTheWild.html">DIP in the Wild</Ext>
+                  <Ext href="https://martinfowler.com/articles/dipInTheWild.html">
+                    DIP in the Wild
+                  </Ext>
                   <div className="source-desc">依存性逆転原則の実際の適用例を解説。</div>
                 </div>
               </li>
@@ -2065,7 +2129,9 @@ else:
               <li className="source-item">
                 <IconExternalLinkIcon />
                 <div>
-                  <Ext href="https://docs.python.org/ja/3/library/abc.html">Python 公式 — abc（抽象基底クラス）</Ext>
+                  <Ext href="https://docs.python.org/ja/3/library/abc.html">
+                    Python 公式 — abc（抽象基底クラス）
+                  </Ext>
                   <div className="source-desc">ポートを定義するための ABC の使い方。</div>
                 </div>
               </li>
@@ -2075,14 +2141,20 @@ else:
                   <Ext href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/">
                     FastAPI 公式 — Dependency Injection
                   </Ext>
-                  <div className="source-desc">FastAPI で DI を使ってアダプターを注入する方法。</div>
+                  <div className="source-desc">
+                    FastAPI で DI を使ってアダプターを注入する方法。
+                  </div>
                 </div>
               </li>
               <li className="source-item">
                 <IconExternalLinkIcon />
                 <div>
-                  <Ext href="https://testcontainers-python.readthedocs.io/">TestContainers Python</Ext>
-                  <div className="source-desc">実際の DB を使った統合テストを自動化するライブラリ。</div>
+                  <Ext href="https://testcontainers-python.readthedocs.io/">
+                    TestContainers Python
+                  </Ext>
+                  <div className="source-desc">
+                    実際の DB を使った統合テストを自動化するライブラリ。
+                  </div>
                 </div>
               </li>
               <li className="source-item">
@@ -2105,7 +2177,9 @@ else:
               <li className="source-item">
                 <IconExternalLinkIcon />
                 <div>
-                  <Ext href="https://martinfowler.com/bliki/TestPyramid.html">Martin Fowler — テストピラミッド</Ext>
+                  <Ext href="https://martinfowler.com/bliki/TestPyramid.html">
+                    Martin Fowler — テストピラミッド
+                  </Ext>
                   <div className="source-desc">ユニット・統合・E2Eテストの比率についての指針。</div>
                 </div>
               </li>
@@ -2124,7 +2198,9 @@ else:
                   <Ext href="https://martinfowler.com/articles/mocksArentStubs.html">
                     Martin Fowler — Mocks Aren't Stubs
                   </Ext>
-                  <div className="source-desc">Mock・Stub・Fake の違いを理解するための必読記事。</div>
+                  <div className="source-desc">
+                    Mock・Stub・Fake の違いを理解するための必読記事。
+                  </div>
                 </div>
               </li>
             </ul>
@@ -2144,5 +2220,10 @@ else:
 
 // 内部アイコン
 function IconExternalLinkIcon() {
-  return <IconArrowsRight size={16} style={{ color: "var(--c-teal-400)", marginTop: 2, flexShrink: 0 }} />;
+  return (
+    <IconArrowsRight
+      size={16}
+      style={{ color: "var(--c-teal-400)", marginTop: 2, flexShrink: 0 }}
+    />
+  );
 }

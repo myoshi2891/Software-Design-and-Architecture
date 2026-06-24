@@ -74,11 +74,7 @@ describe("HexagonalArchitectureSidebar", () => {
 
     const links = container.querySelectorAll("nav.sb-nav a");
     expect(links).toHaveLength(3);
-    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual([
-      "#s1",
-      "#s2",
-      "#s4",
-    ]);
+    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s4"]);
   });
 
   it("初期状態では先頭の nav 項目に active が付く", () => {

@@ -50,8 +50,8 @@ export default function HexagonalArchitectureSidebar({ groups }: Props) {
         if (intersecting.length > 0) {
           const topmost = intersecting.reduce((prev, curr) => {
             return curr.target.getBoundingClientRect().y < prev.target.getBoundingClientRect().y
-               ? curr
-               : prev;
+              ? curr
+              : prev;
           });
           setActiveId(topmost.target.id);
         }
