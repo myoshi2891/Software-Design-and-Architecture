@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { IconBuilding } from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
 
 export type NavItem = {
   id: string;

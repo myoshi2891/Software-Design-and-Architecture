@@ -58,6 +58,9 @@ bun run check-links
   - `app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/service-oriented-architecture-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`SoaSidebar.tsx`）に分離。
+  - `app/architecture/hexagonal-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/hexagonal-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`HexagonalArchitectureSidebar.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
   `components/site/nav-links.ts`（zod 不使用の判別共用体型、未移行ページへのリンクも意図的に含む。
   現状 404 は許容）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
