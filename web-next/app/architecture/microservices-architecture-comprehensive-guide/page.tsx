@@ -510,6 +510,561 @@ const MERMAID_DATA: Record<string, string> = {
     style F5 fill:#1e3a5f,color:#93c5fd`,
 };
 
+const CODE_BLOCKS: Record<string, string> = {
+  code1: `<span class="kw">import</span> httpx
+
+<span class="kw">class</span> <span class="fn">InventoryServiceClient</span>:
+    <span class="cm">"""
+    在庫サービスへの同期HTTPクライアント
+    タイムアウト・エラーハンドリングをすべて内包する
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, base_url: str, timeout: float = <span class="nu">5.0</span>):
+        <span class="kw">self</span>.base_url = base_url
+        <span class="kw">self</span>.timeout = httpx.<span class="fn">Timeout</span>(connect=<span class="nu">2.0</span>, read=timeout)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">check_availability</span>(<span class="kw">self</span>, product_id: str, quantity: int) -&gt; dict:
+        <span class="cm">"""在庫確認API呼び出し（冪等操作）"""</span>
+        <span class="kw">async</span> <span class="kw">with</span> httpx.<span class="fn">AsyncClient</span>(timeout=<span class="kw">self</span>.timeout) <span class="kw">as</span> client:
+            <span class="kw">try</span>:
+                response = <span class="kw">await</span> client.<span class="fn">get</span>(
+                    f<span class="st">"\${self.base_url}/inventory/\${product_id}"</span>,
+                    params={<span class="st">"requested_quantity"</span>: quantity},
+                    headers={<span class="st">"X-Service-Name"</span>: <span class="st">"order-service"</span>},
+                )
+                response.<span class="fn">raise_for_status</span>()
+                <span class="kw">return</span> response.<span class="fn">json</span>()
+            <span class="kw">except</span> httpx.<span class="fn">TimeoutException</span>:
+                <span class="kw">raise</span> <span class="fn">ServiceUnavailableError</span>(<span class="st">"在庫サービスがタイムアウトしました"</span>)
+            <span class="kw">except</span> httpx.<span class="fn">HTTPStatusError</span> <span class="kw">as</span> e:
+                <span class="kw">if</span> e.response.status_code == <span class="nu">404</span>:
+                    <span class="kw">raise</span> <span class="fn">ProductNotFoundError</span>(f<span class="st">"商品が見つかりません: \${product_id}"</span>)
+                <span class="kw">raise</span> <span class="fn">ServiceError</span>(f<span class="st">"在庫サービスエラー: \${e.response.status_code}"</span>)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">reserve_stock</span>(<span class="kw">self</span>, product_id: str, quantity: int, order_id: str) -&gt; dict:
+        <span class="cm">"""在庫引き当て（冪等キー付き）"""</span>
+        <span class="kw">async</span> <span class="kw">with</span> httpx.<span class="fn">AsyncClient</span>(timeout=<span class="kw">self</span>.timeout) <span class="kw">as</span> client:
+            response = <span class="kw">await</span> client.<span class="fn">post</span>(
+                f<span class="st">"\${self.base_url}/inventory/\${product_id}/reserve"</span>,
+                json={<span class="st">"quantity"</span>: quantity, <span class="st">"order_id"</span>: order_id},
+                headers={
+                    <span class="st">"X-Service-Name"</span>: <span class="st">"order-service"</span>,
+                    <span class="cm"># 冪等性キー: 同じリクエストの重複処理を防ぐ</span>
+                    <span class="st">"Idempotency-Key"</span>: f<span class="st">"reserve-\${order_id}-\${product_id}"</span>,
+                }
+            )
+            response.<span class="fn">raise_for_status</span>()
+            <span class="kw">return</span> response.<span class="fn">json</span>()`,
+
+  code2: `<span class="kw">from</span> kafka <span class="kw">import</span> KafkaProducer, KafkaConsumer
+<span class="kw">import</span> json
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, asdict
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">OrderPlacedEvent</span>:
+    <span class="cm">"""注文確定イベント — 過去形で命名するのがベストプラクティス"""</span>
+    event_id: str
+    event_type: str = <span class="st">"order.placed"</span>
+    order_id: str = <span class="st">""</span>
+    customer_id: str = <span class="st">""</span>
+    items: list = <span class="kw">None</span>
+    total_amount: float = <span class="nu">0.0</span>
+    occurred_at: str = <span class="st">""</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.occurred_at == <span class="st">""</span>:
+            <span class="kw">self</span>.occurred_at = datetime.<span class="fn">utcnow</span>().<span class="fn">isoformat</span>()
+        <span class="kw">if</span> <span class="kw">self</span>.items <span class="kw">is</span> <span class="kw">None</span>:
+            <span class="kw">self</span>.items = []
+
+<span class="cm"># ── プロデューサー（注文サービス） ──</span>
+<span class="kw">class</span> <span class="fn">OrderEventProducer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, bootstrap_servers: list):
+        <span class="kw">self</span>._producer = <span class="fn">KafkaProducer</span>(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=<span class="kw">lambda</span> v: json.<span class="fn">dumps</span>(v).<span class="fn">encode</span>(<span class="st">"utf-8"</span>),
+            acks=<span class="st">"all"</span>,    <span class="cm"># 全レプリカへの書き込みを確認</span>
+            retries=<span class="nu">3</span>,
+        )
+
+    <span class="kw">def</span> <span class="fn">publish_order_placed</span>(<span class="kw">self</span>, event: OrderPlacedEvent):
+        <span class="cm">"""同じ注文IDは常に同じパーティションへ（順序保証）"""</span>
+        <span class="kw">self</span>._producer.<span class="fn">send</span>(
+            topic=<span class="st">"orders"</span>,
+            key=event.order_id.<span class="fn">encode</span>(<span class="st">"utf-8"</span>),
+            value=<span class="fn">asdict</span>(event)
+        )
+        <span class="kw">self</span>._producer.<span class="fn">flush</span>()
+
+<span class="cm"># ── コンシューマー（通知サービス） ──</span>
+<span class="kw">class</span> <span class="fn">NotificationEventConsumer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, bootstrap_servers: list):
+        <span class="kw">self</span>._consumer = <span class="fn">KafkaConsumer</span>(
+            <span class="st">"orders"</span>,
+            bootstrap_servers=bootstrap_servers,
+            group_id=<span class="st">"notification-service"</span>,
+            value_deserializer=<span class="kw">lambda</span> v: json.<span class="fn">loads</span>(v.<span class="fn">decode</span>(<span class="st">"utf-8"</span>)),
+            enable_auto_commit=<span class="kw">False</span>,  <span class="cm"># 手動コミットで確実な処理を保証</span>
+        )
+
+    <span class="kw">def</span> <span class="fn">start</span>(<span class="kw">self</span>):
+        <span class="kw">for</span> message <span class="kw">in</span> <span class="kw">self</span>._consumer:
+            event = message.value
+            <span class="kw">if</span> event[<span class="st">"event_type"</span>] == <span class="st">"order.placed"</span>:
+                <span class="kw">self</span>.<span class="fn">_send_confirmation_email</span>(event)
+                <span class="cm"># 処理成功後にコミット（処理前のコミットはNG）</span>
+                <span class="kw">self</span>._consumer.<span class="fn">commit</span>()`,
+
+  code3: `<span class="kw">_format_version</span>: <span class="st">"3.0"</span>
+
+<span class="kw">services</span>:
+  - <span class="kw">name</span>: <span class="st">order-service</span>
+    <span class="kw">url</span>: <span class="st">http://order-service:8001</span>
+    <span class="kw">connect_timeout</span>: <span class="nu">5000</span>
+    <span class="kw">read_timeout</span>: <span class="nu">10000</span>
+    <span class="kw">retries</span>: <span class="nu">3</span>
+
+<span class="kw">routes</span>:
+  - <span class="kw">name</span>: <span class="st">order-routes</span>
+    <span class="kw">service</span>: <span class="st">order-service</span>
+    <span class="kw">paths</span>:
+      - <span class="st">/v1/orders</span>
+    <span class="kw">methods</span>: [<span class="st">GET</span>, <span class="st">POST</span>, <span class="st">DELETE</span>]
+
+<span class="kw">plugins</span>:
+  <span class="cm"># JWT認証（全サービスに適用）</span>
+  - <span class="kw">name</span>: <span class="st">jwt</span>
+    <span class="kw">config</span>:
+      <span class="kw">secret_is_base64</span>: <span class="kw">false</span>
+      <span class="kw">claims_to_verify</span>: [<span class="st">exp</span>, <span class="st">nbf</span>]
+
+  <span class="cm"># レート制限（注文サービスに個別設定）</span>
+  - <span class="kw">name</span>: <span class="st">rate-limiting</span>
+    <span class="kw">service</span>: <span class="st">order-service</span>
+    <span class="kw">config</span>:
+      <span class="kw">minute</span>: <span class="nu">100</span>          <span class="cm"># 1分あたり100リクエスト</span>
+      <span class="kw">hour</span>: <span class="nu">5000</span>           <span class="cm"># 1時間あたり5000リクエスト</span>
+      <span class="kw">policy</span>: <span class="st">redis</span>        <span class="cm"># Redisで分散レート制限</span>
+      <span class="kw">redis_host</span>: <span class="st">redis</span>
+      <span class="kw">redis_port</span>: <span class="nu">6379</span>
+
+  <span class="cm"># リクエストロギング</span>
+  - <span class="kw">name</span>: <span class="st">http-log</span>
+    <span class="kw">config</span>:
+      <span class="kw">http_endpoint</span>: <span class="st">http://logging-service:9200/logs</span>
+      <span class="kw">method</span>: <span class="st">POST</span>
+
+  <span class="cm"># CORS設定</span>
+  - <span class="kw">name</span>: <span class="st">cors</span>
+    <span class="kw">config</span>:
+      <span class="kw">origins</span>: [<span class="st">"https://example.com"</span>]
+      <span class="kw">methods</span>: [<span class="st">GET</span>, <span class="st">POST</span>, <span class="st">OPTIONS</span>]
+      <span class="kw">headers</span>: [<span class="st">Authorization</span>, <span class="st">Content-Type</span>]
+      <span class="kw">max_age</span>: <span class="nu">3600</span>`,
+
+  code4: `<span class="kw">apiVersion</span>: <span class="st">apps/v1</span>
+<span class="kw">kind</span>: <span class="st">Deployment</span>
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: <span class="st">order-service</span>
+  <span class="kw">labels</span>:
+    <span class="kw">app</span>: <span class="st">order-service</span>
+    <span class="kw">version</span>: <span class="st">"2.1.0"</span>
+<span class="kw">spec</span>:
+  <span class="kw">replicas</span>: <span class="nu">3</span>
+  <span class="kw">selector</span>:
+    <span class="kw">matchLabels</span>:
+      <span class="kw">app</span>: <span class="st">order-service</span>
+  <span class="kw">template</span>:
+    <span class="kw">spec</span>:
+      <span class="kw">containers</span>:
+        - <span class="kw">name</span>: <span class="st">order-service</span>
+          <span class="kw">image</span>: <span class="st">myregistry/order-service:2.1.0</span>
+          <span class="kw">ports</span>:
+            - <span class="kw">containerPort</span>: <span class="nu">8001</span>
+          <span class="kw">env</span>:
+            - <span class="kw">name</span>: <span class="st">DATABASE_URL</span>
+              <span class="kw">valueFrom</span>:
+                <span class="kw">secretKeyRef</span>:
+                  <span class="kw">name</span>: <span class="st">order-db-secret</span>
+                  <span class="kw">key</span>: <span class="st">url</span>
+          <span class="cm"># ヘルスチェック設定（必須）</span>
+          <span class="kw">livenessProbe</span>:
+            <span class="kw">httpGet</span>:
+              <span class="kw">path</span>: <span class="st">/health/live</span>
+              <span class="kw">port</span>: <span class="nu">8001</span>
+            <span class="kw">initialDelaySeconds</span>: <span class="nu">30</span>
+            <span class="kw">periodSeconds</span>: <span class="nu">10</span>
+          <span class="kw">readinessProbe</span>:
+            <span class="kw">httpGet</span>:
+              <span class="kw">path</span>: <span class="st">/health/ready</span>
+              <span class="kw">port</span>: <span class="nu">8001</span>
+            <span class="kw">initialDelaySeconds</span>: <span class="nu">10</span>
+            <span class="kw">periodSeconds</span>: <span class="nu">5</span>
+          <span class="cm"># リソース制限（必須）</span>
+          <span class="kw">resources</span>:
+            <span class="kw">requests</span>:
+              <span class="kw">cpu</span>: <span class="st">"100m"</span>
+              <span class="kw">memory</span>: <span class="st">"256Mi"</span>
+            <span class="kw">limits</span>:
+              <span class="kw">cpu</span>: <span class="st">"500m"</span>
+              <span class="kw">memory</span>: <span class="st">"512Mi"</span>
+<span class="st">---</span>
+<span class="cm"># Kubernetes Service（DNS名で解決できる内部LB）</span>
+<span class="kw">apiVersion</span>: <span class="st">v1</span>
+<span class="kw">kind</span>: <span class="st">Service</span>
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: <span class="st">order-service</span>  <span class="cm"># この名前でDNS解決される</span>
+<span class="kw">spec</span>:
+  <span class="kw">selector</span>:
+    <span class="kw">app</span>: <span class="st">order-service</span>
+  <span class="kw">ports</span>:
+    - <span class="kw">port</span>: <span class="nu">80</span>
+      <span class="kw">targetPort</span>: <span class="nu">8001</span>
+  <span class="kw">type</span>: <span class="st">ClusterIP</span>
+<span class="st">---</span>
+<span class="cm"># HPA（CPU使用率70%超でスケールアウト）</span>
+<span class="kw">apiVersion</span>: <span class="st">autoscaling/v2</span>
+<span class="kw">kind</span>: <span class="st">HorizontalPodAutoscaler</span>
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: <span class="st">order-service-hpa</span>
+<span class="kw">spec</span>:
+  <span class="kw">scaleTargetRef</span>:
+    <span class="kw">apiVersion</span>: <span class="st">autoscaling/v2</span>
+    <span class="kw">kind</span>: <span class="st">Deployment</span>
+    <span class="kw">name</span>: <span class="st">order-service</span>
+  <span class="kw">minReplicas</span>: <span class="nu">2</span>
+  <span class="kw">maxReplicas</span>: <span class="nu">20</span>
+  <span class="kw">metrics</span>:
+    - <span class="kw">type</span>: <span class="st">Resource</span>
+      <span class="kw">resource</span>:
+        <span class="kw">name</span>: <span class="st">cpu</span>
+        <span class="kw">target</span>:
+          <span class="kw">type</span>: <span class="st">Utilization</span>
+          <span class="kw">averageUtilization</span>: <span class="nu">70</span>`,
+
+  code5: `<span class="kw">import</span> time
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+<span class="kw">from</span> typing <span class="kw">import</span> Callable, Any, Optional
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+<span class="kw">import</span> logging
+
+logger = logging.<span class="fn">getLogger</span>(__name__)
+
+<span class="kw">class</span> <span class="fn">CircuitState</span>(Enum):
+    CLOSED = <span class="st">"closed"</span>       <span class="cm"># 正常状態: リクエストを通す</span>
+    OPEN = <span class="st">"open"</span>           <span class="cm"># 障害状態: リクエストを即拒否</span>
+    HALF_OPEN = <span class="st">"half_open"</span> <span class="cm"># 回復確認中</span>
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">CircuitBreakerConfig</span>:
+    failure_threshold: int = <span class="nu">5</span>       <span class="cm"># OPEN になる失敗回数</span>
+    success_threshold: int = <span class="nu">2</span>       <span class="cm"># CLOSED に戻る成功回数</span>
+    timeout_duration: float = <span class="nu">30.0</span>   <span class="cm"># OPEN 状態の持続時間（秒）</span>
+    half_open_max_calls: int = <span class="nu">3</span>     <span class="cm"># HALF_OPEN でのテスト回数上限</span>
+
+<span class="kw">class</span> <span class="fn">CircuitBreaker</span>:
+    <span class="cm">"""外部サービス呼び出しをラップして障害を局所化する"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, service_name: str, config: CircuitBreakerConfig = <span class="kw">None</span>):
+        <span class="kw">self</span>.service_name = service_name
+        <span class="kw">self</span>.config = config <span class="kw">or</span> <span class="fn">CircuitBreakerConfig</span>()
+        <span class="kw">self</span>._state = CircuitState.CLOSED
+        <span class="kw">self</span>._failure_count = <span class="nu">0</span>
+        <span class="kw">self</span>._success_count = <span class="nu">0</span>
+        <span class="kw">self</span>._last_failure_time: Optional[float] = <span class="kw">None</span>
+        <span class="kw">self</span>._half_open_calls = <span class="nu">0</span>
+
+    @property
+    def <span class="fn">state</span>(<span class="kw">self</span>) -&gt; CircuitState:
+        <span class="cm">"""タイムアウト後に OPEN -&gt; HALF_OPEN へ自動遷移"""</span>
+        <span class="kw">if</span> <span class="kw">self</span>._state == CircuitState.OPEN:
+            elapsed = time.<span class="fn">time</span>() - (<span class="kw">self</span>._last_failure_time <span class="kw">or</span> <span class="nu">0</span>)
+            <span class="kw">if</span> elapsed &gt; <span class="kw">self</span>.config.timeout_duration:
+                <span class="kw">self</span>._state = CircuitState.HALF_OPEN
+                <span class="kw">self</span>._half_open_calls = <span class="nu">0</span>
+                logger.<span class="fn">info</span>(f"CB[\${self.service_name}]: OPEN -&gt; HALF_OPEN")
+        <span class="kw">return</span> <span class="kw">self</span>._state
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">execute</span>(<span class="kw">self</span>, func: Callable, *args, fallback: Any = <span class="kw">None</span>, **kwargs) -&gt; Any:
+        <span class="kw">if</span> <span class="kw text-info">self</span>.state == CircuitState.OPEN:
+            logger.<span class="fn">warning</span>(f"CB[\${self.service_name}]: OPEN - リクエストを拒否")
+            <span class="kw">if</span> fallback <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>:
+                <span class="kw">return</span> fallback() <span class="kw text-info">if</span> <span class="fn">callable</span>(fallback) <span class="kw text-info">else</span> fallback
+            <span class="kw">raise</span> <span class="fn">CircuitBreakerOpenError</span>(f"\${self.service_name} は現在利用できません")
+
+        <span class="kw">try</span>:
+            result = <span class="kw">await</span> func(*args, **kwargs)
+            <span class="kw text-info">self</span>.<span class="fn">_on_success</span>()
+            <span class="kw text-info">return</span> result
+        <span class="kw">except</span> <span class="fn">Exception</span>:
+            <span class="kw text-info">self</span>.<span class="fn">_on_failure</span>()
+            <span class="kw">raise</span>
+
+    <span class="kw">def</span> <span class="fn">_on_success</span>(<span class="kw text-info">self</span>):
+        <span class="kw">if</span> <span class="kw text-info">self</span>._state == CircuitState.HALF_OPEN:
+            <span class="kw text-info">self</span>._success_count += <span class="nu">1</span>
+            <span class="kw">if</span> <span class="kw text-info">self</span>._success_count &gt;= <span class="kw text-info">self</span>.config.success_threshold:
+                <span class="kw text-info">self</span>._state = CircuitState.CLOSED
+                <span class="kw text-info">self</span>._failure_count = <span class="nu">0</span>
+                logger.<span class="fn">info</span>(f"CB[\${self.service_name}]: HALF_OPEN -&gt; CLOSED")
+
+    <span class="kw">def</span> <span class="fn">_on_failure</span>(<span class="kw text-info">self</span>):
+        <span class="kw text-info">self</span>._failure_count += <span class="nu">1</span>
+        <span class="kw text-info">self</span>._last_failure_time = time.<span class="fn">time</span>()
+        <span class="kw">if</span> <span class="kw text-info">self</span>._failure_count &gt;= <span class="kw text-info">self</span>.config.failure_threshold:
+            <span class="kw text-info">self</span>._state = CircuitState.OPEN
+            logger.<span class="fn">error</span>(f"CB[\${self.service_name}]: CLOSED -&gt; OPEN (\${self._failure_count} failures)")
+
+<span class="cm"># 使用例</span>
+inventory_cb = <span class="fn">CircuitBreaker</span>(
+    service_name=<span class="st">"inventory-service"</span>,
+    config=<span class="fn">CircuitBreakerConfig</span>(failure_threshold=<span class="nu">3</span>, timeout_duration=<span class="nu">30</span>)
+)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">check_inventory_with_cb</span>(product_id: str, quantity: int):
+    <span class="cm">"""サーキットブレーカー付き在庫確認"""</span>
+    <span class="kw">return</span> <span class="kw">await</span> inventory_cb.<span class="fn">execute</span>(
+        inventory_client.check_availability,
+        product_id, quantity,
+        fallback={<span class="st">"available"</span>: <span class="kw">False</span>, <span class="st">"reason"</span>: <span class="st">"在庫サービス利用不可（CB OPEN）"</span>}
+    )`,
+
+  code6: `<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, Depends, HTTPException, Security
+<span class="kw">from</span> fastapi.security <span class="kw">import</span> HTTPBearer, HTTPAuthorizationCredentials
+<span class="kw">import</span> jwt
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+<span class="kw">import</span> os
+
+<span class="cm"># 公開鍵で検証（本番環境では RS256 非対称鍵を使用）</span>
+JWT_PUBLIC_KEY = os.<span class="fn">getenv</span>(<span class="st">"JWT_PUBLIC_KEY"</span>)
+JWT_ALGORITHM = <span class="st">"RS256"</span>
+
+<span class="kw">if</span> <span class="kw">not</span> JWT_PUBLIC_KEY:
+    <span class="kw">raise</span> <span class="fn">RuntimeError</span>(<span class="st">"JWT_PUBLIC_KEY が設定されていません（Fail-Fast）"</span>)
+
+security = <span class="fn">HTTPBearer</span>()
+
+<span class="kw">class</span> <span class="fn">TokenData</span>(BaseModel):
+    sub: str            <span class="cm"># ユーザーID</span>
+    email: str
+    roles: list
+    service: Optional[str] = <span class="kw">None</span>  <span class="cm"># サービス間通信用</span>
+
+<span class="kw">def</span> <span class="fn">verify_jwt_token</span>(
+    credentials: HTTPAuthorizationCredentials = Security(security)
+) -&gt; TokenData:
+    <span class="cm">"""JWTトークンの検証"""</span>
+    <span class="kw">try</span>:
+        payload = jwt.<span class="fn">decode</span>(
+            credentials.credentials,
+            JWT_PUBLIC_KEY,
+            algorithms=[JWT_ALGORITHM],
+            options={<span class="st">"verify_exp"</span>: <span class="kw">True</span>}
+        )
+        <span class="kw">return</span> <span class="fn">TokenData</span>(**payload)
+    <span class="kw">except</span> jwt.<span class="fn">ExpiredSignatureError</span>:
+        <span class="kw">raise</span> <span class="fn">HTTPException</span>(status_code=<span class="nu">401</span>, detail=<span class="st">"トークンの有効期限切れ"</span>)
+    <span class="kw">except</span> jwt.<span class="fn">InvalidTokenError</span>:
+        <span class="kw">raise</span> <span class="fn">HTTPException</span>(status_code=<span class="nu">401</span>, detail=<span class="st">"認証に失敗しました"</span>)
+
+<span class="kw">def</span> <span class="fn">require_role</span>(required_role: str):
+    <span class="cm">"""ロールベースアクセス制御（RBAC）"""</span>
+    <span class="kw">def</span> <span class="fn">role_checker</span>(token: TokenData = Depends(verify_jwt_token)):
+        <span class="kw">if</span> required_role <span class="kw">not</span> <span class="kw">in</span> token.roles:
+            <span class="kw">raise</span> <span class="fn">HTTPException</span>(
+                status_code=<span class="nu">403</span>,
+                detail=f"権限不足: \${required_role} が必要"
+            )
+        <span class="kw text-info">return</span> token
+    <span class="kw text-info">return</span> role_checker
+
+app = <span class="fn">FastAPI</span>()
+
+@app.post(<span class="st">"/orders"</span>, status_code=<span class="nu">201</span>)
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">create_order</span>(
+    order_data: dict,
+    current_user: TokenData = Depends(verify_jwt_token)
+):
+    <span class="cm">"""注文作成（認証が必要）"""</span>
+    <span class="kw">return</span> {<span class="st">"order_id"</span>: <span class="st">"order_123"</span>, <span class="st">"customer_id"</span>: current_user.sub}
+
+@app.delete(<span class="st">"/orders/{order_id}"</span>)
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">delete_order</span>(
+    order_id: str,
+    admin: TokenData = Depends(require_role(<span class="st">"admin"</span>))
+):
+    <span class="cm">"""注文削除（admin ロールが必要）"""</span>
+    <span class="kw">return</span> {<span class="st">"deleted"</span>: order_id}`,
+
+  code7: `<span class="kw">name</span>: <span class="st">Order Service CI/CD</span>
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [<span class="st">main</span>]
+    <span class="kw">paths</span>: [<span class="st">'services/order-service/**'</span>]
+  <span class="kw">pull_request</span>:
+    <span class="kw">paths</span>: [<span class="st">'services/order-service/**'</span>]
+
+<span class="kw">env</span>:
+  <span class="kw">REGISTRY</span>: <span class="st">ghcr.io</span>
+  <span class="kw">IMAGE_NAME</span>: <span class="st">\${{ github.repository }}/order-service</span>
+
+<span class="kw">jobs</span>:
+  <span class="kw">test</span>:
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Set up Python 3.11</span>
+        <span class="kw">uses</span>: <span class="st">actions/setup-python@v4</span>
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="st">"3.11"</span>
+      - <span class="kw">name</span>: <span class="st">Install dependencies</span>
+        <span class="kw">run</span>: <span class="st">pip install -r services/order-service/requirements.txt</span>
+      - <span class="kw">name</span>: <span class="st">Lint</span>
+        <span class="kw">run</span>: <span class="st">ruff check services/order-service/</span>
+      - <span class="kw">name</span>: <span class="st">Unit Tests</span>
+        <span class="kw">run</span>: <span class="st">pytest services/order-service/tests/unit/ -v --cov</span>
+      - <span class="kw">name</span>: <span class="st">Integration Tests</span>
+        <span class="kw">run</span>: <span class="st">pytest services/order-service/tests/integration/ -v</span>
+      - <span class="kw">name</span>: <span class="st">Contract Tests (Pact)</span>  <span class="cm"># API互換性の自動検証</span>
+        <span class="kw">run</span>: <span class="st">pytest services/order-service/tests/contract/ -v</span>
+
+  <span class="kw">build-and-push</span>:
+    <span class="kw">needs</span>: <span class="st">test</span>
+    <span class="kw">if</span>: <span class="st">github.ref == 'refs/heads/main'</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Build and push Docker image</span>
+        <span class="kw">uses</span>: <span class="st">docker/build-push-action@v5</span>
+        <span class="kw">with</span>:
+          <span class="kw">context</span>: <span class="st">services/order-service</span>
+          <span class="kw">push</span>: <span class="st">true</span>
+          <span class="kw">tags</span>: <span class="st">\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }}</span>
+      <span class="cm"># 重大な脆弱性があればパイプラインを停止する</span>
+      - <span class="kw">name</span>: <span class="st">Security scan (Trivy)</span>
+        <span class="kw">uses</span>: <span class="st">aquasecurity/trivy-action@master</span>
+        <span class="kw">with</span>:
+          <span class="kw">image-ref</span>: <span class="st">\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }}</span>
+          <span class="kw">severity</span>: <span class="st">HIGH,CRITICAL</span>
+          <span class="kw">exit-code</span>: <span class="nu">1</span>
+
+  <span class="kw">deploy-staging</span>:
+    <span class="kw">needs</span>: <span class="st">build-and-push</span>
+    <span class="kw">environment</span>: <span class="st">staging</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">name</span>: <span class="st">Deploy to Staging</span>
+        <span class="kw">run</span>: |
+          <span class="st">kubectl set image deployment/order-service \\\\</span>
+            <span class="st">order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\\\</span>
+            <span class="st">-n staging</span>
+      - <span class="kw">name</span>: <span class="st">Wait for rollout</span>
+        <span class="kw">run</span>: <span class="st">kubectl rollout status deployment/order-service -n staging --timeout=5m</span>
+      - <span class="kw">name</span>: <span class="st">Run E2E Tests</span>
+        <span class="kw">run</span>: <span class="st">pytest tests/e2e/ --base-url=https://api-staging.example.com</span>
+
+  <span class="kw">deploy-production</span>:
+    <span class="kw">needs</span>: <span class="st">deploy-staging</span>
+    <span class="kw">environment</span>: <span class="st">production</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">name</span>: <span class="st">Canary Deploy (10% traffic)</span>
+        <span class="kw">run</span>: |
+          <span class="st">kubectl set image deployment/order-service-canary \\\\</span>
+            <span class="st">order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\\\</span>
+            <span class="st">-n production</span>
+      - <span class="kw">name</span>: <span class="st">Monitor canary (10 minutes)</span>
+        <span class="kw">run</span>: <span class="st">sleep 600</span>  <span class="cm"># 実際はPrometheus APIでエラー率を監視</span>
+      - <span class="kw">name</span>: <span class="st">Full Production Deploy</span>
+        <span class="kw">run</span>: |
+          <span class="st">kubectl set image deployment/order-service \\\\</span>
+            <span class="st">order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\\\</span>
+            <span class="st">-n production</span>`,
+
+  code8: `<span class="cm"># Stage 1: ビルド環境（依存関係インストール）</span>
+<span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> builder
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> requirements.txt .
+<span class="cm"># --no-cache-dir でキャッシュを残さずイメージサイズを最小化</span>
+<span class="kw">RUN</span> pip install --user --no-cache-dir -r requirements.txt
+
+<span class="cm"># Stage 2: 実行環境（最小イメージ）</span>
+<span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> runtime
+
+<span class="cm"># セキュリティ：非rootユーザーで実行（必須）</span>
+<span class="kw">RUN</span> addgroup --system appgroup &amp;&amp; adduser --system --group appuser
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># ビルド環境から依存関係のみコピー（ソースは含まない）</span>
+<span class="kw">COPY</span> --from=builder /root/.local /home/appuser/.local
+
+<span class="cm"># アプリコードをコピー（オーナーを非rootユーザーに設定）</span>
+<span class="kw">COPY</span> --chown=appuser:appgroup . .
+
+<span class="cm"># 非rootユーザーに切り替え</span>
+<span class="kw">USER</span> appuser
+
+<span class="cm"># ヘルスチェック設定</span>
+<span class="kw">HEALTHCHECK</span> --interval=30s --timeout=10s --start-period=40s --retries=3 \\\\
+    CMD python -c <span class="st">"import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"</span> || exit <span class="nu">1</span>
+
+<span class="kw">EXPOSE</span> <span class="nu">8001</span>
+
+<span class="kw">ENV</span> PATH=/home/appuser/.local/bin:$PATH
+
+<span class="cm"># グレースフルシャットダウンを考慮した起動コマンド</span>
+<span class="kw">CMD</span> [<span class="st">"uvicorn"</span>, <span class="st">"main:app"</span>, <span class="st">"--host"</span>, <span class="st">"0.0.0.0"</span>, <span class="st">"--port"</span>, <span class="st">"8001"</span>, \\\\
+     <span class="st">"--workers"</span>, <span class="st">"4"</span>, <span class="st">"--timeout-graceful-shutdown"</span>, <span class="st">"30"</span>]`,
+
+  code9: `<span class="kw">from</span> opentelemetry <span class="kw">import</span> trace
+<span class="kw">from</span> opentelemetry.sdk.trace <span class="kw">import</span> TracerProvider
+<span class="kw">from</span> opentelemetry.sdk.trace.export <span class="kw">import</span> BatchSpanProcessor
+<span class="kw">from</span> opentelemetry.exporter.otlp.proto.grpc.trace_exporter <span class="kw">import</span> OTLPSpanExporter
+<span class="kw">from</span> opentelemetry.instrumentation.fastapi <span class="kw">import</span> FastAPIInstrumentor
+<span class="kw">from</span> opentelemetry.instrumentation.httpx <span class="kw">import</span> HTTPXClientInstrumentor
+
+<span class="kw">def</span> <span class="fn">setup_tracing</span>(service_name: str):
+    <span class="cm">"""分散トレーシングの初期化"""</span>
+    otlp_exporter = <span class="fn">OTLPSpanExporter</span>(
+        endpoint=<span class="st">"http://otel-collector:4317"</span>,
+        insecure=<span class="kw">True</span>,
+    )
+    provider = <span class="fn">TracerProvider</span>()
+    provider.<span class="fn">add_span_processor</span>(<span class="fn">BatchSpanProcessor</span>(otlp_exporter))
+    trace.<span class="fn">set_tracer_provider</span>(provider)
+
+    <span class="cm"># FastAPIとHTTPXの自動計装（コードの修正不要）</span>
+    <span class="fn">FastAPIInstrumentor</span>().<span class="fn">instrument</span>()
+    <span class="fn">HTTPXClientInstrumentor</span>().<span class="fn">instrument</span>()
+
+    <span class="kw">return</span> trace.<span class="fn">get_tracer</span>(service_name)
+
+tracer = <span class="fn">setup_tracing</span>(<span class="st">"order-service"</span>)
+
+<span class="kw">class</span> <span class="fn">OrderService</span>:
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">create_order</span>(<span class="kw">self</span>, customer_id: str, items: list) -&gt; dict:
+        <span class="cm">"""注文作成（分散トレーシング付き）"""</span>
+        <span class="kw">with</span> tracer.<span class="fn">start_as_current_span</span>(<span class="st">"create-order"</span>) <span class="kw">as</span> span:
+            <span class="cm"># スパンに属性を追加（検索・フィルタリングに使用）</span>
+            span.<span class="fn">set_attribute</span>(<span class="st">"customer.id"</span>, customer_id)
+            span.<span class="fn">set_attribute</span>(<span class="st">"order.item_count"</span>, <span class="fn">len</span>(items))
+
+            <span class="cm"># 子スパン：在庫チェック</span>
+            <span class="kw">with</span> tracer.<span class="fn">start_as_current_span</span>(<span class="st">"check-inventory"</span>):
+                inventory_result = <span class="kw">await</span> <span class="kw text-info">self</span>.<span class="fn">_check_inventory</span>(items)
+
+            <span class="cm"># 子スパン：決済処理</span>
+            <span class="kw">with</span> tracer.<span class="fn">start_as_current_span</span>(<span class="st">"process-payment"</span>):
+                payment_result = <span class="kw">await</span> <span class="kw text-info">self</span>.<span class="fn">_process_payment</span>(customer_id, items)
+
+            order = {<span class="st">"order_id"</span>: <span class="st">"order_123"</span>, <span class="st">"status"</span>: <span class="st">"confirmed"</span>}
+            span.<span class="fn">set_attribute</span>(<span class="st">"order.id"</span>, order[<span class="st">"order_id"</span>])
+            <span class="kw">return</span> order`,
+};
+
 export default function Page() {
   return (
     <div className="microservices-architecture-comprehensive-guide">
@@ -1030,49 +1585,7 @@ export default function Page() {
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `import httpx
-
-class InventoryServiceClient:
-    """
-    在庫サービスへの同期HTTPクライアント
-    タイムアウト・エラーハンドリングをすべて内包する
-    """
-    def __init__(self, base_url: str, timeout: float = 5.0):
-        self.base_url = base_url
-        self.timeout = httpx.Timeout(connect=2.0, read=timeout)
-
-    async def check_availability(self, product_id: str, quantity: int) -> dict:
-        """在庫確認API呼び出し（冪等操作）"""
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            try:
-                response = await client.get(
-                    f"{self.base_url}/inventory/{product_id}",
-                    params={"requested_quantity": quantity},
-                    headers={"X-Service-Name": "order-service"},
-                )
-                response.raise_for_status()
-                return response.json()
-            except httpx.TimeoutException:
-                raise ServiceUnavailableError("在庫サービスがタイムアウトしました")
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code == 404:
-                    raise ProductNotFoundError(f"商品が見つかりません: {product_id}")
-                raise ServiceError(f"在庫サービスエラー: {e.response.status_code}")
-
-    async def reserve_stock(self, product_id: str, quantity: int, order_id: str) -> dict:
-        """在庫引き当て（冪等キー付き）"""
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            response = await client.post(
-                f"{self.base_url}/inventory/{product_id}/reserve",
-                json={"quantity": quantity, "order_id": order_id},
-                headers={
-                    "X-Service-Name": "order-service",
-                    # 冪等性キー: 同じリクエストの重複処理を防ぐ
-                    "Idempotency-Key": f"reserve-{order_id}-{product_id}",
-                }
-            )
-            response.raise_for_status()
-            return response.json()`,
+                  __html: CODE_BLOCKS.code1,
                 }}
               />
             </div>
@@ -1086,65 +1599,7 @@ class InventoryServiceClient:
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `from kafka import KafkaProducer, KafkaConsumer
-import json
-from dataclasses import dataclass, asdict
-from datetime import datetime
-
-@dataclass
-class OrderPlacedEvent:
-    """注文確定イベント — 過去形で命名するのがベストプラクティス"""
-    event_id: str
-    event_type: str = "order.placed"
-    order_id: str = ""
-    customer_id: str = ""
-    items: list = None
-    total_amount: float = 0.0
-    occurred_at: str = ""
-
-    def __post_init__(self):
-        if self.occurred_at == "":
-            self.occurred_at = datetime.utcnow().isoformat()
-        if self.items is None:
-            self.items = []
-
-# ── プロデューサー（注文サービス） ──
-class OrderEventProducer:
-    def __init__(self, bootstrap_servers: list):
-        self._producer = KafkaProducer(
-            bootstrap_servers=bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode("utf-8"),
-            acks="all",    # 全レプリカへの書き込みを確認
-            retries=3,
-        )
-
-    def publish_order_placed(self, event: OrderPlacedEvent):
-        """同じ注文IDは常に同じパーティションへ（順序保証）"""
-        self._producer.send(
-            topic="orders",
-            key=event.order_id.encode("utf-8"),
-            value=asdict(event)
-        )
-        self._producer.flush()
-
-# ── コンシューマー（通知サービス） ──
-class NotificationEventConsumer:
-    def __init__(self, bootstrap_servers: list):
-        self._consumer = KafkaConsumer(
-            "orders",
-            bootstrap_servers=bootstrap_servers,
-            group_id="notification-service",
-            value_deserializer=lambda v: json.loads(v.decode("utf-8")),
-            enable_auto_commit=False,  # 手動コミットで確実な処理を保証
-        )
-
-    def start(self):
-        for message in self._consumer:
-            event = message.value
-            if event["event_type"] == "order.placed":
-                self._send_confirmation_email(event)
-                # 処理成功後にコミット（処理前のコミットはNG）
-                self._consumer.commit()`,
+                  __html: CODE_BLOCKS.code2,
                 }}
               />
             </div>
@@ -1210,52 +1665,7 @@ class NotificationEventConsumer:
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `_format_version: "3.0"
-
-services:
-  - name: order-service
-    url: http://order-service:8001
-    connect_timeout: 5000
-    read_timeout: 10000
-    retries: 3
-
-routes:
-  - name: order-routes
-    service: order-service
-    paths:
-      - /v1/orders
-    methods: [GET, POST, DELETE]
-
-plugins:
-  # JWT認証（全サービスに適用）
-  - name: jwt
-    config:
-      secret_is_base64: false
-      claims_to_verify: [exp, nbf]
-
-  # レート制限（注文サービスに個別設定）
-  - name: rate-limiting
-    service: order-service
-    config:
-      minute: 100          # 1分あたり100リクエスト
-      hour: 5000           # 1時間あたり5000リクエスト
-      policy: redis        # Redisで分散レート制限
-      redis_host: redis
-      redis_port: 6379
-
-  # リクエストロギング
-  - name: http-log
-    config:
-      http_endpoint: http://logging-service:9200/logs
-      method: POST
-
-  # CORS設定
-  - name: cors
-    config:
-      origins: ["https://example.com"]
-      methods: [GET, POST, OPTIONS]
-      headers: [Authorization, Content-Type]
-      max_age: 3600`,
+                  __html: CODE_BLOCKS.code3,
                 }}
               />
             </div>
@@ -1338,85 +1748,7 @@ plugins:
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: order-service
-  labels:
-    app: order-service
-    version: "2.1.0"
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: order-service
-  template:
-    spec:
-      containers:
-        - name: order-service
-          image: myregistry/order-service:2.1.0
-          ports:
-            - containerPort: 8001
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: order-db-secret
-                  key: url
-          # ヘルスチェック設定（必須）
-          livenessProbe:
-            httpGet:
-              path: /health/live
-              port: 8001
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: 8001
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          # リソース制限（必須）
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
----
-# Kubernetes Service（DNS名で解決できる内部LB）
-apiVersion: v1
-kind: Service
-metadata:
-  name: order-service  # この名前でDNS解決される
-spec:
-  selector:
-    app: order-service
-  ports:
-    - port: 80
-      targetPort: 8001
-  type: ClusterIP
----
-# HPA（CPU使用率70%超でスケールアウト）
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: order-service-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: order-service
-  minReplicas: 2
-  maxReplicas: 20
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70`,
+                  __html: CODE_BLOCKS.code4,
                 }}
               />
             </div>
@@ -1575,92 +1907,7 @@ spec:
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `import time
-from enum import Enum
-from typing import Callable, Any, Optional
-from dataclasses import dataclass
-import logging
-
-logger = logging.getLogger(__name__)
-
-class CircuitState(Enum):
-    CLOSED = "closed"       # 正常状態: リクエストを通す
-    OPEN = "open"           # 障害状態: リクエストを即拒否
-    HALF_OPEN = "half_open" # 回復確認中
-
-@dataclass
-class CircuitBreakerConfig:
-    failure_threshold: int = 5       # OPEN になる失敗回数
-    success_threshold: int = 2       # CLOSED に戻る成功回数
-    timeout_duration: float = 30.0   # OPEN 状態の持続時間（秒）
-    half_open_max_calls: int = 3     # HALF_OPEN でのテスト回数上限
-
-class CircuitBreaker:
-    """外部サービス呼び出しをラップして障害を局所化する"""
-
-    def __init__(self, service_name: str, config: CircuitBreakerConfig = None):
-        self.service_name = service_name
-        self.config = config or CircuitBreakerConfig()
-        self._state = CircuitState.CLOSED
-        self._failure_count = 0
-        self._success_count = 0
-        self._last_failure_time: Optional[float] = None
-        self._half_open_calls = 0
-
-    @property
-    def state(self) -> CircuitState:
-        """タイムアウト後に OPEN -> HALF_OPEN へ自動遷移"""
-        if self._state == CircuitState.OPEN:
-            elapsed = time.time() - (self._last_failure_time or 0)
-            if elapsed > self.config.timeout_duration:
-                self._state = CircuitState.HALF_OPEN
-                self._half_open_calls = 0
-                logger.info(f"CB[{self.service_name}]: OPEN -> HALF_OPEN")
-        return self._state
-
-    async def execute(self, func: Callable, *args, fallback: Any = None, **kwargs) -> Any:
-        if self.state == CircuitState.OPEN:
-            logger.warning(f"CB[{self.service_name}]: OPEN - リクエストを拒否")
-            if fallback is not None:
-                return fallback() if callable(fallback) else fallback
-            raise CircuitBreakerOpenError(f"{self.service_name} は現在利用できません")
-
-        try:
-            result = await func(*args, **kwargs)
-            self._on_success()
-            return result
-        except Exception:
-            self._on_failure()
-            raise
-
-    def _on_success(self):
-        if self._state == CircuitState.HALF_OPEN:
-            self._success_count += 1
-            if self._success_count >= self.config.success_threshold:
-                self._state = CircuitState.CLOSED
-                self._failure_count = 0
-                logger.info(f"CB[{self.service_name}]: HALF_OPEN -> CLOSED")
-
-    def _on_failure(self):
-        self._failure_count += 1
-        self._last_failure_time = time.time()
-        if self._failure_count >= self.config.failure_threshold:
-            self._state = CircuitState.OPEN
-            logger.error(f"CB[{self.service_name}]: CLOSED -> OPEN ({self._failure_count} failures)")
-
-# 使用例
-inventory_cb = CircuitBreaker(
-    service_name="inventory-service",
-    config=CircuitBreakerConfig(failure_threshold=3, timeout_duration=30)
-)
-
-async def check_inventory_with_cb(product_id: str, quantity: int):
-    """サーキットブレーカー付き在庫確認"""
-    return await inventory_cb.execute(
-        inventory_client.check_availability,
-        product_id, quantity,
-        fallback={"available": False, "reason": "在庫サービス利用不可（CB OPEN）"}
-    )`,
+                  __html: CODE_BLOCKS.code5,
                 }}
               />
             </div>
@@ -1731,73 +1978,7 @@ async def check_inventory_with_cb(product_id: str, quantity: int):
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `from fastapi import FastAPI, Depends, HTTPException, Security
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
-from pydantic import BaseModel
-from typing import Optional
-import os
-
-# 公開鍵で検証（本番環境では RS256 非対称鍵を使用）
-JWT_PUBLIC_KEY = os.getenv("JWT_PUBLIC_KEY")
-JWT_ALGORITHM = "RS256"
-
-if not JWT_PUBLIC_KEY:
-    raise RuntimeError("JWT_PUBLIC_KEY が設定されていません（Fail-Fast）")
-
-security = HTTPBearer()
-
-class TokenData(BaseModel):
-    sub: str            # ユーザーID
-    email: str
-    roles: list
-    service: Optional[str] = None  # サービス間通信用
-
-def verify_jwt_token(
-    credentials: HTTPAuthorizationCredentials = Security(security)
-) -> TokenData:
-    """JWTトークンの検証"""
-    try:
-        payload = jwt.decode(
-            credentials.credentials,
-            JWT_PUBLIC_KEY,
-            algorithms=[JWT_ALGORITHM],
-            options={"verify_exp": True}
-        )
-        return TokenData(**payload)
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="トークンの有効期限切れ")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="認証に失敗しました")
-
-def require_role(required_role: str):
-    """ロールベースアクセス制御（RBAC）"""
-    def role_checker(token: TokenData = Depends(verify_jwt_token)):
-        if required_role not in token.roles:
-            raise HTTPException(
-                status_code=403,
-                detail=f"権限不足: {required_role} が必要"
-            )
-        return token
-    return role_checker
-
-app = FastAPI()
-
-@app.post("/orders", status_code=201)
-async def create_order(
-    order_data: dict,
-    current_user: TokenData = Depends(verify_jwt_token)
-):
-    """注文作成（認証が必要）"""
-    return {"order_id": "order_123", "customer_id": current_user.sub}
-
-@app.delete("/orders/{order_id}")
-async def delete_order(
-    order_id: str,
-    admin: TokenData = Depends(require_role("admin"))
-):
-    """注文削除（admin ロールが必要）"""
-    return {"deleted": order_id}`,
+                  __html: CODE_BLOCKS.code6,
                 }}
               />
             </div>
@@ -1859,91 +2040,7 @@ async def delete_order(
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `name: Order Service CI/CD
-
-on:
-  push:
-    branches: [main]
-    paths: ['services/order-service/**']
-  pull_request:
-    paths: ['services/order-service/**']
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: \${{ github.repository }}/order-service
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install -r services/order-service/requirements.txt
-      - name: Lint
-        run: ruff check services/order-service/
-      - name: Unit Tests
-        run: pytest services/order-service/tests/unit/ -v --cov
-      - name: Integration Tests
-        run: pytest services/order-service/tests/integration/ -v
-      - name: Contract Tests (Pact)  # API互換性の自動検証
-        run: pytest services/order-service/tests/contract/ -v
-
-  build-and-push:
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: services/order-service
-          push: true
-          tags: \${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }}
-      # 重大な脆弱性があればパイプラインを停止する
-      - name: Security scan (Trivy)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: \${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }}
-          severity: HIGH,CRITICAL
-          exit-code: 1
-
-  deploy-staging:
-    needs: build-and-push
-    environment: staging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Staging
-        run: |
-          kubectl set image deployment/order-service \\
-            order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\
-            -n staging
-      - name: Wait for rollout
-        run: kubectl rollout status deployment/order-service -n staging --timeout=5m
-      - name: Run E2E Tests
-        run: pytest tests/e2e/ --base-url=https://api-staging.example.com
-
-  deploy-production:
-    needs: deploy-staging
-    environment: production
-    runs-on: ubuntu-latest
-    steps:
-      - name: Canary Deploy (10% traffic)
-        run: |
-          kubectl set image deployment/order-service-canary \\
-            order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\
-            -n production
-      - name: Monitor canary (10 minutes)
-        run: sleep 600  # 実際はPrometheus APIでエラー率を監視
-      - name: Full Production Deploy
-        run: |
-          kubectl set image deployment/order-service \\
-            order-service=\${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}:sha-\${{ github.sha }} \\
-            -n production`,
+                  __html: CODE_BLOCKS.code7,
                 }}
               />
             </div>
@@ -1996,41 +2093,7 @@ jobs:
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `# Stage 1: ビルド環境（依存関係インストール）
-FROM python:3.11-slim AS builder
-WORKDIR /app
-COPY requirements.txt .
-# --no-cache-dir でキャッシュを残さずイメージサイズを最小化
-RUN pip install --user --no-cache-dir -r requirements.txt
-
-# Stage 2: 実行環境（最小イメージ）
-FROM python:3.11-slim AS runtime
-
-# セキュリティ：非rootユーザーで実行（必須）
-RUN addgroup --system appgroup && adduser --system --group appuser
-
-WORKDIR /app
-
-# ビルド環境から依存関係のみコピー（ソースは含まない）
-COPY --from=builder /root/.local /home/appuser/.local
-
-# アプリコードをコピー（オーナーを非rootユーザーに設定）
-COPY --chown=appuser:appgroup . .
-
-# 非rootユーザーに切り替え
-USER appuser
-
-# ヘルスチェック設定
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \\
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')" || exit 1
-
-EXPOSE 8001
-
-ENV PATH=/home/appuser/.local/bin:$PATH
-
-# グレースフルシャットダウンを考慮した起動コマンド
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", \\
-     "--workers", "4", "--timeout-graceful-shutdown", "30"]`,
+                  __html: CODE_BLOCKS.code8,
                 }}
               />
             </div>
@@ -2177,50 +2240,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", \\
               <pre
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block
                 dangerouslySetInnerHTML={{
-                  __html: `from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
-
-def setup_tracing(service_name: str):
-    """分散トレーシングの初期化"""
-    otlp_exporter = OTLPSpanExporter(
-        endpoint="http://otel-collector:4317",
-        insecure=True,
-    )
-    provider = TracerProvider()
-    provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
-    trace.set_tracer_provider(provider)
-
-    # FastAPIとHTTPXの自動計装（コードの修正不要）
-    FastAPIInstrumentor().instrument()
-    HTTPXClientInstrumentor().instrument()
-
-    return trace.get_tracer(service_name)
-
-tracer = setup_tracing("order-service")
-
-class OrderService:
-    async def create_order(self, customer_id: str, items: list) -> dict:
-        """注文作成（分散トレーシング付き）"""
-        with tracer.start_as_current_span("create-order") as span:
-            # スパンに属性を追加（検索・フィルタリングに使用）
-            span.set_attribute("customer.id", customer_id)
-            span.set_attribute("order.item_count", len(items))
-
-            # 子スパン：在庫チェック
-            with tracer.start_as_current_span("check-inventory"):
-                inventory_result = await self._check_inventory(items)
-
-            # 子スパン：決済処理
-            with tracer.start_as_current_span("process-payment"):
-                payment_result = await self._process_payment(customer_id, items)
-
-            order = {"order_id": "order_123", "status": "confirmed"}
-            span.set_attribute("order.id", order["order_id"])
-            return order`,
+                  __html: CODE_BLOCKS.code9,
                 }}
               />
             </div>
