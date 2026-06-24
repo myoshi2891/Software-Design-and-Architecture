@@ -2966,4 +2966,19 @@ body.has-common-header .service-oriented-architecture-comprehensive-guide .secti
   .service-oriented-architecture-comprehensive-guide .progress-bar { left: 0; }
 }
 
+/* ==========================================================================
+   Hexagonal Architecture Comprehensive Guide
+   ========================================================================== */
+.hexagonal-architecture-comprehensive-guide {
+  --sw: 260px;
+
+  .main {
+    margin-left: var(--sw);
+    flex: 1;
+    max-width: calc(100% - var(--sw));
+    overflow-x: hidden;
+  }
+}
+
+
 
