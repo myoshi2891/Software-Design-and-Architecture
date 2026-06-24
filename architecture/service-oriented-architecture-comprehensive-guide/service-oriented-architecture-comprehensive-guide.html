@@ -1,0 +1,2879 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOA 完全ガイド</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --color-background-primary: #0f1117;
+  --color-background-secondary: #161b27;
+  --color-background-tertiary: #1e2535;
+  --color-background-info: #0d1f35;
+  --color-background-danger: #2a1215;
+  --color-background-success: #0d2318;
+  --color-background-warning: #251c0a;
+
+  --color-text-primary: #e8ecf4;
+  --color-text-secondary: #9aa5bc;
+  --color-text-tertiary: #5c6882;
+  --color-text-info: #60a5fa;
+  --color-text-danger: #f87171;
+  --color-text-success: #4ade80;
+  --color-text-warning: #fbbf24;
+
+  --color-border-primary: #2e3a52;
+  --color-border-secondary: #1e2b42;
+  --color-border-tertiary: #14203a;
+
+  --font-sans: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  --c-purple-50: #f5f3ff;
+  --c-purple-100: #ede9fe;
+  --c-purple-200: #ddd6fe;
+  --c-purple-400: #a78bfa;
+  --c-purple-600: #7c3aed;
+  --c-purple-800: #3b0764;
+  --c-purple-900: #2e0750;
+
+  --c-teal-100: #ccfbf1;
+  --c-teal-200: #99f6e4;
+  --c-teal-400: #2dd4bf;
+  --c-teal-600: #0d9488;
+  --c-teal-800: #134e4a;
+  --c-teal-900: #0f3d3a;
+
+  --c-coral-100: #ffe4e6;
+  --c-coral-200: #fecdd3;
+  --c-coral-400: #fb7185;
+  --c-coral-600: #e11d48;
+  --c-coral-800: #4c0519;
+  --c-coral-900: #3b0416;
+
+  --c-pink-100: #fce7f3;
+  --c-pink-200: #fbcfe8;
+  --c-pink-400: #f472b6;
+  --c-pink-600: #db2777;
+  --c-pink-800: #500724;
+
+  --c-blue-400: #60a5fa;
+  --c-blue-600: #2563eb;
+  --c-blue-800: #1e3a5f;
+
+  --c-green-400: #4ade80;
+  --c-green-600: #16a34a;
+  --c-green-800: #14532d;
+
+  --c-amber-400: #fbbf24;
+  --c-amber-600: #d97706;
+  --c-amber-800: #451a03;
+
+  --c-red-400: #f87171;
+  --c-red-600: #dc2626;
+  --c-red-800: #450a0a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.page-wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+h3 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+
+p { color: var(--color-text-secondary); font-size: 16px; line-height: 1.7; }
+
+a { color: var(--c-teal-400); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--color-background-tertiary);
+  color: var(--c-purple-400);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+pre {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--color-border-primary);
+  padding: 32px 0 28px;
+  margin-bottom: 40px;
+}
+
+.site-header .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--c-purple-800);
+  color: var(--c-purple-200);
+  border: 1px solid var(--c-purple-600);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.site-header h1 {
+  font-size: 22px;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
+}
+
+.site-header .subtitle {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.toc-box {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 48px;
+}
+
+.toc-box h3 {
+  font-size: 14px;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.toc-item:last-child { border-bottom: none; }
+
+.toc-num {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  min-width: 20px;
+}
+
+.toc-link {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.toc-link:hover { color: var(--c-teal-400); }
+
+.section {
+  margin-bottom: 56px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.icon-purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+.icon-teal   { background: var(--c-teal-800);   color: var(--c-teal-200); }
+.icon-coral  { background: var(--c-coral-800);   color: var(--c-coral-200); }
+.icon-blue   { background: var(--c-blue-800);    color: var(--c-blue-400); }
+.icon-green  { background: var(--c-green-800);   color: var(--c-green-400); }
+.icon-amber  { background: var(--c-amber-800);   color: var(--c-amber-400); }
+.icon-red    { background: var(--c-red-800);     color: var(--c-red-400); }
+
+.subsection {
+  margin-bottom: 36px;
+}
+
+.subsection h3 {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.subsection h3 i { font-size: 18px; color: var(--c-teal-400); }
+
+.callout {
+  border-radius: var(--border-radius-md);
+  padding: 16px 20px;
+  margin: 16px 0;
+  border-left: 3px solid;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.callout i { font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+
+.callout-info  { background: var(--color-background-info);    border-color: var(--c-blue-400);   color: var(--color-text-info); }
+.callout-warn  { background: var(--color-background-warning);  border-color: var(--c-amber-400);  color: var(--color-text-warning); }
+.callout-tip   { background: var(--color-background-success);  border-color: var(--c-green-400);  color: var(--color-text-success); }
+.callout-danger{ background: var(--color-background-danger);   border-color: var(--c-red-400);    color: var(--color-text-danger); }
+
+.callout .callout-body { font-size: 14px; line-height: 1.6; }
+.callout strong { font-weight: 500; }
+
+.principle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.principle-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+}
+
+.principle-card .p-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 6px;
+}
+
+.principle-card .p-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.principle-card .p-en {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 8px;
+}
+
+.principle-card .p-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.mermaid-wrap {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 24px 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.mermaid-label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-align: right;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 16px 0;
+}
+
+.data-table th {
+  background: var(--color-background-tertiary);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-primary);
+  font-size: 12px;
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  color: var(--color-text-secondary);
+  vertical-align: top;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--color-background-secondary); }
+
+.data-table td strong {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+.tag-teal   { background: var(--c-teal-800);   color: var(--c-teal-200); }
+.tag-coral  { background: var(--c-coral-800);   color: var(--c-coral-200); }
+.tag-amber  { background: var(--c-amber-800);   color: var(--c-amber-400); }
+.tag-green  { background: var(--c-green-800);   color: var(--c-green-400); }
+.tag-red    { background: var(--c-red-800);     color: var(--c-red-400); }
+
+.steps-list {
+  list-style: none;
+  counter-reset: steps;
+  margin: 16px 0;
+}
+
+.steps-list li {
+  counter-increment: steps;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.steps-list li:last-child { border-bottom: none; margin-bottom: 0; }
+
+.steps-list li::before {
+  content: counter(steps);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--c-purple-400);
+  background: var(--c-purple-800);
+  border: 1px solid var(--c-purple-600);
+  border-radius: var(--border-radius-md);
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.steps-list .step-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.steps-list .step-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.compare-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+}
+
+.compare-card .cc-head {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.compare-card ul li {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.compare-card ul li:last-child { border-bottom: none; }
+.compare-card ul li::before { content: "—"; color: var(--color-text-tertiary); flex-shrink: 0; }
+
+.antipattern-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--c-coral-800);
+  border-left: 3px solid var(--c-coral-600);
+  border-radius: var(--border-radius-md);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.antipattern-card .ap-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-coral-200);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.antipattern-card .ap-prob {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.antipattern-card .ap-fix {
+  background: var(--c-green-800);
+  border: 1px solid var(--c-green-600);
+  border-radius: var(--border-radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--c-green-200);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.antipattern-card .ap-fix i { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+.ref-section {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.ref-section h4 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref-list {
+  list-style: none;
+}
+
+.ref-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ref-list li:last-child { border-bottom: none; }
+
+.ref-list .ref-title {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  min-width: 0;
+  flex: 1;
+}
+
+.ref-list .ref-url {
+  font-size: 12px;
+  color: var(--c-teal-400);
+  word-break: break-all;
+}
+
+.ref-list i { color: var(--color-text-tertiary); font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb span { color: var(--color-text-tertiary); }
+
+.highlight-row { background: var(--color-background-tertiary); }
+
+.book-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.book-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.book-card .bc-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--c-purple-800);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.book-card .bc-icon i { font-size: 18px; color: var(--c-purple-200); }
+
+.book-card .bc-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+
+.book-card .bc-author {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+
+.book-card .bc-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.stars { color: var(--c-amber-400); font-size: 11px; margin-bottom: 4px; }
+
+.update-footer {
+  border-top: 1px solid var(--color-border-primary);
+  padding-top: 24px;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.update-footer .uf-left {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.update-footer .uf-right {
+  display: flex;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.pill-purple { background: var(--c-purple-800); color: var(--c-purple-200); border-color: var(--c-purple-600); }
+.pill-teal   { background: var(--c-teal-800);   color: var(--c-teal-200);   border-color: var(--c-teal-600); }
+.pill-coral  { background: var(--c-coral-800);   color: var(--c-coral-200);  border-color: var(--c-coral-600); }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border-primary);
+  margin: 32px 0;
+}
+
+.inline-def {
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin: 12px 0;
+}
+
+.inline-def .id-term {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-purple-400);
+  margin-bottom: 4px;
+}
+
+.inline-def .id-def {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.service-tier {
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.st-header {
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-header.purple { background: var(--c-purple-800); color: var(--c-purple-100); }
+.st-header.teal   { background: var(--c-teal-800);   color: var(--c-teal-100); }
+.st-header.coral  { background: var(--c-coral-800);  color: var(--c-coral-100); }
+
+.st-body {
+  background: var(--color-background-secondary);
+  padding: 16px 18px;
+}
+
+.st-body p {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+}
+
+.st-body ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.st-body ul li {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+  padding: 3px 10px;
+}
+
+.esb-feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.esb-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.esb-card .ec-head {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.esb-card .ec-head i { font-size: 16px; color: var(--c-teal-400); }
+.esb-card .ec-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.product-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.product-card .pc-cat {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.product-card .pc-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.product-card .pc-pros, .product-card .pc-cons {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.product-card .pc-pros { color: var(--c-green-400); }
+.product-card .pc-cons { color: var(--c-coral-400); margin-top: 4px; }
+
+.pattern-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pattern-card .pat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.pattern-card .pat-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.pattern-card .pat-en {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 6px;
+}
+
+.pattern-card .pat-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.xml-block {
+  background: #0d1117;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  margin: 16px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.xml-block .xc-tag    { color: #79c0ff; }
+.xml-block .xc-attr   { color: #ff7b72; }
+.xml-block .xc-val    { color: #a5d6ff; }
+.xml-block .xc-comment{ color: #8b949e; font-style: italic; }
+.xml-block .xc-text   { color: var(--color-text-secondary); }
+
+.security-layer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.sec-row {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.sec-row .sr-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sec-row .sr-label {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+
+.sec-row .sr-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.sec-row .sr-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.maturity-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.mat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mat-row .mr-lv {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  min-width: 50px;
+}
+
+.mat-row .mr-bar {
+  height: 28px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.mat-row .mr-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  min-width: 140px;
+}
+
+.bp-item {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.bp-item i { font-size: 18px; color: var(--c-teal-400); flex-shrink: 0; margin-top: 1px; }
+
+.bp-item .bp-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.bp-item .bp-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.governance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.gov-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+}
+
+.gov-card .gc-head {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.gov-card .gc-head i { font-size: 16px; color: var(--c-purple-400); }
+
+.gov-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.gov-card ul li {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.gov-card ul li:last-child { border-bottom: none; }
+.gov-card ul li::before { content: "·"; color: var(--c-purple-400); font-size: 16px; line-height: 1; flex-shrink: 0; }
+
+.seq-diagram {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.seq-diagram .sd-title {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.registry-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.ri-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+  text-align: center;
+}
+
+.ri-card i {
+  font-size: 22px;
+  color: var(--c-purple-400);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.ri-card .rc-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.ri-card .rc-desc {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<header class="site-header">
+  <div class="badge"><i class="ti ti-building"></i> アーキテクチャ完全ガイド</div>
+  <h1>SOA（サービス指向アーキテクチャ）完全ガイド</h1>
+  <p class="subtitle">初学者から実践者まで：設計原則・ESB・SOAP/REST・ガバナンス・事例を網羅</p>
+</header>
+
+<nav class="toc-box" aria-label="目次">
+  <h3><i class="ti ti-list"></i> 目次</h3>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="toc-num">01</span><a href="#s1" class="toc-link">SOAとは何か</a></div>
+    <div class="toc-item"><span class="toc-num">02</span><a href="#s2" class="toc-link">SOAの基本原則</a></div>
+    <div class="toc-item"><span class="toc-num">03</span><a href="#s3" class="toc-link">主要コンポーネント</a></div>
+    <div class="toc-item"><span class="toc-num">04</span><a href="#s4" class="toc-link">ESB</a></div>
+    <div class="toc-item"><span class="toc-num">05</span><a href="#s5" class="toc-link">サービス設計パターン</a></div>
+    <div class="toc-item"><span class="toc-num">06</span><a href="#s6" class="toc-link">SOA vs マイクロサービス</a></div>
+    <div class="toc-item"><span class="toc-num">07</span><a href="#s7" class="toc-link">Webサービス技術スタック</a></div>
+    <div class="toc-item"><span class="toc-num">08</span><a href="#s8" class="toc-link">サービスレジストリ</a></div>
+    <div class="toc-item"><span class="toc-num">09</span><a href="#s9" class="toc-link">セキュリティ設計</a></div>
+    <div class="toc-item"><span class="toc-num">10</span><a href="#s10" class="toc-link">データ管理</a></div>
+    <div class="toc-item"><span class="toc-num">11</span><a href="#s11" class="toc-link">SOAガバナンス</a></div>
+    <div class="toc-item"><span class="toc-num">12</span><a href="#s12" class="toc-link">実装ステップ</a></div>
+    <div class="toc-item"><span class="toc-num">13</span><a href="#s13" class="toc-link">銀行基幹システム事例</a></div>
+    <div class="toc-item"><span class="toc-num">14</span><a href="#s14" class="toc-link">監視・運用管理</a></div>
+    <div class="toc-item"><span class="toc-num">15</span><a href="#s15" class="toc-link">ベストプラクティス</a></div>
+    <div class="toc-item"><span class="toc-num">16</span><a href="#s16" class="toc-link">アンチパターン</a></div>
+    <div class="toc-item"><span class="toc-num">17</span><a href="#s17" class="toc-link">参考文献</a></div>
+  </div>
+</nav>
+
+<!-- ─── Section 1 ─── -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div class="section-icon icon-purple"><i class="ti ti-building-arch"></i></div>
+    <h2>SOAとは何か</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-info-circle"></i> 定義と核心思想</h3>
+    <p>SOA（Service-Oriented Architecture：サービス指向アーキテクチャ）は、アプリケーションの機能を<strong>再利用可能・独立したサービス</strong>として設計し、標準プロトコルで疎結合に連携させることで、システム全体の再利用性・柔軟性・相互運用性を高めるアーキテクチャスタイルです。</p>
+
+    <div class="callout callout-info" style="margin-top:16px;">
+      <i class="ti ti-bulb"></i>
+      <div class="callout-body">
+        <strong>核心思想：</strong>「ビジネス機能をネットワーク越しに呼び出せる独立したサービスとして公開し、標準プロトコルで疎結合に連携させることで、システム全体の再利用性・柔軟性・相互運用性を高める」
+      </div>
+    </div>
+
+    <p style="margin-top:12px;">2000年代初頭にエンタープライズシステムの統合課題を解決するために普及し、現在もレガシーシステム統合・大規模エンタープライズ・金融・官公庁系システムで広く採用されています。</p>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-history"></i> SOAが生まれた背景</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+timeline
+    title SOAの歴史的背景
+    1990年代後半 : エンタープライズシステムの複雑化
+                 : スパゲッティ統合（Point-to-Point）が限界に
+    1996年       : Gartner が SOA という概念を初めて定義
+    2000年代初頭 : XML・SOAP・WSDLなどWebサービス技術が標準化
+                 : W3C・OASIS による仕様策定が進む
+    2003〜2006年 : ESB（Enterprise Service Bus）製品が台頭
+                 : IBM WebSphere・Oracle SOA Suite・TIBCO普及
+    2006〜2010年 : SOAが大企業の標準アーキテクチャとして確立
+                 : TOGAF・SOA参照モデルの整備
+    2011〜現在   : マイクロサービスへの移行が始まる
+                 : SOAはエンタープライズ統合基盤として継続活用
+      </div>
+      <div class="mermaid-label">diagram / timeline</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-urgent"></i> SOAが解決する問題：スパゲッティ統合からの脱却</h3>
+    <p>SOA導入前のPoint-to-Point統合（スパゲッティ統合）では、システム間の直接依存が爆発的に増加し、変更・保守が困難になります。SOAはESBという共通通信基盤を置くことでこれを解決します。</p>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    subgraph "SOA導入前：スパゲッティ統合"
+        S1["受発注システム"]
+        S2["会計システム"]
+        S3["人事システム"]
+        S4["在庫システム"]
+        S5["物流システム"]
+        S1 <-->|独自連携| S2
+        S1 <-->|独自連携| S3
+        S2 <-->|独自連携| S4
+        S3 <-->|独自連携| S5
+        S4 <-->|独自連携| S1
+        S5 <-->|独自連携| S2
+        S3 <-->|独自連携| S4
+    end
+      </div>
+      <div class="mermaid-label">diagram / structural — 問題：変更に弱い・再利用できない・管理困難</div>
+    </div>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    subgraph "SOA導入後：ESBによる統合"
+        ESB["ESB（Enterprise Service Bus）<br>共通通信基盤"]
+        SVC1["受発注サービス"]
+        SVC2["会計サービス"]
+        SVC3["人事サービス"]
+        SVC4["在庫サービス"]
+        SVC5["物流サービス"]
+        SVC6["分析サービス"]
+        SVC1 & SVC2 & SVC3 & SVC4 & SVC5 & SVC6 <--> ESB
+    end
+      </div>
+      <div class="mermaid-label">diagram / structural — 解決：標準インターフェース・サービス再利用・集中管理</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-target"></i> SOAの適用領域</h3>
+    <p>SOAは組織規模が大きく、複数システム間の統合が複雑なほど効果を発揮します。小規模・単純なシステムではオーバーエンジニアリングになる場合があります。</p>
+    <table class="data-table">
+      <thead>
+        <tr><th>適用領域</th><th>システム統合の複雑さ</th><th>組織規模</th><th>SOA効果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>大手銀行・基幹統合</strong></td><td>非常に高い</td><td>大規模</td><td><span class="tag tag-teal">非常に高い</span></td></tr>
+        <tr><td><strong>政府系・官公庁</strong></td><td>高い</td><td>大規模</td><td><span class="tag tag-teal">非常に高い</span></td></tr>
+        <tr><td><strong>製造業ERP統合</strong></td><td>高い</td><td>中〜大</td><td><span class="tag tag-teal">高い</span></td></tr>
+        <tr><td><strong>中堅企業SaaS統合</strong></td><td>中程度</td><td>中規模</td><td><span class="tag tag-purple">中程度</span></td></tr>
+        <tr><td><strong>スタートアップMVP</strong></td><td>低い</td><td>小規模</td><td><span class="tag tag-coral">推奨しない</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>既存の異種システム（ERP・基幹・外部API）が多数存在し、統合コストが高い中〜大規模組織でSOAが最も価値を発揮します。</div>
+    </div>
+    <p style="margin-top:8px;font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.gartner.com/en/information-technology/insights/service-oriented-architecture" target="_blank">Gartner SOA Research</a>、<a href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/" target="_blank">TOGAF SOA Reference Architecture</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 2 ─── -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div class="section-icon icon-teal"><i class="ti ti-pillar"></i></div>
+    <h2>SOAの基本原則</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-star"></i> SOA設計の8大原則（Thomas Erl の定義）</h3>
+    <p>Thomas Erlが体系化したSOA設計の8大原則は、再利用性・疎結合・相互運用性を実現するための基盤です。</p>
+    <div class="principle-grid">
+      <div class="principle-card">
+        <div class="p-num">01</div>
+        <div class="p-title">標準化されたサービス契約</div>
+        <div class="p-en">Standardized Service Contract</div>
+        <div class="p-desc">WSDL・OpenAPIで明示的なインターフェースを定義。内部実装ではなく「契約」に依存することで疎結合を実現する。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">02</div>
+        <div class="p-title">サービスの疎結合</div>
+        <div class="p-en">Service Loose Coupling</div>
+        <div class="p-desc">サービス間の依存を最小化し、一方が変更されても他方に影響しない設計にする。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">03</div>
+        <div class="p-title">サービスの抽象化</div>
+        <div class="p-en">Service Abstraction</div>
+        <div class="p-desc">内部実装を隠蔽し、コントラクト（契約）のみを外部に公開する。実装変更が消費者に影響しない。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">04</div>
+        <div class="p-title">サービスの再利用性</div>
+        <div class="p-en">Service Reusability</div>
+        <div class="p-desc">複数のコンテキストで再利用可能なよう、特定のビジネスプロセスに依存しない汎用的な設計にする。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">05</div>
+        <div class="p-title">サービスの自律性</div>
+        <div class="p-en">Service Autonomy</div>
+        <div class="p-desc">自身のロジックと実行環境を制御できる独立性を持つ。他サービスの状態に依存しない。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">06</div>
+        <div class="p-title">ステートレス性</div>
+        <div class="p-en">Service Statelessness</div>
+        <div class="p-desc">セッション状態を持たず、スケーラビリティを確保する。状態管理は呼び出し元の責務。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">07</div>
+        <div class="p-title">サービスの発見可能性</div>
+        <div class="p-en">Service Discoverability</div>
+        <div class="p-desc">レジストリで発見・管理可能なようメタデータを充実させる。ドキュメント化と検索性が重要。</div>
+      </div>
+      <div class="principle-card">
+        <div class="p-num">08</div>
+        <div class="p-title">組み合わせ可能性</div>
+        <div class="p-en">Service Composability</div>
+        <div class="p-desc">複数のサービスを組み合わせて上位の複合サービスを構成できる。再利用の最終形態。</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.serviceorientation.com/" target="_blank">Thomas Erl — SOA Manifesto & Design Principles</a></p>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-link"></i> 疎結合の実現方法</h3>
+    <p>密結合と疎結合の違いを理解することが、SOA設計の出発点です。</p>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph BAD["密結合（アンチパターン）"]
+        A_SVC["サービスA\n（呼び出し側）"]
+        B_SVC["サービスB\n（提供側）"]
+        A_SVC -->|"Bの内部クラスを直接インポート"| B_SVC
+    end
+    subgraph GOOD["疎結合（SOAパターン）"]
+        C_SVC["サービスC\n（呼び出し側）"]
+        CONTRACT["サービス契約\nWSDL / OpenAPI"]
+        D_SVC["サービスD\n（提供側）"]
+        C_SVC -->|"契約に従い呼び出し"| CONTRACT
+        CONTRACT -->|"実装を隠蔽"| D_SVC
+    end
+      </div>
+      <div class="mermaid-label">diagram / structural</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="cc-head"><span class="tag tag-coral">密結合</span></div>
+        <ul>
+          <li>Bの変更がAに即影響する</li>
+          <li>単独テストが困難</li>
+          <li>バージョン管理が複雑</li>
+          <li>デプロイが連動してしまう</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <div class="cc-head"><span class="tag tag-teal">疎結合（SOA）</span></div>
+        <ul>
+          <li>契約が変わらなければ独立して変更可能</li>
+          <li>単独テストが容易</li>
+          <li>バージョン管理が明確</li>
+          <li>独立デプロイが可能</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-resize"></i> サービスの粒度（Granularity）の考え方</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    GRANULARITY["サービス粒度の設計"]
+    COARSE["粗粒度サービス（Coarse-Grained）\n例：注文管理サービス\n注文の作成・更新・照会・キャンセルを含む"]
+    FINE["細粒度サービス（Fine-Grained）\n例：注文作成サービス・注文照会サービス（個別）"]
+    BALANCE["SOAのベストプラクティス\nビジネスエンティティ単位で粗粒度に設計し\n内部でアーキテクチャ上の細粒度を持つ"]
+    GRANULARITY --> COARSE & FINE
+    COARSE & FINE --> BALANCE
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>粒度</th><th>メリット</th><th>デメリット</th><th>推奨用途</th></tr></thead>
+      <tbody>
+        <tr><td><strong>粗粒度</strong></td><td>通信オーバーヘッド少・トランザクション管理容易</td><td>再利用性低い・変更影響大</td><td>ビジネスエンティティ単位の外部API</td></tr>
+        <tr><td><strong>細粒度</strong></td><td>再利用性高・独立変更容易</td><td>通信コスト大・Orchestrationが複雑</td><td>内部実装・ユーティリティ機能</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>外部向けAPIは「注文サービス（粗粒度）」として設計し、内部では「注文作成ロジック」「在庫チェック」などを細粒度で実装するハイブリッドアプローチが最適です。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 3 ─── -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div class="section-icon icon-purple"><i class="ti ti-topology-complex"></i></div>
+    <h2>SOAの主要コンポーネント</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-layout-distribute-vertical"></i> SOAリファレンスアーキテクチャ</h3>
+    <p>SOAは複数の層（レイヤー）から構成されます。各層の役割を理解することが設計の基本です。</p>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    subgraph CON["サービスコンシューマー層"]
+        WEB["Webアプリ"]
+        MOB["モバイルアプリ"]
+        PAR["パートナーシステム"]
+        LEG_C["レガシークライアント"]
+    end
+    subgraph GW["サービスゲートウェイ層"]
+        API_GW["API Gateway\n認証・認可・スロットリング・プロトコル変換"]
+    end
+    subgraph ESB_L["ESBレイヤー（中核）"]
+        ESB_C["ESB（Enterprise Service Bus）\nルーティング・変換・オーケストレーション・監視"]
+    end
+    subgraph SVC_L["サービス層"]
+        BS["ビジネスサービス\n注文・顧客・請求"]
+        ES["エンティティサービス\n商品・口座"]
+        US["ユーティリティサービス\n認証・通知・監査"]
+    end
+    subgraph REG["サービスレジストリ"]
+        UDDI_R["UDDI / サービスカタログ\nサービスの登録・検索・管理"]
+    end
+    subgraph BK["バックエンド層"]
+        DB1["基幹DB"]
+        LEG_S["レガシーシステム"]
+        EXT["外部API"]
+    end
+    CON --> GW --> ESB_L
+    ESB_L --> SVC_L
+    ESB_L <--> REG
+    SVC_L --> BK
+      </div>
+      <div class="mermaid-label">diagram / structural</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-category"></i> サービスの3分類</h3>
+    <p>SOAのサービスは役割によって3種類に分類されます。分類を意識することで再利用性と保守性が向上します。</p>
+
+    <div class="service-tier">
+      <div class="st-header purple"><i class="ti ti-briefcase"></i> Business Services（ビジネスサービス）</div>
+      <div class="st-body">
+        <p>ビジネスプロセスを直接反映したサービス。ドメインエキスパートが定義に関与する。再利用頻度は中程度。</p>
+        <ul>
+          <li>注文処理サービス（Order Processing）</li>
+          <li>与信審査サービス（Credit Check）</li>
+          <li>保険引受サービス（Underwriting）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="service-tier">
+      <div class="st-header teal"><i class="ti ti-database"></i> Entity Services（エンティティサービス）</div>
+      <div class="st-body">
+        <p>特定のビジネスエンティティを管理するサービス。CRUD操作を提供し、高い再利用性を持つ。</p>
+        <ul>
+          <li>顧客マスタサービス（Customer）</li>
+          <li>商品マスタサービス（Product）</li>
+          <li>口座サービス（Account）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="service-tier">
+      <div class="st-header coral"><i class="ti ti-tools"></i> Utility Services（ユーティリティサービス）</div>
+      <div class="st-body">
+        <p>業務ドメインに依存しない汎用的な機能を提供。最高の再利用性を持ち、複数サービスから呼び出される。</p>
+        <ul>
+          <li>通知サービス（Notification）</li>
+          <li>監査ログサービス（Audit）</li>
+          <li>暗号化サービス（Encryption）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>新規サービスを設計する際は必ずこの3分類のどれに属するかを定義してください。分類することで所有者・再利用範囲・変更ポリシーが自動的に決まります。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 4 ─── -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div class="section-icon icon-teal"><i class="ti ti-bus"></i></div>
+    <h2>ESB（エンタープライズ・サービス・バス）</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-info-circle"></i> ESBとは</h3>
+    <div class="inline-def">
+      <div class="id-term">Enterprise Service Bus（ESB）</div>
+      <div class="id-def">SOAの中核インフラ。複数サービス間のメッセージルーティング・プロトコル変換・データ変換・オーケストレーションを一元管理するミドルウェア基盤。「バス」のようにすべてのサービスをつなぐ通信基盤。</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-components"></i> ESBの6大機能</h3>
+    <div class="esb-feature-grid">
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-route"></i> メッセージルーティング</div>
+        <div class="ec-desc">コンテンツ・ヘッダー・優先度に基づいて適切なサービスへメッセージを転送する。ロードバランシングも担う。</div>
+      </div>
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-arrows-exchange"></i> プロトコル変換</div>
+        <div class="ec-desc">SOAP ⇔ REST、HTTP ⇔ JMS、FTP ⇔ HTTP など異なるプロトコル間の変換を透過的に行う。</div>
+      </div>
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-transform"></i> データ変換</div>
+        <div class="ec-desc">XML ⇔ JSON、CSV ⇔ XML など形式変換とスキーマバリデーションを実行する（XSLT・DataWeave等）。</div>
+      </div>
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-orchestra"></i> オーケストレーション</div>
+        <div class="ec-desc">BPEL実行エンジンで複数サービスの協調動作・ワークフロー管理・補償トランザクションを制御する。</div>
+      </div>
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-shield-lock"></i> セキュリティ適用</div>
+        <div class="ec-desc">WS-Securityによるメッセージ暗号化・認証認可・監査ログを一元的に適用する。</div>
+      </div>
+      <div class="esb-card">
+        <div class="ec-head"><i class="ti ti-chart-bar"></i> 監視・管理</div>
+        <div class="ec-desc">メッセージトレース・SLA監視・エラー管理・パフォーマンス計測をリアルタイムで提供する。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-git-branch"></i> ESBのメッセージフロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant CLI as クライアント
+    participant ESB as ESB
+    participant AUTH as 認証サービス
+    participant ORDER as 注文サービス
+    participant NOTIFY as 通知サービス
+    CLI->>ESB: SOAPリクエスト（注文作成）
+    ESB->>AUTH: 認証トークン検証
+    AUTH-->>ESB: 認証OK
+    ESB->>ESB: ルーティング判定
+    ESB->>ESB: SOAP→REST、XML→JSON変換
+    ESB->>ORDER: POST /orders（REST）
+    ORDER-->>ESB: 注文作成結果（JSON）
+    ESB->>ESB: JSON→XML変換
+    ESB--)NOTIFY: OrderCreatedEvent（非同期・JMS）
+    ESB-->>CLI: SOAPレスポンス
+      </div>
+      <div class="mermaid-label">diagram / sequence</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-package"></i> ESB主要製品・OSSの比較</h3>
+    <div class="product-grid">
+      <div class="product-card">
+        <div class="pc-cat">OSS</div>
+        <div class="pc-name">Apache Camel</div>
+        <div class="pc-pros">+ 軽量・高性能<br>+ 300以上のコンポーネント<br>+ Javaと親和性高い</div>
+        <div class="pc-cons">- GUIツールが限定的</div>
+      </div>
+      <div class="product-card">
+        <div class="pc-cat">OSS</div>
+        <div class="pc-name">WSO2 EI</div>
+        <div class="pc-pros">+ フルOSS<br>+ API管理も統合<br>+ Ballerina言語</div>
+        <div class="pc-cons">- 学習コストやや高め</div>
+      </div>
+      <div class="product-card">
+        <div class="pc-cat">OSS</div>
+        <div class="pc-name">MuleSoft（無償版）</div>
+        <div class="pc-pros">+ 豊富なコネクタ<br>+ DataWeaveで変換</div>
+        <div class="pc-cons">- 学習コスト高め</div>
+      </div>
+      <div class="product-card">
+        <div class="pc-cat">商用</div>
+        <div class="pc-name">IBM App Connect</div>
+        <div class="pc-pros">+ 豊富なエンタープライズ実績<br>+ 強力なサポート</div>
+        <div class="pc-cons">- ライセンスコスト高</div>
+      </div>
+      <div class="product-card">
+        <div class="pc-cat">商用</div>
+        <div class="pc-name">Oracle SOA Suite</div>
+        <div class="pc-pros">+ BPEL/BPMN対応<br>+ Oracle製品と統合</div>
+        <div class="pc-cons">- 構築コスト高</div>
+      </div>
+      <div class="product-card">
+        <div class="pc-cat">クラウド</div>
+        <div class="pc-name">AWS EventBridge</div>
+        <div class="pc-pros">+ サーバーレス<br>+ スケーラビリティ<br>+ マネージド</div>
+        <div class="pc-cons">- ベンダーロックイン</div>
+      </div>
+    </div>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>新規案件では Apache Camel（Java環境）または WSO2 EI（フルスタック統合が必要な場合）から検討してください。既存IBM/Oracle環境がある場合はその製品エコシステムに沿うのが現実的です。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">参考：<a href="https://camel.apache.org/manual/latest/index.html" target="_blank">Apache Camel 公式</a>、<a href="https://wso2.com/integration/" target="_blank">WSO2 Enterprise Integrator</a>、<a href="https://www.ibm.com/products/app-connect" target="_blank">IBM App Connect</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 5 ─── -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <div class="section-icon icon-purple"><i class="ti ti-puzzle"></i></div>
+    <h2>サービスの設計パターン</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-template"></i> SOA主要デザインパターン</h3>
+
+    <div class="pattern-card">
+      <div class="pat-icon icon-purple"><i class="ti ti-music"></i></div>
+      <div>
+        <div class="pat-title">オーケストレーション（Orchestration）</div>
+        <div class="pat-en">中央のESBコントローラーが複数サービスを制御・順序付けする</div>
+        <div class="pat-desc">ESBが「指揮者」として各サービスを呼び出す順序・条件を一元管理する。全体フローの可視性が高いが、ESBが単一障害点になるリスクがある。</div>
+      </div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pat-icon icon-teal"><i class="ti ti-wave-sine"></i></div>
+      <div>
+        <div class="pat-title">コレオグラフィー（Choreography）</div>
+        <div class="pat-en">イベント駆動で各サービスが自律的に協調動作する</div>
+        <div class="pat-desc">中央の指揮者がなく、各サービスがイベントを受け取り自律的に次のアクションを実行する。高い疎結合を実現するが、全体フローの把握が難しい。</div>
+      </div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pat-icon icon-coral"><i class="ti ti-theater"></i></div>
+      <div>
+        <div class="pat-title">サービスファサード（Service Facade）</div>
+        <div class="pat-en">複雑な内部サービスをシンプルなインターフェースで包む</div>
+        <div class="pat-desc">複数の内部サービスを束ね、外部には単一のシンプルなAPIとして公開する。クライアントの複雑さを軽減し、内部変更の影響を遮断する。</div>
+      </div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pat-icon icon-amber"><i class="ti ti-git-merge"></i></div>
+      <div>
+        <div class="pat-title">サービスアグリゲーター（Service Aggregator）</div>
+        <div class="pat-en">複数サービスの結果を集約して返す</div>
+        <div class="pat-desc">複数のサービスを並列または順次呼び出し、その結果をひとつのレスポンスにまとめる。BFF（Backend for Frontend）パターンの基礎でもある。</div>
+      </div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pat-icon icon-blue"><i class="ti ti-versions"></i></div>
+      <div>
+        <div class="pat-title">サービスバージョニング（Service Versioning）</div>
+        <div class="pat-en">後方互換性を保ちながらサービスを進化させる</div>
+        <div class="pat-desc">既存コンシューマーを壊さずにサービスのインターフェースを変更するための戦略。URLパス・HTTPヘッダー・クエリパラメータの3方式がある。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-arrows-diff"></i> オーケストレーション vs コレオグラフィー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    subgraph ORCH["オーケストレーション（ESB中央制御）"]
+        direction TB
+        ESB_O["ESBオーケストレーションエンジン（中央司令官）"]
+        O_A["サービスA: 注文作成"]
+        O_B["サービスB: 在庫確認"]
+        O_C["サービスC: 決済処理"]
+        O_D["サービスD: 通知送信"]
+        ESB_O -->|"1 呼び出し"| O_A
+        ESB_O -->|"2 在庫確認"| O_B
+        ESB_O -->|"3 決済実行"| O_C
+        ESB_O -->|"4 通知"| O_D
+    end
+    subgraph CHOREO["コレオグラフィー（イベント駆動）"]
+        direction TB
+        CH_BUS["イベントバス"]
+        C_A["注文サービス"]
+        C_B["在庫サービス"]
+        C_C["決済サービス"]
+        C_D["通知サービス"]
+        C_A -->|"OrderCreated"| CH_BUS
+        CH_BUS -->|"購読"| C_B
+        C_B -->|"StockReserved"| CH_BUS
+        CH_BUS -->|"購読"| C_C
+        C_C -->|"PaymentCompleted"| CH_BUS
+        CH_BUS -->|"購読"| C_D
+    end
+      </div>
+      <div class="mermaid-label">diagram / structural</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>観点</th><th>オーケストレーション</th><th>コレオグラフィー</th></tr></thead>
+      <tbody>
+        <tr><td><strong>制御方式</strong></td><td>中央集中（ESBが制御）</td><td>分散自律（イベント駆動）</td></tr>
+        <tr><td><strong>可視性</strong></td><td>フローが一元管理・見やすい</td><td>全体フローの把握が難しい</td></tr>
+        <tr><td><strong>疎結合度</strong></td><td>中程度（ESBへの依存あり）</td><td>高い（直接依存がない）</td></tr>
+        <tr><td><strong>障害点</strong></td><td>ESBが単一障害点になりやすい</td><td>分散型で単一障害点なし</td></tr>
+        <tr><td><strong>適用場面</strong></td><td>複雑な承認フロー・順序が重要な処理</td><td>高トラフィック・疎結合重視の設計</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-tag"></i> サービスバージョニング戦略</h3>
+    <table class="data-table">
+      <thead><tr><th>方式</th><th>例</th><th>メリット</th><th>デメリット</th></tr></thead>
+      <tbody>
+        <tr><td><strong>URLパスバージョニング</strong></td><td><code>/v1/orders</code><br><code>/v2/orders</code></td><td>最もわかりやすい・一般的</td><td>URLが変わる</td></tr>
+        <tr><td><strong>HTTPヘッダー</strong></td><td><code>Accept: application/vnd.api+json;version=2</code></td><td>URLをクリーンに保てる</td><td>実装が複雑</td></tr>
+        <tr><td><strong>クエリパラメータ</strong></td><td><code>/orders?version=2</code></td><td>シンプルな実装</td><td>キャッシュが複雑</td></tr>
+        <tr><td><strong>WSDLバージョニング（SOAP）</strong></td><td><code>urn:example:orders:v2</code></td><td>SOAP標準に準拠</td><td>クライアント再生成が必要</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>新バージョンは別URLで公開し、旧バージョンは少なくとも6〜12ヶ月は維持してください。廃止予告は<code>Deprecation</code>ヘッダーで通知し、コンシューマーへの移行サポート期間を必ず設けましょう。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 6 ─── -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div class="section-icon icon-teal"><i class="ti ti-scale"></i></div>
+    <h2>SOA vs マイクロサービス</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-columns"></i> 詳細比較</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="cc-head" style="color:var(--c-purple-200)"><i class="ti ti-building" style="color:var(--c-purple-400)"></i> SOAの特徴</div>
+        <ul>
+          <li>ESBを中心とした集中型統合</li>
+          <li>WS-* / SOAP / XMLが基本</li>
+          <li>共有データモデル・共有DBが多い</li>
+          <li>サービスサイズは中〜大</li>
+          <li>エンタープライズ向け</li>
+          <li>既存システム統合に強い</li>
+          <li>分散トランザクション管理が充実</li>
+          <li>BPEL/BPMNでプロセス管理</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <div class="cc-head" style="color:var(--c-teal-200)"><i class="ti ti-microchip" style="color:var(--c-teal-400)"></i> マイクロサービスの特徴</div>
+        <ul>
+          <li>APIゲートウェイ + 直接通信</li>
+          <li>REST / gRPC / Kafkaが基本</li>
+          <li>DB per Serviceが原則</li>
+          <li>サービスサイズは小</li>
+          <li>クラウドネイティブ向け</li>
+          <li>独立デプロイが容易</li>
+          <li>結果整合性が基本</li>
+          <li>CI/CDによる自動化が前提</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-route"></i> SOAからマイクロサービスへの移行判断</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    START["SOAからの移行を検討する"]
+    Q1{"ESBがボトルネックに\nなっているか？"}
+    Q2{"各チームが独立して\nデプロイしたいか？"}
+    Q3{"クラウドネイティブな\nスケーリングが必要か？"}
+    Q4{"既存の大規模エンタープライズ\n統合が多くあるか？"}
+    Q5{"組織がDevOpsに\n成熟しているか？"}
+    STAY["SOAを継続・最適化\nESBチューニング + API管理レイヤー追加"]
+    HYBRID["ハイブリッドアプローチ\n新機能はマイクロサービス\n既存統合はSOAを維持"]
+    GO_MS["マイクロサービスへ移行\nStrangler Figパターンで段階的に"]
+    START --> Q1
+    Q1 -->|No| STAY
+    Q1 -->|Yes| Q2
+    Q2 -->|No| STAY
+    Q2 -->|Yes| Q3
+    Q3 -->|No| Q4
+    Q3 -->|Yes| Q5
+    Q4 -->|Yes 多い| HYBRID
+    Q4 -->|No| Q5
+    Q5 -->|No 未成熟| HYBRID
+    Q5 -->|Yes| GO_MS
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+    <div class="callout callout-info">
+      <i class="ti ti-info-circle"></i>
+      <div class="callout-body"><strong>Strangler Figパターン：</strong>既存SOAを一括置換するのではなく、新機能から順次マイクロサービスとして実装し、段階的に移行する手法。リスクを最小化しながら現代化できる。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">参考：<a href="https://martinfowler.com/articles/microservices.html" target="_blank">Martin Fowler — Microservices</a>、<a href="https://aws.amazon.com/compare/the-difference-between-soa-microservices/" target="_blank">AWS: SOA vs Microservices</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 7 ─── -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div class="section-icon icon-blue"><i class="ti ti-code"></i></div>
+    <h2>Webサービス技術スタック（SOAP / REST / WSDL）</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-stack"></i> WS-* 技術スタック全体像</h3>
+    <table class="data-table">
+      <thead><tr><th>層</th><th>技術・仕様</th><th>役割</th><th>標準化団体</th></tr></thead>
+      <tbody>
+        <tr><td><strong>トランスポート</strong></td><td>HTTP/HTTPS、JMS、FTP</td><td>メッセージの物理的な転送</td><td>IETF・W3C</td></tr>
+        <tr><td><strong>メッセージング</strong></td><td>SOAP 1.1 / 1.2</td><td>XMLベースのメッセージ形式定義</td><td>W3C</td></tr>
+        <tr><td><strong>サービス記述</strong></td><td>WSDL 2.0</td><td>インターフェース・操作・バインディングの定義</td><td>W3C</td></tr>
+        <tr><td><strong>サービス発見</strong></td><td>UDDI</td><td>サービスレジストリ・検索</td><td>OASIS</td></tr>
+        <tr><td><strong>セキュリティ</strong></td><td>WS-Security、WS-Trust、SAML 2.0</td><td>メッセージ暗号化・認証・SSO</td><td>OASIS</td></tr>
+        <tr><td><strong>信頼性</strong></td><td>WS-ReliableMessaging</td><td>確実なメッセージ配信保証</td><td>OASIS</td></tr>
+        <tr><td><strong>トランザクション</strong></td><td>WS-AtomicTransaction</td><td>分散トランザクションのACID保証</td><td>OASIS</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-file-code"></i> WSDLの構造（コントラクトファースト設計の要）</h3>
+    <p>WSDLは「サービスの設計図」です。実装より先にWSDLを定義することをコントラクトファースト開発といい、SOAの基本的なベストプラクティスです。</p>
+    <pre><code>&lt;!-- 注文サービスのWSDL定義例（コントラクトファースト） --&gt;
+&lt;definitions name="OrderService"
+    targetNamespace="urn:example:orderservice:v1"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"&gt;
+
+  &lt;!-- 1. Types：XMLスキーマでデータ型を定義 --&gt;
+  &lt;types&gt;
+    &lt;xsd:schema targetNamespace="urn:example:orderservice:v1"&gt;
+      &lt;xsd:element name="CreateOrderRequest"&gt;
+        &lt;xsd:complexType&gt;
+          &lt;xsd:sequence&gt;
+            &lt;xsd:element name="customerId"  type="xsd:string"/&gt;
+            &lt;xsd:element name="productId"   type="xsd:string"/&gt;
+            &lt;xsd:element name="quantity"    type="xsd:int"/&gt;
+            &lt;xsd:element name="totalAmount" type="xsd:decimal"/&gt;
+          &lt;/xsd:sequence&gt;
+        &lt;/xsd:complexType&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:schema&gt;
+  &lt;/types&gt;
+
+  &lt;!-- 2. Message：メッセージ定義 --&gt;
+  &lt;message name="CreateOrderInput"&gt;
+    &lt;part name="parameters" element="tns:CreateOrderRequest"/&gt;
+  &lt;/message&gt;
+
+  &lt;!-- 3. PortType：抽象インターフェース（操作定義） --&gt;
+  &lt;portType name="OrderServicePortType"&gt;
+    &lt;operation name="createOrder"&gt;
+      &lt;input  message="tns:CreateOrderInput"/&gt;
+      &lt;output message="tns:CreateOrderOutput"/&gt;
+    &lt;/operation&gt;
+  &lt;/portType&gt;
+
+  &lt;!-- 4. Binding：プロトコルバインディング（SOAP/HTTP） --&gt;
+  &lt;binding name="OrderServiceSOAPBinding"
+           type="tns:OrderServicePortType"&gt;
+    &lt;soap:binding style="document"
+                  transport="http://schemas.xmlsoap.org/soap/http"/&gt;
+    &lt;operation name="createOrder"&gt;
+      &lt;soap:operation soapAction="urn:createOrder"/&gt;
+    &lt;/operation&gt;
+  &lt;/binding&gt;
+
+  &lt;!-- 5. Service：エンドポイントURL定義 --&gt;
+  &lt;service name="OrderService"&gt;
+    &lt;port name="OrderServicePort"
+          binding="tns:OrderServiceSOAPBinding"&gt;
+      &lt;soap:address
+          location="https://api.example.com/ws/order-service/v1"/&gt;
+    &lt;/port&gt;
+  &lt;/service&gt;
+
+&lt;/definitions&gt;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-message-code"></i> SOAPメッセージの構造</h3>
+    <pre><code>&lt;!-- SOAPリクエストメッセージの構造 --&gt;
+&lt;soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:ord="urn:example:orderservice:v1"&gt;
+
+  &lt;!-- ヘッダー：WS-Securityトークン・相関ID --&gt;
+  &lt;soapenv:Header&gt;
+    &lt;wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/..."&gt;
+      &lt;wsse:UsernameToken&gt;
+        &lt;wsse:Username&gt;service_account&lt;/wsse:Username&gt;
+        &lt;wsse:Password&gt;{{encrypted}}&lt;/wsse:Password&gt;
+      &lt;/wsse:UsernameToken&gt;
+    &lt;/wsse:Security&gt;
+    &lt;!-- トレーサビリティ用の相関ID --&gt;
+    &lt;ord:CorrelationId&gt;550e8400-e29b-41d4-a716&lt;/ord:CorrelationId&gt;
+  &lt;/soapenv:Header&gt;
+
+  &lt;!-- ボディ：実際のビジネスデータ --&gt;
+  &lt;soapenv:Body&gt;
+    &lt;ord:CreateOrderRequest&gt;
+      &lt;ord:customerId&gt;CUST-001&lt;/ord:customerId&gt;
+      &lt;ord:productId&gt;PROD-ABC&lt;/ord:productId&gt;
+      &lt;ord:quantity&gt;3&lt;/ord:quantity&gt;
+      &lt;ord:totalAmount&gt;15000.00&lt;/ord:totalAmount&gt;
+    &lt;/ord:CreateOrderRequest&gt;
+  &lt;/soapenv:Body&gt;
+
+&lt;/soapenv:Envelope&gt;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-arrows-exchange"></i> SOAP vs REST の使い分け判断</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    DECIDE["SOAのプロトコルを選択する"]
+    Q1{"エンタープライズ統合か？\n金融・官公庁・SAP連携"}
+    Q2{"WS-AtomicTransactionによる\n厳密なトランザクション管理が必要か？"}
+    Q3{"WS-SecurityやSAMLによる\nメッセージレベル暗号化が必要か？"}
+    Q4{"モバイル・Webアプリ・パブリックAPI向けか？"}
+    USE_SOAP["SOAP / WS-* を使用\n厳密なエラー処理・ACID TX・WS-Security"]
+    USE_REST["REST を使用\nシンプル・軽量JSON・OpenAPI"]
+    BOTH["ESBでプロトコル変換して共存\n内部はSOAP、外部はRESTなど"]
+    DECIDE --> Q1
+    Q1 -->|Yes| Q2
+    Q1 -->|No| Q4
+    Q2 -->|Yes| USE_SOAP
+    Q2 -->|No| Q3
+    Q3 -->|Yes| USE_SOAP
+    Q3 -->|No| BOTH
+    Q4 -->|Yes| USE_REST
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>内部システム間はWS-SOAP（厳密な型定義・セキュリティ）、外部パートナー・フロントエンド向けにはREST/JSONをESBで変換して公開するハイブリッド構成が現実的かつ一般的です。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.w3.org/TR/wsdl20/" target="_blank">WSDL 2.0 仕様（W3C）</a>、<a href="https://www.w3.org/TR/soap12/" target="_blank">SOAP 1.2 仕様（W3C）</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 8 ─── -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div class="section-icon icon-teal"><i class="ti ti-book"></i></div>
+    <h2>サービスレジストリとサービスディスカバリ</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-database"></i> サービスレジストリの役割</h3>
+    <p>サービスレジストリは「SOAの電話帳」です。提供者がサービスを登録し、消費者が検索・発見するための中央カタログです。</p>
+
+    <div class="registry-info">
+      <div class="ri-card">
+        <i class="ti ti-upload"></i>
+        <div class="rc-title">サービス提供者</div>
+        <div class="rc-desc">サービスを実装後、レジストリにエンドポイント・WSDL・SLAを登録する</div>
+      </div>
+      <div class="ri-card">
+        <i class="ti ti-book-2"></i>
+        <div class="rc-title">レジストリ本体</div>
+        <div class="rc-desc">名前・バージョン・URL・SLA・所有者・依存サービス等のメタデータを管理</div>
+      </div>
+      <div class="ri-card">
+        <i class="ti ti-search"></i>
+        <div class="rc-title">サービス消費者</div>
+        <div class="rc-desc">レジストリで目的のサービスを検索しエンドポイントを取得して呼び出す</div>
+      </div>
+    </div>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    PROVIDER["サービス提供者"]
+    REGISTRY["サービスレジストリ\nUDDI / カスタムカタログ"]
+    CONSUMER["サービス消費者"]
+    PROVIDER -->|"1 サービスを登録"| REGISTRY
+    CONSUMER -->|"2 サービスを検索"| REGISTRY
+    REGISTRY -->|"3 エンドポイントを返す"| CONSUMER
+    CONSUMER -->|"4 サービスを呼び出す"| PROVIDER
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-file-description"></i> サービスカタログに登録すべき情報</h3>
+    <table class="data-table">
+      <thead><tr><th>カテゴリ</th><th>登録項目</th><th>重要度</th></tr></thead>
+      <tbody>
+        <tr><td><strong>識別情報</strong></td><td>サービス名・バージョン・説明</td><td><span class="tag tag-coral">必須</span></td></tr>
+        <tr><td><strong>エンドポイント</strong></td><td>本番・ステージングURL（SOAP/REST）</td><td><span class="tag tag-coral">必須</span></td></tr>
+        <tr><td><strong>SLA</strong></td><td>可用性・応答時間P99・メンテナンス時間</td><td><span class="tag tag-coral">必須</span></td></tr>
+        <tr><td><strong>プロトコル</strong></td><td>SOAP/REST・認証方式（OAuth2/WS-Security）</td><td><span class="tag tag-coral">必須</span></td></tr>
+        <tr><td><strong>依存関係</strong></td><td>依存するサービス一覧（名前・バージョン）</td><td><span class="tag tag-amber">推奨</span></td></tr>
+        <tr><td><strong>ドキュメント</strong></td><td>WSDL・OpenAPI・Wikiリンク</td><td><span class="tag tag-amber">推奨</span></td></tr>
+        <tr><td><strong>オーナー情報</strong></td><td>チーム名・連絡先メール</td><td><span class="tag tag-amber">推奨</span></td></tr>
+        <tr><td><strong>タグ</strong></td><td>core・business-critical等の分類タグ</td><td><span class="tag tag-purple">任意</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>サービスカタログの更新をデプロイプロセスに組み込み（CI/CD）、手動更新を不要にしてください。古いカタログは「存在しないのと同じ」です。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.oasis-open.org/committees/uddi-spec/" target="_blank">UDDI 仕様（OASIS）</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 9 ─── -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <div class="section-icon icon-red"><i class="ti ti-shield-lock"></i></div>
+    <h2>セキュリティ設計</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-layers"></i> SOAセキュリティの多層防御</h3>
+    <p>SOAセキュリティは単一の対策ではなく、トランスポートからビジネス層まで複数のレイヤーで保護する多層防御（Defense in Depth）アプローチが基本です。</p>
+
+    <div class="security-layer">
+      <div class="sec-row">
+        <div class="sr-icon icon-red"><i class="ti ti-wall"></i></div>
+        <div>
+          <div class="sr-label">Layer 1 — 境界セキュリティ</div>
+          <div class="sr-title">ファイアウォール / WAF（Webアプリケーションファイアウォール）</div>
+          <div class="sr-desc">ネットワーク境界でSQLインジェクション・XSSなど既知の攻撃パターンをブロックする。DMZにAPIゲートウェイを配置する。</div>
+        </div>
+      </div>
+      <div class="sec-row">
+        <div class="sr-icon icon-blue"><i class="ti ti-lock"></i></div>
+        <div>
+          <div class="sr-label">Layer 2 — トランスポートセキュリティ</div>
+          <div class="sr-title">TLS 1.3 / HTTPS + mTLS（相互TLS）</div>
+          <div class="sr-desc">通信経路を暗号化する。サービス間通信では双方向TLS（mTLS）で相互認証を実施し、なりすましを防止する。</div>
+        </div>
+      </div>
+      <div class="sec-row">
+        <div class="sr-icon icon-purple"><i class="ti ti-key"></i></div>
+        <div>
+          <div class="sr-label">Layer 3 — メッセージセキュリティ（WS-Security）</div>
+          <div class="sr-title">XML Encryption + XML Signature</div>
+          <div class="sr-desc">トランスポートに依存せずメッセージ本体を暗号化・署名する。中間ノードを経由しても機密性・完全性を保証できる点がSOAの強み。</div>
+        </div>
+      </div>
+      <div class="sec-row">
+        <div class="sr-icon icon-green"><i class="ti ti-user-shield"></i></div>
+        <div>
+          <div class="sr-label">Layer 4 — ID管理・認証認可</div>
+          <div class="sr-title">SAML 2.0 SSO / OAuth 2.0 / RBAC</div>
+          <div class="sr-desc">シングルサインオンによる統合認証と、サービス操作レベルのRBAC（役割ベースアクセス制御）を組み合わせる。</div>
+        </div>
+      </div>
+      <div class="sec-row">
+        <div class="sr-icon icon-amber"><i class="ti ti-clipboard-list"></i></div>
+        <div>
+          <div class="sr-label">Layer 5 — 監査・コンプライアンス</div>
+          <div class="sr-title">全メッセージの監査ログ</div>
+          <div class="sr-desc">誰が・何を・いつ呼び出したかを記録する。PCI-DSS・SOX・GDPRなどの規制対応に必須。改ざん防止のための不変ストレージに保管する。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-timeline"></i> WS-Security 認証フロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant CLI as サービスコンシューマー
+    participant STS as Security Token Service
+    participant ESB as ESB
+    participant SVC as ビジネスサービス
+    CLI->>STS: セキュリティトークン要求（RST）
+    STS->>STS: 認証・認可チェック
+    STS-->>CLI: SAMLトークン発行（RSTR）
+    CLI->>ESB: SOAPリクエスト（WS-Securityヘッダー + SAMLトークン）
+    ESB->>STS: トークン検証
+    STS-->>ESB: 検証OK
+    ESB->>ESB: ルーティング・変換
+    ESB->>SVC: サービス呼び出し（サービス間認証: mTLS）
+    SVC-->>ESB: レスポンス
+    ESB->>ESB: XML Signatureでレスポンスに署名
+    ESB-->>CLI: 署名済みSOAPレスポンス
+      </div>
+      <div class="mermaid-label">diagram / sequence</div>
+    </div>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>すべてのサービス呼び出しに相関ID（UUID）を付与し、認証ログと突合できるようにしてください。不正アクセスの追跡と監査対応の両方に有効です。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.oasis-open.org/standards#wssv1.1" target="_blank">WS-Security（OASIS）</a>、<a href="https://www.oasis-open.org/standards#samlv2.0" target="_blank">SAML 2.0（OASIS）</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 10 ─── -->
+<section class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <div class="section-icon icon-teal"><i class="ti ti-database"></i></div>
+    <h2>データ管理とサービス間連携</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-schema"></i> SOAのデータ共有パターン3種</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    P1["パターン1：共有データモデル\n共通スキーマをすべてのサービスが参照\nEnterprise Data Model（EDM）"]
+    P2["パターン2：カノニカルデータモデル\nサービスは独自モデルを持ち\nESBが標準形式に変換する"]
+    P3["パターン3：イベント駆動データ共有\nデータ変更をイベントとして発行\n他サービスが購読・反映する"]
+      </div>
+      <div class="mermaid-label">diagram / structural</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>パターン</th><th>メリット</th><th>デメリット</th><th>適用場面</th></tr></thead>
+      <tbody>
+        <tr><td><strong>共有データモデル</strong></td><td>データ一貫性高・重複少</td><td>サービス間の結合度が上がる</td><td>厳密なデータ整合性が必要な金融系</td></tr>
+        <tr><td><strong>カノニカルデータモデル</strong></td><td>サービスが独立できる・レガシー統合に強い</td><td>ESBの変換ロジックが複雑化</td><td>異種システム統合・レガシーシステムがある場合</td></tr>
+        <tr><td><strong>イベント駆動</strong></td><td>最大の疎結合・高スケーラビリティ</td><td>結果整合性の管理が必要</td><td>高トラフィック・可用性重視</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-brand-cashapp"></i> 分散トランザクション管理</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    TX["SOA分散トランザクション管理"]
+    ACID["WS-AtomicTransaction\n2フェーズコミット\n厳密なACIDトランザクション\n同期・高コスト"]
+    SAGA["Sagaパターン\n補償トランザクション\n各サービスがロールバック操作を持つ\nSOAでもESBが調整可能"]
+    COMP["補償トランザクション設計例\nOrderCreated → 失敗 → CancelOrder\nPaymentCharged → 失敗 → RefundPayment\nStockReserved → 失敗 → ReleaseStock"]
+    TX --> ACID & SAGA
+    COMP --> SAGA
+    ACID -->|"厳密な整合性が必要な場合"| FIN["金融取引・会計処理"]
+    SAGA -->|"可用性重視の場合"| ORD["注文・在庫管理"]
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+    <div class="callout callout-warn">
+      <i class="ti ti-alert-triangle"></i>
+      <div class="callout-body"><strong>注意：</strong>WS-AtomicTransactionは参加サービスがすべて応答するまでロックを保持するため、可用性・パフォーマンスに影響します。金融・会計のような厳密な整合性が必要な場合のみ使用し、それ以外はSagaパターンを検討してください。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 11 ─── -->
+<section class="section" id="s11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <div class="section-icon icon-purple"><i class="ti ti-crown"></i></div>
+    <h2>SOAガバナンス</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-grid-dots"></i> ガバナンスの4領域</h3>
+    <div class="governance-grid">
+      <div class="gov-card">
+        <div class="gc-head"><i class="ti ti-pencil-ruler"></i> 設計ガバナンス</div>
+        <ul>
+          <li>サービス設計レビュープロセス</li>
+          <li>命名規約の統一（サービス名・操作名）</li>
+          <li>インターフェース標準化（WSDL/OpenAPI）</li>
+          <li>バージョン管理ポリシー</li>
+        </ul>
+      </div>
+      <div class="gov-card">
+        <div class="gc-head"><i class="ti ti-refresh"></i> ライフサイクル管理</div>
+        <ul>
+          <li>サービスカタログ管理</li>
+          <li>廃止・移行プロセス（廃止予告→移行→削除）</li>
+          <li>依存関係の追跡・可視化</li>
+          <li>変更管理プロセス</li>
+        </ul>
+      </div>
+      <div class="gov-card">
+        <div class="gc-head"><i class="ti ti-certificate"></i> 品質ガバナンス</div>
+        <ul>
+          <li>SLAの定義と監視</li>
+          <li>パフォーマンスベンチマーク</li>
+          <li>セキュリティ監査</li>
+          <li>テスト標準化</li>
+        </ul>
+      </div>
+      <div class="gov-card">
+        <div class="gc-head"><i class="ti ti-users"></i> 組織ガバナンス</div>
+        <ul>
+          <li>CoE（センター・オブ・エクセレンス）設立</li>
+          <li>サービス所有者の明確化</li>
+          <li>開発標準・ガイドライン整備</li>
+          <li>教育・トレーニング</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-circle-check"></i> サービスライフサイクル</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+stateDiagram-v2
+    [*] --> DESIGN : サービス設計開始
+    DESIGN : 設計フェーズ
+    DEVELOPMENT : 開発フェーズ
+    TESTING : テストフェーズ
+    DEPLOYED : 本番稼働
+    DEPRECATED : 廃止予告
+    RETIRED : 廃止完了
+    DESIGN --> DEVELOPMENT : 設計承認
+    DEVELOPMENT --> TESTING : 開発完了
+    TESTING --> DEPLOYED : テスト合格
+    DEPLOYED --> DEPRECATED : 廃止決定
+    DEPRECATED --> RETIRED : 移行完了
+    TESTING --> DESIGN : テスト不合格
+    DEPLOYED --> DEVELOPMENT : 障害・改修
+      </div>
+      <div class="mermaid-label">diagram / statechart</div>
+    </div>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>ガバナンスの自動化が鍵です。設計レビューをプルリクエストプロセスに組み込み、命名規約チェックをCIで自動化することで、形骸化を防げます。「ルールがあっても守られない」は最も多いガバナンスの失敗パターンです。</div>
+    </div>
+    <p style="font-size:13px;color:var(--color-text-secondary);">出典：<a href="https://www.opengroup.org/subjectareas/soa" target="_blank">The Open Group SOA Governance</a></p>
+  </div>
+</section>
+
+<!-- ─── Section 12 ─── -->
+<section class="section" id="s12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <div class="section-icon icon-green"><i class="ti ti-rocket"></i></div>
+    <h2>実装ステップバイステップ</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-stairs"></i> SOA導入の6段階</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    S1["Step 1：現状分析・As-Is設計\n既存システムのインベントリ作成\nPoint-to-Point統合の可視化\nビジネスプロセスのマッピング\n期間：4〜8週間"]
+    S2["Step 2：SOAロードマップ策定\nビジネス優先度に基づくサービス候補選定\nTo-Beアーキテクチャ設計\nESB製品選定・PoC\nガバナンス体制の整備\n期間：4〜8週間"]
+    S3["Step 3：基盤整備\nESBのインストール・設定\nサービスレジストリのセットアップ\n開発・テスト環境の構築\nセキュリティ基盤の整備\n期間：4〜6週間"]
+    S4["Step 4：パイロットサービスの実装\n最も価値の高い1〜3サービスを実装\nWSDLの設計・レビュー\nESBへのデプロイ\nモニタリングの検証\n期間：6〜12週間"]
+    S5["Step 5：段階的サービス拡大\nパイロットの知見を横展開\nサービスカタログの充実\nチーム教育・ナレッジ共有\nガバナンスの運用開始\n期間：継続的"]
+    S6["Step 6：継続的改善\nSLA達成状況の評価\nサービスの最適化\n新技術（APIマネジメント等）の導入\nマイクロサービスへの段階的移行検討\n期間：継続的"]
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-code"></i> サービス実装例（Python + FastAPI）</h3>
+    <p>ESBから呼び出されるRESTサービスの実装例です。サービス間認証にJWTトークンを使用します。</p>
+    <pre><code>from fastapi import FastAPI, HTTPException, Depends, Header
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime, timezone
+import uuid, jwt, os, logging
+
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="Order Service",
+    version="2.1.0",
+    description="SOAにおける注文管理サービス（ESB経由で呼び出される）"
+)
+
+class CreateOrderRequest(BaseModel):
+    customer_id:  str   = Field(..., description="顧客ID")
+    product_id:   str   = Field(..., description="商品ID")
+    quantity:     int   = Field(..., ge=1, description="数量（1以上）")
+    total_amount: float = Field(..., gt=0, description="合計金額（0より大）")
+
+class CreateOrderResponse(BaseModel):
+    order_id:   str
+    status:     str
+    created_at: str
+    message:    str
+
+async def verify_esb_token(
+    x_service_token: Optional[str] = Header(None),
+    x_correlation_id: Optional[str] = Header(None),
+):
+    """
+    ESBからの呼び出しであることを検証するミドルウェア。
+    直接クライアントからの呼び出しを防ぐために使用する。
+    """
+    if not x_service_token:
+        raise HTTPException(status_code=401, detail="サービストークンが必要です")
+    try:
+        JWT_SECRET = os.getenv("JWT_SECRET")
+        if not JWT_SECRET:
+            raise HTTPException(status_code=500, detail="Server configuration error")
+        jwt.decode(
+            x_service_token,
+            JWT_SECRET,
+            algorithms=["HS256"],
+            audience="order-service"
+        )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="トークンの有効期限が切れています")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="無効なトークンです")
+    return {"correlation_id": x_correlation_id or str(uuid.uuid4())}
+
+@app.post("/v2/orders", response_model=CreateOrderResponse, status_code=201)
+async def create_order(
+    request: CreateOrderRequest,
+    auth: dict = Depends(verify_esb_token),
+):
+    """
+    注文を作成するエンドポイント。
+    ESBを経由して呼び出される（直接クライアントからは呼べない）。
+    """
+    correlation_id = auth["correlation_id"]
+    logger.info(f"[{correlation_id}] 注文作成リクエストを受信しました")
+
+    order_id = f"ORD-{uuid.uuid4().hex[:8].upper()}"
+
+    return CreateOrderResponse(
+        order_id=order_id,
+        status="CREATED",
+        created_at=datetime.now(timezone.utc).isoformat(),
+        message="注文が正常に作成されました",
+    )</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-brand-java"></i> Apache Camel ESBルーティング例（Java）</h3>
+    <pre><code>import org.apache.camel.builder.RouteBuilder;
+
+// Apache Camelを使ったESBルーティング設定例
+public class OrderServiceRoute extends RouteBuilder {
+    @Override
+    public void configure() throws Exception {
+
+        // エラーハンドリング：最大3回リトライ、指数バックオフ
+        errorHandler(
+            deadLetterChannel("jms:queue:error.orders")
+                .maximumRedeliveries(3)
+                .redeliveryDelay(1000)
+                .backOffMultiplier(2)
+                .useExponentialBackOff()
+        );
+
+        // 注文処理ルート：JMSキューからメッセージを受信
+        from("jms:queue:orders.incoming")
+            .setHeader("X-Correlation-Id", simple("${exchangeId}"))
+            .log("注文受信: correlationId=${header.X-Correlation-Id}")
+            .to("validator:schema/order-request.xsd") // XSDバリデーション
+
+            // コンテンツベースルーティング
+            .choice()
+                .when(xpath("//order/amount > 1000000"))
+                    .to("jms:queue:orders.review")  // 高額注文は審査へ
+                .when(xpath("//order/type = 'EXPRESS'"))
+                    .to("direct:processExpressOrder")  // 特急注文は優先処理
+                .otherwise()
+                    .to("direct:processStandardOrder")  // 通常注文処理
+            .end();
+
+        // 標準注文処理：SOAP→REST変換してサービス呼び出し
+        from("direct:processStandardOrder")
+            .marshal().jacksonXml()
+            .convertBodyTo(String.class)
+            .to("http://inventory-service/v1/check?httpMethod=POST")
+            .unmarshal().json()
+            .to("cxf:https://payment-service/ws/v1?wsdlURL=payment.wsdl")
+            .to("jms:queue:orders.responses");
+    }
+}</code></pre>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>ESBルーティングに複雑なビジネスロジックを入れないでください。ルーティング・変換・バリデーションのみに徹し、ビジネスロジックはサービス側に置く「ダムESB・スマートサービス」原則を守りましょう。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 13 ─── -->
+<section class="section" id="s13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <div class="section-icon icon-amber"><i class="ti ti-building-bank"></i></div>
+    <h2>実践：銀行基幹システム移行事例</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-topology-full"></i> 銀行システムのSOAアーキテクチャ</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    subgraph CH["チャネル層"]
+        ATM["ATM"]
+        IB["インターネットバンキング"]
+        MB["モバイルバンキング"]
+        TL["窓口システム"]
+    end
+    subgraph CI["チャネル統合層"]
+        APIM["API管理基盤\nKong / Apigee"]
+    end
+    subgraph CORE["SOAコア層（ESB）"]
+        ESB_B["銀行ESB\nIBM MQ / MuleSoft"]
+        IAM["IAM\nSAML / OAuth2"]
+    end
+    subgraph SVC_B["銀行業務サービス層"]
+        ACCS["口座サービス\n残高照会・入出金"]
+        TRFS["振込サービス\n国内・海外送金"]
+        LOAS["ローンサービス\n申込・審査・返済"]
+        FXS["為替サービス\n外貨換算・レート"]
+    end
+    subgraph UTIL_B["ユーティリティサービス"]
+        AUDS["監査ログサービス"]
+        NOTS["通知サービス"]
+        CRYS["暗号化サービス"]
+    end
+    subgraph BK_B["基幹バックエンド"]
+        CORE_B["勘定系システム\nIBMメインフレーム"]
+        SAP_F["財務会計\nSAP FICO"]
+        INTER["全銀システム\nSWIFT接続"]
+    end
+    CH --> CI --> CORE
+    CORE --> SVC_B & UTIL_B
+    SVC_B --> BK_B
+      </div>
+      <div class="mermaid-label">diagram / structural</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-arrows-transfer-down"></i> 振込処理の完全フロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant USER as 顧客（モバイル）
+    participant APIM as API管理基盤
+    participant ESB_K as ESB
+    participant AUTH_K as 認証サービス
+    participant TRANS as 振込サービス
+    participant ACC as 口座サービス
+    participant AUDIT as 監査ログサービス
+    participant ZENGIN as 全銀システム
+    participant NOTIFY as 通知サービス
+    USER->>APIM: 振込リクエスト（HTTPS + OAuth2トークン）
+    APIM->>AUTH_K: トークン検証・認証
+    AUTH_K-->>APIM: 認証OK（顧客情報）
+    APIM->>ESB_K: 振込オーケストレーション開始
+    ESB_K->>ACC: 出金元口座の残高確認
+    ACC-->>ESB_K: 残高: 500,000円
+    ESB_K->>TRANS: 振込トランザクション開始（WS-AtomicTransaction）
+    TRANS->>ACC: 出金処理（-100,000円）
+    ACC-->>TRANS: 出金完了
+    TRANS->>ZENGIN: 全銀電文送信
+    ZENGIN-->>TRANS: 受付完了
+    TRANS-->>ESB_K: 振込成功
+    ESB_K->>AUDIT: 取引ログ記録（非同期・必須）
+    ESB_K--)NOTIFY: 振込完了通知（プッシュ・メール）
+    ESB_K-->>APIM: 振込完了レスポンス
+    APIM-->>USER: 200 OK + 振込完了明細
+      </div>
+      <div class="mermaid-label">diagram / sequence</div>
+    </div>
+    <div class="callout callout-info">
+      <i class="ti ti-info-circle"></i>
+      <div class="callout-body"><strong>設計ポイント：</strong>振込のような金融取引では、WS-AtomicTransactionで出金・全銀電文送信の整合性を保証しつつ、通知は非同期で送ることでユーザーへのレスポンスを速くする設計が重要です。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 14 ─── -->
+<section class="section" id="s14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <div class="section-icon icon-teal"><i class="ti ti-chart-line"></i></div>
+    <h2>監視・運用管理</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-radar"></i> SOA監視の4層体系</h3>
+    <table class="data-table">
+      <thead><tr><th>監視層</th><th>監視項目</th><th>閾値例</th><th>ツール例</th></tr></thead>
+      <tbody>
+        <tr><td><strong>インフラ監視</strong></td><td>CPU・メモリ・ネットワーク・死活</td><td>CPU 80%・レスポンス 2s超</td><td>Prometheus・Zabbix</td></tr>
+        <tr><td><strong>サービス監視</strong></td><td>応答時間・エラー率・スループット（TPS）</td><td>P99 500ms・エラー率 1%</td><td>Grafana・Datadog</td></tr>
+        <tr><td><strong>メッセージ監視</strong></td><td>キュー深度・デッドレター・トレース</td><td>キュー深度 1000件超</td><td>Jaeger・Zipkin・Kibana</td></tr>
+        <tr><td><strong>ビジネス監視</strong></td><td>BAM・プロセス完了率・KPI</td><td>注文完了率 99%以上</td><td>BAMコンソール・Grafana</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-fingerprint"></i> 分散トレーシング：相関IDによる追跡</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant CLI as クライアント
+    participant ESB as ESB
+    participant SVC_A as サービスA
+    participant SVC_B as サービスB
+    participant TRACE as Jaeger / Zipkin
+    CLI->>ESB: リクエスト
+    ESB->>ESB: 相関ID生成 CID:abc-123
+    ESB->>TRACE: スパン記録（ESB開始 t=0ms）
+    ESB->>SVC_A: 呼び出し（X-Correlation-Id: abc-123）
+    SVC_A->>TRACE: スパン記録（SvcA開始 t=5ms）
+    SVC_A->>SVC_B: 呼び出し（X-Correlation-Id: abc-123）
+    SVC_B->>TRACE: スパン記録（SvcB開始 t=10ms）
+    SVC_B-->>SVC_A: レスポンス
+    SVC_B->>TRACE: スパン記録（SvcB終了 t=25ms）
+    SVC_A-->>ESB: レスポンス
+    SVC_A->>TRACE: スパン記録（SvcA終了 t=30ms）
+    ESB-->>CLI: レスポンス
+    ESB->>TRACE: スパン記録（ESB終了 t=35ms）
+    Note over TRACE: abc-123: ESB(35ms) → SvcA(25ms) → SvcB(15ms)<br/>ボトルネック特定・SLA違反検知
+      </div>
+      <div class="mermaid-label">diagram / sequence</div>
+    </div>
+    <div class="callout callout-tip">
+      <i class="ti ti-check"></i>
+      <div class="callout-body"><strong>ベストプラクティス：</strong>すべてのメッセージに UUID v4 の相関IDを付与し、ESBから末端サービスまで伝播させてください。障害発生時の原因特定時間を劇的に短縮できます。OpenTelemetry標準に準拠することで、Jaeger・Zipkin・Datadogなど複数ツールへの対応が容易になります。</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-target"></i> SLA定義の実例</h3>
+    <pre><code># SLA定義例（サービスカタログに登録するYAML形式）
+sla_definitions:
+  order-service:
+    availability:
+      target: 99.9           # 月次99.9%の可用性（月8.7時間の許容停止時間）
+      measurement: "月次計算（予定メンテナンスを除く）"
+
+    response_time:
+      p50_ms: 100            # 中央値: 100ms以内
+      p95_ms: 300            # 95パーセンタイル: 300ms以内
+      p99_ms: 500            # 99パーセンタイル: 500ms以内（SLA閾値）
+      max_ms: 2000           # タイムアウト閾値
+
+    throughput:
+      normal_tps: 100        # 通常時: 100 TPS
+      peak_tps:   500        # ピーク時: 500 TPS
+
+    error_rate:
+      warning:  0.1          # 警告アラート: 0.1%
+      critical: 1.0          # 重大アラート: 1.0%
+
+    recovery_time:
+      rto_minutes: 15        # Recovery Time Objective: 障害から15分で復旧
+      rpo_minutes: 5         # Recovery Point Objective: 5分前の状態に復旧
+
+    alerting:
+      channels:
+        - slack: "#ops-alerts"
+        - pagerduty: "order-service-oncall"</code></pre>
+  </div>
+</section>
+
+<!-- ─── Section 15 ─── -->
+<section class="section" id="s15">
+  <div class="section-header">
+    <span class="section-num">15</span>
+    <div class="section-icon icon-green"><i class="ti ti-star"></i></div>
+    <h2>SOAのベストプラクティス総まとめ</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-checklist"></i> 設計フェーズのベストプラクティス</h3>
+    <div class="bp-item">
+      <i class="ti ti-pencil-ruler"></i>
+      <div>
+        <div class="bp-title">コントラクトファースト設計</div>
+        <div class="bp-desc">実装より先にWSDL・OpenAPIを定義してから実装する。コントラクトが変わらなければ実装は自由に変更でき、疎結合が保たれる。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-resize"></i>
+      <div>
+        <div class="bp-title">ビジネス機能単位の粗粒度設計</div>
+        <div class="bp-desc">過度な細分化（ナノサービス化）は通信コストと設定の爆発を招く。「注文管理サービス」のようにビジネスエンティティ単位でまとめる。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-fingerprint"></i>
+      <div>
+        <div class="bp-title">すべてのメッセージに相関IDを付与</div>
+        <div class="bp-desc">UUID v4 の相関IDをすべてのメッセージに必ず付与し、ESBから末端サービスまで伝播させる。分散トレーシングと障害調査に必須。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-refresh"></i>
+      <div>
+        <div class="bp-title">重要な操作に冪等性を持たせる</div>
+        <div class="bp-desc">リトライ・再送による二重処理を防ぐため、注文作成・決済などの操作は同じリクエストを複数回受けても結果が変わらないよう設計する。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-tag"></i>
+      <div>
+        <div class="bp-title">後方互換性を保つバージョニング</div>
+        <div class="bp-desc">URLパスかnamespaceにバージョンを含め、既存コンシューマーを壊さずにサービスを進化させる。旧バージョンは6〜12ヶ月維持する。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-shield-lock"></i>
+      <div>
+        <div class="bp-title">メッセージレベルの暗号化を優先</div>
+        <div class="bp-desc">TLS（トランスポート暗号化）だけでは中間ノード（ESB）で平文になる。WS-Securityによるメッセージレベル暗号化で端末間の機密性を保証する。</div>
+      </div>
+    </div>
+    <div class="bp-item">
+      <i class="ti ti-bus"></i>
+      <div>
+        <div class="bp-title">「ダムESB・スマートサービス」原則</div>
+        <div class="bp-desc">ESBにビジネスロジックを詰め込まない。ルーティング・変換・監視はESBの責務だが、ビジネスルールはサービス側に置くことでESBの変更リスクを最小化する。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-chart-bar"></i> SOA成熟度モデル（6レベル）</h3>
+    <div class="maturity-bar">
+      <div class="mat-row">
+        <div class="mr-lv">Level 0</div>
+        <div class="mr-bar" style="background:var(--c-red-800);color:var(--c-red-200)">アドホック統合（スパゲッティ）</div>
+        <div class="mr-desc">Point-to-Point・管理不能</div>
+      </div>
+      <div class="mat-row">
+        <div class="mr-lv">Level 1</div>
+        <div class="mr-bar" style="background:var(--c-amber-800);color:var(--c-amber-200)">サービス化の開始</div>
+        <div class="mr-desc">個別サービス定義・統一規格なし</div>
+      </div>
+      <div class="mat-row">
+        <div class="mr-lv">Level 2</div>
+        <div class="mr-bar" style="background:var(--c-amber-800);color:var(--c-amber-400)">SOA基盤の確立</div>
+        <div class="mr-desc">ESB導入・WSDL標準化・レジストリ運用</div>
+      </div>
+      <div class="mat-row">
+        <div class="mr-lv">Level 3</div>
+        <div class="mr-bar" style="background:var(--c-teal-800);color:var(--c-teal-200)">SOAの定着</div>
+        <div class="mr-desc">ガバナンス機能・再利用率向上</div>
+      </div>
+      <div class="mat-row">
+        <div class="mr-lv">Level 4</div>
+        <div class="mr-bar" style="background:var(--c-teal-800);color:var(--c-teal-100)">ビジネス俊敏性</div>
+        <div class="mr-desc">サービス組み合わせで新プロセス迅速構築</div>
+      </div>
+      <div class="mat-row">
+        <div class="mr-lv">Level 5</div>
+        <div class="mr-bar" style="background:var(--c-purple-800);color:var(--c-purple-200)">最適化・進化</div>
+        <div class="mr-desc">マイクロサービスとの共存・継続改善</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 16 ─── -->
+<section class="section" id="s16">
+  <div class="section-header">
+    <span class="section-num">16</span>
+    <div class="section-icon icon-coral"><i class="ti ti-alert-octagon"></i></div>
+    <h2>SOAのアンチパターン</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-ban"></i> 主要な5つのアンチパターン</h3>
+
+    <div class="antipattern-card">
+      <div class="ap-title"><i class="ti ti-alert-circle"></i> ESBのモノリス化（スマートESB・ダムサービス）</div>
+      <div class="ap-prob">ESBにすべてのビジネスロジックを集中させた結果、ESBが「神様コンポーネント」になる。ESBの変更が全サービスに影響し、デプロイが止まる。</div>
+      <div class="ap-fix"><i class="ti ti-check"></i> <strong>解決策：</strong>「ダムESB・スマートサービス」原則を徹底。ESBはルーティング・変換・監視に徹し、ビジネスロジックは各サービス側に置く。</div>
+    </div>
+
+    <div class="antipattern-card">
+      <div class="ap-title"><i class="ti ti-alert-circle"></i> サービスの過細分化（ナノサービス化）</div>
+      <div class="ap-prob">1機能ずつ別サービスにした結果、100個以上のサービスが乱立し、ESB設定が爆発的に増加。運用コストと障害の複雑さが急増する。</div>
+      <div class="ap-fix"><i class="ti ti-check"></i> <strong>解決策：</strong>ビジネスエンティティ単位の粗粒度設計。「注文サービス」にCRUD操作をまとめ、サービス数を適切な規模（数十以内）に保つ。</div>
+    </div>
+
+    <div class="antipattern-card">
+      <div class="ap-title"><i class="ti ti-alert-circle"></i> 共有DBへの直接アクセス</div>
+      <div class="ap-prob">複数サービスが同じDBテーブルに直接アクセスする。スキーマ変更が全サービスに波及し、データ整合性の管理が不能になる。</div>
+      <div class="ap-fix"><i class="ti ti-check"></i> <strong>解決策：</strong>データオーナーシップの明確化。データを持つサービスのAPIを経由してアクセスするか、カノニカルデータモデルで統一する。</div>
+    </div>
+
+    <div class="antipattern-card">
+      <div class="ap-title"><i class="ti ti-alert-circle"></i> バージョニング無視（インターフェースの直接変更）</div>
+      <div class="ap-prob">サービスのインターフェースをバージョン管理せずに直接変更する。既存コンシューマーが突然壊れ、テスト・デプロイの全体調整が必要になる。</div>
+      <div class="ap-fix"><i class="ti ti-check"></i> <strong>解決策：</strong>新バージョンは別URLで公開し、旧バージョンを一定期間維持。Deprecationヘッダーで廃止予告し、移行サポート期間を必ず設ける。</div>
+    </div>
+
+    <div class="antipattern-card">
+      <div class="ap-title"><i class="ti ti-alert-circle"></i> SOAガバナンスの形骸化</div>
+      <div class="ap-prob">ルールは定義されているが誰も守らない。命名規約が不統一になり、重複サービスが乱立し、「どのサービスを使えばいいかわからない」状態になる。</div>
+      <div class="ap-fix"><i class="ti ti-check"></i> <strong>解決策：</strong>設計レビューをデプロイプロセスに義務付け、命名規約チェックをCIで自動化。SOA CoEが実質的な活動を行う体制を作る。</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-stethoscope"></i> SOA健全性チェックフロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    CHECK["SOAアーキテクチャの健全性チェック"]
+    Q1{"すべてのサービスが\n標準インターフェースを持つか？"}
+    Q2{"ESBがルーティング・変換に\n徹しているか？"}
+    Q3{"サービス間で他サービスの\nDBに直接アクセスしていないか？"}
+    Q4{"バージョン管理が\n適切に行われているか？"}
+    Q5{"サービスカタログが\n最新の状態か？"}
+    Q6{"SLAが定義・監視\nされているか？"}
+    FIX1["WSDL・OpenAPIの設計を先行させる\nコントラクトファースト開発を導入"]
+    FIX2["ESBからビジネスロジックを\nサービス側に移動させる"]
+    FIX3["データオーナーシップポリシーを策定\nサービスAPI経由のアクセスに統一"]
+    FIX4["バージョニング戦略を定義\n廃止予告プロセスを整備"]
+    FIX5["カタログ更新をデプロイに組み込む"]
+    FIX6["SLAを定義してアラートを設定"]
+    HEALTHY["健全なSOAアーキテクチャ\n再利用性・保守性・可視性が高い状態"]
+    CHECK --> Q1
+    Q1 -->|No| FIX1
+    Q1 -->|Yes| Q2
+    Q2 -->|No| FIX2
+    Q2 -->|Yes| Q3
+    Q3 -->|No| FIX3
+    Q3 -->|Yes| Q4
+    Q4 -->|No| FIX4
+    Q4 -->|Yes| Q5
+    Q5 -->|No| FIX5
+    Q5 -->|Yes| Q6
+    Q6 -->|No| FIX6
+    Q6 -->|Yes| HEALTHY
+      </div>
+      <div class="mermaid-label">diagram / flowchart</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 17 ─── -->
+<section class="section" id="s17">
+  <div class="section-header">
+    <span class="section-num">17</span>
+    <div class="section-icon icon-purple"><i class="ti ti-books"></i></div>
+    <h2>参考文献・ソース一覧</h2>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-book"></i> 必読書籍</h3>
+    <div class="book-grid">
+      <div class="book-card">
+        <div class="bc-icon"><i class="ti ti-book-2"></i></div>
+        <div>
+          <div class="bc-title">SOA Design Patterns</div>
+          <div class="bc-author">Thomas Erl</div>
+          <div class="stars">★★★★☆</div>
+          <div class="bc-desc">SOAパターンの決定版百科事典。8大原則とパターンカタログの原典。</div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="bc-icon"><i class="ti ti-book-2"></i></div>
+        <div>
+          <div class="bc-title">Enterprise Integration Patterns</div>
+          <div class="bc-author">Gregor Hohpe, Bobby Woolf</div>
+          <div class="stars">★★★★☆</div>
+          <div class="bc-desc">ESBと統合パターンの名著。メッセージングシステム設計の必読書。</div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="bc-icon"><i class="ti ti-book-2"></i></div>
+        <div>
+          <div class="bc-title">Service-Oriented Architecture: Analysis and Design for Services and Microservices</div>
+          <div class="bc-author">Thomas Erl</div>
+          <div class="stars">★★★★☆</div>
+          <div class="bc-desc">SOA・マイクロサービスの統合解説。移行判断の理論的基盤。</div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="bc-icon"><i class="ti ti-book-2"></i></div>
+        <div>
+          <div class="bc-title">SOA Governance</div>
+          <div class="bc-author">Thomas Erl</div>
+          <div class="stars">★★★★☆</div>
+          <div class="bc-desc">SOAガバナンスの体系書。組織・プロセス・技術の3軸で解説。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3><i class="ti ti-world"></i> 公式ドキュメント・URL</h3>
+
+    <div class="ref-section">
+      <h4><i class="ti ti-building-arch"></i> SOAコア概念・標準</h4>
+      <ul class="ref-list">
+        <li><i class="ti ti-link"></i><div><div class="ref-title">OASIS SOA Reference Model</div><a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm" class="ref-url" target="_blank">https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=soa-rm</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">W3C Web Services Architecture</div><a href="https://www.w3.org/TR/ws-arch/" class="ref-url" target="_blank">https://www.w3.org/TR/ws-arch/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Thomas Erl SOA公式（serviceorientation.com）</div><a href="https://www.serviceorientation.com/" class="ref-url" target="_blank">https://www.serviceorientation.com/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">TOGAF SOA Reference Architecture</div><a href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/" class="ref-url" target="_blank">https://pubs.opengroup.org/architecture/togaf9-doc/arch/</a></div></li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h4><i class="ti ti-code"></i> Webサービス技術標準</h4>
+      <ul class="ref-list">
+        <li><i class="ti ti-link"></i><div><div class="ref-title">WSDL 2.0 仕様（W3C）</div><a href="https://www.w3.org/TR/wsdl20/" class="ref-url" target="_blank">https://www.w3.org/TR/wsdl20/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">SOAP 1.2 仕様（W3C）</div><a href="https://www.w3.org/TR/soap12/" class="ref-url" target="_blank">https://www.w3.org/TR/soap12/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">WS-Security（OASIS）</div><a href="https://www.oasis-open.org/standards#wssv1.1" class="ref-url" target="_blank">https://www.oasis-open.org/standards#wssv1.1</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">WS-AtomicTransaction（OASIS）</div><a href="https://www.oasis-open.org/committees/ws-tx/" class="ref-url" target="_blank">https://www.oasis-open.org/committees/ws-tx/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">SAML 2.0（OASIS）</div><a href="https://www.oasis-open.org/standards#samlv2.0" class="ref-url" target="_blank">https://www.oasis-open.org/standards#samlv2.0</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Enterprise Integration Patterns（Webサイト版）</div><a href="https://www.enterpriseintegrationpatterns.com/" class="ref-url" target="_blank">https://www.enterpriseintegrationpatterns.com/</a></div></li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h4><i class="ti ti-tools"></i> ESBフレームワーク・ツール</h4>
+      <ul class="ref-list">
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Apache Camel 公式ドキュメント</div><a href="https://camel.apache.org/manual/latest/index.html" class="ref-url" target="_blank">https://camel.apache.org/manual/latest/index.html</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">MuleSoft ドキュメント</div><a href="https://docs.mulesoft.com/" class="ref-url" target="_blank">https://docs.mulesoft.com/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">WSO2 Enterprise Integrator</div><a href="https://wso2.com/integration/" class="ref-url" target="_blank">https://wso2.com/integration/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">IBM App Connect 公式</div><a href="https://www.ibm.com/products/app-connect" class="ref-url" target="_blank">https://www.ibm.com/products/app-connect</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Spring Integration（Java）</div><a href="https://spring.io/projects/spring-integration" class="ref-url" target="_blank">https://spring.io/projects/spring-integration</a></div></li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h4><i class="ti ti-cloud"></i> クラウドSOA・統合サービス</h4>
+      <ul class="ref-list">
+        <li><i class="ti ti-link"></i><div><div class="ref-title">AWS Application Integration</div><a href="https://aws.amazon.com/products/application-integration/" class="ref-url" target="_blank">https://aws.amazon.com/products/application-integration/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Azure Integration Services</div><a href="https://azure.microsoft.com/en-us/products/category/integration" class="ref-url" target="_blank">https://azure.microsoft.com/en-us/products/category/integration</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Google Cloud Integration Connectors</div><a href="https://cloud.google.com/integration-connectors/docs/overview" class="ref-url" target="_blank">https://cloud.google.com/integration-connectors/docs/overview</a></div></li>
+      </ul>
+    </div>
+
+    <div class="ref-section">
+      <h4><i class="ti ti-arrows-exchange"></i> SOA vs マイクロサービス</h4>
+      <ul class="ref-list">
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Martin Fowler — Microservices（SOA比較含む）</div><a href="https://martinfowler.com/articles/microservices.html" class="ref-url" target="_blank">https://martinfowler.com/articles/microservices.html</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">AWS: SOA vs Microservices 違い</div><a href="https://aws.amazon.com/compare/the-difference-between-soa-microservices/" class="ref-url" target="_blank">https://aws.amazon.com/compare/the-difference-between-soa-microservices/</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">IBM SOA ベストプラクティス</div><a href="https://www.ibm.com/think/topics/soa" class="ref-url" target="_blank">https://www.ibm.com/think/topics/soa</a></div></li>
+        <li><i class="ti ti-link"></i><div><div class="ref-title">Gartner SOA Research</div><a href="https://www.gartner.com/en/information-technology/insights/service-oriented-architecture" class="ref-url" target="_blank">https://www.gartner.com/en/information-technology/insights/service-oriented-architecture</a></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="update-footer">
+    <div class="uf-left">
+      <i class="ti ti-calendar-event"></i>
+      最終更新日: 2026-04-17 | 各仕様・ツールのバージョンは変更される場合があります。実装前に必ず公式ドキュメントをご確認ください。
+    </div>
+    <div class="uf-right">
+      <span class="pill pill-purple"><i class="ti ti-building"></i> SOA Guide v1.0</span>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#161b27',
+      mainBkg: '#1e2535',
+      nodeBorder: '#2e3a52',
+      clusterBkg: '#1a2033',
+      titleColor: '#e8ecf4',
+      edgeLabelBackground: '#1e2535',
+      lineColor: '#5c6882',
+      textColor: '#9aa5bc',
+      primaryColor: '#3b0764',
+      primaryTextColor: '#ede9fe',
+      primaryBorderColor: '#7c3aed',
+      secondaryColor: '#134e4a',
+      secondaryTextColor: '#ccfbf1',
+      tertiaryColor: '#1e2535',
+    },
+    sequence: {
+      mirrorActors: false,
+      actorFontSize: 12,
+      noteFontSize: 11,
+      messageFontSize: 12,
+      actorFontWeight: 400,
+      messageFontWeight: 400,
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+    },
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "web-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "format": "biome format . --write",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.34.0",
+    "mermaid": "10.9.6",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "4.1.4",
+    "jsdom": "^25.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.1.4"
+  }
+}

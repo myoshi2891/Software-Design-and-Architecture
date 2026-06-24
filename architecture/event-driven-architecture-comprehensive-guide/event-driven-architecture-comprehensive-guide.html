@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ EDA完全ガイド | イベント駆動アーキテクチャ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<style>
+:root{
+  --bg:#07111e;--sf:#0d1f35;--sf2:#12263f;--sf3:#163352;
+  --bd:rgba(255,255,255,0.07);--bda:rgba(0,212,255,0.22);
+  --ac:#00d4ff;--acd:rgba(0,212,255,0.07);
+  --gn:#10b981;--gnd:rgba(16,185,129,0.08);--gnb:rgba(16,185,129,0.28);
+  --or:#f59e0b;--ord:rgba(245,158,11,0.09);--orb:rgba(245,158,11,0.28);
+  --rd:#ef4444;--rdd:rgba(239,68,68,0.08);--rdb:rgba(239,68,68,0.28);
+  --pu:#8b5cf6;--pud:rgba(139,92,246,0.08);--pub:rgba(139,92,246,0.28);
+  --tx:#e2e8f0;--txm:#94a3b8;--txd:#64748b;
+  --sw:272px;--rr:12px;--rs:8px;
+  --fs:'Inter','Noto Sans JP',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--tx);font-family:var(--fs);line-height:1.7;display:flex;min-height:100vh;overflow-x:hidden}
+.sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;z-index:100;scrollbar-width:thin;scrollbar-color:var(--sf3) transparent}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:2px}
+.sb-logo{padding:22px 18px 14px;border-bottom:1px solid var(--bd)}
+.sb-logo-icon{font-size:26px;display:block;margin-bottom:5px}
+.sb-logo-title{font-size:13.5px;font-weight:800;color:var(--ac);letter-spacing:0.05em;text-transform:uppercase}
+.sb-logo-sub{font-size:11px;color:var(--txd);margin-top:2px}
+.sb-nav{flex:1;padding:10px 0}
+.sb-group{font-size:10px;font-weight:700;color:var(--txd);letter-spacing:0.1em;text-transform:uppercase;padding:12px 18px 3px}
+.sl{display:flex;align-items:center;gap:8px;padding:7px 18px;font-size:12px;color:var(--txm);text-decoration:none;border-left:3px solid transparent;transition:all 0.2s;cursor:pointer;line-height:1.4}
+.sl:hover{color:var(--tx);background:var(--sf2);border-left-color:var(--txd)}
+.sl.active{color:var(--ac);background:var(--acd);border-left-color:var(--ac);font-weight:600}
+.sl-num{font-size:10px;color:var(--txd);font-family:var(--fm);min-width:18px;flex-shrink:0}
+.sl.active .sl-num{color:var(--ac)}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--bd);font-size:10.5px;color:var(--txd);line-height:1.5}
+#progress-bar{position:fixed;top:0;left:var(--sw);right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--pu));transform-origin:left;transform:scaleX(0);z-index:200;transition:transform 0.1s linear}
+.main{margin-left:var(--sw);flex:1;max-width:calc(100% - var(--sw));overflow-x:hidden}
+.hero{background:linear-gradient(135deg,#07111e 0%,#0a1f40 55%,#07111e 100%);border-bottom:1px solid var(--bd);padding:56px 56px 44px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-120px;width:440px;height:440px;background:radial-gradient(circle,rgba(0,212,255,0.07) 0%,transparent 68%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--acd);border:1px solid var(--bda);color:var(--ac);font-size:11.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:18px}
+.hero-title{font-size:40px;font-weight:800;line-height:1.18;margin-bottom:14px;letter-spacing:-0.025em}
+.hero-title span{background:linear-gradient(135deg,var(--ac) 0%,#7c3aed 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:15.5px;color:var(--txm);max-width:680px;margin-bottom:28px;line-height:1.8}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.hero-stat-num{font-size:22px;font-weight:800;color:var(--ac);font-family:var(--fm)}
+.hero-stat-label{font-size:11.5px;color:var(--txm);margin-top:2px}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.section{padding:44px 56px;border-bottom:1px solid var(--bd)}
+.section:last-child{border-bottom:none}
+.sec-header{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--bd)}
+.sec-num{font-size:11px;font-weight:700;font-family:var(--fm);color:var(--ac);background:var(--acd);border:1px solid var(--bda);padding:3px 10px;border-radius:6px;letter-spacing:0.06em;white-space:nowrap}
+.sec-icon{font-size:26px;line-height:1;flex-shrink:0}
+.sec-title{font-size:24px;font-weight:700;letter-spacing:-0.015em;line-height:1.2}
+.sec-subtitle{font-size:13px;color:var(--txm);margin-top:3px}
+.subsec{margin-top:32px}
+.subsec-title{font-size:17px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:9px;color:var(--tx)}
+.subsec-title::before{content:'';display:inline-block;width:3px;height:16px;background:linear-gradient(180deg,var(--ac),var(--pu));border-radius:2px;flex-shrink:0}
+p{color:var(--txm);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+.cg{display:grid;gap:14px;margin-top:18px}
+.cg.c2{grid-template-columns:repeat(2,1fr)}
+.cg.c3{grid-template-columns:repeat(3,1fr)}
+.cg.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:18px;transition:border-color 0.2s,transform 0.2s}
+.card:hover{border-color:var(--bda);transform:translateY(-1px)}
+.card-icon{font-size:22px;margin-bottom:9px}
+.card-title{font-size:13.5px;font-weight:700;margin-bottom:6px;color:var(--tx)}
+.card-desc{font-size:12.5px;color:var(--txm);line-height:1.65}
+.card.ac-blue{border-top:3px solid var(--ac)}
+.card.ac-green{border-top:3px solid var(--gn)}
+.card.ac-orange{border-top:3px solid var(--or)}
+.card.ac-red{border-top:3px solid var(--rd)}
+.card.ac-purple{border-top:3px solid var(--pu)}
+.mbox{border-radius:var(--rs);padding:15px 18px;margin:18px 0;border-left:3px solid;font-size:13.5px;line-height:1.75}
+.mbox-title{font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:7px;font-size:13px}
+.mbox p{margin:0;font-size:13px;color:var(--txm)}
+.mbox.tip{background:var(--acd);border-color:var(--ac)}.mbox.tip .mbox-title{color:var(--ac)}
+.mbox.best{background:var(--gnd);border-color:var(--gn)}.mbox.best .mbox-title{color:var(--gn)}
+.mbox.warn{background:var(--ord);border-color:var(--or)}.mbox.warn .mbox-title{color:var(--or)}
+.mbox.danger{background:var(--rdd);border-color:var(--rd)}.mbox.danger .mbox-title{color:var(--rd)}
+.mbox.purple{background:var(--pud);border-color:var(--pu)}.mbox.purple .mbox-title{color:var(--pu)}
+.diag-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:22px;margin:22px 0;overflow-x:auto}
+.diag-title{font-size:11px;font-weight:700;color:var(--txd);letter-spacing:0.09em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.diag-title::before{content:'';display:inline-block;width:7px;height:7px;background:var(--ac);border-radius:50%}
+.mermaid{min-width:300px;display:flex;justify-content:center}
+.mermaid svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.cb{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);overflow:hidden;margin:18px 0}
+.cb-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--sf2);border-bottom:1px solid var(--bd)}
+.cb-label{font-size:11.5px;font-weight:600;color:var(--txm);font-family:var(--fm);display:flex;align-items:center;gap:6px}
+.cb-lang{background:var(--acd);color:var(--ac);border:1px solid var(--bda);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.06em}
+.cb-dots{display:flex;gap:5px}
+.cb-dots span{width:11px;height:11px;border-radius:50%}
+.cb-dots span:nth-child(1){background:#ff5f57}
+.cb-dots span:nth-child(2){background:#febc2e}
+.cb-dots span:nth-child(3){background:#28c840}
+.cb pre{margin:0;padding:18px;overflow-x:auto;font-size:12.5px;line-height:1.6}
+.cb pre code{font-family:var(--fm);background:transparent!important}
+.tw{overflow-x:auto;margin:18px 0;border-radius:var(--rr);border:1px solid var(--bd)}
+.tw table{width:100%;border-collapse:collapse;font-size:13px}
+.tw th{background:var(--sf2);color:var(--tx);font-weight:600;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;padding:11px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tw td{padding:11px 14px;color:var(--txm);border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.65}
+.tw tr:last-child td{border-bottom:none}
+.tw tr:hover td{background:rgba(255,255,255,0.015)}
+.tw td strong{color:var(--tx)}
+.tw td code{background:var(--sf2);border:1px solid var(--bd);color:var(--ac);padding:1px 6px;border-radius:4px;font-family:var(--fm);font-size:11.5px}
+.tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:100px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.tag.blue{background:var(--acd);color:var(--ac);border:1px solid var(--bda)}
+.tag.green{background:var(--gnd);color:var(--gn);border:1px solid var(--gnb)}
+.tag.orange{background:var(--ord);color:var(--or);border:1px solid var(--orb)}
+.tag.red{background:var(--rdd);color:var(--rd);border:1px solid var(--rdb)}
+.tag.purple{background:var(--pud);color:var(--pu);border:1px solid var(--pub)}
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.comp-box{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:18px}
+.comp-box.bad{border-top:3px solid var(--rd)}.comp-box.good{border-top:3px solid var(--gn)}
+.comp-title{font-weight:700;margin-bottom:10px;font-size:13px;display:flex;align-items:center;gap:7px}
+.comp-box.bad .comp-title{color:var(--rd)}.comp-box.good .comp-title{color:var(--gn)}
+.comp-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.comp-list li{font-size:12.5px;color:var(--txm);padding-left:18px;position:relative;line-height:1.6}
+.comp-list li::before{position:absolute;left:0;top:2px;font-size:12px}
+.comp-box.bad .comp-list li::before{content:'✗';color:var(--rd)}
+.comp-box.good .comp-list li::before{content:'✓';color:var(--gn)}
+.ref-box{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:18px;margin-top:28px}
+.ref-title{font-size:11px;font-weight:700;color:var(--txd);letter-spacing:0.09em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ref-links{display:flex;flex-wrap:wrap;gap:7px}
+.ref-link{display:inline-flex;align-items:center;gap:5px;background:var(--sf2);border:1px solid var(--bd);color:var(--ac);text-decoration:none;padding:5px 11px;border-radius:6px;font-size:11.5px;transition:all 0.2s}
+.ref-link:hover{border-color:var(--bda);background:var(--acd)}
+.ref-link::before{content:'↗';font-size:11px}
+.bp-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.bp-list li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--txm);line-height:1.7}
+.bp-list li .bp-icon{flex-shrink:0;margin-top:2px;font-size:14px}
+.kv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}
+.kv-item{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:13px}
+.kv-key{font-size:10.5px;font-weight:700;color:var(--txd);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:3px}
+.kv-val{font-size:14px;font-weight:700;color:var(--tx)}
+.kv-sub{font-size:11.5px;color:var(--txm);margin-top:2px}
+code{background:var(--sf2);border:1px solid var(--bd);color:var(--ac);padding:2px 6px;border-radius:4px;font-family:var(--fm);font-size:0.84em}
+pre code{background:none!important;border:none!important;color:inherit!important;padding:0!important}
+.hl-box{background:linear-gradient(135deg,var(--acd),var(--pud));border:1px solid var(--bda);border-radius:var(--rr);padding:20px 22px;margin:18px 0}
+.hl-box-title{font-weight:800;font-size:15px;color:var(--ac);margin-bottom:6px}
+.hl-box-desc{font-size:13.5px;color:var(--txm);line-height:1.8}
+.ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.ap-box{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:18px}
+.ap-bad{border-top:3px solid var(--rd)}.ap-fix{border-top:3px solid var(--gn)}
+.ap-bad-title{color:var(--rd);font-weight:700;font-size:13px;margin-bottom:8px}
+.ap-fix-title{color:var(--gn);font-weight:700;font-size:13px;margin-bottom:8px}
+.ap-desc{font-size:12.5px;color:var(--txm);line-height:1.65}
+.maturity-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.maturity-item{display:flex;align-items:center;gap:14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 16px}
+.maturity-lv{font-size:11px;font-weight:800;font-family:var(--fm);min-width:54px;text-align:center;padding:4px 0;border-radius:4px}
+.maturity-text{font-size:13px;color:var(--txm)}
+.maturity-text strong{color:var(--tx);font-weight:600}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:3px}
+@media(max-width:1100px){.comp{grid-template-columns:1fr}.ap-grid{grid-template-columns:1fr}.cg.c3,.cg.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;max-width:100%}.hero,.section{padding:28px 20px}.cg.c2,.cg.c3,.cg.c4{grid-template-columns:1fr}.hero-title{font-size:26px}#progress-bar{left:0}}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<aside class="sidebar">
+  <div class="sb-logo">
+    <span class="sb-logo-icon">⚡</span>
+    <div class="sb-logo-title">EDA 完全ガイド</div>
+    <div class="sb-logo-sub">イベント駆動アーキテクチャ</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-group">基礎知識</div>
+    <a class="sl active" href="#sec-1"><span class="sl-num">01</span>EDAとは何か</a>
+    <a class="sl" href="#sec-2"><span class="sl-num">02</span>基本構成要素</a>
+    <a class="sl" href="#sec-3"><span class="sl-num">03</span>イベントの種類と設計</a>
+    <a class="sl" href="#sec-4"><span class="sl-num">04</span>メッセージブローカー</a>
+    <div class="sb-group">パターン</div>
+    <a class="sl" href="#sec-5"><span class="sl-num">05</span>トポロジーパターン</a>
+    <a class="sl" href="#sec-8"><span class="sl-num">08</span>イベントソーシング</a>
+    <a class="sl" href="#sec-9"><span class="sl-num">09</span>CQRS</a>
+    <div class="sb-group">主要ツール</div>
+    <a class="sl" href="#sec-6"><span class="sl-num">06</span>Apache Kafka</a>
+    <a class="sl" href="#sec-7"><span class="sl-num">07</span>AWS EventBridge</a>
+    <div class="sb-group">信頼性・運用</div>
+    <a class="sl" href="#sec-10"><span class="sl-num">10</span>エラーハンドリング</a>
+    <a class="sl" href="#sec-11"><span class="sl-num">11</span>セキュリティ設計</a>
+    <a class="sl" href="#sec-12"><span class="sl-num">12</span>監視・オブザーバビリティ</a>
+    <div class="sb-group">実践</div>
+    <a class="sl" href="#sec-13"><span class="sl-num">13</span>ECサイト完全事例</a>
+    <a class="sl" href="#sec-14"><span class="sl-num">14</span>ベストプラクティス</a>
+    <a class="sl" href="#sec-15"><span class="sl-num">15</span>アンチパターン</a>
+    <a class="sl" href="#sec-16"><span class="sl-num">16</span>参考文献</a>
+  </nav>
+  <div class="sb-footer">Software Architect Guide<br>Version 2.0 | 2025年版</div>
+</aside>
+<main class="main">
+<div class="hero">
+  <div class="hero-eyebrow">⚡ Complete Architecture Guide</div>
+  <h1 class="hero-title"><span>EDA</span> — イベント駆動<br>アーキテクチャ完全ガイド</h1>
+  <p class="hero-desc">Event-Driven Architecture（EDA）は、現代のスケーラブルなシステム設計の根幹をなすアーキテクチャスタイルです。本ガイドでは初学者から上級者まで、EDAの基礎概念から実践的な実装パターン、Apache Kafka・AWS EventBridgeの使い方までステップバイステップで徹底解説します。</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">16</div><div class="hero-stat-label">セクション</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">14+</div><div class="hero-stat-label">アーキテクチャ図</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">5+</div><div class="hero-stat-label">コード例</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">30+</div><div class="hero-stat-label">ベストプラクティス</div></div>
+  </div>
+  <div class="hero-tags">
+    <span class="tag blue">Apache Kafka</span>
+    <span class="tag orange">AWS EventBridge</span>
+    <span class="tag green">Event Sourcing</span>
+    <span class="tag purple">CQRS</span>
+    <span class="tag blue">Saga Pattern</span>
+    <span class="tag green">マイクロサービス</span>
+  </div>
+</div>
+
+<!-- ═══ SECTION 1 ═══ -->
+<section class="section" id="sec-1">
+<div class="sec-header"><span class="sec-num">SECTION 01</span><span class="sec-icon">⚡</span><div><h2 class="sec-title">EDAとは何か？</h2><p class="sec-subtitle">定義・課題解決・ユースケース</p></div></div>
+<div class="hl-box"><div class="hl-box-title">💡 核心思想</div><div class="hl-box-desc">「何かが起きたこと（イベント）を通知し、それに反応する。各コンポーネントは互いの存在を直接知らなくてよい。」<br>サービス同士は<strong>イベントを通じて間接的に通信</strong>するため、変更の影響を局所化できます。</div></div>
+<div class="subsec"><h3 class="subsec-title">1.1 従来のリクエスト駆動型 vs EDA</h3>
+<p>従来の同期型API連携では、注文サービスが在庫・決済・通知・配送の各サービスを<strong>順番に直接呼び出す</strong>ため、1つのサービスが遅延すると全体に影響します。EDAでは<code>OrderPlacedEvent</code>を発行するだけで、各サービスが<strong>独立して非同期に反応</strong>します。</p>
+<div class="diag-wrap"><div class="diag-title">アーキテクチャ比較：リクエスト駆動型 vs EDA</div><div class="mermaid" id="d-eda-vs-req"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">1.2 EDAが解決する4つの問題</h3>
+<div class="cg c2">
+<div class="card ac-red"><div class="card-icon">🔗</div><div class="card-title">密結合 → <span style="color:var(--gn)">疎結合</span></div><div class="card-desc">サービス間の直接依存をなくし、1つの障害が全体に波及しない設計を実現。コンポーネントは互いの存在を知らなくてよい。</div></div>
+<div class="card ac-orange"><div class="card-icon">⏱️</div><div class="card-title">同期ブロック → <span style="color:var(--gn)">非同期処理</span></div><div class="card-desc">応答を待たない設計で高スループット・低レイテンシを達成。ピーク時の負荷をイベントキューで吸収できる。</div></div>
+<div class="card ac-purple"><div class="card-icon">🔧</div><div class="card-title">改修困難 → <span style="color:var(--gn)">拡張容易</span></div><div class="card-desc">新機能は「イベントを購読するだけ」で追加可能。既存のプロデューサーコードに一切触れない。</div></div>
+<div class="card ac-blue"><div class="card-icon">📈</div><div class="card-title">スケール困難 → <span style="color:var(--gn)">独立スケール</span></div><div class="card-desc">コンシューマーはそれぞれ独立してスケールアウト。ボトルネックとなるサービスだけを増強できる。</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">1.3 EDAが適しているユースケース</h3>
+<div class="diag-wrap"><div class="diag-title">EDA 適用ユースケース マインドマップ</div><div class="mermaid" id="d-usecases"></div></div>
+<div class="mbox tip"><div class="mbox-title">💡 初学者向けポイント</div><p>「メール送信」「在庫更新」「決済処理」など、注文後にやるべき処理を列挙してみてください。それらが独立した「イベントへの反応」として切り出せるなら、EDAは適切なアーキテクチャです。</p></div>
+</div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/articles/201701-event-driven.html" target="_blank">Martin Fowler — Event-Driven Architecture</a>
+<a class="ref-link" href="https://aws.amazon.com/event-driven-architecture/" target="_blank">AWS — EDA パターン解説</a>
+</div></div></section>
+
+<!-- ═══ SECTION 2 ═══ -->
+<section class="section" id="sec-2">
+<div class="sec-header"><span class="sec-num">SECTION 02</span><span class="sec-icon">🧩</span><div><h2 class="sec-title">EDAの基本構成要素</h2><p class="sec-subtitle">Producer / Broker / Consumer とイベントの解剖</p></div></div>
+<div class="subsec"><h3 class="subsec-title">2.1 3つの主要コンポーネント</h3>
+<div class="diag-wrap"><div class="diag-title">Producer → Broker → Consumer の基本関係</div><div class="mermaid" id="d-components"></div></div>
+<div class="cg c3">
+<div class="card ac-blue"><div class="card-icon">📤</div><div class="card-title">プロデューサー（Producer）</div><div class="card-desc">イベントを生成・発行するコンポーネント。誰が受け取るかを知らない。<br><br>例：注文サービス、IoTセンサー、ユーザー操作イベント</div></div>
+<div class="card ac-orange"><div class="card-icon">🔀</div><div class="card-title">ブローカー（Broker）</div><div class="card-desc">イベントを受け取り、保存・ルーティング・配信するミドルウェア。<br><br>例：Apache Kafka、RabbitMQ、AWS EventBridge</div></div>
+<div class="card ac-green"><div class="card-icon">📥</div><div class="card-title">コンシューマー（Consumer）</div><div class="card-desc">イベントを受信・処理するコンポーネント。処理後に新たなイベントを発行することもある。<br><br>例：在庫サービス、通知サービス</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">2.2 イベントの構造（Anatomy of an Event）</h3>
+<p>イベントは<strong>メタデータ</strong>（すべてのイベントに共通）と<strong>ペイロード</strong>（イベント固有のデータ）の2層で構成されます。</p>
+<div class="tw"><table>
+<thead><tr><th>フィールド</th><th>型</th><th>説明</th><th>必須</th></tr></thead>
+<tbody>
+<tr><td><code>event_id</code></td><td>UUID</td><td>イベントの一意識別子。べき等性チェックに使用</td><td><span class="tag green">必須</span></td></tr>
+<tr><td><code>event_type</code></td><td>String</td><td>イベントの種類。例: <code>order.placed</code></td><td><span class="tag green">必須</span></td></tr>
+<tr><td><code>occurred_at</code></td><td>ISO8601</td><td>イベントが発生した日時（UTC）</td><td><span class="tag green">必須</span></td></tr>
+<tr><td><code>source</code></td><td>String</td><td>発生元サービス名</td><td><span class="tag green">必須</span></td></tr>
+<tr><td><code>version</code></td><td>String</td><td>スキーマバージョン。例: <code>1.0</code></td><td><span class="tag green">必須</span></td></tr>
+<tr><td><code>correlation_id</code></td><td>UUID</td><td>分散トレーシング用ID。リクエスト全体を追跡</td><td><span class="tag orange">推奨</span></td></tr>
+<tr><td><em>ペイロードフィールド</em></td><td>Any</td><td>イベント固有のビジネスデータ。自己完結型にする</td><td><span class="tag blue">任意</span></td></tr>
+</tbody></table></div></div>
+<div class="subsec"><h3 class="subsec-title">2.3 イベントの実装例（Python）</h3>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">Python</span>events/order_placed.py</div></div>
+<pre><code class="language-python">from dataclasses import dataclass, field, asdict
+from datetime import datetime, timezone
+from uuid import uuid4
+import json
+
+@dataclass(frozen=True)   # frozen=True: イミュータブル（変更不可）
+class EventMetadata:
+    """すべてのイベントに共通するメタデータ"""
+    event_id: str = field(default_factory=lambda: str(uuid4()))
+    occurred_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    version: str = "1.0"
+    correlation_id: str = field(default_factory=lambda: str(uuid4()))
+
+@dataclass(frozen=True)
+class OrderPlacedEvent:
+    """
+    注文が確定されたことを表すドメインイベント
+    設計ポイント:
+      1. 名前は必ず過去形: OrderPlaced（注文が確定した）
+      2. イミュータブル: frozen=True で変更不可
+      3. 自己完結型: 受信者がDBを参照しなくてよい情報を含む
+    """
+    event_type: str = "order.placed"
+    source: str = "order-service"
+    metadata: EventMetadata = field(default_factory=EventMetadata)
+    order_id: str = ""
+    customer_id: str = ""
+    customer_email: str = ""
+    total_amount: float = 0.0
+    currency: str = "JPY"
+    items: list = field(default_factory=list)
+
+    def to_json(self) -> str:
+        return json.dumps(asdict(self), ensure_ascii=False)
+
+# ─── 使用例 ───
+event = OrderPlacedEvent(
+    order_id="order_12345",
+    customer_id="cust_67890",
+    customer_email="user@example.com",
+    total_amount=15000.0,
+    items=[{"product_id": "prod_001", "name": "Tシャツ", "quantity": 2, "price": 5000}]
+)
+print(event.to_json())
+</code></pre></div></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://cloudevents.io/" target="_blank">CloudEvents 仕様（CNCF）</a>
+</div></div></section>
+
+<!-- ═══ SECTION 3 ═══ -->
+<section class="section" id="sec-3">
+<div class="sec-header"><span class="sec-num">SECTION 03</span><span class="sec-icon">📋</span><div><h2 class="sec-title">イベントの種類と設計</h2><p class="sec-subtitle">4分類・Good vs Bad・スキーマ進化戦略</p></div></div>
+<div class="subsec"><h3 class="subsec-title">3.1 イベントの4分類</h3>
+<div class="cg c2">
+<div class="card ac-blue"><div class="card-icon">🧩</div><div class="card-title">ドメインイベント（Domain Event）</div><div class="card-desc"><strong>ビジネス上で意味のある出来事。最も重要なイベント種別。</strong><br><br>例: <code>OrderPlaced</code>（注文確定）<br><code>PaymentCompleted</code>（決済完了）<br><code>CustomerRegistered</code>（顧客登録）</div></div>
+<div class="card ac-purple"><div class="card-icon">⚙️</div><div class="card-title">システムイベント（System Event）</div><div class="card-desc"><strong>インフラ・技術的な出来事。ビジネスロジックとは分離する。</strong><br><br>例: <code>ServiceStarted</code>（起動）<br><code>HealthCheckFailed</code>（障害検知）</div></div>
+<div class="card ac-orange"><div class="card-icon">🔔</div><div class="card-title">トリガーイベント（Trigger Event）</div><div class="card-desc"><strong>処理のキックオフ。スケジュール実行や手動起動の代わりに使用。</strong><br><br>例: <code>BatchProcessingRequested</code>（バッチ開始）</div></div>
+<div class="card ac-green"><div class="card-icon">🔄</div><div class="card-title">変更通知イベント（Change Notification）</div><div class="card-desc"><strong>データの変更を通知。キャッシュ更新やCQRSのプロジェクション更新に利用。</strong><br><br>例: <code>ProductPriceChanged</code>（価格変更）</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">3.2 良いイベント設計 vs 悪いイベント設計</h3>
+<div class="comp">
+<div class="comp-box good"><div class="comp-title">✅ 良いイベント設計</div><ul class="comp-list">
+<li><strong>過去形で命名する</strong>: <code>OrderPlaced</code>（注文が確定した）← 起きた事実</li>
+<li><strong>自己完結型にする</strong>: 受信者がDBを参照しなくてよい情報をペイロードに含める</li>
+<li><strong>イミュータブルにする</strong>: 発生した事実は変更不可。バージョンアップは新しいイベントで</li>
+<li><strong>スキーマバージョンを管理</strong>: <code>version: "2.0"</code>を付与し後方互換性を保つ</li>
+<li><strong>べき等性を保証する</strong>: 同じイベントを2回処理しても結果が変わらない設計</li>
+</ul></div>
+<div class="comp-box bad"><div class="comp-title">❌ 悪いイベント設計</div><ul class="comp-list">
+<li><strong>命令形で命名</strong>: <code>CreateOrder</code>（これはコマンドであってイベントではない）</li>
+<li><strong>IDのみを含める</strong>: <code>order_id: "12345"</code>だけでは受信者が毎回DBアクセスが必要</li>
+<li><strong>巨大すぎるイベント</strong>: 50フィールド以上の「神イベント」はスキーマ変更の影響が甚大</li>
+<li><strong>バージョン管理なし</strong>: フィールド名変更などの破壊的変更で既存コンシューマーが壊れる</li>
+<li><strong>細かすぎる粒度</strong>: <code>UserFirstNameChanged</code>と<code>UserLastNameChanged</code>を別々に送る（Chatty Events）</li>
+</ul></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">3.3 イベントスキーマの進化戦略</h3>
+<div class="diag-wrap"><div class="diag-title">スキーマバージョニング — 後方互換 vs 破壊的変更の対処</div><div class="mermaid" id="d-schema-evolution"></div></div>
+<div class="mbox warn"><div class="mbox-title">⚠️ 破壊的変更を行う場合のルール</div><p>フィールド名の変更・型変更など破壊的な変更が必要な場合は、<strong>旧バージョンと新バージョンを並行して一定期間（目安：3ヶ月）同時発行</strong>し、すべてのコンシューマーが移行完了後に旧バージョンを廃止します。</p></div>
+</div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://www.enterpriseintegrationpatterns.com/" target="_blank">Enterprise Integration Patterns</a>
+<a class="ref-link" href="https://cloudevents.io/" target="_blank">CloudEvents 仕様</a>
+</div></div></section>
+
+<!-- ═══ SECTION 4 ═══ -->
+<section class="section" id="sec-4">
+<div class="sec-header"><span class="sec-num">SECTION 04</span><span class="sec-icon">🔀</span><div><h2 class="sec-title">メッセージブローカーとイベントストリーミング</h2><p class="sec-subtitle">主要ブローカーの比較・選択ガイド</p></div></div>
+<div class="subsec"><h3 class="subsec-title">4.1 主要ブローカーの比較</h3>
+<div class="tw"><table>
+<thead><tr><th>ブローカー</th><th>タイプ</th><th>スループット</th><th>永続化</th><th>主なユースケース</th></tr></thead>
+<tbody>
+<tr><td><strong>Apache Kafka</strong></td><td><span class="tag blue">ストリーミング</span></td><td><span class="tag green">超高速</span></td><td>✅ 長期保存・再生可能</td><td>高スループット、イベントソーシング、ログ収集</td></tr>
+<tr><td><strong>RabbitMQ</strong></td><td><span class="tag purple">キュー</span></td><td><span class="tag blue">高速</span></td><td>設定次第</td><td>複雑なルーティング、タスクキュー</td></tr>
+<tr><td><strong>Amazon SQS</strong></td><td><span class="tag purple">キュー</span></td><td><span class="tag blue">高速</span></td><td>最大14日</td><td>AWSサービス間連携、シンプルなキュー</td></tr>
+<tr><td><strong>AWS EventBridge</strong></td><td><span class="tag orange">イベントバス</span></td><td><span class="tag blue">高速</span></td><td>アーカイブ可</td><td>サーバーレス統合、SaaS連携</td></tr>
+<tr><td><strong>Amazon Kinesis</strong></td><td><span class="tag blue">ストリーミング</span></td><td><span class="tag green">超高速</span></td><td>最大7日</td><td>リアルタイム分析、AWSエコシステム</td></tr>
+<tr><td><strong>Apache Pulsar</strong></td><td><span class="tag blue">ストリーミング</span></td><td><span class="tag green">超高速</span></td><td>✅ 長期保存</td><td>地理的レプリケーション、マルチテナント</td></tr>
+</tbody></table></div></div>
+<div class="subsec"><h3 class="subsec-title">4.2 ユースケース別ブローカー選択ガイド</h3>
+<div class="diag-wrap"><div class="diag-title">ブローカー選定フローチャート</div><div class="mermaid" id="d-broker-select"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">4.3 メッセージキュー型 vs イベントストリーミング型の本質的違い</h3>
+<div class="comp">
+<div class="comp-box" style="border-top:3px solid var(--pu)"><div class="comp-title" style="color:var(--pu)">📬 メッセージキュー型（RabbitMQ / SQS）</div><ul class="comp-list">
+<li><strong>消費されたメッセージは削除</strong>される（1回限り）</li>
+<li>1つのメッセージは<strong>1つのコンシューマーのみ</strong>に配信</li>
+<li>タスクキュー・ワークキューに最適</li>
+<li>ACK/NACKで確実な配信を保証</li>
+</ul></div>
+<div class="comp-box" style="border-top:3px solid var(--ac)"><div class="comp-title" style="color:var(--ac)">📊 イベントストリーミング型（Kafka / Kinesis）</div><ul class="comp-list">
+<li>イベントは<strong>保持期間中保存</strong>（再生・巻き戻し可能）</li>
+<li><strong>複数のコンシューマーグループ</strong>が独立して購読可能</li>
+<li>イベントソーシング・リアルタイム分析に最適</li>
+<li>オフセット管理でコンシューマーが処理位置を制御</li>
+</ul></div>
+</div></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://kafka.apache.org/documentation/" target="_blank">Apache Kafka 公式</a>
+<a class="ref-link" href="https://aws.amazon.com/sqs/" target="_blank">Amazon SQS</a>
+<a class="ref-link" href="https://aws.amazon.com/kinesis/" target="_blank">Amazon Kinesis</a>
+</div></div></section>
+
+<!-- ═══ SECTION 5 ═══ -->
+<section class="section" id="sec-5">
+<div class="sec-header"><span class="sec-num">SECTION 05</span><span class="sec-icon">🗺️</span><div><h2 class="sec-title">EDAのトポロジーパターン</h2><p class="sec-subtitle">仲介者 / ブローカー / Sagaパターン</p></div></div>
+<div class="subsec"><h3 class="subsec-title">5.1 仲介者トポロジー（Mediator Topology）</h3>
+<p><strong>中央の仲介者（オーケストレーター）</strong>がワークフロー全体の制御を担当します。処理の順序・条件分岐・エラーハンドリングを一箇所で管理できますが、仲介者への依存が生じます。</p>
+<div class="diag-wrap"><div class="diag-title">仲介者トポロジー — 仲介者が処理順序を制御</div><div class="mermaid" id="d-mediator"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">5.2 ブローカートポロジー（Broker Topology）</h3>
+<p>中央制御なし。各サービスが<strong>イベントに独立して反応</strong>し、新しいイベントを発行することで処理が連鎖します。完全疎結合ですが、フロー全体の追跡が複雑になります。</p>
+<div class="diag-wrap"><div class="diag-title">ブローカートポロジー — 各サービスが自律的に反応</div><div class="mermaid" id="d-broker-topology"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">5.3 仲介者 vs ブローカーの使い分け</h3>
+<div class="tw"><table>
+<thead><tr><th>観点</th><th>仲介者トポロジー</th><th>ブローカートポロジー</th></tr></thead>
+<tbody>
+<tr><td><strong>処理の制御</strong></td><td>中央集権的・順序制御可能</td><td>分散・各サービスが自律</td></tr>
+<tr><td><strong>結合度</strong></td><td>仲介者への依存あり</td><td>完全疎結合</td></tr>
+<tr><td><strong>エラーハンドリング</strong></td><td>仲介者で一元管理</td><td>各サービスが個別に対応</td></tr>
+<tr><td><strong>可視性</strong></td><td>フロー全体が見えやすい</td><td>追跡が複雑になりやすい</td></tr>
+<tr><td><strong>適用場面</strong></td><td>複雑なワークフロー・承認フロー</td><td>独立したリアクション処理</td></tr>
+<tr><td><strong>代表ツール</strong></td><td>AWS Step Functions、Temporal</td><td>Apache Kafka、EventBridge</td></tr>
+</tbody></table></div></div>
+<div class="subsec"><h3 class="subsec-title">5.4 Sagaパターン（分散トランザクション）</h3>
+<p>マイクロサービス間でデータの整合性を保つパターン。各サービスがローカルトランザクションを実行し、失敗時は<strong>補償トランザクション（Compensating Transaction）</strong>で前の状態に戻します。</p>
+<div class="diag-wrap"><div class="diag-title">Saga（Choreography型）— 正常フローと補償トランザクション</div><div class="mermaid" id="d-saga"></div></div>
+<div class="mbox warn"><div class="mbox-title">⚠️ Sagaの注意点：結果整合性（Eventual Consistency）</div><p>Sagaでは厳密なACID整合性ではなく<strong>結果整合性</strong>を採用します。一時的に各サービスの状態が不一致になる可能性があり、UXやビジネスロジックでこれを考慮する必要があります。</p></div>
+</div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/articles/patterns-of-distributed-systems/saga.html" target="_blank">Martin Fowler — Saga Pattern</a>
+<a class="ref-link" href="https://aws.amazon.com/step-functions/" target="_blank">AWS Step Functions</a>
+</div></div></section>
+
+<!-- ═══ SECTION 6 ═══ -->
+<section class="section" id="sec-6">
+<div class="sec-header"><span class="sec-num">SECTION 06</span><span class="sec-icon">🔶</span><div><h2 class="sec-title">Apache Kafka 完全解説</h2><p class="sec-subtitle">アーキテクチャ・主要概念・Python実装・パーティション戦略</p></div></div>
+<div class="subsec"><h3 class="subsec-title">6.1 Kafkaのアーキテクチャ概観</h3>
+<div class="diag-wrap"><div class="diag-title">Kafkaクラスター全体図（Broker / Topic / Partition / Consumer Group）</div><div class="mermaid" id="d-kafka-arch"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">6.2 Kafkaの主要概念</h3>
+<div class="kv-grid">
+<div class="kv-item"><div class="kv-key">Topic（トピック）</div><div class="kv-val">メッセージのカテゴリ</div><div class="kv-sub">例：<code>orders</code>/<code>payments</code><br>複数のPartitionで構成される</div></div>
+<div class="kv-item"><div class="kv-key">Partition（パーティション）</div><div class="kv-val">並列処理の基本単位</div><div class="kv-sub">順序保証はPartition内のみ。Partition数がスループットの上限を決める</div></div>
+<div class="kv-item"><div class="kv-key">Offset（オフセット）</div><div class="kv-val">メッセージの位置番号</div><div class="kv-sub">コンシューマーが管理。任意の位置から再生可能（巻き戻し可能）</div></div>
+<div class="kv-item"><div class="kv-key">Consumer Group</div><div class="kv-val">水平スケールの単位</div><div class="kv-sub">同一グループ内でPartitionを分担。グループ間は独立して購読</div></div>
+<div class="kv-item"><div class="kv-key">Replication Factor</div><div class="kv-val">レプリカ数（通常3）</div><div class="kv-sub">LeaderがI/Oを担当。障害時はFollowerが昇格（高可用性）</div></div>
+<div class="kv-item"><div class="kv-key">Retention（保持期間）</div><div class="kv-val">デフォルト7日間</div><div class="kv-sub">時間/サイズベースで設定。Log Compactionで最新値のみ保持も可能</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">6.3 Kafkaの実装例（Python）</h3>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">Python</span>kafka/producer.py — プロデューサー</div></div>
+<pre><code class="language-python">from kafka import KafkaProducer
+from kafka.errors import KafkaError
+from uuid import uuid4
+from datetime import datetime, timezone
+import json, logging
+logger = logging.getLogger(__name__)
+
+class OrderEventProducer:
+    def __init__(self, bootstrap_servers: list[str]):
+        self._producer = KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=lambda v: json.dumps(v, ensure_ascii=False).encode("utf-8"),
+            key_serializer=lambda k: k.encode("utf-8") if k else None,
+            acks="all",            # すべてのレプリカへの書き込み確認を待つ
+            retries=3,             # 失敗時のリトライ回数
+            retry_backoff_ms=100,
+            batch_size=16384,      # バッチサイズ（16KB）
+            linger_ms=10,          # バッチ待機時間（throughput向上）
+            compression_type="gzip",
+        )
+
+    def publish_order_placed(self, order: dict) -> None:
+        event = {
+            "event_type": "order.placed",
+            "event_id":   str(uuid4()),
+            "occurred_at": datetime.now(timezone.utc).isoformat(),
+            "version":    "1.0",
+            "order_id":   order["id"],
+            "customer_id": order["customer_id"],
+            "total_amount": order["total_amount"],
+            "items":      order["items"],
+        }
+        try:
+            # order_id をキーにすることで同じ注文のイベントが
+            # 同じパーティションに送られ、順序が保証される
+            future = self._producer.send(
+                topic="orders",
+                key=order["id"],    # ← パーティションキー（順序保証）
+                value=event,
+            )
+            meta = future.get(timeout=10)  # 同期待機（送信確認）
+            logger.info(f"発行成功: partition={meta.partition}, offset={meta.offset}")
+        except KafkaError as e:
+            logger.error(f"発行失敗: {e}")
+            raise
+
+    def close(self):
+        self._producer.flush()
+        self._producer.close()
+</code></pre></div>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">Python</span>kafka/consumer.py — べき等なコンシューマー</div></div>
+<pre><code class="language-python">from kafka import KafkaConsumer
+import json, logging
+logger = logging.getLogger(__name__)
+
+class InventoryEventConsumer:
+    def __init__(self, bootstrap_servers: list[str]):
+        self._consumer = KafkaConsumer(
+            "orders",
+            bootstrap_servers=bootstrap_servers,
+            group_id="inventory-service",    # コンシューマーグループID
+            value_deserializer=lambda v: json.loads(v.decode("utf-8")),
+            auto_offset_reset="earliest",    # 初回は最初から読む
+            enable_auto_commit=False,        # 手動コミット（確実な処理のため）
+            max_poll_records=100,
+        )
+
+    def start(self):
+        try:
+            for message in self._consumer:
+                try:
+                    self._process_event(message.value)
+                    self._consumer.commit()  # 処理成功後にオフセットをコミット
+                except Exception as e:
+                    logger.error(f"処理エラー: {e}")
+                    self._send_to_dlq(message.value, str(e))
+        finally:
+            self._consumer.close()
+
+    def _process_event(self, event: dict):
+        if event.get("event_type") != "order.placed":
+            return
+        # べき等性チェック: 同じevent_idを2度処理しない
+        if self._already_processed(event["event_id"]):
+            logger.info(f"重複イベントをスキップ: {event['event_id']}")
+            return
+        self._reserve_stock(event["order_id"], event["items"])
+        self._mark_as_processed(event["event_id"])  # Redisなどで管理
+
+    def _already_processed(self, event_id: str) -> bool:
+        return False  # 実際はRedis等で処理済みIDを管理
+
+    def _reserve_stock(self, order_id: str, items: list):
+        for item in items:
+            logger.info(f"在庫引当: {item['product_id']} x {item['quantity']}")
+
+    def _mark_as_processed(self, event_id: str): pass
+    def _send_to_dlq(self, event: dict, error: str):
+        logger.error(f"DLQへ送信: error={error}")
+</code></pre></div></div>
+<div class="mbox best"><div class="mbox-title">✅ Kafkaベストプラクティス</div><p><strong>パーティション数 ≧ コンシューマーグループの最大コンシューマー数</strong>を守ること。パーティション数 &lt; コンシューマー数の場合、余分なコンシューマーはアイドル状態になります。<strong>キーベースのパーティショニング</strong>（例：<code>order_id</code>をキーに設定）で同一エンティティのイベント順序を保証します。</p></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://kafka.apache.org/documentation/" target="_blank">Apache Kafka 公式</a>
+<a class="ref-link" href="https://developer.confluent.io/learn-kafka/" target="_blank">Confluent Kafka チュートリアル</a>
+<a class="ref-link" href="https://www.confluent.io/designing-event-driven-systems/" target="_blank">Designing Event-Driven Systems（無料書籍）</a>
+<a class="ref-link" href="https://kafka-python.readthedocs.io/" target="_blank">kafka-python ドキュメント</a>
+</div></div></section>
+
+<!-- ═══ SECTION 7 ═══ -->
+<section class="section" id="sec-7">
+<div class="sec-header"><span class="sec-num">SECTION 07</span><span class="sec-icon">☁️</span><div><h2 class="sec-title">AWS EventBridge 完全解説</h2><p class="sec-subtitle">フルマネージドなサーバーレスイベントバス</p></div></div>
+<div class="subsec"><h3 class="subsec-title">7.1 EventBridgeのアーキテクチャ</h3>
+<div class="diag-wrap"><div class="diag-title">AWS EventBridge — ソース → バス → ルール → ターゲット</div><div class="mermaid" id="d-eventbridge"></div></div>
+<div class="cg c3">
+<div class="card ac-orange"><div class="card-icon">🚌</div><div class="card-title">イベントバス（Event Bus）</div><div class="card-desc">Default（AWSサービス用）、Custom（自作アプリ用）、Partner（SaaS用）の3種類。</div></div>
+<div class="card ac-blue"><div class="card-icon">📋</div><div class="card-title">イベントルール（Event Rule）</div><div class="card-desc">JSONパターンマッチングでフィルタリング。数値範囲・文字列マッチ・存在チェックが可能。</div></div>
+<div class="card ac-green"><div class="card-icon">📐</div><div class="card-title">スキーマレジストリ</div><div class="card-desc">イベントスキーマを自動検出・保存。SDK用コードを自動生成でき型安全を実現。</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">7.2 EventBridgeの設定例（Terraform HCL）</h3>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">HCL</span>eventbridge/main.tf</div></div>
+<pre><code class="language-bash"># カスタムイベントバスの作成
+resource "aws_cloudwatch_event_bus" "orders" {
+  name = "orders-event-bus"
+}
+
+# 注文確定イベントを在庫LambdaへルーティングするRule
+resource "aws_cloudwatch_event_rule" "order_to_inventory" {
+  name           = "order-placed-to-inventory"
+  event_bus_name = aws_cloudwatch_event_bus.orders.name
+
+  # イベントパターン: source + detail-type でフィルタリング
+  event_pattern = jsonencode({
+    source      = ["com.myapp.order-service"]
+    detail-type = ["OrderPlaced"]
+    detail = {
+      total_amount = [{ numeric = [">=", 1000] }]  # 1000円以上のみ
+    }
+  })
+}
+
+# ターゲット（Lambda）の設定
+resource "aws_cloudwatch_event_target" "inventory_lambda" {
+  rule           = aws_cloudwatch_event_rule.order_to_inventory.name
+  event_bus_name = aws_cloudwatch_event_bus.orders.name
+  target_id      = "InventoryServiceLambda"
+  arn            = aws_lambda_function.inventory_service.arn
+
+  dead_letter_config {           # 失敗時のDLQ設定（必須！）
+    arn = aws_sqs_queue.event_dlq.arn
+  }
+  retry_policy {
+    maximum_event_age_in_seconds = 3600  # 最大1時間リトライ
+    maximum_retry_attempts       = 3
+  }
+}
+</code></pre></div></div>
+<div class="mbox best"><div class="mbox-title">✅ EventBridge ベストプラクティス</div><p>ターゲットには<strong>必ずDead Letter Queue（DLQ）</strong>を設定すること。設定しない場合、処理失敗したイベントは永遠に失われます。また<code>source</code>には<code>"com.myapp.service-name"</code>、<code>detail-type</code>には<code>"OrderPlaced"</code>のような具体的な値を設定し、ルールのスコープを明確にします。</p></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://aws.amazon.com/eventbridge/" target="_blank">AWS EventBridge 公式</a>
+<a class="ref-link" href="https://aws.amazon.com/sns/" target="_blank">Amazon SNS</a>
+</div></div></section>
+
+<!-- ═══ SECTION 8 ═══ -->
+<section class="section" id="sec-8">
+<div class="sec-header"><span class="sec-num">SECTION 08</span><span class="sec-icon">📜</span><div><h2 class="sec-title">イベントソーシング（Event Sourcing）</h2><p class="sec-subtitle">状態ではなく「イベントの履歴」を唯一の真実（Single Source of Truth）とする</p></div></div>
+<div class="hl-box"><div class="hl-box-title">💡 イベントソーシングの核心</div><div class="hl-box-desc">従来のDBは「現在の状態」のみを保存します。イベントソーシングでは「<strong>状態を変化させたすべてのイベントの履歴</strong>」を保存し、現在の状態はイベントを再生（リプレイ）して導出します。これにより<strong>完全な監査ログ・タイムトラベル・バグ再現</strong>が可能になります。</div></div>
+<div class="subsec"><h3 class="subsec-title">8.1 従来の状態保存 vs イベントソーシング</h3>
+<div class="diag-wrap"><div class="diag-title">従来のDB（現在状態のみ）vs イベントストア（イベント履歴全体）</div><div class="mermaid" id="d-event-sourcing"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">8.2 イベントソーシングの実装例（Python）</h3>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">Python</span>domain/order_aggregate.py</div></div>
+<pre><code class="language-python">class OrderAggregate:
+    """
+    イベントソーシングによる注文集約。
+    状態変更はイベントを通じてのみ行う。
+    現在の状態はイベントの再生から導出する。
+    """
+    def __init__(self, order_id: str):
+        self._id, self._status, self._items = order_id, "INITIAL", []
+        self._total, self._version = 0.0, 0
+        self._uncommitted_events: list[dict] = []
+
+    # ── コマンドハンドラー（ビジネスルールを検証してイベントを生成）──
+    def create(self, customer_id: str):
+        if self._status != "INITIAL":
+            raise ValueError("すでに作成済みです")
+        self._apply_and_record({"event_type": "OrderCreated", "customer_id": customer_id})
+
+    def add_item(self, product_id: str, name: str, price: float, qty: int):
+        if self._status != "PENDING":
+            raise ValueError("PENDING状態でのみ商品を追加できます")
+        self._apply_and_record({"event_type":"ItemAdded","product_id":product_id,
+                                 "name":name,"price":price,"quantity":qty})
+
+    def confirm(self):
+        if not self._items: raise ValueError("商品が1件もありません")
+        self._apply_and_record({"event_type": "OrderConfirmed"})
+
+    def cancel(self, reason: str):
+        if self._status in ("SHIPPED", "DELIVERED"):
+            raise ValueError("発送済みはキャンセルできません")
+        self._apply_and_record({"event_type": "OrderCancelled", "reason": reason})
+
+    # ── イベントアプライヤー（純粋な状態更新・副作用なし）──
+    def _apply_event(self, event: dict):
+        t = event["event_type"]
+        if t == "OrderCreated":   self._status = "PENDING"
+        elif t == "ItemAdded":
+            self._items.append(event)
+            self._total += event["price"] * event["quantity"]
+        elif t == "OrderConfirmed": self._status = "CONFIRMED"
+        elif t == "OrderCancelled": self._status = "CANCELLED"
+        self._version += 1
+
+    def _apply_and_record(self, event_data: dict):
+        self._apply_event(event_data)
+        self._uncommitted_events.append(event_data)
+
+    @classmethod
+    def rebuild_from_events(cls, order_id: str, events: list[dict]):
+        """保存されたイベント履歴から集約を再構築する（リプレイ）"""
+        agg = cls(order_id)
+        for ev in events:
+            agg._apply_event(ev)  # ビジネスルールを通さず直接適用
+        return agg
+</code></pre></div></div>
+<div class="subsec"><h3 class="subsec-title">8.3 スナップショット戦略（パフォーマンス最適化）</h3>
+<p>イベント数が増えるにつれ集約の再構築に時間がかかります。<strong>一定間隔（目安：100件ごと）でスナップショット（その時点の状態）</strong>を保存することで、スナップショット以降のイベントのみ再生すればよくなります。</p></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/eaaDev/EventSourcing.html" target="_blank">Martin Fowler — Event Sourcing</a>
+<a class="ref-link" href="https://www.eventstore.com/" target="_blank">EventStoreDB 公式</a>
+<a class="ref-link" href="https://github.com/cosmicpython/book" target="_blank">Cosmic Python — Event Sourcing</a>
+</div></div></section>
+
+<!-- ═══ SECTION 9 ═══ -->
+<section class="section" id="sec-9">
+<div class="sec-header"><span class="sec-num">SECTION 09</span><span class="sec-icon">⚖️</span><div><h2 class="sec-title">CQRS（コマンドクエリ責務分離）</h2><p class="sec-subtitle">Command Query Responsibility Segregation</p></div></div>
+<div class="hl-box"><div class="hl-box-title">💡 CQRSの原則</div><div class="hl-box-desc">「<strong>書き込み（Command）</strong>」と「<strong>読み取り（Query）</strong>」のモデルを分離します。書き込みは整合性を重視した正規化DBに、読み取りは参照に最適化した非正規化DBに行います。EDAでイベントを使って両者を非同期同期することで、<strong>書き込みスケール</strong>と<strong>読み取りスケール</strong>を独立して最適化できます。</div></div>
+<div class="subsec"><h3 class="subsec-title">9.1 CQRS + EDA + Event Sourcing の組み合わせ</h3>
+<div class="diag-wrap"><div class="diag-title">EDA + CQRS + Event Sourcing — コマンドサイドとクエリサイドの完全分離</div><div class="mermaid" id="d-cqrs"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">9.2 いつCQRSを使うべきか</h3>
+<div class="comp">
+<div class="comp-box good"><div class="comp-title">✅ CQRSが適している場合</div><ul class="comp-list">
+<li><strong>読み取りと書き込みの負荷バランスが大きく異なる</strong>（例：読み取り10倍）</li>
+<li>読み取りに複数の最適化されたビューが必要（全文検索 + RDB + キャッシュ）</li>
+<li>複雑なビジネスドメインでEvent Sourcingと組み合わせる</li>
+<li>マイクロサービスで各サービスが自身の読み取りモデルを持つ</li>
+</ul></div>
+<div class="comp-box bad"><div class="comp-title">❌ CQRSが不適な場合</div><ul class="comp-list">
+<li>シンプルなCRUDアプリケーション（過剰設計になる）</li>
+<li>チームが小さく、複雑さを管理できない</li>
+<li>結果整合性（Eventual Consistency）をUXに組み込めない</li>
+<li>読み取りと書き込みの負荷がほぼ同じ場合</li>
+</ul></div>
+</div></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/bliki/CQRS.html" target="_blank">Martin Fowler — CQRS</a>
+<a class="ref-link" href="https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf" target="_blank">Greg Young — CQRS Documents（PDF）</a>
+<a class="ref-link" href="https://developer.axoniq.io/" target="_blank">Axon Framework（Java CQRS/ES）</a>
+</div></div></section>
+
+<!-- ═══ SECTION 10 ═══ -->
+<section class="section" id="sec-10">
+<div class="sec-header"><span class="sec-num">SECTION 10</span><span class="sec-icon">🛡️</span><div><h2 class="sec-title">エラーハンドリングと信頼性設計</h2><p class="sec-subtitle">DLQ / サーキットブレーカー / リトライ戦略 / べき等性</p></div></div>
+<div class="subsec"><h3 class="subsec-title">10.1 配信保証モデルの選択</h3>
+<div class="cg c3">
+<div class="card ac-orange"><div class="card-icon">📬</div><div class="card-title">At-Least-Once（最低1回）</div><div class="card-desc"><strong>最も現実的な選択。</strong>少なくとも1回は届けるが重複する可能性がある。<code>べき等なコンシューマー</code>で対処する。Kafka・SQSのデフォルト。</div></div>
+<div class="card ac-red"><div class="card-icon">🎲</div><div class="card-title">At-Most-Once（最大1回）</div><div class="card-desc">重複は起きないがメッセージロストの可能性がある。ログ収集など損失許容可能な場面のみ。</div></div>
+<div class="card ac-green"><div class="card-icon">🎯</div><div class="card-title">Exactly-Once（正確に1回）</div><div class="card-desc">Kafka EOS（Exactly-Once Semantics）で実現可能だが実装コストが高い。決済など重複不可の場面で使用。</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">10.2 Dead Letter Queue（DLQ）パターン</h3>
+<div class="diag-wrap"><div class="diag-title">DLQパターン — 処理失敗メッセージの安全な隔離と再投入</div><div class="mermaid" id="d-dlq"></div></div>
+<div class="mbox danger"><div class="mbox-title">🚨 DLQは必ず設定すること</div><p>DLQを設定しないと、処理に失敗したイベントが永遠に失われます。DLQのメッセージ数を<strong>常時ゼロになるよう監視</strong>し、増加時は即座にアラートを出すことが重要です。</p></div></div>
+<div class="subsec"><h3 class="subsec-title">10.3 サーキットブレーカーパターン</h3>
+<div class="diag-wrap"><div class="diag-title">サーキットブレーカー 状態遷移図（CLOSED / OPEN / HALF-OPEN）</div><div class="mermaid" id="d-circuit-breaker"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">10.4 指数バックオフ + ジッターによるリトライ</h3>
+<div class="cb"><div class="cb-header"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-label"><span class="cb-lang">Python</span>utils/retry.py — 指数バックオフ + ジッターデコレーター</div></div>
+<pre><code class="language-python">import time, random, logging
+from typing import Callable, Any
+from functools import wraps
+logger = logging.getLogger(__name__)
+
+def exponential_backoff_retry(
+    max_retries: int = 3,
+    base_delay: float = 1.0,
+    max_delay: float = 60.0,
+    jitter: bool = True,        # Thundering Herd問題を防ぐランダム要素
+    exceptions: tuple = (Exception,),
+):
+    """
+    指数バックオフ + ジッターによるリトライデコレーター
+
+    ジッターを加えることで、複数のコンシューマーが同時にリトライして
+    サービスに負荷が集中する「Thundering Herd問題」を防ぐ。
+    待機時間: 1s → 2s → 4s → 8s（最大max_delay秒まで）
+    """
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> Any:
+            last_exc = None
+            for attempt in range(max_retries + 1):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    last_exc = e
+                    if attempt == max_retries:
+                        logger.error(f"最大リトライ到達: {func.__name__}, error={e}")
+                        raise
+                    delay = min(base_delay * (2 ** attempt), max_delay)
+                    if jitter:
+                        delay = delay * (0.5 + random.random())  # ±50%のランダム要素
+                    logger.warning(f"リトライ {attempt+1}/{max_retries}: {delay:.2f}秒後")
+                    time.sleep(delay)
+            raise last_exc
+        return wrapper
+    return decorator
+
+# ─── 使用例 ───
+@exponential_backoff_retry(max_retries=3, base_delay=1.0)
+def process_order_event(event: dict) -> None:
+    """注文イベントを処理する（自動リトライ付き）"""
+    inventory_service.reserve_stock(event["items"])
+</code></pre></div></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/bliki/CircuitBreaker.html" target="_blank">Martin Fowler — Circuit Breaker</a>
+<a class="ref-link" href="https://martinfowler.com/articles/patterns-of-distributed-systems/retry.html" target="_blank">Martin Fowler — Retry Pattern</a>
+</div></div></section>
+
+<!-- ═══ SECTION 11 ═══ -->
+<section class="section" id="sec-11">
+<div class="sec-header"><span class="sec-num">SECTION 11</span><span class="sec-icon">🔒</span><div><h2 class="sec-title">EDAのセキュリティ設計</h2><p class="sec-subtitle">認証・認可・暗号化・PII保護・監査ログ</p></div></div>
+<div class="subsec"><h3 class="subsec-title">11.1 EDAセキュリティの4レイヤー</h3>
+<div class="cg c2">
+<div class="card ac-red"><div class="card-icon">🔑</div><div class="card-title">認証（Authentication）</div><div class="card-desc">誰がイベントを発行しているかを検証する。<br><br><strong>実装手段：</strong> サービスアカウント、mTLS（相互TLS）、JWT/OAuth2トークン。各サービスに一意のIDを付与し、なりすましを防ぐ。</div></div>
+<div class="card ac-blue"><div class="card-icon">🛡️</div><div class="card-title">認可（Authorization）</div><div class="card-desc">何のトピックに書き込み・読み取りできるかを制御する。<br><br><strong>実装手段：</strong> KafkaのトピックレベルACL、IAMロールポリシー（AWS）。最小権限の原則を徹底する。</div></div>
+<div class="card ac-green"><div class="card-icon">🔐</div><div class="card-title">暗号化（Encryption）</div><div class="card-desc">転送中・保存中のデータを暗号化する。<br><br><strong>実装手段：</strong> TLS 1.2以上での転送暗号化、AES-256での保存時暗号化、PIIのフィールドレベル暗号化。</div></div>
+<div class="card ac-orange"><div class="card-icon">📋</div><div class="card-title">スキーマ検証 + 監査ログ</div><div class="card-desc">不正なイベントの注入を防ぐ。<br><br><strong>実装手段：</strong> Schema Registry（Confluent）でスキーマ検証。すべてのイベントの送受信を監査ログに記録しコンプライアンスを満たす。</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">11.2 個人情報（PII）の取り扱いパターン</h3>
+<div class="tw"><table>
+<thead><tr><th>PII種別</th><th>推奨対処</th><th>実装例</th></tr></thead>
+<tbody>
+<tr><td><strong>メールアドレス</strong></td><td>マスキング / トークン化</td><td><code>ya***@***.com</code> or <code>tok_email_abc123</code></td></tr>
+<tr><td><strong>クレジットカード番号</strong></td><td>トークン化（PCI DSS準拠）</td><td><code>tok_card_xyz789</code>（元番号はVaultに保管）</td></tr>
+<tr><td><strong>氏名</strong></td><td>フィールドレベル暗号化</td><td><code>[ENCRYPTED:aGVsbG8=...]</code></td></tr>
+<tr><td><strong>住所</strong></td><td>権限のあるサービスのみ復号化</td><td>配送サービスのみ復号キーを持つ</td></tr>
+</tbody></table></div>
+<div class="mbox danger"><div class="mbox-title">🚨 PIIをイベントに含める際の原則</div><p>イベントバスには多数のサービスがアクセスします。<strong>認可されていないサービスが読み取れる状態でPIIをペイロードに含めてはいけません。</strong>フィールドレベル暗号化またはトークン化を使用してください。</p></div></div></section>
+
+<!-- ═══ SECTION 12 ═══ -->
+<section class="section" id="sec-12">
+<div class="sec-header"><span class="sec-num">SECTION 12</span><span class="sec-icon">🔭</span><div><h2 class="sec-title">EDAの監視・オブザーバビリティ</h2><p class="sec-subtitle">メトリクス / ログ / 分散トレーシング の3本柱</p></div></div>
+<div class="subsec"><h3 class="subsec-title">12.1 可観測性の3本柱</h3>
+<div class="cg c3">
+<div class="card ac-blue"><div class="card-icon">📊</div><div class="card-title">メトリクス（Metrics）</div><div class="card-desc">数値で状態を把握する<br><br><strong>必須メトリクス：</strong><br>• イベント発行レート（件/秒）<br>• <strong>コンシューマーラグ（遅延件数）⚠️最重要</strong><br>• エラーレート（%）<br>• DLQメッセージ数<br>• 処理レイテンシ（p50/p95/p99）</div></div>
+<div class="card ac-green"><div class="card-icon">📝</div><div class="card-title">ログ（Logs）</div><div class="card-desc">イベントの詳細記録<br><br><strong>必須ログ項目：</strong><br>• event_id・event_type・occurred_at<br>• correlation_id（トレーシング用）<br>• 処理成功・失敗・スキップ記録<br>• スキーマ検証エラー詳細<br>• リトライ回数・DLQ送信記録</div></div>
+<div class="card ac-purple"><div class="card-icon">🔗</div><div class="card-title">分散トレーシング（Tracing）</div><div class="card-desc">イベントの流れを追跡<br><br><strong>実装ポイント：</strong><br>• <code>correlation_id</code>を全イベントに付与<br>• Jaeger / Zipkin / AWS X-Ray<br>• OpenTelemetry 標準を採用<br>• サービス間の処理フロー可視化<br>• ボトルネックの特定・解消</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">12.2 コンシューマーラグの重要性</h3>
+<div class="mbox warn"><div class="mbox-title">⚠️ コンシューマーラグ（Consumer Lag）は最重要メトリクス</div><p>コンシューマーラグとは「Kafkaに蓄積されているが、まだ処理されていないメッセージ数」です。<strong>ラグが増加し続ける</strong>場合、コンシューマーの処理速度がプロデューサーの発行速度に追いついていないことを意味します。閾値（例：10,000件）を設定してアラートを出し、コンシューマーのスケールアウトや処理チューニングを行います。<br><br><strong>監視ツール：</strong> Confluent Control Center、Grafana + Prometheus、Amazon CloudWatch（MSK使用時）</p></div></div>
+<div class="subsec"><h3 class="subsec-title">12.3 分散トレーシングのシーケンス</h3>
+<div class="diag-wrap"><div class="diag-title">correlation_id による全サービスを横断したトレーシング</div><div class="mermaid" id="d-tracing"></div></div></div>
+<div class="ref-box"><div class="ref-title">📚 参考文献</div><div class="ref-links">
+<a class="ref-link" href="https://www.jaegertracing.io/" target="_blank">Jaeger 分散トレーシング（CNCF）</a>
+<a class="ref-link" href="https://opentelemetry.io/" target="_blank">OpenTelemetry 公式</a>
+<a class="ref-link" href="https://grafana.com/" target="_blank">Grafana 公式</a>
+</div></div></section>
+
+<!-- ═══ SECTION 13 ═══ -->
+<section class="section" id="sec-13">
+<div class="sec-header"><span class="sec-num">SECTION 13</span><span class="sec-icon">🛒</span><div><h2 class="sec-title">EDA実践：ECサイト完全事例</h2><p class="sec-subtitle">注文・在庫・決済・配送・通知の完全なイベント駆動設計</p></div></div>
+<div class="subsec"><h3 class="subsec-title">13.1 システムアーキテクチャ全体図</h3>
+<div class="diag-wrap"><div class="diag-title">ECサイト全体アーキテクチャ（Frontend → API → Kafka → Workers → DataStores）</div><div class="mermaid" id="d-ec-arch"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">13.2 注文処理の完全なイベントフロー</h3>
+<div class="diag-wrap"><div class="diag-title">注文確定から配送手配までの非同期イベントフロー</div><div class="mermaid" id="d-ec-flow"></div></div></div>
+<div class="subsec"><h3 class="subsec-title">13.3 ECサイトの主要イベント一覧</h3>
+<div class="tw"><table>
+<thead><tr><th>イベント名</th><th>発行元</th><th>コンシューマー</th><th>トリガー</th></tr></thead>
+<tbody>
+<tr><td><code>OrderPlaced</code></td><td>注文サービス</td><td>在庫・決済・通知</td><td>注文確定ボタン押下</td></tr>
+<tr><td><code>StockReserved</code></td><td>在庫サービス</td><td>決済サービス</td><td>在庫引当完了</td></tr>
+<tr><td><code>StockReservationFailed</code></td><td>在庫サービス</td><td>注文サービス・通知</td><td>在庫不足</td></tr>
+<tr><td><code>PaymentCompleted</code></td><td>決済サービス</td><td>配送・通知</td><td>決済処理成功</td></tr>
+<tr><td><code>PaymentFailed</code></td><td>決済サービス</td><td>在庫（解放）・通知</td><td>決済処理失敗</td></tr>
+<tr><td><code>ShipmentCreated</code></td><td>配送サービス</td><td>注文・通知</td><td>配送手配完了</td></tr>
+<tr><td><code>OrderDelivered</code></td><td>配送サービス</td><td>注文・通知・分析</td><td>配送完了スキャン</td></tr>
+</tbody></table></div>
+<div class="mbox best"><div class="mbox-title">✅ ECサイトEDA設計のポイント</div><p>ユーザーには<strong>注文受付後すぐにorderIdを返却</strong>し、以降の処理（在庫確認・決済・配送）はすべて非同期で行います。ユーザーへの状態通知はWebSocket、Server-Sent Events、またはポーリングで行います。「注文ステータス」はイベントが到着するたびに更新する<strong>結果整合性モデル</strong>で設計します。</p></div></div></section>
+
+<!-- ═══ SECTION 14 ═══ -->
+<section class="section" id="sec-14">
+<div class="sec-header"><span class="sec-num">SECTION 14</span><span class="sec-icon">✅</span><div><h2 class="sec-title">EDAのベストプラクティス総まとめ</h2><p class="sec-subtitle">イベント設計・運用・スケール・EDA成熟度モデル</p></div></div>
+<div class="subsec"><h3 class="subsec-title">14.1 イベント設計のベストプラクティス</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>カテゴリ</th><th>ベストプラクティス</th><th>根拠</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><span class="tag blue">命名</span></td><td>過去形・英語で命名（<code>OrderPlaced</code>）</td><td>イベントは「起きた事実」を表す</td></tr>
+<tr><td>2</td><td><span class="tag green">ペイロード</span></td><td>自己完結型にする（必要な情報をすべて含める）</td><td>受信者がDBを参照しなくて済む</td></tr>
+<tr><td>3</td><td><span class="tag purple">スキーマ</span></td><td>バージョン管理を必ずする（<code>version: "1.0"</code>）</td><td>後方互換性を保ちながら進化させる</td></tr>
+<tr><td>4</td><td><span class="tag orange">信頼性</span></td><td>べき等性を保証する（重複処理しても同じ結果）</td><td>At-Least-Once配信に対応するため</td></tr>
+<tr><td>5</td><td><span class="tag blue">サイズ</span></td><td>1イベントは1MB以下を目安に</td><td>Kafkaデフォルト上限・ネットワーク効率</td></tr>
+<tr><td>6</td><td><span class="tag green">メタデータ</span></td><td><code>event_id</code>・<code>occurred_at</code>・<code>correlation_id</code>を必ず付与</td><td>トレーシング・デバッグに必須</td></tr>
+</tbody></table></div></div>
+<div class="subsec"><h3 class="subsec-title">14.2 運用のベストプラクティス</h3>
+<div class="cg c2">
+<div class="card ac-green"><div class="card-icon">🛡️</div><div class="card-title">信頼性</div><div class="card-desc"><ul class="bp-list">
+<li><span class="bp-icon">✅</span>DLQを必ず設定し、メッセージ数を監視する</li>
+<li><span class="bp-icon">✅</span>リトライは指数バックオフ＋ジッターを使用する</li>
+<li><span class="bp-icon">✅</span>コンシューマーはべき等に実装する</li>
+<li><span class="bp-icon">✅</span>サーキットブレーカーを導入する</li>
+</ul></div></div>
+<div class="card ac-blue"><div class="card-icon">📈</div><div class="card-title">スケーラビリティ</div><div class="card-desc"><ul class="bp-list">
+<li><span class="bp-icon">✅</span>パーティション数はコンシューマー数の倍を目安に</li>
+<li><span class="bp-icon">✅</span>コンシューマーグループで水平スケールする</li>
+<li><span class="bp-icon">✅</span>ホットパーティションを避ける（キー設計を工夫）</li>
+<li><span class="bp-icon">✅</span>コンシューマーラグを常時監視する</li>
+</ul></div></div>
+<div class="card ac-orange"><div class="card-icon">🔒</div><div class="card-title">セキュリティ</div><div class="card-desc"><ul class="bp-list">
+<li><span class="bp-icon">✅</span>TLS 1.2以上での転送暗号化を徹底する</li>
+<li><span class="bp-icon">✅</span>最小権限のACLを設定する</li>
+<li><span class="bp-icon">✅</span>PIIはフィールドレベルで暗号化する</li>
+<li><span class="bp-icon">✅</span>スキーマ検証で不正イベントを排除する</li>
+</ul></div></div>
+<div class="card ac-purple"><div class="card-icon">📐</div><div class="card-title">スキーマ管理</div><div class="card-desc"><ul class="bp-list">
+<li><span class="bp-icon">✅</span>Schema Registryを導入する</li>
+<li><span class="bp-icon">✅</span>破壊的変更は並行運用（3ヶ月）で移行する</li>
+<li><span class="bp-icon">✅</span>後方互換性テストを自動化する</li>
+<li><span class="bp-icon">✅</span>フィールド追加は後方互換なので自由に行える</li>
+</ul></div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">14.3 EDA成熟度モデル</h3>
+<div class="maturity-list">
+<div class="maturity-item"><div class="maturity-lv" style="background:var(--rdd);color:var(--rd)">Lv.0</div><div class="maturity-text"><strong>同期API連携</strong> — サービス間の直接HTTP呼び出し。密結合の出発点。</div></div>
+<div class="maturity-item"><div class="maturity-lv" style="background:var(--ord);color:var(--or)">Lv.1</div><div class="maturity-text"><strong>基本的なキュー導入</strong> — 非同期処理にキューを使用（RabbitMQ / SQS）。</div></div>
+<div class="maturity-item"><div class="maturity-lv" style="background:rgba(251,191,36,0.1);color:#fbbf24">Lv.2</div><div class="maturity-text"><strong>Pub/Sub パターン</strong> — 複数コンシューマーへの配信（Kafka / EventBridge）。</div></div>
+<div class="maturity-item"><div class="maturity-lv" style="background:var(--gnd);color:var(--gn)">Lv.3</div><div class="maturity-text"><strong>イベントストリーミング</strong> — イベントの永続化・再生（Kafka + Consumer Groups）。</div></div>
+<div class="maturity-item"><div class="maturity-lv" style="background:var(--acd);color:var(--ac)">Lv.4</div><div class="maturity-text"><strong>Event Sourcing + CQRS</strong> — イベントを唯一の真実とし読み書きを完全分離。</div></div>
+<div class="maturity-item"><div class="maturity-lv" style="background:var(--pud);color:var(--pu)">Lv.5</div><div class="maturity-text"><strong>Real-time Streaming Platform</strong> — リアルタイム分析・ML統合・完全な可観測性・自動スケール。</div></div>
+</div></div></section>
+
+<!-- ═══ SECTION 15 ═══ -->
+<section class="section" id="sec-15">
+<div class="sec-header"><span class="sec-num">SECTION 15</span><span class="sec-icon">⚠️</span><div><h2 class="sec-title">EDAのアンチパターン</h2><p class="sec-subtitle">やってはいけない設計と、その修正方法</p></div></div>
+<div class="subsec"><h3 class="subsec-title">15.1 主要な4つのアンチパターン</h3>
+<div class="ap-grid">
+<div class="ap-box ap-bad"><div class="ap-bad-title">❌ Anti-Pattern 1: Event Sourcingの乱用</div><div class="ap-desc">すべてのデータにEvent Sourcingを適用してしまう。シンプルなCRUD（ユーザー設定、マスタデータ）に適用しても過剰な複雑さを生むだけで、メリットはほとんどない。</div></div>
+<div class="ap-box ap-fix"><div class="ap-fix-title">✅ 解決策</div><div class="ap-desc">複雑なビジネスロジックを持つ集約（注文、取引）のみに限定する。参照データ・マスタデータには通常のRDBを使用する。「本当にイベント履歴が必要か？」を常に問う。</div></div>
+<div class="ap-box ap-bad"><div class="ap-bad-title">❌ Anti-Pattern 2: Chatty Events（過剰なイベント）</div><div class="ap-desc">細かすぎるイベントを大量に発行する。<code>UserFirstNameChanged</code>と<code>UserLastNameChanged</code>を別々に発行→受信者が毎回複数の更新処理が必要になる。</div></div>
+<div class="ap-box ap-fix"><div class="ap-fix-title">✅ 解決策</div><div class="ap-desc">ビジネス上意味のある粒度に統合する。<code>UserProfileUpdated</code>として変更されたフィールドをまとめてペイロードに含める。「ビジネスとして何が起きたか」を1イベントで表現する。</div></div>
+<div class="ap-box ap-bad"><div class="ap-bad-title">❌ Anti-Pattern 3: Synchronous Thinking（同期的な思考）</div><div class="ap-desc">EDAを採用しているのに同期的な応答を期待する設計。在庫サービスの完了を待つ実装→EDAのメリットを打ち消す。結果整合性を理解していない。</div></div>
+<div class="ap-box ap-fix"><div class="ap-fix-title">✅ 解決策</div><div class="ap-desc">結果整合性（Eventual Consistency）をUX設計に組み込む。注文確定後はorderId返却のみ行い、ステータス更新はWebSocket/SSE/ポーリングで通知する設計にする。</div></div>
+<div class="ap-box ap-bad"><div class="ap-bad-title">❌ Anti-Pattern 4: God Event（神イベント）</div><div class="ap-desc">1つのイベントに50以上のフィールドを詰め込む<code>OrderSuperEvent</code>→スキーマ変更の影響が甚大になり、受信者が不要なデータを受け取る。</div></div>
+<div class="ap-box ap-fix"><div class="ap-fix-title">✅ 解決策</div><div class="ap-desc">責務を分割した複数のイベントに分ける。<code>OrderPlaced</code>、<code>PaymentProcessed</code>、<code>ShipmentCreated</code>を別々のイベントとして発行する。各イベントは自己完結型を保つ。</div></div>
+</div></div>
+<div class="subsec"><h3 class="subsec-title">15.2 アーキテクチャ健全性チェックフロー</h3>
+<div class="diag-wrap"><div class="diag-title">EDAアンチパターン判定フロー — 4つの確認ポイント</div><div class="mermaid" id="d-ap-check"></div></div></div></section>
+
+<!-- ═══ SECTION 16 ═══ -->
+<section class="section" id="sec-16">
+<div class="sec-header"><span class="sec-num">SECTION 16</span><span class="sec-icon">📚</span><div><h2 class="sec-title">参考文献・ソース一覧</h2><p class="sec-subtitle">公式ドキュメント・書籍・チュートリアル</p></div></div>
+<div class="subsec"><h3 class="subsec-title">16.1 必読書籍</h3>
+<div class="tw"><table>
+<thead><tr><th>タイトル</th><th>著者</th><th>難易度</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><strong>Designing Event-Driven Systems</strong></td><td>Ben Stopford</td><td><span class="tag blue">★★★☆☆</span></td><td>KafkaベースのEDA設計（Confluentより無料PDF配布）</td></tr>
+<tr><td><strong>Building Event-Driven Microservices</strong></td><td>Adam Bellemare</td><td><span class="tag orange">★★★★☆</span></td><td>EDAとマイクロサービスの実践・Kafka中心</td></tr>
+<tr><td><strong>Designing Data-Intensive Applications</strong></td><td>Martin Kleppmann</td><td><span class="tag red">★★★★★</span></td><td>ストリーミング処理・分散システムの決定版教科書</td></tr>
+<tr><td><strong>Enterprise Integration Patterns</strong></td><td>Hohpe &amp; Woolf</td><td><span class="tag orange">★★★★☆</span></td><td>メッセージングパターンの原典・名著</td></tr>
+<tr><td><strong>Implementing Domain-Driven Design</strong></td><td>Vaughn Vernon</td><td><span class="tag orange">★★★★☆</span></td><td>DDD × EDAの統合・ドメインイベント設計</td></tr>
+</tbody></table></div></div>
+<div class="subsec"><h3 class="subsec-title">16.2 公式ドキュメント・ URL</h3>
+<div class="ref-box"><div class="ref-title">🔗 EDAコア概念</div><div class="ref-links">
+<a class="ref-link" href="https://martinfowler.com/articles/201701-event-driven.html" target="_blank">Event-Driven Architecture — Martin Fowler</a>
+<a class="ref-link" href="https://martinfowler.com/eaaDev/EventSourcing.html" target="_blank">Event Sourcing — Martin Fowler</a>
+<a class="ref-link" href="https://martinfowler.com/bliki/CQRS.html" target="_blank">CQRS — Martin Fowler</a>
+<a class="ref-link" href="https://martinfowler.com/articles/patterns-of-distributed-systems/saga.html" target="_blank">Saga Pattern — Martin Fowler</a>
+<a class="ref-link" href="https://martinfowler.com/bliki/CircuitBreaker.html" target="_blank">Circuit Breaker — Martin Fowler</a>
+<a class="ref-link" href="https://cloudevents.io/" target="_blank">CloudEvents 仕様（CNCF）</a>
+<a class="ref-link" href="https://www.enterpriseintegrationpatterns.com/" target="_blank">Enterprise Integration Patterns</a>
+</div></div>
+<div class="ref-box"><div class="ref-title">🔗 Apache Kafka</div><div class="ref-links">
+<a class="ref-link" href="https://kafka.apache.org/documentation/" target="_blank">Apache Kafka 公式ドキュメント</a>
+<a class="ref-link" href="https://developer.confluent.io/learn-kafka/" target="_blank">Confluent Kafka チュートリアル</a>
+<a class="ref-link" href="https://www.confluent.io/designing-event-driven-systems/" target="_blank">Designing Event-Driven Systems（無料書籍PDF）</a>
+<a class="ref-link" href="https://kafka-python.readthedocs.io/" target="_blank">kafka-python ドキュメント</a>
+<a class="ref-link" href="https://docs.confluent.io/platform/current/kafka/monitoring.html" target="_blank">Kafka Monitoring — Confluent</a>
+</div></div>
+<div class="ref-box"><div class="ref-title">🔗 AWSイベントサービス</div><div class="ref-links">
+<a class="ref-link" href="https://aws.amazon.com/eventbridge/" target="_blank">AWS EventBridge</a>
+<a class="ref-link" href="https://aws.amazon.com/sqs/" target="_blank">Amazon SQS</a>
+<a class="ref-link" href="https://aws.amazon.com/sns/" target="_blank">Amazon SNS</a>
+<a class="ref-link" href="https://aws.amazon.com/kinesis/" target="_blank">Amazon Kinesis</a>
+<a class="ref-link" href="https://aws.amazon.com/step-functions/" target="_blank">AWS Step Functions</a>
+</div></div>
+<div class="ref-box"><div class="ref-title">🔗 Event Sourcing / CQRS / Observability</div><div class="ref-links">
+<a class="ref-link" href="https://www.eventstore.com/" target="_blank">EventStoreDB 公式</a>
+<a class="ref-link" href="https://developer.axoniq.io/" target="_blank">Axon Framework（Java CQRS/ES）</a>
+<a class="ref-link" href="https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf" target="_blank">Greg Young — CQRS Documents</a>
+<a class="ref-link" href="https://www.jaegertracing.io/" target="_blank">Jaeger 分散トレーシング</a>
+<a class="ref-link" href="https://opentelemetry.io/" target="_blank">OpenTelemetry 公式</a>
+<a class="ref-link" href="https://grafana.com/" target="_blank">Grafana 公式</a>
+</div></div></div></section>
+</main>
+<script>
+// ─── Mermaid 初期化 ───
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  themeVariables: {
+    background: '#0d1f35',
+    primaryColor: '#12263f',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: 'rgba(255,255,255,0.12)',
+    lineColor: '#00d4ff',
+    secondaryColor: '#163352',
+    tertiaryColor: '#0d1f35',
+    edgeLabelBackground: '#0d1f35',
+    nodeTextColor: '#e2e8f0',
+    clusterBkg: '#0a1929',
+    clusterBorder: 'rgba(0,212,255,0.25)',
+    titleColor: '#00d4ff',
+    fontFamily: "'Inter','Noto Sans JP',sans-serif",
+    fontSize: '13px'
+  },
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+  sequence: { useMaxWidth: true, actorFontFamily: 'Inter', messageFontFamily: 'Inter', noteFontFamily: 'Inter' },
+  stateDiagram: { useMaxWidth: true }
+});
+
+// ─── 全ダイアグラム定義 ───
+const diagrams = {
+
+  'd-eda-vs-req': `flowchart TD
+    subgraph REQ["❌ リクエスト駆動型（従来）"]
+      direction LR
+      RC["クライアント"] -->|"①注文作成"| RO["注文サービス"]
+      RO -->|"②在庫減らして"| RS["在庫サービス"]
+      RO -->|"③決済して"| RP["決済サービス"]
+      RO -->|"④メール送って"| RN["通知サービス"]
+      RO -->|"⑤配送手配"| RD["配送サービス"]
+    end
+    subgraph EDA["✅ イベント駆動型（EDA）"]
+      direction LR
+      EC["クライアント"] -->|"注文確定"| EO["注文サービス"]
+      EO -->|"OrderPlacedEvent 発行"| EB["イベントバス\\nEvent Bus"]
+      EB -->|"購読"| ES["在庫サービス"]
+      EB -->|"購読"| EP["決済サービス"]
+      EB -->|"購読"| EN["通知サービス"]
+      EB -->|"購読"| ED["配送サービス"]
+    end
+    style REQ fill:#1a0a0a,stroke:#ef4444
+    style EDA fill:#0a1a0a,stroke:#10b981
+    style EB fill:#f59e0b,color:#000`,
+
+  'd-usecases': `flowchart LR
+    ROOT(["⚡ EDA 適用\nユースケース"])
+
+    RT["🔴 リアルタイム処理"]
+    RT1["📊 リアルタイム分析\n・ダッシュボード"]
+    RT2["🌐 IoT センサー\nデータ処理"]
+    RT3["📈 株価・為替\nストリーム処理"]
+
+    MS["🟢 マイクロサービス連携"]
+    MS1["🛒 注文処理\nワークフロー"]
+    MS2["📦 在庫・配送\n・通知の連携"]
+    MS3["👤 ユーザー行動\nログ収集"]
+
+    BG["🟣 非同期バックグラウンド"]
+    BG1["📧 メール・プッシュ\n通知送信"]
+    BG2["📄 レポート\n・帳票生成"]
+    BG3["🎬 画像・動画の\n変換処理"]
+
+    SI["🟠 システム統合"]
+    SI1["🏛️ レガシー\nシステム連携"]
+    SI2["🔗 サードパーティ\nAPI 連携"]
+    SI3["☁️ マルチクラウド\n間同期"]
+
+    ROOT --> RT
+    ROOT --> MS
+    ROOT --> BG
+    ROOT --> SI
+
+    RT --> RT1
+    RT --> RT2
+    RT --> RT3
+
+    MS --> MS1
+    MS --> MS2
+    MS --> MS3
+
+    BG --> BG1
+    BG --> BG2
+    BG --> BG3
+
+    SI --> SI1
+    SI --> SI2
+    SI --> SI3
+
+    style ROOT fill:#0f3460,stroke:#00d4ff,stroke-width:3px,color:#00d4ff,font-weight:bold
+    style RT fill:#3b0d0d,stroke:#ef4444,stroke-width:2px,color:#fca5a5,font-weight:bold
+    style RT1 fill:#1a0808,stroke:#ef4444,color:#fca5a5
+    style RT2 fill:#1a0808,stroke:#ef4444,color:#fca5a5
+    style RT3 fill:#1a0808,stroke:#ef4444,color:#fca5a5
+    style MS fill:#0d3b1a,stroke:#10b981,stroke-width:2px,color:#6ee7b7,font-weight:bold
+    style MS1 fill:#071a0d,stroke:#10b981,color:#6ee7b7
+    style MS2 fill:#071a0d,stroke:#10b981,color:#6ee7b7
+    style MS3 fill:#071a0d,stroke:#10b981,color:#6ee7b7
+    style BG fill:#1e0d3b,stroke:#8b5cf6,stroke-width:2px,color:#c4b5fd,font-weight:bold
+    style BG1 fill:#0d0718,stroke:#8b5cf6,color:#c4b5fd
+    style BG2 fill:#0d0718,stroke:#8b5cf6,color:#c4b5fd
+    style BG3 fill:#0d0718,stroke:#8b5cf6,color:#c4b5fd
+    style SI fill:#3b2000,stroke:#f59e0b,stroke-width:2px,color:#fcd34d,font-weight:bold
+    style SI1 fill:#1a0f00,stroke:#f59e0b,color:#fcd34d
+    style SI2 fill:#1a0f00,stroke:#f59e0b,color:#fcd34d
+    style SI3 fill:#1a0f00,stroke:#f59e0b,color:#fcd34d`,
+
+  'd-components': `flowchart LR
+    P["📤 プロデューサー\\n注文サービス / センサー"] -->|"① イベント発行"| B["🔀 ブローカー\\nKafka / EventBridge"]
+    B -->|"② イベント配信"| C1["📥 在庫サービス"]
+    B -->|"② イベント配信"| C2["📥 決済サービス"]
+    B -->|"② イベント配信"| C3["📥 通知サービス"]
+    C1 -->|"③ 新イベント発行"| B
+    style P fill:#1e3a5f,color:#e2e8f0
+    style B fill:#92400e,color:#fde68a
+    style C1 fill:#14532d,color:#e2e8f0
+    style C2 fill:#14532d,color:#e2e8f0
+    style C3 fill:#14532d,color:#e2e8f0`,
+
+  'd-schema-evolution': `flowchart LR
+    subgraph V1["イベント v1.0"]
+      V1D["order_id: string\\ncustomer_id: string\\ntotal: number"]
+    end
+    subgraph V2["イベント v2.0 ✅ 後方互換"]
+      V2D["order_id: string\\ncustomer_id: string\\ntotal: number\\ncurrency: string ← 追加\\nitems: array ← 追加"]
+    end
+    subgraph V3["イベント v3.0 ⚠️ 破壊的変更"]
+      V3D["order_id: string\\ncustomer_id: string\\ntotal_amount: number ← 名称変更\\ncurrency: string\\nitems: array"]
+    end
+    V1 -->|"フィールド追加のみ\\n後方互換OK"| V2
+    V2 -->|"フィールド名変更\\n並行運用が必要"| V3
+    style V1 fill:#1e3a5f
+    style V2 fill:#14532d
+    style V3 fill:#78350f`,
+
+  'd-broker-select': `flowchart TD
+    START["ブローカー選定を開始"]
+    Q1{"AWSを主に\\n使用しているか？"}
+    Q2{"イベントを\\n再生・保存したいか？"}
+    Q3{"スループットが\\n秒間100万件以上か？"}
+    Q4{"GCPを主に\\n使用しているか？"}
+    Q5{"複雑なルーティング\\nロジックが必要か？"}
+    EB["✅ AWS EventBridge\\nサーバーレス・マネージド"]
+    KN["✅ Amazon Kinesis\\nAWS リアルタイムストリーミング"]
+    KF["✅ Apache Kafka\\n高スループット・永続化"]
+    RQ["✅ RabbitMQ\\n柔軟なメッセージルーティング"]
+    PS["✅ Google Cloud Pub/Sub\\nGCP マネージドストリーミング"]
+    START --> Q1
+    Q1 -->|"Yes"| Q2
+    Q1 -->|"No"| Q4
+    Q2 -->|"Yes（ストリーミング）"| KN
+    Q2 -->|"No（シンプルキュー）"| EB
+    Q4 -->|"Yes"| PS
+    Q4 -->|"No（オンプレ/マルチ）"| Q5
+    Q5 -->|"Yes"| RQ
+    Q5 -->|"No"| Q3
+    Q3 -->|"Yes"| KF
+    Q3 -->|"No"| RQ
+    style EB fill:#14532d
+    style KN fill:#14532d
+    style KF fill:#14532d
+    style RQ fill:#14532d
+    style PS fill:#14532d`,
+
+  'd-mediator': `flowchart TD
+    I["🚀 OrderPlacedEvent\\n（注文確定）"]
+    M["🎯 仲介者\\nEvent Mediator\\n（AWS Step Functions）"]
+    P1["⚙️ 在庫確認"]
+    P2["💳 決済処理"]
+    P3["📧 通知送信"]
+    P4["🚚 配送手配"]
+    I --> M
+    M -->|"① 在庫確認イベント"| P1
+    P1 -->|"在庫確認完了"| M
+    M -->|"② 決済イベント"| P2
+    P2 -->|"決済完了"| M
+    M -->|"③ 通知イベント"| P3
+    M -->|"④ 配送イベント"| P4
+    style M fill:#7f1d1d,color:#fca5a5
+    style I fill:#1e3a5f,color:#e2e8f0`,
+
+  'd-broker-topology': `flowchart LR
+    OS["📦 注文サービス"]
+    BK["🔀 イベントブローカー\\nKafka / EventBridge"]
+    ST["🏭 在庫サービス\\nOrderPlaced → 在庫引当\\n→ StockReserved 発行"]
+    PS["💳 決済サービス\\nOrderPlaced → 決済処理\\n→ PaymentProcessed 発行"]
+    NS["📧 通知サービス\\nOrderPlaced → メール送信"]
+    SH["🚚 配送サービス\\nPaymentProcessed → 配送手配\\n→ ShipmentCreated 発行"]
+    OS -->|"OrderPlacedEvent"| BK
+    BK -->|"購読"| ST
+    BK -->|"購読"| PS
+    BK -->|"購読"| NS
+    ST -->|"StockReservedEvent"| BK
+    PS -->|"PaymentProcessedEvent"| BK
+    BK -->|"購読"| SH
+    style OS fill:#1e3a5f
+    style BK fill:#92400e,color:#fde68a
+    style SH fill:#4c1d95`,
+
+  'd-saga': `sequenceDiagram
+    participant CLI as クライアント
+    participant ORD as 注文サービス
+    participant STK as 在庫サービス
+    participant PAY as 決済サービス
+    participant SHP as 配送サービス
+    Note over ORD,SHP: 正常フロー
+    CLI->>ORD: 注文作成リクエスト
+    ORD-->>CLI: orderId 返却（即座）
+    ORD--)STK: OrderCreatedEvent
+    STK->>STK: 在庫引当
+    STK--)PAY: StockReservedEvent
+    PAY->>PAY: 決済処理
+    PAY--)SHP: PaymentCompletedEvent
+    SHP->>SHP: 配送手配
+    SHP--)ORD: ShipmentCreatedEvent
+    ORD->>ORD: ステータス → CONFIRMED
+    Note over ORD,SHP: 補償トランザクション（決済失敗時）
+    PAY-xPAY: 決済失敗！
+    PAY--)STK: PaymentFailedEvent
+    STK->>STK: 在庫引当を解除（補償）
+    STK--)ORD: StockReleasedEvent
+    ORD->>ORD: ステータス → CANCELLED`,
+
+  'd-kafka-arch': `flowchart TD
+    subgraph PROD["📤 プロデューサー群"]
+      P1["注文サービス"]
+      P2["在庫サービス"]
+      P3["ユーザーサービス"]
+    end
+    subgraph KC["🔶 Kafka クラスター"]
+      subgraph B1["Broker 1"]
+        T1["orders P0\\n(Leader)"]
+        T2["orders P1\\n(Follower)"]
+      end
+      subgraph B2["Broker 2"]
+        T3["orders P0\\n(Follower)"]
+        T4["orders P1\\n(Leader)"]
+      end
+      ZK["ZooKeeper / KRaft\\nクラスター管理"]
+    end
+    subgraph CONS["📥 コンシューマーグループ"]
+      CG1["分析サービス\\nGroup: analytics"]
+      CG2["通知ワーカー1\\nGroup: notification"]
+      CG3["通知ワーカー2\\nGroup: notification"]
+    end
+    P1 --> T1
+    P2 --> T2
+    P3 --> T4
+    T1 --> CG1
+    T4 --> CG1
+    T1 --> CG2
+    T4 --> CG3
+    B1 <-->|"レプリケーション"| B2
+    ZK <--> B1
+    ZK <--> B2
+    style KC fill:#0a1a0a,stroke:#f59e0b
+    style ZK fill:#7f1d1d,color:#fca5a5`,
+
+  'd-eventbridge': `flowchart TD
+    subgraph SRC["📤 イベントソース"]
+      A1["AWSサービス\\nEC2/S3/RDS"]
+      A2["カスタムアプリ\\nマイクロサービス"]
+      A3["SaaSパートナー\\nSalesforce/Zendesk"]
+    end
+    subgraph EB["☁️ AWS EventBridge"]
+      BUS["🚌 イベントバス\\nDefault / Custom / Partner"]
+      RULE["📋 イベントルール\\nJSONパターンマッチング"]
+      SCH["📐 スキーマレジストリ\\nスキーマ検証・コード生成"]
+    end
+    subgraph TGT["📥 ターゲット"]
+      LM["⚡ Lambda"]
+      SQ["📬 SQS"]
+      SN["📣 SNS"]
+      SF["🔄 Step Functions"]
+      KN["📊 Kinesis"]
+    end
+    A1 --> BUS
+    A2 --> BUS
+    A3 --> BUS
+    BUS --> RULE
+    RULE --> LM
+    RULE --> SQ
+    RULE --> SN
+    RULE --> SF
+    RULE --> KN
+    BUS <--> SCH
+    style EB fill:#451a03,stroke:#f59e0b
+    style BUS fill:#78350f,color:#fde68a
+    style RULE fill:#78350f,color:#fde68a`,
+
+  'd-event-sourcing': `flowchart LR
+    subgraph TRAD["❌ 従来の状態保存"]
+      TD["注文テーブル\\nstatus: CANCELLED\\ntotal: 15000\\n過去の経緯は不明"]
+    end
+    subgraph ES["✅ イベントソーシング"]
+      E1["OrderCreated\\n2024-01-01 10:00"]
+      E2["ItemAdded\\n2024-01-01 10:01"]
+      E3["OrderConfirmed\\n2024-01-01 10:05"]
+      E4["PaymentCompleted\\n2024-01-01 10:10"]
+      E5["OrderCancelled\\n2024-01-05 15:00"]
+      E1 --> E2 --> E3 --> E4 --> E5
+      RB["🔄 イベントを再生して\\n現在の状態を再構築\\n(完全な監査ログ・タイムトラベル)"]
+      E5 --> RB
+    end
+    style TRAD fill:#1a0a0a,stroke:#ef4444
+    style ES fill:#0a1a0a,stroke:#10b981
+    style E5 fill:#7f1d1d,color:#fca5a5`,
+
+  'd-cqrs': `flowchart TD
+    subgraph WR["✍️ 書き込みサイド（Command）"]
+      CMD["コマンド\\nCreateOrder / CancelOrder"]
+      AGG["集約\\nOrderAggregate"]
+      ESS["イベントストア\\n(Event Sourcing)"]
+      EVP["イベント発行\\nOrderPlacedEvent"]
+      CMD --> AGG --> ESS
+      AGG --> EVP
+    end
+    subgraph BUS2["🔀 イベントバス（Kafka）"]
+      BN["イベントバス"]
+    end
+    subgraph RD["📖 読み取りサイド（Query）"]
+      PR1["プロジェクション 1\\n注文サマリー\\n(PostgreSQL)"]
+      PR2["プロジェクション 2\\n顧客注文履歴\\n(Elasticsearch)"]
+      PR3["プロジェクション 3\\n売上分析\\n(Redis)"]
+      QA["クエリ API\\nGET /orders/:id"]
+    end
+    EVP --> BN
+    BN --> PR1
+    BN --> PR2
+    BN --> PR3
+    PR1 --> QA
+    PR2 --> QA
+    PR3 --> QA
+    style WR fill:#1e3a5f,stroke:#00d4ff
+    style BUS2 fill:#451a03,stroke:#f59e0b
+    style RD fill:#0a1a0a,stroke:#10b981`,
+
+  'd-dlq': `flowchart LR
+    PR["📤 プロデューサー"]
+    MQ["📬 メインキュー"]
+    CS["📥 コンシューマー"]
+    DLQ["💀 Dead Letter Queue\\n処理失敗メッセージを格納"]
+    AL["🔔 アラート\\nCloudWatch / PagerDuty"]
+    DH["🔧 DLQ ハンドラー\\n手動確認・修正・再投入"]
+    PR -->|"メッセージ発行"| MQ
+    MQ -->|"配信"| CS
+    CS -->|"✅ 処理成功 ACK"| MQ
+    CS -->|"❌ 3回リトライ後に失敗"| DLQ
+    DLQ --> AL
+    DLQ --> DH
+    DH -->|"修正後に再投入"| MQ
+    style DLQ fill:#7f1d1d,color:#fca5a5
+    style AL fill:#78350f,color:#fde68a
+    style DH fill:#1e3a5f`,
+
+  'd-circuit-breaker': `stateDiagram-v2
+    [*] --> CLOSED : 初期状態
+    CLOSED --> CLOSED : ✅ 処理成功
+    CLOSED --> OPEN : ❌ 失敗率がしきい値超過\\n（例：5秒間に50%失敗）
+    OPEN --> OPEN : 🚫 すべてのリクエストを即拒否\\nフォールバックを返す
+    OPEN --> HALF_OPEN : ⏱️ タイムアウト後\\n（例：30秒経過）
+    HALF_OPEN --> CLOSED : ✅ テスト成功\\nサービス回復
+    HALF_OPEN --> OPEN : ❌ テスト失敗\\nまだ回復していない`,
+
+  'd-tracing': `sequenceDiagram
+    participant CLI as クライアント
+    participant API as 注文 API
+    participant KFK as Kafka
+    participant STK as 在庫ワーカー
+    participant PAY as 決済ワーカー
+    participant JGR as Jaeger / Zipkin
+    Note over CLI,JGR: correlation_id: trace-abc-123 で全体を追跡
+    CLI->>API: POST /orders [trace-abc-123]
+    API->>JGR: Span: order-api-create
+    API->>KFK: OrderPlacedEvent [trace-abc-123]
+    KFK-->>API: ack
+    KFK->>STK: OrderPlacedEvent [trace-abc-123]
+    STK->>JGR: Span: stock-worker-reserve
+    STK->>KFK: StockReservedEvent [trace-abc-123]
+    KFK->>PAY: StockReservedEvent [trace-abc-123]
+    PAY->>JGR: Span: payment-worker-process
+    Note over JGR: 全スパンを統合してトレース全体を可視化`,
+
+  'd-ec-arch': `flowchart TD
+    subgraph FE["🖥️ フロントエンド"]
+      WEB["Web App (React)"]
+      MOB["Mobile App (iOS/Android)"]
+    end
+    subgraph API["🌐 API レイヤー"]
+      GW["API Gateway\\n(認証・レート制限)"]
+      OA["注文 API"]
+      PA["商品 API"]
+    end
+    subgraph EVL["⚡ イベントレイヤー（Apache Kafka）"]
+      TO["Topic: orders\\nPartitions: 12"]
+      TP["Topic: payments\\nPartitions: 6"]
+      TI["Topic: inventory\\nPartitions: 6"]
+    end
+    subgraph WK["⚙️ イベントワーカー"]
+      IW["在庫ワーカー\\n(Kubernetes)"]
+      PW["決済ワーカー\\n(Kubernetes)"]
+      NW["通知ワーカー\\n(Lambda)"]
+      SW["配送ワーカー\\n(Kubernetes)"]
+      AW["分析ワーカー\\n(Spark Streaming)"]
+    end
+    subgraph DS["🗄️ データストア"]
+      ODB["注文 DB\\n(PostgreSQL)"]
+      RDB["読み取り DB\\n(Elasticsearch)"]
+      DWH["DWH\\n(Snowflake)"]
+    end
+    WEB & MOB --> GW --> OA & PA
+    OA -->|"OrderPlacedEvent"| TO
+    TO --> IW & PW & NW
+    IW -->|"StockReservedEvent"| TI
+    PW -->|"PaymentCompletedEvent"| TP
+    TP --> SW & NW
+    TO & TP & TI --> AW
+    IW --> ODB
+    AW --> DWH
+    OA & PA --> RDB
+    style EVL fill:#0a1a0a,stroke:#f59e0b
+    style API fill:#0a0a2a,stroke:#00d4ff
+    style WK fill:#0a1a0a,stroke:#10b981`,
+
+  'd-ec-flow': `sequenceDiagram
+    participant USR as ユーザー
+    participant ORD as 注文サービス
+    participant KFK as Kafka
+    participant STK as 在庫サービス
+    participant PAY as 決済サービス
+    participant SHP as 配送サービス
+    participant NTF as 通知サービス
+    USR->>ORD: 注文確定ボタンをクリック
+    ORD->>ORD: 注文を作成（PENDING）
+    ORD-->>USR: orderId 返却（即座）
+    ORD--)KFK: OrderPlacedEvent
+    Note right of KFK: 非同期処理開始
+    par 並行処理
+      KFK--)STK: OrderPlacedEvent
+      STK->>STK: 在庫確認・引当
+      STK--)KFK: StockReservedEvent
+    and
+      KFK--)NTF: OrderPlacedEvent
+      NTF->>USR: 注文受付確認メール
+    end
+    KFK--)PAY: StockReservedEvent
+    PAY->>PAY: 決済処理
+    PAY--)KFK: PaymentCompletedEvent
+    par 並行処理
+      KFK--)SHP: PaymentCompletedEvent
+      SHP->>SHP: 配送手配
+      SHP--)KFK: ShipmentCreatedEvent
+    and
+      KFK--)NTF: PaymentCompletedEvent
+      NTF->>USR: 決済完了・発送準備メール
+    end
+    KFK--)ORD: ShipmentCreatedEvent
+    ORD->>ORD: ステータス → SHIPPED`,
+
+  'd-ap-check': `flowchart TD
+    S["EDA アーキテクチャ健全性チェック"]
+    Q1{"コンシューマーが\\nイベント処理後に\\nDBを頻繁に参照？"}
+    Q2{"1つのイベントに\\n50フィールド以上？"}
+    Q3{"DLQ にメッセージが\\n毎日大量に溜まる？"}
+    Q4{"コンシューマーラグが\\n常時1000件以上？"}
+    F1["📦 ペイロードを自己完結型に\\n必要な情報をイベントに含める"]
+    F2["✂️ イベントを適切な粒度に分割\\n責務ごとに別イベントへ"]
+    F3["🔧 べき等性とリトライ処理を改善\\nDLQ分析でパターンを特定"]
+    F4["📈 コンシューマーをスケールアウト\\nパーティション数とインスタンス数を増やす"]
+    OK["✅ 健全な EDA アーキテクチャ"]
+    S --> Q1
+    Q1 -->|"Yes"| F1
+    Q1 -->|"No"| Q2
+    Q2 -->|"Yes"| F2
+    Q2 -->|"No"| Q3
+    Q3 -->|"Yes"| F3
+    Q3 -->|"No"| Q4
+    Q4 -->|"Yes"| F4
+    Q4 -->|"No"| OK
+    style OK fill:#14532d,color:#d1fae5
+    style F1 fill:#1e3a5f
+    style F2 fill:#1e3a5f
+    style F3 fill:#1e3a5f
+    style F4 fill:#1e3a5f`
+};
+
+// ─── Mermaid レンダリング ───
+async function renderAllDiagrams() {
+  for (const [id, definition] of Object.entries(diagrams)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    try {
+      const { svg } = await mermaid.render('g-' + id, definition);
+      el.innerHTML = svg;
+    } catch(e) {
+      el.innerHTML = `<p style="color:#ef4444;font-size:12px;padding:8px">⚠️ 図解の描画に失敗しました: ${e.message}</p>`;
+    }
+  }
+}
+
+// ─── highlight.js 初期化 ───
+document.addEventListener('DOMContentLoaded', async () => {
+  await renderAllDiagrams();
+  document.querySelectorAll('pre code').forEach(el => {
+    hljs.highlightElement(el);
+  });
+});
+
+// ─── プログレスバー ───
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const prog = docH > 0 ? window.scrollY / docH : 0;
+  progressBar.style.transform = `scaleX(${prog})`;
+});
+
+// ─── IntersectionObserver サイドバー ───
+const navLinks = document.querySelectorAll('.sl');
+const sections = document.querySelectorAll('section.section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

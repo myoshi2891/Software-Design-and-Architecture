@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モノリシックアーキテクチャ 完全ガイド</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --color-background-primary: #0f1117;
+  --color-background-secondary: #161b27;
+  --color-background-tertiary: #1e2535;
+  --color-background-info: #0e1e35;
+  --color-background-danger: #2a1018;
+  --color-background-success: #0d1f18;
+  --color-background-warning: #211a0a;
+  --color-text-primary: #e8eaf0;
+  --color-text-secondary: #a0a8bc;
+  --color-text-tertiary: #626880;
+  --color-text-info: #60a5fa;
+  --color-text-danger: #f87171;
+  --color-text-success: #34d399;
+  --color-text-warning: #fbbf24;
+  --color-border-primary: #2e3650;
+  --color-border-secondary: #222840;
+  --color-border-tertiary: #191f30;
+  --font-sans: 'Hiragino Sans', 'Noto Sans JP', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --c-purple-50: #f5f3ff; --c-purple-100: #ede9fe; --c-purple-200: #ddd6fe;
+  --c-purple-500: #8b5cf6; --c-purple-600: #7c3aed; --c-purple-700: #6d28d9;
+  --c-purple-800: #4c1d95; --c-purple-900: #2e1065;
+  --c-teal-50: #f0fdfa; --c-teal-100: #ccfbf1; --c-teal-200: #99f6e4;
+  --c-teal-500: #14b8a6; --c-teal-600: #0d9488; --c-teal-700: #0f766e;
+  --c-teal-800: #134e4a; --c-teal-900: #042f2e;
+  --c-coral-50: #fff7ed; --c-coral-100: #ffedd5; --c-coral-200: #fed7aa;
+  --c-coral-500: #f97316; --c-coral-600: #ea580c; --c-coral-700: #c2410c;
+  --c-coral-800: #7c2d12; --c-coral-900: #431407;
+  --c-pink-50: #fdf2f8; --c-pink-100: #fce7f3; --c-pink-200: #fbcfe8;
+  --c-pink-500: #ec4899; --c-pink-600: #db2777; --c-pink-700: #be185d;
+  --c-pink-800: #831843; --c-pink-900: #500724;
+  --c-blue-500: #3b82f6; --c-blue-600: #2563eb; --c-blue-800: #1e3a8a;
+  --c-green-500: #22c55e; --c-green-600: #16a34a; --c-green-800: #14532d;
+  --c-amber-500: #f59e0b; --c-amber-600: #d97706; --c-amber-800: #78350f;
+  --c-red-500: #ef4444; --c-red-600: #dc2626; --c-red-800: #7f1d1d;
+  --c-gray-100: #f3f4f6; --c-gray-200: #e5e7eb; --c-gray-700: #374151;
+  --c-gray-800: #1f2937; --c-gray-900: #111827;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 400;
+  min-height: 100vh;
+}
+
+a { color: var(--c-teal-500); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.layout {
+  display: flex;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 24px 16px;
+  gap: 24px;
+}
+
+nav.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-primary) transparent;
+}
+
+nav.sidebar h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+nav.sidebar ul { list-style: none; }
+nav.sidebar ul li { margin-bottom: 2px; }
+nav.sidebar ul li a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  transition: background 0.15s, color 0.15s;
+  line-height: 1.4;
+}
+nav.sidebar ul li a:hover {
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+nav.sidebar ul li a.active {
+  background: var(--color-background-tertiary);
+  color: var(--c-teal-500);
+}
+nav.sidebar .nav-group-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.06em;
+  padding: 10px 10px 4px;
+  display: block;
+}
+
+main.content {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-xl);
+  padding: 40px 36px;
+  margin-bottom: 32px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 1rem;
+  color: var(--c-teal-500);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.hero p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+}
+
+section.doc-section {
+  margin-bottom: 48px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.section-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-teal-500);
+  flex-shrink: 0;
+}
+
+h2.section-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+h3.subsection-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h3.subsection-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background: var(--c-teal-600);
+  border-radius: 2px;
+}
+
+p { margin-bottom: 14px; color: var(--color-text-secondary); }
+p:last-child { margin-bottom: 0; }
+
+.callout {
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin: 16px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.callout-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+.callout.info { background: var(--color-background-info); border: 1px solid #1e3a5f; color: var(--color-text-info); }
+.callout.success { background: var(--color-background-success); border: 1px solid #14402e; color: var(--color-text-success); }
+.callout.warning { background: var(--color-background-warning); border: 1px solid #3d2e0a; color: var(--color-text-warning); }
+.callout.danger { background: var(--color-background-danger); border: 1px solid #4a1520; color: var(--color-text-danger); }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 16px 0;
+}
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+.card h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card p { font-size: 1rem; margin-bottom: 0; }
+.card.good { border-color: #14402e; }
+.card.bad { border-color: #4a1520; }
+.card h4.good-label { color: var(--color-text-success); }
+.card h4.bad-label { color: var(--color-text-danger); }
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.tag-teal { background: var(--c-teal-800); color: var(--c-teal-200); border: 1px solid var(--c-teal-700); }
+.tag-purple { background: var(--c-purple-800); color: var(--c-purple-200); border: 1px solid var(--c-purple-700); }
+.tag-coral { background: var(--c-coral-800); color: var(--c-coral-200); border: 1px solid var(--c-coral-700); }
+.tag-pink { background: var(--c-pink-800); color: var(--c-pink-200); border: 1px solid var(--c-pink-700); }
+.tag-green { background: var(--c-green-800); color: #86efac; border: 1px solid var(--c-green-600); }
+.tag-red { background: var(--c-red-800); color: #fca5a5; border: 1px solid var(--c-red-600); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--c-coral-500);
+}
+
+pre {
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  overflow-x: auto;
+  margin: 16px 0;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+pre .comment { color: var(--color-text-tertiary); font-style: italic; }
+pre .keyword { color: var(--c-purple-500); }
+pre .string { color: var(--c-teal-500); }
+pre .func { color: var(--c-coral-500); }
+pre .num { color: var(--c-pink-500); }
+pre .cls { color: var(--c-amber-500); }
+
+.mermaid-wrap {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.mermaid-wrap .mermaid { display: flex; justify-content: center; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 1rem;
+}
+thead th {
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-primary);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  color: var(--color-text-secondary);
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--color-background-tertiary); }
+
+.table-wrap {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.glossary {
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  margin: 24px 0;
+}
+.glossary-header {
+  background: var(--color-background-tertiary);
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.glossary-body { padding: 4px 0; }
+.glossary-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.glossary-item:last-child { border-bottom: none; }
+.glossary-term {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-teal-500);
+  white-space: nowrap;
+  min-width: 160px;
+  flex-shrink: 0;
+}
+.glossary-def { font-size: 1rem; color: var(--color-text-secondary); }
+
+.step-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+.step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-teal-500);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.step-body p { font-size: 1rem; margin-bottom: 0; }
+
+.source-list { margin: 16px 0; }
+.source-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 6px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  font-size: 1rem;
+}
+.source-item i { color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 2px; }
+.source-item .source-label { font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.source-item a { font-size: 1rem; color: var(--color-text-tertiary); word-break: break-all; }
+
+.principle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.principle-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+.principle-card .p-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-purple-500);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.principle-card h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.principle-card p { font-size: 1rem; margin-bottom: 6px; }
+.principle-card code { font-size: 1rem; }
+
+.layer-stack { display: flex; flex-direction: column; gap: 2px; margin: 16px 0; }
+.layer-item {
+  padding: 14px 16px;
+  border-radius: var(--border-radius-md);
+  border-left: 3px solid transparent;
+}
+.layer-1 { background: #0e1e35; border-left-color: var(--c-blue-500); }
+.layer-2 { background: #0d1f18; border-left-color: var(--c-teal-500); }
+.layer-3 { background: #1a1040; border-left-color: var(--c-purple-500); }
+.layer-4 { background: #211a0a; border-left-color: var(--c-coral-500); }
+.layer-item h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.layer-item p { font-size: 1rem; margin-bottom: 4px; }
+.layer-item ul { font-size: 1rem; color: var(--color-text-secondary); padding-left: 16px; }
+.layer-item ul li { margin-bottom: 2px; }
+
+.divider {
+  height: 1px;
+  background: var(--color-border-tertiary);
+  margin: 32px 0;
+}
+
+.toc-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-background-tertiary);
+  z-index: 100;
+}
+.toc-progress-bar {
+  height: 100%;
+  background: var(--c-teal-500);
+  width: 0%;
+  transition: width 0.1s;
+}
+
+.anti-pattern-item {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.anti-pattern-header {
+  padding: 14px 16px;
+  background: var(--color-background-danger);
+  border-bottom: 1px solid #4a1520;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-danger);
+}
+.anti-pattern-body { padding: 14px 16px; }
+.anti-pattern-fix {
+  padding: 12px 16px;
+  background: var(--color-background-success);
+  border-top: 1px solid #14402e;
+  font-size: 1rem;
+  color: var(--color-text-success);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 16px 0;
+}
+.comp-col {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+.comp-col.good { border-color: #14402e; }
+.comp-col.bad { border-color: #4a1520; }
+.comp-col h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.comp-col.good h4 { color: var(--color-text-success); }
+.comp-col.bad h4 { color: var(--color-text-danger); }
+.comp-col ul { list-style: none; padding: 0; }
+.comp-col ul li { font-size: 1rem; color: var(--color-text-secondary); margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; }
+.comp-col ul li::before { flex-shrink: 0; margin-top: 4px; }
+.comp-col.good ul li::before { content: '✓'; color: var(--color-text-success); }
+.comp-col.bad ul li::before { content: '✗'; color: var(--color-text-danger); }
+
+.phase-timeline { display: flex; flex-direction: column; gap: 14px; margin: 16px 0; }
+.phase-item {
+  display: flex;
+  gap: 14px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+  align-items: flex-start;
+}
+.phase-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.phase-1 .phase-badge { background: var(--c-teal-800); color: var(--c-teal-200); }
+.phase-2 .phase-badge { background: var(--c-purple-800); color: var(--c-purple-200); }
+.phase-3 .phase-badge { background: var(--c-coral-800); color: var(--c-coral-200); }
+.phase-4 .phase-badge { background: var(--c-pink-800); color: var(--c-pink-200); }
+.phase-item h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.phase-item p { font-size: 1rem; margin-bottom: 0; }
+
+.scaling-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.scaling-card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+.scaling-card h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.scaling-card p { font-size: 1rem; margin-bottom: 0; }
+
+.maturity-steps { display: flex; flex-direction: column; gap: 2px; margin: 16px 0; }
+.maturity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--border-radius-md);
+}
+.maturity-0 { background: #2a1018; }
+.maturity-1 { background: #211a0a; }
+.maturity-2 { background: #1a1a0a; }
+.maturity-3 { background: #0d1f18; }
+.maturity-4 { background: #0e1e35; }
+.maturity-5 { background: #1a1040; }
+.maturity-level { font-size: 1rem; font-weight: 500; min-width: 52px; }
+.maturity-0 .maturity-level { color: var(--color-text-danger); }
+.maturity-1 .maturity-level { color: var(--c-amber-500); }
+.maturity-2 .maturity-level { color: var(--c-amber-500); }
+.maturity-3 .maturity-level { color: var(--color-text-success); }
+.maturity-4 .maturity-level { color: var(--color-text-info); }
+.maturity-5 .maturity-level { color: var(--c-purple-500); }
+.maturity-item h4 { font-size: 1rem; font-weight: 500; color: var(--color-text-primary); }
+.maturity-item p { font-size: 1rem; margin-bottom: 0; color: var(--color-text-tertiary); }
+
+.book-table .book-title { font-weight: 500; color: var(--color-text-primary); }
+.book-table .difficulty { display: flex; gap: 2px; }
+.book-table .star { color: var(--c-amber-500); font-size: 1rem; }
+.book-table .empty-star { color: var(--color-text-tertiary); font-size: 1rem; }
+
+.footer {
+  border-top: 1px solid var(--color-border-tertiary);
+  padding: 24px 0;
+  margin-top: 48px;
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; padding: 16px 12px; }
+  nav.sidebar { width: 100%; position: static; max-height: none; }
+  .card-grid-2, .card-grid-3, .comparison-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="toc-progress"><div class="toc-progress-bar" id="progressBar"></div></div>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <h2>目次</h2>
+  <ul>
+    <li><a href="#s1">01 モノリシックとは？</a></li>
+    <li><a href="#s2">02 種類と構造</a></li>
+    <li><a href="#s3">03 基本設計原則</a></li>
+    <li><a href="#s4">04 レイヤードアーキテクチャ</a></li>
+    <li><a href="#s5">05 モジュラーモノリス</a></li>
+    <li><a href="#s6">06 データベース設計</a></li>
+    <li><a href="#s7">07 ビジネスロジック</a></li>
+    <li><a href="#s8">08 API とルーティング</a></li>
+    <li><a href="#s9">09 認証・認可</a></li>
+    <li><a href="#s10">10 テスト戦略</a></li>
+    <li><a href="#s11">11 スケーリング戦略</a></li>
+    <li><a href="#s12">12 CI/CD とデプロイ</a></li>
+    <li><a href="#s13">13 監視・ロギング</a></li>
+    <li><a href="#s14">14 EC サイト実装例</a></li>
+    <li><a href="#s15">15 マイクロサービスへの移行</a></li>
+    <li><a href="#s16">16 ベストプラクティス</a></li>
+    <li><a href="#s17">17 アンチパターン</a></li>
+    <li><a href="#s18">18 参考文献</a></li>
+    <li><a href="#glossary">用語集</a></li>
+  </ul>
+</nav>
+
+<main class="content">
+
+<div class="hero">
+  <div class="hero-badge"><i class="ti ti-building-arch"></i> Architecture Guide</div>
+  <h1>モノリシックアーキテクチャ 完全ガイド</h1>
+  <p>初学者でもわかるステップバイステップ解説。設計原則からスケーリング・マイクロサービス移行まで、現場で即使えるベストプラクティスをまとめました。</p>
+  <div class="hero-meta">
+    <span class="hero-meta-item"><i class="ti ti-book"></i> 18 セクション</span>
+    <span class="hero-meta-item"><i class="ti ti-code"></i> Python / FastAPI 実装例付き</span>
+    <span class="hero-meta-item"><i class="ti ti-license"></i> 2026-06-23 版</span>
+  </div>
+</div>
+
+<div class="callout info">
+  <span class="callout-icon"><i class="ti ti-bulb"></i></span>
+  <div><strong>このガイドの読み方</strong><br>左サイドバーの目次から気になるセクションに直接ジャンプできます。初学者は 01 → 04 → 05 → 10 の順で読むと理解しやすいです。各セクション末尾に参照リンクを掲載しています。</div>
+</div>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s1">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">モノリシックアーキテクチャとは何か？</h2>
+  </div>
+
+  <p><strong>モノリシックアーキテクチャ（Monolithic Architecture）</strong>とは、アプリケーションのすべての機能を <em>単一のコードベース・単一のデプロイ単位</em>として構築するアーキテクチャスタイルです。「Monolithic（一枚岩）」という名前のとおり、UI・ビジネスロジック・データアクセスがひとつのプロセスとして統合されています。</p>
+
+  <div class="callout success">
+    <span class="callout-icon"><i class="ti ti-bulb"></i></span>
+    <div><strong>核心思想</strong>：「すべての機能を 1 つのアプリケーションとして構築し、シンプルさ・一貫性・開発スピードを最大化する。多くのシステムにとって、これが最も適切な出発点である。」</div>
+  </div>
+
+  <p>マイクロサービスが注目を集める昨今でも、モノリシックアーキテクチャは有効な選択肢です。その理由を下のメリット比較表で確認できます。</p>
+
+  <h3 class="subsection-title">モノリシックの主なメリット</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4><i class="ti ti-rocket" style="color:var(--c-teal-500)"></i> 開発スピードが速い</h4>
+      <p>環境セットアップがシンプルで、最初から動く環境を素早く構築できます。スタートアップの MVP（最小限の製品）に最適です。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-test-pipe" style="color:var(--c-purple-500)"></i> テストが容易</h4>
+      <p>E2E テストが単純で、統合テストの設定も少ない。分散システム特有の「どのサービスが壊れているか」問題がありません。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-bug" style="color:var(--c-coral-500)"></i> デバッグが容易</h4>
+      <p>単一プロセスで追跡できるため、分散トレーシングのような複雑な仕組みが不要です。スタックトレースがそのまま使えます。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-coin" style="color:var(--c-pink-500)"></i> 運用コストが低い</h4>
+      <p>インフラがシンプルで Kubernetes などの複雑なオーケストレーションが不要。少人数チームでも管理できます。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-arrows-exchange" style="color:var(--c-teal-500)"></i> トランザクション管理</h4>
+      <p>ACID トランザクション（＝データの整合性を保証する仕組み）が容易。複数サービス間の分散トランザクションを心配する必要がありません。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-eye" style="color:var(--c-purple-500)"></i> コード全体が見渡せる</h4>
+      <p>IDE でコードベース全体を把握でき、リファクタリングも一括で実施できます。新メンバーのオンボーディングがシンプルです。</p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">アーキテクチャ選択の判断基準</h3>
+
+  <p>どのアーキテクチャを選ぶかは、チーム規模・変化の速さ・システム規模の 3 軸で判断します。以下の表が目安になります。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>状況</th>
+          <th>推奨アーキテクチャ</th>
+          <th>理由</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>チーム 1〜5 人・スタートアップ MVP</td>
+          <td><span class="tag tag-teal">モノリス</span></td>
+          <td>開発スピードと運用シンプルさを最優先できる</td>
+        </tr>
+        <tr>
+          <td>チーム 5〜30 人・成長期の SaaS</td>
+          <td><span class="tag tag-purple">モジュラーモノリス</span></td>
+          <td>境界を明確にしつつ、複雑さは抑えられる</td>
+        </tr>
+        <tr>
+          <td>チーム 30 人以上・大規模 EC・高負荷</td>
+          <td><span class="tag tag-coral">マイクロサービス</span></td>
+          <td>独立デプロイと独立スケーリングが必要になる</td>
+        </tr>
+        <tr>
+          <td>大規模・変化が少ない社内システム</td>
+          <td><span class="tag tag-purple">モジュラーモノリス</span></td>
+          <td>安定性重視・分散の複雑さを避けられる</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    subgraph MONOLITH["モノリシックアプリケーション（単一デプロイ単位）"]
+        subgraph PRESENTATION["プレゼンテーション層"]
+            WEB_CTRL["Webコントローラー"]
+            API_CTRL["APIコントローラー"]
+        end
+        subgraph BUSINESS["ビジネスロジック層"]
+            ORDER_SVC["注文サービス"]
+            USER_SVC["ユーザーサービス"]
+            PRODUCT_SVC["商品サービス"]
+        end
+        subgraph DATA["データアクセス層"]
+            ORDER_REPO["注文リポジトリ"]
+            USER_REPO["ユーザーリポジトリ"]
+        end
+        subgraph SHARED["共有コンポーネント"]
+            AUTH["認証・認可"]
+            LOGGER["ロギング"]
+            CACHE["キャッシュ"]
+        end
+    end
+    DB[("データベース PostgreSQL")]
+    REDIS["Redis キャッシュ"]
+    PRESENTATION --> BUSINESS
+    BUSINESS --> DATA
+    DATA --> DB
+    CACHE --> REDIS
+    SHARED --> PRESENTATION
+    SHARED --> BUSINESS
+    </div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — MonolithFirst パターン</div>
+        <a href="https://martinfowler.com/bliki/MonolithFirst.html" target="_blank">https://martinfowler.com/bliki/MonolithFirst.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Sam Newman — Monolith to Microservices（書籍）</div>
+        <a href="https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/" target="_blank">https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary">
+    <div class="glossary-header"><i class="ti ti-book"></i> このセクションで登場した用語</div>
+    <div class="glossary-body">
+      <div class="glossary-item">
+        <span class="glossary-term">モノリシック</span>
+        <span class="glossary-def">「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造のこと。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">デプロイ単位</span>
+        <span class="glossary-def">アプリケーションをサーバーに配備（デプロイ）するときの最小まとまりのこと。モノリスは全機能が 1 単位。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">MVP</span>
+        <span class="glossary-def">Minimum Viable Product（最小限の実用的な製品）。仮説検証のために最低限の機能だけで作るプロダクトのこと。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">ACID トランザクション</span>
+        <span class="glossary-def">データの整合性を保証する 4 つの性質（原子性・一貫性・独立性・耐久性）をまとめた概念。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s2">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2 class="section-title">モノリシックの種類と構造</h2>
+  </div>
+
+  <p>モノリシックアーキテクチャには 4 つのタイプがあります。それぞれのタイプを理解することで、自分のプロジェクトに最適な形を選択できます。</p>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    TYPES["モノリシックアーキテクチャの種類"]
+    TYPES --> SINGLE["1. 単純モノリス<br>Single-Tier Monolith<br>すべてが1ファイル・1モジュールに<br>小規模スクリプト・PoC向け"]
+    TYPES --> LAYERED["2. レイヤードモノリス<br>Layered Monolith<br>プレゼンテーション・ビジネス・<br>データアクセスを層で分離<br>最も一般的な構造"]
+    TYPES --> MODULAR["3. モジュラーモノリス<br>Modular Monolith<br>機能ドメインごとにモジュール分割<br>単一デプロイだが高い独立性"]
+    TYPES --> DISTRIBUTED["4. 分散モノリス（アンチパターン）<br>Distributed Monolith<br>見た目はマイクロサービスだが<br>実は密結合な最悪の形態<br>避けるべき構成"]
+    SINGLE --> S_USE["適用：プロトタイプ・個人開発<br>チーム：1〜2人"]
+    LAYERED --> L_USE["適用：中小規模Webアプリ<br>チーム：3〜10人"]
+    MODULAR --> M_USE["適用：成長期のSaaS・社内システム<br>チーム：10〜30人"]
+    DISTRIBUTED --> D_USE["複雑さのみ増大<br>どちらのメリットも得られない"]
+    style SINGLE fill:#0e1e35,color:#60a5fa
+    style LAYERED fill:#0d1f18,color:#34d399
+    style MODULAR fill:#1a1040,color:#a78bfa
+    style DISTRIBUTED fill:#2a1018,color:#f87171
+    </div>
+  </div>
+
+  <h3 class="subsection-title">単純モノリス vs レイヤードモノリス</h3>
+
+  <div class="comparison-row">
+    <div class="comp-col bad">
+      <h4><i class="ti ti-x"></i> 単純モノリス（スパゲッティ）</h4>
+      <ul>
+        <li>DB クエリ・ビジネスロジック・HTML 生成がすべて 1 ファイルに混在</li>
+        <li>変更の影響範囲が予測できない</li>
+        <li>テストが書けない</li>
+        <li>新メンバーが理解するのに時間がかかる</li>
+      </ul>
+    </div>
+    <div class="comp-col good">
+      <h4><i class="ti ti-check"></i> レイヤードモノリス</h4>
+      <ul>
+        <li>プレゼンテーション・ビジネス・DB を明確に層分離</li>
+        <li>変更の影響が層内に限定される</li>
+        <li>ユニットテストが書きやすい</li>
+        <li>新メンバーが構造を把握しやすい</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">各タイプの適用シナリオ</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>タイプ</th><th>チーム規模</th><th>適用シナリオ</th><th>主なリスク</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-teal">単純モノリス</span></td>
+          <td>1〜2 人</td>
+          <td>個人開発・PoC・プロトタイプ</td>
+          <td>拡大すると保守不能になる</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-purple">レイヤードモノリス</span></td>
+          <td>3〜10 人</td>
+          <td>中小規模 Web アプリ・社内システム</td>
+          <td>層を無視したコードが増えやすい</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-coral">モジュラーモノリス</span></td>
+          <td>10〜30 人</td>
+          <td>成長期 SaaS・将来の分割を見据えたシステム</td>
+          <td>モジュール境界の維持に規律が必要</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-red">分散モノリス</span></td>
+          <td>—</td>
+          <td>なし（アンチパターン）</td>
+          <td>両方のデメリットを受ける最悪の形態</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon"><i class="ti ti-alert-triangle"></i></span>
+    <div><strong>分散モノリスに注意</strong>：サービスを分割したのに、デプロイを常に同時にしないと動かない状態は「分散モノリス」です。マイクロサービスの複雑さだけを得て、モノリスのシンプルさも失った最悪の形態です。この状態に気づいたら、潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから分割しましょう。</div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Microservices（モノリスとの比較）</div>
+        <a href="https://martinfowler.com/articles/microservices.html" target="_blank">https://martinfowler.com/articles/microservices.html</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s3">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <h2 class="section-title">モノリシックの基本設計原則</h2>
+  </div>
+
+  <p>良いモノリスを設計するために、ソフトウェア工学の基本原則を理解しておく必要があります。これらの原則を無視すると、最終的にスパゲッティコード（＝複雑に絡み合って手をつけられないコード）になります。</p>
+
+  <h3 class="subsection-title">SOLID 原則</h3>
+
+  <p>SOLID は 5 つの設計原則の頭文字をとったものです。モノリスでこれらを守ることで、将来の変更に強いコードが生まれます。</p>
+
+  <div class="principle-grid">
+    <div class="principle-card">
+      <div class="p-label"><span class="tag tag-purple">S</span> 単一責任原則</div>
+      <h4>Single Responsibility Principle</h4>
+      <p>1 つのクラスは 1 つの変更理由だけを持つべきです。</p>
+      <p style="font-size: 1rem;color:var(--color-text-tertiary)">例：<code>OrderService</code> は注文のみを扱い、メール送信は <code>NotificationService</code> が担当する。</p>
+    </div>
+    <div class="principle-card">
+      <div class="p-label"><span class="tag tag-teal">O</span> 開放閉鎖原則</div>
+      <h4>Open/Closed Principle</h4>
+      <p>拡張に対して開かれており、修正に対して閉じているべきです。</p>
+      <p style="font-size: 1rem;color:var(--color-text-tertiary)">例：新しい割引タイプを追加するとき、既存コードを修正せず新クラスを追加する。</p>
+    </div>
+    <div class="principle-card">
+      <div class="p-label"><span class="tag tag-coral">L</span> リスコフ置換原則</div>
+      <h4>Liskov Substitution Principle</h4>
+      <p>サブクラスは親クラスの代わりに使えるべきです。</p>
+      <p style="font-size: 1rem;color:var(--color-text-tertiary)">例：<code>SQLOrderRepo</code> は <code>OrderRepository</code> インターフェースを完全に代替できる。</p>
+    </div>
+    <div class="principle-card">
+      <div class="p-label"><span class="tag tag-pink">I</span> インターフェース分離</div>
+      <h4>Interface Segregation Principle</h4>
+      <p>使わないメソッドを実装させてはいけません。</p>
+      <p style="font-size: 1rem;color:var(--color-text-tertiary)">例：読み取りと書き込みを分離した小さなインターフェースを定義する。</p>
+    </div>
+    <div class="principle-card">
+      <div class="p-label"><span class="tag tag-teal">D</span> 依存性逆転原則</div>
+      <h4>Dependency Inversion Principle</h4>
+      <p>具体的な実装ではなく、抽象（インターフェース）に依存するべきです。</p>
+      <p style="font-size: 1rem;color:var(--color-text-tertiary)">例：<code>OrderService → OrderRepository（抽象）← SQLAlchemyOrderRepo（具体）</code></p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">モノリス設計の 5 つの黄金ルール</h3>
+
+  <div class="step-item">
+    <span class="step-num">1</span>
+    <div class="step-body">
+      <h4>関心の分離（Separation of Concerns）</h4>
+      <p>プレゼンテーション・ビジネス・データを明確に分離します。「画面のコードと計算ロジックが混ざっていたら危険サイン」と覚えてください。混在させると変更の影響が予測不能になります。</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <span class="step-num">2</span>
+    <div class="step-body">
+      <h4>依存方向の統一</h4>
+      <p>上位層から下位層への一方向依存を守ります。<code>Controller → Service → Repository</code> の方向は OK ですが、逆（Repository が Controller を知る）は禁止です。循環依存はコードの腐敗の始まりです。</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <span class="step-num">3</span>
+    <div class="step-body">
+      <h4>ドメインの独立性</h4>
+      <p>各ドメイン（注文・ユーザー・商品など）を疎結合（＝お互いの依存が少ない状態）に保ちます。これが将来のマイクロサービス分割の布石になります。</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <span class="step-num">4</span>
+    <div class="step-body">
+      <h4>共有カーネルの最小化</h4>
+      <p>共通コードは必要最小限にします。<code>utils</code> や <code>helpers</code> に何でも入れると、変更時に影響範囲が広がりすぎます。</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <span class="step-num">5</span>
+    <div class="step-body">
+      <h4>テスタビリティ優先設計</h4>
+      <p>依存性注入（＝外からオブジェクトを渡す仕組み）でモックが容易に。ビジネスロジックは DB なしでテストできる構造を目指します。テストできないコードはリファクタリングも怖くなります。</p>
+    </div>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    RULE1["1 関心の分離\n層を明確に分ける"] --> RULE2["2 依存方向の統一\n上から下への一方向"] --> RULE3["3 ドメインの独立\n疎結合を保つ"] --> RULE4["4 共有を最小化\nutilsに何でも入れない"] --> RULE5["5 テスタビリティ\nDIで疎結合に設計"]
+    </div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Clean Architecture — Robert C. Martin</div>
+        <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Twelve-Factor App（設計原則）</div>
+        <a href="https://12factor.net/ja/" target="_blank">https://12factor.net/ja/</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary">
+    <div class="glossary-header"><i class="ti ti-book"></i> このセクションで登場した用語</div>
+    <div class="glossary-body">
+      <div class="glossary-item">
+        <span class="glossary-term">SOLID 原則</span>
+        <span class="glossary-def">ソフトウェア設計の 5 つの原則の頭文字。保守性・拡張性の高いコードを書くための指針。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">依存性注入 (DI)</span>
+        <span class="glossary-def">クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモック（偽物）に差し替えられる。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">疎結合</span>
+        <span class="glossary-def">コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">関心の分離</span>
+        <span class="glossary-def">異なる責務を別々のモジュール・クラス・層に分けること。混在させないことが重要。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s4">
+  <div class="section-header">
+    <span class="section-number">04</span>
+    <h2 class="section-title">レイヤードアーキテクチャの詳細</h2>
+  </div>
+
+  <p>レイヤードアーキテクチャ（層状アーキテクチャ）は、モノリシックアプリケーションの最も一般的な構造です。各層が決まった責務だけを持ち、隣接する層のみと通信するルールを守ります。</p>
+
+  <h3 class="subsection-title">4 層の役割</h3>
+
+  <div class="layer-stack">
+    <div class="layer-item layer-1">
+      <h4>プレゼンテーション層（Presentation Layer）</h4>
+      <p>HTTP リクエスト・レスポンスの処理のみを担当。ビジネスロジックは書かない。</p>
+      <ul>
+        <li>REST API コントローラー・ビューコントローラー</li>
+        <li>リクエストの DTO（データ転送オブジェクト）への変換</li>
+        <li>バリデーションエラーのレスポンス整形</li>
+      </ul>
+    </div>
+    <div class="layer-item layer-2">
+      <h4>アプリケーション層（Application Layer）</h4>
+      <p>ビジネスフローのオーケストレーション（複数の処理を順番に調整すること）を担当。</p>
+      <ul>
+        <li>ユースケースクラス（place_order.py など）</li>
+        <li>入力バリデーション・ドメインモデルへのマッピング</li>
+        <li>トランザクション境界の管理</li>
+      </ul>
+    </div>
+    <div class="layer-item layer-3">
+      <h4>ドメイン層（Domain Layer）</h4>
+      <p>ビジネスルールの中核。フレームワーク依存なし・最も安定すべき層。</p>
+      <ul>
+        <li>エンティティ（注文・ユーザーなどのビジネスオブジェクト）</li>
+        <li>値オブジェクト（Money・Email・Address など）</li>
+        <li>リポジトリインターフェース（抽象定義のみ）</li>
+      </ul>
+    </div>
+    <div class="layer-item layer-4">
+      <h4>インフラストラクチャ層（Infrastructure Layer）</h4>
+      <p>外部システムとの接続を担当。DB・キャッシュ・外部 API の具体実装。</p>
+      <ul>
+        <li>リポジトリ具体実装（SQLAlchemy など）</li>
+        <li>Redis キャッシュ・メール送信・外部 API クライアント</li>
+        <li>依存性逆転でドメイン層のインターフェースを実装</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+sequenceDiagram
+    participant CLIENT as クライアント
+    participant CTRL as コントローラー（プレゼンテーション層）
+    participant SVC as サービス（アプリケーション層）
+    participant DOM as ドメインモデル（ドメイン層）
+    participant REPO as リポジトリ（インフラ層）
+    participant DB as データベース
+    CLIENT->>CTRL: HTTP POST /orders
+    CTRL->>CTRL: バリデーション・DTO変換
+    CTRL->>SVC: place_order(command)
+    SVC->>DOM: Order.create(customer_id, items)
+    DOM->>DOM: ビジネスルール実行・価格計算
+    SVC->>REPO: save(order)
+    REPO->>DB: INSERT INTO orders
+    DB-->>REPO: 保存完了
+    REPO-->>SVC: Order エンティティ
+    SVC-->>CTRL: OrderResult DTO
+    CTRL-->>CLIENT: HTTP 201 Created
+    </div>
+  </div>
+
+  <h3 class="subsection-title">ディレクトリ構成のベストプラクティス</h3>
+
+  <p>ディレクトリ構成はアーキテクチャを「見える化」する最初の一歩です。以下の構成は 4 層アーキテクチャを忠実に反映しています。</p>
+
+  <pre>
+my_app/
+├── <span class="cls">presentation/</span>               <span class="comment"># プレゼンテーション層</span>
+│   ├── controllers/
+│   │   ├── order_controller.py   <span class="comment"># 注文 API エンドポイント</span>
+│   │   └── user_controller.py
+│   ├── schemas/                  <span class="comment"># リクエスト/レスポンス スキーマ</span>
+│   └── middleware/
+│       └── auth_middleware.py
+│
+├── <span class="cls">application/</span>                <span class="comment"># アプリケーション層</span>
+│   ├── use_cases/
+│   │   ├── place_order.py        <span class="comment"># 注文確定ユースケース</span>
+│   │   └── register_user.py
+│   └── dtos/
+│
+├── <span class="cls">domain/</span>                     <span class="comment"># ドメイン層（最重要・最安定）</span>
+│   ├── entities/
+│   │   ├── order.py              <span class="comment"># 注文エンティティ</span>
+│   │   └── user.py
+│   ├── value_objects/
+│   │   ├── money.py              <span class="comment"># 金額値オブジェクト</span>
+│   │   └── email.py
+│   ├── repositories/             <span class="comment"># インターフェース（抽象）のみ</span>
+│   └── exceptions.py
+│
+├── <span class="cls">infrastructure/</span>             <span class="comment"># インフラストラクチャ層</span>
+│   ├── database/
+│   │   ├── models.py             <span class="comment"># SQLAlchemy モデル</span>
+│   │   └── migrations/
+│   ├── repositories/             <span class="comment"># 具体実装</span>
+│   │   └── sql_order_repo.py
+│   └── external/
+│       └── payment_gateway.py
+│
+├── <span class="cls">config/</span>                     <span class="comment"># 設定管理</span>
+│   ├── settings.py
+│   └── dependencies.py           <span class="comment"># 依存性注入設定</span>
+│
+└── <span class="cls">tests/</span>                      <span class="comment"># テスト（層別に整理）</span>
+    ├── unit/
+    ├── integration/
+    └── e2e/</pre>
+
+  <div class="callout info">
+    <span class="callout-icon"><i class="ti ti-lightbulb"></i></span>
+    <div><strong>なぜドメイン層が「最重要・最安定」なのか？</strong><br>ドメイン層はビジネスルール（＝会社が何をするかの本質）を含みます。フレームワークは変わっても（Flask → FastAPI など）、ビジネスルールは変わりません。だからこそ、フレームワーク依存をゼロにして最も安定させるべき層なのです。</div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Presentation Domain Data Layering</div>
+        <a href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html" target="_blank">https://martinfowler.com/bliki/PresentationDomainDataLayering.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Hexagonal Architecture — Alistair Cockburn</div>
+        <a href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/" target="_blank">Alistair Cockburn - Hexagonal Architecture (Web Archive)</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary">
+    <div class="glossary-header"><i class="ti ti-book"></i> このセクションで登場した用語</div>
+    <div class="glossary-body">
+      <div class="glossary-item">
+        <span class="glossary-term">DTO</span>
+        <span class="glossary-def">Data Transfer Object（データ転送オブジェクト）。層をまたいでデータを運ぶための入れ物。ロジックを持たない。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">エンティティ</span>
+        <span class="glossary-def">ID を持ち、ライフサイクル（生成→更新→削除）を持つビジネスオブジェクト。例：注文・ユーザー。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">値オブジェクト</span>
+        <span class="glossary-def">ID を持たない、値で識別されるオブジェクト。イミュータブル（変更不可）。例：Money(1000, "JPY")。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">リポジトリ</span>
+        <span class="glossary-def">データベースへのアクセスを抽象化したクラス。ドメイン層はインターフェース（抽象）だけを知り、実装はインフラ層が担当。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">オーケストレーション</span>
+        <span class="glossary-def">複数の処理を特定の順序で調整・実行すること。例：「注文→在庫チェック→決済→通知」の順序制御。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s5">
+  <div class="section-header">
+    <span class="section-number">05</span>
+    <h2 class="section-title">モジュラーモノリス（推奨形態）</h2>
+  </div>
+
+  <p>モジュラーモノリスは、レイヤードアーキテクチャをさらに発展させた形態です。単一デプロイを保ちつつ、機能ドメインごとにモジュールを分割します。将来のマイクロサービス移行への最良の準備でもあります。</p>
+
+  <div class="callout success">
+    <span class="callout-icon"><i class="ti ti-star"></i></span>
+    <div><strong>なぜモジュラーモノリスを推奨するのか？</strong><br>モノリスのシンプルさ（単一デプロイ・トランザクション管理のしやすさ）を保ちながら、将来の分割に備えた境界設計ができます。チーム規模が大きくなっても、各チームが独立したモジュールを担当できます。</div>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    subgraph MODULAR_MONO["モジュラーモノリス（単一デプロイ・モジュール分離）"]
+        subgraph ORDER_MOD["注文モジュール"]
+            OM_API["Order API"]
+            OM_SVC["Order Service"]
+            OM_DOM["Order Domain"]
+            OM_REPO["Order Repo"]
+            OM_API --> OM_SVC --> OM_DOM --> OM_REPO
+        end
+        subgraph USER_MOD["ユーザーモジュール"]
+            UM_API["User API"]
+            UM_SVC["User Service"]
+            UM_DOM["User Domain"]
+            UM_REPO["User Repo"]
+            UM_API --> UM_SVC --> UM_DOM --> UM_REPO
+        end
+        subgraph PRODUCT_MOD["商品モジュール"]
+            PM_API["Product API"]
+            PM_SVC["Product Service"]
+            PM_DOM["Product Domain"]
+            PM_REPO["Product Repo"]
+            PM_API --> PM_SVC --> PM_DOM --> PM_REPO
+        end
+        subgraph SHARED_KERNEL["共有カーネル（最小限）"]
+            AUTH_K["認証ミドルウェア"]
+            EVENT_K["ドメインイベント"]
+        end
+    end
+    ORDER_MOD -->|"インターフェース経由のみ"| USER_MOD
+    DB_ORDER[("注文スキーマ")]
+    DB_USER[("ユーザースキーマ")]
+    OM_REPO --> DB_ORDER
+    UM_REPO --> DB_USER
+    </div>
+  </div>
+
+  <h3 class="subsection-title">モジュール間通信のルール</h3>
+
+  <div class="comparison-row">
+    <div class="comp-col good">
+      <h4><i class="ti ti-check"></i> 正しいモジュール間通信</h4>
+      <ul>
+        <li>公開インターフェース（Port）経由でのみ呼び出す</li>
+        <li>データ変更の通知はドメインイベント（Pub/Sub）で行う</li>
+        <li>共有データが必要なら ACL（変換レイヤー）で各モジュール独自のモデルに変換する</li>
+      </ul>
+    </div>
+    <div class="comp-col bad">
+      <h4><i class="ti ti-x"></i> 禁止パターン</h4>
+      <ul>
+        <li>他モジュールの内部クラスを直接インポートする</li>
+        <li>他モジュールの DB テーブルに直接 SQL でアクセスする</li>
+        <li>循環依存（注文 → ユーザー → 注文）を作る</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">モジュール間通信の実装例（Python）</h3>
+
+  <p>以下のコードは、注文モジュールがユーザーモジュールを利用する際の正しいパターンです。<strong>公開インターフェースのみに依存し、内部実装の詳細は知らない</strong>ことがポイントです。</p>
+
+  <pre><span class="comment"># ユーザーモジュールの公開 API 定義（modules/users/public.py）</span>
+<span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+
+<span class="comment"># 外部に公開するデータ構造（内部のDBモデルは隠蔽する）</span>
+@dataclass(frozen=True)
+<span class="keyword">class</span> <span class="cls">UserInfo</span>:
+    user_id:   str
+    name:      str
+    email:     str
+    is_active: bool
+
+<span class="comment"># 公開クエリインターフェース（抽象クラス）</span>
+<span class="keyword">class</span> <span class="cls">UserQueryService</span>(ABC):
+    @abstractmethod
+    <span class="keyword">def</span> <span class="func">get_user_by_id</span>(self, user_id: str) -> UserInfo | None: ...
+    @abstractmethod
+    <span class="keyword">def</span> <span class="func">is_user_active</span>(self, user_id: str) -> bool: ...
+
+<span class="comment"># 注文モジュールからの利用（modules/orders/application/place_order.py）</span>
+<span class="keyword">from</span> modules.users.public <span class="keyword">import</span> UserQueryService  <span class="comment"># 公開インターフェースのみ</span>
+
+<span class="keyword">class</span> <span class="cls">PlaceOrderUseCase</span>:
+    <span class="keyword">def</span> <span class="func">__init__</span>(
+        self,
+        order_repository:   OrderRepository,
+        user_query_service: UserQueryService,  <span class="comment"># インターフェースに依存（具体実装ではない）</span>
+        event_bus:          EventBus,
+    ):
+        self._order_repo    = order_repository
+        self._user_service  = user_query_service
+        self._event_bus     = event_bus
+
+    <span class="keyword">def</span> <span class="func">execute</span>(self, customer_id: str, items: list[dict]) -> dict:
+        <span class="comment"># 公開インターフェースを通じてユーザー情報を取得</span>
+        <span class="keyword">if not</span> self._user_service.is_user_active(customer_id):
+            <span class="keyword">raise</span> ValueError(<span class="string">"アクティブでないユーザーは注文できません"</span>)
+
+        order = Order.create(customer_id=customer_id, items=items)
+        self._order_repo.save(order)
+
+        <span class="comment"># 他モジュールへの通知はイベント経由（直接メソッド呼び出しではない）</span>
+        self._event_bus.publish(<span class="string">"order.placed"</span>, {<span class="string">"order_id"</span>: order.id})
+        <span class="keyword">return</span> {<span class="string">"order_id"</span>: order.id}</pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Modular Monolith への言及</div>
+        <a href="https://martinfowler.com/articles/break-monolith-into-microservices.html" target="_blank">https://martinfowler.com/articles/break-monolith-into-microservices.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Anemic Domain Model（アンチパターン）</div>
+        <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" target="_blank">https://martinfowler.com/bliki/AnemicDomainModel.html</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary">
+    <div class="glossary-header"><i class="ti ti-book"></i> このセクションで登場した用語</div>
+    <div class="glossary-body">
+      <div class="glossary-item">
+        <span class="glossary-term">モジュラーモノリス</span>
+        <span class="glossary-def">単一デプロイを保ちつつ、機能ドメインごとにモジュール分割されたモノリス。境界が明確で将来の分割が容易。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">ドメインイベント</span>
+        <span class="glossary-def">ビジネス上の出来事（注文確定・注文キャンセルなど）を表すオブジェクト。Pub/Sub で他モジュールに通知する。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">Pub/Sub パターン</span>
+        <span class="glossary-def">発行者（Publisher）と購読者（Subscriber）を分離する通信パターン。直接の依存なしにメッセージを伝達できる。</span>
+      </div>
+      <div class="glossary-item">
+        <span class="glossary-term">ACL（腐敗防止層）</span>
+        <span class="glossary-def">Anti-Corruption Layer。他モジュールのモデルを自モジュールのモデルに変換する変換レイヤー。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s6">
+  <div class="section-header">
+    <span class="section-number">06</span>
+    <h2 class="section-title">データベース設計</h2>
+  </div>
+
+  <p>モノリシックアプリケーションのデータベース設計は、将来のスケーリングと保守性に大きく影響します。最初から将来を見据えた設計をしておくことで、後から大規模な変更を避けられます。</p>
+
+  <h3 class="subsection-title">モノリスの DB 設計パターン</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4><i class="ti ti-database" style="color:var(--c-teal-500)"></i> 単一データベース（推奨：初期）</h4>
+      <p>すべてのデータを 1 つの DB に格納。トランザクションが最も強力。チーム 1〜10 人・データ量 1TB 以下に最適。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-database" style="color:var(--c-purple-500)"></i> スキーマ分離（推奨：モジュラー）</h4>
+      <p><code>orders</code>・<code>users</code>・<code>products</code> スキーマを分離。将来の DB 分割がしやすく、アクセス制御も可能。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-arrows-right-left" style="color:var(--c-coral-500)"></i> 読み書き分離（スケール時）</h4>
+      <p>プライマリ（書き込み専用）+ レプリカ（読み取り専用）。読み取り比率が 70% 以上になったら検討。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-bolt" style="color:var(--c-pink-500)"></i> キャッシュアサイドパターン</h4>
+      <p>頻繁に読まれるデータを Redis にキャッシュ。DB クエリ数を劇的に削減。セッション管理にも活用。</p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">スキーマ設計のベストプラクティス（SQLAlchemy）</h3>
+
+  <pre><span class="keyword">from</span> sqlalchemy <span class="keyword">import</span> Column, String, Numeric, DateTime, ForeignKey, Index, Boolean
+<span class="keyword">from</span> sqlalchemy.orm <span class="keyword">import</span> relationship, DeclarativeBase
+
+<span class="keyword">class</span> <span class="cls">OrderModel</span>(Base):
+    <span class="string">"""注文テーブル"""</span>
+    __tablename__ = <span class="string">"orders"</span>
+    __table_args__ = (
+        <span class="comment"># よく使う検索カラムにインデックスを貼る（検索速度が劇的に改善する）</span>
+        Index(<span class="string">"ix_orders_user_id"</span>, <span class="string">"user_id"</span>),
+        Index(<span class="string">"ix_orders_status"</span>,  <span class="string">"status"</span>),
+        Index(<span class="string">"ix_orders_created_at"</span>, <span class="string">"created_at"</span>),
+        {<span class="string">"schema"</span>: <span class="string">"order_schema"</span>},  <span class="comment"># スキーマ分離でモジュール境界を DB レベルで表現</span>
+    )
+
+    id           = Column(String(<span class="num">36</span>), primary_key=True, default=<span class="keyword">lambda</span>: str(uuid.uuid4()))
+    user_id      = Column(String(<span class="num">36</span>), ForeignKey(<span class="string">"user_schema.users.id"</span>), nullable=False)
+    status       = Column(SQLEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
+    total_amount = Column(Numeric(<span class="num">12</span>, <span class="num">2</span>), nullable=False)  <span class="comment"># 金額は Decimal で精度保証</span>
+    currency     = Column(String(<span class="num">3</span>), nullable=False, default=<span class="string">"JPY"</span>)
+    created_at   = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at   = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())</pre>
+
+  <h3 class="subsection-title">マイグレーション管理のベストプラクティス</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    DEV["開発者がモデルを変更"] --> GEN["マイグレーションファイル生成\nalembic revision --autogenerate"]
+    GEN --> REVIEW["レビュー：生成された SQL を確認\nup / down 両方が正しいか検証"]
+    REVIEW --> TEST["テスト環境で実行\nalembic upgrade head"]
+    TEST --> STAGING["ステージング環境で実行\nロールバックのテスト"]
+    STAGING --> PROD["本番環境で実行"]
+    PROD --> MONITOR["実行後の確認\nエラーログ・データ整合性チェック"]
+    PROD -->|"問題発生時"| ROLLBACK["alembic downgrade -1\n1バージョン戻す"]
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon"><i class="ti ti-alert-triangle"></i></span>
+    <div><strong>本番 DB マイグレーションの鉄則</strong><br>必ずステージング環境で先にテストし、ロールバック手順を確認してから本番に適用します。特に大量データが存在するテーブルへの ALTER TABLE は、本番環境で長時間ロックがかかる可能性があります。</div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">SQLAlchemy 公式ドキュメント</div>
+        <a href="https://docs.sqlalchemy.org/" target="_blank">https://docs.sqlalchemy.org/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Alembic（DB マイグレーション）</div>
+        <a href="https://alembic.sqlalchemy.org/" target="_blank">https://alembic.sqlalchemy.org/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">PostgreSQL パフォーマンスチューニング</div>
+        <a href="https://www.postgresql.org/docs/current/performance-tips.html" target="_blank">https://www.postgresql.org/docs/current/performance-tips.html</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s7">
+  <div class="section-header">
+    <span class="section-number">07</span>
+    <h2 class="section-title">ビジネスロジックの実装</h2>
+  </div>
+
+  <p>ビジネスロジックとは「会社が何をするか」を表すコードです。注文の合計金額計算・在庫チェック・割引ルールなどがこれに該当します。<strong>最もよくある間違いは、このロジックをコントローラーやテンプレートに書いてしまうこと</strong>です。</p>
+
+  <h3 class="subsection-title">ビジネスロジックの正しい配置場所</h3>
+
+  <div class="comparison-row">
+    <div class="comp-col good">
+      <h4><i class="ti ti-check"></i> 置くべき場所</h4>
+      <ul>
+        <li><strong>ドメイン層</strong>：エンティティの不変条件・値オブジェクトの計算・ドメインルール検証</li>
+        <li><strong>アプリケーション層</strong>：ユースケースのフロー制御・サービス間調整・トランザクション境界</li>
+      </ul>
+    </div>
+    <div class="comp-col bad">
+      <h4><i class="ti ti-x"></i> 置いてはいけない場所</h4>
+      <ul>
+        <li><strong>コントローラー</strong>：HTTP の詳細のみを扱う場所。計算ロジックを書かない</li>
+        <li><strong>DB（ストアドプロシージャ）</strong>：テストが困難になり、ビジネスロジックがバラバラになる</li>
+        <li><strong>テンプレート・ビュー</strong>：表示ロジックのみ。計算や判断をここに書かない</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">ドメインモデルの実装例（リッチドメインモデル）</h3>
+
+  <p>リッチドメインモデル（＝ビジネスロジックをエンティティ自身が持つパターン）の実装例です。<code>Order</code> クラスがビジネスルールを自分で守ります。</p>
+
+  <pre><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field
+<span class="keyword">from</span> decimal <span class="keyword">import</span> Decimal
+<span class="keyword">from</span> enum <span class="keyword">import</span> Enum
+
+<span class="comment"># 値オブジェクト：金額をただの数値でなく「意味のある型」として表現</span>
+@dataclass(frozen=True)  <span class="comment"># frozen=True でイミュータブル（変更不可）にする</span>
+<span class="keyword">class</span> <span class="cls">Money</span>:
+    amount:   Decimal
+    currency: str = <span class="string">"JPY"</span>
+
+    <span class="keyword">def</span> <span class="func">__post_init__</span>(self):
+        <span class="comment"># 初期化時にビジネスルール（金額は0以上）を強制する</span>
+        <span class="keyword">if</span> self.amount < <span class="num">0</span>:
+            <span class="keyword">raise</span> ValueError(<span class="string">f"金額は0以上でなければなりません: {self.amount}"</span>)
+
+    <span class="keyword">def</span> <span class="func">__add__</span>(self, other: <span class="string">"Money"</span>) -> <span class="string">"Money"</span>:
+        <span class="comment"># 通貨が異なる加算を防ぐ（型で守るビジネスルール）</span>
+        <span class="keyword">if</span> self.currency != other.currency:
+            <span class="keyword">raise</span> ValueError(<span class="string">f"通貨が一致しません: {self.currency} vs {other.currency}"</span>)
+        <span class="keyword">return</span> Money(self.amount + other.amount, self.currency)
+
+<span class="comment"># エンティティ：注文（ビジネスロジックを自分で持つ）</span>
+@dataclass
+<span class="keyword">class</span> <span class="cls">Order</span>:
+    id:          str
+    customer_id: str
+    _status:     OrderStatus = OrderStatus.PENDING
+
+    @classmethod
+    <span class="keyword">def</span> <span class="func">create</span>(cls, customer_id: str) -> <span class="string">"Order"</span>:
+        <span class="keyword">return</span> cls(id=str(uuid.uuid4()), customer_id=customer_id)
+
+    <span class="keyword">def</span> <span class="func">confirm</span>(self) -> None:
+        <span class="comment"># 確定できる状態かをエンティティ自身がチェックする</span>
+        <span class="keyword">if</span> self._status != OrderStatus.PENDING:
+            <span class="keyword">raise</span> ValueError(<span class="string">"保留中の注文のみ確定できます"</span>)
+        <span class="keyword">if not</span> self._items:
+            <span class="keyword">raise</span> ValueError(<span class="string">"商品が1件もありません"</span>)
+        self._status = OrderStatus.CONFIRMED
+
+    <span class="keyword">def</span> <span class="func">cancel</span>(self, reason: str = <span class="string">""</span>) -> None:
+        <span class="comment"># 発送済み・配達済みはキャンセル不可というビジネスルールをここで守る</span>
+        <span class="keyword">if</span> self._status <span class="keyword">in</span> (OrderStatus.SHIPPED, OrderStatus.DELIVERED):
+            <span class="keyword">raise</span> ValueError(<span class="string">"発送済み・配達済みの注文はキャンセルできません"</span>)</pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Repository Pattern</div>
+        <a href="https://martinfowler.com/eaaCatalog/repository.html" target="_blank">https://martinfowler.com/eaaCatalog/repository.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Domain-Driven Design — Eric Evans（書籍）</div>
+        <a href="https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/" target="_blank">https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s8">
+  <div class="section-header">
+    <span class="section-number">08</span>
+    <h2 class="section-title">API とルーティング設計</h2>
+  </div>
+
+  <p>モノリシックアプリケーションの API 設計は、外部クライアントとアプリケーション内部の橋渡し役です。RESTful 設計原則に従い、リソース指向の URL 設計を行います。</p>
+
+  <h3 class="subsection-title">RESTful エンドポイント設計</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>HTTP メソッド</th><th>URL</th><th>操作</th><th>レスポンス</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag tag-teal">GET</span></td><td><code>/api/v1/orders</code></td><td>注文一覧取得</td><td>200 OK + ページネーション</td></tr>
+        <tr><td><span class="tag tag-purple">POST</span></td><td><code>/api/v1/orders</code></td><td>注文作成</td><td>201 Created</td></tr>
+        <tr><td><span class="tag tag-teal">GET</span></td><td><code>/api/v1/orders/{id}</code></td><td>注文詳細取得</td><td>200 OK / 404</td></tr>
+        <tr><td><span class="tag tag-coral">PATCH</span></td><td><code>/api/v1/orders/{id}</code></td><td>注文部分更新</td><td>200 OK</td></tr>
+        <tr><td><span class="tag tag-pink">DELETE</span></td><td><code>/api/v1/orders/{id}</code></td><td>注文削除</td><td>204 No Content</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">ミドルウェアスタックの処理順序</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    REQ["HTTP リクエスト受信"] --> MW1["1 CORS ミドルウェア\n許可オリジンのチェック"]
+    MW1 --> MW2["2 レート制限\nRate Limiting"]
+    MW2 --> MW3["3 認証チェック\nJWT 検証"]
+    MW3 --> MW4["4 リクエストロギング\nリクエストID生成"]
+    MW4 --> MW5["5 バリデーション\n入力値の検証"]
+    MW5 --> MW6["6 ルーターへディスパッチ\nコントローラー実行"]
+    MW6 --> MW7["7 エラーハンドリング\n統一エラーフォーマット"]
+    MW7 --> RES["HTTP レスポンス送信"]
+    </div>
+  </div>
+
+  <h3 class="subsection-title">FastAPI コントローラー実装例</h3>
+
+  <pre><span class="keyword">from</span> fastapi <span class="keyword">import</span> APIRouter, Depends, HTTPException, status
+
+router = APIRouter(prefix=<span class="string">"/api/v1/orders"</span>, tags=[<span class="string">"orders"</span>])
+
+@router.post(
+    <span class="string">""</span>,
+    response_model=OrderResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+<span class="keyword">async def</span> <span class="func">create_order</span>(
+    request:      CreateOrderRequest,
+    use_case:     PlaceOrderUseCase = Depends(get_place_order_use_case),
+    current_user: CurrentUser       = Depends(get_current_user),
+) -> OrderResponse:
+    <span class="string">"""
+    コントローラーは HTTP の詳細（リクエスト受取・レスポンス整形）のみを担当。
+    ビジネスロジックはユースケースクラスに完全委譲する。
+    """</span>
+    <span class="keyword">try</span>:
+        result = <span class="keyword">await</span> use_case.execute(
+            customer_id=current_user.user_id,
+            items=[{<span class="string">"product_id"</span>: i.product_id, <span class="string">"quantity"</span>: i.quantity} <span class="keyword">for</span> i <span class="keyword">in</span> request.items],
+        )
+        <span class="keyword">return</span> OrderResponse(**result)
+
+    <span class="keyword">except</span> ValueError <span class="keyword">as</span> e:
+        <span class="comment"># ビジネスルール違反は 422 で返す（500 ではない）</span>
+        <span class="keyword">raise</span> HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={<span class="string">"code"</span>: <span class="string">"BUSINESS_RULE_VIOLATION"</span>, <span class="string">"message"</span>: str(e)},
+        )</pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">FastAPI 公式ドキュメント</div>
+        <a href="https://fastapi.tiangolo.com/" target="_blank">https://fastapi.tiangolo.com/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Pydantic（バリデーション）</div>
+        <a href="https://docs.pydantic.dev/" target="_blank">https://docs.pydantic.dev/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s9">
+  <div class="section-header">
+    <span class="section-number">09</span>
+    <h2 class="section-title">認証・認可の実装</h2>
+  </div>
+
+  <p>モノリシックアプリケーションの認証（＝あなたは誰か）と認可（＝あなたは何をしてよいか）の実装は、すべての API で共通のミドルウェアとして適用します。</p>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+sequenceDiagram
+    participant USER as ユーザー
+    participant APP as モノリスアプリ
+    participant JWT_SVC as JWT サービス
+    participant USER_DB as ユーザー DB
+    participant REDIS_S as Redis（セッションストア）
+    Note over USER,REDIS_S: ログインフロー
+    USER->>APP: POST /auth/login { email, password }
+    APP->>USER_DB: ユーザー取得・パスワード検証
+    USER_DB-->>APP: ユーザー情報
+    APP->>JWT_SVC: JWT トークン生成
+    JWT_SVC-->>APP: access_token（15分）+ refresh_token（7日）
+    APP->>REDIS_S: refresh_token を保存
+    APP-->>USER: トークン返却
+    Note over USER,REDIS_S: 認証が必要な API アクセス
+    USER->>APP: GET /api/v1/orders Authorization: Bearer {access_token}
+    APP->>JWT_SVC: 署名・有効期限チェック
+    JWT_SVC-->>APP: ペイロード（user_id, roles）
+    APP-->>USER: 200 OK + データ
+    </div>
+  </div>
+
+  <h3 class="subsection-title">JWT 認証の実装例</h3>
+
+  <pre><span class="keyword">import</span> jwt, bcrypt
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta, timezone
+<span class="keyword">import</span> os
+
+<span class="keyword">class</span> <span class="cls">JWTService</span>:
+    <span class="comment"># シークレットキーは必ず環境変数から取得する（コードにハードコードしない）</span>
+    SECRET_KEY     = os.environ[<span class="string">"JWT_SECRET_KEY"</span>]
+    ALGORITHM      = <span class="string">"HS256"</span>
+    ACCESS_EXPIRE  = timedelta(minutes=<span class="num">15</span>)   <span class="comment"># 短い有効期限でリスクを最小化</span>
+    REFRESH_EXPIRE = timedelta(days=<span class="num">7</span>)
+
+    @classmethod
+    <span class="keyword">def</span> <span class="func">create_access_token</span>(cls, user_id: str, roles: list[str]) -> str:
+        now = datetime.now(timezone.utc)
+        payload = {
+            <span class="string">"sub"</span>:   user_id,
+            <span class="string">"roles"</span>: roles,
+            <span class="string">"iat"</span>:   now,
+            <span class="string">"exp"</span>:   now + cls.ACCESS_EXPIRE,
+        }
+        <span class="keyword">return</span> jwt.encode(payload, cls.SECRET_KEY, algorithm=cls.ALGORITHM)
+
+<span class="keyword">class</span> <span class="cls">PasswordHasher</span>:
+    @staticmethod
+    <span class="keyword">def</span> <span class="func">hash</span>(plain_password: str) -> str:
+        <span class="comment"># bcrypt を使う。コストファクター 12 が推奨（高いほど安全だが遅くなる）</span>
+        <span class="keyword">return</span> bcrypt.hashpw(
+            plain_password.encode(<span class="string">"utf-8"</span>),
+            bcrypt.gensalt(rounds=<span class="num">12</span>),
+        ).decode(<span class="string">"utf-8"</span>)
+
+<span class="comment"># ロールベースアクセス制御（RBAC）の依存性注入</span>
+<span class="keyword">def</span> <span class="func">require_roles</span>(*roles: Role):
+    <span class="keyword">def</span> <span class="func">dependency</span>(current_user: CurrentUser = Depends(get_current_user)):
+        <span class="comment"># いずれかのロールを持っていれば許可（OR 条件）</span>
+        <span class="keyword">if not</span> any(current_user.has_role(role) <span class="keyword">for</span> role <span class="keyword">in</span> roles):
+            <span class="keyword">raise</span> HTTPException(status_code=<span class="num">403</span>, detail=<span class="string">"権限が不足しています"</span>)
+        <span class="keyword">return</span> current_user
+    <span class="keyword">return</span> dependency</pre>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>項目</th><th>ベストプラクティス</th><th>理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>シークレットキー</td><td>環境変数から取得</td><td>コードに埋め込むと Git 経由で漏洩するリスクがある</td></tr>
+        <tr><td>access_token 有効期限</td><td>15 分</td><td>漏洩時の被害を最小化できる</td></tr>
+        <tr><td>パスワードハッシュ</td><td>bcrypt（コスト 12）</td><td>ブルートフォース攻撃への耐性が高い</td></tr>
+        <tr><td>refresh_token の保存</td><td>Redis（サーバーサイド）</td><td>即座に無効化できる（ログアウト対応）</td></tr>
+        <tr><td>認可</td><td>ロールベース（RBAC）</td><td>きめ細かなアクセス制御が可能</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">JWT 公式サイト（jwt.io）</div>
+        <a href="https://jwt.io/" target="_blank">https://jwt.io/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">OWASP — Authentication Cheat Sheet</div>
+        <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank">https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s10">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h2 class="section-title">テスト戦略</h2>
+  </div>
+
+  <p>テストはコードの品質保証の核心です。「テストがないコードは変更するのが怖い」というのはソフトウェア工学の格言です。モノリスのテストは、テストピラミッドという考え方に基づいて設計します。</p>
+
+  <h3 class="subsection-title">テストピラミッド</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    E2E_T["E2E テスト（少数）\n実際のブラウザ・HTTP 通信で検証\nツール：Playwright / Selenium\n実行時間：数分\n目標：重要な 5〜10 シナリオのみ"]
+    INT_T["統合テスト（中程度）\nDB やキャッシュを含めた検証\nツール：pytest + TestContainers\n実行時間：数十秒"]
+    UNIT_T["ユニットテスト（多数・大量）\nドメインロジック・ビジネスルール\nツール：pytest（DB 不要）\n実行時間：ミリ秒\n目標：90% 以上のカバレッジ"]
+    UNIT_T --> INT_T --> E2E_T
+    </div>
+  </div>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <h4><i class="ti ti-checkbox" style="color:var(--c-teal-500)"></i> ユニットテスト</h4>
+      <p>DB なしで純粋なビジネスロジックをテスト。最も速く、最も多く書く。カバレッジ 90% 以上を目標にする。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-arrows-join" style="color:var(--c-purple-500)"></i> 統合テスト</h4>
+      <p>TestContainers で実際の DB を起動してリポジトリをテスト。API エンドポイントのシナリオ検証も含む。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-world" style="color:var(--c-coral-500)"></i> E2E テスト</h4>
+      <p>実際のブラウザで重要なビジネスシナリオ（登録→注文→決済）を検証。数件のみ作成する。</p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">テスト実装例（pytest）</h3>
+
+  <pre><span class="keyword">import</span> pytest
+<span class="keyword">from</span> decimal <span class="keyword">import</span> Decimal
+<span class="keyword">from</span> domain.entities.order <span class="keyword">import</span> Order, OrderStatus
+<span class="keyword">from</span> domain.value_objects.money <span class="keyword">import</span> Money
+
+<span class="keyword">class</span> <span class="cls">TestOrder</span>:
+    <span class="string">"""注文エンティティのユニットテスト（DB 不要・高速）"""</span>
+
+    <span class="keyword">def</span> <span class="func">test_注文作成時は保留中ステータスになる</span>(self):
+        order = Order.create(customer_id=<span class="string">"cust_001"</span>)
+        <span class="keyword">assert</span> order.status == OrderStatus.PENDING
+
+    <span class="keyword">def</span> <span class="func">test_確定後は商品を追加できない</span>(self):
+        order = Order.create(customer_id=<span class="string">"cust_001"</span>)
+        order.add_item(<span class="string">"prod_001"</span>, <span class="string">"Tシャツ"</span>, Money(Decimal(<span class="string">"1000"</span>)), <span class="num">1</span>)
+        order.confirm()
+
+        <span class="comment"># 確定済みへの変更を試みると ValueError が発生することを確認</span>
+        <span class="keyword">with</span> pytest.raises(ValueError, match=<span class="string">"確定済みの注文は変更できません"</span>):
+            order.add_item(<span class="string">"prod_002"</span>, <span class="string">"ジーンズ"</span>, Money(Decimal(<span class="string">"5000"</span>)), <span class="num">1</span>)
+
+    <span class="keyword">def</span> <span class="func">test_注文確定時にドメインイベントが発行される</span>(self):
+        order = Order.create(customer_id=<span class="string">"cust_001"</span>)
+        order.add_item(<span class="string">"prod_001"</span>, <span class="string">"Tシャツ"</span>, Money(Decimal(<span class="string">"1000"</span>)), <span class="num">1</span>)
+        order.confirm()
+
+        events = order.domain_events
+        <span class="keyword">assert</span> len(events) == <span class="num">1</span>
+        <span class="keyword">assert</span> events[<span class="num">0</span>][<span class="string">"type"</span>] == <span class="string">"OrderConfirmed"</span>
+
+<span class="comment"># 統合テスト：TestContainers で実際の DB を起動</span>
+@pytest.fixture(scope=<span class="string">"session"</span>)
+<span class="keyword">def</span> <span class="func">postgres_container</span>():
+    <span class="keyword">with</span> PostgresContainer(<span class="string">"postgres:16-alpine"</span>) <span class="keyword">as</span> pg:
+        <span class="keyword">yield</span> pg
+
+@pytest.fixture
+<span class="keyword">def</span> <span class="func">db_session</span>(db_engine):
+    <span class="comment"># 各テスト後にロールバックすることで、テスト間の独立性を保証する</span>
+    connection = db_engine.connect()
+    transaction = connection.begin()
+    session = sessionmaker(bind=connection)()
+    <span class="keyword">yield</span> session
+    session.close()
+    transaction.rollback()  <span class="comment"># テストデータを残さない</span></pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">pytest 公式ドキュメント</div>
+        <a href="https://docs.pytest.org/" target="_blank">https://docs.pytest.org/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">TestContainers（統合テスト）</div>
+        <a href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/" target="_blank">https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Playwright（E2E テスト）</div>
+        <a href="https://playwright.dev/python/" target="_blank">https://playwright.dev/python/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s11">
+  <div class="section-header">
+    <span class="section-number">11</span>
+    <h2 class="section-title">スケーリング戦略</h2>
+  </div>
+
+  <p>モノリスは「スケールできない」という誤解がありますが、適切な戦略を使えば大規模システムでも十分に対応できます。スケーリングは必要に応じて段階的に行います。</p>
+
+  <div class="scaling-grid">
+    <div class="scaling-card">
+      <h4><i class="ti ti-arrow-up" style="color:var(--c-teal-500)"></i> 垂直スケーリング</h4>
+      <p>サーバーの CPU・メモリを増強する最もシンプルな方法。まずここから始める。上限があるためいずれ限界に達する。</p>
+    </div>
+    <div class="scaling-card">
+      <h4><i class="ti ti-arrows-horizontal" style="color:var(--c-purple-500)"></i> 水平スケーリング</h4>
+      <p>同一アプリを複数インスタンスで起動してロードバランサーで分散する。ステートレス設計（セッションを外に持つ）が前提条件。</p>
+    </div>
+    <div class="scaling-card">
+      <h4><i class="ti ti-bolt" style="color:var(--c-coral-500)"></i> Redis キャッシュ</h4>
+      <p>頻繁に読まれるデータを Redis にキャッシュして DB 負荷を削減する。セッション管理にも使用してインスタンス間で共有する。</p>
+    </div>
+    <div class="scaling-card">
+      <h4><i class="ti ti-database-export" style="color:var(--c-pink-500)"></i> 読み取りレプリカ</h4>
+      <p>DB のリードレプリカを追加して SELECT クエリを振り分ける。読み取り比率が 70% 以上の場合に特に効果的。</p>
+    </div>
+    <div class="scaling-card">
+      <h4><i class="ti ti-brand-cloudflare" style="color:var(--c-teal-500)"></i> CDN 配信</h4>
+      <p>静的ファイル・画像を CDN から配信してオリジンサーバーの負荷を軽減する。グローバルなレイテンシも改善される。</p>
+    </div>
+    <div class="scaling-card">
+      <h4><i class="ti ti-clock-play" style="color:var(--c-purple-500)"></i> 非同期処理</h4>
+      <p>メール送信・レポート生成などの重い処理を Celery などのジョブキューに移す。レスポンスタイムが劇的に改善する。</p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">水平スケーリングの構成</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    INTERNET["インターネット"] --> LB["ロードバランサー\nNginx / AWS ALB"]
+    subgraph APP_INSTANCES["アプリケーションインスタンス（ステートレス）"]
+        APP1["App Instance 1"]
+        APP2["App Instance 2"]
+        APP3["App Instance 3"]
+    end
+    LB --> APP1
+    LB --> APP2
+    LB --> APP3
+    APP1 & APP2 & APP3 -->|"書き込み"| PG_PRIMARY["PostgreSQL Primary"]
+    APP1 & APP2 & APP3 -->|"読み取り"| PG_REPLICA["PostgreSQL Replica"]
+    APP1 & APP2 & APP3 --> REDIS_CLUSTER["Redis Cluster\nセッション・キャッシュ"]
+    APP1 & APP2 & APP3 --> S3["S3 共有ストレージ"]
+    PG_PRIMARY -->|"レプリケーション"| PG_REPLICA
+    </div>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-icon"><i class="ti ti-lightbulb"></i></span>
+    <div><strong>ステートレス設計の 3 つのポイント</strong><br>水平スケーリングには、アプリケーションインスタンスが「状態を持たない（ステートレス）」設計が必須です。① セッションは Redis に保存（サーバーローカルに保存しない）、② ファイルアップロードは S3 等の共有ストレージへ、③ ローカルキャッシュより Redis などの分散キャッシュを使う。</div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Redis 公式ドキュメント</div>
+        <a href="https://redis.io/docs/" target="_blank">https://redis.io/docs/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s12">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h2 class="section-title">CI/CD とデプロイ戦略</h2>
+  </div>
+
+  <p>CI/CD（継続的インテグレーション・継続的デリバリー）は、コードの変更を安全・高速に本番環境に届けるための仕組みです。モノリスは単一コードベースなので、CI/CD の設計がシンプルで始めやすいのも利点です。</p>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    subgraph CI["継続的インテグレーション"]
+        PUSH["git push / PR 作成"] --> LINT["コード品質チェック\nruff / mypy"]
+        LINT --> UNIT_CI["ユニットテスト\n高速・並列実行"]
+        UNIT_CI --> INT_CI["統合テスト\nTestContainers"]
+        INT_CI --> COVERAGE["カバレッジチェック\n80% 以上を維持"]
+        COVERAGE --> BUILD["Docker イメージビルド"]
+        BUILD --> SECURITY["セキュリティスキャン\n依存関係の脆弱性"]
+        SECURITY --> PUSH_IMG["イメージプッシュ\nContainer Registry"]
+    end
+    subgraph CD["継続的デリバリー"]
+        DEPLOY_STG["ステージング環境デプロイ"] --> SMOKE["スモークテスト\n基本動作確認"]
+        SMOKE --> E2E_CD["E2E テスト実行"]
+        E2E_CD --> APPROVE["本番デプロイ承認"]
+        APPROVE --> DB_MIGRATE["DB マイグレーション実行"]
+        DB_MIGRATE --> BLUE_GREEN["ブルーグリーンデプロイ\nまたは Rolling Update"]
+        BLUE_GREEN --> HEALTH_CHECK["ヘルスチェック確認"]
+        HEALTH_CHECK -->|"問題あり"| ROLLBACK["自動ロールバック"]
+    end
+    PUSH_IMG --> DEPLOY_STG
+    </div>
+  </div>
+
+  <h3 class="subsection-title">Dockerfile ベストプラクティス（マルチステージビルド）</h3>
+
+  <pre><span class="comment"># Stage 1: 依存関係インストール</span>
+<span class="keyword">FROM</span> python:3.12-slim <span class="cls">AS</span> dependencies
+WORKDIR /app
+<span class="comment"># 依存関係ファイルを先にコピー（コードが変わってもキャッシュを活用できる）</span>
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+<span class="comment"># Stage 2: 本番イメージ（最小サイズ）</span>
+<span class="keyword">FROM</span> python:3.12-slim <span class="cls">AS</span> runtime
+<span class="comment"># セキュリティ：非 root ユーザーで実行する</span>
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+WORKDIR /app
+COPY --from=dependencies /root/.local /home/appuser/.local
+COPY --chown=appuser:appgroup . .
+USER appuser
+
+<span class="comment"># ヘルスチェック：コンテナの死活監視に使われる</span>
+HEALTHCHECK --interval=30s --timeout=10s CMD \
+    python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+CMD [<span class="string">"gunicorn"</span>, <span class="string">"main:app"</span>, <span class="string">"--workers"</span>, <span class="string">"4"</span>, \
+     <span class="string">"--worker-class"</span>, <span class="string">"uvicorn.workers.UvicornWorker"</span>, \
+     <span class="string">"--bind"</span>, <span class="string">"0.0.0.0:8000"</span>]</pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Docker Best Practices</div>
+        <a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/" target="_blank">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Gunicorn 設定ガイド</div>
+        <a href="https://docs.gunicorn.org/" target="_blank">https://docs.gunicorn.org/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s13">
+  <div class="section-header">
+    <span class="section-number">13</span>
+    <h2 class="section-title">監視・ロギング</h2>
+  </div>
+
+  <p>監視とロギングは「本番環境で何が起きているか」を把握するための仕組みです。モノリスは単一プロセスなので、分散システムより監視が容易です。</p>
+
+  <h3 class="subsection-title">オブザーバビリティの 3 本柱</h3>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <h4><i class="ti ti-chart-line" style="color:var(--c-teal-500)"></i> メトリクス</h4>
+      <p>Prometheus + Grafana。RPS・P95 レスポンスタイム・エラーレート・CPU / メモリ使用率を継続的に計測する。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-notes" style="color:var(--c-purple-500)"></i> ログ</h4>
+      <p>構造化ログ（JSON 形式）で出力する。リクエスト ID を付与して追跡可能にする。ELK Stack や Loki + Grafana で集中管理。</p>
+    </div>
+    <div class="card">
+      <h4><i class="ti ti-topology-ring" style="color:var(--c-coral-500)"></i> トレース</h4>
+      <p>Jaeger / OpenTelemetry でリクエストの処理経路を可視化する。DB クエリの実行時間を含め、ボトルネックを特定できる。</p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">アラート設定の目安</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>アラート条件</th><th>閾値</th><th>対応</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>レスポンスタイム P99</td><td>> 1 秒</td><td>DB クエリの最適化・キャッシュ追加を検討</td></tr>
+        <tr><td>エラーレート</td><td>> 1%</td><td>ログを確認してエラー原因を特定する</td></tr>
+        <tr><td>CPU 使用率</td><td>> 80%（5 分継続）</td><td>スケールアウトまたはコード最適化</td></tr>
+        <tr><td>DB コネクション数</td><td>> 80%</td><td>コネクションプールの調整またはインスタンス増強</td></tr>
+        <tr><td>ディスク使用率</td><td>> 85%</td><td>ログローテーション・ストレージ拡張</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">構造化ロギング実装例</h3>
+
+  <pre><span class="keyword">import</span> structlog, time, uuid
+
+<span class="keyword">class</span> <span class="cls">RequestLoggingMiddleware</span>(BaseHTTPMiddleware):
+    <span class="keyword">async def</span> <span class="func">dispatch</span>(self, request: Request, call_next) -> Response:
+        request_id = str(uuid.uuid4())  <span class="comment"># 追跡のためのリクエスト ID</span>
+        start_time = time.perf_counter()
+
+        <span class="comment"># コンテキスト変数に設定しておくとすべてのログに自動付与される</span>
+        structlog.contextvars.bind_contextvars(
+            request_id=request_id,
+            method=request.method,
+            path=request.url.path,
+        )
+        logger.info(<span class="string">"リクエスト受信"</span>)
+
+        response  = <span class="keyword">await</span> call_next(request)
+        elapsed_ms = (time.perf_counter() - start_time) * <span class="num">1000</span>
+
+        logger.info(<span class="string">"レスポンス送信"</span>,
+            status_code=response.status_code,
+            elapsed_ms=round(elapsed_ms, <span class="num">2</span>),
+        )
+        response.headers[<span class="string">"X-Request-ID"</span>] = request_id  <span class="comment"># クライアントに ID を返す</span>
+        <span class="keyword">return</span> response</pre>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">OpenTelemetry 公式</div>
+        <a href="https://opentelemetry.io/" target="_blank">https://opentelemetry.io/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Prometheus 公式</div>
+        <a href="https://prometheus.io/docs/" target="_blank">https://prometheus.io/docs/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">structlog（構造化ロギング）</div>
+        <a href="https://www.structlog.org/" target="_blank">https://www.structlog.org/</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s14">
+  <div class="section-header">
+    <span class="section-number">14</span>
+    <h2 class="section-title">実践：EC サイト完全実装例</h2>
+  </div>
+
+  <p>これまで学んだ知識を EC サイトの例で統合します。モノリシックアーキテクチャで EC サイトを構築する場合の全体図と、注文処理の完全なフローを確認しましょう。</p>
+
+  <h3 class="subsection-title">EC サイト全体アーキテクチャ</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    BROWSER["ブラウザ"] & MOBILE["モバイルアプリ"] --> CDN_EC["CDN\n静的ファイル配信"]
+    BROWSER & MOBILE --> LB_EC["ロードバランサー"]
+    LB_EC --> EC_MONO
+
+    subgraph EC_MONO["EC サイト モノリシックアプリ"]
+        subgraph PRES_EC["プレゼンテーション層"]
+            PRODUCT_CTRL["商品コントローラー"]
+            ORDER_CTRL["注文コントローラー"]
+            USER_CTRL["ユーザーコントローラー"]
+            CART_CTRL["カートコントローラー"]
+        end
+        subgraph BUSI_EC["ビジネスロジック層（モジュール）"]
+            PRODUCT_MOD["商品モジュール\nカタログ管理・検索"]
+            ORDER_MOD["注文モジュール\n注文処理・履歴"]
+            USER_MOD["ユーザーモジュール\n会員管理"]
+            PAYMENT_MOD["決済モジュール"]
+            INVENTORY_MOD["在庫モジュール"]
+            NOTIFY_MOD["通知モジュール"]
+        end
+    end
+
+    PRES_EC --> BUSI_EC
+    BUSI_EC --> PG_EC[("PostgreSQL")]
+    BUSI_EC --> REDIS_EC["Redis キャッシュ"]
+    BUSI_EC --> S3_EC["S3 商品画像"]
+    BUSI_EC --> ES_EC["Elasticsearch\n商品検索"]
+    </div>
+  </div>
+
+  <h3 class="subsection-title">注文処理の完全フロー</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+sequenceDiagram
+    participant BROWSER as ブラウザ
+    participant CTRL as 注文コントローラー
+    participant USE_CASE as 注文作成ユースケース
+    participant INVENTORY2 as 在庫モジュール
+    participant ORDER_DOM2 as 注文ドメイン
+    participant PAYMENT2 as 決済モジュール
+    participant DB2 as PostgreSQL
+    participant EVENTS2 as イベントバス
+    participant NOTIFY2 as 通知モジュール
+    BROWSER->>CTRL: POST /api/v1/orders/checkout
+    CTRL->>CTRL: JWT 検証・リクエストバリデーション
+    CTRL->>USE_CASE: execute(checkout_command)
+    USE_CASE->>INVENTORY2: check_and_reserve_stock(items)
+    INVENTORY2->>DB2: 在庫確認（SELECT FOR UPDATE）
+    DB2-->>INVENTORY2: 在庫 OK
+    INVENTORY2->>DB2: 在庫引き当て（UPDATE）
+    USE_CASE->>ORDER_DOM2: Order.create(customer_id, items)
+    ORDER_DOM2->>ORDER_DOM2: ビジネスルール・価格計算
+    USE_CASE->>DB2: BEGIN TRANSACTION
+    USE_CASE->>DB2: INSERT INTO orders + order_items
+    USE_CASE->>PAYMENT2: process_payment(order, payment_info)
+    PAYMENT2-->>USE_CASE: 決済成功
+    USE_CASE->>DB2: UPDATE orders SET status = confirmed
+    USE_CASE->>DB2: COMMIT TRANSACTION
+    USE_CASE->>EVENTS2: publish("order.placed")
+    EVENTS2--)NOTIFY2: order.placed イベント受信
+    NOTIFY2--)BROWSER: 注文確認メール送信
+    USE_CASE-->>CTRL: OrderResult
+    CTRL-->>BROWSER: HTTP 201 Created
+    </div>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-icon"><i class="ti ti-check"></i></span>
+    <div><strong>モノリスだからこそ実現できること</strong><br>注文→在庫引き当て→決済→通知の一連のフローを、単一のデータベーストランザクションで囲めることがモノリスの最大の強みです。マイクロサービスでは分散トランザクション（Saga パターンなど）が必要になり、実装が格段に複雑になります。</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s15">
+  <div class="section-header">
+    <span class="section-number">15</span>
+    <h2 class="section-title">マイクロサービスへの段階的移行</h2>
+  </div>
+
+  <p>モノリスからマイクロサービスへの移行は「必要になったときに、段階的に」行うものです。移行の必要性を判断するフローと、安全な移行パターンを紹介します。</p>
+
+  <h3 class="subsection-title">移行判断のフロー</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    START["モノリスの課題が発生している"] --> Q1{"開発チームが\n5人以上になったか？"}
+    Q1 -->|"No"| STAY["モノリスを最適化\nモジュラーモノリスへ再設計"]
+    Q1 -->|"Yes"| Q2{"デプロイ頻度が\n週1回以上必要か？"}
+    Q2 -->|"No"| MODULAR["モジュラーモノリスへ移行\nコード境界を明確化"]
+    Q2 -->|"Yes"| Q3{"特定機能が\nスケールボトルネックか？"}
+    Q3 -->|"No"| MODULAR
+    Q3 -->|"Yes"| EXTRACT["一部機能をマイクロサービス化\nStrangler Fig パターンを使う"]
+    </div>
+  </div>
+
+  <h3 class="subsection-title">Strangler Fig パターン（安全な段階的移行）</h3>
+
+  <p>Strangler Fig（絞め殺しのイチジク）パターンは、モノリスを徐々に置き換えていく移行パターンです。いきなり全機能を移行せず、一部の機能から段階的に切り出します。</p>
+
+  <div class="phase-timeline">
+    <div class="phase-item phase-1">
+      <div class="phase-badge">P1</div>
+      <div>
+        <h4>Phase 1：モノリスをモジュラー化する</h4>
+        <p>先にモジュール境界を明確にします。これをしないと、マイクロサービスに分割したとき依存が複雑で失敗します。</p>
+      </div>
+    </div>
+    <div class="phase-item phase-2">
+      <div class="phase-badge">P2</div>
+      <div>
+        <h4>Phase 2：最初の 1 サービスを切り出す（通知など）</h4>
+        <p>最も独立性が高く、他モジュールへの影響が少ない機能から始めます。通知・メール送信・レポート生成がよい候補です。</p>
+      </div>
+    </div>
+    <div class="phase-item phase-3">
+      <div class="phase-badge">P3</div>
+      <div>
+        <h4>Phase 3：API ゲートウェイを導入する</h4>
+        <p>クライアントはゲートウェイだけを知り、背後でモノリスと各マイクロサービスに振り分けます。移行中も既存クライアントは変更不要です。</p>
+      </div>
+    </div>
+    <div class="phase-item phase-4">
+      <div class="phase-badge">P4</div>
+      <div>
+        <h4>Phase 4：段階的に移行を続ける</h4>
+        <p>高負荷・独立性が高い機能から順に切り出します。モノリスのコアが残っても問題ありません。無理に全部分割する必要はありません。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    subgraph PHASE1["Phase 1: モノリス"]
+        MONO1["モノリス\n全機能"]
+    end
+    subgraph PHASE2["Phase 2: 通知を切り出す"]
+        PROXY1["API ゲートウェイ"] --> MONO2["モノリス\n通知以外"]
+        PROXY1 --> NOTIFY_MS["通知\nマイクロサービス"]
+    end
+    subgraph PHASE3["Phase 3: 検索も切り出す"]
+        PROXY2["API ゲートウェイ"] --> MONO3["モノリス\nコア機能"]
+        PROXY2 --> NOTIFY_MS2["通知\nサービス"]
+        PROXY2 --> SEARCH_MS["検索\nサービス"]
+    end
+    PHASE1 --> PHASE2 --> PHASE3
+    </div>
+  </div>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Sam Newman — Strangler Fig Application</div>
+        <a href="https://martinfowler.com/bliki/StranglerFigApplication.html" target="_blank">https://martinfowler.com/bliki/StranglerFigApplication.html</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s16">
+  <div class="section-header">
+    <span class="section-number">16</span>
+    <h2 class="section-title">ベストプラクティス総まとめ</h2>
+  </div>
+
+  <h3 class="subsection-title">設計フェーズのベストプラクティス</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>カテゴリ</th><th>ベストプラクティス</th><th>理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag tag-teal">構造</span></td><td>モジュラーモノリスを選択する</td><td>将来の移行が容易になる</td></tr>
+        <tr><td><span class="tag tag-purple">依存方向</span></td><td>上位層から下位層への一方向依存</td><td>変更の影響範囲を限定できる</td></tr>
+        <tr><td><span class="tag tag-coral">ドメイン</span></td><td>公開インターフェース経由で通信</td><td>疎結合を保ち拡張しやすい</td></tr>
+        <tr><td><span class="tag tag-pink">DB 設計</span></td><td>スキーマ分離でモジュール境界を明確化</td><td>将来の DB 分割が容易になる</td></tr>
+        <tr><td><span class="tag tag-teal">ロジック</span></td><td>ドメイン層に集約・フレームワーク非依存</td><td>テストが容易・移植性が高い</td></tr>
+        <tr><td><span class="tag tag-purple">設定</span></td><td>環境変数で外部注入（12-Factor App）</td><td>環境差異を最小化できる</td></tr>
+        <tr><td><span class="tag tag-coral">エラー</span></td><td>統一されたエラーレスポンス形式</td><td>クライアントの実装が一貫する</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">モノリス成熟度モデル</h3>
+
+  <p>以下の成熟度モデルは、自分のシステムの現在地を把握するための指標です。焦らず段階的にレベルを上げていくことが重要です。</p>
+
+  <div class="maturity-steps">
+    <div class="maturity-item maturity-0">
+      <span class="maturity-level">Level 0</span>
+      <div>
+        <h4>スパゲッティモノリス</h4>
+        <p>すべてが 1 ファイルに混在。テスト不可・変更が怖い状態。</p>
+      </div>
+    </div>
+    <div class="maturity-item maturity-1">
+      <span class="maturity-level">Level 1</span>
+      <div>
+        <h4>レイヤードモノリス</h4>
+        <p>プレゼンテーション・ビジネス・DB を分離。基本的なテストが可能になる。</p>
+      </div>
+    </div>
+    <div class="maturity-item maturity-2">
+      <span class="maturity-level">Level 2</span>
+      <div>
+        <h4>テスタブルモノリス</h4>
+        <p>依存性注入・ユニットテスト充実。CI/CD が整備されている。</p>
+      </div>
+    </div>
+    <div class="maturity-item maturity-3">
+      <span class="maturity-level">Level 3</span>
+      <div>
+        <h4>モジュラーモノリス</h4>
+        <p>ドメイン境界が明確。モジュール間が疎結合で独立して変更できる。</p>
+      </div>
+    </div>
+    <div class="maturity-item maturity-4">
+      <span class="maturity-level">Level 4</span>
+      <div>
+        <h4>最適化されたモノリス</h4>
+        <p>水平スケーリング対応・キャッシュ戦略・監視・ロギングが充実している。</p>
+      </div>
+    </div>
+    <div class="maturity-item maturity-5">
+      <span class="maturity-level">Level 5</span>
+      <div>
+        <h4>マイクロサービス移行準備完了</h4>
+        <p>必要に応じて段階的に分離可能。または高品質なモノリスとして維持。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s17">
+  <div class="section-header">
+    <span class="section-number">17</span>
+    <h2 class="section-title">アンチパターン</h2>
+  </div>
+
+  <p>アンチパターン（＝よく見られる失敗パターン）を知ることで、同じ間違いを避けられます。以下は特に注意すべき 5 つのアンチパターンです。</p>
+
+  <div class="anti-pattern-item">
+    <div class="anti-pattern-header"><i class="ti ti-x"></i> アンチパターン 1：大きな泥の塊（Big Ball of Mud）</div>
+    <div class="anti-pattern-body">
+      <p style="font-size: 1rem;">コード構造がなくすべてが密結合している状態。変更のたびに予期しないバグが発生し、テストも書けない。最初は速く開発できるが、時間とともに保守コストが爆発的に増大する。</p>
+    </div>
+    <div class="anti-pattern-fix"><i class="ti ti-check"></i> 解決：レイヤードアーキテクチャを採用し、責務を明確に分離する。テストを書きやすい設計から始める。</div>
+  </div>
+
+  <div class="anti-pattern-item">
+    <div class="anti-pattern-header"><i class="ti ti-x"></i> アンチパターン 2：コントローラーにビジネスロジック</div>
+    <div class="anti-pattern-body">
+      <p style="font-size: 1rem;">コントローラーメソッドが 100 行を超え、DB 操作・計算・メール送信がすべて入っている状態。テストが困難で再利用できない。「Fat Controller（太ったコントローラー）」とも呼ばれる。</p>
+    </div>
+    <div class="anti-pattern-fix"><i class="ti ti-check"></i> 解決：ユースケースクラスを作成してロジックを移す。コントローラーは HTTP 変換のみを担当する。</div>
+  </div>
+
+  <div class="anti-pattern-item">
+    <div class="anti-pattern-header"><i class="ti ti-x"></i> アンチパターン 3：神クラス（God Class）</div>
+    <div class="anti-pattern-body">
+      <p style="font-size: 1rem;"><code>OrderManager</code> クラスが注文・在庫・決済・通知・配送・顧客をすべて処理している状態。数千行のクラスは変更のたびに恐怖を感じる。単一責任原則の違反の典型。</p>
+    </div>
+    <div class="anti-pattern-fix"><i class="ti ti-check"></i> 解決：単一責任原則を適用して機能ごとにクラスを分割する。各クラスは 1 つのことだけを担当する。</div>
+  </div>
+
+  <div class="anti-pattern-item">
+    <div class="anti-pattern-header"><i class="ti ti-x"></i> アンチパターン 4：コピー&ペーストプログラミング</div>
+    <div class="anti-pattern-body">
+      <p style="font-size: 1rem;">同じバリデーションロジックが 10 か所にコピーされている状態。1 か所修正すると他 9 か所に漏れが発生する。技術的負債（＝将来の変更コストの増大）が急速に蓄積される。</p>
+    </div>
+    <div class="anti-pattern-fix"><i class="ti ti-check"></i> 解決：DRY 原則（Don't Repeat Yourself）を適用する。共通ロジックは値オブジェクトや共通クラスに集約する。</div>
+  </div>
+
+  <div class="anti-pattern-item">
+    <div class="anti-pattern-header"><i class="ti ti-x"></i> アンチパターン 5：分散モノリス</div>
+    <div class="anti-pattern-body">
+      <p style="font-size: 1rem;">サービスに分割したのに、デプロイを常に一緒にしないと動かない状態。マイクロサービスの複雑さ（ネットワーク遅延・分散トレーシング・サービスディスカバリ）だけを得て、モノリスのシンプルさも失った最悪の形態。</p>
+    </div>
+    <div class="anti-pattern-fix"><i class="ti ti-check"></i> 解決：潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから再分割する。</div>
+  </div>
+
+  <h3 class="subsection-title">健全性チェックフロー</h3>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    CHECK["モノリスの健全性チェック開始"] --> Q1{"コントローラーが\n50行以下か？"}
+    Q1 -->|"No"| FIX1["ユースケースクラスに\nロジックを抽出する"]
+    Q1 -->|"Yes"| Q2{"ビジネスロジックが\nドメイン層にあるか？"}
+    Q2 -->|"No"| FIX2["ドメインモデルをリッチ化する"]
+    Q2 -->|"Yes"| Q3{"DB なしで\nユニットテストが書けるか？"}
+    Q3 -->|"No"| FIX3["依存性注入を導入する"]
+    Q3 -->|"Yes"| Q4{"同じロジックが\n3か所以上にないか？"}
+    Q4 -->|"ある"| FIX4["共通クラスに集約する\nDRY 原則を適用"]
+    Q4 -->|"Yes"| HEALTHY["健全なモノリス"]
+    style HEALTHY fill:#0d1f18,color:#34d399
+    style FIX1 fill:#0e1e35,color:#60a5fa
+    style FIX2 fill:#0e1e35,color:#60a5fa
+    style FIX3 fill:#0e1e35,color:#60a5fa
+    style FIX4 fill:#0e1e35,color:#60a5fa
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="s18">
+  <div class="section-header">
+    <span class="section-number">18</span>
+    <h2 class="section-title">参考文献・ソース一覧</h2>
+  </div>
+
+  <h3 class="subsection-title">必読書籍</h3>
+
+  <div class="table-wrap">
+    <table class="book-table">
+      <thead>
+        <tr><th>タイトル</th><th>著者</th><th>難易度</th><th>内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="book-title">Clean Architecture</span></td>
+          <td>Robert C. Martin</td>
+          <td><span class="difficulty"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="empty-star">★</span></span></td>
+          <td>レイヤードアーキテクチャの決定版。依存性逆転の原則が詳細に解説される。</td>
+        </tr>
+        <tr>
+          <td><span class="book-title">Domain-Driven Design</span></td>
+          <td>Eric Evans</td>
+          <td><span class="difficulty"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></span></td>
+          <td>ドメイン層設計の原典。エンティティ・値オブジェクト・集約の概念の根拠。</td>
+        </tr>
+        <tr>
+          <td><span class="book-title">Monolith to Microservices</span></td>
+          <td>Sam Newman</td>
+          <td><span class="difficulty"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="empty-star">★</span><span class="empty-star">★</span></span></td>
+          <td>モノリスの最適化と段階的移行戦略。Strangler Fig パターンの詳細。</td>
+        </tr>
+        <tr>
+          <td><span class="book-title">Designing Data-Intensive Applications</span></td>
+          <td>Martin Kleppmann</td>
+          <td><span class="difficulty"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></span></td>
+          <td>スケーリング・データ設計の詳解。DB・キャッシュ・分散システムの本質。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">アーキテクチャ原則・ドキュメント</h3>
+
+  <div class="source-list">
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — MonolithFirst パターン</div>
+        <a href="https://martinfowler.com/bliki/MonolithFirst.html" target="_blank">https://martinfowler.com/bliki/MonolithFirst.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Presentation Domain Data Layering</div>
+        <a href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html" target="_blank">https://martinfowler.com/bliki/PresentationDomainDataLayering.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Anemic Domain Model（アンチパターン）</div>
+        <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" target="_blank">https://martinfowler.com/bliki/AnemicDomainModel.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Martin Fowler — Repository Pattern</div>
+        <a href="https://martinfowler.com/eaaCatalog/repository.html" target="_blank">https://martinfowler.com/eaaCatalog/repository.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Clean Architecture — Uncle Bob</div>
+        <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Hexagonal Architecture — Alistair Cockburn</div>
+        <a href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/" target="_blank">Alistair Cockburn - Hexagonal Architecture (Web Archive)</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Twelve-Factor App（設計原則）</div>
+        <a href="https://12factor.net/ja/" target="_blank">https://12factor.net/ja/</a>
+      </div>
+    </div>
+    <div class="source-item">
+      <i class="ti ti-link"></i>
+      <div>
+        <div class="source-label">Sam Newman — Strangler Fig Application</div>
+        <a href="https://martinfowler.com/bliki/StranglerFigApplication.html" target="_blank">https://martinfowler.com/bliki/StranglerFigApplication.html</a>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">フレームワーク・ツール</h3>
+
+  <div class="source-list">
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">FastAPI 公式ドキュメント</div><a href="https://fastapi.tiangolo.com/" target="_blank">https://fastapi.tiangolo.com/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">SQLAlchemy 公式</div><a href="https://docs.sqlalchemy.org/" target="_blank">https://docs.sqlalchemy.org/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Alembic（DB マイグレーション）</div><a href="https://alembic.sqlalchemy.org/" target="_blank">https://alembic.sqlalchemy.org/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Pydantic（バリデーション）</div><a href="https://docs.pydantic.dev/" target="_blank">https://docs.pydantic.dev/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">pytest 公式ドキュメント</div><a href="https://docs.pytest.org/" target="_blank">https://docs.pytest.org/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">TestContainers（統合テスト）</div><a href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/" target="_blank">https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Playwright（E2E テスト）</div><a href="https://playwright.dev/python/" target="_blank">https://playwright.dev/python/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">structlog（構造化ロギング）</div><a href="https://www.structlog.org/" target="_blank">https://www.structlog.org/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Redis 公式ドキュメント</div><a href="https://redis.io/docs/" target="_blank">https://redis.io/docs/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">OpenTelemetry 公式</div><a href="https://opentelemetry.io/" target="_blank">https://opentelemetry.io/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Prometheus 公式</div><a href="https://prometheus.io/docs/" target="_blank">https://prometheus.io/docs/</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">PostgreSQL パフォーマンスチューニング</div><a href="https://www.postgresql.org/docs/current/performance-tips.html" target="_blank">https://www.postgresql.org/docs/current/performance-tips.html</a></div></div>
+    <div class="source-item"><i class="ti ti-link"></i><div><div class="source-label">Docker Dockerfile Best Practices</div><a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/" target="_blank">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</a></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="doc-section" id="glossary">
+  <div class="section-header">
+    <span class="section-number"><i class="ti ti-book"></i></span>
+    <h2 class="section-title">総合用語集</h2>
+  </div>
+
+  <div class="glossary">
+    <div class="glossary-header"><i class="ti ti-book"></i> 全セクション登場用語まとめ</div>
+    <div class="glossary-body">
+      <div class="glossary-item"><span class="glossary-term">モノリシック</span><span class="glossary-def">「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造。</span></div>
+      <div class="glossary-item"><span class="glossary-term">デプロイ単位</span><span class="glossary-def">アプリケーションをサーバーに配備するときの最小まとまり。モノリスは全機能が 1 単位。</span></div>
+      <div class="glossary-item"><span class="glossary-term">SOLID 原則</span><span class="glossary-def">Single Responsibility / Open-Closed / Liskov Substitution / Interface Segregation / Dependency Inversion の 5 原則。</span></div>
+      <div class="glossary-item"><span class="glossary-term">依存性注入（DI）</span><span class="glossary-def">クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモックに差し替えられる。</span></div>
+      <div class="glossary-item"><span class="glossary-term">疎結合</span><span class="glossary-def">コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。</span></div>
+      <div class="glossary-item"><span class="glossary-term">エンティティ</span><span class="glossary-def">ID を持ちライフサイクルを持つビジネスオブジェクト。例：注文・ユーザー。</span></div>
+      <div class="glossary-item"><span class="glossary-term">値オブジェクト</span><span class="glossary-def">ID を持たない値で識別されるオブジェクト。イミュータブル。例：Money・Email・Address。</span></div>
+      <div class="glossary-item"><span class="glossary-term">リポジトリ</span><span class="glossary-def">DB へのアクセスを抽象化したクラス。ドメイン層は抽象のみを知り実装はインフラ層が担当。</span></div>
+      <div class="glossary-item"><span class="glossary-term">DTO</span><span class="glossary-def">Data Transfer Object。層をまたいでデータを運ぶための入れ物。ロジックを持たない。</span></div>
+      <div class="glossary-item"><span class="glossary-term">モジュラーモノリス</span><span class="glossary-def">単一デプロイを保ちつつ機能ドメインごとにモジュール分割されたモノリス。</span></div>
+      <div class="glossary-item"><span class="glossary-term">ドメインイベント</span><span class="glossary-def">ビジネス上の出来事（注文確定など）を表すオブジェクト。Pub/Sub で他モジュールに通知する。</span></div>
+      <div class="glossary-item"><span class="glossary-term">ACID トランザクション</span><span class="glossary-def">原子性・一貫性・独立性・耐久性の 4 性質でデータ整合性を保証する仕組み。</span></div>
+      <div class="glossary-item"><span class="glossary-term">ステートレス</span><span class="glossary-def">サーバー自身が状態（セッション・データ）を持たない設計。水平スケーリングの前提条件。</span></div>
+      <div class="glossary-item"><span class="glossary-term">テストピラミッド</span><span class="glossary-def">ユニット（多数）→ 統合（中程度）→ E2E（少数）の比率でテストを配置する考え方。</span></div>
+      <div class="glossary-item"><span class="glossary-term">Strangler Fig パターン</span><span class="glossary-def">モノリスの機能を段階的に別サービスに置き換えていく移行パターン。絞め殺しのイチジクが木を包んで置き換える様子から命名。</span></div>
+      <div class="glossary-item"><span class="glossary-term">分散モノリス</span><span class="glossary-def">見た目はマイクロサービスでも実際は密結合な最悪の形態。両方のデメリットを受ける。</span></div>
+      <div class="glossary-item"><span class="glossary-term">DRY 原則</span><span class="glossary-def">Don't Repeat Yourself。同じロジックを複数の場所にコピーしない。1 か所だけに集約する。</span></div>
+      <div class="glossary-item"><span class="glossary-term">水平スケーリング</span><span class="glossary-def">同一アプリを複数サーバーで起動して負荷を分散する方法。ロードバランサーが前段に必要。</span></div>
+      <div class="glossary-item"><span class="glossary-term">リッチドメインモデル</span><span class="glossary-def">エンティティ自身がビジネスロジックを持つパターン。反対はアネミック（貧血）ドメインモデル。</span></div>
+      <div class="glossary-item"><span class="glossary-term">マイグレーション</span><span class="glossary-def">DB のスキーマを安全に変更するためのバージョン管理されたスクリプト群。</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <p>モノリシックアーキテクチャ 完全ガイド v1.0 — 最終更新 2026-06-23</p>
+  <p style="margin-top:6px;">本ドキュメントは公式ドキュメント・書籍・Martin Fowler 氏らの論文を参照して作成されています。各ツールの最新情報は公式ドキュメントをご確認ください。</p>
+</div>
+
+</main>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#161b27',
+    primaryColor: '#1e2535',
+    primaryTextColor: '#e8eaf0',
+    primaryBorderColor: '#2e3650',
+    lineColor: '#626880',
+    secondaryColor: '#161b27',
+    tertiaryColor: '#161b27',
+    edgeLabelBackground: '#161b27',
+    clusterBkg: '#161b27',
+    clusterBorder: '#2e3650',
+    titleColor: '#e8eaf0',
+    nodeBorder: '#2e3650',
+    nodeTextColor: '#e8eaf0',
+    mainBkg: '#1e2535',
+    labelBackground: '#1e2535',
+    actorBkg: '#1e2535',
+    actorBorder: '#2e3650',
+    actorTextColor: '#e8eaf0',
+    actorLineColor: '#626880',
+    signalColor: '#a0a8bc',
+    signalTextColor: '#e8eaf0',
+    loopTextColor: '#a0a8bc',
+    noteBkgColor: '#1e2535',
+    noteTextColor: '#e8eaf0',
+    noteBorderColor: '#2e3650',
+    activationBkgColor: '#1e2535',
+    activationBorderColor: '#2e3650',
+    sequenceNumberColor: '#e8eaf0',
+  },
+  flowchart: { curve: 'basis' },
+  sequence: { actorMargin: 60 },
+});
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progressBar').style.width = progress + '%';
+});
+</script>
+
+</body>
+</html>

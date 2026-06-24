@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# testing / coverage
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ルート .gitignore の Python 向け `lib/` 無視を上書きし、Next.js の lib/ を追跡する
+!/lib/
+!/lib/**

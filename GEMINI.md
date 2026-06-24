@@ -44,6 +44,32 @@ bun run check-links
 - GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックを実行する。
 - 毎週月曜日にスケジュール実行を行い、リンク切れを早期に発見する。
 
+### 3. Web アプリ (`web-next/`) の開発
+
+- 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
+- 移行済み:
+  - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
+  - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`EdaSidebar.tsx`）に分離。
+  - `app/architecture/clean-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/clean-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`CleanArchitectureSidebar.tsx`）に分離。
+  - `app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/service-oriented-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`SoaSidebar.tsx`）に分離。
+- 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型、未移行ページへのリンクも意図的に含む。
+  現状 404 は許容）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  スタイルは `globals.css` の `ch-*` クラス。
+- 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
+  Testing Library）を Red→Green→Refactor で進める。詳細手順は
+  `.claude/skills/nextjs-page-migration/SKILL.md` を参照。
+- 検証は `web-next/` 配下で `bun run lint` / `bun run typecheck` / `bun run test` /
+  `bun run build` の全通過を必須とする。Lint/Format は Biome。
+- スタイルは `app/globals.css` のデザイントークン + ページスコープクラス。アイコンは
+  `@tabler/icons-react`、Mermaid はクライアント描画、コードハイライトは手書き span を維持する。
+
 ## 📝 規約
 
 - すべてのドキュメントは日本語で記述する。
@@ -57,3 +83,16 @@ bun run check-links
 - **プレースホルダーの活用**: テスト用データやコード例では、実在しない架空の値（例: `user@example.com`）やプレースホルダー（例: `YOUR_API_KEY`）を使用すること。
 - **環境変数の利用**: 認証キーなどはコード内にハードコードせず、環境変数から読み込むように設計すること。
 - **コミット前の検証**: コミットを行う前に `git diff` を確認し、個人の環境名や絶対パス、認証情報が含まれていないか確認すること。
+
+---
+
+## 参考文献・ソース一覧
+
+- **TDDワークフロー**: [tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md)
+- **Next.js**: [Next.js Documentation](https://nextjs.org/docs)
+- **React**: [React 19 Documentation](https://react.dev)
+- **Vitest**: [Vitest](https://vitest.dev)
+- **Testing Library**: [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Biome**: [Biome Analyzer](https://biomejs.dev)
+- **Tabler Icons**: [Tabler Icons React](https://tabler.io/icons)
+- **Mermaid**: [Mermaid.js](https://mermaid.js.org)
