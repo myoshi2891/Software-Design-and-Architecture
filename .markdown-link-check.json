@@ -191,6 +191,12 @@
     },
     {
       "pattern": "^https?://(www\\.)?theleanstartup\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?rfc-editor\\.org/rfc/"
+    },
+    {
+      "pattern": "^https?://storybook\\.js\\.org/docs"
     }
   ],
   "replacementPatterns": [],
