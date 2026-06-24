@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP（最小実行可能製品）開発 完全ガイド</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --color-background-primary: #0f1117;
+  --color-background-secondary: #161b22;
+  --color-background-tertiary: #1e2530;
+  --color-background-info: #0d2137;
+  --color-background-danger: #2d1117;
+  --color-background-success: #0d2818;
+  --color-background-warning: #2d2000;
+
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-tertiary: #484f58;
+  --color-text-info: #79c0ff;
+  --color-text-danger: #ff7b72;
+  --color-text-success: #56d364;
+  --color-text-warning: #d29922;
+
+  --color-border-primary: #30363d;
+  --color-border-secondary: #21262d;
+  --color-border-tertiary: #161b22;
+
+  --font-sans: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  --c-purple-800: #3d1f6b;
+  --c-purple-600: #7c3aed;
+  --c-purple-200: #c4b5fd;
+  --c-purple-100: #ede9fe;
+
+  --c-teal-800: #134e4a;
+  --c-teal-600: #0d9488;
+  --c-teal-200: #99f6e4;
+  --c-teal-100: #ccfbf1;
+
+  --c-coral-800: #7c2d12;
+  --c-coral-600: #ea580c;
+  --c-coral-200: #fed7aa;
+  --c-coral-100: #fff7ed;
+
+  --c-pink-800: #831843;
+  --c-pink-600: #db2777;
+  --c-pink-200: #fbcfe8;
+
+  --c-blue-600: #2563eb;
+  --c-blue-200: #bfdbfe;
+  --c-green-600: #16a34a;
+  --c-green-200: #bbf7d0;
+  --c-amber-600: #d97706;
+  --c-amber-200: #fde68a;
+  --c-red-600: #dc2626;
+  --c-red-200: #fecaca;
+
+  --sidebar-width: 240px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  display: flex;
+  min-height: 100vh;
+}
+
+a { color: var(--c-teal-200); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--color-background-secondary);
+  border-right: 1px solid var(--color-border-primary);
+  padding: 24px 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--color-border-secondary);
+  margin-bottom: 8px;
+}
+
+.sidebar-section {
+  padding: 8px 0;
+}
+
+.sidebar-section-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  padding: 8px 16px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.sidebar nav a:hover {
+  color: var(--color-text-primary);
+  background: var(--color-background-tertiary);
+  text-decoration: none;
+  border-left-color: var(--c-teal-600);
+}
+
+.sidebar nav a.active {
+  color: var(--c-teal-200);
+  border-left-color: var(--c-teal-600);
+  background: var(--color-background-tertiary);
+}
+
+.sidebar nav a .ti {
+  font-size: 14px;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  min-width: 0;
+  max-width: 900px;
+  padding: 48px 56px;
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.page-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-teal-600);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+
+.page-description {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* Section */
+.section {
+  margin-bottom: 80px;
+  scroll-margin-top: 24px;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h2 .ti {
+  font-size: 18px;
+  color: var(--c-teal-600);
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+
+h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  margin-top: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+p {
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Callout */
+.callout {
+  background: var(--color-background-tertiary);
+  border-left: 3px solid var(--c-teal-600);
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  padding: 16px 20px;
+  margin: 24px 0;
+}
+
+.callout.info {
+  background: var(--color-background-info);
+  border-left-color: var(--c-blue-600);
+}
+
+.callout.warning {
+  background: var(--color-background-warning);
+  border-left-color: var(--c-amber-600);
+}
+
+.callout.danger {
+  background: var(--color-background-danger);
+  border-left-color: var(--c-red-600);
+}
+
+.callout.success {
+  background: var(--color-background-success);
+  border-left-color: var(--c-green-600);
+}
+
+.callout-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  color: var(--c-teal-200);
+}
+
+.callout.info .callout-label { color: var(--c-blue-200); }
+.callout.warning .callout-label { color: var(--c-amber-200); }
+.callout.danger .callout-label { color: var(--c-red-200); }
+.callout.success .callout-label { color: var(--c-green-200); }
+
+.callout p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+/* Mermaid diagrams */
+.mermaid-wrap {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+
+.mermaid-caption {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-primary);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background: var(--color-background-tertiary);
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+td {
+  padding: 12px 16px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-secondary);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+
+td a { color: var(--c-teal-200); font-size: 13px; }
+
+td strong, th strong {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+/* Code */
+pre[class*="language-"] {
+  background: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  font-size: 13px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+code:not([class]) {
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--c-coral-200);
+}
+
+/* Cards grid */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.card {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  transition: border-color 0.15s;
+}
+
+.card:hover { border-color: var(--c-teal-600); }
+
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.card-icon.purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+.card-icon.teal { background: var(--c-teal-800); color: var(--c-teal-200); }
+.card-icon.coral { background: var(--c-coral-800); color: var(--c-coral-200); }
+.card-icon.pink { background: var(--c-pink-800); color: var(--c-pink-200); }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Step badge */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 20px;
+  padding: 4px 12px 4px 4px;
+  margin-bottom: 20px;
+}
+
+.step-badge-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--c-teal-600);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-badge-text {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* Check/cross list */
+.check-list {
+  list-style: none;
+  margin: 16px 0;
+}
+
+.check-list li {
+  padding: 8px 0;
+  padding-left: 28px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-left: 0;
+}
+
+.check-list li:last-child { border-bottom: none; }
+
+.check-list li .ti {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.check-list li .ti-circle-check { color: var(--c-green-200); }
+.check-list li .ti-circle-x { color: var(--c-red-200); }
+.check-list li .ti-alert-triangle { color: var(--c-amber-200); }
+
+/* Tag */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-right: 4px;
+}
+
+.tag.green { background: var(--c-teal-800); color: var(--c-teal-200); }
+.tag.purple { background: var(--c-purple-800); color: var(--c-purple-200); }
+.tag.coral { background: var(--c-coral-800); color: var(--c-coral-200); }
+.tag.red { background: var(--color-background-danger); color: var(--c-red-200); }
+
+/* Source URL block */
+.sources {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+
+.sources-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sources ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sources li {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sources li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--c-teal-600);
+  flex-shrink: 0;
+  position: relative;
+  top: -2px;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--color-border-secondary);
+  margin: 48px 0;
+}
+
+/* Two columns layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.panel {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.panel-title.good { color: var(--c-green-200); }
+.panel-title.bad { color: var(--c-red-200); }
+
+/* Inline highlight */
+.hl-purple { color: var(--c-purple-200); }
+.hl-teal { color: var(--c-teal-200); }
+.hl-coral { color: var(--c-coral-200); }
+
+/* Rule numbered list */
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.rule-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+}
+
+.rule-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--c-teal-600);
+  color: var(--c-teal-200);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rule-content {}
+.rule-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+.rule-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Stack row */
+.stack-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.stack-item {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.stack-item.recommended {
+  border-color: var(--c-teal-600);
+}
+
+.stack-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.stack-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.stack-note {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+/* Footer */
+.footer {
+  padding: 48px 56px;
+  border-top: 1px solid var(--color-border-secondary);
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 20px; }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* Mermaid custom theme */
+.mermaid { font-family: var(--font-sans) !important; }
+
+/* Table striping */
+tbody tr:nth-child(even) td {
+  background: rgba(255,255,255,0.015);
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-title">MVP 完全ガイド</div>
+  <div class="sidebar-section">
+    <nav>
+      <a href="#intro"><i class="ti ti-bulb"></i>MVPとは何か</a>
+      <a href="#lean"><i class="ti ti-recycle"></i>リーンスタートアップ</a>
+      <a href="#process"><i class="ti ti-map"></i>全体プロセス</a>
+      <a href="#step1"><i class="ti ti-users"></i>Step 1 問題発見</a>
+      <a href="#step2"><i class="ti ti-list-check"></i>Step 2 スコープ定義</a>
+      <a href="#step3"><i class="ti ti-building-arch"></i>Step 3 アーキテクチャ</a>
+      <a href="#step4"><i class="ti ti-stack-2"></i>Step 4 技術スタック</a>
+      <a href="#step5"><i class="ti ti-code"></i>Step 5 実装</a>
+      <a href="#step6"><i class="ti ti-chart-bar"></i>Step 6 測定・学習</a>
+      <a href="#step7"><i class="ti ti-arrows-shuffle"></i>Step 7 ピボット判断</a>
+      <a href="#failures"><i class="ti ti-alert-triangle"></i>失敗パターン</a>
+      <a href="#scale"><i class="ti ti-trending-up"></i>本番への移行</a>
+      <a href="#rules"><i class="ti ti-award"></i>黄金律 10箇条</a>
+      <a href="#refs"><i class="ti ti-books"></i>参考文献</a>
+    </nav>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Page header -->
+  <header class="page-header">
+    <div class="page-eyebrow">Software Architecture Guide</div>
+    <h1 class="page-title">MVP（最小実行可能製品）開発<br>完全ガイド</h1>
+    <p class="page-description">初学者から中級エンジニアまでを対象に、MVP開発の思想・プロセス・実装・測定を網羅的に解説します。リーンスタートアップの原則に基づき、無駄なく素早く学ぶためのロードマップを提供します。</p>
+    <div style="margin-top:20px; display:flex; gap:8px; flex-wrap:wrap;">
+      <span class="tag green"><i class="ti ti-clock"></i>読了目安 30分</span>
+      <span class="tag purple"><i class="ti ti-user"></i>初学者対応</span>
+      <span class="tag coral"><i class="ti ti-calendar"></i>2025年版</span>
+    </div>
+  </header>
+
+  <!-- Section 1: What is MVP -->
+  <section class="section" id="intro">
+    <h2><i class="ti ti-bulb"></i>1. MVPとは何か</h2>
+
+    <p>MVP（Minimum Viable Product / 最小実行可能製品）とは、<strong style="color:var(--color-text-primary)">「最小限の機能で最大限の学びを得るために構築するプロダクト」</strong>です。Eric Riesが著書「The Lean Startup」で提唱し、現代のプロダクト開発における根幹哲学となっています。</p>
+
+    <div class="callout">
+      <div class="callout-label">一言で言うと</div>
+      <p>「作りすぎず、学ぶための最小限のプロダクトを素早く届けて、顧客の反応から真実を学ぶ」手法です。</p>
+    </div>
+
+    <h3>1.1 「M・V・P」それぞれの意味</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon purple"><i class="ti ti-minimize"></i></div>
+        <div class="card-title">Minimum（最小限）</div>
+        <div class="card-desc">機能を徹底的に絞り込む。余分な機能を一切含めず、必要最低限の機能だけを実装する。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon teal"><i class="ti ti-circle-check"></i></div>
+        <div class="card-title">Viable（実行可能）</div>
+        <div class="card-desc">ユーザーが実際に使える状態。コア価値を体験できる品質を備えている。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon coral"><i class="ti ti-package"></i></div>
+        <div class="card-title">Product（製品）</div>
+        <div class="card-desc">プロトタイプではなく、実際にユーザーに届ける本物のプロダクト。</div>
+      </div>
+    </div>
+
+    <h3>1.2 モックアップ・プロトタイプとの違い</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>種別</th><th>動作</th><th>対象</th><th>目的</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>モックアップ・ワイヤーフレーム</td><td>動作しない</td><td>内部チーム</td><td>デザイン検証</td></tr>
+          <tr><td>プロトタイプ</td><td>限定的に動作</td><td>内部向け</td><td>技術検証</td></tr>
+          <tr><td><strong>MVP</strong></td><td><strong>実際に動作</strong></td><td><strong>実ユーザーへ提供</strong></td><td><strong>市場検証</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>1.3 MVPが重要な理由：従来型開発との比較</h3>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title bad"><i class="ti ti-circle-x"></i>MVPなし（従来型）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-x"></i>完全な機能を1年かけて開発</li>
+          <li><i class="ti ti-circle-x"></i>リリース後に顧客が使わないと判明</li>
+          <li><i class="ti ti-circle-x"></i>時間・コスト・機会を大量に損失</li>
+          <li><i class="ti ti-circle-x"></i>競合に遅れをとる</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title good"><i class="ti ti-circle-check"></i>MVPあり（リーン開発）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-check"></i>最小機能を2〜3ヶ月で構築</li>
+          <li><i class="ti ti-circle-check"></i>実ユーザーのフィードバックを取得</li>
+          <li><i class="ti ti-circle-check"></i>必要な方向性が明確になる</li>
+          <li><i class="ti ti-circle-check"></i>競合より早く市場参入できる</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>Eric Ries公式サイト — <a href="https://theleanstartup.com/" target="_blank">https://theleanstartup.com/</a></li>
+        <li>Lean Startup Wikipedia — <a href="https://en.wikipedia.org/wiki/Lean_startup" target="_blank">https://en.wikipedia.org/wiki/Lean_startup</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 2: Lean Startup -->
+  <section class="section" id="lean">
+    <h2><i class="ti ti-recycle"></i>2. MVPの思想的背景：リーンスタートアップ</h2>
+
+    <h3>2.1 Build-Measure-Learn サイクル</h3>
+    <p>MVPの中核にある考え方は、<span class="hl-teal">Build（構築）→ Measure（測定）→ Learn（学習）</span>の高速サイクルです。このサイクルをいかに短くするかが、MVP成功の鍵となります。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    IDEAS["💡 アイデア（仮説）"]
+    BUILD["🔨 Build（構築）\n仮説を検証するMVPを素早く構築"]
+    PRODUCT["📦 プロダクト（MVP）"]
+    MEASURE["📊 Measure（測定）\n実ユーザーの行動データを定量計測"]
+    DATA["📈 データ（指標・メトリクス）"]
+    LEARN["🧠 Learn（学習）\n何が正しく何が間違っていたかを学ぶ"]
+
+    IDEAS --> BUILD --> PRODUCT --> MEASURE --> DATA --> LEARN
+    LEARN -->|"仮説を更新"| IDEAS
+
+    style IDEAS fill:#d97706,color:#fff,stroke:none
+    style BUILD fill:#dc2626,color:#fff,stroke:none
+    style PRODUCT fill:#2563eb,color:#fff,stroke:none
+    style MEASURE fill:#7c3aed,color:#fff,stroke:none
+    style DATA fill:#0d9488,color:#fff,stroke:none
+    style LEARN fill:#16a34a,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">Build-Measure-Learn サイクル：このループを高速で回すことがMVPの本質</div>
+    </div>
+
+    <h3>2.2 検証済み学習（Validated Learning）</h3>
+    <p>MVPでは「作った」ことではなく、「学んだ」ことが成果です。仮説を立て、実験し、データで検証するプロセスを繰り返します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    A["仮説\n（Assumption）\n「顧客はXという問題を持つ」\n「Yという解決策が機能するはず」"]
+    B["実験\n（Experiment）\n最小の労力でこの仮説を\n検証できるMVPを構築する"]
+    C["結果\n（Result）\n実際のユーザー行動から\n定量的なデータを収集する"]
+    D["洞察\n（Insight）\n仮説は正しかったか？\n何を学んだか？"]
+
+    A --> B --> C --> D --> A
+
+    style A fill:#dc2626,color:#fff,stroke:none
+    style B fill:#2563eb,color:#fff,stroke:none
+    style C fill:#d97706,color:#fff,stroke:none
+    style D fill:#16a34a,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">検証済み学習のサイクル：仮説→実験→結果→洞察</div>
+    </div>
+
+    <h3>2.3 Innovation Accounting（イノベーション会計）</h3>
+    <p>MVPの成果は従来の財務指標ではなく、「学習の進捗」で測定します。</p>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title bad"><i class="ti ti-circle-x"></i>従来の指標（避けるべき）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-x"></i>総ユーザー数（見栄えが良いだけ）</li>
+          <li><i class="ti ti-circle-x"></i>ページビュー（行動に繋がらない）</li>
+          <li><i class="ti ti-circle-x"></i>フォロワー数（本質的価値なし）</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title good"><i class="ti ti-circle-check"></i>リーン指標（Actionable Metrics）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-check"></i>顧客獲得コスト（CAC）</li>
+          <li><i class="ti ti-circle-check"></i>顧客生涯価値（LTV）</li>
+          <li><i class="ti ti-circle-check"></i>リテンション率（継続率）</li>
+          <li><i class="ti ti-circle-check"></i>機能の実際の使用率</li>
+          <li><i class="ti ti-circle-check"></i>NPS（顧客推奨度）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>Y Combinator — <a href="https://www.ycombinator.com/library/7x-how-to-get-and-test-ideas" target="_blank">How to Validate Your Startup Idea</a></li>
+        <li>Amplitude North Star Playbook — <a href="https://amplitude.com/books/north-star" target="_blank">https://amplitude.com/books/north-star</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 3: Overall Process -->
+  <section class="section" id="process">
+    <h2><i class="ti ti-map"></i>3. MVP開発の全体プロセス</h2>
+
+    <p>MVP開発は7つのフェーズで構成されます。各フェーズは順番に進みますが、学習サイクルによって前のフェーズに戻ることもあります。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    P1["🔍 Phase 1：問題発見\n顧客インタビュー・市場調査・競合分析"]
+    P2["🎯 Phase 2：スコープ定義\nユーザーストーリー・機能優先順位・KPI設定"]
+    P3["🏗️ Phase 3：アーキテクチャ設計\n技術スタック選定・拡張性・セキュリティ"]
+    P4["⚙️ Phase 4：実装\nコア機能の開発・CI/CD整備・品質保証"]
+    P5["🚀 Phase 5：リリース\n限定公開・段階的ロールアウト・監視設定"]
+    P6["📊 Phase 6：測定\nメトリクス収集・ユーザー行動分析・定性フィードバック"]
+    P7["🔄 Phase 7：学習・意思決定\nピボット or 継続・次の仮説・機能追加計画"]
+
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
+    P7 -->|"反復"| P1
+
+    style P1 fill:#2563eb,color:#fff,stroke:none
+    style P2 fill:#7c3aed,color:#fff,stroke:none
+    style P3 fill:#ea580c,color:#fff,stroke:none
+    style P4 fill:#dc2626,color:#fff,stroke:none
+    style P5 fill:#16a34a,color:#fff,stroke:none
+    style P6 fill:#0d9488,color:#fff,stroke:none
+    style P7 fill:#d97706,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">MVP開発の7フェーズ：Phase 7が終わったら、学びを元にPhase 1に戻る</div>
+    </div>
+
+    <h3>タイムライン目安（2〜3ヶ月）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>フェーズ</th><th>期間目安</th><th>主なアウトプット</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Phase 1 問題発見</td><td>2〜3週間</td><td>顧客インタビュー20件以上・課題仮説の検証</td></tr>
+          <tr><td>Phase 2 スコープ定義</td><td>1〜2週間</td><td>ユーザーストーリー・KPI・MoSCoW優先順位</td></tr>
+          <tr><td>Phase 3 設計</td><td>2週間</td><td>アーキテクチャ図・UIプロトタイプ</td></tr>
+          <tr><td>Phase 4 実装</td><td>4〜6週間</td><td>動作するMVP・テスト・CI/CD</td></tr>
+          <tr><td>Phase 5 リリース</td><td>1週間</td><td>限定ベータ・監視ダッシュボード</td></tr>
+          <tr><td>Phase 6-7 学習</td><td>2〜4週間</td><td>データ分析・意思決定・次の計画</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 4: Problem Discovery -->
+  <section class="section" id="step1">
+    <div class="step-badge"><span class="step-badge-num">1</span><span class="step-badge-text">Step 1</span></div>
+    <h2><i class="ti ti-users"></i>4. 問題発見と顧客検証</h2>
+
+    <div class="callout warning">
+      <div class="callout-label">最重要ステップ</div>
+      <p>MVPを作る前に「本当に解くべき問題があるか」を確認することが最重要です。コードを書く前にインタビューを行うことで、誰も使わないものを作るリスクを大幅に減らせます。</p>
+    </div>
+
+    <h3>4.1 顧客開発プロセス</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    H["💡 問題仮説を立てる\n「〇〇な人は△△に困っている」"]
+    I["👥 顧客インタビューを行う\n最低20〜50件\nソリューションは話さず問題だけ聞く"]
+    P["🔍 パターンを見つける\n同じ問題が繰り返し聞かれるか？\n痛みのレベルは高いか？"]
+    V["✅ 問題が検証できた\n20件中15件以上が同じ問題\n既存解決策への不満がある\n解決にお金を払う意思がある"]
+    X["❌ 問題が検証できなかった\n問題の重要度が低い\n既存解決策で十分\n仮説の見直しが必要"]
+    N["Step 2へ：スコープ定義"]
+
+    H --> I --> P
+    P -->|"問題確認"| V
+    P -->|"問題なし"| X
+    X -->|"仮説修正"| H
+    V --> N
+
+    style H fill:#d97706,color:#fff,stroke:none
+    style I fill:#2563eb,color:#fff,stroke:none
+    style P fill:#7c3aed,color:#fff,stroke:none
+    style V fill:#16a34a,color:#fff,stroke:none
+    style X fill:#dc2626,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">顧客開発フロー：「問題を見つける」フェーズ。ソリューションの話は禁止</div>
+    </div>
+
+    <h3>4.2 顧客インタビューのベストプラクティス</h3>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title good"><i class="ti ti-circle-check"></i>やるべきこと（DO）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-check"></i>過去の行動について聞く「以前この問題をどう解決しましたか？」</li>
+          <li><i class="ti ti-circle-check"></i>具体的な事例を聞く「最後にそれが起きたのはいつですか？」</li>
+          <li><i class="ti ti-circle-check"></i>感情を掘り下げる「そのときどう感じましたか？」</li>
+          <li><i class="ti ti-circle-check"></i>沈黙を活用する。相手が考える時間を与える</li>
+          <li><i class="ti ti-circle-check"></i>「なぜ？」を3〜5回繰り返して根本原因を探る</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title bad"><i class="ti ti-circle-x"></i>やってはいけないこと（DON'T）</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-x"></i>ソリューションを説明する「こんな機能があったら使いますか？」</li>
+          <li><i class="ti ti-circle-x"></i>Yes/Noで答えられる質問をする「この問題は困りますか？」</li>
+          <li><i class="ti ti-circle-x"></i>未来の行動を聞く「もし〇〇があったら使いますか？」</li>
+          <li><i class="ti ti-circle-x"></i>インタビューで自分のアイデアを正当化しようとする</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>4.3 市場規模の確認（TAM・SAM・SOM）</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    TAM["🌍 TAM（Total Addressable Market）\n全体到達可能市場\n理論上の最大市場規模\n例：全世界のSaaS市場"]
+    SAM["🗾 SAM（Serviceable Addressable Market）\nサービス可能市場\n自社が届けられる範囲\n例：日本のSaaS市場"]
+    SOM["🎯 SOM（Serviceable Obtainable Market）\n実際に獲得可能な市場\n現実的に獲得できる規模\n例：中小企業向けSaaS"]
+    MVP_T["🚀 MVP ターゲット\n最初の100〜1000ユーザー\nアーリーアダプター\n特定のニッチから始める"]
+
+    TAM --> SAM --> SOM --> MVP_T
+
+    style TAM fill:#2563eb,color:#fff,stroke:none
+    style SAM fill:#16a34a,color:#fff,stroke:none
+    style SOM fill:#ea580c,color:#fff,stroke:none
+    style MVP_T fill:#dc2626,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">市場規模の3層構造：MVPでは最初に最もニッチなターゲットを狙う</div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>The Mom Test（顧客インタビュー方法論）— <a href="https://www.momtestbook.com/" target="_blank">https://www.momtestbook.com/</a></li>
+        <li>Steve Blank Customer Development — <a href="https://steveblank.com/category/customer-development/" target="_blank">https://steveblank.com/category/customer-development/</a></li>
+        <li>Superhuman PMF事例 — <a href="https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/" target="_blank">First Round Review</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 5: Scope Definition -->
+  <section class="section" id="step2">
+    <div class="step-badge"><span class="step-badge-num">2</span><span class="step-badge-text">Step 2</span></div>
+    <h2><i class="ti ti-list-check"></i>5. MVPのスコープ定義</h2>
+
+    <h3>5.1 Jobs-to-be-Done（JTBD）フレームワーク</h3>
+    <p>機能リストではなく、「ユーザーが何を達成しようとしているか」を中心に考えます。JTBDは「状況・動機・期待する結果」の3要素で構成されます。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    S["📍 状況\n（Situation）\n「〇〇なとき」"]
+    M["💪 動機\n（Motivation）\n「△△したい」"]
+    O["🏆 期待する結果\n（Outcome）\n「〇〇できるように」"]
+
+    S --> M --> O
+
+    style S fill:#2563eb,color:#fff,stroke:none
+    style M fill:#16a34a,color:#fff,stroke:none
+    style O fill:#dc2626,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">JTBD例：「毎朝の通勤電車で（状況）/ 英語を効率的に学習したい（動機）/ TOEICスコアを上げられるように（結果）」</div>
+    </div>
+
+    <h3>5.2 機能優先順位付け：MoSCoW法</h3>
+    <p>MVPに含める機能を4つのカテゴリで分類し、<span class="hl-coral">Must Have のみ</span>をMVPに含めます。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    MO["📋 MoSCoW 優先順位付け"]
+    MU["🔴 Must Have（必須）\nMVPに絶対必要な機能\nこれがないと製品として成立しない\n例：ユーザー登録・コア機能・基本UI"]
+    SH["🟡 Should Have（重要）\nあれば価値が高い機能\n時間があれば第1リリースに含める\n例：通知機能・詳細フィルター"]
+    CO["🟢 Could Have（あれば良い）\n優先度が低い機能\n将来のイテレーションに延期\n例：テーマ変更・高度な分析"]
+    WO["⚫ Won't Have（今回は不要）\n意図的に除外する機能\nスコープを守るために明示的に排除\n例：AIレコメンド・多言語対応"]
+    SC["🚀 MVP スコープ\n= Must Have のみ"]
+
+    MO --> MU & SH & CO & WO
+    MU --> SC
+
+    style MU fill:#dc2626,color:#fff,stroke:none
+    style SH fill:#d97706,color:#fff,stroke:none
+    style CO fill:#16a34a,color:#fff,stroke:none
+    style WO fill:#374151,color:#fff,stroke:none
+    style SC fill:#1e2530,color:#e6edf3,stroke:#0d9488,stroke-width:2px
+      </div>
+      <div class="mermaid-caption">MoSCoW法：MVPに含めるのは「Must Have」だけ。他は意識的に排除する</div>
+    </div>
+
+    <h3>5.3 MVP KPI設定：AARRRフレームワーク</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    A1["🔵 Acquisition（獲得）\nユーザーをどう獲得するか\n指標：訪問者数・登録率・CAC"]
+    A2["🟢 Activation（活性化）\n最初の価値を体験させられるか\n指標：オンボーディング完了率"]
+    A3["🟡 Retention（継続）\nユーザーが戻ってくるか\n指標：DAU/MAU・チャーンレート"]
+    A4["🟠 Revenue（収益）\nお金を生み出せるか\n指標：MRR・LTV・ARPU"]
+    A5["🔴 Referral（紹介）\n自発的に広めてくれるか\n指標：NPS・紹介率"]
+    FO["🎯 MVPフェーズの重点指標\nActivation率 と Retention率\n「使われているか」を最初に確認"]
+
+    A1 --> A2 --> A3 --> A4 --> A5
+    A3 --> FO
+
+    style A1 fill:#2563eb,color:#fff,stroke:none
+    style A2 fill:#16a34a,color:#fff,stroke:none
+    style A3 fill:#d97706,color:#fff,stroke:none
+    style A4 fill:#ea580c,color:#fff,stroke:none
+    style A5 fill:#dc2626,color:#fff,stroke:none
+    style FO fill:#1e2530,color:#e6edf3,stroke:#0d9488,stroke-width:2px
+      </div>
+      <div class="mermaid-caption">AARRRフレームワーク：MVPフェーズではActivationとRetentionに集中する</div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>AARRR フレームワーク — <a href="https://www.startuplessonslearned.com/" target="_blank">https://www.startuplessonslearned.com/</a></li>
+        <li>Lean Canvas（Ash Maurya）— <a href="https://leanstack.com/lean-canvas" target="_blank">https://leanstack.com/lean-canvas</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 6: Architecture -->
+  <section class="section" id="step3">
+    <div class="step-badge"><span class="step-badge-num">3</span><span class="step-badge-text">Step 3</span></div>
+    <h2><i class="ti ti-building-arch"></i>6. アーキテクチャ選択</h2>
+
+    <div class="callout success">
+      <div class="callout-label">MVPの鉄則</div>
+      <p>MVPではモノリシックアーキテクチャから始めることを強く推奨します。マイクロサービスは過剰設計になりがちで、学習速度を下げます。「必要になってから分割する」が正しいアプローチです。</p>
+    </div>
+
+    <h3>6.1 アーキテクチャ選択フロー</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    S["MVP アーキテクチャを選ぶ"]
+    Q1{"チームサイズは？"}
+    Q2{"スケールの必要性は\nいつ来るか？"}
+    MO["✅ モノリシックアーキテクチャ\n【MVPに最も推奨】\n開発速度が速い・運用シンプル\nチーム：1〜5人"]
+    MM["✅ モジュラーモノリス\n【成長段階のMVPに推奨】\n将来の分割を見据えた設計\nチーム：5〜15人"]
+    MS["⚠️ マイクロサービス\n【MVPには過剰設計になりがち】\n必要になってから移行する\nチーム：15人以上"]
+
+    S --> Q1
+    Q1 -->|"1〜5人"| MO
+    Q1 -->|"5〜15人"| Q2
+    Q1 -->|"15人以上"| MS
+    Q2 -->|"1年以内は不要"| MO
+    Q2 -->|"6ヶ月以内に必要"| MM
+
+    style MO fill:#16a34a,color:#fff,stroke:none
+    style MM fill:#2563eb,color:#fff,stroke:none
+    style MS fill:#ea580c,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">アーキテクチャ選択フロー：小さなチームはモノリスから始める</div>
+    </div>
+
+    <h3>6.2 MVP向けアーキテクチャ全体像</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    subgraph CLIENT["クライアント層"]
+        WEB["Web アプリ（React / Next.js）"]
+        MOBILE["モバイルアプリ（React Native）"]
+    end
+    subgraph BACKEND["バックエンド（モノリス）"]
+        API["REST API 層\nルーティング・認証"]
+        BIZ["ビジネスロジック層\nコアドメイン"]
+        DATA["データアクセス層\nORM / Repository"]
+    end
+    subgraph INFRA["インフラ"]
+        DB[("PostgreSQL\nメインDB")]
+        CACHE["Redis\nセッション・キャッシュ"]
+        STORAGE["S3\nファイルストレージ"]
+    end
+    subgraph EXTERNAL["外部サービス"]
+        AUTH_E["Auth0 / Firebase Auth"]
+        EMAIL_E["SendGrid\nメール送信"]
+        PAY_E["Stripe\n決済"]
+        MON["Sentry + Datadog\n監視・エラー追跡"]
+    end
+
+    WEB & MOBILE --> API
+    API --> BIZ --> DATA
+    DATA --> DB
+    API --> CACHE
+    DATA --> STORAGE
+    API --> AUTH_E & EMAIL_E & PAY_E
+    BACKEND --> MON
+      </div>
+      <div class="mermaid-caption">MVP向けアーキテクチャ：外部サービスを最大活用し、自前実装を最小化する</div>
+    </div>
+
+    <h3>6.3 今 vs 将来のトレードオフ</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>要素</th><th>MVPフェーズ（今）</th><th>成長フェーズ（将来）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>サーバー</td><td>単一サーバー（EC2 / Heroku）</td><td>ロードバランサー＋複数サーバー</td></tr>
+          <tr><td>データベース</td><td>単一DB（PostgreSQL）</td><td>リードレプリカ・シャーディング</td></tr>
+          <tr><td>API構造</td><td>モノリシックAPI</td><td>マイクロサービス（必要な部分のみ）</td></tr>
+          <tr><td>認証</td><td>シンプルな認証（JWT）</td><td>OAuth2 / SSO</td></tr>
+          <tr><td>デプロイ</td><td>手動またはシンプルなCI/CD</td><td>完全自動化されたパイプライン</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>Martin Fowler — Monolith First: <a href="https://martinfowler.com/bliki/MonolithFirst.html" target="_blank">https://martinfowler.com/bliki/MonolithFirst.html</a></li>
+        <li>Twelve-Factor App（SaaS設計原則）— <a href="https://12factor.net/ja/" target="_blank">https://12factor.net/ja/</a></li>
+        <li>Martin Fowler — Sacrificial Architecture: <a href="https://martinfowler.com/bliki/SacrificialArchitecture.html" target="_blank">https://martinfowler.com/bliki/SacrificialArchitecture.html</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 7: Tech Stack -->
+  <section class="section" id="step4">
+    <div class="step-badge"><span class="step-badge-num">4</span><span class="step-badge-text">Step 4</span></div>
+    <h2><i class="ti ti-stack-2"></i>7. 技術スタック選定</h2>
+
+    <h3>7.1 選定の判断基準（優先順）</h3>
+    <div class="rule-list">
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div class="rule-content">
+          <div class="rule-title">開発速度</div>
+          <div class="rule-desc">チームが最も習熟している技術を選ぶ。新しい技術の習得コストはMVPフェーズでは致命的な遅延になる。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div class="rule-content">
+          <div class="rule-title">チームスキル</div>
+          <div class="rule-desc">チーム全員が使えるか、採用市場での人材が豊富かを確認する。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div class="rule-content">
+          <div class="rule-title">エコシステムの充実度</div>
+          <div class="rule-desc">ライブラリ・ツールが充実し、コミュニティが活発であること。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">4</div>
+        <div class="rule-content">
+          <div class="rule-title">コスト最小化</div>
+          <div class="rule-desc">無料ティアを最大活用。Vercel・Supabase・Railway等はMVPを無料で運用できる。</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>7.2 MVP推奨技術スタック（2025年版）</h3>
+
+    <h4>フロントエンド</h4>
+    <div class="stack-row">
+      <div class="stack-item recommended">
+        <div class="stack-label">最推奨</div>
+        <div class="stack-value">Next.js + TypeScript</div>
+        <div class="stack-note">SSR/SSG・フルスタック対応。Vercelでゼロ設定デプロイ。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">選択肢 A</div>
+        <div class="stack-value">React + Vite</div>
+        <div class="stack-note">SPA・高速ビルド。Tailwind CSSと相性良好。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">選択肢 B</div>
+        <div class="stack-value">Vue 3 + Nuxt</div>
+        <div class="stack-note">シンプルな構文で習得しやすい。</div>
+      </div>
+    </div>
+
+    <h4>バックエンド</h4>
+    <div class="stack-row">
+      <div class="stack-item recommended">
+        <div class="stack-label">フルスタック推奨</div>
+        <div class="stack-value">Next.js API Routes</div>
+        <div class="stack-note">フロントと同一コードベースで管理できる。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">AI/ML連携向け</div>
+        <div class="stack-value">FastAPI（Python）</div>
+        <div class="stack-note">型安全・自動Swagger生成。AI/MLとの相性が良い。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">大規模チーム向け</div>
+        <div class="stack-value">NestJS（TypeScript）</div>
+        <div class="stack-note">構造化されたNode.js。大きなチームに向く。</div>
+      </div>
+    </div>
+
+    <h4>データベース</h4>
+    <div class="stack-row">
+      <div class="stack-item recommended">
+        <div class="stack-label">最推奨</div>
+        <div class="stack-value">PostgreSQL</div>
+        <div class="stack-note">信頼性・機能性・無料。99%のMVPにこれで十分。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">サーバーレス向け</div>
+        <div class="stack-value">PlanetScale / Neon</div>
+        <div class="stack-note">サーバーレスDB。無料ティアあり。スケールが容易。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">スキーマ柔軟性重視</div>
+        <div class="stack-value">MongoDB</div>
+        <div class="stack-note">ドキュメントDB。スキーマが頻繁に変わる場合に有効。</div>
+      </div>
+    </div>
+
+    <h4>デプロイ・インフラ</h4>
+    <div class="stack-row">
+      <div class="stack-item recommended">
+        <div class="stack-label">最推奨</div>
+        <div class="stack-value">Vercel + Railway</div>
+        <div class="stack-note">ゼロ設定・無料ティア充実。Push → デプロイが自動。</div>
+      </div>
+      <div class="stack-item recommended">
+        <div class="stack-label">オールインワン</div>
+        <div class="stack-value">Supabase</div>
+        <div class="stack-note">DB + Auth + Storage + Realtime が一体化。MVPに最適。</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-label">エンタープライズ向け</div>
+        <div class="stack-value">AWS</div>
+        <div class="stack-note">学習コストが高いため、MVPフェーズでは非推奨。</div>
+      </div>
+    </div>
+
+    <h3>7.3 「作らずに買う」戦略：外部サービス活用</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>機能</th><th>自前実装の問題点</th><th>推奨外部サービス</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>認証</td>
+            <td>数週間かかる・セキュリティリスクが高い</td>
+            <td><a href="https://clerk.com/docs" target="_blank">Clerk</a> / Auth0 / Supabase Auth</td>
+          </tr>
+          <tr>
+            <td>決済</td>
+            <td>PCI DSS対応が必要・法的リスク</td>
+            <td><a href="https://stripe.com/docs" target="_blank">Stripe</a> / Paddle</td>
+          </tr>
+          <tr>
+            <td>メール配信</td>
+            <td>配信率・スパム対策が複雑</td>
+            <td>SendGrid / Resend</td>
+          </tr>
+          <tr>
+            <td>監視・エラー追跡</td>
+            <td>維持コストが高い・専門知識が必要</td>
+            <td>Sentry + Datadog</td>
+          </tr>
+          <tr>
+            <td>ファイルストレージ</td>
+            <td>インフラ管理・CDN設定が複雑</td>
+            <td>Cloudflare R2 / AWS S3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>Next.js 公式ドキュメント — <a href="https://nextjs.org/docs" target="_blank">https://nextjs.org/docs</a></li>
+        <li>Supabase ドキュメント — <a href="https://supabase.com/docs" target="_blank">https://supabase.com/docs</a></li>
+        <li>Vercel ドキュメント — <a href="https://vercel.com/docs" target="_blank">https://vercel.com/docs</a></li>
+        <li>Railway ドキュメント — <a href="https://railway.app/docs" target="_blank">https://railway.app/docs</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 8: Implementation -->
+  <section class="section" id="step5">
+    <div class="step-badge"><span class="step-badge-num">5</span><span class="step-badge-text">Step 5</span></div>
+    <h2><i class="ti ti-code"></i>8. MVP実装のベストプラクティス</h2>
+
+    <h3>8.1 コーディング原則</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon purple"><i class="ti ti-ban"></i></div>
+        <div class="card-title">YAGNI原則</div>
+        <div class="card-desc">You Aren't Gonna Need It。今必要でない機能は実装しない。将来の妄想より現在の問題を解く。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon teal"><i class="ti ti-leaf"></i></div>
+        <div class="card-title">KISS原則</div>
+        <div class="card-desc">Keep It Simple, Stupid。複雑な設計より単純な解決策。シンプルなコードが保守しやすい。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon coral"><i class="ti ti-rocket"></i></div>
+        <div class="card-title">完璧より完成</div>
+        <div class="card-desc">Done is Better than Perfect。完成度80%でリリース。残り20%はユーザーが教えてくれる。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon pink"><i class="ti ti-notes"></i></div>
+        <div class="card-title">意図的な技術負債</div>
+        <div class="card-desc">意識的な技術的負債はOK。ただし文書化し、期限を設けて管理すること。無意識の負債は避ける。</div>
+      </div>
+    </div>
+
+    <h3>8.2 CI/CDパイプライン（GitHub Actions例）</h3>
+    <p>早期にCI/CDを整備することで、迅速なイテレーションが可能になります。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    CODE["コードを書く"]
+    LT["ローカルテスト実行\n（jest / pytest）"]
+    PUSH["git commit & push"]
+    LINT["Lint チェック\n（ESLint / Ruff）"]
+    TYPE["型チェック\n（TypeScript / mypy）"]
+    TEST["ユニットテスト"]
+    BUILD["ビルド確認"]
+    STG["ステージング自動デプロイ\nPRごとにプレビューURL生成"]
+    SMOKE["スモークテスト\n（基本動作確認）"]
+    PROD["本番デプロイ\n（mainマージ後）"]
+    MON["デプロイ後監視\n（エラー率・レイテンシ）"]
+
+    CODE --> LT --> PUSH
+    PUSH --> LINT --> TYPE --> TEST --> BUILD
+    BUILD -->|"PR作成時"| STG --> SMOKE
+    SMOKE -->|"PRマージ後"| PROD --> MON
+
+    style STG fill:#d97706,color:#fff,stroke:none
+    style PROD fill:#16a34a,color:#fff,stroke:none
+    style MON fill:#2563eb,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">CI/CDパイプライン：コードをpushするだけでテスト・デプロイが自動実行される</div>
+    </div>
+
+    <pre><code class="language-yaml"># .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run lint        # ESLintチェック
+      - run: npm run type-check  # TypeScript型チェック
+      - run: npm test            # ユニットテスト実行
+      - run: npm run build       # ビルド確認
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel Preview
+        run: npx vercel --token=${{ secrets.VERCEL_TOKEN }}</code></pre>
+
+    <h3>8.3 セキュリティ最低限チェックリスト</h3>
+    <ul class="check-list">
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">HTTPS 必須</strong> — HTTPは絶対に使わない。Let's Encrypt / CDNで無料化できる。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">環境変数で秘密情報を管理</strong> — コードにAPIキーを絶対に書かない。<code>.env.local</code> / secrets managerを使う。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">パスワードハッシュ化</strong> — bcrypt / argon2を使用する。MD5・SHA1は禁止。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">SQLインジェクション対策</strong> — ORMを使い、生SQLを避ける。パラメータバインドを徹底する。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">CORS設定</strong> — 許可するオリジンを明示。ワイルドカード（*）は避ける。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">レート制限</strong> — APIエンドポイントに上限を設定。DDoS・ブルートフォース対策。</div></li>
+      <li><i class="ti ti-circle-check"></i><div><strong style="color:var(--color-text-primary)">依存関係の脆弱性スキャン</strong> — <code>npm audit</code> / pip-audit。GitHub Dependabotを活用。</div></li>
+    </ul>
+
+    <h3>8.4 テスト戦略：MVPでのテスト優先度</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TD
+    E2E["E2Eテスト（最小限）\n重要なユーザーシナリオのみ\nCypress / Playwright\n数件程度"]
+    INT["統合テスト（中程度）\nAPIエンドポイントの動作確認\n外部サービスとの連携確認"]
+    UNIT["ユニットテスト（多め）\nビジネスロジックのコア部分\n計算・バリデーション・変換ロジック\nMVPで最も価値が高いテスト"]
+
+    UNIT --> INT --> E2E
+
+    style E2E fill:#dc2626,color:#fff,stroke:none
+    style INT fill:#d97706,color:#fff,stroke:none
+    style UNIT fill:#16a34a,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">テストピラミッド：ユニットテストを最も重視し、E2Eテストは最小限に絞る</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">MVPのテスト原則</div>
+      <p>完全なテストカバレッジは求めない。ビジネスロジックの中核だけをカバーし、リグレッション（意図しないバグの再発生）を防ぐための最小限のテストを書くことが目標です。</p>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>OWASP Top 10（Webセキュリティ）— <a href="https://owasp.org/www-project-top-ten/" target="_blank">https://owasp.org/www-project-top-ten/</a></li>
+        <li>Stripe 決済SDK公式 — <a href="https://stripe.com/docs" target="_blank">https://stripe.com/docs</a></li>
+        <li>Clerk 認証サービス — <a href="https://clerk.com/docs" target="_blank">https://clerk.com/docs</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 9: Measure & Learn -->
+  <section class="section" id="step6">
+    <div class="step-badge"><span class="step-badge-num">6</span><span class="step-badge-text">Step 6</span></div>
+    <h2><i class="ti ti-chart-bar"></i>9. 測定・学習（Measure &amp; Learn）</h2>
+
+    <h3>9.1 アナリティクス設計の4ステップ</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    D["1️⃣ 測定する指標を\n事前に決める\nKPIを数値で定義\n「良い状態」の閾値を設定"]
+    I["2️⃣ 計測コードを\n組み込む\nイベントトラッキング\nファネル分析の設計"]
+    B["3️⃣ ダッシュボードを\n作成する\n毎日見る習慣をつける\n自動レポートを設定"]
+    R["4️⃣ 定期レビュー\n週次で指標を確認\n異常値をすぐに検知"]
+
+    D --> I --> B --> R
+
+    style D fill:#2563eb,color:#fff,stroke:none
+    style I fill:#16a34a,color:#fff,stroke:none
+    style B fill:#d97706,color:#fff,stroke:none
+    style R fill:#7c3aed,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">アナリティクス設計：「何を測るか」を先に決めることが最重要</div>
+    </div>
+
+    <h3>9.2 定量指標 vs 定性フィードバック</h3>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title" style="color:var(--c-teal-200)"><i class="ti ti-chart-line"></i>定量指標（What）</div>
+        <div style="font-size:13px;color:var(--color-text-tertiary);margin-bottom:12px;">何が起きているかを教えてくれる</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-check"></i>コンバージョン率</li>
+          <li><i class="ti ti-circle-check"></i>リテンション率</li>
+          <li><i class="ti ti-circle-check"></i>機能使用率</li>
+          <li><i class="ti ti-circle-check"></i>エラー発生率</li>
+          <li><i class="ti ti-circle-check"></i>平均セッション時間</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title" style="color:var(--c-purple-200)"><i class="ti ti-message-circle"></i>定性フィードバック（Why）</div>
+        <div style="font-size:13px;color:var(--color-text-tertiary);margin-bottom:12px;">なぜそれが起きているかを教えてくれる</div>
+        <ul class="check-list">
+          <li><i class="ti ti-circle-check"></i>ユーザーインタビュー</li>
+          <li><i class="ti ti-circle-check"></i>サポートチケット分析</li>
+          <li><i class="ti ti-circle-check"></i>NPS自由記述欄</li>
+          <li><i class="ti ti-circle-check"></i>セッションリプレイ（Hotjar / FullStory）</li>
+          <li><i class="ti ti-circle-check"></i>ユーザビリティテスト</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>9.3 North Star Metric（北極星指標）</h3>
+    <p>プロダクトの長期的な成功を最もよく表す、<span class="hl-coral">たった1つの指標</span>を設定します。チーム全員がこの指標に向かって動くことで、優先順位の議論を減らせます。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>プロダクト</th><th>North Star Metric</th><th>その理由</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Slack</td><td>DAU（日次アクティブユーザー）</td><td>毎日使われることがプロダクト価値の本質</td></tr>
+          <tr><td>Airbnb</td><td>予約された宿泊日数</td><td>ホスト・ゲスト双方への価値を1指標で表現</td></tr>
+          <tr><td>Spotify</td><td>1日あたりの楽曲再生時間</td><td>継続的なエンゲージメントを測る</td></tr>
+          <tr><td>あなたのMVP</td><td>コア価値が生まれた回数</td><td>プロダクトがユーザーにとって本質的な価値を届けた瞬間を数える</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>9.4 推奨アナリティクスツール</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon teal"><i class="ti ti-chart-dots"></i></div>
+        <div class="card-title">PostHog</div>
+        <div class="card-desc">オープンソース・プロダクト分析。セルフホスト可能。プライバシー重視のチームに最適。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon purple"><i class="ti ti-trending-up"></i></div>
+        <div class="card-title">Mixpanel</div>
+        <div class="card-desc">イベント分析に特化。無料ティアが充実。ファネル分析とコホート分析が強力。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon coral"><i class="ti ti-wave-saw-tool"></i></div>
+        <div class="card-title">Amplitude</div>
+        <div class="card-desc">行動分析・コホート分析。スタートアップ向け無料プランあり。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon pink"><i class="ti ti-brand-google"></i></div>
+        <div class="card-title">Google Analytics 4</div>
+        <div class="card-desc">基本的なWebアナリティクス。完全無料。最初の入り口として最適。</div>
+      </div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>PostHog（オープンソースプロダクト分析）— <a href="https://posthog.com/" target="_blank">https://posthog.com/</a></li>
+        <li>Mixpanel リソース — <a href="https://mixpanel.com/resources/" target="_blank">https://mixpanel.com/resources/</a></li>
+        <li>Amplitude North Star Playbook — <a href="https://amplitude.com/books/north-star" target="_blank">https://amplitude.com/books/north-star</a></li>
+        <li>Sean Ellis PMF Survey — <a href="https://pmfsurvey.com/" target="_blank">https://pmfsurvey.com/</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 10: Pivot or Persevere -->
+  <section class="section" id="step7">
+    <div class="step-badge"><span class="step-badge-num">7</span><span class="step-badge-text">Step 7</span></div>
+    <h2><i class="ti ti-arrows-shuffle"></i>10. ピボットか継続かの判断</h2>
+
+    <h3>10.1 判断フレームワーク</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    R["📊 定期レビュー（週次/月次）\n指標データを確認する"]
+    C1{"北極星指標は\n目標値を達成しているか？"}
+    C2{"ユーザーが\n本当の問題を解決できているか？"}
+    C3{"ビジネスとして\n持続可能か？"}
+    PE["✅ 継続（Persevere）\n現在の戦略を続ける\n機能を深化させる\n拡大に集中する"]
+    PV["🔄 ピボット（Pivot）\n戦略を変える\n前提を見直す\n何かを根本的に変える"]
+    ST["🛑 停止\n市場がない・解決策がない\nリソースを他に向ける"]
+
+    R --> C1
+    C1 -->|"Yes"| C2
+    C1 -->|"No（でも伸びている）"| PE
+    C1 -->|"No（止まっている）"| PV
+    C2 -->|"Yes"| C3
+    C2 -->|"No"| PV
+    C3 -->|"Yes"| PE
+    C3 -->|"No"| PV
+    PV -->|"方向性が見えない"| ST
+
+    style PE fill:#16a34a,color:#fff,stroke:none
+    style PV fill:#d97706,color:#fff,stroke:none
+    style ST fill:#dc2626,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">ピボット判断フレームワーク：3つの問いに答えて「継続・ピボット・停止」を決める</div>
+    </div>
+
+    <h3>10.2 ピボットの主要な種類</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>種類</th><th>説明</th><th>有名な事例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ズームイン・ピボット</td><td>1機能が製品全体になる</td><td>Twitterは元々Odeoというポッドキャスト会社の一機能だった</td></tr>
+          <tr><td>ズームアウト・ピボット</td><td>1製品が1機能になる</td><td>他の大きな製品の一部として組み込まれる</td></tr>
+          <tr><td>顧客セグメント・ピボット</td><td>同じ問題を抱える別の顧客層へ</td><td>解決策はそのままに対象ユーザーを変える</td></tr>
+          <tr><td>顧客ニーズ・ピボット</td><td>同じ顧客の別の問題を解く</td><td>深く知った顧客から別のニーズを発見する</td></tr>
+          <tr><td>プラットフォーム・ピボット</td><td>アプリ↔プラットフォームの転換</td><td>サービスをAPIとして提供する形に変える</td></tr>
+          <tr><td>ビジネスモデル・ピボット</td><td>収益化の方法を変える</td><td>無料→有料 / B2C→B2B への転換</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">ピボットの心得</div>
+      <p>ピボットは「失敗」ではありません。間違いに気づいたら素早く方向転換することが、MVPの目的そのものです。多くの成功したスタートアップ（Slack, Instagram, YouTube）はピボットによって生まれました。</p>
+    </div>
+  </section>
+
+  <!-- Section 11: Failure Patterns -->
+  <section class="section" id="failures">
+    <h2><i class="ti ti-alert-triangle"></i>11. よくある失敗パターンと対策</h2>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    subgraph FAIL["❌ 失敗パターン"]
+        F1["Too Big MVP\n「最小限」なのに多機能\n→ リリースが遅れ学習も遅れる"]
+        F2["Problem-Solution Fit なし\n顧客検証なしに作り始める\n→ 誰も使わないものができる"]
+        F3["間違った指標を追う\nバニティメトリクスに集中\n→ 本質的な学習ができない"]
+        F4["フィードバックを聞かない\n批判的意見を無視する\n→ 確証バイアスに陥る"]
+        F5["技術負債の過剰蓄積\nMVPで妥協しすぎる\n→ 第2バージョンが作れない"]
+        F6["過剰設計\nMVPでマイクロサービスを作る\n→ 機能より技術に時間をかける"]
+    end
+
+    subgraph SOL["✅ 対策"]
+        S1["機能リストを3回絞り込む\n「本当に必要か？」を繰り返す"]
+        S2["先にインタビュー20件\nコードを書く前に検証する"]
+        S3["North Star Metricを1つ決める\nActionable Metricsを使う"]
+        S4["毎週ユーザーと話す\n批判は宝として扱う"]
+        S5["意図的な負債を文書化\n期限付きで管理する"]
+        S6["モノリスから始める\n必要になってから分割する"]
+    end
+
+    F1 --> S1
+    F2 --> S2
+    F3 --> S3
+    F4 --> S4
+    F5 --> S5
+    F6 --> S6
+
+    style F1 fill:#dc2626,color:#fff,stroke:none
+    style F2 fill:#dc2626,color:#fff,stroke:none
+    style F3 fill:#dc2626,color:#fff,stroke:none
+    style F4 fill:#dc2626,color:#fff,stroke:none
+    style F5 fill:#dc2626,color:#fff,stroke:none
+    style F6 fill:#dc2626,color:#fff,stroke:none
+    style S1 fill:#16a34a,color:#fff,stroke:none
+    style S2 fill:#16a34a,color:#fff,stroke:none
+    style S3 fill:#16a34a,color:#fff,stroke:none
+    style S4 fill:#16a34a,color:#fff,stroke:none
+    style S5 fill:#16a34a,color:#fff,stroke:none
+    style S6 fill:#16a34a,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">失敗パターン6種と対策：左の失敗を右の対策で防ぐ</div>
+    </div>
+
+    <h3>11.2 「スモークテスト」でMVP前に需要を確認する</h3>
+    <p>実際にコードを書く前に、需要があるかを確認する手法です。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>手法</th><th>内容</th><th>有名な事例</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ランディングページ</strong></td>
+            <td>機能説明ページ＋メール登録。登録率で需要を測定。</td>
+            <td>事前登録100件で開発開始</td>
+          </tr>
+          <tr>
+            <td><strong>動画デモ</strong></td>
+            <td>プロダクトなしで動画だけで需要確認。</td>
+            <td>Dropboxは動画だけで75,000人がサインアップ</td>
+          </tr>
+          <tr>
+            <td><strong>Concierge MVP</strong></td>
+            <td>ツールなしで手動でサービスを提供する。</td>
+            <td>Airbnbは最初手動で写真撮影</td>
+          </tr>
+          <tr>
+            <td><strong>Wizard of Oz MVP</strong></td>
+            <td>自動に見えるが裏側は人間が手動で処理する。</td>
+            <td>技術的検証より価値検証に集中できる</td>
+          </tr>
+          <tr>
+            <td><strong>フェイクドア</strong></td>
+            <td>存在しない機能のボタンを置き、クリック率で関心度を測定。</td>
+            <td>倫理的に使用すること（後でフォローアップする）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>Paul Graham — Do Things That Don't Scale: <a href="https://paulgraham.com/ds.html" target="_blank">https://paulgraham.com/ds.html</a></li>
+        <li>Dropbox MVP動画: <a href="https://www.youtube.com/watch?v=7QmCUDHpNzE" target="_blank">https://www.youtube.com/watch?v=7QmCUDHpNzE</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 12: Scale to Production -->
+  <section class="section" id="scale">
+    <h2><i class="ti ti-trending-up"></i>12. MVPから本番プロダクトへの移行</h2>
+
+    <h3>12.1 PMF（Product-Market Fit）の確認指標</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>指標</th><th>PMF達成の目安</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sean Ellisテスト</strong></td>
+            <td>「このプロダクトが使えなくなったら？」→「非常に残念」が<strong style="color:var(--c-teal-200)">40%以上</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Net Promoter Score（NPS）</strong></td>
+            <td><strong style="color:var(--c-teal-200)">NPS 50以上</strong>が目安。顧客が積極的に勧めている状態。</td>
+          </tr>
+          <tr>
+            <td><strong>有機的な成長</strong></td>
+            <td>広告なしで口コミだけでユーザーが増えている。</td>
+          </tr>
+          <tr>
+            <td><strong>月次チャーン率</strong></td>
+            <td><strong style="color:var(--c-teal-200)">月次1〜3%以下</strong>。ユーザーが離れていかない状態。</td>
+          </tr>
+          <tr>
+            <td><strong>顧客からの要求</strong></td>
+            <td>「もっと使いたい」「早く次の機能を」という声が来る。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>12.2 アーキテクチャの段階的移行</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph LR
+    subgraph MVP["🚀 MVPフェーズ"]
+        M1["モノリシックアプリ\n（単一サーバー）"]
+        M2[("PostgreSQL\n（単一DB）")]
+        M1 --> M2
+    end
+    subgraph GROWTH["📈 成長フェーズ"]
+        G1["ロードバランサー"]
+        G2["App Server 1"]
+        G3["App Server 2"]
+        G4["Redis\nキャッシュ"]
+        G5[("DB Primary")]
+        G6[("DB Replica")]
+        G1 --> G2 & G3
+        G2 & G3 --> G4
+        G2 & G3 --> G5
+        G5 --> G6
+    end
+    subgraph SCALE["🏢 スケールフェーズ"]
+        S1["CDN"]
+        S2["API Gateway"]
+        S3["サービスA"]
+        S4["サービスB"]
+        S5["メッセージキュー"]
+        S1 --> S2
+        S2 --> S3 & S4
+        S3 --> S5 --> S4
+    end
+
+    MVP -->|"PMF達成後"| GROWTH
+    GROWTH -->|"さらなる成長後"| SCALE
+      </div>
+      <div class="mermaid-caption">アーキテクチャの段階的移行：PMF達成後に必要に応じてスケールさせる</div>
+    </div>
+
+    <div class="sources">
+      <div class="sources-title"><i class="ti ti-link"></i>ソース・参考URL</div>
+      <ul>
+        <li>a16z — Product-Market Fit: <a href="https://a16z.com/12-things-about-product-market-fit/" target="_blank">https://a16z.com/12-things-about-product-market-fit/</a></li>
+        <li>Martin Fowler — Strangler Fig Application: <a href="https://martinfowler.com/bliki/StranglerFigApplication.html" target="_blank">https://martinfowler.com/bliki/StranglerFigApplication.html</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 13: Golden Rules -->
+  <section class="section" id="rules">
+    <h2><i class="ti ti-award"></i>13. MVP開発の黄金律 10箇条</h2>
+
+    <div class="rule-list">
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div class="rule-content">
+          <div class="rule-title">コードを書く前に検証する</div>
+          <div class="rule-desc">仮説を立てて→インタビューで確認。問題を確認してからソリューションを作る。コードより対話を先に。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div class="rule-content">
+          <div class="rule-title">機能は3回絞り込む</div>
+          <div class="rule-desc">リストを作る→半分にする→さらに半分。本当に必要なものだけが残る。削ることで開発速度が上がる。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div class="rule-content">
+          <div class="rule-title">完璧より速さを優先する</div>
+          <div class="rule-desc">完成度80%でリリース。残り20%はユーザーが教えてくれる。完璧を目指すとリリースできない。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">4</div>
+        <div class="rule-content">
+          <div class="rule-title">実ユーザーに早く届ける</div>
+          <div class="rule-desc">内部デモは学習にならない。本物のユーザーの反応だけが真実を語る。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">5</div>
+        <div class="rule-content">
+          <div class="rule-title">測定できるものだけを作る</div>
+          <div class="rule-desc">何を測るかを先に決める。測れない機能は後回し。データのない改善は勘に過ぎない。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">6</div>
+        <div class="rule-content">
+          <div class="rule-title">外部サービスを最大活用する</div>
+          <div class="rule-desc">認証・決済・メールは自分で作らない。差別化ポイントになるコア部分だけを作る。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">7</div>
+        <div class="rule-content">
+          <div class="rule-title">モノリスから始める</div>
+          <div class="rule-desc">必要になってから分割する。過剰設計はMVPの最大の敵。シンプルな構成が学習を速める。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">8</div>
+        <div class="rule-content">
+          <div class="rule-title">毎週ユーザーと話す</div>
+          <div class="rule-desc">定性フィードバックは定量と同じく重要。顧客の言葉がプロダクトを正しい方向に導く。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">9</div>
+        <div class="rule-content">
+          <div class="rule-title">ピボットを恐れない</div>
+          <div class="rule-desc">間違いに気づいたら素早く方向転換。失敗から学ぶのがMVPの目的。ピボットは敗北ではなく進化。</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">10</div>
+        <div class="rule-content">
+          <div class="rule-title">学習を記録する</div>
+          <div class="rule-desc">何を仮説として・何を学んだかをドキュメントに残す。チームの集合知として蓄積する。</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>MVP健全性チェックリスト</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    CH["MVP 健全性チェック"]
+    Q1{"顧客インタビューを\n最低20件実施したか？"}
+    Q2{"MVP機能を\n3回以上削減したか？"}
+    Q3{"North Star Metricが\n1つ定義されているか？"}
+    Q4{"2〜3ヶ月以内に\nリリースできるか？"}
+    Q5{"実ユーザーへの\n提供ができているか？"}
+    Q6{"毎週データを\n確認しているか？"}
+    OK["✅ 健全なMVP開発\n学習のサイクルが回っている"]
+
+    F1["まず問題の検証を\nコードを書くのを止める"]
+    F2["スコープを削る\nMust Haveのみに絞る"]
+    F3["指標を決める\n何を目標にするか合意する"]
+    F4["さらに機能を削る\n段階的リリースを計画"]
+    F5["実ユーザーに届ける\n内部テストを超える"]
+    F6["ダッシュボードを設定\n自動レポートを作る"]
+
+    CH --> Q1
+    Q1 -->|"No"| F1
+    Q1 -->|"Yes"| Q2
+    Q2 -->|"No"| F2
+    Q2 -->|"Yes"| Q3
+    Q3 -->|"No"| F3
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"No"| F4
+    Q4 -->|"Yes"| Q5
+    Q5 -->|"No"| F5
+    Q5 -->|"Yes"| Q6
+    Q6 -->|"No"| F6
+    Q6 -->|"Yes"| OK
+
+    style OK fill:#16a34a,color:#fff,stroke:none
+    style F1 fill:#dc2626,color:#fff,stroke:none
+    style F2 fill:#dc2626,color:#fff,stroke:none
+    style F3 fill:#dc2626,color:#fff,stroke:none
+    style F4 fill:#dc2626,color:#fff,stroke:none
+    style F5 fill:#dc2626,color:#fff,stroke:none
+    style F6 fill:#dc2626,color:#fff,stroke:none
+      </div>
+      <div class="mermaid-caption">MVP健全性チェック：6つのYes/Noで自分のMVP開発の状態を診断する</div>
+    </div>
+  </section>
+
+  <!-- Section 14: References -->
+  <section class="section" id="refs">
+    <h2><i class="ti ti-books"></i>14. 参考文献・ソース一覧</h2>
+
+    <h3>必読書籍</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>タイトル</th><th>著者</th><th>内容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>The Lean Startup</strong></td><td>Eric Ries</td><td>MVP・Build-Measure-Learnの原典</td></tr>
+          <tr><td><strong>Running Lean</strong></td><td>Ash Maurya</td><td>リーンキャンバスとCustomer Developmentの実践書</td></tr>
+          <tr><td><strong>The Mom Test</strong></td><td>Rob Fitzpatrick</td><td>顧客インタビューの方法論</td></tr>
+          <tr><td><strong>Inspired</strong></td><td>Marty Cagan</td><td>プロダクトマネジメントの実践</td></tr>
+          <tr><td><strong>Zero to One</strong></td><td>Peter Thiel</td><td>スタートアップ戦略と独自性の構築</td></tr>
+          <tr><td><strong>Continuous Discovery Habits</strong></td><td>Teresa Torres</td><td>継続的な顧客発見の方法論</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>公式ドキュメント・参考URL（カテゴリ別）</h3>
+
+    <h4>MVP・リーンスタートアップの基礎概念</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>リソース</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Eric Ries 公式サイト（Lean Startup）</td><td><a href="https://theleanstartup.com/" target="_blank">https://theleanstartup.com/</a></td></tr>
+          <tr><td>Lean Startup Wikipedia</td><td><a href="https://en.wikipedia.org/wiki/Lean_startup" target="_blank">https://en.wikipedia.org/wiki/Lean_startup</a></td></tr>
+          <tr><td>Lean Canvas（Ash Maurya）</td><td><a href="https://leanstack.com/lean-canvas" target="_blank">https://leanstack.com/lean-canvas</a></td></tr>
+          <tr><td>Y Combinator — How to Validate Your Startup Idea</td><td><a href="https://www.ycombinator.com/library/7x-how-to-get-and-test-ideas" target="_blank">https://www.ycombinator.com/library/...</a></td></tr>
+          <tr><td>Paul Graham — Do Things That Don't Scale</td><td><a href="https://paulgraham.com/ds.html" target="_blank">https://paulgraham.com/ds.html</a></td></tr>
+          <tr><td>a16z — Product-Market Fit</td><td><a href="https://a16z.com/12-things-about-product-market-fit/" target="_blank">https://a16z.com/12-things-about-product-market-fit/</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>顧客開発・インタビュー</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>リソース</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>The Mom Test（公式サイト）</td><td><a href="https://www.momtestbook.com/" target="_blank">https://www.momtestbook.com/</a></td></tr>
+          <tr><td>Steve Blank — Customer Development</td><td><a href="https://steveblank.com/category/customer-development/" target="_blank">https://steveblank.com/category/customer-development/</a></td></tr>
+          <tr><td>Superhuman — How to Find PMF</td><td><a href="https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/" target="_blank">First Round Review</a></td></tr>
+          <tr><td>Sean Ellis — PMF Survey</td><td><a href="https://pmfsurvey.com/" target="_blank">https://pmfsurvey.com/</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>技術的アーキテクチャ</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>リソース</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Martin Fowler — Monolith First</td><td><a href="https://martinfowler.com/bliki/MonolithFirst.html" target="_blank">https://martinfowler.com/bliki/MonolithFirst.html</a></td></tr>
+          <tr><td>Martin Fowler — Strangler Fig Application</td><td><a href="https://martinfowler.com/bliki/StranglerFigApplication.html" target="_blank">https://martinfowler.com/bliki/StranglerFigApplication.html</a></td></tr>
+          <tr><td>Twelve-Factor App（SaaS設計原則）</td><td><a href="https://12factor.net/ja/" target="_blank">https://12factor.net/ja/</a></td></tr>
+          <tr><td>Martin Fowler — Sacrificial Architecture</td><td><a href="https://martinfowler.com/bliki/SacrificialArchitecture.html" target="_blank">https://martinfowler.com/bliki/SacrificialArchitecture.html</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>プロダクト指標・アナリティクス</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>リソース</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Amplitude — North Star Playbook</td><td><a href="https://amplitude.com/books/north-star" target="_blank">https://amplitude.com/books/north-star</a></td></tr>
+          <tr><td>PostHog（オープンソースプロダクト分析）</td><td><a href="https://posthog.com/" target="_blank">https://posthog.com/</a></td></tr>
+          <tr><td>Mixpanel — Product Analytics Guide</td><td><a href="https://mixpanel.com/resources/" target="_blank">https://mixpanel.com/resources/</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>セキュリティ</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>リソース</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>OWASP Top 10（Webセキュリティ）</td><td><a href="https://owasp.org/www-project-top-ten/" target="_blank">https://owasp.org/www-project-top-ten/</a></td></tr>
+          <tr><td>Clerk（認証サービス）</td><td><a href="https://clerk.com/docs" target="_blank">https://clerk.com/docs</a></td></tr>
+          <tr><td>Stripe（決済SDK公式）</td><td><a href="https://stripe.com/docs" target="_blank">https://stripe.com/docs</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>著名なMVP成功事例</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>事例</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Dropbox MVP（動画デモで需要検証）</td><td><a href="https://www.youtube.com/watch?v=7QmCUDHpNzE" target="_blank">https://www.youtube.com/watch?v=7QmCUDHpNzE</a></td></tr>
+          <tr><td>Airbnb の初期戦略（Paul Graham）</td><td><a href="https://paulgraham.com/growth.html" target="_blank">https://paulgraham.com/growth.html</a></td></tr>
+          <tr><td>Twitter の誕生（ピボット事例）</td><td><a href="https://en.wikipedia.org/wiki/History_of_Twitter" target="_blank">Wikipedia: History of Twitter</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout info" style="margin-top:40px;">
+      <div class="callout-label">注記</div>
+      <p>本ドキュメントは2025年時点の情報を基に作成しています。技術情報は変更される場合があるため、実装前に必ず公式ドキュメントをご確認ください。</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    darkMode: true,
+    background: '#161b22',
+    primaryColor: '#1e2530',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#30363d',
+    lineColor: '#8b949e',
+    secondaryColor: '#1e2530',
+    tertiaryColor: '#161b22',
+    clusterBkg: '#1e2530',
+    clusterBorder: '#30363d',
+    titleColor: '#e6edf3',
+    edgeLabelBackground: '#161b22',
+    fontFamily: 'Segoe UI, Hiragino Sans, Yu Gothic UI, system-ui, sans-serif',
+    fontSize: '13px'
+  },
+  flowchart: {
+    curve: 'basis',
+    padding: 20
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+});
+</script>
+</body>
+</html>
