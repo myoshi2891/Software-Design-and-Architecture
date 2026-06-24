@@ -4378,6 +4378,11 @@ body.has-common-header .hexagonal-architecture-comprehensive-guide .section {
     background: var(--bg-code) !important;
     border: none;
     border-radius: 0;
+    padding: 18px 20px;
+    font-family: var(--fm);
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--text);
   }
   .cd pre code {
     font-family: var(--fm) !important;
@@ -4388,6 +4393,13 @@ body.has-common-header .hexagonal-architecture-comprehensive-guide .section {
     display: block;
     line-height: 1.65;
   }
+
+  /* 手書き span ハイライト（highlight.js 非依存） */
+  .kw { color: #c4b5fd; }
+  .st { color: #6ee7b7; }
+  .fn { color: #7ab3f0; }
+  .cm { color: var(--text-muted); font-style: italic; }
+  .nu { color: #fcd34d; }
 
   /* MERMAID */
   .dw {
