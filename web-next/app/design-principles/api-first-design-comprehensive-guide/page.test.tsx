@@ -88,7 +88,7 @@ describe("api-first-design-comprehensive-guide page", () => {
   it("globals.css に .api-first-design-comprehensive-guide のレイアウト調整が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../../globals.css");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
     expect(cssContent).toContain(".api-first-design-comprehensive-guide");
   });
