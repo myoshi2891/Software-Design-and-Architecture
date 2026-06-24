@@ -197,6 +197,9 @@
     },
     {
       "pattern": "^https?://storybook\\.js\\.org/docs"
+    },
+    {
+      "pattern": "^https?://(www\\.)?ycombinator\\.com/library"
     }
   ],
   "replacementPatterns": [],
