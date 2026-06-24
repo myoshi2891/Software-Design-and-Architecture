@@ -149,9 +149,8 @@ li { margin-bottom: 3px; }
   min-width: 0;
 }
 .content-inner {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 28px 32px 80px;
+  width: 100%;
+  padding: 24px 16px 80px;
 }
 
 /* ─── Section ─── */
@@ -270,18 +269,9 @@ tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
   border-radius: var(--radius-md);
   padding: 16px;
   overflow-x: auto;
-  margin: 8px 0;
+  margin: 8px auto;
   display: flex;
   justify-content: center;
-}
-.mermaid {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-.mermaid svg {
-  max-width: 100%;
-  height: auto;
 }
 
 /* ─── Code ─── */
@@ -326,6 +316,19 @@ code[class*="language-"] { font-size: 12px !important; background: transparent !
 
 /* ─── Practice tag ─── */
 .pt { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: rgba(45,212,191,0.1); color: var(--c-teal-200); border: 1px solid var(--c-teal-600); margin-right: 4px; }
+        /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
+        .mermaid-wrap,
+        .diagram-wrap .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .mermaid-wrap svg,
+        .diagram-wrap .mermaid svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
 </style>
 </head>
 <body>
@@ -401,30 +404,12 @@ code[class*="language-"] { font-size: 12px !important; background: transparent !
 
   <p class="sub-title">1.1 XPの歴史的背景</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-timeline
-    title XPの歴史的背景
-    1990年代初頭 : ウォーターフォール開発の限界が顕在化
-    1996年 : Kent BeckがC3プロジェクト（Chrysler社）でXPを実践
-    1999年 : Extreme Programming Explained 初版出版
-    2001年 : アジャイルマニフェストに参加
-    2004年 : 第2版出版（5つの価値と13のプラクティスへ体系化）
-    2010年代 : TDD・CI/CD・ペアプロが業界標準のプラクティスへ
-    </div>
+    <div class="mermaid" id="diag-1"></div>
   </div>
 
   <p class="sub-title">1.2 XPの全体像</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-graph TD
-    XP["Extreme Programming"] --> V["5つの価値 Values"]
-    XP --> PR["原則 Principles"]
-    XP --> P["13のプラクティス Practices"]
-    V --> PR --> P
-    P --> P1["TDD"] & P2["ペアプログラミング"] & P3["継続的インテグレーション"]
-    P --> P4["リファクタリング"] & P5["シンプルな設計"] & P6["小さなリリース"]
-    P --> P7["計画ゲーム"] & P8["コレクティブオーナーシップ"] & P9["コーディング規約"]
-    </div>
+    <div class="mermaid" id="diag-2"></div>
   </div>
 
   <p class="sub-title">1.3 XPが解決する問題</p>
@@ -516,45 +501,12 @@ graph TD
   </div>
 
   <div class="mermaid-wrap">
-    <div class="mermaid">
-graph TD
-    subgraph FINE["細粒度フィードバック（コードレベル）"]
-        TDD["TDD"]
-        PAIR["ペアプログラミング"]
-        CI["継続的インテグレーション"]
-        REF["リファクタリング"]
-    end
-    subgraph CONT["継続的なプロセス"]
-        SIM["シンプルな設計"]
-        SR["小さなリリース"]
-        COL["コレクティブオーナーシップ"]
-        STD["コーディング規約"]
-    end
-    subgraph TEAM["共有理解（チームレベル）"]
-        PG["計画ゲーム"]
-        OC["オンサイト顧客"]
-        MET["メタファー"]
-    end
-    subgraph WELL["チームの健全性"]
-        HRS["週40時間労働"]
-        ACC["システム全体のテスト"]
-    end
-    </div>
+    <div class="mermaid" id="diag-3"></div>
   </div>
 
   <p class="sub-title">プラクティスの相互依存関係</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-graph LR
-    TDD -->|安全に変更できる| RF["リファクタリング"]
-    RF -->|設計を改善する| SD["シンプルな設計"]
-    SD -->|変更しやすいコード| TDD
-    CI2["CI"] -->|素早いフィードバック| TDD
-    TDD -->|テストがあるから統合できる| CI2
-    PP["ペアプロ"] -->|知識共有| CO["コレクティブOW"]
-    CO -->|誰でも変更できる| RF
-    PG2["計画ゲーム"] --> SR2["小さなリリース"] --> PG2
-    </div>
+    <div class="mermaid" id="diag-4"></div>
   </div>
 </div>
 
@@ -576,18 +528,7 @@ graph LR
 
   <p class="sub-title">Red-Green-Refactor サイクル</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart TD
-    START(["新機能を実装する"])
-    RED["🔴 RED フェーズ\n失敗するテストを書く\nまだ実装コードは存在しない\nテストは必ず失敗する"]
-    GREEN["🟢 GREEN フェーズ\n最小限の実装コードを書く\nテストを通すだけの最小限\n美しさより動作を優先"]
-    REFACTOR["🔵 REFACTOR フェーズ\nコードを整理・改善する\nテストを壊さない範囲で\n重複排除・命名改善"]
-    CHECK{"全機能実装完了？"}
-    DONE(["実装完了"])
-    START --> RED --> GREEN --> REFACTOR --> CHECK
-    CHECK -->|No| RED
-    CHECK -->|Yes| DONE
-    </div>
+    <div class="mermaid" id="diag-5"></div>
   </div>
 
   <p class="sub-title">良いテストのFIRST原則</p>
@@ -740,18 +681,7 @@ class Order:
 
   <p class="sub-title">セッション設計フロー</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart TD
-    PREP["セッション開始前 5分\nタスクの目標を2人で確認\n担当範囲を明確にする"]
-    DRIVE["ドライバー開始\nコードを書き始める"]
-    NAV["ナビゲーターの活動\nリアルタイムレビュー・改善提案"]
-    SWITCH["ロール交代 15〜30分ごと"]
-    BREAK["休憩 90分ごと\n適切な休憩で集中力回復"]
-    END["セッション終了後 5分\n学んだことを共有・コミット"]
-    PREP --> DRIVE --> NAV --> SWITCH --> DRIVE
-    DRIVE -->|90分経過| BREAK --> DRIVE
-    NAV --> END
-    </div>
+    <div class="mermaid" id="diag-6"></div>
   </div>
 
   <p class="sub-title">実践すること / 避けること</p>
@@ -805,29 +735,7 @@ flowchart TD
 
   <p class="sub-title">CIパイプラインの設計</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart TD
-    COMMIT["git commit and push"]
-    TRIGGER["CIトリガー\nプッシュ・PR作成時に自動起動"]
-    subgraph FAST["高速チェック 2〜3分"]
-        LINT["Lint・型チェック"]
-        UNIT["ユニットテスト"]
-        BUILD["ビルド確認"]
-    end
-    subgraph SLOW["詳細チェック 5〜15分"]
-        INT["統合テスト"]
-        E2E["E2Eテスト"]
-        SEC["セキュリティスキャン"]
-        COV["カバレッジ確認"]
-    end
-    OK["全チェック通過\nマージ可能"]
-    FAIL["チェック失敗\n即座に通知・修正最優先"]
-    COMMIT --> TRIGGER --> FAST
-    FAST -->|通過| SLOW
-    FAST -->|失敗| FAIL
-    SLOW -->|通過| OK
-    SLOW -->|失敗| FAIL
-    </div>
+    <div class="mermaid" id="diag-7"></div>
   </div>
 
   <p class="sub-title">XP流CI 10のルール</p>
@@ -1149,19 +1057,7 @@ jobs:
     <p>顧客が開発チームと同じ場所にいる</p>
   </div>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-sequenceDiagram
-    participant DEV as 開発チーム
-    participant CUST as 顧客（オンサイト）
-    DEV->>CUST: この仕様、〇〇の場合はどうしますか？
-    CUST-->>DEV: その場合は△△にしてください
-    Note over DEV: 即座に理解・実装開始
-    DEV->>CUST: できました。確認してもらえますか？
-    CUST->>CUST: 動作を確認する
-    CUST-->>DEV: ほぼOKですが、ここを変えてほしい
-    DEV->>CUST: 修正しました
-    CUST-->>DEV: 完璧です！
-    </div>
+    <div class="mermaid" id="diag-8"></div>
   </div>
   <p class="sub-title">現代的な代替手段（リモート対応）</p>
   <div class="grid-2">
@@ -1184,16 +1080,7 @@ sequenceDiagram
     <p>持続可能なペース（Sustainable Pace）</p>
   </div>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-graph LR
-    O1["残業・過労"] -->|短期| P1["生産性一時上昇"]
-    O1 -->|中期| P2["疲弊・ミス増加"]
-    O1 -->|長期| P3["燃え尽き症候群"]
-    P3 --> P4["コード品質低下・技術的負債"]
-    S1["週40時間以内"] --> S2["集中力維持・高品質"]
-    S2 --> S3["チームの士気・健康維持"]
-    S3 --> S4["長期的なプロダクト品質"]
-    </div>
+    <div class="mermaid" id="diag-9"></div>
   </div>
   <div class="callout callout-warn" style="margin-top:12px;">
     <strong>残業は警告サイン：</strong>計画が間違っているサインとして扱う。スコープを削るか、計画を見直す。
@@ -1235,24 +1122,11 @@ graph LR
   </div>
   <p class="sub-title">テストの階層</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-graph TD
-    ACC["受け入れテスト\n顧客が定義した完了の基準\nユーザーストーリーの検証\n数十件"]
-    INT["統合テスト\nコンポーネント間の連携\nDB・外部サービスとの統合\n数百件"]
-    UNIT["ユニットテスト\nTDDで書く細かいテスト\n個々の関数・クラスの動作\n数千件"]
-    UNIT --> INT --> ACC
-    </div>
+    <div class="mermaid" id="diag-10"></div>
   </div>
   <p class="sub-title">受け入れテストのフロー</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart LR
-    S1["顧客がストーリーを書く"] --> S2["顧客と開発者で受け入れ条件を共同定義"]
-    S2 --> S3["開発者が受け入れテストを自動化"]
-    S3 --> S4["実装完了後に受け入れテスト実行"]
-    S4 --> S5["全テスト通過 = 機能完了の証明"]
-    S5 --> S6["顧客が確認・承認"]
-    </div>
+    <div class="mermaid" id="diag-11"></div>
   </div>
   <div class="callout callout-info" style="margin-top:12px;">
     <strong>XPのルール：</strong>コードを書く前にテストを書く（TDD）。受け入れテストは顧客と一緒に定義する。全テストは自動化して毎回実行する。
@@ -1291,13 +1165,7 @@ flowchart LR
     <p>1〜2週間のリズムで回すフロー</p>
   </div>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart TD
-    MON["月曜日：計画ゲーム\n前回の振り返り 30分\nベロシティの確認\n今回のストーリー選択\nタスク分解と見積もり"]
-    DEV["火〜木：開発\nTDDでコードを書く\nペアプログラミング\n継続的インテグレーション\nデイリースタンドアップ 15分"]
-    FRI["金曜日：レビュー & 振り返り\nデモ（完成した機能を顧客に）\n受け入れテストの実行\nKPT振り返り\n次のイテレーションへの準備"]
-    MON --> DEV --> FRI --> MON
-    </div>
+    <div class="mermaid" id="diag-12"></div>
   </div>
 
   <p class="sub-title">KPT 振り返りフレームワーク</p>
@@ -1432,34 +1300,7 @@ flowchart TD
 
   <p class="sub-title">XP健全性チェック</p>
   <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart TD
-    Q1{"毎日mainへプッシュしているか？"}
-    Q2{"コードの前にテストを書いているか？"}
-    Q3{"全員がすべてのコードに触れているか？"}
-    Q4{"イテレーションごとにリリースできるか？"}
-    Q5{"週40時間以内で働けているか？"}
-    Q6{"顧客との対話が週2回以上か？"}
-    OK["健全なXPプロジェクト"]
-    F1["Trunk-Based Developmentへ移行"]
-    F2["TDDのサイクルを学び直す"]
-    F3["ペアプロとコレクティブOWを強化"]
-    F4["ストーリーをさらに小さく分割"]
-    F5["計画を見直す・スコープを削る"]
-    F6["オンサイト顧客またはPO制を導入"]
-    Q1 -->|No| F1
-    Q1 -->|Yes| Q2
-    Q2 -->|No| F2
-    Q2 -->|Yes| Q3
-    Q3 -->|No| F3
-    Q3 -->|Yes| Q4
-    Q4 -->|No| F4
-    Q4 -->|Yes| Q5
-    Q5 -->|No| F5
-    Q5 -->|Yes| Q6
-    Q6 -->|No| F6
-    Q6 -->|Yes| OK
-    </div>
+    <div class="mermaid" id="diag-13"></div>
   </div>
 </div>
 
@@ -1620,8 +1461,187 @@ flowchart TD
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
 
 <script>
+const DIAGRAMS = {
+  'diag-1': `
+timeline
+    title XPの歴史的背景
+    1990年代初頭 : ウォーターフォール開発の限界が顕在化
+    1996年 : Kent BeckがC3プロジェクト（Chrysler社）でXPを実践
+    1999年 : Extreme Programming Explained 初版出版
+    2001年 : アジャイルマニフェストに参加
+    2004年 : 第2版出版（5つの価値と13のプラクティスへ体系化）
+    2010年代 : TDD・CI/CD・ペアプロが業界標準のプラクティスへ
+`,
+  'diag-2': `
+graph TD
+    XP["Extreme Programming"] --> V["5つの価値 Values"]
+    XP --> PR["原則 Principles"]
+    XP --> P["13のプラクティス Practices"]
+    V --> PR --> P
+    P --> P1["TDD"] & P2["ペアプログラミング"] & P3["継続的インテグレーション"]
+    P --> P4["リファクタリング"] & P5["シンプルな設計"] & P6["小さなリリース"]
+    P --> P7["計画ゲーム"] & P8["コレクティブオーナーシップ"] & P9["コーディング規約"]
+`,
+  'diag-3': `
+graph TD
+    subgraph FINE["細粒度フィードバック（コードレベル）"]
+        TDD["TDD"]
+        PAIR["ペアプログラミング"]
+        CI["継続的インテグレーション"]
+        REF["リファクタリング"]
+    end
+    subgraph CONT["継続的なプロセス"]
+        SIM["シンプルな設計"]
+        SR["小さなリリース"]
+        COL["コレクティブオーナーシップ"]
+        STD["コーディング規約"]
+    end
+    subgraph TEAM["共有理解（チームレベル）"]
+        PG["計画ゲーム"]
+        OC["オンサイト顧客"]
+        MET["メタファー"]
+    end
+    subgraph WELL["チームの健全性"]
+        HRS["週40時間労働"]
+        ACC["システム全体のテスト"]
+    end
+`,
+  'diag-4': `
+graph LR
+    TDD -->|安全に変更できる| RF["リファクタリング"]
+    RF -->|設計を改善する| SD["シンプルな設計"]
+    SD -->|変更しやすいコード| TDD
+    CI2["CI"] -->|素早いフィードバック| TDD
+    TDD -->|テストがあるから統合できる| CI2
+    PP["ペアプロ"] -->|知識共有| CO["コレクティブOW"]
+    CO -->|誰でも変更できる| RF
+    PG2["計画ゲーム"] --> SR2["小さなリリース"] --> PG2
+`,
+  'diag-5': `
+flowchart TD
+    START(["新機能を実装する"])
+    RED["🔴 RED フェーズ\n失敗するテストを書く\nまだ実装コードは存在しない\nテストは必ず失敗する"]
+    GREEN["🟢 GREEN フェーズ\n最小限の実装コードを書く\nテストを通すだけの最小限\n美しさより動作を優先"]
+    REFACTOR["🔵 REFACTOR フェーズ\nコードを整理・改善する\nテストを壊さない範囲で\n重複排除・命名改善"]
+    CHECK{"全機能実装完了？"}
+    DONE(["実装完了"])
+    START --> RED --> GREEN --> REFACTOR --> CHECK
+    CHECK -->|No| RED
+    CHECK -->|Yes| DONE
+`,
+  'diag-6': `
+flowchart TD
+    PREP["セッション開始前 5分\nタスクの目標を2人で確認\n担当範囲を明確にする"]
+    DRIVE["ドライバー開始\nコードを書き始める"]
+    NAV["ナビゲーターの活動\nリアルタイムレビュー・改善提案"]
+    SWITCH["ロール交代 15〜30分ごと"]
+    BREAK["休憩 90分ごと\n適切な休憩で集中力回復"]
+    END["セッション終了後 5分\n学んだことを共有・コミット"]
+    PREP --> DRIVE --> NAV --> SWITCH --> DRIVE
+    DRIVE -->|90分経過| BREAK --> DRIVE
+    NAV --> END
+`,
+  'diag-7': `
+flowchart TD
+    COMMIT["git commit and push"]
+    TRIGGER["CIトリガー\nプッシュ・PR作成時に自動起動"]
+    subgraph FAST["高速チェック 2〜3分"]
+        LINT["Lint・型チェック"]
+        UNIT["ユニットテスト"]
+        BUILD["ビルド確認"]
+    end
+    subgraph SLOW["詳細チェック 5〜15分"]
+        INT["統合テスト"]
+        E2E["E2Eテスト"]
+        SEC["セキュリティスキャン"]
+        COV["カバレッジ確認"]
+    end
+    OK["全チェック通過\nマージ可能"]
+    FAIL["チェック失敗\n即座に通知・修正最優先"]
+    COMMIT --> TRIGGER --> FAST
+    FAST -->|通過| SLOW
+    FAST -->|失敗| FAIL
+    SLOW -->|通過| OK
+    SLOW -->|失敗| FAIL
+`,
+  'diag-8': `
+sequenceDiagram
+    participant DEV as 開発チーム
+    participant CUST as 顧客（オンサイト）
+    DEV->>CUST: この仕様、〇〇の場合はどうしますか？
+    CUST-->>DEV: その場合は△△にしてください
+    Note over DEV: 即座に理解・実装開始
+    DEV->>CUST: できました。確認してもらえますか？
+    CUST->>CUST: 動作を確認する
+    CUST-->>DEV: ほぼOKですが、ここを変えてほしい
+    DEV->>CUST: 修正しました
+    CUST-->>DEV: 完璧です！
+`,
+  'diag-9': `
+graph LR
+    O1["残業・過労"] -->|短期| P1["生産性一時上昇"]
+    O1 -->|中期| P2["疲弊・ミス増加"]
+    O1 -->|長期| P3["燃え尽き症候群"]
+    P3 --> P4["コード品質低下・技術的負債"]
+    S1["週40時間以内"] --> S2["集中力維持・高品質"]
+    S2 --> S3["チームの士気・健康維持"]
+    S3 --> S4["長期的なプロダクト品質"]
+`,
+  'diag-10': `
+graph TD
+    ACC["受け入れテスト\n顧客が定義した完了の基準\nユーザーストーリーの検証\n数十件"]
+    INT["統合テスト\nコンポーネント間の連携\nDB・外部サービスとの統合\n数百件"]
+    UNIT["ユニットテスト\nTDDで書く細かいテスト\n個々の関数・クラスの動作\n数千件"]
+    UNIT --> INT --> ACC
+`,
+  'diag-11': `
+flowchart LR
+    S1["顧客がストーリーを書く"] --> S2["顧客と開発者で受け入れ条件を共同定義"]
+    S2 --> S3["開発者が受け入れテストを自動化"]
+    S3 --> S4["実装完了後に受け入れテスト実行"]
+    S4 --> S5["全テスト通過 = 機能完了の証明"]
+    S5 --> S6["顧客が確認・承認"]
+`,
+  'diag-12': `
+flowchart TD
+    MON["月曜日：計画ゲーム\n前回の振り返り 30分\nベロシティの確認\n今回のストーリー選択\nタスク分解と見積もり"]
+    DEV["火〜木：開発\nTDDでコードを書く\nペアプログラミング\n継続的インテグレーション\nデイリースタンドアップ 15分"]
+    FRI["金曜日：レビュー & 振り返り\nデモ（完成した機能を顧客に）\n受け入れテストの実行\nKPT振り返り\n次のイテレーションへの準備"]
+    MON --> DEV --> FRI --> MON
+`,
+  'diag-13': `
+flowchart TD
+    Q1{"毎日mainへプッシュしているか？"}
+    Q2{"コードの前にテストを書いているか？"}
+    Q3{"全員がすべてのコードに触れているか？"}
+    Q4{"イテレーションごとにリリースできるか？"}
+    Q5{"週40時間以内で働けているか？"}
+    Q6{"顧客との対話が週2回以上か？"}
+    OK["健全なXPプロジェクト"]
+    F1["Trunk-Based Developmentへ移行"]
+    F2["TDDのサイクルを学び直す"]
+    F3["ペアプロとコレクティブOWを強化"]
+    F4["ストーリーをさらに小さく分割"]
+    F5["計画を見直す・スコープを削る"]
+    F6["オンサイト顧客またはPO制を導入"]
+    Q1 -->|No| F1
+    Q1 -->|Yes| Q2
+    Q2 -->|No| F2
+    Q2 -->|Yes| Q3
+    Q3 -->|No| F3
+    Q3 -->|Yes| Q4
+    Q4 -->|No| F4
+    Q4 -->|Yes| Q5
+    Q5 -->|No| F5
+    Q5 -->|Yes| Q6
+    Q6 -->|No| F6
+    Q6 -->|Yes| OK
+`,
+};
+
 mermaid.initialize({
-  startOnLoad: true,
+  startOnLoad: false,
+                securityLevel: 'loose',
   theme: 'dark',
   themeVariables: {
     darkMode: true,
@@ -1639,18 +1659,18 @@ mermaid.initialize({
     nodeTextColor: '#e2e8f0',
     fontFamily: 'JetBrains Mono, monospace',
     fontSize: '13px',
-    cScale0: '#1e293b',
-    cScale1: '#0f172a',
-    cScale2: '#1e1b4b',
-    cScale3: '#311042',
-    cScale4: '#2d0f0f',
-    cScale5: '#1c1917',
-    cScaleLabel0: '#f8fafc',
-    cScaleLabel1: '#f8fafc',
-    cScaleLabel2: '#f8fafc',
-    cScaleLabel3: '#f8fafc',
-    cScaleLabel4: '#f8fafc',
-    cScaleLabel5: '#f8fafc',
+    cScale0: '#1d4ed8',
+    cScale1: '#0891b2',
+    cScale2: '#7c3aed',
+    cScale3: '#be185d',
+    cScale4: '#b91c1c',
+    cScale5: '#b45309',
+    cScaleLabel0: '#ffffff',
+    cScaleLabel1: '#ffffff',
+    cScaleLabel2: '#ffffff',
+    cScaleLabel3: '#ffffff',
+    cScaleLabel4: '#ffffff',
+    cScaleLabel5: '#ffffff',
   },
   flowchart: { htmlLabels: true, curve: 'basis' },
   sequence: { useMaxWidth: true },
@@ -1681,6 +1701,53 @@ function goTo(id) {
   const el = document.getElementById(id);
   if (el) window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
 }
-</script>
+
+            // --- mermaid render pipeline (apply_render_pipeline.ts) ---
+            function applySvgFixups(svgEl, src) {
+                svgEl.removeAttribute('width');
+                svgEl.removeAttribute('height');
+                svgEl.style.height = 'auto';
+                svgEl.style.maxWidth = '100%';
+                svgEl.style.overflow = 'visible';
+                svgEl.style.marginBottom = '10px';
+                const viewBox = svgEl.getAttribute('viewBox');
+                if (!viewBox) return;
+                const parts = viewBox.split(/\s+/).map(Number);
+                if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+                const trimmed = src.trim();
+                const isSequenceOrState =
+                    trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+                const extraHeight = isSequenceOrState ? 110 : 15;
+                const [x, y, w, h] = parts;
+                // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+                svgEl.style.width = w + 'px';
+                svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+            }
+
+            (async () => {
+                if (document.fonts && document.fonts.ready) {
+                    try {
+                        await document.fonts.ready;
+                    } catch (_e) {
+                        /* フォント待機に失敗しても描画は継続する */
+                    }
+                }
+                for (const [id, src] of Object.entries(DIAGRAMS)) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    try {
+                        const { svg } = await mermaid.render('svg-' + id, src);
+                        el.innerHTML = svg;
+                        const svgEl = el.querySelector('svg');
+                        if (svgEl) applySvgFixups(svgEl, src);
+                    } catch (err) {
+                        el.innerHTML =
+                            '<pre style="color:#ff8888;white-space:pre-wrap">' +
+                            (err && err.message ? err.message : String(err)) +
+                            '</pre>';
+                    }
+                }
+            })();
+        </script>
 </body>
 </html>
