@@ -1,6 +1,8 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import MicroservicesArchitectureSidebar, { type NavGroup } from "./MicroservicesArchitectureSidebar";
+import MicroservicesArchitectureSidebar, {
+  type NavGroup,
+} from "./MicroservicesArchitectureSidebar";
 
 const GROUPS: NavGroup[] = [
   {
