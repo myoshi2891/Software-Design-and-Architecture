@@ -8,12 +8,8 @@ description: >
   TRIGGER when the user says any of the following (Japanese or English):
   - "新規ガイドページを追加" / "ガイドページを移行" / "ページを保守"
   - "add new guide page" / "migrate guide page" / "nextjs page migration"
-  Applies this repo's patterns: globals.css scoped class styling (CSS Nesting — each page
-  scope must define its own .kw/.fn/.st/.cm/.nu syntax highlight classes; they do NOT
-  inherit from other page scopes), hand-written span syntax highlighting via
-  dangerouslySetInnerHTML (pre receives spans directly — no <code> wrapper — so padding
-  and font-family must be set on .cd pre itself, NOT only on .cd pre code),
-  @tabler/icons-react, lazy Mermaid.
+  このリポジトリ固有のパターンを適用します：globals.css のスコープ付きクラススタイリング（CSSネスト - 各ページスコープは独自の .kw/.fn/.st/.cm/.nu 構文ハイライトクラスを定義する必要があり、他のページスコープから継承しません）、dangerouslySetInnerHTML を介した手書きの span 構文ハイライト（pre は直接 span を受け取り、code ラッパーを持たないため、パディングとフォントファミリーは cd pre code だけでなく cd pre 自体に設定する必要があります）、@tabler/icons-react、遅延 Mermaid。
+
 invocation: explicit
 allowed-tools:
   - Read

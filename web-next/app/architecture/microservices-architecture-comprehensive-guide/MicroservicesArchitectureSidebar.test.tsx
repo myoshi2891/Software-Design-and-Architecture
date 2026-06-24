@@ -20,12 +20,15 @@ const GROUPS: NavGroup[] = [
 
 type IOCallback = (entries: IntersectionObserverEntry[]) => void;
 let ioCallback: IOCallback | null = null;
+let observedElements: Element[] = [];
 
 class CapturingIO implements IntersectionObserver {
   readonly root = null;
   readonly rootMargin = "";
   readonly thresholds: ReadonlyArray<number> = [];
-  observe = vi.fn();
+  observe = vi.fn((el: Element) => {
+    observedElements.push(el);
+  });
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn(() => []);
@@ -49,6 +52,7 @@ describe("MicroservicesArchitectureSidebar", () => {
 
   beforeEach(() => {
     ioCallback = null;
+    observedElements = [];
     originalIntersectionObserver = globalThis.IntersectionObserver;
     globalThis.IntersectionObserver = CapturingIO as unknown as typeof IntersectionObserver;
     document.body.insertAdjacentHTML(
@@ -57,6 +61,7 @@ describe("MicroservicesArchitectureSidebar", () => {
         <section class="section" id="s1"></section>
         <section class="section" id="s2"></section>
         <section class="section" id="s3"></section>
+        <section id="s-plain"></section>
       </main>`
     );
   });
@@ -64,6 +69,7 @@ describe("MicroservicesArchitectureSidebar", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.restoreAllMocks();
+    observedElements = [];
     globalThis.IntersectionObserver = originalIntersectionObserver;
   });
 
@@ -121,5 +127,18 @@ describe("MicroservicesArchitectureSidebar", () => {
       window.dispatchEvent(new Event("scroll"));
     });
     expect(bar?.style.transform).toBe("scaleX(0.5)");
+  });
+
+  it("クラスを持たないプレーンな section は IntersectionObserver に登録されない", () => {
+    render(<MicroservicesArchitectureSidebar groups={GROUPS} />);
+
+    const plainSection = document.getElementById("s-plain");
+    const s1 = document.getElementById("s1");
+
+    expect(plainSection).not.toBeNull();
+    expect(s1).not.toBeNull();
+
+    expect(observedElements).not.toContain(plainSection);
+    expect(observedElements).toContain(s1);
   });
 });

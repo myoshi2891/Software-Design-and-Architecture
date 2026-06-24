@@ -74,6 +74,16 @@ describe("hexagonal-architecture-comprehensive-guide page", () => {
     expect(container.querySelectorAll("pre")).toHaveLength(11);
   });
 
+  it("すべてのコードブロック（pre）にハイライト用 span が含まれている", () => {
+    const { container } = render(<Page />);
+    const pres = container.querySelectorAll("pre");
+    expect(pres).toHaveLength(11);
+    for (const pre of pres) {
+      const spans = pre.querySelectorAll("span.kw, span.cm, span.st, span.fn, span.nu");
+      expect(spans.length).toBeGreaterThan(0);
+    }
+  });
+
   it("globals.css に .hexagonal-architecture-comprehensive-guide .main のレイアウト調整が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
@@ -85,8 +95,9 @@ describe("hexagonal-architecture-comprehensive-guide page", () => {
     );
     expect(cssContent).toContain(".hexagonal-architecture-comprehensive-guide");
 
-    const mainStyleRegex =
-      /\.main\s*\{\s*margin-left:\s*var\(--sw\);\s*flex:\s*1;\s*max-width:\s*calc\(100%\s*-\s*var\(--sw\)\);\s*overflow-x:\s*hidden;\s*\}/;
-    expect(mainStyleRegex.test(sectionContent)).toBe(true);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*margin-left:\s*var\(--sw\)/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*flex:\s*1/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*max-width:\s*calc\(100%\s*-\s*var\(--sw\)\)/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*overflow-x:\s*hidden/);
   });
 });

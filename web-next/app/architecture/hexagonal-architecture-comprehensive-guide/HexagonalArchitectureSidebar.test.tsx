@@ -77,28 +77,37 @@ describe("HexagonalArchitectureSidebar", () => {
     expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s4"]);
   });
 
-  it("初期状態では先頭の nav 項目に active が付く", () => {
+  it("初期状態では先頭の nav 項目に active が付き、aria-current が設定される", () => {
     const { container } = render(<HexagonalArchitectureSidebar groups={GROUPS} />);
     const active = container.querySelectorAll("nav.sb-nav a.active");
     expect(active).toHaveLength(1);
     expect(active[0]?.getAttribute("href")).toBe("#s1");
+    expect(active[0]?.getAttribute("aria-current")).toBe("location");
+
+    const inactive = container.querySelectorAll("nav.sb-nav a:not(.active)");
+    for (const el of Array.from(inactive)) {
+      expect(el.getAttribute("aria-current")).toBeNull();
+    }
   });
 
-  it("section が交差すると対応する nav 項目だけが active になる", () => {
+  it("section が交差すると対応する nav 項目だけが active かつ aria-current になる", () => {
     const { container } = render(<HexagonalArchitectureSidebar groups={GROUPS} />);
 
     const activeInitial = container.querySelectorAll("nav.sb-nav a.active");
     expect(activeInitial).toHaveLength(1);
     expect(activeInitial[0]?.getAttribute("href")).toBe("#s1");
+    expect(activeInitial[0]?.getAttribute("aria-current")).toBe("location");
 
     intersect("s4");
 
     const activeAfter = container.querySelectorAll("nav.sb-nav a.active");
     expect(activeAfter).toHaveLength(1);
     expect(activeAfter[0]?.getAttribute("href")).toBe("#s4");
+    expect(activeAfter[0]?.getAttribute("aria-current")).toBe("location");
 
     const prevActive = container.querySelector("nav.sb-nav a[href='#s1']");
     expect(prevActive?.classList.contains("active")).toBe(false);
+    expect(prevActive?.getAttribute("aria-current")).toBeNull();
   });
 
   it("スクロール量に応じて進捗バーの scaleX を更新する", () => {

@@ -3102,8 +3102,13 @@ body.has-common-header .service-oriented-architecture-comprehensive-guide .secti
     text-align: center;
   }
 
-  .main { margin-left: var(--sw); flex: 1; max-width: calc(100% - var(--sw)); overflow-x: hidden; }
-  .main { padding: 40px 48px; }
+  .main {
+    margin-left: var(--sw);
+    flex: 1;
+    max-width: calc(100% - var(--sw));
+    overflow-x: hidden;
+    padding: 40px 48px;
+  }
 
   .page-hero {
     margin-bottom: 48px;
@@ -4009,8 +4014,6 @@ body.has-common-header .hexagonal-architecture-comprehensive-guide .section {
     flex: 1;
     max-width: calc(100% - var(--sw));
     overflow-x: hidden;
-  }
-  .main {
     padding: 0 44px 80px;
   }
   .mw {

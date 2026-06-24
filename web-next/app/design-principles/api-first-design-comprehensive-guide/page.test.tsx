@@ -85,11 +85,18 @@ describe("api-first-design-comprehensive-guide page", () => {
     }
   });
 
-  it("globals.css に .api-first-design-comprehensive-guide のレイアウト調整が含まれている", () => {
+  it("globals.css に .api-first-design-comprehensive-guide .main のレイアウト調整が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
+
+    const sectionContent = cssContent.slice(
+      cssContent.indexOf(".api-first-design-comprehensive-guide")
+    );
     expect(cssContent).toContain(".api-first-design-comprehensive-guide");
+
+    const mainStyleRegex = /\.main\s*\{\s*flex:\s*1;\s*min-width:\s*0;\s*margin-left:\s*0;\s*\}/;
+    expect(mainStyleRegex.test(sectionContent)).toBe(true);
   });
 });

@@ -98,8 +98,9 @@ describe("microservices-architecture-comprehensive-guide page", () => {
     );
     expect(cssContent).toContain(".microservices-architecture-comprehensive-guide");
 
-    const mainStyleRegex =
-      /\.main\s*\{\s*margin-left:\s*var\(--sw\);\s*flex:\s*1;\s*max-width:\s*calc\(100%\s*-\s*var\(--sw\)\);\s*overflow-x:\s*hidden;\s*\}/;
-    expect(mainStyleRegex.test(sectionContent)).toBe(true);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*margin-left:\s*var\(--sw\)/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*flex:\s*1/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*max-width:\s*calc\(100%\s*-\s*var\(--sw\)\)/);
+    expect(sectionContent).toMatch(/\.main\s*\{[^}]*overflow-x:\s*hidden/);
   });
 });

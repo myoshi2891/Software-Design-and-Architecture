@@ -1125,6 +1125,7 @@ export default function Page() {
                 <span className="code-lang">YAML (openapi.yaml)</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code1 }} />
               </pre>
             </div>
@@ -1529,6 +1530,7 @@ export default function Page() {
                 <span className="code-lang">Python (FastAPI JWT検証)</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code2 }} />
               </pre>
             </div>
@@ -1573,6 +1575,7 @@ export default function Page() {
                 <span className="code-lang">JSON（統一エラーレスポンス形式）</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code3 }} />
               </pre>
             </div>
@@ -1665,6 +1668,7 @@ export default function Page() {
                 <span className="code-lang">Python (FastAPI エラーハンドラー)</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code4 }} />
               </pre>
             </div>
@@ -1758,6 +1762,7 @@ export default function Page() {
                 </span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code5 }} />
               </pre>
             </div>
@@ -1810,6 +1815,7 @@ export default function Page() {
                 <span className="code-lang">HTTP（レート制限ヘッダー）</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code6 }} />
               </pre>
             </div>
@@ -1866,6 +1872,7 @@ export default function Page() {
                 <span className="code-lang">Python (pytest 統合テスト)</span>
               </div>
               <pre>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static code block */}
                 <code dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code7 }} />
               </pre>
             </div>
