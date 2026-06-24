@@ -18,6 +18,7 @@ const GROUPS: NavGroup[] = [
 
 type IOCallback = (entries: IntersectionObserverEntry[]) => void;
 let ioCallback: IOCallback | null = null;
+let originalIO: typeof IntersectionObserver;
 
 class CapturingIO implements IntersectionObserver {
   readonly root = null;
@@ -45,6 +46,7 @@ function intersect(id: string): void {
 describe("SoaSidebar", () => {
   beforeEach(() => {
     ioCallback = null;
+    originalIO = globalThis.IntersectionObserver;
     globalThis.IntersectionObserver = CapturingIO as unknown as typeof IntersectionObserver;
     document.body.insertAdjacentHTML(
       "beforeend",
@@ -58,6 +60,7 @@ describe("SoaSidebar", () => {
 
   afterEach(() => {
     document.body.innerHTML = "";
+    globalThis.IntersectionObserver = originalIO;
     vi.restoreAllMocks();
   });
 

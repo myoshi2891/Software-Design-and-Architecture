@@ -665,8 +665,8 @@ resource <span class="st">"aws_cloudwatch_event_rule"</span> <span class="st">"o
 
   <span class="cm"># イベントパターン: source + detail-type でフィルタリング</span>
   event_pattern = jsonencode({
-    source      = [<span class="st">"com.myapp.order-service"</span>]
-    detail-type = [<span class="st">"OrderPlaced"</span>]
+    source        = [<span class="st">"com.myapp.order-service"</span>]
+    "detail-type" = [<span class="st">"OrderPlaced"</span>]
     detail = {
       total_amount = [{ numeric = [<span class="st">"&gt;="</span>, <span class="nu">1000</span>] }]  <span class="cm"># 1000円以上のみ</span>
     }
@@ -713,6 +713,8 @@ const CODE_ORDER_AGGREGATE = `<span class="kw">class</span> <span class="fn">Ord
                                  <span class="st">"name"</span>:name,<span class="st">"price"</span>:price,<span class="st">"quantity"</span>:qty})
 
     <span class="kw">def</span> <span class="fn">confirm</span>(self):
+        <span class="kw">if</span> self._status != <span class="st">"PENDING"</span>:
+            <span class="kw">raise</span> ValueError(<span class="st">"PENDING状態でのみ注文を確定できます"</span>)
         <span class="kw">if</span> <span class="kw">not</span> self._items: <span class="kw">raise</span> ValueError(<span class="st">"商品が1件もありません"</span>)
         self._apply_and_record({<span class="st">"event_type"</span>: <span class="st">"OrderConfirmed"</span>})
 

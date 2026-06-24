@@ -63,6 +63,9 @@ export default function MermaidDiagram({ chart, id, style, className }: Props) {
       })
       .catch((err: unknown) => {
         console.error("[MermaidDiagram] load failed:", err);
+        if (active && ref.current) {
+          ref.current.textContent = "⚠️ ダイアグラムを描画できませんでした";
+        }
       });
     return () => {
       active = false;

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { IconBuilding } from "@tabler/icons-react";
 
 export type NavItem = {
   id: string;
@@ -24,7 +25,7 @@ export default function SoaSidebar({ groups }: Props) {
   useEffect(() => {
     const onScroll = () => {
       const docH = document.documentElement.scrollHeight - window.innerHeight;
-      const prog = docH > 0 ? window.scrollY / docH : 0;
+      const prog = docH > 0 ? Math.min(1, Math.max(0, window.scrollY / docH)) : 0;
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${prog})`;
       }
@@ -61,7 +62,7 @@ export default function SoaSidebar({ groups }: Props) {
       <div className="progress-bar" ref={progressRef} />
       <aside className="sidebar">
         <div className="sb-logo">
-          <span className="sb-logo-icon">🏛️</span>
+          <IconBuilding size={20} className="sb-logo-icon" />
           <div className="sb-logo-title">SOA 完全ガイド</div>
           <div className="sb-logo-sub">サービス指向アーキテクチャ</div>
         </div>

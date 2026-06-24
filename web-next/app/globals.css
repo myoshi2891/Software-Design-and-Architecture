@@ -35,7 +35,7 @@
   --color-border-tertiary: #4a5680;
 
   --font-sans: var(--font-noto-sans-jp), 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, Consolas, monospace;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Menlo', 'Monaco', 'Consolas', monospace;
 
   --border-radius-md: 8px;
   --border-radius-lg: 12px;

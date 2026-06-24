@@ -186,7 +186,13 @@ const CODE_BLOCKS = {
 
     <span class="kw text-info">def</span> <span class="fn">_assert_editable</span>(<span class="kw text-info">self</span>) -&gt; <span class="kw text-info">None</span>:
         <span class="kw text-info">if</span> <span class="kw text-info">self</span>._status != OrderStatus.PENDING:
-            <span class="kw text-info">raise</span> <span class="fn">ValueError</span>(<span class="st">"確定済みの注文は変更できません"</span>)`,
+            <span class="kw text-info">raise</span> <span class="fn">ValueError</span>(<span class="st">"確定済みの注文は変更できません"</span>)
+
+    @classmethod
+    <span class="kw text-info">def</span> <span class="fn">from_persistence</span>(cls, id: str, customer_id: str, status: OrderStatus, created_at: datetime) -&gt; <span class="st">"Order"</span>:
+        order = <span class="fn">cls</span>(id=id, customer_id=customer_id, created_at=created_at)
+        order._status = status
+        <span class="kw text-info">return</span> order`,
   code3: `<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
 <span class="kw text-info">from</span> abc <span class="kw text-info">import</span> ABC, abstractmethod
 <span class="kw text-info">from</span> typing <span class="kw text-info">import</span> Optional
@@ -334,7 +340,8 @@ router = <span class="fn">APIRouter</span>(prefix=<span class="st">"/v1/orders"<
     <span class="kw text-info">except</span> Exception <span class="kw text-info">as</span> e:
         logger.<span class="fn">error</span>(f<span class="st">"予期しないエラー: {e}"</span>, exc_info=<span class="kw text-info">True</span>)
         <span class="kw text-info">raise</span> <span class="fn">HTTPException</span>(status_code=<span class="nu">500</span>, detail=<span class="st">"内部エラーが発生しました"</span>)`,
-  code5: `<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> Session, DeclarativeBase, Mapped, mapped_column
+  code5: `<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> Session, DeclarativeBase, Mapped, mapped_column
 <span class="kw">from</span> sqlalchemy <span class="kw">import</span> String, Integer, DateTime
 
 <span class="cm"># ──── DB モデル（外側の詳細・ドメインとは別物）────</span>
