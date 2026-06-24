@@ -44,9 +44,9 @@ function extractUrlsFromMarkdown(content: string): string[] {
 }
 
 /**
- * Extracts HTTP/HTTPS URLs from HTML content, excluding script and style blocks.
+ * Extracts HTTP and HTTPS URLs from HTML content, excluding script, style, code, and preformatted blocks.
  *
- * @returns An array of extracted URLs
+ * @returns An array of extracted URLs.
  */
 function extractUrlsFromHtml(content: string): string[] {
   // <script> ブロック内を除外（DIAGRAMSオブジェクトやJSコードのURL含む）

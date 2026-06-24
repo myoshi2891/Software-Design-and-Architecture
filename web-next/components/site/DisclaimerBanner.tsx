@@ -3,9 +3,10 @@
 import { useEffect, useRef } from "react";
 
 /**
- * 2 行のディスクレーマーを描画し、ResizeObserver で高さを
- * --ch-disclaimer-height に同期する。body.has-common-header の
- * margin-top 計算に使われる。
+ * Renders the site disclaimer banner and keeps its height in sync with the
+ * `--ch-disclaimer-height` CSS custom property.
+ *
+ * The height value is used to position the common header layout.
  */
 export function DisclaimerBanner() {
   const ref = useRef<HTMLDivElement>(null);

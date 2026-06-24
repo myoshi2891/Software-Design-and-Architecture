@@ -21,12 +21,9 @@ type Props = {
 };
 
 /**
- * EDA ガイドの固定サイドバー + スクロール進捗バー。
+ * Renders the EDA guide sidebar and scroll progress bar.
  *
- * 元 HTML のインライン script（progress-bar の scaleX 更新と
- * IntersectionObserver によるサイドバー現在地ハイライト）を React 化する。
- * 本文（section 群）は Server Component 側に残し、本コンポーネントは
- * chrome（サイドバー・進捗バー）の interactivity のみを担う。
+ * @param groups - Navigation groups used to build the sidebar links and headings
  */
 export default function EdaSidebar({ groups }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);

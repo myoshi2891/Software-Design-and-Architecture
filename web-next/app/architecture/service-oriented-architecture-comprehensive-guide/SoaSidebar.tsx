@@ -17,6 +17,11 @@ type Props = {
   groups: NavGroup[];
 };
 
+/**
+ * Renders the sidebar navigation and scroll progress bar for the guide.
+ *
+ * @param groups - Navigation groups displayed in the sidebar
+ */
 export default function SoaSidebar({ groups }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState<string | null>(groups[0]?.items[0]?.id ?? null);

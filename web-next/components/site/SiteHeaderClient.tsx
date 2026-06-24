@@ -4,16 +4,9 @@ import type { ReactNode } from "react";
 import { useEffect } from "react";
 
 /**
- * SiteHeader が描画した nav#common-header 配下に、ハンバーガー開閉・
- * dropdown トグル・Escape・外側クリックを束ねるイベントハンドラを取り付ける。
- * children は SiteHeader が生成した DOM ツリー全体で、ハンドラは useEffect で
- * 後付けする。
+ * Attaches header interaction handlers to the DOM under `#common-header`.
  *
- * 設計メモ:
- * - React の synthetic event ではなく addEventListener を使う。
- *   stopPropagation 連鎖を忠実に再現するため、document への直接 listener も併用する。
- * - 要素取得は document.getElementById("common-header") スコープに限定。
- *   Fragment 返しにより余計な wrapper DOM を作らない。
+ * The component renders its `children` unchanged.
  */
 export function SiteHeaderClient({ children }: { children: ReactNode }) {
   useEffect(() => {
