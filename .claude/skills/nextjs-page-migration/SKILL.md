@@ -386,11 +386,11 @@ bun run build       # Next.js production build
 
 ## 参考文献・ソース一覧
 
-- **TDDコミットワークフロー**: [tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md) - テスト駆動開発での実装とコミット手順を定義
+- **TDDコミットワークフロー**: [tdd-commit-workflow.md](../../rules/tdd-commit-workflow.md) - テスト駆動開発での実装とコミット手順を定義
 - **移行の参照実装**:
-  - [page.tsx](./web-next/app/general/comprehensive-guide/page.tsx) - 最初のガイド移行ページ実装
-  - [globals.css](./web-next/app/globals.css) - グローバルCSSと共通デザイン定義
-  - [microservices page.tsx](./web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx) - `.cd pre` + 手書き span ハイライトの実装例（実行時ハイライタ → 手書き span 変換を含む）
+  - [page.tsx](../../../web-next/app/general/comprehensive-guide/page.tsx) - 最初のガイド移行ページ実装
+  - [globals.css](../../../web-next/app/globals.css) - グローバルCSSと共通デザイン定義
+  - [microservices page.tsx](../../../web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx) - `.cd pre` + 手書き span ハイライトの実装例（実行時ハイライタ → 手書き span 変換を含む）
   - `.microservices-architecture-comprehensive-guide` スコープ（`globals.css` 内）- ページスコープ内 `.kw`/`.cd pre` 定義の参照パターン
 - **Mermaid.js**: [Mermaid Documentation](https://mermaid.js.org) - クライアント側ダイアグラム描画ツール
 - **React 19**: [React 19 Documentation](https://react.dev) - UIライブラリ

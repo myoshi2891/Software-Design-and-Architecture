@@ -91,10 +91,19 @@ describe("api-first-design-comprehensive-guide page", () => {
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
-    const sectionContent = cssContent.slice(
-      cssContent.indexOf(".api-first-design-comprehensive-guide")
-    );
-    expect(cssContent).toContain(".api-first-design-comprehensive-guide");
+    const scopeClass = ".api-first-design-comprehensive-guide";
+    expect(cssContent).toContain(scopeClass);
+    const scopeStart = cssContent.indexOf(scopeClass);
+    let depth = 0,
+      endIdx = scopeStart;
+    for (let i = scopeStart; i < cssContent.length; i++) {
+      if (cssContent[i] === "{") depth++;
+      else if (cssContent[i] === "}" && --depth === 0) {
+        endIdx = i + 1;
+        break;
+      }
+    }
+    const sectionContent = cssContent.slice(scopeStart, endIdx);
 
     const mainStyleRegex = /\.main\s*\{\s*flex:\s*1;\s*min-width:\s*0;\s*margin-left:\s*0;\s*\}/;
     expect(mainStyleRegex.test(sectionContent)).toBe(true);

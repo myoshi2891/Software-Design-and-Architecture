@@ -93,10 +93,19 @@ describe("microservices-architecture-comprehensive-guide page", () => {
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
-    const sectionContent = cssContent.slice(
-      cssContent.indexOf(".microservices-architecture-comprehensive-guide")
-    );
-    expect(cssContent).toContain(".microservices-architecture-comprehensive-guide");
+    const scopeClass = ".microservices-architecture-comprehensive-guide";
+    expect(cssContent).toContain(scopeClass);
+    const scopeStart = cssContent.indexOf(scopeClass);
+    let depth = 0,
+      endIdx = scopeStart;
+    for (let i = scopeStart; i < cssContent.length; i++) {
+      if (cssContent[i] === "{") depth++;
+      else if (cssContent[i] === "}" && --depth === 0) {
+        endIdx = i + 1;
+        break;
+      }
+    }
+    const sectionContent = cssContent.slice(scopeStart, endIdx);
 
     expect(sectionContent).toMatch(/\.main\s*\{[^}]*margin-left:\s*var\(--sw\)/);
     expect(sectionContent).toMatch(/\.main\s*\{[^}]*flex:\s*1/);
