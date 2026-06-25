@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧩 コンポーネント指向開発（COD）完全ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
+:root{
+  --ac:#10d9a0;--ac-d:#0bb585;--ac-l:#3de8b4;--ac-g:rgba(16,217,160,.13);
+  --pu:#7b68ee;--pu-g:rgba(123,104,238,.12);
+  --bg:#07111e;--bg-c:#0d1b2e;--bg-ch:#112236;--bg-code:#050e1a;--bg-sb:#091625;--bg-hi:#0f2040;
+  --br:#1a2d47;--br-h:#2a4060;
+  --tx:#e2edf5;--tx-m:#7a9ab8;--tx-d:#3d5a78;
+  --sb:280px;--mx:920px;--r:8px;--rl:14px;
+  --ff:'Space Grotesk',system-ui,sans-serif;
+  --fb:'Inter',system-ui,sans-serif;
+  --fm:'JetBrains Mono','Courier New',monospace;
+  --tr:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);line-height:1.75;font-size:16px}
+
+/* ── Layout ── */
+.layout{display:flex;min-height:100vh}
+.main{margin-left:var(--sb);flex:1;min-width:0}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sb);min-height:100vh;position:fixed;top:0;left:0;
+  background:var(--bg-sb);border-right:1px solid var(--br);
+  overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--br);border-radius:2px}
+.sb-brand{padding:22px 18px 16px;border-bottom:1px solid var(--br)}
+.sb-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sb-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--pu));
+  border-radius:var(--r);display:flex;align-items:center;justify-content:center;
+  font-size:19px;flex-shrink:0}
+.sb-text{font-family:var(--ff);font-size:13px;font-weight:700;color:var(--tx);line-height:1.3}
+.sb-sub{font-size:10px;font-weight:400;color:var(--tx-m);display:block}
+.sb-nav{padding:10px 0;flex:1}
+.nav-section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tx-d);padding:10px 18px 3px}
+.nav-item{display:flex;align-items:center;gap:7px;padding:6px 18px;font-size:12.5px;
+  color:var(--tx-m);text-decoration:none;transition:all var(--tr);
+  border-left:2px solid transparent;cursor:pointer}
+.nav-item:hover{color:var(--tx);background:var(--bg-hi);border-left-color:var(--br-h)}
+.nav-item.active{color:var(--ac);background:var(--ac-g);border-left-color:var(--ac);font-weight:600}
+.nav-num{font-family:var(--fm);font-size:9px;color:var(--tx-d);min-width:18px}
+.sb-foot{padding:14px 18px;border-top:1px solid var(--br);font-size:10px;color:var(--tx-d)}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,#091828 0%,#07111e 55%,#0b1525 100%);
+  padding:68px 56px 60px;border-bottom:1px solid var(--br);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-30%;right:-5%;width:560px;height:560px;
+  background:radial-gradient(circle,rgba(16,217,160,.07) 0%,transparent 65%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-20%;left:15%;width:380px;height:380px;
+  background:radial-gradient(circle,rgba(123,104,238,.05) 0%,transparent 65%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ac-g);
+  border:1px solid rgba(16,217,160,.3);border-radius:20px;padding:4px 12px;
+  font-size:11px;font-weight:700;color:var(--ac);margin-bottom:18px;letter-spacing:.06em}
+.hero-title{font-family:var(--ff);font-size:clamp(26px,3.8vw,46px);font-weight:700;
+  line-height:1.2;color:var(--tx);margin-bottom:14px}
+.hero-title span{background:linear-gradient(90deg,var(--ac),var(--pu));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:16px;color:var(--tx-m);max-width:580px;line-height:1.75;margin-bottom:28px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.hero-tag{background:var(--bg-c);border:1px solid var(--br);border-radius:20px;
+  padding:4px 12px;font-size:11px;font-weight:600;color:var(--tx-m)}
+
+/* ── Content ── */
+.content{max-width:var(--mx);padding:56px 56px 80px}
+
+/* ── Sections ── */
+.section{margin-bottom:76px}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:30px;
+  padding-bottom:18px;border-bottom:1px solid var(--br)}
+.section-num{width:42px;height:42px;background:var(--ac-g);border:1px solid rgba(16,217,160,.3);
+  border-radius:var(--r);display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:13px;font-weight:700;color:var(--ac);flex-shrink:0}
+.section-title{font-family:var(--ff);font-size:24px;font-weight:700;color:var(--tx)}
+.section-title small{display:block;font-size:11px;font-weight:400;color:var(--tx-m);margin-top:2px}
+.subsection{margin-bottom:44px}
+.sub-title{font-family:var(--ff);font-size:17px;font-weight:600;color:var(--tx);
+  margin-bottom:14px;padding-left:12px;border-left:3px solid var(--ac)}
+.sub-title .stag{display:inline-block;background:var(--ac-g);color:var(--ac);font-size:10px;
+  font-weight:700;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle}
+p{color:var(--tx-m);margin-bottom:14px;line-height:1.8}
+strong{color:var(--tx)}
+code{font-family:var(--fm);font-size:.875em;background:var(--bg-hi);color:var(--ac);
+  padding:2px 6px;border-radius:4px}
+
+/* ── Cards & Boxes ── */
+.card{background:var(--bg-c);border:1px solid var(--br);border-radius:var(--rl);
+  padding:22px;margin-bottom:20px}
+.box{border-radius:var(--r);padding:16px 20px;margin:18px 0}
+.box p{margin:0;font-size:14px}
+.box .bt{font-size:12px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.box-ac{background:rgba(16,217,160,.07);border:1px solid rgba(16,217,160,.25);
+  border-left:3px solid var(--ac)}
+.box-ac .bt{color:var(--ac)}
+.box-pu{background:rgba(123,104,238,.07);border:1px solid rgba(123,104,238,.25);
+  border-left:3px solid var(--pu)}
+.box-pu .bt{color:var(--pu)}
+.box-am{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);
+  border-left:3px solid #f59e0b}
+.box-am .bt{color:#f59e0b}
+.box-rd{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);
+  border-left:3px solid #ef4444}
+.box-rd .bt{color:#ef4444}
+
+/* ── Grids ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.gc{background:var(--bg-c);border:1px solid var(--br);border-radius:var(--r);padding:18px;
+  transition:all var(--tr)}
+.gc:hover{border-color:var(--br-h);background:var(--bg-ch)}
+.gc-icon{font-size:22px;margin-bottom:9px}
+.gc-title{font-family:var(--ff);font-size:14px;font-weight:600;color:var(--tx);margin-bottom:7px}
+.gc p{font-size:13px;margin:0}
+.gc.ac{border-top:2px solid var(--ac)}
+.gc.pu{border-top:2px solid var(--pu)}
+.gc.am{border-top:2px solid #f59e0b}
+.gc.rd{border-top:2px solid #ef4444}
+.gc.bl{border-top:2px solid #3b82f6}
+
+/* ── Diagrams ── */
+.dg{background:var(--bg-c);border:1px solid var(--br);border-radius:var(--rl);
+  padding:28px;margin:22px 0;overflow-x:auto}
+.dg-label{font-size:10px;font-weight:700;color:var(--tx-d);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.mermaid-src{display:none}
+.mermaid{display:flex;justify-content:center}
+.mermaid svg{max-width:100%;height:auto}
+
+/* ── Code ── */
+.cb{margin:22px 0;border-radius:var(--rl);overflow:hidden;border:1px solid var(--br)}
+.cb-head{background:#0a1628;padding:9px 15px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--br)}
+.cb-lang{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--ac);
+  letter-spacing:.06em;text-transform:uppercase}
+.cb-file{font-family:var(--fm);font-size:10px;color:var(--tx-d)}
+.cp-btn{background:none;border:1px solid var(--br);color:var(--tx-m);font-family:var(--fm);
+  font-size:10px;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all var(--tr)}
+.cp-btn:hover{background:var(--ac-g);border-color:var(--ac);color:var(--ac)}
+.cb pre{margin:0;padding:18px;overflow-x:auto;background:var(--bg-code)!important}
+.cb pre code{font-family:var(--fm);font-size:13px;line-height:1.65;background:none;
+  color:inherit;padding:0}
+
+/* ── Tables ── */
+.tw{overflow-x:auto;margin:22px 0;border-radius:var(--rl);border:1px solid var(--br)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead tr{background:var(--bg-hi)}
+thead th{padding:11px 15px;text-align:left;font-family:var(--ff);font-size:11px;
+  font-weight:700;color:var(--ac);letter-spacing:.06em;text-transform:uppercase;
+  border-bottom:1px solid var(--br)}
+tbody tr{border-bottom:1px solid var(--br);transition:background var(--tr)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg-hi)}
+tbody td{padding:11px 15px;color:var(--tx-m);vertical-align:top}
+tbody td:first-child{color:var(--tx);font-weight:500}
+
+/* ── Timeline ── */
+.tl{position:relative;margin:20px 0;padding-left:30px}
+.tl::before{content:'';position:absolute;left:10px;top:8px;bottom:8px;width:1px;
+  background:linear-gradient(to bottom,var(--ac),var(--pu),transparent)}
+.tl-item{position:relative;margin-bottom:22px}
+.tl-item::before{content:'';position:absolute;left:-24px;top:5px;width:10px;height:10px;
+  border-radius:50%;background:var(--ac);box-shadow:0 0 0 3px var(--ac-g)}
+.tl-year{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--ac);margin-bottom:3px}
+.tl-text{font-size:13.5px;color:var(--tx-m);line-height:1.6}
+
+/* ── Badges ── */
+.bdg{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.bdg-ac{background:rgba(16,217,160,.12);color:var(--ac)}
+.bdg-pu{background:rgba(123,104,238,.12);color:var(--pu)}
+.bdg-am{background:rgba(245,158,11,.12);color:#f59e0b}
+.bdg-rd{background:rgba(239,68,68,.12);color:#ef4444}
+.bdg-bl{background:rgba(59,130,246,.12);color:#60a5fa}
+
+/* ── Checklist ── */
+.cl{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}
+.cl li{display:flex;align-items:flex-start;gap:9px;background:var(--bg-c);
+  border:1px solid var(--br);border-radius:var(--r);padding:13px 15px;
+  font-size:13.5px;color:var(--tx-m);transition:all var(--tr)}
+.cl li:hover{border-color:var(--ac);color:var(--tx)}
+.cl-ic{color:var(--ac);flex-shrink:0;margin-top:1px}
+
+/* ── Maturity ── */
+.ml{display:flex;flex-direction:column;gap:3px;margin:18px 0}
+.ml-item{display:flex;align-items:flex-start;gap:16px;padding:15px;
+  border-radius:var(--r);border:1px solid var(--br);background:var(--bg-c);
+  transition:all var(--tr)}
+.ml-item:hover{border-color:var(--br-h)}
+.ml-lv{min-width:68px;text-align:center}
+.ml-lv-n{font-family:var(--fm);font-size:22px;font-weight:700;line-height:1}
+.ml-lv-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.ml-title{font-family:var(--ff);font-size:14px;font-weight:600;color:var(--tx);margin-bottom:3px}
+.ml-desc{font-size:13px;color:var(--tx-m)}
+
+/* ── Refs ── */
+.ref-grp{margin-bottom:28px}
+.ref-grp-title{font-family:var(--ff);font-size:14px;font-weight:700;color:var(--tx);
+  margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--br)}
+.ref-list{display:flex;flex-direction:column;gap:7px}
+.ref-item{display:flex;align-items:flex-start;gap:11px;background:var(--bg-c);
+  border:1px solid var(--br);border-radius:var(--r);padding:11px 15px;
+  text-decoration:none;transition:all var(--tr)}
+.ref-item:hover{border-color:var(--ac);background:var(--ac-g)}
+.ref-ic{font-size:15px;flex-shrink:0;margin-top:1px}
+.ref-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.ref-url{font-family:var(--fm);font-size:10px;color:var(--tx-d)}
+.ref-item:hover .ref-url{color:var(--ac)}
+
+/* ── Scroll Top ── */
+.st{position:fixed;bottom:22px;right:22px;width:42px;height:42px;background:var(--ac);
+  color:var(--bg);border:none;border-radius:50%;font-size:17px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;z-index:999;
+  box-shadow:0 4px 14px rgba(16,217,160,.3);transition:all var(--tr)}
+.st.vis{display:flex}
+.st:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,217,160,.4)}
+
+/* ── Responsive ── */
+@media(max-width:1024px){
+  .sidebar{display:none}.main{margin-left:0}
+  .content{padding:36px 22px 60px}.hero{padding:44px 22px}
+  .g2,.g3{grid-template-columns:1fr}.cl{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <a class="sb-logo" href="#">
+      <div class="sb-icon">🧩</div>
+      <div class="sb-text">COD 完全ガイド
+        <span class="sb-sub">Component-Oriented Development</span>
+      </div>
+    </a>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-section-title">基礎編</div>
+    <a class="nav-item" href="#s1"><span class="nav-num">01</span>コンポーネント指向とは</a>
+    <a class="nav-item" href="#s2"><span class="nav-num">02</span>設計原則</a>
+    <a class="nav-item" href="#s3"><span class="nav-num">03</span>分類と粒度</a>
+    <a class="nav-item" href="#s4"><span class="nav-num">04</span>コンポーネント間の通信</a>
+    <div class="nav-section-title" style="margin-top:8px">実装編</div>
+    <a class="nav-item" href="#s5"><span class="nav-num">05</span>UIコンポーネント設計</a>
+    <a class="nav-item" href="#s6"><span class="nav-num">06</span>バックエンド設計</a>
+    <a class="nav-item" href="#s7"><span class="nav-num">07</span>ライフサイクル管理</a>
+    <a class="nav-item" href="#s8"><span class="nav-num">08</span>依存性管理と疎結合</a>
+    <a class="nav-item" href="#s9"><span class="nav-num">09</span>テスト戦略</a>
+    <div class="nav-section-title" style="margin-top:8px">応用編</div>
+    <a class="nav-item" href="#s10"><span class="nav-num">10</span>デザインシステム</a>
+    <a class="nav-item" href="#s11"><span class="nav-num">11</span>マイクロフロントエンド</a>
+    <a class="nav-item" href="#s12"><span class="nav-num">12</span>実践：ECサイト実装</a>
+    <div class="nav-section-title" style="margin-top:8px">まとめ</div>
+    <a class="nav-item" href="#s13"><span class="nav-num">13</span>アンチパターン</a>
+    <a class="nav-item" href="#s14"><span class="nav-num">14</span>ベストプラクティス</a>
+    <a class="nav-item" href="#s15"><span class="nav-num">15</span>参考文献</a>
+  </div>
+  <div class="sb-foot">Software Architect Guide v1.0 &nbsp;·&nbsp; 2024</div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">📘 Complete Guide</div>
+  <h1 class="hero-title">
+    <span>コンポーネント指向開発</span><br>
+    完全ガイド
+  </h1>
+  <p class="hero-desc">
+    ソフトウェアシステムを<strong>再利用可能・独立した部品（コンポーネント）</strong>の集合体として
+    設計・構築するパラダイムを、初学者から実践者まで体系的に解説します。
+    フロントエンド・バックエンド双方の設計原則、実装パターン、テスト戦略、デザインシステムまで網羅します。
+  </p>
+  <div class="hero-tags">
+    <span class="hero-tag">🧩 Component Design</span>
+    <span class="hero-tag">⚛️ React / Vue</span>
+    <span class="hero-tag">🔧 NestJS / FastAPI</span>
+    <span class="hero-tag">🎨 Design System</span>
+    <span class="hero-tag">🔺 Test Pyramid</span>
+    <span class="hero-tag">🏗️ Micro Frontends</span>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+<!-- ═══════════ SECTION 1 ═══════════ -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <h2 class="section-title">コンポーネント指向開発とは何か？
+      <small>Component-Oriented Development（COD）の基礎概念</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">1.1 定義：一言で理解する</h3>
+    <p><strong>コンポーネント指向開発（COD）</strong>とは、ソフトウェアシステムを
+    <strong>再利用可能・独立した「コンポーネント」の集合体</strong>として設計・構築する開発パラダイムです。</p>
+
+    <div class="box box-ac">
+      <div class="bt">💡 直感的なたとえ</div>
+      <p>LEGOブロックのように、独立した部品を組み合わせてシステムを構築する考え方です。
+      各ブロックは単独で存在でき、違うセットでも同じブロックを再利用できます。
+      これがコンポーネント指向の本質です。</p>
+    </div>
+
+    <div class="dg">
+      <div class="dg-label">📐 図1-1：コンポーネントの5つの特性</div>
+      <pre class="mermaid-src">
+graph TD
+    C["🧩 コンポーネント"]
+    C --> I["📋 明確なインターフェース<br/>外部との契約を定義<br/>Props / API / イベント"]
+    C --> E["🔒 カプセル化<br/>内部実装を隠蔽<br/>ブラックボックス原則"]
+    C --> R["♻️ 再利用可能<br/>異なる文脈・プロジェクトで<br/>そのまま使いまわせる"]
+    C --> D["🔗 独立性<br/>他コンポーネントへの<br/>依存を最小限に"]
+    C --> M["🔀 合成可能<br/>組み合わせてより大きな<br/>機能を構成できる"]
+    style C fill:#0d3b50,stroke:#10d9a0,color:#10d9a0
+    style I fill:#0d1b2e,stroke:#1a2d47,color:#e2edf5
+    style E fill:#0d1b2e,stroke:#1a2d47,color:#e2edf5
+    style R fill:#0d1b2e,stroke:#1a2d47,color:#e2edf5
+    style D fill:#0d1b2e,stroke:#1a2d47,color:#e2edf5
+    style M fill:#0d1b2e,stroke:#1a2d47,color:#e2edf5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">1.2 OOP との違い・相補的な関係</h3>
+    <p>コンポーネント指向とオブジェクト指向（OOP）は対立するものではなく、異なるレベルの設計を扱います。</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>観点</th><th>オブジェクト指向（OOP）</th><th>コンポーネント指向（COD）</th></tr></thead>
+        <tbody>
+          <tr><td>設計の単位</td><td>クラス・インスタンス</td><td>モジュール・サブシステム</td></tr>
+          <tr><td>主な関心事</td><td>継承・ポリモーフィズム・カプセル化</td><td>インターフェース契約・疎結合・再利用</td></tr>
+          <tr><td>スコープ</td><td>コードレベルの構造化</td><td>アーキテクチャレベルの設計</td></tr>
+          <tr><td>デプロイ</td><td>単一バイナリの一部</td><td>独立したデプロイ単位も可能</td></tr>
+          <tr><td>実践での使い方</td><td>コンポーネント<em>内部</em>を実装</td><td>コンポーネント<em>間</em>の構造を定義</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box box-ac">
+      <div class="bt">✅ 実践の鉄則</div>
+      <p>コンポーネントの<strong>内部は OOP で実装</strong>し、コンポーネント<strong>間はインターフェースで疎結合</strong>にする。両者を組み合わせることで最も効果的なアーキテクチャになります。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">1.3 歴史的背景</h3>
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-year">1968年</div>
+        <div class="tl-text"><strong>ソフトウェア危機</strong>：NATO会議で「再利用可能な部品」の概念が初めて提唱される。複雑化するソフトウェアに「部品化」が解決策として浮上。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1992年</div>
+        <div class="tl-text"><strong>COM / DCOM（Microsoft）</strong>：ランタイムコンポーネントモデルの先駆けとして登場。言語に依存しないコンポーネント間通信を実現。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1998年</div>
+        <div class="tl-text"><strong>Enterprise JavaBeans（EJB）</strong>：サーバーサイドコンポーネントの標準化。Javaエコシステムにコンポーネント概念が普及。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2013年</div>
+        <div class="tl-text"><strong>Reactの登場</strong>：UIコンポーネント革命。Virtual DOM と再利用可能な UI コンポーネントの概念がフロントエンドに革命をもたらす。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2016年</div>
+        <div class="tl-text"><strong>Storybookの登場</strong>：コンポーネントカタログ化・ドキュメント化ツール。デザインシステムとの連携が加速。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2020年代</div>
+        <div class="tl-text"><strong>マイクロフロントエンド</strong>：コンポーネント指向がアーキテクチャレベルへ進化。チームの境界がコンポーネントの境界と一致する設計が主流に。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">1.4 なぜコンポーネント指向が重要なのか</h3>
+    <div class="dg">
+      <div class="dg-label">📊 図1-2：コンポーネント設計あり vs なし</div>
+      <pre class="mermaid-src">
+graph LR
+    subgraph BEFORE["❌ コンポーネント設計なし"]
+        B1["密結合でコード変更が困難"]
+        B2["同じUIパーツを各ページで再実装"]
+        B3["全体を動かさないとテストできない"]
+        B4["チームがファイルを共有して競合頻発"]
+        B5["ブランドの一貫性が保てない"]
+    end
+    subgraph AFTER["✅ コンポーネント指向"]
+        A1["独立コンポーネントで変更が局所化"]
+        A2["Buttonを一度作れば全体で再利用"]
+        A3["コンポーネント単体でテスト完結"]
+        A4["チームがコンポーネント単位で分業"]
+        A5["デザインシステムで一貫性を保証"]
+    end
+    style BEFORE fill:#1a0e0e,stroke:#ef4444
+    style AFTER fill:#0e1a15,stroke:#10d9a0
+    style B1 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style B2 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style B3 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style B4 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style B5 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style A1 fill:#0d2e22,stroke:#10d9a0,color:#6ee7b7
+    style A2 fill:#0d2e22,stroke:#10d9a0,color:#6ee7b7
+    style A3 fill:#0d2e22,stroke:#10d9a0,color:#6ee7b7
+    style A4 fill:#0d2e22,stroke:#10d9a0,color:#6ee7b7
+    style A5 fill:#0d2e22,stroke:#10d9a0,color:#6ee7b7
+      </pre>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 2 ═══════════ -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <h2 class="section-title">コンポーネントの設計原則
+      <small>Robert C. Martin が提唱した6つの原則と高凝集・低結合</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">2.1 コンポーネント設計の6原則（Robert C. Martin）</h3>
+    <p>Clean Architecture の著者 Robert C. Martin（Uncle Bob）が提唱した、コンポーネント設計を支える6つの原則です。<strong>凝集に関する3原則</strong>と<strong>結合に関する3原則</strong>に分類されます。</p>
+    <div class="dg">
+      <div class="dg-label">📐 図2-1：コンポーネント設計の6原則</div>
+      <pre class="mermaid-src">
+graph TD
+    P["📐 コンポーネント設計の原則"] --> CO["凝集に関する原則"]
+    P --> CP["結合に関する原則"]
+    CO --> REP["REP：再利用・リリース等価の原則<br/>再利用の単位 ＝ リリースの単位"]
+    CO --> CCP["CCP：閉鎖性共通の原則<br/>同じ理由で変更されるクラスを<br/>同じコンポーネントにまとめる"]
+    CO --> CRP["CRP：全再利用の原則<br/>不要なものへの依存を<br/>ユーザーに強制しない"]
+    CP --> ADP["ADP：非循環依存の原則<br/>依存グラフにサイクルを<br/>作ってはならない"]
+    CP --> SDP["SDP：安定依存の原則<br/>安定している方向に<br/>依存する"]
+    CP --> SAP["SAP：安定抽象の原則<br/>安定したコンポーネントほど<br/>抽象的であるべき"]
+    style P fill:#0d2040,stroke:#10d9a0,color:#10d9a0
+    style CO fill:#0d1b2e,stroke:#7b68ee,color:#a78bfa
+    style CP fill:#0d1b2e,stroke:#10d9a0,color:#6ee7b7
+    style REP fill:#1a1040,stroke:#7b68ee,color:#e2edf5
+    style CCP fill:#1a1040,stroke:#7b68ee,color:#e2edf5
+    style CRP fill:#1a1040,stroke:#7b68ee,color:#e2edf5
+    style ADP fill:#0d2515,stroke:#10d9a0,color:#e2edf5
+    style SDP fill:#0d2515,stroke:#10d9a0,color:#e2edf5
+    style SAP fill:#0d2515,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+    <div class="g2">
+      <div class="gc pu">
+        <div class="gc-icon">🔵</div>
+        <div class="gc-title">凝集の原則（何をまとめるか）</div>
+        <p><strong>REP</strong>：再利用したいものとリリース単位を一致させる<br>
+        <strong>CCP</strong>：一緒に変わるものは一緒に置く（SRP のコンポーネント版）<br>
+        <strong>CRP</strong>：使わないものへの依存を作らない</p>
+      </div>
+      <div class="gc ac">
+        <div class="gc-icon">🟢</div>
+        <div class="gc-title">結合の原則（何に依存するか）</div>
+        <p><strong>ADP</strong>：依存グラフは DAG（有向非巡回グラフ）でなければならない<br>
+        <strong>SDP</strong>：不安定→安定の方向にのみ依存する<br>
+        <strong>SAP</strong>：安定＝抽象的であるべき（DIP のコンポーネント版）</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">2.2 高凝集・低結合の原則</h3>
+    <p>コンポーネント設計における最重要概念です。<strong>高凝集</strong>はコンポーネント内部の関連性の高さ、<strong>低結合</strong>はコンポーネント間の依存の少なさを指します。</p>
+    <div class="dg">
+      <div class="dg-label">📊 図2-2：高凝集・低結合 vs アンチパターン</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph GOOD["✅ 高凝集・低結合（理想）"]
+        AUTH["AuthComponent<br/>・ログイン処理<br/>・ログアウト処理<br/>・トークン管理<br/>→ すべて「認証」の責務"]
+        PROD["ProductComponent<br/>・商品一覧表示<br/>・商品検索<br/>・在庫確認<br/>→ すべて「商品」の責務"]
+        AUTH --- |"インターフェース経由のみ"| PROD
+    end
+    subgraph BAD["❌ 低凝集・高結合（アンチパターン）"]
+        GOD["UserManager<br/>・ログイン処理<br/>・商品一覧表示<br/>・注文履歴管理<br/>・通知送信<br/>→ 無関係な責務が混在（神クラス）"]
+    end
+    style GOOD fill:#0e1a15,stroke:#10d9a0
+    style BAD fill:#1a0e0e,stroke:#ef4444
+    style AUTH fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style PROD fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style GOD fill:#2a1515,stroke:#ef4444,color:#fca5a5
+      </pre>
+    </div>
+    <div class="box box-am">
+      <div class="bt">⚠️ 実践ヒント：コンポーネント分割の判断基準</div>
+      <p>「このコンポーネントを一言で説明できますか？」と自問してください。
+      説明に「〜かつ〜」や「〜と〜」が入ったら、分割のサインです。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">2.3 インターフェース契約（Contract）の設計</h3>
+    <p>コンポーネントのインターフェースは「契約」です。変更しにくく、明確に定義する必要があります。
+    契約には4つの要素があります。</p>
+    <div class="g2">
+      <div class="gc bl"><div class="gc-icon">📥</div><div class="gc-title">入力（Props / パラメータ）</div><p>コンポーネントが受け取るデータ。型・必須/任意・デフォルト値を明示します。</p></div>
+      <div class="gc ac"><div class="gc-icon">📤</div><div class="gc-title">出力（Events / 戻り値）</div><p>コンポーネントが外部に返すイベント・コールバック・戻り値。</p></div>
+      <div class="gc pu"><div class="gc-icon">🎰</div><div class="gc-title">スロット / Children</div><p>コンポーネント内部に外部からコンテンツを注入できる差し込み口。</p></div>
+      <div class="gc am"><div class="gc-icon">⚡</div><div class="gc-title">副作用の宣言</div><p>API呼び出し・状態更新など外部に影響する処理を明示的に宣言する。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 3 ═══════════ -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <h2 class="section-title">コンポーネントの分類と粒度
+      <small>Atomic Design と責務による分類、粒度の決定フロー</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">3.1 アトミックデザイン（Atomic Design）</h3>
+    <p>Brad Frost が提唱した、UI コンポーネントを<strong>化学構造になぞらえて5階層</strong>に整理するシステムです。
+    どの粒度のコンポーネントを作るべきかの明確な指針を与えてくれます。</p>
+    <div class="dg">
+      <div class="dg-label">⚗️ 図3-1：アトミックデザイン 5階層（ECサイトの例）</div>
+      <pre class="mermaid-src">
+graph TD
+    AT["⚛️ Atoms（原子）<br/>最小単位 — これ以上分割できない<br/>Button / Input / Label / Icon / Badge"]
+    MO["🔬 Molecules（分子）<br/>Atomsを組み合わせた小さな機能単位<br/>SearchBar / FormField / ReviewStars / PriceDisplay"]
+    OR["🦠 Organisms（有機体）<br/>独立した意味を持つ UI ブロック<br/>Header / ProductCard / CartSidebar / NavigationMenu"]
+    TE["📄 Templates（テンプレート）<br/>Organismsを配置したページのレイアウト<br/>コンテンツなしのワイヤーフレーム定義"]
+    PA["📱 Pages（ページ）<br/>Templatesに実データを流し込んだ最終形<br/>ユーザーが実際に見る画面"]
+    AT -->|"組み合わせる"| MO
+    MO -->|"組み合わせる"| OR
+    OR -->|"配置する"| TE
+    TE -->|"データを注入"| PA
+    style AT fill:#1a1040,stroke:#7b68ee,color:#c4b5fd
+    style MO fill:#0d2515,stroke:#10d9a0,color:#6ee7b7
+    style OR fill:#1a1a08,stroke:#f59e0b,color:#fcd34d
+    style TE fill:#1a0a1a,stroke:#ec4899,color:#f9a8d4
+    style PA fill:#1a0e0e,stroke:#ef4444,color:#fca5a5
+      </pre>
+    </div>
+    <div class="box box-pu">
+      <div class="bt">💡 初学者向け：なぜ5階層に分けるのか</div>
+      <p>「どこにコードを書けばいいかわからない」という問題を解決します。
+      <code>Button</code> は Atoms、<code>SearchBox = Input + Button</code> は Molecules、
+      <code>Header = Logo + Nav + SearchBox</code> は Organisms。
+      この階層を意識するだけで、コンポーネントの置き場所が自然に決まります。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">3.2 スマート vs ダムコンポーネント</h3>
+    <p>コンポーネントを<strong>「何を知っているか」</strong>で分類する重要なパターンです。
+    この分離によりテスト容易性と再利用性が大幅に向上します。</p>
+    <div class="dg">
+      <div class="dg-label">📊 図3-2：Container / Presentational パターン</div>
+      <pre class="mermaid-src">
+graph LR
+    subgraph SMART["🧠 スマートコンポーネント（Container）"]
+        S1["ProductListContainer<br/>・APIからデータを取得<br/>・フィルタリング・ソートを処理<br/>・状態管理を担当<br/>・ビジネスロジックを持つ"]
+    end
+    subgraph DUMB["🎨 ダムコンポーネント（Presentational）"]
+        D1["ProductList<br/>・products配列を受け取って表示するだけ<br/>・API呼び出しをしない<br/>・高い再利用性<br/>・テストが容易"]
+    end
+    S1 -->|"products: Product[] を Props で渡す"| D1
+    style SMART fill:#1a1040,stroke:#7b68ee
+    style DUMB fill:#0d2515,stroke:#10d9a0
+    style S1 fill:#12103a,stroke:#7b68ee,color:#e2edf5
+    style D1 fill:#0a2018,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>観点</th><th>🧠 スマート（Container）</th><th>🎨 ダム（Presentational）</th></tr></thead>
+        <tbody>
+          <tr><td>主な責務</td><td>状態管理・データ取得・ロジック</td><td>Props を受け取って描画するだけ</td></tr>
+          <tr><td>状態（state）</td><td>多く持つ</td><td>最小限または持たない</td></tr>
+          <tr><td>API呼び出し</td><td>行う</td><td>行わない</td></tr>
+          <tr><td>再利用性</td><td>低い（文脈依存）</td><td>高い（汎用的）</td></tr>
+          <tr><td>テスト難度</td><td>モックが必要</td><td>Props を渡すだけで簡単</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">3.3 コンポーネント粒度の決定フロー</h3>
+    <p>「これはコンポーネントにすべきか？」という判断を体系化したフローチャートです。</p>
+    <div class="dg">
+      <div class="dg-label">🔀 図3-3：粒度決定フローチャート</div>
+      <pre class="mermaid-src">
+flowchart TD
+    START(["UI要素を設計する"]) --> Q1{"複数の場所で<br/>使われるか？"}
+    Q1 -->|"Yes"| MAKE["✅ コンポーネントとして切り出す"]
+    Q1 -->|"No"| Q2{"独立して<br/>テストできるか？"}
+    Q2 -->|"Yes"| Q3{"単独で<br/>意味を持つか？"}
+    Q2 -->|"No"| KEEP["📝 インラインで実装（切り出し不要）"]
+    Q3 -->|"Yes"| MAKE
+    Q3 -->|"No"| KEEP
+    MAKE --> Q4{"500行を<br/>超えているか？"}
+    Q4 -->|"Yes"| SPLIT["✂️ さらに小さく分割する"]
+    Q4 -->|"No"| DONE(["✅ 完成"])
+    SPLIT --> MAKE
+    style START fill:#0d2040,stroke:#10d9a0,color:#e2edf5
+    style MAKE fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style KEEP fill:#1a1a1a,stroke:#4a6a8a,color:#7a9ab8
+    style SPLIT fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style DONE fill:#0d2040,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 4 ═══════════ -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <h2 class="section-title">コンポーネント間の通信パターン
+      <small>Props Down / Events Up から Context・Slot まで5つのパターンを徹底解説</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">4.1 通信パターン全体像</h3>
+    <div class="dg">
+      <div class="dg-label">📡 図4-1：コンポーネント間通信パターン一覧</div>
+      <pre class="mermaid-src">
+graph TD
+    PAT["📡 通信パターン"] --> PD["⬇️ Props Down<br/>親→子の一方向データフロー<br/>最もシンプルで推奨"]
+    PAT --> EU["⬆️ Events Up<br/>子→親のイベント通知<br/>コールバック / emit"]
+    PAT --> CTX["🌐 Context / Store<br/>グローバル状態の共有<br/>深いツリーでの共有"]
+    PAT --> SL["🎰 Slot / Children<br/>コンポーネント内にコンテンツ注入<br/>高い柔軟性・再利用性"]
+    PAT --> PO["🚪 Portal<br/>DOMツリー外側に描画<br/>モーダル・ツールチップ"]
+    style PAT fill:#0d2040,stroke:#10d9a0,color:#10d9a0
+    style PD fill:#0d1b2e,stroke:#3b82f6,color:#93c5fd
+    style EU fill:#0d1b2e,stroke:#10d9a0,color:#6ee7b7
+    style CTX fill:#0d1b2e,stroke:#7b68ee,color:#c4b5fd
+    style SL fill:#0d1b2e,stroke:#f59e0b,color:#fcd34d
+    style PO fill:#0d1b2e,stroke:#ef4444,color:#fca5a5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">4.2 Props Down / Events Up（基本パターン）</h3>
+    <p>最もシンプルで追跡しやすいパターンです。<strong>データは上から下へ（Props）、イベントは下から上へ（callback）</strong>という一方向フローを維持します。</p>
+    <div class="dg">
+      <div class="dg-label">🔄 図4-2：Props Down / Events Up シーケンス</div>
+      <pre class="mermaid-src">
+sequenceDiagram
+    participant PP as 親 ProductPage
+    participant PC as 子 ProductCard
+    participant AB as 孫 AddToCartButton
+    Note over PP,AB: ⬇️ Props Down（データを下に流す）
+    PP->>PC: product={id, name, price}
+    PC->>AB: productId={id}, onAdd={handler}
+    Note over PP,AB: ⬆️ Events Up（イベントを上に伝える）
+    AB-->>PC: onAdd(productId, quantity) を呼ぶ
+    PC-->>PP: onAddToCart(product) を呼ぶ
+    PP->>PP: カートに商品を追加する処理
+      </pre>
+    </div>
+    <div class="box box-ac">
+      <div class="bt">✅ ベストプラクティス</div>
+      <p>2〜3階層以内であれば Props Down / Events Up を使いましょう。
+      シンプルで<strong>データフローが追跡しやすく、デバッグが容易</strong>です。
+      それ以上の深さになったら Context / Store を検討してください。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">4.3 Context / Store パターン（グローバル状態）</h3>
+    <p>深いコンポーネントツリーで Props を何階層も中継してしまう「Props ドリリング」を解決するパターンです。</p>
+    <div class="dg">
+      <div class="dg-label">🌐 図4-3：Context / Store によるグローバル状態共有</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph STORE["🌐 グローバルストア（Context / Zustand / Redux）"]
+        CS["cartItems: CartItem[]"]
+        US["currentUser: User | null"]
+        LS["isLoading: boolean"]
+    end
+    subgraph TREE["コンポーネントツリー"]
+        APP["App"]
+        HED["Header（カートアイコン表示）"]
+        PL["ProductList"]
+        PC["ProductCard"]
+        AB["AddToCartButton"]
+        CT["CartSidebar"]
+    end
+    APP --> HED
+    APP --> PL
+    APP --> CT
+    PL --> PC
+    PC --> AB
+    STORE -->|"cartItemsを購読"| HED
+    STORE -->|"cartItemsを購読"| CT
+    AB -->|"addToCart()をディスパッチ"| STORE
+    style STORE fill:#1a1040,stroke:#7b68ee
+    style CS fill:#12103a,stroke:#7b68ee,color:#e2edf5
+    style US fill:#12103a,stroke:#7b68ee,color:#e2edf5
+    style LS fill:#12103a,stroke:#7b68ee,color:#e2edf5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">4.4 通信パターン使い分けガイド</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>状況</th><th>推奨パターン</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>親子間のデータ受け渡し</td><td><span class="bdg bdg-bl">Props Down</span></td><td>シンプルで追跡しやすい</td></tr>
+          <tr><td>子から親への通知</td><td><span class="bdg bdg-ac">Events Up</span></td><td>一方向フローを保てる</td></tr>
+          <tr><td>3階層以上を超えた共有</td><td><span class="bdg bdg-pu">Context / Store</span></td><td>Props ドリリングを回避</td></tr>
+          <tr><td>ログイン状態・テーマ等</td><td><span class="bdg bdg-pu">Context</span></td><td>アプリ全体での共有に最適</td></tr>
+          <tr><td>柔軟な UI 合成</td><td><span class="bdg bdg-am">Slot / Children</span></td><td>レイアウトや内容を外部化</td></tr>
+          <tr><td>モーダル・ツールチップ</td><td><span class="bdg bdg-rd">Portal</span></td><td>DOM 階層外に描画が必要</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 5 ═══════════ -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <h2 class="section-title">UIコンポーネント設計（フロントエンド）
+      <small>React / Vue における実装ベストプラクティスと Custom Hooks</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">5.1 React コンポーネント設計の6原則</h3>
+    <div class="g3">
+      <div class="gc ac"><div class="gc-icon">📌</div><div class="gc-title">単一責任</div><p>1コンポーネント = 1つの役割。肥大化したら迷わず分割する。</p></div>
+      <div class="gc ac"><div class="gc-icon">🏷️</div><div class="gc-title">Props を型定義</div><p>TypeScript で厳密に型付け。必須/任意を明示し、ドキュメント代わりにする。</p></div>
+      <div class="gc ac"><div class="gc-icon">🎯</div><div class="gc-title">デフォルト値を設定</div><p>オプショナルな Props には適切なデフォルト値を与え、呼び出し側の負担を減らす。</p></div>
+      <div class="gc pu"><div class="gc-icon">⚡</div><div class="gc-title">Pure に保つ</div><p>同じ Props → 同じ出力。副作用は Custom Hooks に分離する。</p></div>
+      <div class="gc pu"><div class="gc-icon">🔀</div><div class="gc-title">継承より合成</div><p>コンポーネントの継承は避け、children / render props / Slot で合成する。</p></div>
+      <div class="gc pu"><div class="gc-icon">🧹</div><div class="gc-title">状態を最小化</div><p>Props で表現できるものは state にしない。必要な状態だけを持つ。</p></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">5.2 Button コンポーネント実装例（Atom）<span class="stag">React + TypeScript</span></h3>
+    <p>最小単位のコンポーネントである Button の完全実装例です。アクセシビリティ・ローディング状態・バリアント管理まで考慮します。</p>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / React</span>
+        <span class="cb-file">components/atoms/Button/Button.tsx</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-button" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-button">
+// ✅ Props を厳密に型定義（ドキュメントの役割も兼ねる）
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface ButtonProps {
+  // 必須 Props
+  children: React.ReactNode;
+  onClick: () => void;
+  // オプション Props（デフォルト値付き）
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  ariaLabel?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+// ✅ 関数コンポーネント + TypeScript で Pure に保つ
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  onClick,
+  variant = 'primary',   // デフォルト値: primary
+  size = 'md',
+  disabled = false,
+  loading = false,
+  fullWidth = false,
+  ariaLabel,
+  type = 'button',
+}) => {
+  const handleClick = () => {
+    // ✅ disabled / loading 中はクリックを無効化
+    if (!disabled && !loading) onClick();
+  };
+
+  return (
+    <button
+      type={type}
+      className={[
+        styles.button,
+        styles[variant],
+        styles[size],
+        fullWidth ? styles.fullWidth : '',
+        loading ? styles.loading : '',
+      ].filter(Boolean).join(' ')}
+      onClick={handleClick}
+      disabled={disabled || loading}
+      aria-label={ariaLabel}
+      aria-busy={loading}   // ✅ アクセシビリティ対応
+    >
+      {loading && <span className={styles.spinner} aria-hidden="true" />}
+      <span className={loading ? styles.hidden : ''}>{children}</span>
+    </button>
+  );
+};
+
+Button.displayName = 'Button'; // ✅ デバッグ時の表示名
+    </script>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">5.3 Custom Hooks でロジックをコンポーネント化する</h3>
+    <p>Custom Hooks は<strong>ロジックをコンポーネントと同じように再利用する</strong>React のパターンです。
+    API 呼び出し・タイマー・イベントリスナーなどのロジックを複数のコンポーネントで共有できます。</p>
+    <div class="dg">
+      <div class="dg-label">📊 図5-1：Custom Hook によるロジックの再利用</div>
+      <pre class="mermaid-src">
+graph LR
+    subgraph WITHOUT["❌ Hookなし（ロジック重複）"]
+        CA["ProductList<br/>+ API呼び出しロジック<br/>+ ローディング状態管理<br/>+ エラー処理"]
+        CB["OrderList<br/>+ API呼び出しロジック（重複！）<br/>+ ローディング状態管理（重複！）<br/>+ エラー処理（重複！）"]
+    end
+    subgraph WITH["✅ Custom Hook（ロジックを再利用）"]
+        HK["useFetch(url)<br/>→ data, loading, error を返す<br/>汎用フック"]
+        CC["ProductList<br/>useFetch('/api/products') のみ"]
+        CD["OrderList<br/>useFetch('/api/orders') のみ"]
+        HK --> CC
+        HK --> CD
+    end
+    style WITHOUT fill:#1a0e0e,stroke:#ef4444
+    style WITH fill:#0e1a15,stroke:#10d9a0
+    style CA fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style CB fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style HK fill:#0d3b50,stroke:#10d9a0,color:#10d9a0
+    style CC fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style CD fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / React</span>
+        <span class="cb-file">hooks/useFetch.ts</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-hook" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-hook">
+// ✅ 汎用フェッチフック — ロジックをコンポーネントとして再利用
+interface FetchState<T> {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+
+function useFetch<T>(url: string): FetchState<T> {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [trigger, setTrigger] = useState(0);
+
+  const refetch = useCallback(() => setTrigger(n => n + 1), []);
+
+  useEffect(() => {
+    // ✅ AbortController: アンマウント時にリクエストをキャンセル（メモリリーク防止）
+    const controller = new AbortController();
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        setData(await res.json());
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return; // ✅ アボートは無視
+        setError(err instanceof Error ? err : new Error('不明なエラー'));
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // ✅ クリーンアップ関数: コンポーネントのアンマウント時に実行される
+    return () => controller.abort();
+  }, [url, trigger]);
+
+  return { data, loading, error, refetch };
+}
+
+// ✅ 使い方（どこでも同じロジックが使えるようになる）
+const ProductList: React.FC = () => {
+  const { data: products, loading, error, refetch } = useFetch<Product[]>('/api/products');
+
+  if (loading) return <Spinner />;
+  if (error) return <ErrorMessage message={error.message} onRetry={refetch} />;
+  return <ProductGrid products={products ?? []} />;
+};
+    </script>
+  </div>
+</section>
+<!-- ═══════════ SECTION 6 ═══════════ -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <h2 class="section-title">バックエンドコンポーネント設計
+      <small>NestJS / FastAPI によるサービス・リポジトリ・コントローラーの分離</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">6.1 バックエンドにおけるコンポーネントの種類</h3>
+    <div class="dg">
+      <div class="dg-label">🔧 図6-1：バックエンドコンポーネントの依存関係</div>
+      <pre class="mermaid-src">
+graph TD
+    CTL["🟡 Controller（コントローラー）<br/>HTTPリクエスト処理・バリデーション<br/>OrderController / UserController"]
+    SVC["🔵 Service（サービス）<br/>ビジネスロジックを担う中心的コンポーネント<br/>OrderService / UserService"]
+    REP["🟢 Repository（リポジトリ）<br/>データアクセスを担当<br/>OrderRepository / UserRepository"]
+    GTW["🔴 Gateway（ゲートウェイ）<br/>外部サービスへの接続<br/>PaymentGateway / EmailGateway"]
+    MID["🟣 Middleware（ミドルウェア）<br/>横断的関心事：認証・ロギング・レート制限"]
+    CTL --> SVC
+    SVC --> REP
+    SVC --> GTW
+    MID -.->|"横断的に適用"| CTL
+    style CTL fill:#1a1a08,stroke:#f59e0b,color:#fcd34d
+    style SVC fill:#0d1b40,stroke:#3b82f6,color:#93c5fd
+    style REP fill:#0d2515,stroke:#10d9a0,color:#6ee7b7
+    style GTW fill:#1a0e0e,stroke:#ef4444,color:#fca5a5
+    style MID fill:#1a1040,stroke:#7b68ee,color:#c4b5fd
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">6.2 NestJS によるモジュール設計</h3>
+    <p>NestJS は<strong>モジュール</strong>という単位でコンポーネントを管理します。各モジュールは独立しており、必要な依存関係のみをインポートします。</p>
+    <div class="dg">
+      <div class="dg-label">📦 図6-2：NestJS モジュール構成</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph ORDER["📦 OrderModule"]
+        OC["OrderController<br/>HTTP エンドポイント"]
+        OS["OrderService<br/>ビジネスロジック"]
+        OR["OrderRepository<br/>DB アクセス"]
+        OC --> OS
+        OS --> OR
+    end
+    subgraph USER["📦 UserModule"]
+        UC["UserController"]
+        US["UserService"]
+        UR["UserRepository"]
+        UC --> US
+        US --> UR
+    end
+    subgraph SHARED["📦 SharedModule（共有）"]
+        LG["LoggerService"]
+        CF["ConfigService"]
+        EM["EmailService"]
+    end
+    ORDER -->|"import"| SHARED
+    USER -->|"import"| SHARED
+    OS -.->|"UserService を利用"| US
+    style ORDER fill:#0d1b40,stroke:#3b82f6
+    style USER fill:#0d2515,stroke:#10d9a0
+    style SHARED fill:#1a1a08,stroke:#f59e0b
+      </pre>
+    </div>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / NestJS</span>
+        <span class="cb-file">order/order.service.ts</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-nestjs" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-nestjs">
+// ✅ @Injectable() = DI コンテナへの登録宣言
+@Injectable()
+export class OrderService {
+  // ✅ コンストラクタ注入：依存するコンポーネントを受け取るだけ
+  //    テスト時はモックに差し替えられる（疎結合の恩恵）
+  constructor(
+    private readonly orderRepository: OrderRepository,
+    private readonly userService: UserService,
+  ) {}
+
+  async createOrder(dto: CreateOrderDto): Promise<Order> {
+    // 1. ユーザーの存在確認（UserService に委譲）
+    const user = await this.userService.findById(dto.customerId);
+    if (!user) {
+      throw new NotFoundException(`顧客が見つかりません: ${dto.customerId}`);
+    }
+    if (!user.isActive) {
+      throw new BadRequestException('非アクティブなユーザーは注文できません');
+    }
+
+    // 2. 注文エンティティを作成して永続化（Repository に委譲）
+    const order = this.orderRepository.create({
+      customerId: dto.customerId,
+      items: dto.items,
+      status: 'pending',
+    });
+    return this.orderRepository.save(order);
+  }
+
+  async findById(orderId: string): Promise<Order> {
+    const order = await this.orderRepository.findOne({ where: { id: orderId } });
+    if (!order) throw new NotFoundException(`注文が見つかりません: ${orderId}`);
+    return order;
+  }
+}
+
+// ✅ Controller: HTTP 処理のみを担当（ビジネスロジックを持たない）
+@ApiTags('orders')
+@UseGuards(JwtAuthGuard)
+@Controller('api/v1/orders')
+export class OrderController {
+  constructor(private readonly orderService: OrderService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() dto: CreateOrderDto, @CurrentUser() user: AuthUser) {
+    // ✅ Service に処理を委譲するだけ
+    return this.orderService.createOrder({ ...dto, customerId: user.id });
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.orderService.findById(id);
+  }
+}
+    </script>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">6.3 FastAPI によるコンポーネント設計（Python）</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">Python / FastAPI</span>
+        <span class="cb-file">order/router.py</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-fastapi" class="language-python"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-fastapi">
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from .service import OrderService
+from .schemas import CreateOrderRequest, OrderResponse
+from ..auth.dependencies import get_current_user
+from ..auth.schemas import CurrentUser
+
+# ✅ Router をコンポーネントの単位として分割
+router = APIRouter(prefix="/api/v1/orders", tags=["orders"])
+
+# ✅ 依存性注入 — テスト時に差し替え可能にする
+def get_order_service() -> OrderService:
+    return OrderService()
+
+@router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
+async def create_order(
+    request: CreateOrderRequest,
+    # ✅ Depends() により依存関係を自動注入
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    service: Annotated[OrderService, Depends(get_order_service)],
+):
+    """注文を作成する。認証必須。"""
+    try:
+        order = await service.create_order(
+            customer_id=current_user.id,
+            items=request.items,
+        )
+        return OrderResponse.from_domain(order)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+    </script>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 7 ═══════════ -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <h2 class="section-title">コンポーネントのライフサイクル管理
+      <small>Mounting / Updating / Unmounting の各フェーズと実装パターン</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">7.1 フロントエンドコンポーネントのライフサイクル</h3>
+    <div class="dg">
+      <div class="dg-label">🔄 図7-1：コンポーネントライフサイクル（React / Vue）</div>
+      <pre class="mermaid-src">
+stateDiagram-v2
+    [*] --> Mounting : コンポーネント生成
+    state Mounting {
+        [*] --> InitState : state 初期化
+        InitState --> FirstRender : 初回レンダリング
+        FirstRender --> DidMount : DOM に挿入
+        DidMount --> [*] : API呼び出し・イベント登録
+    }
+    Mounting --> Updating : Props / State 変更
+    state Updating {
+        [*] --> ShouldUpdate : 更新が必要か判断
+        ShouldUpdate --> Rerender : Yes → 再描画
+        ShouldUpdate --> Skip : No → スキップ（最適化）
+        Rerender --> DidUpdate : 更新完了
+        DidUpdate --> [*]
+        Skip --> [*]
+    }
+    Updating --> Updating : 再度変更あり
+    Updating --> Unmounting : コンポーネント削除
+    state Unmounting {
+        [*] --> Cleanup : クリーンアップ処理
+        Cleanup --> [*] : イベント解除・タイマーキャンセル・リクエスト中断
+    }
+    Unmounting --> [*]
+      </pre>
+    </div>
+
+    <div class="g3">
+      <div class="gc ac">
+        <div class="gc-icon">🚀</div>
+        <div class="gc-title">Mounting フェーズ</div>
+        <p>コンポーネントが初めて DOM に挿入されるとき。API 呼び出し・イベントリスナー登録・タイマー開始などの初期化処理を行います。</p>
+      </div>
+      <div class="gc pu">
+        <div class="gc-icon">🔄</div>
+        <div class="gc-title">Updating フェーズ</div>
+        <p>Props や State が変更されたとき。不要な再レンダリングを防ぐ最適化（<code>useMemo</code>/<code>useCallback</code>/<code>React.memo</code>）が重要です。</p>
+      </div>
+      <div class="gc am">
+        <div class="gc-icon">🧹</div>
+        <div class="gc-title">Unmounting フェーズ</div>
+        <p>コンポーネントが削除されるとき。<strong>クリーンアップを忘れるとメモリリーク</strong>の原因に。イベント解除・タイマーキャンセル・リクエスト中断が必須です。</p>
+      </div>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / React</span>
+        <span class="cb-file">コンポーネントのライフサイクル管理</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-lifecycle" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-lifecycle">
+const LiveInventoryComponent: React.FC<{ productId: string }> = ({ productId }) => {
+  const [stockCount, setStockCount] = useState<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const fetchStock = useCallback(async () => {
+    // ✅ 前のリクエストをキャンセル（Updating フェーズ）
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch(`/api/products/${productId}/stock`, {
+        signal: abortRef.current.signal,
+      });
+      const { stockCount } = await res.json();
+      setStockCount(stockCount);
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') console.error(err);
+    }
+  }, [productId]);
+
+  useEffect(() => {
+    // ✅ Mounting: データ取得とポーリング開始
+    fetchStock();
+    intervalRef.current = setInterval(fetchStock, 5000);
+
+    // ✅ Unmounting: クリーンアップ（メモリリーク・状態更新エラーを防ぐ）
+    return () => {
+      clearInterval(intervalRef.current!);
+      abortRef.current?.abort();
+    };
+  }, [fetchStock]); // productId 変更時も再実行
+
+  return <div>在庫: {stockCount ?? '...'} 個</div>;
+};
+    </script>
+
+    <div class="box box-rd">
+      <div class="bt">⚠️ 最も多い落とし穴：クリーンアップ忘れ</div>
+      <p>useEffect の return 関数（クリーンアップ）を忘れると、<strong>アンマウント後も API リクエストが継続し、存在しないコンポーネントの state を更新しようとして「Warning: Can't perform a React state update on an unmounted component」</strong>エラーが発生します。必ず AbortController と clearInterval でクリーンアップしてください。</p>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 8 ═══════════ -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <h2 class="section-title">依存性管理と疎結合設計
+      <small>DI（依存性注入）・循環依存の回避・インターフェース分離</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">8.1 依存性注入（DI）の仕組みと効果</h3>
+    <p><strong>依存性注入（Dependency Injection）</strong>とは、コンポーネントが自分で依存先を生成するのではなく、<strong>外部から注入してもらう</strong>設計パターンです。テスト容易性と疎結合を同時に実現します。</p>
+    <div class="dg">
+      <div class="dg-label">🔀 図8-1：DI なし（密結合）vs DI あり（疎結合）</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph BAD["❌ DI なし（密結合）— テスト不可"]
+        SB["OrderService<br/>内部で new MySQLRepository()"]
+        DB["MySQLRepository<br/>直接生成される（差し替え不可）"]
+        SB --> DB
+    end
+    subgraph GOOD["✅ DI あり（疎結合）— テスト可能"]
+        DIC["🏭 DI コンテナ（IoC）<br/>依存関係を管理・注入する"]
+        SG["OrderService<br/>インターフェースに依存するだけ"]
+        RI["OrderRepository<br/>インターフェース（抽象）"]
+        RM["MySQLOrderRepository<br/>本番用の実装"]
+        RT["InMemoryOrderRepository<br/>テスト用の実装"]
+        DIC -->|"本番時"| RM
+        DIC -->|"テスト時"| RT
+        RM -->|"実装"| RI
+        RT -->|"実装"| RI
+        SG -->|"依存"| RI
+    end
+    style BAD fill:#1a0e0e,stroke:#ef4444
+    style GOOD fill:#0e1a15,stroke:#10d9a0
+    style SB fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style DB fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style DIC fill:#1a1a08,stroke:#f59e0b,color:#fcd34d
+    style SG fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style RI fill:#0d1b40,stroke:#3b82f6,color:#93c5fd
+    style RM fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style RT fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+    <div class="box box-ac">
+      <div class="bt">✅ DI がもたらす3つのメリット</div>
+      <p>①<strong>テスト容易性</strong>：本番 DB の代わりにインメモリ実装を注入してユニットテストが書ける<br>
+      ②<strong>交換容易性</strong>：MySQL → PostgreSQL 移行時に実装を差し替えるだけでよい<br>
+      ③<strong>疎結合</strong>：OrderService は「どんな DB か」を知らなくてよい</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">8.2 循環依存の回避（ADP 原則）</h3>
+    <p>コンポーネント間の依存グラフは<strong>有向非巡回グラフ（DAG）</strong>でなければなりません。A→B→C→A のような循環依存はビルドエラー・初期化問題・変更の影響範囲拡大を引き起こします。</p>
+    <div class="dg">
+      <div class="dg-label">🔄 図8-2：循環依存 vs 非循環依存</div>
+      <pre class="mermaid-src">
+graph LR
+    subgraph CYCLIC["❌ 循環依存（絶対NG）"]
+        A1["OrderService"] -->|"依存"| B1["UserService"]
+        B1 -->|"依存"| C1["NotificationService"]
+        C1 -->|"依存"| A1
+    end
+    subgraph ACYCLIC["✅ 非循環依存（正しい設計）"]
+        A2["OrderService"] -->|"依存"| B2["UserService"]
+        A2 -->|"依存"| C2["NotificationService"]
+        B2 -->|"依存"| D2["UserRepository"]
+        C2 -->|"依存"| E2["EmailGateway"]
+    end
+    style CYCLIC fill:#1a0e0e,stroke:#ef4444
+    style ACYCLIC fill:#0e1a15,stroke:#10d9a0
+    style A1 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style B1 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style C1 fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style A2 fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style B2 fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+    style C2 fill:#0d2e22,stroke:#10d9a0,color:#e2edf5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">8.3 インターフェース分離の実装（ISP）</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript</span>
+        <span class="cb-file">インターフェース分離原則（ISP）の実践</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-isp" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-isp">
+// ❌ 肥大化したインターフェース（ISP 違反）
+// — OrderService は generateMonthlyReport を使わないのに依存させられる
+interface UserRepository {
+  findById(id: string): Promise<User | null>;
+  findAll(): Promise<User[]>;
+  save(user: User): Promise<void>;
+  delete(id: string): Promise<void>;
+  generateMonthlyReport(): Promise<Report>; // OrderService には不要！
+}
+
+// ✅ 役割ごとに分離した小さなインターフェース（ISP 準拠）
+interface UserReader {
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+}
+
+interface UserWriter {
+  save(user: User): Promise<void>;
+  delete(id: string): Promise<void>;
+}
+
+interface UserReporter {
+  generateMonthlyReport(): Promise<Report>;
+}
+
+// ✅ OrderService は UserReader だけに依存（不要なものを知らなくてよい）
+class OrderService {
+  constructor(
+    private readonly userReader: UserReader, // 必要な契約だけに依存
+  ) {}
+
+  async createOrder(customerId: string, items: OrderItem[]) {
+    const user = await this.userReader.findById(customerId);
+    if (!user) throw new Error('ユーザーが見つかりません');
+    // ...注文作成ロジック
+  }
+}
+
+// ✅ 実装クラスは必要なインターフェースをすべて実装する
+class UserRepositoryImpl implements UserReader, UserWriter, UserReporter {
+  async findById(id: string) { /* ... */ }
+  async findByEmail(email: string) { /* ... */ }
+  async save(user: User) { /* ... */ }
+  async delete(id: string) { /* ... */ }
+  async generateMonthlyReport() { /* ... */ }
+}
+    </script>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 9 ═══════════ -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <h2 class="section-title">コンポーネントのテスト戦略
+      <small>テストピラミッドとユニット・統合・E2Eテストの実装パターン</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">9.1 コンポーネントテストピラミッド</h3>
+    <div class="dg">
+      <div class="dg-label">🔺 図9-1：コンポーネントテストのピラミッド</div>
+      <pre class="mermaid-src">
+graph TD
+    E2E["🌐 E2Eテスト（少数）<br/>実際のブラウザで全体フローを確認<br/>Playwright / Cypress<br/>最も遅い・最もコスト高"]
+    INT["🔗 統合テスト（中程度）<br/>複数コンポーネントの連携を確認<br/>React Testing Library<br/>ユーザー操作をシミュレート"]
+    UNIT["⚡ ユニットテスト（多数）<br/>単一コンポーネントの動作確認<br/>Vitest / Jest<br/>高速・モックを活用"]
+    VIS["🎨 ビジュアルテスト（補完）<br/>見た目の変化を検出<br/>Storybook / Chromatic<br/>スタイル・レイアウトの回帰テスト"]
+    UNIT -->|"基盤"| INT
+    INT -->|"基盤"| E2E
+    VIS -.->|"補完的に利用"| UNIT
+    style E2E fill:#1a0e0e,stroke:#ef4444,color:#fca5a5
+    style INT fill:#1a1a08,stroke:#f59e0b,color:#fcd34d
+    style UNIT fill:#0d2515,stroke:#10d9a0,color:#6ee7b7
+    style VIS fill:#0d1b40,stroke:#3b82f6,color:#93c5fd
+      </pre>
+    </div>
+    <div class="box box-ac">
+      <div class="bt">✅ テストピラミッドの黄金比</div>
+      <p><strong>ユニットテスト 70%</strong>（高速・大量）→ <strong>統合テスト 20%</strong>（ユーザー視点）→ <strong>E2E テスト 10%</strong>（全体確認）。
+      E2E テストが多すぎると CI が遅くなり開発速度が低下します。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">9.2 フロントエンドコンポーネントのテスト実装</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / Vitest + Testing Library</span>
+        <span class="cb-file">ProductCard.test.tsx</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-fe-test" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-fe-test">
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ProductCard } from './ProductCard';
+
+// ✅ テスト用のモックデータ（型付き）
+const mockProduct: Product = {
+  id: 'P001', name: 'テスト商品', price: 3000,
+  originalPrice: 5000, imageUrl: '/test.jpg',
+  rating: 4.5, reviewCount: 120, stockCount: 10,
+  isNew: false, discountRate: 40,
+};
+
+describe('ProductCard コンポーネント', () => {
+  // ─── レンダリングテスト ───
+  test('商品名が正しく表示される', () => {
+    render(<ProductCard product={mockProduct} onAddToCart={() => {}} />);
+    expect(screen.getByText('テスト商品')).toBeInTheDocument();
+  });
+
+  // ─── インタラクションテスト ───
+  test('カートボタンをクリックすると onAddToCart が呼ばれる', async () => {
+    const mockAddToCart = vi.fn();
+    render(<ProductCard product={mockProduct} onAddToCart={mockAddToCart} />);
+
+    // ✅ ユーザー操作をシミュレート（実装ではなく振る舞いをテスト）
+    await userEvent.click(screen.getByText('カートに追加'));
+    expect(mockAddToCart).toHaveBeenCalledWith('P001', 1);
+    expect(mockAddToCart).toHaveBeenCalledOnce();
+  });
+
+  // ─── 境界値テスト ───
+  test('在庫切れ時はボタンが無効化される', async () => {
+    const mockAddToCart = vi.fn();
+    const outOfStock = { ...mockProduct, stockCount: 0 };
+
+    render(<ProductCard product={outOfStock} onAddToCart={mockAddToCart} />);
+
+    const btn = screen.getByText('在庫切れ');
+    expect(btn).toBeDisabled();
+
+    await userEvent.click(btn);
+    expect(mockAddToCart).not.toHaveBeenCalled(); // ✅ クリックされても呼ばれない
+  });
+
+  // ─── アクセシビリティテスト ───
+  test('aria 属性が正しく設定される', () => {
+    render(<ProductCard product={mockProduct} onAddToCart={() => {}} />);
+    expect(screen.getByRole('article')).toHaveAttribute(
+      'data-testid', 'product-card-P001'
+    );
+  });
+});
+    </script>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">9.3 バックエンドコンポーネントのテスト（NestJS）</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / NestJS + Jest</span>
+        <span class="cb-file">order.service.spec.ts</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-be-test" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-be-test">
+describe('OrderService', () => {
+  let service: OrderService;
+
+  // ✅ モックファクトリー（DI のおかげで差し替え可能）
+  const mockOrderRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+  const mockUserService = {
+    findById: jest.fn(),
+  };
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        OrderService,
+        { provide: OrderRepository, useValue: mockOrderRepository }, // ✅ Mock 注入
+        { provide: UserService,     useValue: mockUserService },
+      ],
+    }).compile();
+
+    service = module.get<OrderService>(OrderService);
+    jest.clearAllMocks();
+  });
+
+  describe('createOrder()', () => {
+    test('有効なデータで注文が正常に作成される', async () => {
+      const mockUser = { id: 'U001', isActive: true };
+      const mockOrder = { id: 'O001', status: 'pending' };
+      mockUserService.findById.mockResolvedValue(mockUser);
+      mockOrderRepository.create.mockReturnValue(mockOrder);
+      mockOrderRepository.save.mockResolvedValue(mockOrder);
+
+      const result = await service.createOrder({
+        customerId: 'U001',
+        items: [{ productId: 'P001', quantity: 2 }],
+      });
+
+      expect(result).toEqual(mockOrder);
+      expect(mockOrderRepository.save).toHaveBeenCalledOnce();
+    });
+
+    test('存在しないユーザーで NotFoundException が発生する', async () => {
+      mockUserService.findById.mockResolvedValue(null); // ✅ null を返すモック
+
+      await expect(
+        service.createOrder({ customerId: 'GHOST', items: [] })
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    test('非アクティブユーザーで BadRequestException が発生する', async () => {
+      mockUserService.findById.mockResolvedValue({ id: 'U001', isActive: false });
+
+      await expect(
+        service.createOrder({ customerId: 'U001', items: [] })
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+});
+    </script>
+    <div class="tw">
+      <table>
+        <thead><tr><th>テスト種類</th><th>ツール</th><th>対象</th><th>実行速度</th></tr></thead>
+        <tbody>
+          <tr><td>ユニットテスト（FE）</td><td>Vitest / Jest</td><td>単一コンポーネント</td><td>⚡ 超高速</td></tr>
+          <tr><td>統合テスト（FE）</td><td>React Testing Library</td><td>複数コンポーネント連携</td><td>🏃 高速</td></tr>
+          <tr><td>ビジュアルテスト</td><td>Storybook / Chromatic</td><td>見た目の変化</td><td>🐢 中程度</td></tr>
+          <tr><td>ユニットテスト（BE）</td><td>Jest / pytest</td><td>Service / Repository 単体</td><td>⚡ 超高速</td></tr>
+          <tr><td>統合テスト（BE）</td><td>Supertest / httpx</td><td>API エンドポイント</td><td>🏃 高速</td></tr>
+          <tr><td>E2E テスト</td><td>Playwright / Cypress</td><td>ユーザーシナリオ全体</td><td>🐢 低速</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 10 ═══════════ -->
+<section class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2 class="section-title">コンポーネントライブラリとデザインシステム
+      <small>デザイントークン・Storybook・一貫性の保ち方</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">10.1 デザインシステムの全体像</h3>
+    <p><strong>デザインシステム</strong>は、コンポーネントライブラリの上位概念です。
+    カラー・タイポグラフィ・スペーシングといった基盤から、再利用可能なコンポーネント、
+    ドキュメントまでを体系化し、<strong>チーム全体でUIの一貫性を保証</strong>します。</p>
+    <div class="dg">
+      <div class="dg-label">🎨 図10-1：デザインシステムの構造</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph FOUND["🏗️ 基盤（Foundation）"]
+        COL["🎨 カラーパレット<br/>Primary / Semantic / Neutral<br/>Light / Dark モード対応"]
+        TYP["📝 タイポグラフィ<br/>フォント・サイズ・ウェイト"]
+        SPC["📐 スペーシング<br/>4px グリッドシステム"]
+        ICO["🔣 アイコンセット"]
+    end
+    subgraph TOKEN["🔑 デザイントークン"]
+        DT["CSS カスタムプロパティ / JS オブジェクト<br/>--color-primary: #3498db<br/>--spacing-md: 16px<br/>一元管理・テーマ切り替えが容易"]
+    end
+    subgraph LIB["📦 コンポーネントライブラリ"]
+        AT["Atoms: Button / Input / Badge"]
+        MO["Molecules: FormField / SearchBar"]
+        OR["Organisms: Header / Modal / Card"]
+    end
+    subgraph DOC["📖 ドキュメント＆ツール"]
+        SB["Storybook コンポーネントカタログ"]
+        FG["Figma デザインソース"]
+        CL["Changelog 変更履歴管理"]
+    end
+    FOUND --> TOKEN
+    TOKEN --> LIB
+    LIB --> DOC
+    style FOUND fill:#0d1b40,stroke:#3b82f6
+    style TOKEN fill:#1a1040,stroke:#7b68ee
+    style LIB fill:#0d2515,stroke:#10d9a0
+    style DOC fill:#1a1a08,stroke:#f59e0b
+    style DT fill:#12103a,stroke:#7b68ee,color:#e2edf5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">10.2 デザイントークンの実装</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript</span>
+        <span class="cb-file">design-system/tokens/index.ts</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-tokens" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-tokens">
+// ✅ デザイントークン：コンポーネントライブラリ全体の基盤
+export const tokens = {
+  colors: {
+    brand: {
+      primary:      '#3498db',
+      primaryDark:  '#2980b9',
+      secondary:    '#27ae60',
+    },
+    semantic: {
+      success: '#2ecc71',
+      warning: '#f39c12',
+      danger:  '#e74c3c',
+      info:    '#3498db',
+    },
+    neutral: {
+      white:   '#ffffff',
+      gray100: '#f8f9fa',
+      gray500: '#adb5bd',
+      gray900: '#212529',
+    },
+  },
+  // ✅ 4px グリッドシステム（8の倍数で統一）
+  spacing: {
+    xs:  '4px',
+    sm:  '8px',
+    md:  '16px',
+    lg:  '24px',
+    xl:  '32px',
+    xxl: '48px',
+  },
+  typography: {
+    fontFamily: {
+      base: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+      mono: "'JetBrains Mono', 'Courier New', monospace",
+    },
+    fontSize: { sm: '14px', md: '16px', lg: '18px', xl: '24px' },
+    fontWeight: { regular: 400, medium: 500, bold: 700 },
+  },
+  border: {
+    radius: { sm: '4px', md: '8px', lg: '12px', full: '9999px' },
+  },
+  animation: {
+    duration: { fast: '150ms', normal: '250ms', slow: '400ms' },
+    easing: { ease: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+  },
+} as const;
+
+// ✅ CSS カスタムプロパティとして出力（テーマ切り替えが容易になる）
+export const generateCSSVariables = () => `
+  :root {
+    --color-primary:       ${tokens.colors.brand.primary};
+    --color-success:       ${tokens.colors.semantic.success};
+    --spacing-md:          ${tokens.spacing.md};
+    --font-size-md:        ${tokens.typography.fontSize.md};
+    --border-radius-md:    ${tokens.border.radius.md};
+    --animation-duration:  ${tokens.animation.duration.normal};
+  }
+`;
+    </script>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">10.3 Storybook によるコンポーネントカタログ</h3>
+    <p>Storybook はコンポーネントを<strong>ページとは切り離して独立して開発・ドキュメント化・テスト</strong>するツールです。すべてのコンポーネントをカタログ化することで、デザインとエンジニアリングの共通言語になります。</p>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / Storybook</span>
+        <span class="cb-file">Button.stories.tsx</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-storybook" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-storybook">
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+// ✅ Meta: コンポーネントのカタログ定義
+const meta: Meta<typeof Button> = {
+  title: 'Atoms/Button',   // サイドバーのカテゴリとタイトル
+  component: Button,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: '基本的なアクションボタン。4種類のバリアントと3種類のサイズに対応。',
+      },
+    },
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'danger', 'ghost'],
+      description: 'ボタンのスタイルバリアント',
+    },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    disabled: { control: 'boolean' },
+    loading:  { control: 'boolean' },
+  },
+  tags: ['autodocs'], // ✅ 自動ドキュメント生成
+};
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+// ✅ 各ストーリー = コンポーネントの1つの「状態」を定義
+export const Primary: Story = {
+  args: { children: 'カートに追加', variant: 'primary', onClick: () => {} },
+};
+
+export const Loading: Story = {
+  args: { ...Primary.args, loading: true, children: '処理中...' },
+};
+
+export const Disabled: Story = {
+  args: { ...Primary.args, disabled: true, children: '在庫切れ' },
+};
+
+// ✅ 全サイズの比較表示（自動回帰テストにも使われる）
+export const AllSizes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <Button onClick={() => {}} size="sm">Small</Button>
+      <Button onClick={() => {}}>Medium</Button>
+      <Button onClick={() => {}} size="lg">Large</Button>
+    </div>
+  ),
+};
+    </script>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 11 ═══════════ -->
+<section class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2 class="section-title">マイクロフロントエンド・マイクロサービスとの統合
+      <small>コンポーネント指向をアーキテクチャレベルへ拡張する</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">11.1 マイクロフロントエンドとは</h3>
+    <p>マイクロサービスのアイデアをフロントエンドに適用したアーキテクチャです。
+    フロントエンドを<strong>独立したチームが独立してデプロイできる</strong>小さなアプリケーションに分割します。</p>
+    <div class="dg">
+      <div class="dg-label">🏗️ 図11-1：マイクロフロントエンドアーキテクチャ</div>
+      <pre class="mermaid-src">
+graph TD
+    SH["🐚 Shell アプリ（ホスト）<br/>各 MFE を読み込み・配置する"]
+    subgraph TA["チームA：商品チーム"]
+        PM["Product MFE<br/>商品一覧・詳細・検索<br/>独立デプロイ"]
+    end
+    subgraph TB["チームB：注文チーム"]
+        OM["Order MFE<br/>カート・チェックアウト<br/>独立デプロイ"]
+    end
+    subgraph TC["チームC：ユーザーチーム"]
+        UM["User MFE<br/>認証・プロフィール<br/>独立デプロイ"]
+    end
+    SL["📦 共有コンポーネントライブラリ<br/>全チームが使う共通 UI（デザインシステム）"]
+    SH --> PM
+    SH --> OM
+    SH --> UM
+    PM --> SL
+    OM --> SL
+    UM --> SL
+    style SH fill:#0d2040,stroke:#10d9a0,color:#10d9a0
+    style PM fill:#0d1b40,stroke:#3b82f6,color:#93c5fd
+    style OM fill:#0d2515,stroke:#10d9a0,color:#6ee7b7
+    style UM fill:#1a1a08,stroke:#f59e0b,color:#fcd34d
+    style SL fill:#1a1040,stroke:#7b68ee,color:#c4b5fd
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">11.2 Module Federation による実装</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">JavaScript / Webpack</span>
+        <span class="cb-file">webpack.config.js — Shell（ホスト）</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-mfe" class="language-javascript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-mfe">
+// ✅ Shell アプリケーション（ホスト）の設定
+const shellConfig = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'shell',
+      remotes: {
+        // ✅ 各 MFE を動的に読み込む（URLはデプロイ環境に合わせる）
+        productApp: 'productApp@https://product.example.com/remoteEntry.js',
+        orderApp:   'orderApp@https://order.example.com/remoteEntry.js',
+        userApp:    'userApp@https://user.example.com/remoteEntry.js',
+      },
+      shared: {
+        // ✅ React を共有（各 MFE がバンドルせず Shell のものを使う）
+        react:     { singleton: true, requiredVersion: '^18.0.0' },
+        'react-dom': { singleton: true, requiredVersion: '^18.0.0' },
+        '@company/design-system': { singleton: true },
+      },
+    }),
+  ],
+};
+
+// ✅ Product MFE（リモート）の設定
+const productConfig = {
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'productApp',
+      filename: 'remoteEntry.js',  // Shell から参照されるエントリーポイント
+      exposes: {
+        // ✅ 外部に公開するコンポーネントを明示的に定義
+        './ProductList':   './src/components/ProductList',
+        './ProductDetail': './src/components/ProductDetail',
+      },
+    }),
+  ],
+};
+
+// ✅ Shell での使い方 — Suspense + ErrorBoundary で障害隔離
+const ProductList = lazy(() => import('productApp/ProductList'));
+
+function App() {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <Suspense fallback={<Skeleton />}>
+        <ProductList />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+    </script>
+    <div class="box box-am">
+      <div class="bt">⚠️ MFE 導入前に検討すること</div>
+      <p>MFE は<strong>チームが独立して動いているプロジェクト</strong>に最大の効果を発揮します。
+      小規模チームや単一チームの場合、Monorepo + コンポーネントライブラリの方が
+      シンプルで管理しやすいことが多いです。複雑さとのトレードオフを慎重に評価してください。</p>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 12 ═══════════ -->
+<section class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <h2 class="section-title">実践：ECサイト完全コンポーネント実装例
+      <small>Atomic Design で構成するショッピングカート実装</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">12.1 ECサイトのコンポーネント全体構成</h3>
+    <div class="dg">
+      <div class="dg-label">🛒 図12-1：ECサイト コンポーネント階層</div>
+      <pre class="mermaid-src">
+graph TD
+    subgraph PA["📱 Pages"]
+        TOP["TopPage"]
+        PROD["ProductDetailPage"]
+        CART["CartPage"]
+        CHK["CheckoutPage"]
+    end
+    subgraph TE["📄 Templates"]
+        ML["MainLayout<br/>Header + Main + Footer"]
+        CL["CheckoutLayout<br/>Step ナビ + コンテンツ"]
+    end
+    subgraph OR["🦠 Organisms"]
+        HD["Header<br/>ロゴ・ナビ・検索・カートアイコン"]
+        PG["ProductGrid<br/>ProductCard × N"]
+        CI["CartItems<br/>CartItem × N"]
+        CF["CheckoutForm<br/>住所・支払い入力"]
+    end
+    subgraph MO["🔬 Molecules"]
+        PC["ProductCard"]
+        CAI["CartItem"]
+        PD["PriceDisplay"]
+        FF["FormField"]
+        SB["SearchBox"]
+    end
+    subgraph AT["⚛️ Atoms"]
+        BT["Button"]
+        IN["Input"]
+        BA["Badge"]
+        SP["Spinner"]
+        LB["Label"]
+    end
+    TOP & PROD & CART --> ML
+    CHK --> CL
+    ML --> HD & PG & CI
+    CHK --> CF
+    PG --> PC
+    CI --> CAI
+    PC --> BT & BA & PD
+    CAI --> BT & IN
+    CF --> FF
+    FF --> LB & IN
+    HD --> SB
+    SB --> IN & BT
+    style PA fill:#1a0e0e,stroke:#ef4444
+    style TE fill:#1a1a08,stroke:#f59e0b
+    style OR fill:#0d2515,stroke:#10d9a0
+    style MO fill:#0d1b40,stroke:#3b82f6
+    style AT fill:#1a1040,stroke:#7b68ee
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">12.2 カート機能の完全実装（Custom Hook + Organism）</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / React</span>
+        <span class="cb-file">hooks/useCart.ts + components/organisms/CartSidebar.tsx</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-cart" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-cart">
+// ─── 型定義 ───────────────────────────────────────────────
+interface CartItem {
+  id: string;
+  product: { id: string; name: string; price: number; imageUrl: string; maxStock: number };
+  quantity: number;
+}
+
+// ─── Custom Hook: カートロジックをコンポーネント化 ──────────
+function useCart() {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  const addItem = useCallback((product: CartItem['product'], qty = 1) => {
+    setItems(prev => {
+      const existing = prev.find(i => i.product.id === product.id);
+      if (existing) {
+        // 既存アイテムは数量を増やす（maxStock を超えない）
+        return prev.map(i =>
+          i.product.id === product.id
+            ? { ...i, quantity: Math.min(i.quantity + qty, product.maxStock) }
+            : i
+        );
+      }
+      // ✅ crypto.randomUUID でユニーク ID を生成
+      return [...prev, { id: crypto.randomUUID(), product, quantity: qty }];
+    });
+  }, []);
+
+  const updateQuantity = useCallback((itemId: string, newQty: number) => {
+    if (newQty <= 0) {
+      setItems(prev => prev.filter(i => i.id !== itemId)); // 0以下で削除
+    } else {
+      setItems(prev => prev.map(i => i.id === itemId ? { ...i, quantity: newQty } : i));
+    }
+  }, []);
+
+  const removeItem = useCallback((itemId: string) => {
+    setItems(prev => prev.filter(i => i.id !== itemId));
+  }, []);
+
+  const totalAmount = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const totalCount  = items.reduce((sum, i) => sum + i.quantity, 0);
+
+  return { items, totalAmount, totalCount, addItem, updateQuantity, removeItem };
+}
+
+// ─── CartItem コンポーネント（Molecule）───────────────────
+const CartItemRow: React.FC<{
+  item: CartItem;
+  onUpdateQty: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+}> = ({ item, onUpdateQty, onRemove }) => (
+  <li className="cart-item" data-testid={`cart-item-${item.id}`}>
+    <img src={item.product.imageUrl} alt={item.product.name} />
+    <div>
+      <p>{item.product.name}</p>
+      <p>¥{(item.product.price * item.quantity).toLocaleString()}</p>
+    </div>
+    <div className="quantity-ctrl">
+      <Button variant="ghost" size="sm" onClick={() => onUpdateQty(item.id, item.quantity - 1)}>−</Button>
+      <span>{item.quantity}</span>
+      <Button variant="ghost" size="sm"
+        onClick={() => onUpdateQty(item.id, item.quantity + 1)}
+        disabled={item.quantity >= item.product.maxStock}>＋</Button>
+    </div>
+    <Button variant="ghost" size="sm" onClick={() => onRemove(item.id)} ariaLabel="削除">🗑</Button>
+  </li>
+);
+
+// ─── CartSidebar コンポーネント（Organism）───────────────
+const CartSidebar: React.FC<{
+  cart: ReturnType<typeof useCart>;
+  onCheckout: () => void;
+}> = ({ cart, onCheckout }) => (
+  <aside className="cart-sidebar" aria-label="ショッピングカート">
+    <h2>カート（{cart.totalCount}点）</h2>
+    {cart.items.length === 0 ? (
+      <p>カートは空です</p>
+    ) : (
+      <>
+        <ul>
+          {cart.items.map(item => (
+            <CartItemRow key={item.id} item={item}
+              onUpdateQty={cart.updateQuantity} onRemove={cart.removeItem} />
+          ))}
+        </ul>
+        <div>
+          <span>合計: <strong>¥{cart.totalAmount.toLocaleString()}</strong></span>
+          <Button onClick={onCheckout} fullWidth size="lg">購入手続きへ</Button>
+        </div>
+      </>
+    )}
+  </aside>
+);
+    </script>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">12.3 推奨ディレクトリ構成</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">Directory Structure</span>
+        <span class="cb-file">プロジェクトルート</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-dir" class="language-plaintext"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-dir">
+src/
+├── components/
+│   ├── atoms/                    # ⚛️ 最小単位のコンポーネント
+│   │   ├── Button/
+│   │   │   ├── Button.tsx        # 実装
+│   │   │   ├── Button.test.tsx   # ユニットテスト
+│   │   │   ├── Button.stories.tsx # Storybook
+│   │   │   ├── Button.module.css  # スタイル
+│   │   │   └── index.ts           # エクスポート
+│   │   ├── Input/
+│   │   ├── Badge/
+│   │   └── index.ts               # Atoms 一括エクスポート
+│   ├── molecules/                # 🔬 Atoms の組み合わせ
+│   │   ├── ProductCard/
+│   │   ├── FormField/
+│   │   └── index.ts
+│   ├── organisms/                # 🦠 独立した UI ブロック
+│   │   ├── Header/
+│   │   ├── ProductGrid/
+│   │   ├── CartSidebar/
+│   │   └── index.ts
+│   ├── templates/                # 📄 レイアウト定義
+│   │   ├── MainLayout/
+│   │   └── index.ts
+│   └── pages/                    # 📱 実際のページ
+│       ├── TopPage/
+│       └── CartPage/
+├── hooks/                        # 🔧 Custom Hooks（ロジックコンポーネント）
+│   ├── useCart.ts
+│   ├── useFetch.ts
+│   └── index.ts
+├── contexts/                     # 🌐 Context（グローバル状態）
+│   ├── CartContext.tsx
+│   └── AuthContext.tsx
+├── design-system/                # 🎨 デザインシステム
+│   ├── tokens/
+│   │   ├── colors.ts
+│   │   ├── spacing.ts
+│   │   └── index.ts
+│   └── global.css
+└── types/                        # 📋 型定義
+    ├── product.ts
+    ├── order.ts
+    └── user.ts
+    </script>
+  </div>
+</section>
+<!-- ═══════════ SECTION 13 ═══════════ -->
+<section class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <h2 class="section-title">コンポーネントのアンチパターン
+      <small>やってはいけない設計と、それぞれの解決策</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">13.1 主要アンチパターン一覧</h3>
+    <div class="dg">
+      <div class="dg-label">⚠️ 図13-1：コンポーネントのアンチパターンと解決策</div>
+      <pre class="mermaid-src">
+graph TD
+    ANT["⚠️ コンポーネントのアンチパターン"]
+    ANT --> G["🔴 コンポーネントモノリス<br/>500行超・複数の責務が混在<br/>→ 単一責任原則を適用して分割"]
+    ANT --> P["🔴 Props ドリリング<br/>5階層以上 Props を中継<br/>→ Context / Store を使う"]
+    ANT --> M["🔴 関心事の混在<br/>API呼び出しと描画が同じ場所<br/>→ Custom Hooks でロジックを分離"]
+    ANT --> D["🔴 状態の直接変更<br/>Props を直接書き換える<br/>→ setState / emit のみで更新"]
+    ANT --> O["🔴 過度な最適化<br/>すべてを useMemo/useCallback でラップ<br/>→ プロファイラで確認してから適用"]
+    ANT --> A["🔴 過度な抽象化<br/>1回しか使わないものをコンポーネント化<br/>→ 3回使ったら共通化を検討"]
+    style ANT fill:#0d2040,stroke:#ef4444,color:#ef4444
+    style G fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style P fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style M fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style D fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style O fill:#2a1515,stroke:#ef4444,color:#fca5a5
+    style A fill:#2a1515,stroke:#ef4444,color:#fca5a5
+      </pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">13.2 Props ドリリングの解決例</h3>
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-lang">TypeScript / React</span>
+        <span class="cb-file">Props ドリリング → Context への移行</span>
+        <button class="cp-btn" onclick="copyCode(this)">コピー</button>
+      </div>
+      <pre><code id="code-drilling" class="language-typescript"></code></pre>
+    </div>
+    <script type="text/code" data-for="code-drilling">
+// ❌ Props ドリリング（アンチパターン）
+// — user を使うのは UserMenu だけなのに全中間コンポーネントを汚染する
+const App = () => {
+  const [user, setUser] = useState<User | null>(null);
+  return <Layout user={user} setUser={setUser} />;           // 中継するだけ
+};
+const Layout = ({ user, setUser }: Props) => (
+  <Header user={user} setUser={setUser} />                   // 中継するだけ
+);
+const Header = ({ user, setUser }: Props) => (
+  <Nav user={user} setUser={setUser} />                      // 中継するだけ
+);
+const Nav = ({ user, setUser }: Props) => (
+  <UserMenu user={user} onLogout={() => setUser(null)} />    // ようやく使う
+);
+
+// ✅ Context で解決（中間コンポーネントが Props を知らなくてよくなる）
+const AuthContext = React.createContext<{
+  user: User | null;
+  logout: () => void;
+} | null>(null);
+
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const logout = useCallback(() => setUser(null), []);
+  return (
+    <AuthContext.Provider value={{ user, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// ✅ カスタムフックで使いやすくラップ
+const useAuth = () => {
+  const ctx = React.useContext(AuthContext);
+  if (!ctx) throw new Error('AuthProvider の外で useAuth を呼びました');
+  return ctx;
+};
+
+// ✅ UserMenu は Props を受け取らずに Context から直接取得できる
+const UserMenu = () => {
+  const { user, logout } = useAuth(); // 中間コンポーネントを経由しない！
+  return (
+    <div>
+      <span>{user?.name}</span>
+      <button onClick={logout}>ログアウト</button>
+    </div>
+  );
+};
+    </script>
+    <div class="tw">
+      <table>
+        <thead><tr><th>アンチパターン</th><th>症状</th><th>解決策</th></tr></thead>
+        <tbody>
+          <tr><td>コンポーネントモノリス</td><td>1ファイルが 500 行超・複数の責務</td><td>SRP で分割、Container/Presentational パターン</td></tr>
+          <tr><td>Props ドリリング</td><td>3〜5 階層を超えて Props を中継</td><td>Context / Zustand / Redux Toolkit</td></tr>
+          <tr><td>関心事の混在</td><td>fetch() と JSX が同じコンポーネント</td><td>Custom Hooks でロジックを分離</td></tr>
+          <tr><td>状態の直接変更</td><td><code>props.user.name = 'foo'</code></td><td>イミュータブルな更新（setState / emit）</td></tr>
+          <tr><td>過度な最適化</td><td>すべてに useMemo・コードが複雑</td><td>React Profiler で計測してから適用</td></tr>
+          <tr><td>過度な抽象化</td><td>1回しか使わない汎用コンポーネント</td><td>Rule of Three（3回使ったら共通化）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 14 ═══════════ -->
+<section class="section" id="s14">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <h2 class="section-title">ベストプラクティス総まとめ
+      <small>チェックリスト・成熟度モデル・フレームワーク別比較</small>
+    </h2>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">14.1 コンポーネント設計チェックリスト</h3>
+    <p>コンポーネントを実装する前後に確認するチェックリストです。</p>
+    <ul class="cl">
+      <li><span class="cl-ic">✅</span><div><strong>単一責任</strong>：1コンポーネント = 1つの明確な役割。「〜かつ〜」があれば分割。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>Props を最小限に</strong>：必要なデータだけを受け取る。不要な Props は依存を増やす。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>TypeScript で型定義</strong>：Props / Events を厳密に型付けしてインターフェース契約を明文化。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>デフォルト値を設定</strong>：オプショナルな Props には適切なデフォルト値を与える。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>副作用を分離</strong>：API 呼び出しは Custom Hooks / サービス層に切り出す。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>テストを書く</strong>：ユニット・統合・ビジュアルテストを整備。CI で自動実行。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>アクセシビリティ</strong>：aria 属性・キーボード操作・カラーコントラストを考慮。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>Storybook でカタログ化</strong>：全状態をストーリーとして記録。チームの共通認識に。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>クリーンアップを忘れずに</strong>：useEffect の return でイベント解除・タイマーキャンセル・リクエスト中断。</div></li>
+      <li><span class="cl-ic">✅</span><div><strong>ErrorBoundary でラップ</strong>：コンポーネントのエラーが全体に波及しないよう隔離する。</div></li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">14.2 コンポーネント指向 成熟度モデル</h3>
+    <div class="ml">
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#ef4444">Lv.0</div><div class="ml-lv-l" style="color:#ef4444">初期</div></div>
+        <div><div class="ml-title">モノリシックなビュー</div><div class="ml-desc">コンポーネント分割なし。ページ単位の大きな実装。変更のたびに全体に影響が波及する。</div></div>
+      </div>
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#f97316">Lv.1</div><div class="ml-lv-l" style="color:#f97316">基礎</div></div>
+        <div><div class="ml-title">基本的なコンポーネント化</div><div class="ml-desc">再利用されるパーツ（Button / Input など）を切り出す。コンポーネント化の概念を理解している。</div></div>
+      </div>
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#f59e0b">Lv.2</div><div class="ml-lv-l" style="color:#f59e0b">体系化</div></div>
+        <div><div class="ml-title">アトミックデザインの導入</div><div class="ml-desc">Atoms / Molecules / Organisms の階層でシステマティックに粒度を管理できる。</div></div>
+      </div>
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#10d9a0">Lv.3</div><div class="ml-lv-l" style="color:#10d9a0">標準化</div></div>
+        <div><div class="ml-title">デザインシステムの確立</div><div class="ml-desc">デザイントークン・共有コンポーネントライブラリ・Storybook でカタログ化。チーム全体で一貫性を保証。</div></div>
+      </div>
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#3b82f6">Lv.4</div><div class="ml-lv-l" style="color:#3b82f6">分離</div></div>
+        <div><div class="ml-title">Container / Presentational の完全分離</div><div class="ml-desc">ロジックと UI の完全分離。Custom Hooks による再利用・テストが容易な設計が実現できている。</div></div>
+      </div>
+      <div class="ml-item">
+        <div class="ml-lv"><div class="ml-lv-n" style="color:#7b68ee">Lv.5</div><div class="ml-lv-l" style="color:#7b68ee">最適化</div></div>
+        <div><div class="ml-title">マイクロフロントエンド</div><div class="ml-desc">コンポーネントが独立したチームの境界と一致。独立デプロイ・完全な疎結合・チームの自律性が最大化。</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">14.3 フレームワーク別ベストプラクティス比較</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>観点</th><th>⚛️ React</th><th>💚 Vue 3</th><th>🔴 Angular</th></tr></thead>
+        <tbody>
+          <tr><td>コンポーネント定義</td><td>関数コンポーネント + Hooks</td><td>SFC（Composition API）</td><td>クラス + デコレータ</td></tr>
+          <tr><td>Props 型定義</td><td>TypeScript インターフェース</td><td><code>defineProps&lt;T&gt;()</code></td><td><code>@Input()</code> デコレータ</td></tr>
+          <tr><td>状態管理</td><td>useState / Zustand / Redux</td><td>ref / reactive / Pinia</td><td>サービス / NgRx</td></tr>
+          <tr><td>スロット</td><td>children / render props</td><td><code>&lt;slot&gt;</code></td><td><code>&lt;ng-content&gt;</code></td></tr>
+          <tr><td>テスト</td><td>React Testing Library</td><td>Vue Test Utils</td><td>TestBed</td></tr>
+          <tr><td>カタログ</td><td>Storybook</td><td>Storybook / Histoire</td><td>Storybook</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="sub-title">14.4 ライフサイクル別ベストプラクティス</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>フェーズ</th><th>ベストプラクティス</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>設計</td><td>最も小さい粒度から設計（Atoms から）</td><td>再利用性と組み合わせやすさが向上する</td></tr>
+          <tr><td>実装</td><td>Pure コンポーネントを目指す</td><td>テストしやすく予測可能な動作を保証</td></tr>
+          <tr><td>状態管理</td><td>状態は最も近い親コンポーネントに置く</td><td>不要なグローバル状態を避ける</td></tr>
+          <tr><td>通信</td><td>Props Down / Events Up を基本にする</td><td>データフローが追跡しやすい</td></tr>
+          <tr><td>依存</td><td>インターフェースに依存（具体実装に依存しない）</td><td>テストと差し替えが容易になる</td></tr>
+          <tr><td>テスト</td><td>ユーザー操作ベースのテストを書く</td><td>実装ではなく振る舞いを検証する</td></tr>
+          <tr><td>ドキュメント</td><td>Storybook で全状態を記録する</td><td>チームの共通認識と品質保証</td></tr>
+          <tr><td>リリース</td><td>セマンティックバージョニングを使う</td><td>破壊的変更を明確にする</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- ═══════════ SECTION 15 ═══════════ -->
+<section class="section" id="s15">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <h2 class="section-title">参考文献・ソース一覧
+      <small>さらに深く学ぶための公式ドキュメント・必読書・URL集</small>
+    </h2>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">📚 必読書籍</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://atomicdesign.bradfrost.com/" target="_blank">
+        <span class="ref-ic">📖</span>
+        <div><div class="ref-name">Atomic Design — Brad Frost（無料オンライン）</div>
+        <div class="ref-url">https://atomicdesign.bradfrost.com/</div></div>
+      </a>
+      <a class="ref-item" href="https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/" target="_blank">
+        <span class="ref-ic">📖</span>
+        <div><div class="ref-name">Clean Architecture — Robert C. Martin（コンポーネント設計原則 CCP / CRP / ADP を網羅）</div>
+        <div class="ref-url">https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/</div></div>
+      </a>
+      <a class="ref-item" href="https://martinfowler.com/articles/micro-frontends.html" target="_blank">
+        <span class="ref-ic">📖</span>
+        <div><div class="ref-name">Micro Frontends — Martin Fowler（MFE の原典）</div>
+        <div class="ref-url">https://martinfowler.com/articles/micro-frontends.html</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">⚛️ React コンポーネント</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://ja.react.dev/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">React 公式ドキュメント（日本語）</div>
+        <div class="ref-url">https://ja.react.dev/</div></div>
+      </a>
+      <a class="ref-item" href="https://ja.react.dev/learn/reusing-logic-with-custom-hooks" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">React 公式 — Custom Hooks でロジックを再利用する</div>
+        <div class="ref-url">https://ja.react.dev/learn/reusing-logic-with-custom-hooks</div></div>
+      </a>
+      <a class="ref-item" href="https://ja.react.dev/learn/passing-data-deeply-with-context" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">React 公式 — Context でデータを深く渡す</div>
+        <div class="ref-url">https://ja.react.dev/learn/passing-data-deeply-with-context</div></div>
+      </a>
+      <a class="ref-item" href="https://testing-library.com/docs/react-testing-library/intro/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">React Testing Library 公式</div>
+        <div class="ref-url">https://testing-library.com/docs/react-testing-library/intro/</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">💚 Vue コンポーネント</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://ja.vuejs.org/guide/essentials/component-basics" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Vue 3 公式 — コンポーネントの基礎（日本語）</div>
+        <div class="ref-url">https://ja.vuejs.org/guide/essentials/component-basics</div></div>
+      </a>
+      <a class="ref-item" href="https://ja.vuejs.org/guide/extras/composition-api-faq" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Vue 3 公式 — Composition API FAQ（日本語）</div>
+        <div class="ref-url">https://ja.vuejs.org/guide/extras/composition-api-faq</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">🎨 デザインシステム・Storybook</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://storybook.js.org/docs" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Storybook 公式ドキュメント</div>
+        <div class="ref-url">https://storybook.js.org/docs</div></div>
+      </a>
+      <a class="ref-item" href="https://www.w3.org/TR/design-tokens/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Design Tokens W3C 仕様</div>
+        <div class="ref-url">https://www.w3.org/TR/design-tokens/</div></div>
+      </a>
+      <a class="ref-item" href="https://styledictionary.com/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Style Dictionary — デザイントークン管理ツール</div>
+        <div class="ref-url">https://styledictionary.com/</div></div>
+      </a>
+      <a class="ref-item" href="https://ui.shadcn.com/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">shadcn/ui — 参考実装のコンポーネントライブラリ（React）</div>
+        <div class="ref-url">https://ui.shadcn.com/</div></div>
+      </a>
+      <a class="ref-item" href="https://www.radix-ui.com/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Radix UI — アクセシブルなヘッドレス Atom コンポーネント</div>
+        <div class="ref-url">https://www.radix-ui.com/</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">🔧 バックエンドコンポーネント</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://docs.nestjs.com/modules" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">NestJS 公式 — モジュールとコンポーネント</div>
+        <div class="ref-url">https://docs.nestjs.com/modules</div></div>
+      </a>
+      <a class="ref-item" href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">NestJS 公式 — 依存性注入（カスタムプロバイダー）</div>
+        <div class="ref-url">https://docs.nestjs.com/fundamentals/custom-providers</div></div>
+      </a>
+      <a class="ref-item" href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">FastAPI 公式（日本語）— 依存性注入</div>
+        <div class="ref-url">https://fastapi.tiangolo.com/ja/tutorial/dependencies/</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-grp">
+    <div class="ref-grp-title">🔺 テスト・MFE</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://vitest.dev/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Vitest 公式（高速ユニットテストフレームワーク）</div>
+        <div class="ref-url">https://vitest.dev/</div></div>
+      </a>
+      <a class="ref-item" href="https://playwright.dev/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Playwright 公式（E2E テスト）</div>
+        <div class="ref-url">https://playwright.dev/</div></div>
+      </a>
+      <a class="ref-item" href="https://webpack.js.org/concepts/module-federation/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Module Federation 公式（Webpack）</div>
+        <div class="ref-url">https://webpack.js.org/concepts/module-federation/</div></div>
+      </a>
+      <a class="ref-item" href="https://www.componentdriven.org/" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Component Driven Development 公式</div>
+        <div class="ref-url">https://www.componentdriven.org/</div></div>
+      </a>
+      <a class="ref-item" href="https://kentcdodds.com/blog/how-to-test-custom-react-hooks" target="_blank">
+        <span class="ref-ic">🔗</span>
+        <div><div class="ref-name">Kent C. Dodds — Custom React Hooks のテスト方法</div>
+        <div class="ref-url">https://kentcdodds.com/blog/how-to-test-custom-react-hooks</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- Scroll to Top -->
+<button class="st" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ═══════════ JAVASCRIPT ═══════════ -->
+<script>
+// ── Mermaid 初期化 ──────────────────────────────────────────
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    background:           '#0d1b2e',
+    primaryColor:         '#0d2040',
+    primaryTextColor:     '#e2edf5',
+    primaryBorderColor:   '#1a2d47',
+    lineColor:            '#10d9a0',
+    secondaryColor:       '#112236',
+    tertiaryColor:        '#071525',
+    edgeLabelBackground:  '#0d1b2e',
+    nodeTextColor:        '#e2edf5',
+    clusterBkg:           '#091625',
+    clusterBorder:        '#1a2d47',
+    titleColor:           '#e2edf5',
+    actorBkg:             '#0d2040',
+    actorBorder:          '#10d9a0',
+    actorTextColor:       '#e2edf5',
+    actorLineColor:       '#1a2d47',
+    signalColor:          '#10d9a0',
+    signalTextColor:      '#e2edf5',
+    labelBoxBkgColor:     '#0d1b2e',
+    labelBoxBorderColor:  '#1a2d47',
+    labelTextColor:       '#e2edf5',
+    loopTextColor:        '#7a9ab8',
+    noteBkgColor:         '#0d2040',
+    noteTextColor:        '#e2edf5',
+    activationBkgColor:   '#112236',
+    sequenceNumberColor:  '#10d9a0',
+    stateBkg:             '#0d1b2e',
+    stateBorder:          '#1a2d47',
+    labelColor:           '#e2edf5',
+    altBackground:        '#112236',
+    fontFamily:           'Inter, system-ui, sans-serif',
+    fontSize:             '14px',
+  },
+});
+
+// ── コード例の注入 ──────────────────────────────────────────
+function injectCode() {
+  document.querySelectorAll('script[type="text/code"]').forEach(script => {
+    const targetId = script.dataset.for;
+    const target   = document.getElementById(targetId);
+    if (target) {
+      target.textContent = script.textContent.trim();
+      hljs.highlightElement(target);
+    }
+  });
+}
+
+// ── Mermaid ダイアグラム描画 ───────────────────────────────
+async function renderMermaid() {
+  document.querySelectorAll('.mermaid-src').forEach(el => {
+    const code = el.textContent.trim();
+    const div  = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code;
+    el.replaceWith(div);
+  });
+  try {
+    await mermaid.run();
+  } catch (e) {
+    console.warn('Mermaid render warning:', e);
+  }
+}
+
+// ── コピーボタン ──────────────────────────────────────────
+function copyCode(btn) {
+  const pre  = btn.closest('.cb').querySelector('pre');
+  const text = pre ? pre.textContent : '';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.style.color = '#10d9a0';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  }).catch(() => {
+    // フォールバック
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+
+// ── スクロール進捗・Scroll Top ────────────────────────────
+const scrollTopBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('vis', window.scrollY > 400);
+}, { passive: true });
+
+// ── サイドバーのアクティブ状態（IntersectionObserver）────
+const navItems = document.querySelectorAll('.nav-item[href^="#"]');
+const sections = document.querySelectorAll('.section[id]');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.getAttribute('href') === `#${id}`);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+sections.forEach(sec => observer.observe(sec));
+
+// ── DOMContentLoaded で初期化 ─────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  injectCode();
+  await renderMermaid();
+});
+</script>
+</body>
+</html>
