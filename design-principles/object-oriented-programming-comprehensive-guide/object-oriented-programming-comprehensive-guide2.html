@@ -469,12 +469,23 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px 20px;
+  padding: 32px 24px 24px;
   margin: 24px 0;
-  text-align: center;
   overflow-x: auto;
 }
-.mermaid-wrapper .mermaid { display: inline-block; max-width: 100%; }
+.mermaid-wrapper .mermaid {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+/* Mermaid が生成する SVG を強制的にレスポンシブ化 */
+.mermaid-wrapper .mermaid svg {
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 220px;
+  display: block;
+  margin: 0 auto;
+}
 .mermaid-caption {
   font-size: 12px;
   color: var(--text-muted);
@@ -554,10 +565,8 @@ tbody td code {
   font-size: 60px;
   font-weight: 800;
   line-height: 1;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin-bottom: 4px;
+  display: inline-block;
 }
 .solid-name {
   font-family: var(--font-head);
@@ -1377,7 +1386,7 @@ fetch_users(PostgreSQLConnection())  # PostgreSQL を使う
 
   <!-- S -->
   <div class="solid-card" style="margin-bottom:32px;">
-    <div class="solid-letter" style="background: linear-gradient(135deg, #ef4444, #f87171);">S</div>
+    <div class="solid-letter" style="background: linear-gradient(135deg, #ef4444, #f87171); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">S</div>
     <div class="solid-name">単一責任原則</div>
     <div class="solid-sub">Single Responsibility Principle</div>
     <div class="callout callout-quote">
@@ -1423,7 +1432,7 @@ class ReportGenerator:     # レポートのみ
 
   <!-- O -->
   <div class="solid-card" style="margin-bottom:32px;">
-    <div class="solid-letter" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">O</div>
+    <div class="solid-letter" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">O</div>
     <div class="solid-name">開放閉鎖原則</div>
     <div class="solid-sub">Open/Closed Principle</div>
     <div class="callout callout-quote">
@@ -1474,7 +1483,7 @@ def checkout(processor: PaymentProcessor, amount: float):
 
   <!-- L -->
   <div class="solid-card" style="margin-bottom:32px;">
-    <div class="solid-letter" style="background: linear-gradient(135deg, #10b981, #34d399);">L</div>
+    <div class="solid-letter" style="background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">L</div>
     <div class="solid-name">リスコフ置換原則</div>
     <div class="solid-sub">Liskov Substitution Principle</div>
     <div class="callout callout-quote">
@@ -1526,7 +1535,7 @@ class Penguin(Animal):  # Flyable を継承しない
 
   <!-- I -->
   <div class="solid-card" style="margin-bottom:32px;">
-    <div class="solid-letter" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">I</div>
+    <div class="solid-letter" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">I</div>
     <div class="solid-name">インターフェース分離原則</div>
     <div class="solid-sub">Interface Segregation Principle</div>
     <div class="callout callout-quote">
@@ -1542,7 +1551,7 @@ class Penguin(Animal):  # Flyable を継承しない
 
   <!-- D -->
   <div class="solid-card">
-    <div class="solid-letter" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">D</div>
+    <div class="solid-letter" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">D</div>
     <div class="solid-name">依存性逆転原則</div>
     <div class="solid-sub">Dependency Inversion Principle</div>
     <div class="callout callout-quote">
@@ -3347,7 +3356,7 @@ mermaid.initialize({
     tertiaryColor:    '#162d44',
     lineColor:        '#4d7a96',
     textColor:        '#e8f4f8',
-    fontSize:         '14px',
+    fontSize:         '15px',
     edgeLabelBackground: '#0c1b2a',
     clusterBkg:       '#0d1f2d',
     clusterBorder:    '#1e3a52',
@@ -3369,9 +3378,10 @@ mermaid.initialize({
     activationBorderColor: '#00e5ff',
     sequenceNumberColor: '#000',
   },
-  flowchart: { curve: 'basis', htmlLabels: true },
-  sequence:  { actorMargin: 60, messageMargin: 35, mirrorActors: false },
+  flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
+  sequence:  { actorMargin: 60, messageMargin: 35, mirrorActors: false, useMaxWidth: true },
   classDiagram: { useMaxWidth: true },
+  mindmap:   { useMaxWidth: true },
 });
 
 // ═══ Mermaid 図の定義 ═══
@@ -3894,7 +3904,14 @@ async function renderDiagrams() {
     try {
       el.textContent = definition;
       const { svg } = await mermaid.render(id + '-svg', definition);
-      el.innerHTML = svg;
+
+      // SVG をレスポンシブ化：pt 固定サイズを除去して 100% 幅に
+      let responsiveSvg = svg
+        .replace(/(<svg[^>]*?)\s+width="[^"]*"/, '$1')
+        .replace(/(<svg[^>]*?)\s+height="[^"]*"/, '$1')
+        .replace(/<svg/, '<svg style="width:100%;height:auto;min-height:220px;" ');
+
+      el.innerHTML = responsiveSvg;
     } catch (err) {
       console.warn(`Mermaid render failed for ${id}:`, err);
       el.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:16px;">図の読み込みに失敗しました</div>`;

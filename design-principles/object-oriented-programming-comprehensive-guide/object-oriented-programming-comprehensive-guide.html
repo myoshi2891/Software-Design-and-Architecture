@@ -275,26 +275,26 @@ code:not([class]) { font-family: var(--font-mono); font-size: 13px; background: 
   <div id="scroll-bar"><div id="scroll-progress"></div></div>
   <div class="sidebar-nav">
     <div class="nav-section">はじめに</div>
-    <a class="nav-item active" href="#overview" onclick="event.preventDefault(); scrollTo('overview')"><span class="nav-dot"></span>OOPとは何か</a>
+    <a class="nav-item active" onclick="scrollTo('overview')"><span class="nav-dot"></span>OOPとは何か</a>
     <div class="nav-section">4大原則</div>
-    <a class="nav-item" href="#encapsulation" onclick="event.preventDefault(); scrollTo('encapsulation')"><span class="nav-dot"></span>カプセル化</a>
-    <a class="nav-item" href="#inheritance" onclick="event.preventDefault(); scrollTo('inheritance')"><span class="nav-dot"></span>継承</a>
-    <a class="nav-item" href="#polymorphism" onclick="event.preventDefault(); scrollTo('polymorphism')"><span class="nav-dot"></span>ポリモーフィズム</a>
-    <a class="nav-item" href="#abstraction" onclick="event.preventDefault(); scrollTo('abstraction')"><span class="nav-dot"></span>抽象化</a>
+    <a class="nav-item" onclick="scrollTo('encapsulation')"><span class="nav-dot"></span>カプセル化</a>
+    <a class="nav-item" onclick="scrollTo('inheritance')"><span class="nav-dot"></span>継承</a>
+    <a class="nav-item" onclick="scrollTo('polymorphism')"><span class="nav-dot"></span>ポリモーフィズム</a>
+    <a class="nav-item" onclick="scrollTo('abstraction')"><span class="nav-dot"></span>抽象化</a>
     <div class="nav-section">設計原則</div>
-    <a class="nav-item" href="#solid" onclick="event.preventDefault(); scrollTo('solid')"><span class="nav-dot"></span>SOLID原則</a>
-    <a class="nav-item" href="#class-design" onclick="event.preventDefault(); scrollTo('class-design')"><span class="nav-dot"></span>クラス設計</a>
-    <a class="nav-item" href="#inheritance-comp" onclick="event.preventDefault(); scrollTo('inheritance-comp')"><span class="nav-dot"></span>継承 vs コンポジション</a>
-    <a class="nav-item" href="#interfaces" onclick="event.preventDefault(); scrollTo('interfaces')"><span class="nav-dot"></span>インターフェースと抽象クラス</a>
+    <a class="nav-item" onclick="scrollTo('solid')"><span class="nav-dot"></span>SOLID原則</a>
+    <a class="nav-item" onclick="scrollTo('class-design')"><span class="nav-dot"></span>クラス設計</a>
+    <a class="nav-item" onclick="scrollTo('inheritance-comp')"><span class="nav-dot"></span>継承 vs コンポジション</a>
+    <a class="nav-item" onclick="scrollTo('interfaces')"><span class="nav-dot"></span>インターフェースと抽象クラス</a>
     <div class="nav-section">パターン実践</div>
-    <a class="nav-item" href="#patterns" onclick="event.preventDefault(); scrollTo('patterns')"><span class="nav-dot"></span>デザインパターン</a>
-    <a class="nav-item" href="#tdd" onclick="event.preventDefault(); scrollTo('tdd')"><span class="nav-dot"></span>テスト駆動OOP</a>
-    <a class="nav-item" href="#refactoring" onclick="event.preventDefault(); scrollTo('refactoring')"><span class="nav-dot"></span>リファクタリング</a>
-    <a class="nav-item" href="#practical" onclick="event.preventDefault(); scrollTo('practical')"><span class="nav-dot"></span>ECサイト完全実装</a>
+    <a class="nav-item" onclick="scrollTo('patterns')"><span class="nav-dot"></span>デザインパターン</a>
+    <a class="nav-item" onclick="scrollTo('tdd')"><span class="nav-dot"></span>テスト駆動OOP</a>
+    <a class="nav-item" onclick="scrollTo('refactoring')"><span class="nav-dot"></span>リファクタリング</a>
+    <a class="nav-item" onclick="scrollTo('practical')"><span class="nav-dot"></span>ECサイト完全実装</a>
     <div class="nav-section">まとめ</div>
-    <a class="nav-item" href="#antipatterns" onclick="event.preventDefault(); scrollTo('antipatterns')"><span class="nav-dot"></span>アンチパターン</a>
-    <a class="nav-item" href="#bestpractices" onclick="event.preventDefault(); scrollTo('bestpractices')"><span class="nav-dot"></span>ベストプラクティス</a>
-    <a class="nav-item" href="#references" onclick="event.preventDefault(); scrollTo('references')"><span class="nav-dot"></span>参考文献</a>
+    <a class="nav-item" onclick="scrollTo('antipatterns')"><span class="nav-dot"></span>アンチパターン</a>
+    <a class="nav-item" onclick="scrollTo('bestpractices')"><span class="nav-dot"></span>ベストプラクティス</a>
+    <a class="nav-item" onclick="scrollTo('references')"><span class="nav-dot"></span>参考文献</a>
   </div>
 </nav>
 
@@ -2176,114 +2176,114 @@ class OrderService:
     <div class="ref-card">
       <h4>OOP 基礎・設計原則</h4>
       <div class="ref-link">
-        <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener noreferrer">SOLID原則（Robert C. Martin 公式）</a>
+        <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank">SOLID原則（Robert C. Martin 公式）</a>
         <span>blog.cleancoder.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://martinfowler.com/bliki/" target="_blank" rel="noopener noreferrer">Martin Fowler — OOPパターン解説</a>
+        <a href="https://martinfowler.com/bliki/" target="_blank">Martin Fowler — OOPパターン解説</a>
         <span>martinfowler.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://refactoring.guru/design-patterns" target="_blank" rel="noopener noreferrer">Refactoring Guru — デザインパターン図解</a>
+        <a href="https://refactoring.guru/design-patterns" target="_blank">Refactoring Guru — デザインパターン図解</a>
         <span>refactoring.guru</span>
       </div>
       <div class="ref-link">
-        <a href="https://sourcemaking.com/" target="_blank" rel="noopener noreferrer">SourceMaking — パターン・アンチパターン</a>
+        <a href="https://sourcemaking.com/" target="_blank">SourceMaking — パターン・アンチパターン</a>
         <span>sourcemaking.com</span>
       </div>
     </div>
     <div class="ref-card">
       <h4>SOLID 原則詳細</h4>
       <div class="ref-link">
-        <a href="https://www.oodesign.com/single-responsibility-principle" target="_blank" rel="noopener noreferrer">Single Responsibility Principle</a>
+        <a href="https://www.oodesign.com/single-responsibility-principle" target="_blank">Single Responsibility Principle</a>
         <span>oodesign.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://www.oodesign.com/open-close-principle" target="_blank" rel="noopener noreferrer">Open/Closed Principle</a>
+        <a href="https://www.oodesign.com/open-close-principle" target="_blank">Open/Closed Principle</a>
         <span>oodesign.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://www.oodesign.com/liskov-s-substitution-principle" target="_blank" rel="noopener noreferrer">Liskov Substitution Principle</a>
+        <a href="https://www.oodesign.com/liskov-s-substitution-principle" target="_blank">Liskov Substitution Principle</a>
         <span>oodesign.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://www.oodesign.com/dependency-inversion-principle" target="_blank" rel="noopener noreferrer">Dependency Inversion Principle</a>
+        <a href="https://www.oodesign.com/dependency-inversion-principle" target="_blank">Dependency Inversion Principle</a>
         <span>oodesign.com</span>
       </div>
     </div>
     <div class="ref-card">
       <h4>Python OOP リファレンス</h4>
       <div class="ref-link">
-        <a href="https://docs.python.org/ja/3/tutorial/classes.html" target="_blank" rel="noopener noreferrer">Python公式 — クラス（チュートリアル）</a>
+        <a href="https://docs.python.org/ja/3/tutorial/classes.html" target="_blank">Python公式 — クラス（チュートリアル）</a>
         <span>docs.python.org</span>
       </div>
       <div class="ref-link">
-        <a href="https://docs.python.org/ja/3/library/abc.html" target="_blank" rel="noopener noreferrer">Python公式 — ABC モジュール</a>
+        <a href="https://docs.python.org/ja/3/library/abc.html" target="_blank">Python公式 — ABC モジュール</a>
         <span>docs.python.org</span>
       </div>
       <div class="ref-link">
-        <a href="https://docs.python.org/ja/3/library/dataclasses.html" target="_blank" rel="noopener noreferrer">Python公式 — dataclasses</a>
+        <a href="https://docs.python.org/ja/3/library/dataclasses.html" target="_blank">Python公式 — dataclasses</a>
         <span>docs.python.org</span>
       </div>
       <div class="ref-link">
-        <a href="https://realpython.com/python3-object-oriented-programming/" target="_blank" rel="noopener noreferrer">Real Python — OOP入門</a>
+        <a href="https://realpython.com/python3-object-oriented-programming/" target="_blank">Real Python — OOP入門</a>
         <span>realpython.com</span>
       </div>
     </div>
     <div class="ref-card">
       <h4>DDD × OOP</h4>
       <div class="ref-link">
-        <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" target="_blank" rel="noopener noreferrer">Anemic Domain Model（アンチパターン）</a>
+        <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" target="_blank">Anemic Domain Model（アンチパターン）</a>
         <span>martinfowler.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://martinfowler.com/bliki/ValueObject.html" target="_blank" rel="noopener noreferrer">Martin Fowler — Value Object</a>
+        <a href="https://martinfowler.com/bliki/ValueObject.html" target="_blank">Martin Fowler — Value Object</a>
         <span>martinfowler.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://github.com/ddd-crew" target="_blank" rel="noopener noreferrer">DDD Crew — GitHub 実践リソース</a>
+        <a href="https://github.com/ddd-crew" target="_blank">DDD Crew — GitHub 実践リソース</a>
         <span>github.com/ddd-crew</span>
       </div>
       <div class="ref-link">
-        <a href="https://github.com/cosmicpython/book" target="_blank" rel="noopener noreferrer">Cosmic Python（Python × DDD）</a>
+        <a href="https://github.com/cosmicpython/book" target="_blank">Cosmic Python（Python × DDD）</a>
         <span>github.com/cosmicpython</span>
       </div>
     </div>
     <div class="ref-card">
       <h4>デザインパターン</h4>
       <div class="ref-link">
-        <a href="https://python-patterns.guide/" target="_blank" rel="noopener noreferrer">Python デザインパターン実装集</a>
+        <a href="https://python-patterns.guide/" target="_blank">Python デザインパターン実装集</a>
         <span>python-patterns.guide</span>
       </div>
       <div class="ref-link">
-        <a href="https://refactoring.guru/design-patterns/strategy" target="_blank" rel="noopener noreferrer">Refactoring Guru — Strategy</a>
+        <a href="https://refactoring.guru/design-patterns/strategy" target="_blank">Refactoring Guru — Strategy</a>
         <span>refactoring.guru</span>
       </div>
       <div class="ref-link">
-        <a href="https://refactoring.guru/design-patterns/observer" target="_blank" rel="noopener noreferrer">Refactoring Guru — Observer</a>
+        <a href="https://refactoring.guru/design-patterns/observer" target="_blank">Refactoring Guru — Observer</a>
         <span>refactoring.guru</span>
       </div>
       <div class="ref-link">
-        <a href="https://refactoring.guru/design-patterns/factory-method" target="_blank" rel="noopener noreferrer">Refactoring Guru — Factory Method</a>
+        <a href="https://refactoring.guru/design-patterns/factory-method" target="_blank">Refactoring Guru — Factory Method</a>
         <span>refactoring.guru</span>
       </div>
     </div>
     <div class="ref-card">
       <h4>アーキテクチャ × OOP</h4>
       <div class="ref-link">
-        <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank" rel="noopener noreferrer">Clean Architecture（Uncle Bob）</a>
+        <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank">Clean Architecture（Uncle Bob）</a>
         <span>blog.cleancoder.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank" rel="noopener noreferrer">Martin Fowler — テストピラミッド</a>
+        <a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank">Martin Fowler — テストピラミッド</a>
         <span>martinfowler.com</span>
       </div>
       <div class="ref-link">
-        <a href="https://docs.pytest.org/" target="_blank" rel="noopener noreferrer">pytest 公式ドキュメント</a>
+        <a href="https://docs.pytest.org/" target="_blank">pytest 公式ドキュメント</a>
         <span>docs.pytest.org</span>
       </div>
       <div class="ref-link">
-        <a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/" target="_blank" rel="noopener noreferrer">The Onion Architecture</a>
+        <a href="https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/" target="_blank">The Onion Architecture</a>
         <span>jeffreypalermo.com</span>
       </div>
     </div>
