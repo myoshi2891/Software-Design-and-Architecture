@@ -1,0 +1,3941 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP 完全ガイド — オブジェクト指向プログラミング徹底解説</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════
+   TOKEN SYSTEM
+═══════════════════════════════════════════════════════ */
+:root {
+  --bg-deep:      #07111e;
+  --bg-card:      #0c1b2a;
+  --bg-raised:    #112235;
+  --bg-highlight: #162d44;
+  --border:       #1e3a52;
+  --border-glow:  #00b4d8;
+
+  --accent:       #00e5ff;
+  --accent-dim:   #0096b7;
+  --accent2:      #a78bfa;
+  --accent3:      #34d399;
+  --accent4:      #fb923c;
+  --danger:       #f87171;
+  --warning:      #fbbf24;
+
+  --text-primary: #e8f4f8;
+  --text-sub:     #8aafc4;
+  --text-muted:   #4d7a96;
+
+  --font-head: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --radius-sm: 6px;
+  --radius:    12px;
+  --radius-lg: 20px;
+
+  --sidebar-w: 272px;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── RESET ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────── */
+/* NOTE: sidebar は position:fixed なのでフローから外れている。
+   grid を使うと fixed child が列1を占有したまま main も列1に
+   配置され、margin-left と二重オフセットになり幅ゼロになる。
+   block にして margin-left だけで右にズラすのが正しい。 */
+.layout {
+  display: block;
+  min-height: 100vh;
+}
+
+/* ─── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #060f1a;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.sidebar-logo .badge {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #000;
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.sidebar-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.sidebar-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 16px 20px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: all var(--transition);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(0, 229, 255, 0.05);
+  border-left-color: var(--accent-dim);
+}
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.08);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+.nav-item .nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  width: 20px;
+  flex-shrink: 0;
+}
+.nav-item.active .nav-num { color: var(--accent); }
+
+/* ─── MAIN ─────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* ─── HERO ─────────────────────────────────────────── */
+.hero {
+  position: relative;
+  padding: 80px 64px 64px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 20%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.2);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #e8f4f8 0%, var(--accent) 60%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-desc {
+  font-size: 17px;
+  color: var(--text-sub);
+  max-width: 640px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero-stat .num {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.hero-stat .label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ─── SECTIONS ─────────────────────────────────────────── */
+.section {
+  padding: 72px 64px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.section h2 {
+  font-family: var(--font-head);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.section h3 {
+  font-family: var(--font-head);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 40px 0 16px;
+  padding-left: 14px;
+  border-left: 3px solid var(--accent);
+}
+.section h4 {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent2);
+  margin: 28px 0 10px;
+}
+.section p {
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  max-width: 860px;
+}
+.section strong { color: var(--text-primary); font-weight: 600; }
+
+/* ─── CARDS ─────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.card-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.principle-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition);
+}
+.principle-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-dim);
+}
+.principle-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.pc-blue::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.pc-green::before  { background: linear-gradient(90deg, #10b981, #34d399); }
+.pc-purple::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.pc-orange::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.pc-red::before    { background: linear-gradient(90deg, #ef4444, #f87171); }
+.pc-cyan::before   { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+
+.principle-card .pc-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+.principle-card .pc-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.principle-card .pc-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.principle-card .pc-desc {
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+/* ─── CALLOUTS ─────────────────────────────────────────── */
+.callout {
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.callout-body { flex: 1; }
+.callout-body strong { display: block; margin-bottom: 4px; font-size: 13px; letter-spacing: 0.04em; }
+
+.callout-info {
+  background: rgba(59, 130, 246, 0.08);
+  border-left: 3px solid #3b82f6;
+  color: #93c5fd;
+}
+.callout-tip {
+  background: rgba(16, 185, 129, 0.08);
+  border-left: 3px solid var(--accent3);
+  color: #6ee7b7;
+}
+.callout-warn {
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 3px solid var(--warning);
+  color: var(--warning);
+}
+.callout-danger {
+  background: rgba(248, 113, 113, 0.08);
+  border-left: 3px solid var(--danger);
+  color: var(--danger);
+}
+.callout-quote {
+  background: rgba(167, 139, 250, 0.08);
+  border-left: 3px solid var(--accent2);
+  color: #c4b5fd;
+  font-style: italic;
+}
+
+/* ─── CODE BLOCKS ─────────────────────────────────────── */
+.code-block {
+  margin: 24px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #0a1828;
+  border-bottom: 1px solid var(--border);
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+.code-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.code-block pre {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: #0d1f2f !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+.code-block pre code {
+  font-family: var(--font-mono) !important;
+  padding: 20px 24px !important;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.compare-bad .code-header { border-bottom-color: rgba(248,113,113,0.3); }
+.compare-bad .code-lang { color: var(--danger); }
+.compare-good .code-header { border-bottom-color: rgba(52,211,153,0.3); }
+.compare-good .code-lang { color: var(--accent3); }
+
+/* ─── MERMAID ─────────────────────────────────────────── */
+.mermaid-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  margin: 24px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+.mermaid-wrapper .mermaid { display: inline-block; max-width: 100%; }
+.mermaid-caption {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+  font-style: italic;
+}
+
+/* ─── TABLES ─────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin: 24px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  background: var(--bg-raised);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 11px 16px;
+  color: var(--text-sub);
+  border-bottom: 1px solid rgba(30, 58, 82, 0.5);
+  vertical-align: top;
+}
+tbody tr:hover td { background: rgba(0, 229, 255, 0.03); }
+tbody td:first-child { color: var(--text-primary); font-weight: 500; }
+tbody td code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ─── TAGS / BADGES ─────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.tag-good  { background: rgba(52,211,153,0.12); color: var(--accent3); border: 1px solid rgba(52,211,153,0.25); }
+.tag-bad   { background: rgba(248,113,113,0.12); color: var(--danger);  border: 1px solid rgba(248,113,113,0.25); }
+.tag-info  { background: rgba(0,229,255,0.10);   color: var(--accent);  border: 1px solid rgba(0,229,255,0.25); }
+.tag-warn  { background: rgba(251,191,36,0.10);  color: var(--warning); border: 1px solid rgba(251,191,36,0.25); }
+
+/* ─── SOLID CARDS ─────────────────────────────────────── */
+.solid-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin: 24px 0;
+}
+.solid-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+}
+.solid-letter {
+  font-family: var(--font-head);
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 1;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+.solid-name {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.solid-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: 16px;
+}
+
+/* ─── STEP INDICATORS ─────────────────────────────────── */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 24px 0;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  left: 23px; top: 40px;
+  width: 2px;
+  height: calc(100% - 80px);
+  background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  opacity: 0.3;
+}
+.step-item {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+}
+.step-num {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+}
+.step-content { flex: 1; padding-top: 10px; }
+.step-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.step-desc {
+  font-size: 13.5px;
+  color: var(--text-sub);
+  line-height: 1.65;
+}
+
+/* ─── PATTERN CARDS ─────────────────────────────────── */
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+.pattern-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color var(--transition);
+}
+.pattern-card:hover { border-color: var(--accent-dim); }
+.pattern-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+}
+.ptag-creational { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.ptag-structural { background: rgba(16,185,129,0.15); color: #34d399; }
+.ptag-behavioral { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+.pattern-card .p-name {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.pattern-card .p-desc {
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+/* ─── LEVEL CARDS ─────────────────────────────────────── */
+.level-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px 0;
+}
+.level-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.level-item:hover { border-color: var(--accent-dim); }
+.level-badge {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: center;
+}
+.level-name {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 200px;
+}
+.level-desc { font-size: 13px; color: var(--text-sub); }
+
+/* ─── REF LINKS ─────────────────────────────────────── */
+.ref-group {
+  margin: 24px 0;
+}
+.ref-group-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.ref-list { display: flex; flex-direction: column; gap: 8px; }
+.ref-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition);
+}
+.ref-item:hover {
+  border-color: var(--accent-dim);
+  background: var(--bg-raised);
+}
+.ref-item .ref-icon { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+.ref-item .ref-content { flex: 1; min-width: 0; }
+.ref-item .ref-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 2px;
+}
+.ref-item .ref-url {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* ─── BOOK CARDS ─────────────────────────────────────── */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.book-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+.book-card .book-icon { font-size: 24px; margin-bottom: 10px; }
+.book-card .book-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.book-card .book-author { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.book-card .book-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  border: 1px solid rgba(0,229,255,0.2);
+}
+
+/* ─── PROGRESS / MATURITY ─────────────────────────────── */
+.maturity-track {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 32px 0;
+  position: relative;
+}
+.maturity-track::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--danger), var(--warning), var(--accent3), var(--accent), var(--accent2));
+  z-index: 0;
+}
+.maturity-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+.maturity-dot {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 800;
+  border: 3px solid var(--bg-deep);
+}
+.maturity-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sub);
+  text-align: center;
+  max-width: 90px;
+  line-height: 1.3;
+}
+
+/* ─── DIVIDER ─────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 32px 0;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.footer {
+  padding: 32px 64px;
+  background: #060f1a;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero, .section { padding: 48px 32px; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .maturity-track { flex-direction: column; }
+  .maturity-track::after { display: none; }
+}
+
+/* ─── INLINE CODE ─────────────────────────────────────── */
+:not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ─── SCROLL ANIMATION ───────────────────────────────── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+<!-- ═══════════════════ LAYOUT ═══════════════════ -->
+<div class="layout">
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <span class="badge">OOP</span>
+    </div>
+    <div class="sidebar-title">オブジェクト指向<br>プログラミング</div>
+    <div class="sidebar-sub">完全ガイド — Python 実装例つき</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">はじめに</div>
+    <a class="nav-item" href="#sec1"><span class="nav-num">01</span>OOPとは何か？</a>
+    <div class="nav-section-label">コア原則</div>
+    <a class="nav-item" href="#sec2"><span class="nav-num">02</span>4大原則</a>
+    <a class="nav-item" href="#sec3"><span class="nav-num">03</span>SOLID 原則</a>
+    <div class="nav-section-label">設計</div>
+    <a class="nav-item" href="#sec4"><span class="nav-num">04</span>クラスと オブジェクトの設計</a>
+    <a class="nav-item" href="#sec5"><span class="nav-num">05</span>継承の正しい使い方</a>
+    <a class="nav-item" href="#sec6"><span class="nav-num">06</span>インターフェースと抽象クラス</a>
+    <div class="nav-section-label">パターン</div>
+    <a class="nav-item" href="#sec7"><span class="nav-num">07</span>デザインパターン（GoF）</a>
+    <div class="nav-section-label">実践</div>
+    <a class="nav-item" href="#sec8"><span class="nav-num">08</span>アーキテクチャとの統合</a>
+    <a class="nav-item" href="#sec9"><span class="nav-num">09</span>テスト駆動 OOP 開発</a>
+    <a class="nav-item" href="#sec10"><span class="nav-num">10</span>リファクタリング技法</a>
+    <a class="nav-item" href="#sec11"><span class="nav-num">11</span>ECサイト実装例</a>
+    <div class="nav-section-label">応用</div>
+    <a class="nav-item" href="#sec12"><span class="nav-num">12</span>OOP アンチパターン</a>
+    <a class="nav-item" href="#sec13"><span class="nav-num">13</span>ベストプラクティス</a>
+    <a class="nav-item" href="#sec14"><span class="nav-num">14</span>参考文献・ソース一覧</a>
+  </nav>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main">
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span>🧱</span>
+    <span>Object-Oriented Programming — Complete Guide</span>
+  </div>
+  <h1>OOP 完全ガイド</h1>
+  <p class="hero-desc">
+    オブジェクト指向プログラミングの4大原則からSOLID原則・GoFデザインパターン・クリーンアーキテクチャとの統合まで、
+    初学者でも迷わないよう Python 実装例とダイアグラムで体系的に解説します。
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">14</span><span class="label">セクション</span></div>
+    <div class="hero-stat"><span class="num">23+</span><span class="label">コード例</span></div>
+    <div class="hero-stat"><span class="num">5</span><span class="label">SOLID 原則</span></div>
+    <div class="hero-stat"><span class="num">23</span><span class="label">GoF パターン</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 1: OOPとは何か？
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>OOP とは何か？</h2>
+  </div>
+
+  <p>
+    <strong>Object-Oriented Programming（オブジェクト指向プログラミング）</strong>は、プログラムを
+    「データ（状態）」と「振る舞い（操作）」を持つ<strong>オブジェクト</strong>の集まりとして設計する考え方です。
+    1960年代の Simula 言語から始まり、Smalltalk・C++・Java・Python など現代のあらゆる言語に影響を与えています。
+  </p>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      <strong>一言で言うと</strong>
+      現実世界の物事をプログラムで表現し、物事同士が協力し合うようにシステムを組み立てる手法。
+    </div>
+  </div>
+
+  <h3>なぜ OOP が重要なのか？</h3>
+  <p>手続き型プログラミングと OOP を比較すると、大規模開発における優位性が明確になります。</p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-why-oop"></div>
+    <p class="mermaid-caption">図1. 手続き型 vs OOP の比較</p>
+  </div>
+
+  <h3>OOP の全体マップ</h3>
+  <p>OOP は単なる「クラスを書く技術」ではありません。原則・設計パターン・アーキテクチャが有機的に連携したエコシステムです。</p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-mindmap"></div>
+    <p class="mermaid-caption">図2. OOP 全体マップ</p>
+  </div>
+
+  <h3>OOP の歴史</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-timeline"></div>
+    <p class="mermaid-caption">図3. OOP の歴史的変遷</p>
+  </div>
+
+  <h3>手続き型 vs OOP — 実際のコード比較</h3>
+  <div class="compare-grid">
+    <div class="compare-bad">
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">❌ PYTHON — 手続き型（問題あり）</span>
+        </div>
+        <pre><code class="language-python"># データと処理がバラバラ
+user_name = "山田太郎"
+user_balance = 10000
+
+def deposit(balance, amount):
+    if amount <= 0:
+        raise ValueError("金額は正の数")
+    return balance + amount
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise ValueError("残高不足")
+    return balance - amount
+
+# 呼び出す側が状態を管理しなければならない
+user_balance = deposit(user_balance, 5000)
+user_balance = withdraw(user_balance, 3000)
+# 誰でも直接変更できてしまう ⚠️
+user_balance = 9999999  # ← 制約なし</code></pre>
+      </div>
+    </div>
+    <div class="compare-good">
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">✅ PYTHON — OOP（推奨）</span>
+        </div>
+        <pre><code class="language-python"># データと処理が一つのクラスに
+class BankAccount:
+    def __init__(self, owner: str, balance: float = 0):
+        self._owner = owner
+        self.__balance = balance  # private
+
+    def deposit(self, amount: float) -> None:
+        if amount <= 0:
+            raise ValueError("金額は正の数")
+        self.__balance += amount
+
+    def withdraw(self, amount: float) -> None:
+        if amount > self.__balance:
+            raise ValueError("残高不足")
+        self.__balance -= amount
+
+    @property
+    def balance(self) -> float:
+        return self.__balance  # 読み取り専用
+
+# 使い方
+acc = BankAccount("山田太郎", 10000)
+acc.deposit(5000)
+acc.withdraw(3000)
+print(acc.balance)   # 12000
+# acc.__balance = 9999999  # ← 直接変更不可 ✅</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 2: 4大原則
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>4大原則：カプセル化・継承・ポリモーフィズム・抽象化</h2>
+  </div>
+
+  <p>OOP には4つの根幹をなす原則があります。これらは互いに補完し合い、保守性・拡張性の高いコードを実現します。</p>
+
+  <div class="card-grid-4">
+    <div class="principle-card pc-blue">
+      <span class="pc-icon">🔒</span>
+      <div class="pc-title">カプセル化</div>
+      <div class="pc-sub">Encapsulation</div>
+      <div class="pc-desc">データと処理を一つに包み込み、内部の詳細を外部から隠蔽する。変更の影響範囲を限定できる。</div>
+    </div>
+    <div class="principle-card pc-green">
+      <span class="pc-icon">🧬</span>
+      <div class="pc-title">継承</div>
+      <div class="pc-sub">Inheritance</div>
+      <div class="pc-desc">親クラスの特性を子クラスが引き継ぐ。コードの再利用と階層的な分類を可能にする。</div>
+    </div>
+    <div class="principle-card pc-purple">
+      <span class="pc-icon">🎭</span>
+      <div class="pc-title">ポリモーフィズム</div>
+      <div class="pc-sub">Polymorphism</div>
+      <div class="pc-desc">同じインターフェースで異なる振る舞いを実現。呼び出し元は具体的な型を意識しなくてよい。</div>
+    </div>
+    <div class="principle-card pc-orange">
+      <span class="pc-icon">🎨</span>
+      <div class="pc-title">抽象化</div>
+      <div class="pc-sub">Abstraction</div>
+      <div class="pc-desc">本質的な特徴だけを取り出し、不要な詳細を隠す。複雑さをコントロールする手段。</div>
+    </div>
+  </div>
+
+  <!-- 2.1 カプセル化 -->
+  <h3>① カプセル化（Encapsulation）</h3>
+  <p>
+    カプセル化とは、データ（フィールド）と処理（メソッド）を一つのクラスに束ね、
+    外部から直接アクセスさせないようにする原則です。「情報隠蔽」とも呼ばれます。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-encap"></div>
+    <p class="mermaid-caption">図4. カプセル化のイメージ：外部は公開 API のみアクセス可</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PYTHON</span>
+      <span class="code-label">カプセル化の実装例</span>
+    </div>
+    <pre><code class="language-python">class BankAccount:
+    """銀行口座 — カプセル化の例"""
+
+    def __init__(self, owner: str, initial_balance: float = 0):
+        self._owner = owner               # protected（サブクラスからアクセス可）
+        self.__balance = initial_balance  # private（外部から直接アクセス不可）
+        self.__transaction_history = []
+
+    # ✅ 公開インターフェース
+    def deposit(self, amount: float) -> None:
+        """入金する — バリデーションを内部で行う"""
+        self.__validate_amount(amount)
+        self.__balance += amount
+        self.__record_transaction("入金", amount)
+
+    def withdraw(self, amount: float) -> None:
+        """出金する — 残高チェックも内部で行う"""
+        self.__validate_amount(amount)
+        if amount > self.__balance:
+            raise ValueError("残高が不足しています")
+        self.__balance -= amount
+        self.__record_transaction("出金", amount)
+
+    @property
+    def balance(self) -> float:
+        """残高は読み取り専用（setterなし）"""
+        return self.__balance
+
+    # 🔒 非公開メソッド（実装詳細）
+    def __validate_amount(self, amount: float) -> None:
+        if amount <= 0:
+            raise ValueError("金額は0より大きくなければなりません")
+
+    def __record_transaction(self, type_: str, amount: float) -> None:
+        self.__transaction_history.append({"type": type_, "amount": amount})
+
+# 使い方
+account = BankAccount("山田太郎", 10000)
+account.deposit(5000)
+account.withdraw(3000)
+print(account.balance)        # ✅ 12000
+# account.__balance = 999999  # ❌ AttributeError — 直接変更できない</code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>ベストプラクティス</th><th>詳細</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>最小公開の原則</td><td>必要なものだけ <code>public</code> にする。迷ったら <code>private</code> から始める</td></tr>
+        <tr><td>2</td><td>setter より意図を表すメソッド</td><td><code>set_status("active")</code> より <code>activate()</code> の方が意図が明確</td></tr>
+        <tr><td>3</td><td>イミュータブルを積極活用</td><td>変更不可なフィールドは <code>@property</code> で読み取り専用にする</td></tr>
+        <tr><td>4</td><td>コンストラクタでバリデーション</td><td>不正な状態のオブジェクトを作らせない（フェイルファスト）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2.2 継承 -->
+  <h3>② 継承（Inheritance）</h3>
+  <p>
+    継承は、親クラス（スーパークラス）の属性・メソッドを子クラス（サブクラス）が引き継ぐ仕組みです。
+    <strong>「is-a 関係」</strong>を表します（例：犬は動物である）。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-inherit"></div>
+    <p class="mermaid-caption">図5. 継承の階層構造（Animal → Dog/Cat → GuideDog）</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PYTHON</span>
+      <span class="code-label">継承の実装例</span>
+    </div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class Animal(ABC):
+    """動物の基底クラス（抽象クラス）"""
+
+    def __init__(self, name: str, age: int):
+        self.name = name
+        self.age = age
+
+    @abstractmethod
+    def speak(self) -> str:
+        """各動物固有の鳴き声（サブクラスで必ず実装）"""
+        ...
+
+    def eat(self) -> str:
+        return f"{self.name} がご飯を食べています"  # 共通処理は親が持つ
+
+
+class Dog(Animal):
+    """犬クラス — Animal を継承"""
+
+    def __init__(self, name: str, age: int, breed: str):
+        super().__init__(name, age)  # ← 親クラスの __init__ を呼ぶ
+        self.breed = breed
+
+    def speak(self) -> str:
+        return "ワン！"  # 抽象メソッドをオーバーライド
+
+    def fetch(self) -> str:
+        return f"{self.name} がボールを取ってきました！"
+
+
+class Cat(Animal):
+    def speak(self) -> str:
+        return "ニャー！"
+
+    def purr(self) -> str:
+        return f"{self.name} がゴロゴロ言っています"
+
+
+dog = Dog("ポチ", 3, "柴犬")
+cat = Cat("タマ", 5)
+
+print(dog.speak())  # ワン！
+print(cat.speak())  # ニャー！
+print(dog.eat())    # ポチ がご飯を食べています ← 親から継承</code></pre>
+  </div>
+
+  <!-- 2.3 ポリモーフィズム -->
+  <h3>③ ポリモーフィズム（Polymorphism）</h3>
+  <p>
+    ポリモーフィズム（多態性）とは、同じインターフェース（メソッド名）に対して、
+    オブジェクトの種類によって異なる振る舞いをすることです。
+    呼び出し元のコードは「形の種類」を知る必要がなくなります。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-poly"></div>
+    <p class="mermaid-caption">図6. ポリモーフィズム：同じ呼び出し・異なる振る舞い</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PYTHON</span>
+      <span class="code-label">ポリモーフィズムの実装例</span>
+    </div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+from math import pi
+
+
+class Shape(ABC):
+    """図形の抽象クラス"""
+
+    @abstractmethod
+    def area(self) -> float: ...
+
+    @abstractmethod
+    def perimeter(self) -> float: ...
+
+    def describe(self) -> str:
+        return (
+            f"{self.__class__.__name__}: "
+            f"面積={self.area():.2f}, 周囲={self.perimeter():.2f}"
+        )
+
+
+class Circle(Shape):
+    def __init__(self, radius: float):
+        self.radius = radius
+    def area(self) -> float:
+        return pi * self.radius ** 2
+    def perimeter(self) -> float:
+        return 2 * pi * self.radius
+
+
+class Rectangle(Shape):
+    def __init__(self, width: float, height: float):
+        self.width = width
+        self.height = height
+    def area(self) -> float:
+        return self.width * self.height
+    def perimeter(self) -> float:
+        return 2 * (self.width + self.height)
+
+
+# ✅ ポリモーフィズムの真価：コードが形の種類を知らなくていい
+shapes: list[Shape] = [Circle(5), Rectangle(4, 6), Circle(3)]
+
+for shape in shapes:
+    print(shape.describe())  # ← 各オブジェクトが正しい計算を行う
+# 新しい図形（Triangle）を追加しても、このループを変更する必要がない！</code></pre>
+  </div>
+
+  <!-- 2.4 抽象化 -->
+  <h3>④ 抽象化（Abstraction）</h3>
+  <p>
+    抽象化とは、複雑な実装の詳細を隠し、本質的なインターフェース（何ができるか）だけを公開することです。
+    ドライバーはエンジンの内部構造を知らなくても車を運転できます。これが抽象化の本質です。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-abstract"></div>
+    <p class="mermaid-caption">図7. 抽象化の層：ドライバーは高レベル API のみ知ればよい</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PYTHON</span>
+      <span class="code-label">抽象化の実装例 — DBの実装を隠蔽</span>
+    </div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class DatabaseConnection(ABC):
+    """データベース接続の抽象（高レベル API）"""
+
+    @abstractmethod
+    def connect(self) -> None: ...
+
+    @abstractmethod
+    def execute(self, query: str) -> list: ...
+
+    @abstractmethod
+    def close(self) -> None: ...
+
+    # テンプレートメソッド：共通フロー（呼び出し元はこれだけ知ればよい）
+    def run_query(self, query: str) -> list:
+        self.connect()
+        try:
+            return self.execute(query)
+        finally:
+            self.close()
+
+
+class PostgreSQLConnection(DatabaseConnection):
+    """PostgreSQL 具体実装（詳細は隠蔽される）"""
+    def connect(self) -> None:
+        print("PostgreSQL に接続しました")
+    def execute(self, query: str) -> list:
+        print(f"PostgreSQL クエリ実行: {query}")
+        return []
+    def close(self) -> None:
+        print("PostgreSQL 接続を閉じました")
+
+
+# 呼び出し側は「どのDBか」を知らなくてよい ← 抽象化の効果
+def fetch_users(db: DatabaseConnection) -> list:
+    return db.run_query("SELECT * FROM users")
+
+fetch_users(PostgreSQLConnection())  # PostgreSQL を使う
+# fetch_users(MySQLConnection())     # MySQL に差し替えても動く</code></pre>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 3: SOLID 原則
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>SOLID 原則</h2>
+  </div>
+
+  <p>
+    SOLID は OOP 設計の5つの黄金律です。
+    Robert C. Martin（Uncle Bob）が提唱した、変更に強く・テストしやすい設計のための原則群です。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-solid-overview"></div>
+    <p class="mermaid-caption">図8. SOLID 原則の全体像</p>
+  </div>
+
+  <!-- S -->
+  <div class="solid-card" style="margin-bottom:32px;">
+    <div class="solid-letter" style="background: linear-gradient(135deg, #ef4444, #f87171);">S</div>
+    <div class="solid-name">単一責任原則</div>
+    <div class="solid-sub">Single Responsibility Principle</div>
+    <div class="callout callout-quote">
+      <span class="callout-icon">💬</span>
+      <div class="callout-body">「クラスを変更する理由は、ただ一つであるべきだ」— Robert C. Martin</div>
+    </div>
+    <p>1つのクラスは1つのことだけを担当すること。複数の理由でクラスが変わるなら、それは分割すべきサインです。</p>
+    <div class="mermaid-wrapper fade-in">
+      <div class="mermaid" id="diag-srp"></div>
+      <p class="mermaid-caption">図9. SRP 違反 vs 準拠</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-bad">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">❌ SRP 違反</span></div>
+          <pre><code class="language-python">class UserManager:
+    # 認証・DB・メール・レポート
+    # すべてを1クラスが担当 ← NG
+    def authenticate(self, email, pw): ...
+    def save_to_db(self, user): ...
+    def send_welcome_email(self, user): ...
+    def generate_csv_report(self) -> str: ...</code></pre>
+        </div>
+      </div>
+      <div class="compare-good">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">✅ SRP 準拠</span></div>
+          <pre><code class="language-python">class AuthService:          # 認証のみ
+    def authenticate(self, email, pw): ...
+
+class UserRepository:      # DB操作のみ
+    def save(self, user): ...
+
+class EmailService:        # メール送信のみ
+    def send_welcome(self, user): ...
+
+class ReportGenerator:     # レポートのみ
+    def generate_csv(self) -> str: ...</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- O -->
+  <div class="solid-card" style="margin-bottom:32px;">
+    <div class="solid-letter" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">O</div>
+    <div class="solid-name">開放閉鎖原則</div>
+    <div class="solid-sub">Open/Closed Principle</div>
+    <div class="callout callout-quote">
+      <span class="callout-icon">💬</span>
+      <div class="callout-body">「拡張に対して開かれており、修正に対して閉じていなければならない」</div>
+    </div>
+    <p>新しい機能を追加するとき、既存のコードを変更せず<strong>新しいクラスを追加するだけ</strong>で済むように設計します。</p>
+    <div class="mermaid-wrapper fade-in">
+      <div class="mermaid" id="diag-ocp"></div>
+      <p class="mermaid-caption">図10. OCP — 新しい支払い方法を既存コード修正なしで追加</p>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">OCP の実装例</span></div>
+      <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class PaymentProcessor(ABC):
+    """支払い処理の抽象（変更に閉じている）"""
+
+    @abstractmethod
+    def process(self, amount: float) -> bool: ...
+
+
+class CreditCardProcessor(PaymentProcessor):
+    def process(self, amount: float) -> bool:
+        print(f"クレジットカードで {amount}円 を処理")
+        return True
+
+
+class PayPalProcessor(PaymentProcessor):
+    def process(self, amount: float) -> bool:
+        print(f"PayPal で {amount}円 を処理")
+        return True
+
+
+# ✅ 新しい支払い方法は「追加するだけ」（既存コードを一切修正しない）
+class CryptoProcessor(PaymentProcessor):
+    def process(self, amount: float) -> bool:
+        print(f"暗号通貨で {amount}円 を処理")
+        return True
+
+
+# 呼び出し元は変更不要
+def checkout(processor: PaymentProcessor, amount: float):
+    processor.process(amount)</code></pre>
+    </div>
+  </div>
+
+  <!-- L -->
+  <div class="solid-card" style="margin-bottom:32px;">
+    <div class="solid-letter" style="background: linear-gradient(135deg, #10b981, #34d399);">L</div>
+    <div class="solid-name">リスコフ置換原則</div>
+    <div class="solid-sub">Liskov Substitution Principle</div>
+    <div class="callout callout-quote">
+      <span class="callout-icon">💬</span>
+      <div class="callout-body">「派生クラスは、その基底クラスと置換可能でなければならない」— Barbara Liskov</div>
+    </div>
+    <p>
+      サブクラスを使っているコードが、親クラスに差し替えても正常に動作しなければなりません。
+      「ペンギンは鳥だが飛べない」は LSP 違反の典型例です。
+    </p>
+    <div class="mermaid-wrapper fade-in">
+      <div class="mermaid" id="diag-lsp"></div>
+      <p class="mermaid-caption">図11. LSP 違反と修正後の設計</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-bad">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">❌ LSP 違反</span></div>
+          <pre><code class="language-python">class Bird:
+    def fly(self): return "飛んでいます"
+
+class Penguin(Bird):
+    def fly(self):
+        raise NotImplementedError(
+            "ペンギンは飛べません！"
+        )  # ← 置き換えると壊れる</code></pre>
+        </div>
+      </div>
+      <div class="compare-good">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">✅ LSP 準拠</span></div>
+          <pre><code class="language-python">class Animal(ABC): pass
+
+class FlyableAnimal(Animal, ABC):
+    @abstractmethod
+    def fly(self) -> str: ...
+
+class Sparrow(FlyableAnimal):
+    def fly(self) -> str:
+        return "スズメが飛んでいます"
+
+class Penguin(Animal):  # Flyable を継承しない
+    def swim(self) -> str:
+        return "ペンギンが泳いでいます"</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- I -->
+  <div class="solid-card" style="margin-bottom:32px;">
+    <div class="solid-letter" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">I</div>
+    <div class="solid-name">インターフェース分離原則</div>
+    <div class="solid-sub">Interface Segregation Principle</div>
+    <div class="callout callout-quote">
+      <span class="callout-icon">💬</span>
+      <div class="callout-body">「クライアントが使用しないメソッドへの依存を強制してはならない」</div>
+    </div>
+    <p>大きな1つのインターフェースより、小さな複数のインターフェースに分割しましょう。</p>
+    <div class="mermaid-wrapper fade-in">
+      <div class="mermaid" id="diag-isp"></div>
+      <p class="mermaid-caption">図12. ISP — 巨大インターフェースを小さく分割</p>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="solid-card">
+    <div class="solid-letter" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">D</div>
+    <div class="solid-name">依存性逆転原則</div>
+    <div class="solid-sub">Dependency Inversion Principle</div>
+    <div class="callout callout-quote">
+      <span class="callout-icon">💬</span>
+      <div class="callout-body">「上位モジュールは下位モジュールに依存してはならない。両者は抽象に依存すべきだ」</div>
+    </div>
+    <p>
+      上位の業務ロジック（<code>OrderService</code>）が、下位の技術的詳細（<code>MySQLDatabase</code>）に直接依存すると、
+      DBを変えるたびにビジネスロジックを修正することになります。抽象（インターフェース）を介することで疎結合を実現します。
+    </p>
+    <div class="mermaid-wrapper fade-in">
+      <div class="mermaid" id="diag-dip"></div>
+      <p class="mermaid-caption">図13. DIP — 上位は抽象に依存、具体実装は差し替え可能</p>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">DIP の実装例 — 依存性注入</span></div>
+      <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class OrderRepository(ABC):
+    """抽象（インターフェース）"""
+    @abstractmethod
+    def save(self, order) -> None: ...
+    @abstractmethod
+    def find_by_id(self, order_id: str): ...
+
+
+# ✅ 上位モジュール：抽象にのみ依存
+class OrderService:
+    def __init__(self, repository: OrderRepository):  # 抽象を受け取る
+        self._repo = repository
+
+    def place_order(self, customer_id: str, items: list):
+        order = {"id": "ORD-001", "customer_id": customer_id, "items": items}
+        self._repo.save(order)
+        return order
+
+
+# 下位モジュール：抽象を実装
+class MySQLOrderRepository(OrderRepository):
+    def save(self, order) -> None:
+        print(f"MySQL に保存: {order}")
+    def find_by_id(self, order_id: str):
+        return {"id": order_id}
+
+
+class InMemoryOrderRepository(OrderRepository):
+    def __init__(self):
+        self._store = {}
+    def save(self, order) -> None:
+        self._store[order["id"]] = order
+    def find_by_id(self, order_id: str):
+        return self._store.get(order_id)
+
+
+# 本番：MySQL を使用
+service = OrderService(MySQLOrderRepository())
+
+# テスト：インメモリに差し替え（DBなしでテスト可能）
+test_service = OrderService(InMemoryOrderRepository())</code></pre>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 4: クラスとオブジェクトの設計
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>クラスとオブジェクトの設計</h2>
+  </div>
+
+  <p>
+    良いクラス設計は、単に機能を動かすだけでなく、変更のコストを最小化し、
+    コードを自己文書化（読めばわかる状態）にします。
+  </p>
+
+  <h3>クラスの構成要素</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-class-structure"></div>
+    <p class="mermaid-caption">図14. Product クラスの設計：フィールド・メソッド・値オブジェクトの連携</p>
+  </div>
+
+  <h3>クラス設計の7原則</h3>
+  <div class="steps">
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(0,229,255,0.12);color:var(--accent);border:2px solid var(--accent)">1</div>
+      <div class="step-content">
+        <div class="step-title">意図を名前で表現する</div>
+        <div class="step-desc"><code>UserAuthenticator</code>（認証）、<code>OrderValidator</code>（検証）など、クラス名だけで役割がわかるように命名する。動詞＋名詞のパターンが有効。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(52,211,153,0.12);color:var(--accent3);border:2px solid var(--accent3)">2</div>
+      <div class="step-content">
+        <div class="step-title">コンストラクタで整合性を保証する</div>
+        <div class="step-desc">不正な状態のオブジェクトを作らせない。バリデーションロジックを <code>__init__</code> または <code>__post_init__</code> に集約する（フェイルファスト設計）。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(167,139,250,0.12);color:var(--accent2);border:2px solid var(--accent2)">3</div>
+      <div class="step-content">
+        <div class="step-title">不変条件（Invariant）を守る</div>
+        <div class="step-desc">操作前後で常に成立すべき条件（例：残高は0以上）をメソッド内で必ず検証し、クラスの整合性を自分で維持する。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(251,191,36,0.12);color:var(--warning);border:2px solid var(--warning)">4</div>
+      <div class="step-content">
+        <div class="step-title">副作用を最小化する</div>
+        <div class="step-desc">可能な限り純粋関数（同じ入力→同じ出力）を使い、メソッドが何を変更するかを明示する。イミュータブルオブジェクトを積極的に活用する。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(249,115,22,0.12);color:#fb923c;border:2px solid #fb923c">5</div>
+      <div class="step-content">
+        <div class="step-title">小さく保つ（SRP）</div>
+        <div class="step-desc">1クラス＝1責務。目安として200行を超えたら分割を検討する。「このクラスを変更する理由は何か？」と問いかける。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:2px solid #60a5fa">6</div>
+      <div class="step-content">
+        <div class="step-title">テストしやすい設計</div>
+        <div class="step-desc">依存性注入（DI）を使い、外部依存をモックに差し替えられるようにする。テストが難しいなら設計に問題がある可能性が高い。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:rgba(16,185,129,0.12);color:var(--accent3);border:2px solid var(--accent3)">7</div>
+      <div class="step-content">
+        <div class="step-title">適切な可視性を設定する</div>
+        <div class="step-desc">Python では <code>__name</code>（private）→ <code>_name</code>（protected）→ <code>name</code>（public）の順に。迷ったら private から始めて必要に応じて公開する。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>値オブジェクト（Value Object）パターン</h3>
+  <p>
+    値オブジェクトは、<strong>ID を持たず・値の等価性で判断される・イミュータブルなオブジェクト</strong>です。
+    金額・日付範囲・住所・メールアドレスなど、単なる文字列や数値ではなくドメイン概念として表現するのがベストプラクティスです。
+  </p>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">✅</span>
+    <div class="callout-body">
+      <strong>いつ値オブジェクトを使うか？</strong>
+      「この値に対してバリデーションが必要か？」「この値で計算や比較を行うか？」どちらかが Yes なら値オブジェクトにする。
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Money 値オブジェクトの完全実装</span></div>
+    <pre><code class="language-python">from dataclasses import dataclass
+from decimal import Decimal
+
+
+@dataclass(frozen=True)  # frozen=True → イミュータブル（変更不可）
+class Money:
+    """金額を表す値オブジェクト"""
+    amount: Decimal
+    currency: str = "JPY"
+
+    def __post_init__(self):
+        # コンストラクタでバリデーション
+        if self.amount < 0:
+            raise ValueError(f"金額は0以上: {self.amount}")
+        if not self.currency:
+            raise ValueError("通貨コードは必須です")
+
+    def add(self, other: "Money") -> "Money":
+        """加算：新しい Money を返す（自身は変更しない）"""
+        self._assert_same_currency(other)
+        return Money(self.amount + other.amount, self.currency)
+
+    def multiply(self, factor: int) -> "Money":
+        return Money(self.amount * factor, self.currency)
+
+    def apply_discount(self, rate: Decimal) -> "Money":
+        """割引適用（0.0〜1.0 の割引率）"""
+        if not Decimal("0") <= rate <= Decimal("1"):
+            raise ValueError(f"割引率は 0〜1: {rate}")
+        return Money(self.amount * (1 - rate), self.currency)
+
+    def _assert_same_currency(self, other: "Money") -> None:
+        if self.currency != other.currency:
+            raise ValueError(f"通貨が一致しません: {self.currency} vs {other.currency}")
+
+    def __str__(self) -> str:
+        return f"{self.amount:,.0f} {self.currency}"
+
+
+# 使い方
+price = Money(Decimal("1000"))
+tax   = Money(Decimal("100"))
+total = price.add(tax)
+print(total)               # 1,100 JPY
+
+price2 = Money(Decimal("1000"))
+print(price == price2)     # True  — 値が同じなら等しい
+print(price == total)      # False — 値が異なれば不等しい
+
+discounted = total.apply_discount(Decimal("0.1"))
+print(discounted)          # 990 JPY</code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>比較項目</th><th>エンティティ（Entity）</th><th>値オブジェクト（Value Object）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>同一性の判断</td><td>ID（識別子）で判断</td><td>値（フィールド全体）で判断</td></tr>
+        <tr><td>可変性</td><td>可変（状態が変化する）</td><td>不変（変更時は新しいオブジェクトを返す）</td></tr>
+        <tr><td>ライフサイクル</td><td>長い（DBに永続化される）</td><td>短い（計算のたびに生成される）</td></tr>
+        <tr><td>例</td><td>User, Order, Product</td><td>Money, Email, Address, DateRange</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 5: 継承の正しい使い方
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>継承の正しい使い方</h2>
+  </div>
+
+  <p>
+    継承は強力ですが、<strong>誤った使い方が最も多い OOP の機能</strong>でもあります。
+    「コードの再利用」のために継承を使うのは間違いで、
+    <strong>is-a 関係を表現するため</strong>にのみ使うのが原則です。
+  </p>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>継承の落とし穴</strong>
+      継承は親クラスと子クラスを強く結合させます。親クラスの変更が、すべての子クラスに影響します。
+      「has-a（〜を持つ）」関係には必ずコンポジションを使いましょう。
+    </div>
+  </div>
+
+  <h3>継承 vs コンポジション — 選択フロー</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-inherit-vs-compose"></div>
+    <p class="mermaid-caption">図15. 継承とコンポジションの選択フローチャート</p>
+  </div>
+
+  <h3>Mixin パターン（推奨）</h3>
+  <p>
+    Mixin は「単一の機能を提供する小さなクラス」です。多重継承の問題を避けつつ、
+    複数の機能を組み合わせることができます。
+  </p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Mixin パターンの実装</span></div>
+    <pre><code class="language-python">class LoggingMixin:
+    """ロギング機能を追加する Mixin"""
+    def log(self, message: str) -> None:
+        print(f"[{self.__class__.__name__}] {message}")
+
+
+class SerializableMixin:
+    """シリアライズ機能を追加する Mixin"""
+    def to_dict(self) -> dict:
+        return {k: v for k, v in self.__dict__.items()
+                if not k.startswith("_")}
+
+
+class ValidatableMixin:
+    """バリデーション機能を追加する Mixin"""
+    def validate(self) -> bool:
+        return all(
+            getattr(self, field) is not None
+            for field in getattr(self, "required_fields", [])
+        )
+
+
+# ✅ Mixin を組み合わせてクラスを構成（多重継承を安全に活用）
+class User(LoggingMixin, SerializableMixin, ValidatableMixin):
+    required_fields = ["name", "email"]
+
+    def __init__(self, name: str, email: str):
+        self.name = name
+        self.email = email
+
+    def register(self) -> None:
+        if self.validate():
+            self.log(f"ユーザー登録: {self.name}")
+        else:
+            self.log("バリデーション失敗")
+
+
+user = User("山田太郎", "yamada@example.com")
+user.register()           # [User] ユーザー登録: 山田太郎
+print(user.to_dict())     # {'name': '山田太郎', 'email': 'yamada@example.com'}</code></pre>
+  </div>
+
+  <h3>コンポジション over 継承（推奨パターン）</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-composition"></div>
+    <p class="mermaid-caption">図16. 深い継承ツリー vs コンポジション</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">コンポジション — has-a 関係で機能を組み合わせる</span></div>
+    <pre><code class="language-python">class Engine:
+    def __init__(self, horsepower: int):
+        self.horsepower = horsepower
+    def start(self) -> str:
+        return f"{self.horsepower}馬力エンジン始動"
+
+
+class AudioSystem:
+    def __init__(self, brand: str):
+        self.brand = brand
+    def play(self, song: str) -> str:
+        return f"{self.brand} で「{song}」を再生中"
+
+
+class Car:
+    """コンポジション：has-a 関係で機能を組み合わせた Car クラス"""
+
+    def __init__(self, model: str, engine: Engine, audio: AudioSystem):
+        self.model = model
+        self._engine = engine   # has-a（エンジンを持つ）
+        self._audio = audio     # has-a（音響システムを持つ）
+
+    def start(self) -> str:
+        return f"{self.model}: {self._engine.start()}"
+
+    def play_music(self, song: str) -> str:
+        return self._audio.play(song)
+
+
+# エンジンや音響をいつでも差し替えられる
+car = Car("プリウス", Engine(120), AudioSystem("Pioneer"))
+print(car.start())              # プリウス: 120馬力エンジン始動
+print(car.play_music("JPop"))  # Pioneer で「JPop」を再生中</code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>ケース</th><th>使うべき手法</th><th>理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>犬は動物である（is-a）</td><td><span class="tag tag-good">継承</span></td><td>明確な is-a 関係で、LSP を満たせる</td></tr>
+        <tr><td>車はエンジンを持つ（has-a）</td><td><span class="tag tag-info">コンポジション</span></td><td>has-a 関係は継承で表現すべきでない</td></tr>
+        <tr><td>複数の機能を組み合わせたい</td><td><span class="tag tag-info">Mixin</span></td><td>多重継承の問題を避けられる</td></tr>
+        <tr><td>継承ツリーが3階層を超えた</td><td><span class="tag tag-good">コンポジション</span></td><td>深い継承は変更コストが爆発的に増大する</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 6: インターフェースと抽象クラス
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>インターフェースと抽象クラス</h2>
+  </div>
+
+  <p>インターフェースと抽象クラスはどちらも「実装を強制する仕組み」ですが、用途が異なります。</p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-if-vs-abs"></div>
+    <p class="mermaid-caption">図17. インターフェース・抽象クラス・具体クラスの関係</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>観点</th><th>インターフェース（Python: ABC + 抽象メソッドのみ）</th><th>抽象クラス（Python: ABC）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>目的</td><td>契約（Contract）— 何ができるかを定義</td><td>共通実装を提供しつつ一部を委譲</td></tr>
+        <tr><td>実装</td><td>実装を持たない</td><td>部分的な実装を持てる</td></tr>
+        <tr><td>多重実装</td><td>複数実装が可能</td><td>複数継承は可能だが注意が必要</td></tr>
+        <tr><td>状態</td><td>フィールドを持たない（原則）</td><td>共通のフィールドを持てる</td></tr>
+        <tr><td>代表例</td><td><code>Serializable</code>, <code>Printable</code></td><td><code>Animal</code>, <code>Shape</code>, <code>BaseRepository</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>テンプレートメソッドパターン（抽象クラスの活用）</h3>
+  <p>
+    処理の骨格（フロー）を親クラスで定義し、各ステップの具体的な実装をサブクラスに委譲するパターンです。
+    コードの重複を最小化しつつ、拡張ポイントを明確にできます。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-template-method"></div>
+    <p class="mermaid-caption">図18. テンプレートメソッドパターンのシーケンス</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">テンプレートメソッドパターン — データエクスポート</span></div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class DataExporter(ABC):
+    """データエクスポートの骨格を定義"""
+
+    # テンプレートメソッド：処理フローを固定（final に相当）
+    def export(self, data: list) -> None:
+        validated  = self.validate(data)    # 共通処理
+        transformed = self.transform(validated)  # ← サブクラスが実装
+        self.write(transformed)             # ← サブクラスが実装
+        self.notify_completion()            # デフォルト実装（必要なら上書き可）
+
+    def validate(self, data: list) -> list:
+        """共通バリデーション（サブクラスでオーバーライド可）"""
+        return [item for item in data if item is not None]
+
+    @abstractmethod
+    def transform(self, data: list) -> str:
+        """データ変換（サブクラスで実装必須）"""
+        ...
+
+    @abstractmethod
+    def write(self, content: str) -> None:
+        """書き出し（サブクラスで実装必須）"""
+        ...
+
+    def notify_completion(self) -> None:
+        print("エクスポート完了")
+
+
+class CSVExporter(DataExporter):
+    def transform(self, data: list) -> str:
+        return ",".join(str(item) for item in data)
+
+    def write(self, content: str) -> None:
+        print(f"CSV に書き込み: {content}")
+
+
+class JSONExporter(DataExporter):
+    def transform(self, data: list) -> str:
+        import json
+        return json.dumps(data, ensure_ascii=False)
+
+    def write(self, content: str) -> None:
+        print(f"JSON に書き込み: {content}")
+
+
+data = [1, 2, 3, None, 4]
+CSVExporter().export(data)   # CSV に書き込み: 1,2,3,4
+JSONExporter().export(data)  # JSON に書き込み: [1, 2, 3, 4]</code></pre>
+  </div>
+
+  <h3>Protocol（構造的部分型）— Python 3.8+</h3>
+  <p>
+    Python の <code>Protocol</code> を使うと、ABC を継承しなくても「インターフェースを満たす」と見なせます。
+    既存クラスに手を加えずにダックタイピングを型安全に行えます。
+  </p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Protocol の使い方（Python 3.8+）</span></div>
+    <pre><code class="language-python">from typing import Protocol
+
+
+class Drawable(Protocol):
+    """Protocol: ABC を継承しなくても满たせる"""
+    def draw(self) -> None: ...
+    def resize(self, factor: float) -> None: ...
+
+
+# ABC を継承していないが Drawable を満たす
+class Circle:
+    def draw(self) -> None:
+        print("円を描く")
+    def resize(self, factor: float) -> None:
+        print(f"円を {factor}x にリサイズ")
+
+
+# 型チェッカーが Drawable として認識してくれる
+def render(shape: Drawable) -> None:
+    shape.draw()
+
+render(Circle())  # ✅ 動作する</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 7: デザインパターン
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>デザインパターン（GoF パターン）</h2>
+  </div>
+
+  <p>
+    GoF（Gang of Four）が提唱した23のデザインパターンは、OOP における「設計の共通語彙」です。
+    問題の種類に応じて適切なパターンを選択することで、保守性の高いコードを効率的に実現できます。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-gof"></div>
+    <p class="mermaid-caption">図19. GoF 23パターンの分類</p>
+  </div>
+
+  <div class="pattern-grid">
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-creational">生成パターン</span>
+      <div class="p-name">🏭 Factory Method</div>
+      <div class="p-desc">オブジェクトの生成をサブクラスに委譲。生成ロジックを本体から分離し、OCP を実現する。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-creational">生成パターン</span>
+      <div class="p-name">🔧 Builder</div>
+      <div class="p-desc">複雑なオブジェクトを段階的に構築。コンストラクタの引数爆発（5個以上）を解消する。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-creational">生成パターン</span>
+      <div class="p-name">⚡ Singleton</div>
+      <div class="p-desc">インスタンスを1つに限定する。設定管理・コネクションプールなど。乱用は禁物。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-structural">構造パターン</span>
+      <div class="p-name">🔌 Adapter</div>
+      <div class="p-desc">互換性のないインターフェース間の変換器。外部ライブラリを既存コードに適合させる際に有効。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-structural">構造パターン</span>
+      <div class="p-name">🎀 Decorator</div>
+      <div class="p-desc">機能を動的に追加。継承なしに既存クラスを拡張でき、機能のチェーンが可能。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-structural">構造パターン</span>
+      <div class="p-name">🏛️ Facade</div>
+      <div class="p-desc">複雑なサブシステムに対してシンプルなインターフェースを提供。複雑さを一つの窓口で隠蔽。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-behavioral">振る舞いパターン</span>
+      <div class="p-name">📣 Observer</div>
+      <div class="p-desc">状態変化を自動通知。pub/sub の基本形。疎結合なイベント駆動設計を実現する。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-behavioral">振る舞いパターン</span>
+      <div class="p-name">♟️ Strategy</div>
+      <div class="p-desc">アルゴリズムを交換可能にする。if/elif の連鎖を排除し、OCP を美しく実現する最頻出パターン。</div>
+    </div>
+    <div class="pattern-card">
+      <span class="pattern-tag ptag-behavioral">振る舞いパターン</span>
+      <div class="p-name">📋 Command</div>
+      <div class="p-desc">処理をオブジェクト化し、実行・取り消し・キューに積むことを可能にする。</div>
+    </div>
+  </div>
+
+  <h3>Strategy パターン（最重要・最頻出）</h3>
+  <p>if/elif の連鎖を排除し、アルゴリズムを交換可能にします。OCP の最も美しい実現例です。</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Strategy パターン — 割引戦略</span></div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+from decimal import Decimal
+
+
+class DiscountStrategy(ABC):
+    """割引戦略の抽象（Strategy インターフェース）"""
+    @abstractmethod
+    def calculate(self, original_price: Decimal) -> Decimal: ...
+
+
+class NoDiscount(DiscountStrategy):
+    def calculate(self, original_price: Decimal) -> Decimal:
+        return original_price
+
+
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, rate: Decimal):
+        self.rate = rate
+    def calculate(self, original_price: Decimal) -> Decimal:
+        return original_price * (1 - self.rate)
+
+
+class FixedAmountDiscount(DiscountStrategy):
+    def __init__(self, discount_amount: Decimal):
+        self.discount_amount = discount_amount
+    def calculate(self, original_price: Decimal) -> Decimal:
+        return max(Decimal("0"), original_price - self.discount_amount)
+
+
+class ShoppingCart:
+    """Strategy パターン：割引戦略を実行時に差し替え可能"""
+
+    def __init__(self, strategy: DiscountStrategy = None):
+        self._strategy = strategy or NoDiscount()
+        self._items: list[tuple[str, Decimal]] = []
+
+    def set_discount_strategy(self, strategy: DiscountStrategy) -> None:
+        self._strategy = strategy
+
+    def add_item(self, name: str, price: Decimal) -> None:
+        self._items.append((name, price))
+
+    def total(self) -> Decimal:
+        subtotal = sum(price for _, price in self._items)
+        return self._strategy.calculate(subtotal)
+
+
+cart = ShoppingCart()
+cart.add_item("Tシャツ", Decimal("3000"))
+cart.add_item("ジーンズ", Decimal("8000"))
+
+print(f"通常価格: {cart.total()}円")       # 11000円
+cart.set_discount_strategy(PercentageDiscount(Decimal("0.1")))
+print(f"10%割引後: {cart.total()}円")      # 9900円
+cart.set_discount_strategy(FixedAmountDiscount(Decimal("1000")))
+print(f"1000円引き後: {cart.total()}円")   # 10000円</code></pre>
+  </div>
+
+  <h3>Observer パターン</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-observer"></div>
+    <p class="mermaid-caption">図20. Observer パターンのシーケンス</p>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Observer パターン — 注文イベント通知</span></div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+from typing import Any
+
+
+class Observer(ABC):
+    @abstractmethod
+    def update(self, event: str, data: Any) -> None: ...
+
+
+class Observable:
+    def __init__(self):
+        self._observers: list[Observer] = []
+
+    def subscribe(self, observer: Observer) -> None:
+        self._observers.append(observer)
+
+    def notify(self, event: str, data: Any = None) -> None:
+        for observer in self._observers:
+            observer.update(event, data)
+
+
+class Order(Observable):
+    def __init__(self, order_id: str):
+        super().__init__()
+        self.order_id = order_id
+        self._status = "PENDING"
+
+    def confirm(self) -> None:
+        self._status = "CONFIRMED"
+        self.notify("ORDER_CONFIRMED", {"order_id": self.order_id})
+
+
+class InventoryObserver(Observer):
+    def update(self, event: str, data: Any) -> None:
+        if event == "ORDER_CONFIRMED":
+            print(f"[在庫] 引き当て処理: {data['order_id']}")
+
+
+class EmailObserver(Observer):
+    def update(self, event: str, data: Any) -> None:
+        if event == "ORDER_CONFIRMED":
+            print(f"[メール] 確認メール送信: {data['order_id']}")
+
+
+order = Order("ORD-001")
+order.subscribe(InventoryObserver())
+order.subscribe(EmailObserver())
+order.confirm()
+# [在庫] 引き当て処理: ORD-001
+# [メール] 確認メール送信: ORD-001</code></pre>
+  </div>
+
+  <h3>Decorator パターン</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">Decorator パターン — テキスト処理を動的に拡張</span></div>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+
+
+class TextProcessor(ABC):
+    @abstractmethod
+    def process(self, text: str) -> str: ...
+
+
+class PlainText(TextProcessor):
+    def process(self, text: str) -> str:
+        return text
+
+
+class UpperCaseDecorator(TextProcessor):
+    def __init__(self, processor: TextProcessor):
+        self._processor = processor
+    def process(self, text: str) -> str:
+        return self._processor.process(text).upper()
+
+
+class TrimDecorator(TextProcessor):
+    def __init__(self, processor: TextProcessor):
+        self._processor = processor
+    def process(self, text: str) -> str:
+        return self._processor.process(text).strip()
+
+
+class ExclamationDecorator(TextProcessor):
+    def __init__(self, processor: TextProcessor):
+        self._processor = processor
+    def process(self, text: str) -> str:
+        return self._processor.process(text) + "!!!"
+
+
+# Decorator をチェーン（組み合わせ）— 継承なしに機能を積み上げる
+text = "  hello world  "
+processor = ExclamationDecorator(
+    UpperCaseDecorator(
+        TrimDecorator(PlainText())
+    )
+)
+print(processor.process(text))  # HELLO WORLD!!!</code></pre>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">📚</span>
+    <div class="callout-body">
+      <strong>参考：Refactoring Guru — デザインパターン図解</strong>
+      全23パターンをインタラクティブな図解で学べる最良のリソース:
+      <a href="https://refactoring.guru/design-patterns" style="color:var(--accent)">https://refactoring.guru/design-patterns</a>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 8: アーキテクチャとの統合
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>OOP とアーキテクチャの統合</h2>
+  </div>
+
+  <p>
+    OOP の原則は、クリーンアーキテクチャや DDD（ドメイン駆動設計）といった上位の設計思想と深く連携しています。
+    SOLID 原則を守った OOP は、そのままクリーンアーキテクチャの各層に対応します。
+  </p>
+
+  <h3>クリーンアーキテクチャ × OOP</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-clean-arch"></div>
+    <p class="mermaid-caption">図21. クリーンアーキテクチャと OOP 概念の対応</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="principle-card pc-red">
+      <span class="pc-icon">🧩</span>
+      <div class="pc-title">ドメイン層（最内周）</div>
+      <div class="pc-sub">純粋な OOP の世界</div>
+      <div class="pc-desc">Entity・ValueObject・DomainService。外部依存ゼロ。最も重要なビジネスロジックが集中する。</div>
+    </div>
+    <div class="principle-card pc-orange">
+      <span class="pc-icon">⚙️</span>
+      <div class="pc-title">アプリケーション層</div>
+      <div class="pc-sub">ユースケースのオーケストレーション</div>
+      <div class="pc-desc">UseCase クラスがドメインオブジェクトを協調させる。Repository インターフェース（抽象）を定義し DIP を適用。</div>
+    </div>
+    <div class="principle-card pc-blue">
+      <span class="pc-icon">🔧</span>
+      <div class="pc-title">インフラ層（最外周）</div>
+      <div class="pc-sub">技術的詳細の実装</div>
+      <div class="pc-desc">Repository の具体実装（MySQL・PostgreSQL）。フレームワーク・DB・外部APIと接触する唯一の層。</div>
+    </div>
+  </div>
+
+  <h3>DDD（ドメイン駆動設計）× OOP の対応表</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-ddd"></div>
+    <p class="mermaid-caption">図22. DDD 戦術パターンと OOP 概念の対応</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>DDD パターン</th><th>対応する OOP 概念</th><th>役割</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Entity（エンティティ）</td><td>クラス + カプセル化</td><td>ID で同一性を判断するビジネスオブジェクト</td></tr>
+        <tr><td>Value Object（値オブジェクト）</td><td><code>@dataclass(frozen=True)</code></td><td>値で同一性を判断するイミュータブルオブジェクト</td></tr>
+        <tr><td>Aggregate（集約）</td><td>クラス + Facade パターン</td><td>整合性境界を持つオブジェクト群の代表</td></tr>
+        <tr><td>Domain Service</td><td>ステートレスなクラス</td><td>複数 Entity をまたぐビジネスロジック</td></tr>
+        <tr><td>Repository（リポジトリ）</td><td>ABC インターフェース + DIP</td><td>集約の永続化を担う抽象</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">🔗</span>
+    <div class="callout-body">
+      <strong>参考：Clean Architecture（Uncle Bob ブログ原文）</strong><br>
+      <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" style="color:var(--accent)">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 9: テスト駆動 OOP 開発
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>テスト駆動 OOP 開発</h2>
+  </div>
+
+  <p>
+    良い OOP 設計はテストが書きやすいです。逆に言えば、<strong>テストが書きにくいコードは設計に問題がある</strong>サインです。
+    DI（依存性注入）とインターフェースを使った OOP は、ユニットテストを自然に引き寄せます。
+  </p>
+
+  <h3>OOP クラスのテスト戦略</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-test-pyramid"></div>
+    <p class="mermaid-caption">図23. テストピラミッド — OOP テストの種別</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="principle-card pc-green">
+      <span class="pc-icon">🧪</span>
+      <div class="pc-title">ユニットテスト（最多）</div>
+      <div class="pc-sub">単一クラス・メソッドのテスト</div>
+      <div class="pc-desc">外部依存はモック化。最も数が多く最も速い。「振る舞い（結果）」をテストし、内部実装には触れない。</div>
+    </div>
+    <div class="principle-card pc-orange">
+      <span class="pc-icon">🔗</span>
+      <div class="pc-title">統合テスト（中程度）</div>
+      <div class="pc-sub">複数クラスの協調テスト</div>
+      <div class="pc-desc">InMemory 実装でリポジトリを差し替え、実際のユースケースフローを検証する。</div>
+    </div>
+    <div class="principle-card pc-blue">
+      <span class="pc-icon">📋</span>
+      <div class="pc-title">契約テスト（少数）</div>
+      <div class="pc-sub">インターフェースの正しい実装確認</div>
+      <div class="pc-desc">インターフェースを満たすかを検証。LSP の自動チェックにも使える。</div>
+    </div>
+  </div>
+
+  <h3>テスタブルな OOP 設計の実装例</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">pytest + MagicMock によるユニットテスト</span></div>
+    <pre><code class="language-python">import pytest
+from unittest.mock import MagicMock
+
+
+# ─── テスト対象クラス ───────────────────────────────────
+
+class InventoryRepository:
+    """リポジトリのインターフェース（抽象）"""
+    def get_stock(self, product_id: str) -> int: ...
+    def reduce_stock(self, product_id: str, quantity: int) -> None: ...
+
+
+class OrderService:
+    """DI でリポジトリを受け取る — テストが書きやすい設計"""
+
+    def __init__(self, inventory: InventoryRepository):
+        self._inventory = inventory
+
+    def place_order(self, product_id: str, quantity: int) -> dict:
+        stock = self._inventory.get_stock(product_id)
+        if stock < quantity:
+            raise ValueError(f"在庫不足: 在庫={stock}, 注文数={quantity}")
+        self._inventory.reduce_stock(product_id, quantity)
+        return {"product_id": product_id, "quantity": quantity, "status": "confirmed"}
+
+
+# ─── テストコード ───────────────────────────────────────
+
+class TestOrderService:
+
+    @pytest.fixture
+    def mock_inventory(self):
+        mock = MagicMock(spec=InventoryRepository)
+        mock.get_stock.return_value = 10  # 在庫10個と仮定
+        return mock
+
+    @pytest.fixture
+    def service(self, mock_inventory):
+        return OrderService(mock_inventory)
+
+    def test_注文が正常に確定される(self, service, mock_inventory):
+        result = service.place_order("PROD-001", 3)
+
+        assert result["status"] == "confirmed"
+        assert result["quantity"] == 3
+        # reduce_stock が正しい引数で呼ばれたか検証
+        mock_inventory.reduce_stock.assert_called_once_with("PROD-001", 3)
+
+    def test_在庫不足の場合はValueErrorが発生する(self, service, mock_inventory):
+        mock_inventory.get_stock.return_value = 2  # 在庫2個に変更
+
+        with pytest.raises(ValueError, match="在庫不足"):
+            service.place_order("PROD-001", 5)
+
+    def test_在庫不足時は在庫削減が呼ばれない(self, service, mock_inventory):
+        mock_inventory.get_stock.return_value = 0
+
+        with pytest.raises(ValueError):
+            service.place_order("PROD-001", 1)
+
+        mock_inventory.reduce_stock.assert_not_called()  # ← 重要な検証</code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>ルール</th><th>詳細</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>カプセル化を尊重する</td><td>private メソッドを外部からテストしない。public API を通じてテストする</td></tr>
+        <tr><td>振る舞いをテストする</td><td>実装の詳細ではなく「結果・副作用」をテストする</td></tr>
+        <tr><td>1テスト1概念</td><td>1つのテストメソッドで1つのシナリオだけを検証する</td></tr>
+        <tr><td>テスト名は日本語 OK</td><td><code>test_在庫不足時はValueErrorが発生する</code> — 仕様書として読める</td></tr>
+        <tr><td>Arrange-Act-Assert パターン</td><td>準備→実行→検証の3ステップで構造化する</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">🔗</span>
+    <div class="callout-body">
+      <strong>参考：Martin Fowler — Mocks Aren't Stubs</strong><br>
+      <a href="https://martinfowler.com/articles/mocksArentStubs.html" style="color:var(--accent)">https://martinfowler.com/articles/mocksArentStubs.html</a>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 10: リファクタリング技法
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>リファクタリング技法</h2>
+  </div>
+
+  <p>
+    リファクタリングとは、<strong>外部から見た振る舞いを変えずに、コードの内部構造を改善すること</strong>です。
+    OOP 設計の問題（コードの匂い）を発見し、段階的に改善していく技術です。
+  </p>
+
+  <h3>コードの匂い（Code Smells）と対処法</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-code-smells"></div>
+    <p class="mermaid-caption">図24. 代表的なコードの匂いと対処法</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>コードの匂い</th><th>症状</th><th>リファクタリング手法</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>長すぎるメソッド</td><td>50行を超えるメソッド、コメントで区切られている</td><td>Extract Method（メソッドの抽出）</td></tr>
+        <tr><td>大きすぎるクラス</td><td>300行を超えるクラス、フィールドが10個以上</td><td>Extract Class（クラスの抽出）</td></tr>
+        <tr><td>重複コード</td><td>同じロジックが2か所以上に存在</td><td>テンプレートメソッド / 共通クラスへ集約</td></tr>
+        <tr><td>プリミティブ執着</td><td>string/int で金額・住所などを表現</td><td>Introduce Value Object（値オブジェクトの導入）</td></tr>
+        <tr><td>長い引数リスト</td><td>引数が5個以上のメソッド</td><td>Introduce Parameter Object（パラメータオブジェクト）</td></tr>
+        <tr><td>if/elif の連鎖</td><td>型判定による分岐が増え続ける</td><td>Strategy / Factory Method パターン</td></tr>
+        <tr><td>神クラス（God Class）</td><td>1クラスがすべてを知っている</td><td>SRP を適用し責務ごとに分割</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>リファクタリング実践例：Before → After</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">❌ PYTHON — リファクタリング前（問題あり）</span></div>
+    <pre><code class="language-python"># 長い引数リスト + 重複ロジック + プリミティブ執着 の三重苦
+def process_order(customer_name, customer_email, product_id,
+                  product_name, quantity, price, discount_type,
+                  discount_value):
+
+    if discount_type == "percentage":
+        final_price = price * quantity * (1 - discount_value / 100)
+    elif discount_type == "fixed":
+        final_price = price * quantity - discount_value
+    else:
+        final_price = price * quantity
+
+    print(f"顧客: {customer_name} ({customer_email})")
+    print(f"商品: {product_name} x {quantity}")
+    print(f"合計: {final_price}円")</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">✅ PYTHON — リファクタリング後（OOP 適用）</span></div>
+    <pre><code class="language-python">from dataclasses import dataclass
+from decimal import Decimal
+from abc import ABC, abstractmethod
+
+
+# 1. 値オブジェクトで「プリミティブ執着」を解消
+@dataclass(frozen=True)
+class Customer:
+    name: str
+    email: str
+
+
+@dataclass(frozen=True)
+class OrderItem:
+    product_id: str
+    product_name: str
+    unit_price: Decimal
+    quantity: int
+
+    @property
+    def subtotal(self) -> Decimal:
+        return self.unit_price * self.quantity
+
+
+# 2. Strategy パターンで「if/elif の連鎖」を解消
+class DiscountStrategy(ABC):
+    @abstractmethod
+    def apply(self, amount: Decimal) -> Decimal: ...
+
+class NoDiscount(DiscountStrategy):
+    def apply(self, amount: Decimal) -> Decimal:
+        return amount
+
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, rate: Decimal):
+        self.rate = rate
+    def apply(self, amount: Decimal) -> Decimal:
+        return amount * (1 - self.rate)
+
+class FixedDiscount(DiscountStrategy):
+    def __init__(self, amount: Decimal):
+        self.amount = amount
+    def apply(self, amount: Decimal) -> Decimal:
+        return max(Decimal("0"), amount - self.amount)
+
+
+# 3. パラメータオブジェクトで「長い引数リスト」を解消
+@dataclass
+class Order:
+    customer: Customer
+    item: OrderItem
+    discount: DiscountStrategy = None
+
+    def __post_init__(self):
+        if self.discount is None:
+            self.discount = NoDiscount()
+
+    @property
+    def total(self) -> Decimal:
+        return self.discount.apply(self.item.subtotal)
+
+    def print_receipt(self) -> None:
+        print(f"顧客: {self.customer.name} ({self.customer.email})")
+        print(f"商品: {self.item.product_name} x {self.item.quantity}")
+        print(f"合計: {self.total}円")
+
+
+# 使い方：読みやすく・拡張しやすい
+order = Order(
+    customer=Customer("山田太郎", "yamada@example.com"),
+    item=OrderItem("P001", "Tシャツ", Decimal("3000"), 2),
+    discount=PercentageDiscount(Decimal("0.1")),
+)
+order.print_receipt()</code></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">📖</span>
+    <div class="callout-body">
+      <strong>参考：Refactoring.com — リファクタリング技法カタログ（Martin Fowler）</strong><br>
+      <a href="https://martinfowler.com/books/refactoring.html" style="color:var(--accent)">https://martinfowler.com/books/refactoring.html</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 11: ECサイト完全実装例
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>実践：EC サイト完全実装例</h2>
+  </div>
+
+  <p>
+    これまで学んだ OOP の全要素を統合した、実践的な EC サイトのドメインモデルです。
+    値オブジェクト・エンティティ・集約・リポジトリ・ユースケースが有機的に連携します。
+  </p>
+
+  <h3>ドメインモデル全体像</h3>
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-ec-domain"></div>
+    <p class="mermaid-caption">図25. EC サイトのドメインモデル — クラス図</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PYTHON</span><span class="code-label">EC サイト完全実装 — OOP 総合演習</span></div>
+    <pre><code class="language-python">from __future__ import annotations
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from decimal import Decimal
+from enum import Enum
+from typing import Optional
+import uuid
+
+
+# ═══════════════════════════════════════════════
+# 値オブジェクト（Value Objects）
+# ═══════════════════════════════════════════════
+
+@dataclass(frozen=True)
+class Money:
+    """金額値オブジェクト — イミュータブル・通貨チェックつき"""
+    amount: Decimal
+    currency: str = "JPY"
+
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError(f"金額は0以上: {self.amount}")
+
+    def __add__(self, other: Money) -> Money:
+        if self.currency != other.currency:
+            raise ValueError("通貨が一致しません")
+        return Money(self.amount + other.amount, self.currency)
+
+    def __mul__(self, factor: int) -> Money:
+        return Money(self.amount * factor, self.currency)
+
+    def __str__(self) -> str:
+        return f"{self.amount:,.0f} {self.currency}"
+
+
+@dataclass(frozen=True)
+class Email:
+    """メールアドレス値オブジェクト"""
+    value: str
+
+    def __post_init__(self):
+        if "@" not in self.value:
+            raise ValueError(f"不正なメールアドレス: {self.value}")
+
+
+# ═══════════════════════════════════════════════
+# エンティティ（Entities）
+# ═══════════════════════════════════════════════
+
+class OrderStatus(Enum):
+    PENDING   = "pending"
+    CONFIRMED = "confirmed"
+    SHIPPED   = "shipped"
+    CANCELLED = "cancelled"
+
+
+@dataclass
+class Product:
+    """商品エンティティ — ID で同一性を判断"""
+    id: str
+    name: str
+    price: Money
+    _stock_count: int = field(default=0, repr=False)
+
+    def reserve(self, quantity: int) -> None:
+        """在庫を引き当てる（ビジネスルール）"""
+        if quantity <= 0:
+            raise ValueError("数量は1以上")
+        if self._stock_count < quantity:
+            raise ValueError(f"在庫不足: 在庫={self._stock_count}, 要求={quantity}")
+        self._stock_count -= quantity
+
+    def restock(self, quantity: int) -> None:
+        if quantity <= 0:
+            raise ValueError("補充数量は1以上")
+        self._stock_count += quantity
+
+    def is_available(self, quantity: int = 1) -> bool:
+        return self._stock_count >= quantity
+
+    @property
+    def stock_count(self) -> int:
+        return self._stock_count
+
+
+@dataclass
+class OrderLine:
+    """注文明細（Aggregate 内部）"""
+    product_id: str
+    product_name: str
+    unit_price: Money
+    quantity: int
+
+    @property
+    def subtotal(self) -> Money:
+        return self.unit_price * self.quantity
+
+
+@dataclass
+class Order:
+    """注文エンティティ（Aggregate Root）"""
+    id: str
+    customer_id: str
+    _lines: list[OrderLine] = field(default_factory=list, repr=False)
+    _status: OrderStatus = field(default=OrderStatus.PENDING, repr=False)
+
+    @classmethod
+    def create(cls, customer_id: str) -> Order:
+        return cls(id=str(uuid.uuid4()), customer_id=customer_id)
+
+    def add_line(self, product: Product, quantity: int) -> None:
+        self._assert_editable()
+        if not product.is_available(quantity):
+            raise ValueError(f"「{product.name}」の在庫不足")
+        product.reserve(quantity)
+        self._lines.append(
+            OrderLine(product.id, product.name, product.price, quantity)
+        )
+
+    def confirm(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("保留中の注文のみ確定できます")
+        if not self._lines:
+            raise ValueError("注文明細がありません")
+        self._status = OrderStatus.CONFIRMED
+
+    def cancel(self) -> None:
+        if self._status == OrderStatus.SHIPPED:
+            raise ValueError("発送済みの注文はキャンセルできません")
+        self._status = OrderStatus.CANCELLED
+
+    @property
+    def status(self) -> OrderStatus:
+        return self._status
+
+    @property
+    def total(self) -> Money:
+        if not self._lines:
+            return Money(Decimal("0"))
+        totals = [line.subtotal for line in self._lines]
+        return sum(totals[1:], totals[0])
+
+    @property
+    def lines(self) -> tuple[OrderLine, ...]:
+        return tuple(self._lines)
+
+    def _assert_editable(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("確定済みの注文は変更できません")
+
+
+# ═══════════════════════════════════════════════
+# リポジトリ（DIP 適用）
+# ═══════════════════════════════════════════════
+
+class OrderRepository(ABC):
+    @abstractmethod
+    def save(self, order: Order) -> None: ...
+
+    @abstractmethod
+    def find_by_id(self, order_id: str) -> Optional[Order]: ...
+
+
+class InMemoryOrderRepository(OrderRepository):
+    """テスト用インメモリ実装"""
+    def __init__(self):
+        self._store: dict[str, Order] = {}
+
+    def save(self, order: Order) -> None:
+        self._store[order.id] = order
+
+    def find_by_id(self, order_id: str) -> Optional[Order]:
+        return self._store.get(order_id)
+
+
+# ═══════════════════════════════════════════════
+# ユースケース（Application Layer）
+# ═══════════════════════════════════════════════
+
+class PlaceOrderUseCase:
+    """注文作成ユースケース — OOP の総合的な活用"""
+
+    def __init__(self, order_repository: OrderRepository):
+        self._repo = order_repository  # DIP: 抽象に依存
+
+    def execute(
+        self,
+        customer_id: str,
+        items: list[tuple[Product, int]]
+    ) -> Order:
+        order = Order.create(customer_id)
+        for product, quantity in items:
+            order.add_line(product, quantity)
+        order.confirm()
+        self._repo.save(order)
+        return order
+
+
+# ═══════════════════════════════════════════════
+# 動作確認
+# ═══════════════════════════════════════════════
+
+if __name__ == "__main__":
+    tshirt = Product("P001", "Tシャツ",  Money(Decimal("1500")), _stock_count=10)
+    jeans  = Product("P002", "ジーンズ", Money(Decimal("6000")), _stock_count=5)
+
+    repo     = InMemoryOrderRepository()
+    use_case = PlaceOrderUseCase(repo)
+
+    order = use_case.execute(
+        customer_id="CUST-001",
+        items=[(tshirt, 2), (jeans, 1)],
+    )
+
+    print(f"注文ID: {order.id}")
+    print(f"ステータス: {order.status.value}")   # confirmed
+    print(f"合計金額: {order.total}")            # 9,000 JPY
+    print(f"Tシャツの残在庫: {tshirt.stock_count}")  # 8</code></pre>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 12: アンチパターン
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>OOP アンチパターン</h2>
+  </div>
+
+  <p>
+    良い設計を学ぶと同様に、<strong>陥りやすい悪い設計パターン（アンチパターン）</strong>を知ることも重要です。
+    これらを知っておくことで、コードレビューや設計判断の精度が大きく上がります。
+  </p>
+
+  <div class="mermaid-wrapper fade-in">
+    <div class="mermaid" id="diag-antipattern"></div>
+    <p class="mermaid-caption">図26. 主要な OOP アンチパターンと解決策</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="principle-card pc-red">
+      <span class="pc-icon">👑</span>
+      <div class="pc-title">神クラス（God Class）</div>
+      <div class="pc-sub">最も多い・最も危険</div>
+      <div class="pc-desc">1つのクラスがすべてを知り・すべてを行う。変更のたびに影響範囲が爆発する。<br><strong>解決：</strong>SRP を適用し責務ごとに分割する。</div>
+    </div>
+    <div class="principle-card pc-orange">
+      <span class="pc-icon">🧟</span>
+      <div class="pc-title">貧血ドメインモデル</div>
+      <div class="pc-sub">Anemic Domain Model</div>
+      <div class="pc-desc">クラスがデータのみ保持し、ロジックは外部サービスに漏れ出す。クラスが「構造体」に成り下がる。<br><strong>解決：</strong>リッチドメインモデルへ移行。</div>
+    </div>
+    <div class="principle-card pc-purple">
+      <span class="pc-icon">🌳</span>
+      <div class="pc-title">深い継承ツリー</div>
+      <div class="pc-sub">Deep Inheritance</div>
+      <div class="pc-desc">5階層以上の継承。親クラスの変更が全子孫に波及し、「脆い基底クラス問題」が発生する。<br><strong>解決：</strong>コンポジション・Mixin に切り替える。</div>
+    </div>
+    <div class="principle-card pc-blue">
+      <span class="pc-icon">⚡</span>
+      <div class="pc-title">Singleton 乱用</div>
+      <div class="pc-sub">Global State Anti-Pattern</div>
+      <div class="pc-desc">Singleton がグローバル状態の入れ物になり、テスト不能・並行処理の問題を引き起こす。<br><strong>解決：</strong>DI（依存性注入）を使う。</div>
+    </div>
+  </div>
+
+  <h3>貧血ドメインモデル vs リッチドメインモデル（最重要）</h3>
+  <div class="compare-grid">
+    <div class="compare-bad">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">❌ 貧血ドメインモデル（アンチパターン）</span></div>
+        <pre><code class="language-python"># クラスがデータの入れ物のみ
+class Order:
+    def __init__(self):
+        self.id = None
+        self.status = None
+        self.items = []
+        self.total = 0
+    # ← ロジックが一切ない！
+
+# ロジックが外部サービスに漏れる
+class OrderService:
+    def confirm_order(self, order):
+        # 本来 Order 自身が持つべきロジック ⚠️
+        if order.status != "pending":
+            raise Exception("...")
+        if not order.items:
+            raise Exception("...")
+        order.status = "confirmed"  # ← 状態変更も外部が担う
+        order.total = sum(...)      # ← 計算も外部が担う</code></pre>
+      </div>
+    </div>
+    <div class="compare-good">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">✅ リッチドメインモデル（推奨）</span></div>
+        <pre><code class="language-python">class Order:
+    # ロジックはクラス自身が持つ
+    def confirm(self) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError("...")
+        if not self._lines:
+            raise ValueError("...")
+        self._status = OrderStatus.CONFIRMED
+
+    @property
+    def total(self) -> Money:
+        # 計算もクラス自身が担当
+        return sum(line.subtotal for line in self._lines)
+
+# サービスは「オーケストレーション」だけ行う
+class OrderService:
+    def confirm(self, order_id: str) -> None:
+        order = self._repo.find_by_id(order_id)
+        order.confirm()  # ← ロジックは Order に委譲
+        self._repo.save(order)</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>貧血ドメインモデルの見分け方</strong>
+      クラスのメソッドが getter/setter ばかりで、ビジネスロジックをすべて「Service」クラスが持っていたら要注意です。
+      参考：<a href="https://martinfowler.com/bliki/AnemicDomainModel.html" style="color:var(--accent)">Martin Fowler — Anemic Domain Model</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 13: ベストプラクティス
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <h2>ベストプラクティス総まとめ</h2>
+  </div>
+
+  <p>本ガイドで学んだすべての知識を、実際の開発で即座に使えるチートシートとして整理します。</p>
+
+  <h3>OOP 成熟度モデル（Level 0 → Level 5）</h3>
+  <div class="level-bar">
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3)">Lv.0</span>
+      <span class="level-name">手続き型スタイル</span>
+      <span class="level-desc">クラスがデータの入れ物のみ。すべてのロジックが外部関数・サービスに存在する。</span>
+    </div>
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)">Lv.1</span>
+      <span class="level-name">基本的な OOP</span>
+      <span class="level-desc">クラス・メソッドを正しく使い、カプセル化を意識している。</span>
+    </div>
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(251,146,60,0.15);color:#fb923c;border:1px solid rgba(251,146,60,0.3)">Lv.2</span>
+      <span class="level-name">SOLID 原則の適用</span>
+      <span class="level-desc">SRP・OCP を意識した設計。インターフェース（ABC）を積極的に活用している。</span>
+    </div>
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3)">Lv.3</span>
+      <span class="level-name">デザインパターンの活用</span>
+      <span class="level-desc">問題に応じた適切なパターン選択ができる。コンポジション > 継承を実践できる。</span>
+    </div>
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(0,229,255,0.15);color:#00e5ff;border:1px solid rgba(0,229,255,0.3)">Lv.4</span>
+      <span class="level-name">ドメイン駆動設計との統合</span>
+      <span class="level-desc">リッチドメインモデル・値オブジェクト・集約を自然に使いこなせる。</span>
+    </div>
+    <div class="level-item">
+      <span class="level-badge" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)">Lv.5</span>
+      <span class="level-name">アーキテクチャへの応用</span>
+      <span class="level-desc">クリーンアーキテクチャを実践。テスタブルで疎結合な大規模システムを設計できる。</span>
+    </div>
+  </div>
+
+  <h3>状況別クイックリファレンス</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>状況</th><th>推奨アプローチ</th><th>根拠</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>同じロジックが2か所以上ある</td><td>メソッド抽出 / 共通クラスへ集約</td><td>DRY 原則</td></tr>
+        <tr><td>クラスが大きすぎる（300行超）</td><td>責務ごとにクラスを分割</td><td>SRP</td></tr>
+        <tr><td>if/elif が増え続ける</td><td>Strategy / Factory パターン</td><td>OCP</td></tr>
+        <tr><td>テストのためにメソッドを public にした</td><td>設計を見直し・DI を導入</td><td>テスタビリティ</td></tr>
+        <tr><td>深い継承ツリーが生まれた</td><td>コンポジション / Mixin に切り替え</td><td>LSP・保守性</td></tr>
+        <tr><td>引数が5個以上のメソッド</td><td>パラメータオブジェクトを導入</td><td>可読性・保守性</td></tr>
+        <tr><td>private メソッドをテストしたい</td><td>public インターフェースからテスト</td><td>カプセル化の尊重</td></tr>
+        <tr><td>フレームワークがビジネスロジックに侵入</td><td>抽象化レイヤーを追加（DIP）</td><td>クリーンアーキテクチャ</td></tr>
+        <tr><td>has-a 関係なのに継承を使っている</td><td>コンポジションに切り替える</td><td>「コンポジション > 継承」原則</td></tr>
+        <tr><td>string で金額・メールを扱っている</td><td>値オブジェクトを導入</td><td>型安全性・バリデーション集約</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>設計の黄金ルール チェックリスト</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="color:var(--accent);font-family:var(--font-head);font-size:14px;margin-bottom:12px;">🔒 カプセル化</h4>
+      <ul style="color:var(--text-sub);font-size:13.5px;line-height:2;padding-left:16px;">
+        <li>デフォルトは <code>private</code>（<code>__</code>）から始める</li>
+        <li>setter より意図を表すメソッドを使う</li>
+        <li>不変条件をコンストラクタで保証する</li>
+        <li>イミュータブルオブジェクトを積極活用する</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--accent3);font-family:var(--font-head);font-size:14px;margin-bottom:12px;">🧬 継承・コンポジション</h4>
+      <ul style="color:var(--text-sub);font-size:13.5px;line-height:2;padding-left:16px;">
+        <li>is-a 関係にのみ継承を使う</li>
+        <li>継承の深さは3階層以下を目安に</li>
+        <li>has-a 関係はコンポジションを使う</li>
+        <li>機能の追加には Mixin を活用する</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--accent2);font-family:var(--font-head);font-size:14px;margin-bottom:12px;">🎯 SOLID</h4>
+      <ul style="color:var(--text-sub);font-size:13.5px;line-height:2;padding-left:16px;">
+        <li>1クラスの変更理由は1つだけ（SRP）</li>
+        <li>新機能はクラス追加で対応（OCP）</li>
+        <li>サブクラスは親クラスを代替できる（LSP）</li>
+        <li>インターフェースは小さく分割する（ISP）</li>
+        <li>具体でなく抽象に依存する（DIP）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--warning);font-family:var(--font-head);font-size:14px;margin-bottom:12px;">🧪 テスタビリティ</h4>
+      <ul style="color:var(--text-sub);font-size:13.5px;line-height:2;padding-left:16px;">
+        <li>依存性注入（DI）を基本にする</li>
+        <li>副作用を最小化・明示化する</li>
+        <li>振る舞い（結果）をテストする</li>
+        <li>テストが難しければ設計を疑う</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════════════════
+     SECTION 14: 参考文献
+════════════════════════════════════════════════════ -->
+<section class="section" id="sec14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <h2>参考文献・ソース一覧</h2>
+  </div>
+
+  <p>本ガイドの内容は以下の書籍・公式ドキュメント・権威あるブログを根拠としています。</p>
+
+  <h3>📚 必読書籍</h3>
+  <div class="book-grid">
+    <div class="book-card">
+      <div class="book-icon">📗</div>
+      <div class="book-title">Clean Code</div>
+      <div class="book-author">Robert C. Martin</div>
+      <span class="book-tag">OOP 実践</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📘</div>
+      <div class="book-title">Clean Architecture</div>
+      <div class="book-author">Robert C. Martin</div>
+      <span class="book-tag">アーキテクチャ</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📕</div>
+      <div class="book-title">Design Patterns: GoF</div>
+      <div class="book-author">Gang of Four</div>
+      <span class="book-tag">パターン原典</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📙</div>
+      <div class="book-title">Refactoring 2nd Ed.</div>
+      <div class="book-author">Martin Fowler</div>
+      <span class="book-tag">リファクタリング</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📗</div>
+      <div class="book-title">Domain-Driven Design</div>
+      <div class="book-author">Eric Evans</div>
+      <span class="book-tag">DDD</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📘</div>
+      <div class="book-title">Head First Design Patterns</div>
+      <div class="book-author">Freeman &amp; Robson</div>
+      <span class="book-tag">パターン入門</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📕</div>
+      <div class="book-title">Fluent Python</div>
+      <div class="book-author">Luciano Ramalho</div>
+      <span class="book-tag">Python OOP</span>
+    </div>
+    <div class="book-card">
+      <div class="book-icon">📙</div>
+      <div class="book-title">Implementing DDD</div>
+      <div class="book-author">Vaughn Vernon</div>
+      <span class="book-tag">DDD 実践</span>
+    </div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-title">🏛️ SOLID 原則・設計原則</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">SOLID 原則（Robert C. Martin 公式ブログ）</span>
+          <span class="ref-url">blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://www.oodesign.com/single-responsibility-principle" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Single Responsibility Principle — OODesign.com</span>
+          <span class="ref-url">www.oodesign.com/single-responsibility-principle</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://www.oodesign.com/open-close-principle" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Open/Closed Principle — OODesign.com</span>
+          <span class="ref-url">www.oodesign.com/open-close-principle</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://www.oodesign.com/liskov-s-substitution-principle" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Liskov Substitution Principle — OODesign.com</span>
+          <span class="ref-url">www.oodesign.com/liskov-s-substitution-principle</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://www.oodesign.com/dependency-inversion-principle" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Dependency Inversion Principle — OODesign.com</span>
+          <span class="ref-url">www.oodesign.com/dependency-inversion-principle</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-title">🎨 デザインパターン</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://refactoring.guru/design-patterns" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Refactoring Guru — 全23パターン図解</span>
+          <span class="ref-url">refactoring.guru/design-patterns</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://python-patterns.guide/" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Python Design Patterns Guide — Brandon Rhodes</span>
+          <span class="ref-url">python-patterns.guide</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://refactoring.guru/design-patterns/strategy" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Strategy パターン詳解 — Refactoring Guru</span>
+          <span class="ref-url">refactoring.guru/design-patterns/strategy</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://refactoring.guru/design-patterns/observer" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Observer パターン詳解 — Refactoring Guru</span>
+          <span class="ref-url">refactoring.guru/design-patterns/observer</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-title">🐍 Python OOP 公式ドキュメント</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://docs.python.org/ja/3/tutorial/classes.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Python 公式チュートリアル — クラス</span>
+          <span class="ref-url">docs.python.org/ja/3/tutorial/classes.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://docs.python.org/ja/3/library/abc.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Python 公式 — abc モジュール（抽象クラス）</span>
+          <span class="ref-url">docs.python.org/ja/3/library/abc.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://docs.python.org/ja/3/library/dataclasses.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Python 公式 — dataclasses（値オブジェクトに活用）</span>
+          <span class="ref-url">docs.python.org/ja/3/library/dataclasses.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://realpython.com/python3-object-oriented-programming/" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Real Python — OOP in Python 3 完全ガイド</span>
+          <span class="ref-url">realpython.com/python3-object-oriented-programming</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-title">🏗️ アーキテクチャ・DDD</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Clean Architecture — Uncle Bob ブログ原文</span>
+          <span class="ref-url">blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://martinfowler.com/bliki/AnemicDomainModel.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Martin Fowler — Anemic Domain Model（アンチパターン解説）</span>
+          <span class="ref-url">martinfowler.com/bliki/AnemicDomainModel.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://martinfowler.com/bliki/ValueObject.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Martin Fowler — Value Object 解説</span>
+          <span class="ref-url">martinfowler.com/bliki/ValueObject.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://github.com/cosmicpython/book" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Cosmic Python — Python × DDD + OOP 実践書（GitHub）</span>
+          <span class="ref-url">github.com/cosmicpython/book</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://github.com/ddd-crew" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">DDD Crew — DDD 実践リソース集（GitHub）</span>
+          <span class="ref-url">github.com/ddd-crew</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-title">🧪 テスト</div>
+    <div class="ref-list">
+      <a class="ref-item" href="https://docs.pytest.org/" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">pytest 公式ドキュメント</span>
+          <span class="ref-url">docs.pytest.org</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Martin Fowler — Mocks Aren't Stubs</span>
+          <span class="ref-url">martinfowler.com/articles/mocksArentStubs.html</span>
+        </div>
+      </a>
+      <a class="ref-item" href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank">
+        <span class="ref-icon">🔗</span>
+        <div class="ref-content">
+          <span class="ref-name">Martin Fowler — テストピラミッド</span>
+          <span class="ref-url">martinfowler.com/bliki/TestPyramid.html</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="text-align:center;color:var(--text-muted);font-size:12px;padding:8px 0 0;">
+    📅 本ドキュメントは2025年時点の情報を基に作成しています。<br>
+    各リンク・ツールの仕様は変更される場合があります。
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="footer">
+  <span>🧱 OOP 完全ガイド — Software Architect Guide v2.0</span>
+  <span>Python 実装例つき | <a href="#sec1">トップへ戻る ↑</a></span>
+</footer>
+
+</main>
+</div><!-- /layout -->
+<!-- ════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════ -->
+<script>
+// ═══ Mermaid 初期化 ═══
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    background:       '#0c1b2a',
+    primaryColor:     '#112235',
+    primaryBorderColor: '#1e3a52',
+    primaryTextColor: '#e8f4f8',
+    secondaryColor:   '#0d1f2d',
+    tertiaryColor:    '#162d44',
+    lineColor:        '#4d7a96',
+    textColor:        '#e8f4f8',
+    fontSize:         '14px',
+    edgeLabelBackground: '#0c1b2a',
+    clusterBkg:       '#0d1f2d',
+    clusterBorder:    '#1e3a52',
+    titleColor:       '#00e5ff',
+    nodeTextColor:    '#e8f4f8',
+    mainBkg:          '#112235',
+    nodeBorder:       '#1e3a52',
+    labelBackground:  '#0c1b2a',
+    actorBkg:         '#112235',
+    actorBorder:      '#1e3a52',
+    actorTextColor:   '#e8f4f8',
+    actorLineColor:   '#4d7a96',
+    signalColor:      '#00e5ff',
+    signalTextColor:  '#e8f4f8',
+    noteBkgColor:     '#162d44',
+    noteTextColor:    '#e8f4f8',
+    noteBorderColor:  '#1e3a52',
+    activationBkgColor: '#162d44',
+    activationBorderColor: '#00e5ff',
+    sequenceNumberColor: '#000',
+  },
+  flowchart: { curve: 'basis', htmlLabels: true },
+  sequence:  { actorMargin: 60, messageMargin: 35, mirrorActors: false },
+  classDiagram: { useMaxWidth: true },
+});
+
+// ═══ Mermaid 図の定義 ═══
+const diagrams = {
+
+'diag-why-oop': `graph LR
+  subgraph BEFORE["❌ 手続き型プログラミング"]
+    P1["データと処理がバラバラ"]
+    P2["変更が全体に波及する"]
+    P3["コードの再利用が難しい"]
+    P4["大規模化で混乱が増大"]
+  end
+  subgraph AFTER["✅ OOP（オブジェクト指向）"]
+    S1["データと処理を一つに束ねる"]
+    S2["変更の影響範囲を限定できる"]
+    S3["クラスを再利用・拡張できる"]
+    S4["大規模でも秩序ある構造を保てる"]
+  end
+  P1 --> S1
+  P2 --> S2
+  P3 --> S3
+  P4 --> S4
+  style P1 fill:#7f1d1d,color:#fca5a5
+  style P2 fill:#7f1d1d,color:#fca5a5
+  style P3 fill:#7f1d1d,color:#fca5a5
+  style P4 fill:#7f1d1d,color:#fca5a5
+  style S1 fill:#14532d,color:#86efac
+  style S2 fill:#14532d,color:#86efac
+  style S3 fill:#14532d,color:#86efac
+  style S4 fill:#14532d,color:#86efac`,
+
+'diag-mindmap': `mindmap
+  root((OOP\\nオブジェクト指向))
+    4大原則
+      カプセル化
+      継承
+      ポリモーフィズム
+      抽象化
+    SOLID原則
+      S 単一責任
+      O 開放閉鎖
+      L リスコフ置換
+      I インターフェース分離
+      D 依存性逆転
+    設計要素
+      クラスとオブジェクト
+      インターフェース
+      抽象クラス
+      コンポジション
+    デザインパターン
+      生成パターン
+      構造パターン
+      振る舞いパターン
+    実践的応用
+      ドメイン駆動設計
+      クリーンアーキテクチャ
+      テスト駆動開発`,
+
+'diag-timeline': `timeline
+  title OOP の歴史
+  1967年 : Simula 最初のオブジェクト指向言語
+  1972年 : Smalltalk 純粋なOOP言語
+  1985年 : C++ 手続き型にOOPを追加
+  1995年 : Java プラットフォーム非依存のOOP
+  1995年 : Ruby 完全OOP言語
+  2000年 : C# Microsoft製モダンOOP言語
+  2000年代 : Python マルチパラダイム対応
+  2010年代 : Kotlin Swift 現代的なOOP言語`,
+
+'diag-encap': `flowchart LR
+  subgraph OUTSIDE["外部（クライアントコード）"]
+    CLIENT["呼び出し側"]
+  end
+  subgraph CAPSULE["🔒 BankAccount クラス"]
+    PUB["✅ 公開 API\\ndeposit()\\nwithdraw()\\nbalance（読み取り専用）"]
+    PRIV["🔒 非公開（内部実装）\\n__balance\\n__transaction_history\\n__validate_amount()"]
+    PUB --> PRIV
+  end
+  CLIENT --> PUB
+  CLIENT -. "❌ 直接アクセス不可" .-> PRIV
+  style PUB fill:#14532d,color:#86efac
+  style PRIV fill:#7f1d1d,color:#fca5a5
+  style CLIENT fill:#1e3a5f,color:#93c5fd`,
+
+'diag-inherit': `classDiagram
+  class Animal {
+    +String name
+    +int age
+    +speak()* 抽象メソッド
+    +eat()
+    +sleep()
+  }
+  class Dog {
+    +String breed
+    +speak() ワン！
+    +fetch()
+  }
+  class Cat {
+    +bool is_indoor
+    +speak() ニャー！
+    +purr()
+  }
+  class GuideDog {
+    +String owner
+    +guide()
+  }
+  Animal <|-- Dog : is-a
+  Animal <|-- Cat : is-a
+  Dog <|-- GuideDog : is-a`,
+
+'diag-poly': `graph LR
+  CLIENT["クライアントコード\\nshape.describe() を呼ぶ"] --> POLY["🎭 ポリモーフィズム"]
+  POLY --> CIRCLE["Circle.describe()\\n→ 円の面積・周囲を計算"]
+  POLY --> RECT["Rectangle.describe()\\n→ 四角形の面積・周囲を計算"]
+  POLY --> TRI["Triangle.describe()\\n→ 三角形の面積・周囲を計算"]
+  style CLIENT fill:#1e3a5f,color:#93c5fd
+  style POLY fill:#4c1d95,color:#c4b5fd
+  style CIRCLE fill:#14532d,color:#86efac
+  style RECT fill:#14532d,color:#86efac
+  style TRI fill:#14532d,color:#86efac`,
+
+'diag-abstract': `graph TD
+  subgraph ABSTRACTION["抽象化の層"]
+    HIGH["🎨 高レベル（ドライバー視点）\\nハンドルを回す・アクセルを踏む"]
+    MID["⚙️ 中レベル\\n燃料噴射・点火タイミング制御"]
+    LOW["🔧 低レベル（実装詳細）\\nECU・センサー信号・マイクロコード"]
+  end
+  USER["👤 ドライバー\\n高レベルのみ知ればよい"] --> HIGH
+  HIGH --> MID
+  MID --> LOW
+  USER -. "❌ 知らなくてよい" .-> MID
+  USER -. "❌ 知らなくてよい" .-> LOW
+  style HIGH fill:#1e3a5f,color:#93c5fd
+  style MID fill:#78350f,color:#fcd34d
+  style LOW fill:#7f1d1d,color:#fca5a5`,
+
+'diag-solid-overview': `graph TD
+  SOLID["🏛️ SOLID 原則"]
+  SOLID --> SRP["S: Single Responsibility\\n単一責任原則\\n1クラス = 1つの変更理由"]
+  SOLID --> OCP["O: Open/Closed\\n開放閉鎖原則\\n拡張に開き、修正に閉じる"]
+  SOLID --> LSP["L: Liskov Substitution\\nリスコフ置換原則\\nサブクラスは親を代替できる"]
+  SOLID --> ISP["I: Interface Segregation\\nインターフェース分離原則\\n不要なメソッドを強制しない"]
+  SOLID --> DIP["D: Dependency Inversion\\n依存性逆転原則\\n抽象に依存し具体に依存しない"]
+  style SOLID fill:#1e3a5f,color:#93c5fd
+  style SRP fill:#7f1d1d,color:#fca5a5
+  style OCP fill:#1e3a5f,color:#93c5fd
+  style LSP fill:#14532d,color:#86efac
+  style ISP fill:#78350f,color:#fcd34d
+  style DIP fill:#4c1d95,color:#c4b5fd`,
+
+'diag-srp': `graph LR
+  subgraph BAD["❌ SRP 違反"]
+    GOD["UserManager\\n─────────────\\nユーザー認証\\nDB保存・取得\\nメール送信\\nCSVレポート生成"]
+  end
+  subgraph GOOD["✅ SRP 準拠"]
+    AUTH["AuthService\\n認証のみ"]
+    REPO["UserRepository\\nDB操作のみ"]
+    EMAIL["EmailService\\nメール送信のみ"]
+    REPORT["ReportGenerator\\nレポートのみ"]
+  end
+  style GOD fill:#7f1d1d,color:#fca5a5
+  style AUTH fill:#14532d,color:#86efac
+  style REPO fill:#14532d,color:#86efac
+  style EMAIL fill:#14532d,color:#86efac
+  style REPORT fill:#14532d,color:#86efac`,
+
+'diag-ocp': `flowchart TD
+  IF_PAY["PaymentProcessor\\n（インターフェース）\\nprocess() を定義"]
+  CREDIT["CreditCardProcessor\\nprocess() を実装"]
+  PAYPAL["PayPalProcessor\\nprocess() を実装"]
+  CRYPTO["CryptoProcessor\\nprocess() を実装\\n← 既存コード変更なしで追加"]
+  CREDIT -->|"implements"| IF_PAY
+  PAYPAL -->|"implements"| IF_PAY
+  CRYPTO -->|"implements"| IF_PAY
+  style IF_PAY fill:#1e3a5f,color:#93c5fd
+  style CREDIT fill:#14532d,color:#86efac
+  style PAYPAL fill:#14532d,color:#86efac
+  style CRYPTO fill:#14532d,color:#86efac`,
+
+'diag-lsp': `graph TD
+  subgraph LSP_BAD["❌ LSP 違反"]
+    BIRD_NG["Bird\\nfly() を持つ"]
+    PENGUIN_NG["Penguin\\nfly() → 例外を投げる！"]
+    BIRD_NG --> PENGUIN_NG
+  end
+  subgraph LSP_FIX["✅ 修正後の設計"]
+    ANIMAL["Animal（基底）"]
+    FLYABLE["FlyableAnimal\\nfly() を持つ"]
+    SPARROW2["Sparrow\\nfly() → 正常に飛ぶ"]
+    PENGUIN2["Penguin\\nswim() のみ（fly なし）"]
+    ANIMAL --> FLYABLE
+    FLYABLE --> SPARROW2
+    ANIMAL --> PENGUIN2
+  end
+  style PENGUIN_NG fill:#7f1d1d,color:#fca5a5
+  style SPARROW2 fill:#14532d,color:#86efac
+  style PENGUIN2 fill:#14532d,color:#86efac`,
+
+'diag-isp': `graph LR
+  subgraph BAD_ISP["❌ 巨大インターフェース"]
+    FAT["Worker\\nwork()\\neat()\\nsleep()\\ncharge_battery()\\ntake_vacation()"]
+    ROBOT_BAD["Robot\\neat()・sleep() 不要なのに実装強制"]
+    FAT --> ROBOT_BAD
+  end
+  subgraph GOOD_ISP["✅ 小さなインターフェース群"]
+    W["Workable\\nwork()"]
+    E["Eatable\\neat() sleep()"]
+    C["Chargeable\\ncharge_battery()"]
+    H_OK["Human\\nWorkable + Eatable"]
+    R_OK["Robot\\nWorkable + Chargeable"]
+    W --> H_OK
+    E --> H_OK
+    W --> R_OK
+    C --> R_OK
+  end
+  style ROBOT_BAD fill:#7f1d1d,color:#fca5a5
+  style H_OK fill:#14532d,color:#86efac
+  style R_OK fill:#14532d,color:#86efac`,
+
+'diag-dip': `graph TD
+  subgraph BAD_DIP["❌ DIP 違反（具体に依存）"]
+    HIGH_BAD["OrderService（上位）"] -->|"直接依存"| LOW_BAD["MySQLDatabase（下位）"]
+  end
+  subgraph GOOD_DIP["✅ DIP 準拠（抽象に依存）"]
+    HIGH_GOOD["OrderService（上位）"]
+    INTERFACE["OrderRepository\\n（抽象インターフェース）"]
+    MYSQL["MySQLOrderRepo\\n（具体実装A）"]
+    POSTGRES["PostgreSQLOrderRepo\\n（具体実装B）"]
+    HIGH_GOOD -->|"依存"| INTERFACE
+    MYSQL -->|"implements"| INTERFACE
+    POSTGRES -->|"implements"| INTERFACE
+  end
+  style HIGH_BAD fill:#7f1d1d,color:#fca5a5
+  style LOW_BAD fill:#7f1d1d,color:#fca5a5
+  style HIGH_GOOD fill:#14532d,color:#86efac
+  style INTERFACE fill:#1e3a5f,color:#93c5fd
+  style MYSQL fill:#14532d,color:#86efac
+  style POSTGRES fill:#14532d,color:#86efac`,
+
+'diag-class-structure': `classDiagram
+  class Product {
+    -String _id
+    -String _name
+    -Money _price
+    -int _stock_count
+    +reserve(quantity) void
+    +restock(quantity) void
+    +is_available() bool
+    +stock_count() int
+  }
+  class Money {
+    -Decimal _amount
+    -String _currency
+    +add(other) Money
+    +multiply(factor) Money
+    +apply_discount(rate) Money
+    +__str__() String
+  }
+  Product --> Money : uses`,
+
+'diag-inherit-vs-compose': `flowchart TD
+  Q1{"この関係は\\nis-a か？"}
+  Q2{"親クラスを完全に\\n置き換えられるか？\\nLSP 準拠？"}
+  Q3{"継承ツリーが\\n3階層以下か？"}
+  USE_INHERIT["✅ 継承を使う\\nDog extends Animal"]
+  USE_COMPOSE["✅ コンポジションを使う\\nCar has Engine"]
+  Q1 -->|"Yes (is-a)"| Q2
+  Q1 -->|"No (has-a)"| USE_COMPOSE
+  Q2 -->|"Yes"| Q3
+  Q2 -->|"No"| USE_COMPOSE
+  Q3 -->|"Yes"| USE_INHERIT
+  Q3 -->|"No"| USE_COMPOSE
+  style USE_INHERIT fill:#14532d,color:#86efac
+  style USE_COMPOSE fill:#1e3a5f,color:#93c5fd`,
+
+'diag-composition': `graph LR
+  subgraph INHERIT_DEEP["❌ 深い継承（避けるべき）"]
+    V["Vehicle"] --> MV["MotorVehicle"]
+    MV --> CAR["Car"]
+    CAR --> SEDAN["Sedan"]
+    SEDAN --> LUXURY["LuxurySedan（変更困難）"]
+  end
+  subgraph COMPOSE["✅ コンポジション（推奨）"]
+    CAR2["Car"]
+    ENGINE["Engine"]
+    TRANS["Transmission"]
+    AUDIO["AudioSystem"]
+    NAV["Navigation"]
+    CAR2 --> ENGINE
+    CAR2 --> TRANS
+    CAR2 --> AUDIO
+    CAR2 --> NAV
+  end
+  style LUXURY fill:#7f1d1d,color:#fca5a5
+  style CAR2 fill:#14532d,color:#86efac`,
+
+'diag-if-vs-abs': `graph TD
+  subgraph INTERFACE["🔌 インターフェース\\nABC + 抽象メソッドのみ"]
+    IF_DEF["契約を定義\\n実装は持たない\\n多重実装が可能\\n例: Serializable, Printable"]
+  end
+  subgraph ABSTRACT["🏗️ 抽象クラス\\nABC"]
+    ABS_DEF["部分的な実装を持てる\\nテンプレートメソッド可\\n共通状態を持てる\\n例: Animal, Shape"]
+  end
+  subgraph CONCRETE["💻 具体クラス"]
+    CON_DEF["すべて実装済み\\nインスタンス化可能\\n実際の処理を行う"]
+  end
+  INTERFACE --> CONCRETE
+  ABSTRACT --> CONCRETE
+  style INTERFACE fill:#4c1d95,color:#c4b5fd
+  style ABSTRACT fill:#1e3a5f,color:#93c5fd
+  style CONCRETE fill:#14532d,color:#86efac`,
+
+'diag-template-method': `sequenceDiagram
+  participant CLIENT as クライアント
+  participant ABSTRACT as DataExporter（抽象）
+  participant CONCRETE as CSVExporter（具体）
+  CLIENT->>ABSTRACT: export(data) を呼ぶ
+  ABSTRACT->>ABSTRACT: validate(data) 共通処理
+  ABSTRACT->>CONCRETE: transform(data) 委譲
+  CONCRETE-->>ABSTRACT: "1,2,3,4" CSV変換結果
+  ABSTRACT->>CONCRETE: write(content) 委譲
+  CONCRETE-->>ABSTRACT: ファイルに書き込み
+  ABSTRACT->>ABSTRACT: notify_completion() 共通処理
+  ABSTRACT-->>CLIENT: 完了`,
+
+'diag-gof': `graph TD
+  DP["🎨 GoF デザインパターン 23種"]
+  DP --> CREATIONAL["生成パターン\\nオブジェクトの生成に関する"]
+  DP --> STRUCTURAL["構造パターン\\nクラスの構造に関する"]
+  DP --> BEHAVIORAL["振る舞いパターン\\nクラスの相互作用に関する"]
+  CREATIONAL --> SINGLETON["Singleton\\n1インスタンスのみ"]
+  CREATIONAL --> FACTORY["Factory Method\\n生成をサブクラスに委譲"]
+  CREATIONAL --> BUILDER["Builder\\n複雑オブジェクトの段階的構築"]
+  STRUCTURAL --> ADAPTER["Adapter\\nIF変換アダプター"]
+  STRUCTURAL --> DECORATOR["Decorator\\n機能を動的に追加"]
+  STRUCTURAL --> FACADE["Facade\\n複雑さを単純なIFで隠す"]
+  BEHAVIORAL --> OBSERVER["Observer\\n状態変化を自動通知"]
+  BEHAVIORAL --> STRATEGY["Strategy\\nアルゴリズムを交換可能に"]
+  BEHAVIORAL --> COMMAND["Command\\n処理をオブジェクト化"]
+  style CREATIONAL fill:#1e3a5f,color:#93c5fd
+  style STRUCTURAL fill:#14532d,color:#86efac
+  style BEHAVIORAL fill:#4c1d95,color:#c4b5fd`,
+
+'diag-observer': `sequenceDiagram
+  participant ORDER as Order（Subject）
+  participant INV as InventoryObserver
+  participant EMAIL as EmailObserver
+  ORDER->>ORDER: confirm() を呼ぶ
+  ORDER->>ORDER: status = CONFIRMED に変更
+  ORDER->>INV: notify(ORDER_CONFIRMED)
+  INV->>INV: 在庫を引き当てる
+  ORDER->>EMAIL: notify(ORDER_CONFIRMED)
+  EMAIL->>EMAIL: 確認メールを送信`,
+
+'diag-clean-arch': `graph TD
+  subgraph CLEAN["クリーンアーキテクチャ × OOP"]
+    subgraph DOMAIN["🧩 ドメイン層（最も純粋な OOP）"]
+      ENTITIES["Entity — ビジネスルールを持つオブジェクト"]
+      VALUE_OBJ["Value Object — イミュータブルな値"]
+      DOMAIN_SVC["Domain Service — 横断的ビジネスロジック"]
+    end
+    subgraph APP["⚙️ アプリケーション層"]
+      USE_CASE["UseCase — ビジネスフローを調整"]
+      REPO_IF["Repository Interface（抽象） — DIP 適用"]
+    end
+    subgraph INFRA["🔧 インフラ層"]
+      REPO_IMPL["Repository 実装 — 具体的な永続化"]
+    end
+  end
+  APP --> DOMAIN
+  INFRA -. "DIP: 抽象に向けて実装" .-> REPO_IF
+  style DOMAIN fill:#14532d,stroke:#86efac,color:#86efac
+  style APP fill:#78350f,stroke:#fcd34d,color:#fcd34d
+  style INFRA fill:#1e3a5f,stroke:#93c5fd,color:#93c5fd`,
+
+'diag-ddd': `graph LR
+  subgraph DDD["DDD 戦術パターン"]
+    E["Entity\\nIDで同一性判断"]
+    VO["Value Object\\n値で同一性判断"]
+    AGG["Aggregate\\n整合性境界"]
+    DS["Domain Service\\n横断ロジック"]
+    REP["Repository\\n永続化抽象"]
+  end
+  subgraph OOP_C["対応する OOP 概念"]
+    C1["クラス + カプセル化"]
+    C2["@dataclass frozen=True"]
+    C3["Aggregate Root クラス"]
+    C4["ステートレスなクラス"]
+    C5["ABC インターフェース + DIP"]
+  end
+  E --> C1
+  VO --> C2
+  AGG --> C3
+  DS --> C4
+  REP --> C5
+  style E fill:#1e3a5f,color:#93c5fd
+  style VO fill:#14532d,color:#86efac
+  style AGG fill:#4c1d95,color:#c4b5fd
+  style DS fill:#78350f,color:#fcd34d
+  style REP fill:#7f1d1d,color:#fca5a5`,
+
+'diag-test-pyramid': `graph TD
+  subgraph PYRAMID["テストピラミッド"]
+    E2E["E2E テスト\\n少数・遅い\\nブラウザ・API 経由"]
+    INTEGRATION["統合テスト\\n中程度\\n複数クラスの協調"]
+    UNIT["ユニットテスト\\n最多・最速\\n単一クラスのみ\\nモックを使用"]
+  end
+  E2E --- INTEGRATION
+  INTEGRATION --- UNIT
+  style E2E fill:#7f1d1d,color:#fca5a5
+  style INTEGRATION fill:#78350f,color:#fcd34d
+  style UNIT fill:#14532d,color:#86efac`,
+
+'diag-code-smells': `graph TD
+  subgraph SMELLS["🚨 コードの匂い"]
+    A["長すぎるメソッド\\n50行超"]
+    B["大きすぎるクラス\\n300行超"]
+    C["重複コード\\n同じロジックが複数箇所"]
+    D["プリミティブ執着\\nstring/int で概念を表現"]
+    E["長い引数リスト\\n5個以上"]
+    F["if/elif の連鎖\\n型判定が増え続ける"]
+  end
+  subgraph FIXES["✅ 対処法"]
+    FA["Extract Method\\nメソッドの抽出"]
+    FB["Extract Class\\nクラスの抽出"]
+    FC["テンプレートメソッド\\n共通クラスへ集約"]
+    FD["Value Object の導入"]
+    FE["Parameter Object\\nパラメータオブジェクト"]
+    FF["Strategy / Factory パターン"]
+  end
+  A --> FA
+  B --> FB
+  C --> FC
+  D --> FD
+  E --> FE
+  F --> FF
+  style A fill:#7f1d1d,color:#fca5a5
+  style B fill:#7f1d1d,color:#fca5a5
+  style C fill:#7f1d1d,color:#fca5a5
+  style D fill:#7f1d1d,color:#fca5a5
+  style E fill:#7f1d1d,color:#fca5a5
+  style F fill:#7f1d1d,color:#fca5a5
+  style FA fill:#14532d,color:#86efac
+  style FB fill:#14532d,color:#86efac
+  style FC fill:#14532d,color:#86efac
+  style FD fill:#14532d,color:#86efac
+  style FE fill:#14532d,color:#86efac
+  style FF fill:#14532d,color:#86efac`,
+
+'diag-ec-domain': `classDiagram
+  class Customer {
+    -CustomerId _id
+    -String _name
+    -Email _email
+    +activate() void
+    +deactivate() void
+  }
+  class Order {
+    -OrderId _id
+    -CustomerId _customer_id
+    -List~OrderLine~ _lines
+    -OrderStatus _status
+    +add_line(product, qty) void
+    +confirm() void
+    +cancel() void
+    +total() Money
+  }
+  class OrderLine {
+    -ProductId _product_id
+    -Money _unit_price
+    -int _quantity
+    +subtotal() Money
+  }
+  class Product {
+    -ProductId _id
+    -String _name
+    -Money _price
+    -int _stock_count
+    +reserve(qty) void
+    +is_available() bool
+  }
+  class Money {
+    -Decimal _amount
+    -String _currency
+    +add(Money) Money
+    +multiply(int) Money
+  }
+  Customer "1" --> "0..*" Order : places
+  Order "1" *-- "1..*" OrderLine : contains
+  Product "1" <-- "0..*" OrderLine : references
+  OrderLine --> Money
+  Product --> Money`,
+
+'diag-antipattern': `graph TD
+  subgraph AP["⚠️ OOP アンチパターン"]
+    G["神クラス God Class\\n1クラスがすべてを管理"]
+    ANEMIC["貧血ドメインモデル\\nクラスがデータのみ"]
+    DEEP["深い継承ツリー\\n5階層以上"]
+    SING["Singleton 乱用\\nグローバル状態の多用"]
+  end
+  G --> G_FIX["SRP 適用\\n責務ごとに分割"]
+  ANEMIC --> A_FIX["リッチドメインモデル\\nロジックをクラスに移動"]
+  DEEP --> D_FIX["コンポジション/Mixin\\nに切り替える"]
+  SING --> S_FIX["DI（依存性注入）\\nテスタビリティ向上"]
+  style G fill:#7f1d1d,color:#fca5a5
+  style ANEMIC fill:#7f1d1d,color:#fca5a5
+  style DEEP fill:#7f1d1d,color:#fca5a5
+  style SING fill:#7f1d1d,color:#fca5a5
+  style G_FIX fill:#14532d,color:#86efac
+  style A_FIX fill:#14532d,color:#86efac
+  style D_FIX fill:#14532d,color:#86efac
+  style S_FIX fill:#14532d,color:#86efac`
+};
+
+// ═══ Mermaid レンダリング ═══
+async function renderDiagrams() {
+  for (const [id, definition] of Object.entries(diagrams)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    try {
+      el.textContent = definition;
+      const { svg } = await mermaid.render(id + '-svg', definition);
+      el.innerHTML = svg;
+    } catch (err) {
+      console.warn(`Mermaid render failed for ${id}:`, err);
+      el.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:16px;">図の読み込みに失敗しました</div>`;
+    }
+  }
+}
+
+// ═══ highlight.js ═══
+document.addEventListener('DOMContentLoaded', () => {
+  hljs.highlightAll();
+  renderDiagrams();
+});
+
+// ═══ IntersectionObserver — サイドバー ナビ ハイライト ═══
+const navItems = document.querySelectorAll('.nav-item[href]');
+const sections = document.querySelectorAll('.section[id], .hero');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.getAttribute('href') === `#${id}`);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+// ═══ IntersectionObserver — フェードイン ═══
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+</script>
+</body>
+</html>
