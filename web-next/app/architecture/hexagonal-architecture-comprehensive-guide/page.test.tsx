@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { extractScopedCssBlock } from "../../../tests/css-utils";
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
@@ -92,17 +93,7 @@ describe("hexagonal-architecture-comprehensive-guide page", () => {
 
     const scopeClass = ".hexagonal-architecture-comprehensive-guide";
     expect(cssContent).toContain(scopeClass);
-    const scopeStart = cssContent.indexOf(scopeClass);
-    let depth = 0,
-      endIdx = scopeStart;
-    for (let i = scopeStart; i < cssContent.length; i++) {
-      if (cssContent[i] === "{") depth++;
-      else if (cssContent[i] === "}" && --depth === 0) {
-        endIdx = i + 1;
-        break;
-      }
-    }
-    const sectionContent = cssContent.slice(scopeStart, endIdx);
+    const sectionContent = extractScopedCssBlock(cssContent, scopeClass);
 
     expect(sectionContent).toMatch(/\.main\s*\{[^}]*margin-left:\s*var\(--sw\)/);
     expect(sectionContent).toMatch(/\.main\s*\{[^}]*flex:\s*1/);
