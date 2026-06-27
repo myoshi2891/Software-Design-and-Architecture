@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { extractScopedCssBlock } from "../../../tests/css-utils";
@@ -90,8 +93,8 @@ describe("monolithic-architecture-comprehensive-guide page", () => {
   });
 
   it("globals.css に .monolithic-architecture-comprehensive-guide .main のレイアウト調整が含まれている", () => {
-    const fs = require("node:fs");
-    const path = require("node:path");
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
