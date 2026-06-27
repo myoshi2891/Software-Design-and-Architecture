@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import CodSidebar, { type NavGroup } from "./CodSidebar";
 
@@ -60,6 +60,7 @@ describe("CodSidebar", () => {
   });
 
   afterEach(() => {
+    cleanup();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
     globalThis.IntersectionObserver = originalIntersectionObserver;

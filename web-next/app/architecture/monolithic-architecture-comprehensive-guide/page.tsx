@@ -753,6 +753,7 @@ export default function Page() {
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `my_app/
 ├── <span class="cls">presentation/</span>               <span class="cm"># プレゼンテーション層</span>
@@ -978,6 +979,7 @@ export default function Page() {
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="cm"># ユーザーモジュールの公開 API 定義（modules/users/public.py）</span>
 <span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
@@ -1145,6 +1147,7 @@ export default function Page() {
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">from</span> sqlalchemy <span class="kw">import</span> Column, String, Numeric, DateTime, ForeignKey, Index, Boolean
 <span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> relationship, DeclarativeBase
@@ -1289,6 +1292,7 @@ export default function Page() {
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
 <span class="kw">from</span> decimal <span class="kw">import</span> Decimal
@@ -1462,6 +1466,7 @@ export default function Page() {
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">from</span> fastapi <span class="kw">import</span> APIRouter, Depends, HTTPException, status
 
@@ -1558,6 +1563,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">import</span> jwt, bcrypt
 <span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta, timezone
@@ -1719,6 +1725,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">import</span> pytest
 <span class="kw">from</span> decimal <span class="kw">import</span> Decimal
@@ -1956,6 +1963,7 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="cm"># Stage 1: 依存関係インストール</span>
 <span class="kw">FROM</span> python:3.12-slim <span class="cls">AS</span> dependencies
@@ -2094,6 +2102,7 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
 
           <div className="cd">
             <pre
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
                 __html: `<span class="kw">import</span> structlog, time, uuid
 

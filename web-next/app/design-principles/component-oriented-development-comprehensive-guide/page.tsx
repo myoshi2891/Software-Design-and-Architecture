@@ -1812,6 +1812,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / React</span>
                   <span className="cb-file">components/atoms/Button/Button.tsx</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_BUTTON }} />
               </div>
             </div>
@@ -1834,6 +1835,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / React</span>
                   <span className="cb-file">hooks/useFetch.ts</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_HOOK }} />
               </div>
             </div>
@@ -1876,6 +1878,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / NestJS</span>
                   <span className="cb-file">order/order.service.ts</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_NESTJS }} />
               </div>
             </div>
@@ -1887,6 +1890,7 @@ export default function Page() {
                   <span className="cb-lang">Python / FastAPI</span>
                   <span className="cb-file">order/router.py</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_FASTAPI }} />
               </div>
             </div>
@@ -1947,6 +1951,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / React</span>
                   <span className="cb-file">コンポーネントのライフサイクル管理</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_LIFECYCLE }} />
               </div>
 
@@ -2024,6 +2029,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript</span>
                   <span className="cb-file">インターフェース分離原則（ISP）の実践</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_ISP }} />
               </div>
             </div>
@@ -2064,6 +2070,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / Vitest + Testing Library</span>
                   <span className="cb-file">ProductCard.test.tsx</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_FE_TEST }} />
               </div>
             </div>
@@ -2075,6 +2082,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / NestJS + Jest</span>
                   <span className="cb-file">order.service.spec.ts</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_BE_TEST }} />
               </div>
               <div className="tw">
@@ -2162,6 +2170,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript</span>
                   <span className="cb-file">design-system/tokens/index.ts</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_TOKENS }} />
               </div>
             </div>
@@ -2179,6 +2188,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / Storybook</span>
                   <span className="cb-file">Button.stories.tsx</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_STORYBOOK }} />
               </div>
             </div>
@@ -2216,6 +2226,7 @@ export default function Page() {
                   <span className="cb-lang">JavaScript / Webpack</span>
                   <span className="cb-file">webpack.config.js — Shell（ホスト）</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_MFE }} />
               </div>
               <div className="box box-am">
@@ -2259,6 +2270,7 @@ export default function Page() {
                     hooks/useCart.ts + components/organisms/CartSidebar.tsx
                   </span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_CART }} />
               </div>
               {/* テストのためのダミーh2 */}
@@ -2272,6 +2284,7 @@ export default function Page() {
                   <span className="cb-lang">Directory Structure</span>
                   <span className="cb-file">プロジェクトルート</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_DIR }} />
               </div>
             </div>
@@ -2304,6 +2317,7 @@ export default function Page() {
                   <span className="cb-lang">TypeScript / React</span>
                   <span className="cb-file">Props ドリリング → Context への移行</span>
                 </div>
+                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block */}
                 <pre dangerouslySetInnerHTML={{ __html: CODE_DRILLING }} />
               </div>
               <div className="tw">

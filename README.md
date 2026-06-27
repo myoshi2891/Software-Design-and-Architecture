@@ -72,6 +72,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/microservices-architecture-comprehensive-guide`](web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx)
     — マイクロサービス完全ガイドを移植（18 セクション・Mermaid 22 図・table 8・コードブロック 9）。
     固定サイドバー・進捗バー・scroll-spy を [`MicroservicesArchitectureSidebar.tsx`](web-next/app/architecture/microservices-architecture-comprehensive-guide/MicroservicesArchitectureSidebar.tsx) でクライアント描画
+  - [`/architecture/monolithic-architecture-comprehensive-guide`](web-next/app/architecture/monolithic-architecture-comprehensive-guide/page.tsx)
+    — モノリシックアーキテクチャ完全ガイドを移植（19 セクション・Mermaid 16 図・table 7・コードブロック 9）。
+    固定サイドバー・進捗バー・scroll-spy を [`MonolithicArchitectureSidebar.tsx`](web-next/app/architecture/monolithic-architecture-comprehensive-guide/MonolithicArchitectureSidebar.tsx) でクライアント描画
   - [`/design-principles/api-first-design-comprehensive-guide`](web-next/app/design-principles/api-first-design-comprehensive-guide/page.tsx)
     — API-First設計完全ガイドを移植（16 セクション・Mermaid 27 図・table 10・コードブロック 7）。
     固定サイドバー・進捗バー・scroll-spy を [`ApiFirstSidebar.tsx`](web-next/app/design-principles/api-first-design-comprehensive-guide/ApiFirstSidebar.tsx) でクライアント描画

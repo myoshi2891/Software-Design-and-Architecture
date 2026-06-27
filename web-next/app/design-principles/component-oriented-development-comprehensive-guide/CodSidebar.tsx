@@ -1,4 +1,5 @@
 "use client";
+import { IconPuzzle } from "@tabler/icons-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
@@ -30,7 +31,9 @@ export default function CodSidebar({ groups }: Props) {
             className="sb-logo"
             href="/design-principles/component-oriented-development-comprehensive-guide"
           >
-            <div className="sb-icon">🧩</div>
+            <div className="sb-icon">
+              <IconPuzzle size={20} className="sb-logo-icon" />
+            </div>
             <div className="sb-text">
               COD 完全ガイド
               <span className="sb-sub">Component-Oriented Development</span>

@@ -33,6 +33,7 @@ export function extractScopedCssBlock(cssContent: string, scopeClass: string): s
     let foundBrace = false;
     let braceIndex = -1;
     let inComment = false;
+    let invalidCandidate = false;
 
     for (let i = scopeStart + scopeClass.length; i < cssContent.length; i++) {
       if (!inComment && cssContent[i] === "/" && cssContent[i + 1] === "*") {
@@ -49,18 +50,27 @@ export function extractScopedCssBlock(cssContent: string, scopeClass: string): s
         continue;
       }
 
-      if (cssContent[i] === "{") {
+      const char = cssContent[i];
+
+      if (char === "{") {
         foundBrace = true;
         braceIndex = i;
         break;
       }
-      if (cssContent[i] === "}") {
+      if (char === "}") {
         // 先に } が見つかった場合は、このセレクターはブロックを持たないため不適合
+        break;
+      }
+
+      // 空白（スペース、タブ、改行）以外で、かつコメント外の文字があれば
+      // この候補は `.scopeClass` 自体のブロックではなく、子孫セレクター等の定義とみなす
+      if (!/\s/.test(char)) {
+        invalidCandidate = true;
         break;
       }
     }
 
-    if (!foundBrace) {
+    if (invalidCandidate || !foundBrace) {
       continue;
     }
 
