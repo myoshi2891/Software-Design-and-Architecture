@@ -1259,12 +1259,13 @@ export default function Page() {
         <div className="hero">
           <div className="hero-badge">📘 Complete Guide</div>
           <h1 className="hero-title">
-            <span>コンポーネント指向開発</span><br />
+            <span>コンポーネント指向開発</span>
+            <br />
             完全ガイド
           </h1>
           <p className="hero-desc">
-            ソフトウェアシステムを<strong>再利用可能・独立した部品（コンポーネント）</strong>の集合体として
-            設計・構築するパラダイムを、初学者から実践者まで体系的に解説します。
+            ソフトウェアシステムを<strong>再利用可能・独立した部品（コンポーネント）</strong>
+            の集合体として 設計・構築するパラダイムを、初学者から実践者まで体系的に解説します。
             フロントエンド・バックエンド双方の設計原則、実装パターン、テスト戦略、デザインシステムまで網羅します。
           </p>
           <div className="hero-tags">
@@ -1293,7 +1294,8 @@ export default function Page() {
               <h3 className="sub-title">1.1 定義：一言で理解する</h3>
               <p>
                 <strong>コンポーネント指向開発（COD）</strong>とは、ソフトウェアシステムを
-                <strong>再利用可能・独立した「コンポーネント」の集合体</strong>として設計・構築する開発パラダイムです。
+                <strong>再利用可能・独立した「コンポーネント」の集合体</strong>
+                として設計・構築する開発パラダイムです。
               </p>
 
               <div className="box box-ac">
@@ -1315,7 +1317,9 @@ export default function Page() {
 
             <div className="subsection">
               <h3 className="sub-title">1.2 OOP との違い・相補的な関係</h3>
-              <p>コンポーネント指向とオブジェクト指向（OOP）は対立するものではなく、異なるレベルの設計を扱います。</p>
+              <p>
+                コンポーネント指向とオブジェクト指向（OOP）は対立するものではなく、異なるレベルの設計を扱います。
+              </p>
               <div className="tw">
                 <table>
                   <thead>
@@ -1348,8 +1352,12 @@ export default function Page() {
                     </tr>
                     <tr>
                       <td>実践での使い方</td>
-                      <td>コンポーネント<em>内部</em>を実装</td>
-                      <td>コンポーネント<em>間</em>の構造を定義</td>
+                      <td>
+                        コンポーネント<em>内部</em>を実装
+                      </td>
+                      <td>
+                        コンポーネント<em>間</em>の構造を定義
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1357,7 +1365,9 @@ export default function Page() {
               <div className="box box-ac">
                 <div className="bt">✅ 実践の鉄則</div>
                 <p>
-                  コンポーネントの<strong>内部は OOP で実装</strong>し、コンポーネント<strong>間はインターフェースで疎結合</strong>にする。両者を組み合わせることで最も効果的なアーキテクチャになります。
+                  コンポーネントの<strong>内部は OOP で実装</strong>し、コンポーネント
+                  <strong>間はインターフェースで疎結合</strong>
+                  にする。両者を組み合わせることで最も効果的なアーキテクチャになります。
                 </p>
               </div>
             </div>
@@ -1368,37 +1378,43 @@ export default function Page() {
                 <div className="tl-item">
                   <div className="tl-year">1968年</div>
                   <div className="tl-text">
-                    <strong>ソフトウェア危機</strong>：NATO会議で「再利用可能な部品」の概念が初めて提唱される。複雑化するソフトウェアに「部品化」が解決策として浮上。
+                    <strong>ソフトウェア危機</strong>
+                    ：NATO会議で「再利用可能な部品」の概念が初めて提唱される。複雑化するソフトウェアに「部品化」が解決策として浮上。
                   </div>
                 </div>
                 <div className="tl-item">
                   <div className="tl-year">1992年</div>
                   <div className="tl-text">
-                    <strong>COM / DCOM（Microsoft）</strong>：ランタイムコンポーネントモデルの先駆けとして登場。言語に依存しないコンポーネント間通信を実現。
+                    <strong>COM / DCOM（Microsoft）</strong>
+                    ：ランタイムコンポーネントモデルの先駆けとして登場。言語に依存しないコンポーネント間通信を実現。
                   </div>
                 </div>
                 <div className="tl-item">
                   <div className="tl-year">1998年</div>
                   <div className="tl-text">
-                    <strong>Enterprise JavaBeans（EJB）</strong>：サーバーサイドコンポーネントの標準化。Javaエコシステムにコンポーネント概念が普及。
+                    <strong>Enterprise JavaBeans（EJB）</strong>
+                    ：サーバーサイドコンポーネントの標準化。Javaエコシステムにコンポーネント概念が普及。
                   </div>
                 </div>
                 <div className="tl-item">
                   <div className="tl-year">2013年</div>
                   <div className="tl-text">
-                    <strong>Reactの登場</strong>：UIコンポーネント革命。Virtual DOM と再利用可能な UI コンポーネントの概念がフロントエンドに革命をもたらす。
+                    <strong>Reactの登場</strong>：UIコンポーネント革命。Virtual DOM と再利用可能な
+                    UI コンポーネントの概念がフロントエンドに革命をもたらす。
                   </div>
                 </div>
                 <div className="tl-item">
                   <div className="tl-year">2016年</div>
                   <div className="tl-text">
-                    <strong>Storybookの登場</strong>：コンポーネントカタログ化・ドキュメント化ツール。デザインシステムとの連携が加速。
+                    <strong>Storybookの登場</strong>
+                    ：コンポーネントカタログ化・ドキュメント化ツール。デザインシステムとの連携が加速。
                   </div>
                 </div>
                 <div className="tl-item">
                   <div className="tl-year">2020年代</div>
                   <div className="tl-text">
-                    <strong>マイコンフロントエンド</strong>：コンポーネント指向がアーキテクチャレベルへ進化。チームの境界がコンポーネントの境界と一致する設計が主流に。
+                    <strong>マイコンフロントエンド</strong>
+                    ：コンポーネント指向がアーキテクチャレベルへ進化。チームの境界がコンポーネントの境界と一致する設計が主流に。
                   </div>
                 </div>
               </div>
@@ -1428,7 +1444,10 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">2.1 コンポーネント設計の6原則（Robert C. Martin）</h3>
               <p>
-                Clean Architecture の著者 Robert C. Martin（Uncle Bob）が提唱した、コンポーネント設計を支える6つの原則です。<strong>凝集に関する3原則</strong>と<strong>結合に関する3原則</strong>に分類されます。
+                Clean Architecture の著者 Robert C. Martin（Uncle
+                Bob）が提唱した、コンポーネント設計を支える6つの原則です。
+                <strong>凝集に関する3原則</strong>と<strong>結合に関する3原則</strong>
+                に分類されます。
               </p>
               <div className="dg">
                 <div className="dg-label">📐 図2-1：コンポーネント設計の6原則</div>
@@ -1441,8 +1460,10 @@ export default function Page() {
                   <div className="gc-icon">🔵</div>
                   <div className="gc-title">凝集の原則（何をまとめるか）</div>
                   <p>
-                    <strong>REP</strong>：再利用したいものとリリース単位を一致させる<br />
-                    <strong>CCP</strong>：一緒に変わるものは一緒に置く（SRP のコンポーネント版）<br />
+                    <strong>REP</strong>：再利用したいものとリリース単位を一致させる
+                    <br />
+                    <strong>CCP</strong>：一緒に変わるものは一緒に置く（SRP のコンポーネント版）
+                    <br />
                     <strong>CRP</strong>：使わないものへの依存を作らない
                   </p>
                 </div>
@@ -1450,8 +1471,10 @@ export default function Page() {
                   <div className="gc-icon">🟢</div>
                   <div className="gc-title">結合の原則（何に依存するか）</div>
                   <p>
-                    <strong>ADP</strong>：依存グラフは DAG（有向非巡回グラフ）でなければならない<br />
-                    <strong>SDP</strong>：不安定→安定の方向にのみ依存する<br />
+                    <strong>ADP</strong>：依存グラフは DAG（有向非巡回グラフ）でなければならない
+                    <br />
+                    <strong>SDP</strong>：不安定→安定の方向にのみ依存する
+                    <br />
                     <strong>SAP</strong>：安定＝抽象的であるべき（DIP のコンポーネント版）
                   </p>
                 </div>
@@ -1461,7 +1484,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">2.2 高凝集・低結合の原則</h3>
               <p>
-                コンポーネント設計における最重要概念です。<strong>高凝集</strong>はコンポーネント内部の関連性の高さ、<strong>低結合</strong>はコンポーネント間の依存の少なさを指します。
+                コンポーネント設計における最重要概念です。<strong>高凝集</strong>
+                はコンポーネント内部の関連性の高さ、<strong>低結合</strong>
+                はコンポーネント間の依存の少なさを指します。
               </p>
               <div className="dg">
                 <div className="dg-label">📊 図2-2：高凝集・低結合 vs アンチパターン</div>
@@ -1522,7 +1547,8 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">3.1 アトミックデザイン（Atomic Design）</h3>
               <p>
-                Brad Frost が提唱した、UI コンポーネントを<strong>化学構造になぞらえて5階層</strong>に整理するシステムです。
+                Brad Frost が提唱した、UI コンポーネントを<strong>化学構造になぞらえて5階層</strong>
+                に整理するシステムです。
                 どの粒度のコンポーネントを作るべきかの明確な指針を与えてくれます。
               </p>
               <div className="dg">
@@ -1535,7 +1561,8 @@ export default function Page() {
                 <div className="bt">💡 初学者向け：なぜ5階層に分けるのか</div>
                 <p>
                   「どこにコードを書けばいいかわからない」という問題を解決します。
-                  <code>Button</code> は Atoms、<code>SearchBox = Input + Button</code> は Molecules、
+                  <code>Button</code> は Atoms、<code>SearchBox = Input + Button</code> は
+                  Molecules、
                   <code>Header = Logo + Nav + SearchBox</code> は Organisms。
                   この階層を意識するだけで、コンポーネントの置き場所が自然に決まります。
                 </p>
@@ -1629,7 +1656,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">4.2 Props Down / Events Up（基本パターン）</h3>
               <p>
-                最もシンプルで追跡しやすいパターンです。<strong>データは上から下へ（Props）、イベントは下から上へ（callback）</strong>という一方向フローを維持します。
+                最もシンプルで追跡しやすいパターンです。
+                <strong>データは上から下へ（Props）、イベントは下から上へ（callback）</strong>
+                という一方向フローを維持します。
               </p>
               <div className="dg">
                 <div className="dg-label">🔄 図4-2：Props Down / Events Up シーケンス</div>
@@ -1640,8 +1669,8 @@ export default function Page() {
               <div className="box box-ac">
                 <div className="bt">✅ ベストプラクティス</div>
                 <p>
-                  2〜3階層以内であれば Props Down / Events Up を使いましょう。
-                  シンプルで<strong>データフローが追跡しやすく、デバッグが容易</strong>です。
+                  2〜3階層以内であれば Props Down / Events Up を使いましょう。 シンプルで
+                  <strong>データフローが追跡しやすく、デバッグが容易</strong>です。
                   それ以上の深さになったら Context / Store を検討してください。
                 </p>
               </div>
@@ -1649,7 +1678,10 @@ export default function Page() {
 
             <div className="subsection">
               <h3 className="sub-title">4.3 Context / Store パターン（グローバル状態）</h3>
-              <p>深いコンポーネントツリーで Props を何階層も中継してしまう「Props ドリリング」を解決するパターンです。</p>
+              <p>
+                深いコンポーネントツリーで Props を何階層も中継してしまう「Props
+                ドリリング」を解決するパターンです。
+              </p>
               <div className="dg">
                 <div className="dg-label">🌐 図4-3：Context / Store によるグローバル状態共有</div>
                 <div className="mermaid-wrap">
@@ -1672,32 +1704,44 @@ export default function Page() {
                   <tbody>
                     <tr>
                       <td>親子間のデータ受け渡し</td>
-                      <td><span className="bdg bdg-bl">Props Down</span></td>
+                      <td>
+                        <span className="bdg bdg-bl">Props Down</span>
+                      </td>
                       <td>シンプルで追跡しやすい</td>
                     </tr>
                     <tr>
                       <td>子から親への通知</td>
-                      <td><span className="bdg bdg-ac">Events Up</span></td>
+                      <td>
+                        <span className="bdg bdg-ac">Events Up</span>
+                      </td>
                       <td>一方向フローを保てる</td>
                     </tr>
                     <tr>
                       <td>3階層以上を超えた共有</td>
-                      <td><span className="bdg bdg-pu">Context / Store</span></td>
+                      <td>
+                        <span className="bdg bdg-pu">Context / Store</span>
+                      </td>
                       <td>Props ドリリングを回避</td>
                     </tr>
                     <tr>
                       <td>ログイン状態・テーマ等</td>
-                      <td><span className="bdg bdg-pu">Context</span></td>
+                      <td>
+                        <span className="bdg bdg-pu">Context</span>
+                      </td>
                       <td>アプリ全体での共有に最適</td>
                     </tr>
                     <tr>
                       <td>柔軟な UI 合成</td>
-                      <td><span className="bdg bdg-am">Slot / Children</span></td>
+                      <td>
+                        <span className="bdg bdg-am">Slot / Children</span>
+                      </td>
                       <td>レイアウトや内容を外部化</td>
                     </tr>
                     <tr>
                       <td>モーダル・ツールチップ</td>
-                      <td><span className="bdg bdg-rd">Portal</span></td>
+                      <td>
+                        <span className="bdg bdg-rd">Portal</span>
+                      </td>
                       <td>DOM 階層外に描画が必要</td>
                     </tr>
                   </tbody>
@@ -1732,7 +1776,9 @@ export default function Page() {
                 <div className="gc ac">
                   <div className="gc-icon">🎯</div>
                   <div className="gc-title">デフォルト値を設定</div>
-                  <p>オプショナルな Props には適切なデフォルト値を与え、呼び出し側の負担を減らす。</p>
+                  <p>
+                    オプショナルな Props には適切なデフォルト値を与え、呼び出し側の負担を減らす。
+                  </p>
                 </div>
                 <div className="gc pu">
                   <div className="gc-icon">⚡</div>
@@ -1753,8 +1799,14 @@ export default function Page() {
             </div>
 
             <div className="subsection">
-              <h3 className="sub-title">5.2 Button コンポーネント実装例（Atom）<span className="stag">React + TypeScript</span></h3>
-              <p>最小単位のコンポーネントである Button の完全実装例です。アクセシビリティ・ローディング状態・バリアント管理まで考慮します。</p>
+              <h3 className="sub-title">
+                5.2 Button コンポーネント実装例（Atom）
+                <span className="stag">React + TypeScript</span>
+              </h3>
+              <p>
+                最小単位のコンポーネントである Button
+                の完全実装例です。アクセシビリティ・ローディング状態・バリアント管理まで考慮します。
+              </p>
               <div className="cb">
                 <div className="cb-head">
                   <span className="cb-lang">TypeScript / React</span>
@@ -1767,8 +1819,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">5.3 Custom Hooks でロジックをコンポーネント化する</h3>
               <p>
-                Custom Hooks は<strong>ロジックをコンポーネントと同じように再利用する</strong>React のパターンです。
-                API 呼び出し・タイマー・イベントリスナーなどのロジックを複数のコンポーネントで共有できます。
+                Custom Hooks は<strong>ロジックをコンポーネントと同じように再利用する</strong>React
+                のパターンです。 API
+                呼び出し・タイマー・イベントリスナーなどのロジックを複数のコンポーネントで共有できます。
               </p>
               <div className="dg">
                 <div className="dg-label">📊 図5-1：Custom Hook によるロジックの再利用</div>
@@ -1808,7 +1861,10 @@ export default function Page() {
 
             <div className="subsection">
               <h3 className="sub-title">6.2 NestJS によるモジュール設計</h3>
-              <p>NestJS は<strong>モジュール</strong>という単位でコンポーネントを管理します。各モジュールは独立しており、必要な依存関係のみをインポートします。</p>
+              <p>
+                NestJS は<strong>モジュール</strong>
+                という単位でコンポーネントを管理します。各モジュールは独立しており、必要な依存関係のみをインポートします。
+              </p>
               <div className="dg">
                 <div className="dg-label">📦 図6-2：NestJS モジュール構成</div>
                 <div className="mermaid-wrap">
@@ -1849,7 +1905,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">7.1 フロントエンドコンポーネントのライフサイクル</h3>
               <div className="dg">
-                <div className="dg-label">🔄 図7-1：コンポーネントライフサイクル（React / Vue）</div>
+                <div className="dg-label">
+                  🔄 図7-1：コンポーネントライフサイクル（React / Vue）
+                </div>
                 <div className="mermaid-wrap">
                   <MermaidDiagram chart={DIAGRAMS.d7_1} />
                 </div>
@@ -1859,17 +1917,28 @@ export default function Page() {
                 <div className="gc ac">
                   <div className="gc-icon">🚀</div>
                   <div className="gc-title">Mounting フェーズ</div>
-                  <p>コンポーネントが初めて DOM に挿入されるとき。API 呼び出し・イベントリスナー登録・タイマー開始などの初期化処理を行います。</p>
+                  <p>
+                    コンポーネントが初めて DOM に挿入されるとき。API
+                    呼び出し・イベントリスナー登録・タイマー開始などの初期化処理を行います。
+                  </p>
                 </div>
                 <div className="gc pu">
                   <div className="gc-icon">🔄</div>
                   <div className="gc-title">Updating フェーズ</div>
-                  <p>Props や State が変更されたとき。不要な再レンダリングを防ぐ最適化（<code>useMemo</code>/<code>useCallback</code>/<code>React.memo</code>）が重要です。</p>
+                  <p>
+                    Props や State が変更されたとき。不要な再レンダリングを防ぐ最適化（
+                    <code>useMemo</code>/<code>useCallback</code>/<code>React.memo</code>
+                    ）が重要です。
+                  </p>
                 </div>
                 <div className="gc am">
                   <div className="gc-icon">🧹</div>
                   <div className="gc-title">Unmounting フェーズ</div>
-                  <p>コンポーネントが削除されるとき。<strong>クリーンアップを忘れるとメモリリーク</strong>の原因に。イベント解除・タイマーキャンセル・リクエスト中断が必須です。</p>
+                  <p>
+                    コンポーネントが削除されるとき。
+                    <strong>クリーンアップを忘れるとメモリリーク</strong>
+                    の原因に。イベント解除・タイマーキャンセル・リクエスト中断が必須です。
+                  </p>
                 </div>
               </div>
 
@@ -1884,7 +1953,14 @@ export default function Page() {
               <div className="box box-rd">
                 <div className="bt">⚠️ 最も多い落とし穴：クリーンアップ忘れ</div>
                 <p>
-                  useEffect の return 関数（クリーンアップ）を忘れると、<strong>アンマウント後も API リクエストが継続し、存在しないコンポーネントの state を更新しようとして「Warning: Can't perform a React state update on an unmounted component」</strong>エラーが発生します。必ず AbortController と clearInterval でクリーンアップしてください。
+                  useEffect の return 関数（クリーンアップ）を忘れると、
+                  <strong>
+                    アンマウント後も API リクエストが継続し、存在しないコンポーネントの state
+                    を更新しようとして「Warning: Can't perform a React state update on an unmounted
+                    component」
+                  </strong>
+                  エラーが発生します。必ず AbortController と clearInterval
+                  でクリーンアップしてください。
                 </p>
               </div>
             </div>
@@ -1903,7 +1979,10 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">8.1 依存性注入（DI）の仕組みと効果</h3>
               <p>
-                <strong>依存性注入（Dependency Injection）</strong>とは、コンポーネントが自分で依存先を生成するのではなく、<strong>外部から注入してもらう</strong>設計パターンです。テスト容易性と疎結合を同時に実現します。
+                <strong>依存性注入（Dependency Injection）</strong>
+                とは、コンポーネントが自分で依存先を生成するのではなく、
+                <strong>外部から注入してもらう</strong>
+                設計パターンです。テスト容易性と疎結合を同時に実現します。
               </p>
               <div className="dg">
                 <div className="dg-label">🔀 図8-1：DI なし（密結合）vs DI あり（疎結合）</div>
@@ -1914,9 +1993,11 @@ export default function Page() {
               <div className="box box-ac">
                 <div className="bt">✅ DI がもたらす3つのメリット</div>
                 <p>
-                  ①<strong>テスト容易性</strong>：本番 DB の代わりにインメモリ実装を注入してユニットテストが書ける<br />
-                  ②<strong>交換容易性</strong>：MySQL → PostgreSQL 移行時に実装を差し替えるだけでよい<br />
-                  ③<strong>疎結合</strong>：OrderService は「どんな DB か」を知らなくてよい
+                  ①<strong>テスト容易性</strong>：本番 DB
+                  の代わりにインメモリ実装を注入してユニットテストが書ける
+                  <br />②<strong>交換容易性</strong>：MySQL → PostgreSQL
+                  移行時に実装を差し替えるだけでよい
+                  <br />③<strong>疎結合</strong>：OrderService は「どんな DB か」を知らなくてよい
                 </p>
               </div>
             </div>
@@ -1924,7 +2005,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">8.2 循環依存の回避（ADP 原則）</h3>
               <p>
-                コンポーネント間の依存グラフは<strong>有向非巡回グラフ（DAG）</strong>でなければなりません。A→B→C→A のような循環依存はビルドエラー・初期化問題・変更の影響範囲拡大を引き起こします。
+                コンポーネント間の依存グラフは<strong>有向非巡回グラフ（DAG）</strong>
+                でなければなりません。A→B→C→A
+                のような循環依存はビルドエラー・初期化問題・変更の影響範囲拡大を引き起こします。
               </p>
               <div className="dg">
                 <div className="dg-label">🔄 図8-2：循環依存 vs 非循環依存</div>
@@ -1967,8 +2050,9 @@ export default function Page() {
               <div className="box box-ac">
                 <div className="bt">✅ テストピラミッドの黄金比</div>
                 <p>
-                  <strong>ユニットテスト 70%</strong>（高速・大量）→ <strong>統合テスト 20%</strong>（ユーザー視点）→ <strong>E2E テスト 10%</strong>（全体確認）。
-                  E2E テストが多すぎると CI が遅くなり開発速度が低下します。
+                  <strong>ユニットテスト 70%</strong>（高速・大量）→ <strong>統合テスト 20%</strong>
+                  （ユーザー視点）→ <strong>E2E テスト 10%</strong>（全体確認）。 E2E
+                  テストが多すぎると CI が遅くなり開発速度が低下します。
                 </p>
               </div>
             </div>
@@ -2085,7 +2169,9 @@ export default function Page() {
             <div className="subsection">
               <h3 className="sub-title">10.3 Storybook によるコンポーネントカタログ</h3>
               <p>
-                Storybook はコンポーネントを<strong>ページとは切り離して独立して開発・ドキュメント化・テスト</strong>するツールです。
+                Storybook はコンポーネントを
+                <strong>ページとは切り離して独立して開発・ドキュメント化・テスト</strong>
+                するツールです。
                 すべてのコンポーネントをカタログ化することで、デザインとエンジニアリングの共通言語になります。
               </p>
               <div className="cb">
@@ -2112,7 +2198,8 @@ export default function Page() {
               <h3 className="sub-title">11.1 マイクロフロントエンドとは</h3>
               <p>
                 マイクロサービスのアイデアをフロントエンドに適用したアーキテクチャです。
-                フロントエンドを<strong>独立したチームが独立してデプロイできる</strong>小さなアプリケーションに分割します。
+                フロントエンドを<strong>独立したチームが独立してデプロイできる</strong>
+                小さなアプリケーションに分割します。
               </p>
               <div className="dg">
                 <div className="dg-label">🏗️ 図11-1：マイクロフロントエンドアーキテクチャ</div>
@@ -2134,8 +2221,9 @@ export default function Page() {
               <div className="box box-am">
                 <div className="bt">⚠️ MFE 導入前に検討すること</div>
                 <p>
-                  MFE は<strong>チームが独立して動いているプロジェクト</strong>に最大の効果を発揮します。
-                  小規模チームや単一チームの場合、Monorepo + コンポーネントライブラリの方が
+                  MFE は<strong>チームが独立して動いているプロジェクト</strong>
+                  に最大の効果を発揮します。 小規模チームや単一チームの場合、Monorepo +
+                  コンポーネントライブラリの方が
                   シンプルで管理しやすいことが多いです。複雑さとのトレードオフを慎重に評価してください。
                 </p>
               </div>
@@ -2167,7 +2255,9 @@ export default function Page() {
               <div className="cb">
                 <div className="cb-head">
                   <span className="cb-lang">TypeScript / React</span>
-                  <span className="cb-file">hooks/useCart.ts + components/organisms/CartSidebar.tsx</span>
+                  <span className="cb-file">
+                    hooks/useCart.ts + components/organisms/CartSidebar.tsx
+                  </span>
                 </div>
                 <pre dangerouslySetInnerHTML={{ __html: CODE_CART }} />
               </div>
@@ -2243,7 +2333,9 @@ export default function Page() {
                     </tr>
                     <tr>
                       <td>状態の直接変更</td>
-                      <td><code>props.user.name = &apos;foo&apos;</code></td>
+                      <td>
+                        <code>props.user.name = &apos;foo&apos;</code>
+                      </td>
                       <td>イミュータブルな更新（setState / emit）</td>
                     </tr>
                     <tr>
@@ -2276,16 +2368,76 @@ export default function Page() {
               <h3 className="sub-title">14.1 コンポーネント設計チェックリスト</h3>
               <p>コンポーネントを実装する前後に確認するチェックリストです。</p>
               <ul className="cl">
-                <li><span className="cl-ic">✅</span><div><strong>単一責任</strong>：1コンポーネント = 1つの明確な役割。「〜かつ〜」があれば分割。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>Props を最小限に</strong>：必要なデータだけを受け取る。不要な Props は依存を増やす。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>TypeScript で型定義</strong>：Props / Events を厳密に型付けしてインターフェース契約を明文化。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>デフォルト値を設定</strong>：オプショナルな Props には適切なデフォルト値を与える。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>副作用を分離</strong>：API 呼び出しは Custom Hooks / サービス層に切り出す。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>テストを書く</strong>：ユニット・統合・ビジュアルテストを整備。CI で自動実行。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>アクセシビリティ</strong>：aria 属性・キーボード操作・カラーコントラストを考慮。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>Storybook でカタログ化</strong>：全状態をストーリーとして記録。チームの共通認識に。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>クリーンアップを忘れずに</strong>：useEffect の return でイベント解除・タイマーキャンセル・リクエスト中断。</div></li>
-                <li><span className="cl-ic">✅</span><div><strong>ErrorBoundary でラップ</strong>：コンポーネントのエラーが全体に波及しないよう隔離する。</div></li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>単一責任</strong>：1コンポーネント =
+                    1つの明確な役割。「〜かつ〜」があれば分割。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>Props を最小限に</strong>：必要なデータだけを受け取る。不要な Props
+                    は依存を増やす。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>TypeScript で型定義</strong>：Props / Events
+                    を厳密に型付けしてインターフェース契約を明文化。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>デフォルト値を設定</strong>：オプショナルな Props
+                    には適切なデフォルト値を与える。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>副作用を分離</strong>：API 呼び出しは Custom Hooks /
+                    サービス層に切り出す。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>テストを書く</strong>：ユニット・統合・ビジュアルテストを整備。CI
+                    で自動実行。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>アクセシビリティ</strong>：aria
+                    属性・キーボード操作・カラーコントラストを考慮。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>Storybook でカタログ化</strong>
+                    ：全状態をストーリーとして記録。チームの共通認識に。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>クリーンアップを忘れずに</strong>：useEffect の return
+                    でイベント解除・タイマーキャンセル・リクエスト中断。
+                  </div>
+                </li>
+                <li>
+                  <span className="cl-ic">✅</span>
+                  <div>
+                    <strong>ErrorBoundary でラップ</strong>
+                    ：コンポーネントのエラーが全体に波及しないよう隔離する。
+                  </div>
+                </li>
               </ul>
             </div>
 
@@ -2293,28 +2445,103 @@ export default function Page() {
               <h3 className="sub-title">14.2 コンポーネント指向 成熟度モデル</h3>
               <div className="ml">
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#ef4444" }}>Lv.0</div><div className="ml-lv-l" style={{ color: "#ef4444" }}>初期</div></div>
-                  <div><div className="ml-title">モノリシックなビュー</div><div className="ml-desc">コンポーネント分割なし。ページ単位の大きな実装。変更のたびに全体に影響が波及する。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#ef4444" }}>
+                      Lv.0
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#ef4444" }}>
+                      初期
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">モノリシックなビュー</div>
+                    <div className="ml-desc">
+                      コンポーネント分割なし。ページ単位の大きな実装。変更のたびに全体に影響が波及する。
+                    </div>
+                  </div>
                 </div>
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#f97316" }}>Lv.1</div><div className="ml-lv-l" style={{ color: "#f97316" }}>基礎</div></div>
-                  <div><div className="ml-title">基本的なコンポーネント化</div><div className="ml-desc">再利用されるパーツ（Button / Input など）を切り出す。コンポーネント化の概念を理解している。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#f97316" }}>
+                      Lv.1
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#f97316" }}>
+                      基礎
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">基本的なコンポーネント化</div>
+                    <div className="ml-desc">
+                      再利用されるパーツ（Button / Input
+                      など）を切り出す。コンポーネント化の概念を理解している。
+                    </div>
+                  </div>
                 </div>
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#f59e0b" }}>Lv.2</div><div className="ml-lv-l" style={{ color: "#f59e0b" }}>体系化</div></div>
-                  <div><div className="ml-title">アトミックデザインの導入</div><div className="ml-desc">Atoms / Molecules / Organisms の階層でシステマティックに粒度を管理できる。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#f59e0b" }}>
+                      Lv.2
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#f59e0b" }}>
+                      体系化
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">アトミックデザインの導入</div>
+                    <div className="ml-desc">
+                      Atoms / Molecules / Organisms の階層でシステマティックに粒度を管理できる。
+                    </div>
+                  </div>
                 </div>
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#10d9a0" }}>Lv.3</div><div className="ml-lv-l" style={{ color: "#10d9a0" }}>標準化</div></div>
-                  <div><div className="ml-title">デザインシステムの確立</div><div className="ml-desc">デザイントークン・共有コンポーネントライブラリ・Storybook でカタログ化。チーム全体で一貫性を保証。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#10d9a0" }}>
+                      Lv.3
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#10d9a0" }}>
+                      標準化
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">デザインシステムの確立</div>
+                    <div className="ml-desc">
+                      デザイントークン・共有コンポーネントライブラリ・Storybook
+                      でカタログ化。チーム全体で一貫性を保証。
+                    </div>
+                  </div>
                 </div>
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#3b82f6" }}>Lv.4</div><div className="ml-lv-l" style={{ color: "#3b82f6" }}>分離</div></div>
-                  <div><div className="ml-title">Container / Presentational の完全分離</div><div className="ml-desc">ロジックと UI の完全分離。Custom Hooks による再利用・テストが容易な設計が実現できている。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#3b82f6" }}>
+                      Lv.4
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#3b82f6" }}>
+                      分離
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">Container / Presentational の完全分離</div>
+                    <div className="ml-desc">
+                      ロジックと UI の完全分離。Custom Hooks
+                      による再利用・テストが容易な設計が実現できている。
+                    </div>
+                  </div>
                 </div>
                 <div className="ml-item">
-                  <div className="ml-lv"><div className="ml-lv-n" style={{ color: "#7b68ee" }}>Lv.5</div><div className="ml-lv-l" style={{ color: "#7b68ee" }}>最適化</div></div>
-                  <div><div className="ml-title">マイクロフロントエンド</div><div className="ml-desc">コンポーネントが独立したチームの境界と一致。独立デプロイ・完全な疎結合・チームの自律性が最大化。</div></div>
+                  <div className="ml-lv">
+                    <div className="ml-lv-n" style={{ color: "#7b68ee" }}>
+                      Lv.5
+                    </div>
+                    <div className="ml-lv-l" style={{ color: "#7b68ee" }}>
+                      最適化
+                    </div>
+                  </div>
+                  <div>
+                    <div className="ml-title">マイクロフロントエンド</div>
+                    <div className="ml-desc">
+                      コンポーネントが独立したチームの境界と一致。独立デプロイ・完全な疎結合・チームの自律性が最大化。
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2341,8 +2568,12 @@ export default function Page() {
                     <tr>
                       <td>Props 型定義</td>
                       <td>TypeScript インターフェース</td>
-                      <td><code>defineProps&lt;T&gt;()</code></td>
-                      <td><code>@Input()</code> デコレータ</td>
+                      <td>
+                        <code>defineProps&lt;T&gt;()</code>
+                      </td>
+                      <td>
+                        <code>@Input()</code> デコレータ
+                      </td>
                     </tr>
                     <tr>
                       <td>状態管理</td>
@@ -2353,8 +2584,12 @@ export default function Page() {
                     <tr>
                       <td>スロット</td>
                       <td>children / render props</td>
-                      <td><code>&lt;slot&gt;</code></td>
-                      <td><code>&lt;ng-content&gt;</code></td>
+                      <td>
+                        <code>&lt;slot&gt;</code>
+                      </td>
+                      <td>
+                        <code>&lt;ng-content&gt;</code>
+                      </td>
                     </tr>
                     <tr>
                       <td>テスト</td>
@@ -2451,18 +2686,31 @@ export default function Page() {
                     <div className="ref-url">https://atomicdesign.bradfrost.com/</div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/">
+                <Ext
+                  className="ref-item"
+                  href="https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/"
+                >
                   <span className="ref-ic">📖</span>
                   <div>
-                    <div className="ref-name">Clean Architecture — Robert C. Martin（コンポーネント設計原則 CCP / CRP / ADP を網羅）</div>
-                    <div className="ref-url">https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/</div>
+                    <div className="ref-name">
+                      Clean Architecture — Robert C. Martin（コンポーネント設計原則 CCP / CRP / ADP
+                      を網羅）
+                    </div>
+                    <div className="ref-url">
+                      https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/
+                    </div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://martinfowler.com/articles/micro-frontends.html">
+                <Ext
+                  className="ref-item"
+                  href="https://martinfowler.com/articles/micro-frontends.html"
+                >
                   <span className="ref-ic">📖</span>
                   <div>
                     <div className="ref-name">Micro Frontends — Martin Fowler（MFE の原典）</div>
-                    <div className="ref-url">https://martinfowler.com/articles/micro-frontends.html</div>
+                    <div className="ref-url">
+                      https://martinfowler.com/articles/micro-frontends.html
+                    </div>
                   </div>
                 </Ext>
               </div>
@@ -2478,25 +2726,40 @@ export default function Page() {
                     <div className="ref-url">https://ja.react.dev/</div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://ja.react.dev/learn/reusing-logic-with-custom-hooks">
+                <Ext
+                  className="ref-item"
+                  href="https://ja.react.dev/learn/reusing-logic-with-custom-hooks"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">React 公式 — Custom Hooks でロジックを再利用する</div>
-                    <div className="ref-url">https://ja.react.dev/learn/reusing-logic-with-custom-hooks</div>
+                    <div className="ref-url">
+                      https://ja.react.dev/learn/reusing-logic-with-custom-hooks
+                    </div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://ja.react.dev/learn/passing-data-deeply-with-context">
+                <Ext
+                  className="ref-item"
+                  href="https://ja.react.dev/learn/passing-data-deeply-with-context"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">React 公式 — Context でデータを深く渡す</div>
-                    <div className="ref-url">https://ja.react.dev/learn/passing-data-deeply-with-context</div>
+                    <div className="ref-url">
+                      https://ja.react.dev/learn/passing-data-deeply-with-context
+                    </div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://testing-library.com/docs/react-testing-library/intro/">
+                <Ext
+                  className="ref-item"
+                  href="https://testing-library.com/docs/react-testing-library/intro/"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">React Testing Library 公式</div>
-                    <div className="ref-url">https://testing-library.com/docs/react-testing-library/intro/</div>
+                    <div className="ref-url">
+                      https://testing-library.com/docs/react-testing-library/intro/
+                    </div>
                   </div>
                 </Ext>
               </div>
@@ -2505,18 +2768,28 @@ export default function Page() {
             <div className="ref-grp">
               <div className="ref-grp-title">💚 Vue コンポーネント</div>
               <div className="ref-list">
-                <Ext className="ref-item" href="https://ja.vuejs.org/guide/essentials/component-basics">
+                <Ext
+                  className="ref-item"
+                  href="https://ja.vuejs.org/guide/essentials/component-basics"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">Vue 3 公式 — コンポーネントの基礎（日本語）</div>
-                    <div className="ref-url">https://ja.vuejs.org/guide/essentials/component-basics</div>
+                    <div className="ref-url">
+                      https://ja.vuejs.org/guide/essentials/component-basics
+                    </div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://ja.vuejs.org/guide/extras/composition-api-faq">
+                <Ext
+                  className="ref-item"
+                  href="https://ja.vuejs.org/guide/extras/composition-api-faq"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">Vue 3 公式 — Composition API FAQ（日本語）</div>
-                    <div className="ref-url">https://ja.vuejs.org/guide/extras/composition-api-faq</div>
+                    <div className="ref-url">
+                      https://ja.vuejs.org/guide/extras/composition-api-faq
+                    </div>
                   </div>
                 </Ext>
               </div>
@@ -2549,14 +2822,18 @@ export default function Page() {
                 <Ext className="ref-item" href="https://ui.shadcn.com/">
                   <span className="ref-ic">🔗</span>
                   <div>
-                    <div className="ref-name">shadcn/ui — 参考実装のコンポーネントライブラリ（React）</div>
+                    <div className="ref-name">
+                      shadcn/ui — 参考実装のコンポーネントライブラリ（React）
+                    </div>
                     <div className="ref-url">https://ui.shadcn.com/</div>
                   </div>
                 </Ext>
                 <Ext className="ref-item" href="https://www.radix-ui.com/">
                   <span className="ref-ic">🔗</span>
                   <div>
-                    <div className="ref-name">Radix UI — アクセシブルなヘッドレス Atom コンポーネント</div>
+                    <div className="ref-name">
+                      Radix UI — アクセシブルなヘッドレス Atom コンポーネント
+                    </div>
                     <div className="ref-url">https://www.radix-ui.com/</div>
                   </div>
                 </Ext>
@@ -2573,18 +2850,28 @@ export default function Page() {
                     <div className="ref-url">https://docs.nestjs.com/modules</div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://docs.nestjs.com/fundamentals/custom-providers">
+                <Ext
+                  className="ref-item"
+                  href="https://docs.nestjs.com/fundamentals/custom-providers"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">NestJS 公式 — 依存性注入（カスタムプロバイダー）</div>
-                    <div className="ref-url">https://docs.nestjs.com/fundamentals/custom-providers</div>
+                    <div className="ref-url">
+                      https://docs.nestjs.com/fundamentals/custom-providers
+                    </div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/">
+                <Ext
+                  className="ref-item"
+                  href="https://fastapi.tiangolo.com/ja/tutorial/dependencies/"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">FastAPI 公式（日本語）— 依存性注入</div>
-                    <div className="ref-url">https://fastapi.tiangolo.com/ja/tutorial/dependencies/</div>
+                    <div className="ref-url">
+                      https://fastapi.tiangolo.com/ja/tutorial/dependencies/
+                    </div>
                   </div>
                 </Ext>
               </div>
@@ -2611,7 +2898,9 @@ export default function Page() {
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">Module Federation 公式（Webpack）</div>
-                    <div className="ref-url">https://webpack.js.org/concepts/module-federation/</div>
+                    <div className="ref-url">
+                      https://webpack.js.org/concepts/module-federation/
+                    </div>
                   </div>
                 </Ext>
                 <Ext className="ref-item" href="https://www.componentdriven.org/">
@@ -2621,11 +2910,16 @@ export default function Page() {
                     <div className="ref-url">https://www.componentdriven.org/</div>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://kentcdodds.com/blog/how-to-test-custom-react-hooks">
+                <Ext
+                  className="ref-item"
+                  href="https://kentcdodds.com/blog/how-to-test-custom-react-hooks"
+                >
                   <span className="ref-ic">🔗</span>
                   <div>
                     <div className="ref-name">Kent C. Dodds — Custom React Hooks のテスト方法</div>
-                    <div className="ref-url">https://kentcdodds.com/blog/how-to-test-custom-react-hooks</div>
+                    <div className="ref-url">
+                      https://kentcdodds.com/blog/how-to-test-custom-react-hooks
+                    </div>
                   </div>
                 </Ext>
               </div>

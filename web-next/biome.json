@@ -51,7 +51,10 @@
   },
   "overrides": [
     {
-      "includes": ["app/architecture/monolithic-architecture-comprehensive-guide/page.tsx"],
+      "includes": [
+        "app/architecture/monolithic-architecture-comprehensive-guide/page.tsx",
+        "app/design-principles/component-oriented-development-comprehensive-guide/page.tsx"
+      ],
       "linter": {
         "rules": {
           "security": {

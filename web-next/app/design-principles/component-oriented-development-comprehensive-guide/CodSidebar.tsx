@@ -26,7 +26,10 @@ export default function CodSidebar({ groups }: Props) {
       <div className="progress-bar" ref={progressRef} />
       <nav className="sidebar" id="sidebar">
         <div className="sb-brand">
-          <a className="sb-logo" href="#">
+          <a
+            className="sb-logo"
+            href="/design-principles/component-oriented-development-comprehensive-guide"
+          >
             <div className="sb-icon">🧩</div>
             <div className="sb-text">
               COD 完全ガイド
