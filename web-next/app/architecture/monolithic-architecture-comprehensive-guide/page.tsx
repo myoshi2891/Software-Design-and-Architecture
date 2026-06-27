@@ -1149,8 +1149,20 @@ export default function Page() {
             <pre
               // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
-                __html: `<span class="kw">from</span> sqlalchemy <span class="kw">import</span> Column, String, Numeric, DateTime, ForeignKey, Index, Boolean
+                __html: `<span class="kw">import</span> uuid
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> Column, String, Numeric, DateTime, ForeignKey, Index, Boolean, Enum <span class="kw">as</span> SQLEnum, func
 <span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> relationship, DeclarativeBase
+
+<span class="kw">class</span> <span class="cls">Base</span>(DeclarativeBase):
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">OrderStatus</span>(str, Enum):
+    PENDING = <span class="st">"PENDING"</span>
+    CONFIRMED = <span class="st">"CONFIRMED"</span>
+    SHIPPED = <span class="st">"SHIPPED"</span>
+    DELIVERED = <span class="st">"DELIVERED"</span>
+    CANCELLED = <span class="st">"CANCELLED"</span>
 
 <span class="kw">class</span> <span class="cls">OrderModel</span>(Base):
     <span class="st">"""注文テーブル"""</span>
@@ -1294,9 +1306,17 @@ export default function Page() {
             <pre
               // biome-ignore lint/security/noDangerouslySetInnerHtml: safe static HTML block
               dangerouslySetInnerHTML={{
-                __html: `<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+                __html: `<span class="kw">import</span> uuid
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
 <span class="kw">from</span> decimal <span class="kw">import</span> Decimal
 <span class="kw">from</span> enum <span class="kw">import</span> Enum
+
+<span class="kw">class</span> <span class="cls">OrderStatus</span>(str, Enum):
+    PENDING = <span class="st">"PENDING"</span>
+    CONFIRMED = <span class="st">"CONFIRMED"</span>
+    SHIPPED = <span class="st">"SHIPPED"</span>
+    DELIVERED = <span class="st">"DELIVERED"</span>
+    CANCELLED = <span class="st">"CANCELLED"</span>
 
 <span class="cm"># 値オブジェクト：金額をただの数値でなく「意味のある型」として表現</span>
 @dataclass(frozen=True)  <span class="cm"># frozen=True でイミュータブル（変更不可）にする</span>
@@ -1320,11 +1340,12 @@ export default function Page() {
 <span class="kw">class</span> <span class="cls">Order</span>:
     id:          str
     customer_id: str
+    _items:      list = field(default_factory=list)
     _status:     OrderStatus = OrderStatus.PENDING
 
     @classmethod
     <span class="kw">def</span> <span class="fn">create</span>(cls, customer_id: str) -&gt; <span class="st">"Order"</span>:
-        <span class="kw">return</span> cls(id=str(uuid.uuid4()), customer_id=customer_id)
+        <span class="kw">return</span> cls(id=str(uuid.uuid4()), customer_id=customer_id, _items=[])
 
     <span class="kw">def</span> <span class="fn">confirm</span>(self) -&gt; None:
         <span class="cm"># 確定できる状態かをエンティティ自身がチェックする</span>
