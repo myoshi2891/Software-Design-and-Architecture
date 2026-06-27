@@ -1,8 +1,6 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import MonolithicArchitectureSidebar, {
-  type NavGroup,
-} from "./MonolithicArchitectureSidebar";
+import MonolithicArchitectureSidebar, { type NavGroup } from "./MonolithicArchitectureSidebar";
 
 const GROUPS: NavGroup[] = [
   {

@@ -1,37 +1,35 @@
+import {
+  IconAlertTriangle,
+  IconArrowsExchange,
+  IconArrowsHorizontal,
+  IconArrowsRightLeft,
+  IconArrowUp,
+  IconBolt,
+  IconBook,
+  IconBrandCloudflare,
+  IconBug,
+  IconBuildingArch,
+  IconBulb,
+  IconChartLine,
+  IconCheck,
+  IconClockPlay,
+  IconCode,
+  IconCoin,
+  IconDatabase,
+  IconDatabaseExport,
+  IconEye,
+  IconLicense,
+  IconLink,
+  IconNotes,
+  IconRocket,
+  IconStar,
+  IconTestPipe,
+  IconTopologyRing,
+  IconX,
+} from "@tabler/icons-react";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
-import MonolithicArchitectureSidebar, {
-  type NavGroup,
-} from "./MonolithicArchitectureSidebar";
-import {
-  IconBuildingArch,
-  IconBook,
-  IconCode,
-  IconLicense,
-  IconBulb,
-  IconRocket,
-  IconTestPipe,
-  IconBug,
-  IconCoin,
-  IconArrowsExchange,
-  IconEye,
-  IconLink,
-  IconAlertTriangle,
-  IconStar,
-  IconDatabase,
-  IconArrowsRightLeft,
-  IconBolt,
-  IconX,
-  IconCheck,
-  IconArrowUp,
-  IconArrowsHorizontal,
-  IconDatabaseExport,
-  IconBrandCloudflare,
-  IconClockPlay,
-  IconChartLine,
-  IconNotes,
-  IconTopologyRing,
-} from "@tabler/icons-react";
+import MonolithicArchitectureSidebar, { type NavGroup } from "./MonolithicArchitectureSidebar";
 
 const NAV_GROUPS: NavGroup[] = [
   {
@@ -91,7 +89,9 @@ export default function Page() {
             <IconBuildingArch size={20} /> Architecture Guide
           </div>
           <h1>モノリシックアーキテクチャ 完全ガイド</h1>
-          <p>初学者でもわかるステップバイステップ解説。設計原則からスケーリング・マイクロサービス移行まで、現場で即使えるベストプラクティスをまとめました。</p>
+          <p>
+            初学者でもわかるステップバイステップ解説。設計原則からスケーリング・マイクロサービス移行まで、現場で即使えるベストプラクティスをまとめました。
+          </p>
           <div className="hero-meta">
             <span className="hero-meta-item">
               <IconBook size={16} /> 18 セクション
@@ -112,7 +112,8 @@ export default function Page() {
           <div>
             <strong>このガイドの読み方</strong>
             <br />
-            左サイドバーの目次から気になるセクションに直接ジャンプできます。初学者は 01 → 04 → 05 → 10 の順で読むと理解しやすいです。各セクション末尾に参照リンクを掲載しています。
+            左サイドバーの目次から気になるセクションに直接ジャンプできます。初学者は 01 → 04 → 05 →
+            10 の順で読むと理解しやすいです。各セクション末尾に参照リンクを掲載しています。
           </div>
         </div>
 
@@ -126,7 +127,9 @@ export default function Page() {
           </div>
 
           <p>
-            <strong>モノリシックアーキテクチャ（Monolithic Architecture）</strong>とは、アプリケーションのすべての機能を <em>単一のコードベース・単一のデプロイ単位</em>として構築するアーキテクチャスタイルです。「Monolithic（一枚岩）」という名前のとおり、UI・ビジネスロジック・データアクセスがひとつのプロセスとして統合されています。
+            <strong>モノリシックアーキテクチャ（Monolithic Architecture）</strong>
+            とは、アプリケーションのすべての機能を <em>単一のコードベース・単一のデプロイ単位</em>
+            として構築するアーキテクチャスタイルです。「Monolithic（一枚岩）」という名前のとおり、UI・ビジネスロジック・データアクセスがひとつのプロセスとして統合されています。
           </p>
 
           <div className="callout success">
@@ -134,11 +137,14 @@ export default function Page() {
               <IconBulb size={16} color="var(--color-text-success)" />
             </span>
             <div>
-              <strong>核心思想</strong>：「すべての機能を 1 つのアプリケーションとして構築し、シンプルさ・一貫性・開発スピードを最大化する。多くのシステムにとって、これが最も適切な出発点である。」
+              <strong>核心思想</strong>：「すべての機能を 1
+              つのアプリケーションとして構築し、シンプルさ・一貫性・開発スピードを最大化する。多くのシステムにとって、これが最も適切な出発点である。」
             </div>
           </div>
 
-          <p>マイクロサービスが注目を集める昨今でも、モノリシックアーキテクチャは有効な選択肢です。その理由を下のメリット比較表で確認できます。</p>
+          <p>
+            マイクロサービスが注目を集める昨今でも、モノリシックアーキテクチャは有効な選択肢です。その理由を下のメリット比較表で確認できます。
+          </p>
 
           <h3 className="subsection-title">モノリシックの主なメリット</h3>
 
@@ -147,43 +153,63 @@ export default function Page() {
               <h4>
                 <IconRocket size={20} color="var(--c-teal-500)" /> 開発スピードが速い
               </h4>
-              <p>環境セットアップがシンプルで、最初から動く環境を素早く構築できます。スタートアップの MVP（最小限の製品）に最適です。</p>
+              <p>
+                環境セットアップがシンプルで、最初から動く環境を素早く構築できます。スタートアップの
+                MVP（最小限の製品）に最適です。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconTestPipe size={20} color="var(--c-purple-500)" /> テストが容易
               </h4>
-              <p>E2E テストが単純で、統合テストの設定も少ない。分散システム特有の「どのサービスが壊れているか」問題がありません。</p>
+              <p>
+                E2E
+                テストが単純で、統合テストの設定も少ない。分散システム特有の「どのサービスが壊れているか」問題がありません。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconBug size={20} color="var(--c-coral-500)" /> デバッグが容易
               </h4>
-              <p>単一プロセスで追跡できるため、分散トレーシングのような複雑な仕組みが不要です。スタックトレースがそのまま使えます。</p>
+              <p>
+                単一プロセスで追跡できるため、分散トレーシングのような複雑な仕組みが不要です。スタックトレースがそのまま使えます。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconCoin size={20} color="var(--c-pink-500)" /> 運用コストが低い
               </h4>
-              <p>インフラがシンプルで Kubernetes などの複雑なオーケストレーションが不要。少人数チームでも管理できます。</p>
+              <p>
+                インフラがシンプルで Kubernetes
+                などの複雑なオーケストレーションが不要。少人数チームでも管理できます。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconArrowsExchange size={20} color="var(--c-teal-500)" /> トランザクション管理
               </h4>
-              <p>ACID トランザクション（＝データの整合性を保証する仕組み）が容易。複数サービス間の分散トランザクションを心配する必要がありません。</p>
+              <p>
+                ACID
+                トランザクション（＝データの整合性を保証する仕組み）が容易。複数サービス間の分散トランザクションを心配する必要がありません。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconEye size={20} color="var(--c-purple-500)" /> コード全体が見渡せる
               </h4>
-              <p>IDE でコードベース全体を把握でき、リファクタリングも一括で実施できます。新メンバーのオンボーディングがシンプルです。</p>
+              <p>
+                IDE
+                でコードベース全体を把握でき、リファクタリングも一括で実施できます。新メンバーのオンボーディングがシンプルです。
+              </p>
             </div>
           </div>
 
           <h3 className="subsection-title">アーキテクチャ選択の判断基準</h3>
 
-          <p>どのアーキテクチャを選ぶかは、チーム規模・変化の速さ・システム規模の 3 軸で判断します。以下の表が目安になります。</p>
+          <p>
+            どのアーキテクチャを選ぶかは、チーム規模・変化の速さ・システム規模の 3
+            軸で判断します。以下の表が目安になります。
+          </p>
 
           <div className="table-wrap">
             <table>
@@ -266,14 +292,18 @@ export default function Page() {
               <IconLink size={16} />
               <div>
                 <div className="source-label">Martin Fowler — MonolithFirst パターン</div>
-                <Ext href="https://martinfowler.com/bliki/MonolithFirst.html">https://martinfowler.com/bliki/MonolithFirst.html</Ext>
+                <Ext href="https://martinfowler.com/bliki/MonolithFirst.html">
+                  https://martinfowler.com/bliki/MonolithFirst.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Sam Newman — Monolith to Microservices（書籍）</div>
-                <Ext href="https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/">https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/</Ext>
+                <Ext href="https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/">
+                  https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/
+                </Ext>
               </div>
             </div>
           </div>
@@ -285,19 +315,30 @@ export default function Page() {
             <div className="glossary-body">
               <div className="glossary-item">
                 <span className="glossary-term">モノリシック</span>
-                <span className="glossary-def">「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造のこと。</span>
+                <span className="glossary-def">
+                  「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造のこと。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">デプロイ単位</span>
-                <span className="glossary-def">アプリケーションをサーバーに配備（デプロイ）するときの最小まとまりのこと。モノリスは全機能が 1 単位。</span>
+                <span className="glossary-def">
+                  アプリケーションをサーバーに配備（デプロイ）するときの最小まとまりのこと。モノリスは全機能が
+                  1 単位。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">MVP</span>
-                <span className="glossary-def">Minimum Viable Product（最小限の実用的な製品）。仮説検証のために最低限の機能だけで作るプロダクトのこと。</span>
+                <span className="glossary-def">
+                  Minimum Viable
+                  Product（最小限の実用的な製品）。仮説検証のために最低限の機能だけで作るプロダクトのこと。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ACID トランザクション</span>
-                <span className="glossary-def">データの整合性を保証する 4 つの性質（原子性・一貫性・独立性・耐久性）をまとめた概念。</span>
+                <span className="glossary-def">
+                  データの整合性を保証する 4
+                  つの性質（原子性・一貫性・独立性・耐久性）をまとめた概念。
+                </span>
               </div>
             </div>
           </div>
@@ -312,7 +353,10 @@ export default function Page() {
             <h2 className="section-title">モノリシックの種類と構造</h2>
           </div>
 
-          <p>モノリシックアーキテクチャには 4 つのタイプがあります。それぞれのタイプを理解することで、自分のプロジェクトに最適な形を選択できます。</p>
+          <p>
+            モノリシックアーキテクチャには 4
+            つのタイプがあります。それぞれのタイプを理解することで、自分のプロジェクトに最適な形を選択できます。
+          </p>
 
           <div className="mermaid-wrap">
             <MermaidDiagram
@@ -414,7 +458,8 @@ export default function Page() {
               <IconAlertTriangle size={16} color="var(--color-text-warning)" />
             </span>
             <div>
-              <strong>分散モノリスに注意</strong>：サービスを分割したのに、デプロイを常に同時にしないと動かない状態は「分散モノリス」です。マイクロサービスの複雑さだけを得て、モノリスのシンプルさも失った最悪の形態です。この状態に気づいたら、潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから分割しましょう。
+              <strong>分散モノリスに注意</strong>
+              ：サービスを分割したのに、デプロイを常に同時にしないと動かない状態は「分散モノリス」です。マイクロサービスの複雑さだけを得て、モノリスのシンプルさも失った最悪の形態です。この状態に気づいたら、潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから分割しましょう。
             </div>
           </div>
 
@@ -422,8 +467,12 @@ export default function Page() {
             <div className="source-item">
               <IconLink size={16} />
               <div>
-                <div className="source-label">Martin Fowler — Microservices（モノリスとの比較）</div>
-                <Ext href="https://martinfowler.com/articles/microservices.html">https://martinfowler.com/articles/microservices.html</Ext>
+                <div className="source-label">
+                  Martin Fowler — Microservices（モノリスとの比較）
+                </div>
+                <Ext href="https://martinfowler.com/articles/microservices.html">
+                  https://martinfowler.com/articles/microservices.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -438,11 +487,16 @@ export default function Page() {
             <h2 className="section-title">モノリシックの基本設計原則</h2>
           </div>
 
-          <p>良いモノリスを設計するために、ソフトウェア工学の基本原則を理解しておく必要があります。これらの原則を無視すると、最終的にスパゲッティコード（＝複雑に絡み合って手をつけられないコード）になります。</p>
+          <p>
+            良いモノリスを設計するために、ソフトウェア工学の基本原則を理解しておく必要があります。これらの原則を無視すると、最終的にスパゲッティコード（＝複雑に絡み合って手をつけられないコード）になります。
+          </p>
 
           <h3 className="subsection-title">SOLID 原則</h3>
 
-          <p>SOLID は 5 つの設計原則の頭文字をとったものです。モノリスでこれらを守ることで、将来の変更に強いコードが生まれます。</p>
+          <p>
+            SOLID は 5
+            つの設計原則の頭文字をとったものです。モノリスでこれらを守ることで、将来の変更に強いコードが生まれます。
+          </p>
 
           <div className="principle-grid">
             <div className="principle-card">
@@ -452,7 +506,8 @@ export default function Page() {
               <h4>Single Responsibility Principle</h4>
               <p>1 つのクラスは 1 つの変更理由だけを持つべきです。</p>
               <p style={{ fontSize: "14px", color: "var(--color-text-tertiary)" }}>
-                例：<code>OrderService</code> は注文のみを扱い、メール送信は <code>NotificationService</code> が担当する。
+                例：<code>OrderService</code> は注文のみを扱い、メール送信は{" "}
+                <code>NotificationService</code> が担当する。
               </p>
             </div>
             <div className="principle-card">
@@ -472,7 +527,8 @@ export default function Page() {
               <h4>Liskov Substitution Principle</h4>
               <p>サブクラスは親クラスの代わりに使えるべきです。</p>
               <p style={{ fontSize: "14px", color: "var(--color-text-tertiary)" }}>
-                例：<code>SQLOrderRepo</code> は <code>OrderRepository</code> インターフェースを完全に代替できる。
+                例：<code>SQLOrderRepo</code> は <code>OrderRepository</code>{" "}
+                インターフェースを完全に代替できる。
               </p>
             </div>
             <div className="principle-card">
@@ -503,35 +559,51 @@ export default function Page() {
             <span className="step-num">1</span>
             <div className="step-body">
               <h4>関心の分離（Separation of Concerns）</h4>
-              <p>プレゼンテーション・ビジネス・データを明確に分離します。「画面のコード and 計算ロジックが混ざっていたら危険サイン」と覚えてください。混在させると変更の影響が予測不能になります。</p>
+              <p>
+                プレゼンテーション・ビジネス・データを明確に分離します。「画面のコード and
+                計算ロジックが混ざっていたら危険サイン」と覚えてください。混在させると変更の影響が予測不能になります。
+              </p>
             </div>
           </div>
           <div className="step-item">
             <span className="step-num">2</span>
             <div className="step-body">
               <h4>依存 direction の統一</h4>
-              <p>上位層から下位層への一方向依存を守ります。<code>Controller → Service → Repository</code> の方向は OK ですが、逆（Repository が Controller を知る）は禁止です。循環依存はコードの腐敗の始まりです。</p>
+              <p>
+                上位層から下位層への一方向依存を守ります。
+                <code>Controller → Service → Repository</code> の方向は OK ですが、逆（Repository が
+                Controller を知る）は禁止です。循環依存はコードの腐敗の始まりです。
+              </p>
             </div>
           </div>
           <div className="step-item">
             <span className="step-num">3</span>
             <div className="step-body">
               <h4>ドメインの独立性</h4>
-              <p>各ドメイン（注文・ユーザー・商品など）を疎結合（＝お互いの依存が少ない状態）に保ちます。これが将来のマイクロサービス分割の布石になります。</p>
+              <p>
+                各ドメイン（注文・ユーザー・商品など）を疎結合（＝お互いの依存が少ない状態）に保ちます。これが将来のマイクロサービス分割の布石になります。
+              </p>
             </div>
           </div>
           <div className="step-item">
             <span className="step-num">4</span>
             <div className="step-body">
               <h4>共有カーネルの最小化</h4>
-              <p>共通コードは必要最小限にします。<code>utils</code> や <code>helpers</code> に何でも入れると、変更時に影響範囲が広がりすぎます。</p>
+              <p>
+                共通コードは必要最小限にします。<code>utils</code> や <code>helpers</code>{" "}
+                に何でも入れると、変更時に影響範囲が広がりすぎます。
+              </p>
             </div>
           </div>
           <div className="step-item">
             <span className="step-num">5</span>
             <div className="step-body">
               <h4>テスタビリティ優先設計</h4>
-              <p>依存性注入（＝外からオブジェクトを渡す仕組み）でモックが容易に。ビジネスロジックは DB なしでテストできる構造を目指します。テストできないコードはリファクタリングも怖くなります。</p>
+              <p>
+                依存性注入（＝外からオブジェクトを渡す仕組み）でモックが容易に。ビジネスロジックは
+                DB
+                なしでテストできる構造を目指します。テストできないコードはリファクタリングも怖くなります。
+              </p>
             </div>
           </div>
 
@@ -547,7 +619,9 @@ export default function Page() {
               <IconLink size={16} />
               <div>
                 <div className="source-label">Clean Architecture — Robert C. Martin</div>
-                <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</Ext>
+                <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
+                  https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
@@ -566,19 +640,28 @@ export default function Page() {
             <div className="glossary-body">
               <div className="glossary-item">
                 <span className="glossary-term">SOLID 原則</span>
-                <span className="glossary-def">ソフトウェア設計の 5 つの原則の頭文字。保守性・拡張性の高いコードを書くための指針。</span>
+                <span className="glossary-def">
+                  ソフトウェア設計の 5
+                  つの原則の頭文字。保守性・拡張性の高いコードを書くための指針。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">依存性注入 (DI)</span>
-                <span className="glossary-def">クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモック（偽物）に差し替えられる。</span>
+                <span className="glossary-def">
+                  クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモック（偽物）に差し替えられる。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">疎結合</span>
-                <span className="glossary-def">コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。</span>
+                <span className="glossary-def">
+                  コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">関心の分離</span>
-                <span className="glossary-def">異なる責務を別々のモジュール・クラス・層に分けること。混在させないことが重要。</span>
+                <span className="glossary-def">
+                  異なる責務を別々のモジュール・クラス・層に分けること。混在させないことが重要。
+                </span>
               </div>
             </div>
           </div>
@@ -593,7 +676,9 @@ export default function Page() {
             <h2 className="section-title">レイヤードアーキテクチャの詳細</h2>
           </div>
 
-          <p>レイヤードアーキテクチャ（層状アーキテクチャ）は、モノリシックアプリケーションの最も一般的な構造です。各層が決まった責務だけを持ち、隣接する層のみと通信するルールを守ります。</p>
+          <p>
+            レイヤードアーキテクチャ（層状アーキテクチャ）は、モノリシックアプリケーションの最も一般的な構造です。各層が決まった責務だけを持ち、隣接する層のみと通信するルールを守ります。
+          </p>
 
           <h3 className="subsection-title">4 層の役割</h3>
 
@@ -661,7 +746,10 @@ export default function Page() {
 
           <h3 className="subsection-title">ディレクトリ構成のベストプラクティス</h3>
 
-          <p>ディレクトリ構成はアーキテクチャを「見える化」する最初の一歩です。以下の構成は 4 層アーキテクチャを忠実に反映しています。</p>
+          <p>
+            ディレクトリ構成はアーキテクチャを「見える化」する最初の一歩です。以下の構成は 4
+            層アーキテクチャを忠実に反映しています。
+          </p>
 
           <div className="cd">
             <pre
@@ -719,7 +807,9 @@ export default function Page() {
             <div>
               <strong>なぜドメイン層が「最重要・最安定」なのか？</strong>
               <br />
-              ドメイン層はビジネスルール（＝会社が何をするかの本質）を含みます。フレームワークは変わっても（Flask → FastAPI など）、ビジネスルールは変わりません。だからこそ、フレームワーク依存をゼロにして最も安定させるべき層なのです。
+              ドメイン層はビジネスルール（＝会社が何をするかの本質）を含みます。フレームワークは変わっても（Flask
+              → FastAPI
+              など）、ビジネスルールは変わりません。だからこそ、フレームワーク依存をゼロにして最も安定させるべき層なのです。
             </div>
           </div>
 
@@ -727,15 +817,21 @@ export default function Page() {
             <div className="source-item">
               <IconLink size={16} />
               <div>
-                <div className="source-label">Martin Fowler — Presentation Domain Data Layering</div>
-                <Ext href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html">https://martinfowler.com/bliki/PresentationDomainDataLayering.html</Ext>
+                <div className="source-label">
+                  Martin Fowler — Presentation Domain Data Layering
+                </div>
+                <Ext href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html">
+                  https://martinfowler.com/bliki/PresentationDomainDataLayering.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Hexagonal Architecture — Alistair Cockburn</div>
-                <Ext href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/">Alistair Cockburn - Hexagonal Architecture (Web Archive)</Ext>
+                <Ext href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/">
+                  Alistair Cockburn - Hexagonal Architecture (Web Archive)
+                </Ext>
               </div>
             </div>
           </div>
@@ -747,23 +843,37 @@ export default function Page() {
             <div className="glossary-body">
               <div className="glossary-item">
                 <span className="glossary-term">DTO</span>
-                <span className="glossary-def">Data Transfer Object（データ転送オブジェクト）。層をまたいでデータを運ぶための入れ物。ロジックを持たない。</span>
+                <span className="glossary-def">
+                  Data Transfer
+                  Object（データ転送オブジェクト）。層をまたいでデータを運ぶための入れ物。ロジックを持たない。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">エンティティ</span>
-                <span className="glossary-def">ID を持ち、ライフサイクル（生成→更新→削除）を持つビジネスオブジェクト。例：注文・ユーザー。</span>
+                <span className="glossary-def">
+                  ID
+                  を持ち、ライフサイクル（生成→更新→削除）を持つビジネスオブジェクト。例：注文・ユーザー。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">値オブジェクト</span>
-                <span className="glossary-def">ID を持たない、値で識別されるオブジェクト。イミュータブル（変更不可）。例：Money(1000, "JPY")。</span>
+                <span className="glossary-def">
+                  ID
+                  を持たない、値で識別されるオブジェクト。イミュータブル（変更不可）。例：Money(1000,
+                  "JPY")。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">リポジトリ</span>
-                <span className="glossary-def">データベースへのアクセスを抽象化したクラス。ドメイン層はインターフェース（抽象）だけを知り、実装はインフラ層が担当。</span>
+                <span className="glossary-def">
+                  データベースへのアクセスを抽象化したクラス。ドメイン層はインターフェース（抽象）だけを知り、実装はインフラ層が担当。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">オーケストレーション</span>
-                <span className="glossary-def">複数の処理を特定の順序で調整・実行すること。例：「注文→在庫チェック→決済→通知」の順序制御。</span>
+                <span className="glossary-def">
+                  複数の処理を特定の順序で調整・実行すること。例：「注文→在庫チェック→決済→通知」の順序制御。
+                </span>
               </div>
             </div>
           </div>
@@ -778,7 +888,9 @@ export default function Page() {
             <h2 className="section-title">モジュラーモノリス（推奨形態）</h2>
           </div>
 
-          <p>モジュラーモノリスは、レイヤードアーキテクチャをさらに発展させた形態です。単一デプロイを保ちつつ、機能ドメインごとにモジュールを分割します。将来のマイクロサービス移行への最良の準備でもあります。</p>
+          <p>
+            モジュラーモノリスは、レイヤードアーキテクチャをさらに発展させた形態です。単一デプロイを保ちつつ、機能ドメインごとにモジュールを分割します。将来のマイクロサービス移行への最良の準備でもあります。
+          </p>
 
           <div className="callout success">
             <span className="callout-icon">
@@ -839,7 +951,9 @@ export default function Page() {
               <ul>
                 <li>公開インターフェース（Port）経由でのみ呼び出す</li>
                 <li>データ変更の通知はドメインイベント（Pub/Sub）で行う</li>
-                <li>共有データが必要なら ACL（変換レイヤー）で各モジュール独自のモデルに変換する</li>
+                <li>
+                  共有データが必要なら ACL（変換レイヤー）で各モジュール独自のモデルに変換する
+                </li>
               </ul>
             </div>
             <div className="comp-col bad">
@@ -856,7 +970,11 @@ export default function Page() {
 
           <h3 className="subsection-title">モジュール間通信の実装例（Python）</h3>
 
-          <p>以下のコードは、注文モジュールがユーザーモジュールを利用する際の正しいパターンです。<strong>公開インターフェースのみに依存し、内部実装の詳細は知らない</strong>ことがポイントです。</p>
+          <p>
+            以下のコードは、注文モジュールがユーザーモジュールを利用する際の正しいパターンです。
+            <strong>公開インターフェースのみに依存し、内部実装の詳細は知らない</strong>
+            ことがポイントです。
+          </p>
 
           <div className="cd">
             <pre
@@ -914,14 +1032,20 @@ export default function Page() {
               <IconLink size={16} />
               <div>
                 <div className="source-label">Martin Fowler — Modular Monolith への言及</div>
-                <Ext href="https://martinfowler.com/articles/break-monolith-into-microservices.html">https://martinfowler.com/articles/break-monolith-into-microservices.html</Ext>
+                <Ext href="https://martinfowler.com/articles/break-monolith-into-microservices.html">
+                  https://martinfowler.com/articles/break-monolith-into-microservices.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
-                <div className="source-label">Martin Fowler — Anemic Domain Model（アンチパターン）</div>
-                <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html">https://martinfowler.com/bliki/AnemicDomainModel.html</Ext>
+                <div className="source-label">
+                  Martin Fowler — Anemic Domain Model（アンチパターン）
+                </div>
+                <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html">
+                  https://martinfowler.com/bliki/AnemicDomainModel.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -933,19 +1057,29 @@ export default function Page() {
             <div className="glossary-body">
               <div className="glossary-item">
                 <span className="glossary-term">モジュラーモノリス</span>
-                <span className="glossary-def">単一デプロイを保ちつつ、機能ドメインごとにモジュール分割されたモノリス。境界が明確で将来の分割が容易。</span>
+                <span className="glossary-def">
+                  単一デプロイを保ちつつ、機能ドメインごとにモジュール分割されたモノリス。境界が明確で将来の分割が容易。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ドメインイベント</span>
-                <span className="glossary-def">ビジネス上の出来事（注文確定・注文キャンセルなど）を表すオブジェクト。Pub/Sub で他モジュールに通知する。</span>
+                <span className="glossary-def">
+                  ビジネス上の出来事（注文確定・注文キャンセルなど）を表すオブジェクト。Pub/Sub
+                  で他モジュールに通知する。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">Pub/Sub パターン</span>
-                <span className="glossary-def">発行者（Publisher）と購読者（Subscriber）を分離する通信パターン。直接の依存なしにメッセージを伝達できる。</span>
+                <span className="glossary-def">
+                  発行者（Publisher）と購読者（Subscriber）を分離する通信パターン。直接の依存なしにメッセージを伝達できる。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ACL（腐敗防止層）</span>
-                <span className="glossary-def">Anti-Corruption Layer。他モジュールのモデルを自モジュールのモデルに変換する変換レイヤー。</span>
+                <span className="glossary-def">
+                  Anti-Corruption
+                  Layer。他モジュールのモデルを自モジュールのモデルに変換する変換レイヤー。
+                </span>
               </div>
             </div>
           </div>
@@ -960,7 +1094,9 @@ export default function Page() {
             <h2 className="section-title">データベース設計</h2>
           </div>
 
-          <p>モノリシックアプリケーションのデータベース設計は、将来のスケーリングと保守性に大きく影響します。最初から将来を見据えた設計をしておくことで、後から大規模な変更を避けられます。</p>
+          <p>
+            モノリシックアプリケーションのデータベース設計は、将来のスケーリングと保守性に大きく影響します。最初から将来を見据えた設計をしておくことで、後から大規模な変更を避けられます。
+          </p>
 
           <h3 className="subsection-title">モノリスの DB 設計パターン</h3>
 
@@ -969,25 +1105,39 @@ export default function Page() {
               <h4>
                 <IconDatabase size={20} color="var(--c-teal-500)" /> 単一データベース（推奨：初期）
               </h4>
-              <p>すべてのデータを 1 つの DB に格納。トランザクションが最も強力。チーム 1〜10 人・データ量 1TB 以下に最適。</p>
+              <p>
+                すべてのデータを 1 つの DB に格納。トランザクションが最も強力。チーム 1〜10
+                人・データ量 1TB 以下に最適。
+              </p>
             </div>
             <div className="card">
               <h4>
-                <IconDatabase size={20} color="var(--c-purple-500)" /> スキーマ分離（推奨：モジュラー）
+                <IconDatabase size={20} color="var(--c-purple-500)" />{" "}
+                スキーマ分離（推奨：モジュラー）
               </h4>
-              <p><code>orders</code>・<code>users</code>・<code>products</code> スキーマを分離。将来の DB 分割がしやすく、アクセス制御も可能。</p>
+              <p>
+                <code>orders</code>・<code>users</code>・<code>products</code>{" "}
+                スキーマを分離。将来の DB 分割がしやすく、アクセス制御も可能。
+              </p>
             </div>
             <div className="card">
               <h4>
-                <IconArrowsRightLeft size={20} color="var(--c-coral-500)" /> 読み書き分離（スケール時）
+                <IconArrowsRightLeft size={20} color="var(--c-coral-500)" />{" "}
+                読み書き分離（スケール時）
               </h4>
-              <p>プライマリ（書き込み専用）+ レプリカ（読み取り専用）。読み取り比率が 70% 以上になったら検討。</p>
+              <p>
+                プライマリ（書き込み専用）+ レプリカ（読み取り専用）。読み取り比率が 70%
+                以上になったら検討。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconBolt size={20} color="var(--c-pink-500)" /> キャッシュアサイドパターン
               </h4>
-              <p>頻繁に読まれるデータを Redis にキャッシュ。DB クエリ数を劇的に削減。セッション管理にも活用。</p>
+              <p>
+                頻繁に読まれるデータを Redis にキャッシュ。DB
+                クエリ数を劇的に削減。セッション管理にも活用。
+              </p>
             </div>
           </div>
 
@@ -1043,7 +1193,8 @@ export default function Page() {
             <div>
               <strong>本番 DB マイグレーションの鉄則</strong>
               <br />
-              必ずステージング環境で先にテストし、ロールバック手順を確認してから本番に適用します。特に大量データが存在するテーブルへの ALTER TABLE は、本番環境で長時間ロックがかかる可能性があります。
+              必ずステージング環境で先にテストし、ロールバック手順を確認してから本番に適用します。特に大量データが存在するテーブルへの
+              ALTER TABLE は、本番環境で長時間ロックがかかる可能性があります。
             </div>
           </div>
 
@@ -1066,7 +1217,9 @@ export default function Page() {
               <IconLink size={16} />
               <div>
                 <div className="source-label">PostgreSQL パフォーマンスチューニング</div>
-                <Ext href="https://www.postgresql.org/docs/current/performance-tips.html">https://www.postgresql.org/docs/current/performance-tips.html</Ext>
+                <Ext href="https://www.postgresql.org/docs/current/performance-tips.html">
+                  https://www.postgresql.org/docs/current/performance-tips.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -1081,7 +1234,13 @@ export default function Page() {
             <h2 className="section-title">ビジネスロジックの実装</h2>
           </div>
 
-          <p>ビジネスロジックとは「会社が何をするか」を表すコードです。注文の合計金額計算・在庫チェック・割引ルールなどがこれに該当します。<strong>最もよくある間違いは、このロジックをコントローラーやテンプレートに書いてしまうこと</strong>です。</p>
+          <p>
+            ビジネスロジックとは「会社が何をするか」を表すコードです。注文の合計金額計算・在庫チェック・割引ルールなどがこれに該当します。
+            <strong>
+              最もよくある間違いは、このロジックをコントローラーやテンプレートに書いてしまうこと
+            </strong>
+            です。
+          </p>
 
           <h3 className="subsection-title">ビジネスロジックの正しい配置場所</h3>
 
@@ -1092,10 +1251,12 @@ export default function Page() {
               </h4>
               <ul>
                 <li>
-                  <strong>ドメイン層</strong>：エンティティの不変条件・値オブジェクトの計算・ドメインルール検証
+                  <strong>ドメイン層</strong>
+                  ：エンティティの不変条件・値オブジェクトの計算・ドメインルール検証
                 </li>
                 <li>
-                  <strong>アプリケーション層</strong>：ユースケースのフロー制御・サービス間調整・トランザクション境界
+                  <strong>アプリケーション層</strong>
+                  ：ユースケースのフロー制御・サービス間調整・トランザクション境界
                 </li>
               </ul>
             </div>
@@ -1108,10 +1269,12 @@ export default function Page() {
                   <strong>コントローラー</strong>：HTTP の詳細のみを扱う場所。計算ロジックを書かない
                 </li>
                 <li>
-                  <strong>DB（ストアドプロシージャ）</strong>：テストが困難になり、ビジネスロジックがバラバラになる
+                  <strong>DB（ストアドプロシージャ）</strong>
+                  ：テストが困難になり、ビジネスロジックがバラバラになる
                 </li>
                 <li>
-                  <strong>テンプレート・ビュー</strong>：表示ロジックのみ。計算や判断をここに書かない
+                  <strong>テンプレート・ビュー</strong>
+                  ：表示ロジックのみ。計算や判断をここに書かない
                 </li>
               </ul>
             </div>
@@ -1119,7 +1282,10 @@ export default function Page() {
 
           <h3 className="subsection-title">ドメインモデルの実装例（リッチドメインモデル）</h3>
 
-          <p>リッチドメインモデル（＝ビジネスロジックをエンティティ自身が持つパターン）の実装例です。<code>Order</code> クラスがビジネスルールを自分で守ります。</p>
+          <p>
+            リッチドメインモデル（＝ビジネスロジックをエンティティ自身が持つパターン）の実装例です。
+            <code>Order</code> クラスがビジネスルールを自分で守ります。
+          </p>
 
           <div className="cd">
             <pre
@@ -1177,14 +1343,18 @@ export default function Page() {
               <IconLink size={16} />
               <div>
                 <div className="source-label">Martin Fowler — Repository Pattern</div>
-                <Ext href="https://martinfowler.com/eaaCatalog/repository.html">https://martinfowler.com/eaaCatalog/repository.html</Ext>
+                <Ext href="https://martinfowler.com/eaaCatalog/repository.html">
+                  https://martinfowler.com/eaaCatalog/repository.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Domain-Driven Design — Eric Evans（書籍）</div>
-                <Ext href="https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/">https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/</Ext>
+                <Ext href="https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/">
+                  https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/
+                </Ext>
               </div>
             </div>
           </div>
@@ -1199,7 +1369,11 @@ export default function Page() {
             <h2 className="section-title">API とルーティング設計</h2>
           </div>
 
-          <p>モノリシックアプリケーションの API 設計は、外部クライアントとアプリケーション内部の橋渡し役です。RESTful 設計原則に従い、リソース指向の URL 設計を行います。</p>
+          <p>
+            モノリシックアプリケーションの API
+            設計は、外部クライアントとアプリケーション内部の橋渡し役です。RESTful
+            設計原則に従い、リソース指向の URL 設計を行います。
+          </p>
 
           <h3 className="subsection-title">RESTful エンドポイント設計</h3>
 
@@ -1351,7 +1525,10 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <h2 className="section-title">認証・認可の実装</h2>
           </div>
 
-          <p>モノリシックアプリケーションの認証（＝あなたは誰か）と認可（＝あなたは何をしてよいか）の実装は、すべての API で共通のミドルウェアとして適用します。</p>
+          <p>
+            モノリシックアプリケーションの認証（＝あなたは誰か）と認可（＝あなたは何をしてよいか）の実装は、すべての
+            API で共通のミドルウェアとして適用します。
+          </p>
 
           <div className="mermaid-wrap">
             <MermaidDiagram
@@ -1476,7 +1653,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <IconLink size={16} />
               <div>
                 <div className="source-label">OWASP — Authentication Cheat Sheet</div>
-                <Ext href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html</Ext>
+                <Ext href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html">
+                  https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -1491,7 +1670,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <h2 className="section-title">テスト戦略</h2>
           </div>
 
-          <p>テストはコードの品質保証の核心です。「テストがないコードは変更するのが怖い」というのはソフトウェア工学の格言です。モノリスのテストは、テストピラミッドという考え方に基づいて設計します。</p>
+          <p>
+            テストはコードの品質保証の核心です。「テストがないコードは変更するのが怖い」というのはソフトウェア工学の格言です。モノリスのテストは、テストピラミッドという考え方に基づいて設計します。
+          </p>
 
           <h3 className="subsection-title">テストピラミッド</h3>
 
@@ -1510,19 +1691,27 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <h4>
                 <IconCheck size={20} color="var(--c-teal-500)" /> ユニットテスト
               </h4>
-              <p>DB なしで純粋なビジネスロジックをテスト。最も速く、最も多く書く。カバレッジ 90% 以上を目標にする。</p>
+              <p>
+                DB なしで純粋なビジネスロジックをテスト。最も速く、最も多く書く。カバレッジ 90%
+                以上を目標にする。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconArrowsExchange size={20} color="var(--c-purple-500)" /> 統合テスト
               </h4>
-              <p>TestContainers で実際の DB を起動してリポジトリをテスト。API エンドポイントのシナリオ検証も含む。</p>
+              <p>
+                TestContainers で実際の DB を起動してリポジトリをテスト。API
+                エンドポイントのシナリオ検証も含む。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconEye size={20} color="var(--c-coral-500)" /> E2E テスト
               </h4>
-              <p>実際のブラウザで重要なビジネスシナリオ（登録→注文→決済）を検証。数件のみ作成する。</p>
+              <p>
+                実際のブラウザで重要なビジネスシナリオ（登録→注文→決済）を検証。数件のみ作成する。
+              </p>
             </div>
           </div>
 
@@ -1592,7 +1781,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
               <IconLink size={16} />
               <div>
                 <div className="source-label">TestContainers（統合テスト）</div>
-                <Ext href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/">https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/</Ext>
+                <Ext href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/">
+                  https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/
+                </Ext>
               </div>
             </div>
             <div className="source-item">
@@ -1614,44 +1805,63 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <h2 className="section-title">スケーリング戦略</h2>
           </div>
 
-          <p>モノリスは「スケールできない」という誤解がありますが、適切な戦略を使えば大規模システムでも十分に対応できます。スケーリングは必要に応じて段階的に行います。</p>
+          <p>
+            モノリスは「スケールできない」という誤解がありますが、適切な戦略を使えば大規模システムでも十分に対応できます。スケーリングは必要に応じて段階的に行います。
+          </p>
 
           <div className="scaling-grid">
             <div className="scaling-card">
               <h4>
                 <IconArrowUp size={20} color="var(--c-teal-500)" /> 垂直スケーリング
               </h4>
-              <p>サーバーの CPU・メモリを増強する最もシンプルな方法。まずここから始める。上限があるためいずれ限界に達する。</p>
+              <p>
+                サーバーの
+                CPU・メモリを増強する最もシンプルな方法。まずここから始める。上限があるためいずれ限界に達する。
+              </p>
             </div>
             <div className="scaling-card">
               <h4>
                 <IconArrowsHorizontal size={20} color="var(--c-purple-500)" /> 水平スケーリング
               </h4>
-              <p>同一アプリを複数インスタンスで起動してロードバランサーで分散する。ステートレス設計（セッションを外に持つ）が前提条件。</p>
+              <p>
+                同一アプリを複数インスタンスで起動してロードバランサーで分散する。ステートレス設計（セッションを外に持つ）が前提条件。
+              </p>
             </div>
             <div className="scaling-card">
               <h4>
                 <IconBolt size={20} color="var(--c-coral-500)" /> Redis キャッシュ
               </h4>
-              <p>頻繁に読まれるデータを Redis にキャッシュして DB 負荷を削減する。セッション管理にも使用してインスタンス間で共有する。</p>
+              <p>
+                頻繁に読まれるデータを Redis にキャッシュして DB
+                負荷を削減する。セッション管理にも使用してインスタンス間で共有する。
+              </p>
             </div>
             <div className="scaling-card">
               <h4>
                 <IconDatabaseExport size={20} color="var(--c-pink-500)" /> 読み取りレプリカ
               </h4>
-              <p>DB のリードレプリカを追加して SELECT クエリを振り分ける。読み取り比率が 70% 以上の場合に特に効果的。</p>
+              <p>
+                DB のリードレプリカを追加して SELECT クエリを振り分ける。読み取り比率が 70%
+                以上の場合に特に効果的。
+              </p>
             </div>
             <div className="scaling-card">
               <h4>
                 <IconBrandCloudflare size={20} color="var(--c-teal-500)" /> CDN 配信
               </h4>
-              <p>静的ファイル・画像を CDN から配信してオリジンサーバーの負荷を軽減する。グローバルなレイテンシも改善される。</p>
+              <p>
+                静的ファイル・画像を CDN
+                から配信してオリジンサーバーの負荷を軽減する。グローバルなレイテンシも改善される。
+              </p>
             </div>
             <div className="scaling-card">
               <h4>
                 <IconClockPlay size={20} color="var(--c-purple-500)" /> 非同期処理
               </h4>
-              <p>メール送信・レポート生成などの重い処理を Celery などのジョブキューに移す。レスポンスタイムが劇的に改善する。</p>
+              <p>
+                メール送信・レポート生成などの重い処理を Celery
+                などのジョブキューに移す。レスポンスタイムが劇的に改善する。
+              </p>
             </div>
           </div>
 
@@ -1684,7 +1894,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <div>
               <strong>ステートレス設計の 3 つのポイント</strong>
               <br />
-              水平スケーリングには、アプリケーションインスタンスが「状態を持たない（ステートレス）」設計が必須です。① セッションは Redis に保存（サーバーローカルに保存しない）、② ファイルアップロードは S3 等の共有ストレージへ、③ ローカルキャッシュより Redis などの分散キャッシュを使う。
+              水平スケーリングには、アプリケーションインスタンスが「状態を持たない（ステートレス）」設計が必須です。①
+              セッションは Redis に保存（サーバーローカルに保存しない）、② ファイルアップロードは S3
+              等の共有ストレージへ、③ ローカルキャッシュより Redis などの分散キャッシュを使う。
             </div>
           </div>
 
@@ -1708,7 +1920,10 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             <h2 className="section-title">CI/CD とデプロイ戦略</h2>
           </div>
 
-          <p>CI/CD（継続的インテグレーション・継続的デリバリー）は、コードの変更を安全・高速に本番環境に届けるための仕組みです。モノリスは単一コードベースなので、CI/CD の設計がシンプルで始めやすいのも利点です。</p>
+          <p>
+            CI/CD（継続的インテグレーション・継続的デリバリー）は、コードの変更を安全・高速に本番環境に届けるための仕組みです。モノリスは単一コードベースなので、CI/CD
+            の設計がシンプルで始めやすいのも利点です。
+          </p>
 
           <div className="mermaid-wrap">
             <MermaidDiagram
@@ -1735,7 +1950,9 @@ router = APIRouter(prefix=<span class="st">"/api/v1/orders"</span>, tags=[<span 
             />
           </div>
 
-          <h3 className="subsection-title">Dockerfile ベストプラクティス（マルチステージビルド）</h3>
+          <h3 className="subsection-title">
+            Dockerfile ベストプラクティス（マルチステージビルド）
+          </h3>
 
           <div className="cd">
             <pre
@@ -1772,7 +1989,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">Docker Best Practices</div>
-                <Ext href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</Ext>
+                <Ext href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">
+                  https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+                </Ext>
               </div>
             </div>
             <div className="source-item">
@@ -1794,7 +2013,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <h2 className="section-title">監視・ロギング</h2>
           </div>
 
-          <p>監視とロギングは「本番環境で何が起きているか」を把握するための仕組みです。モノリスは単一プロセスなので、分散システムより監視が容易です。</p>
+          <p>
+            監視とロギングは「本番環境で何が起きているか」を把握するための仕組みです。モノリスは単一プロセスなので、分散システムより監視が容易です。
+          </p>
 
           <h3 className="subsection-title">オブザーバビリティの 3 本柱</h3>
 
@@ -1803,19 +2024,28 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <h4>
                 <IconChartLine size={20} color="var(--c-teal-500)" /> メトリクス
               </h4>
-              <p>Prometheus + Grafana。RPS・P95 レスポンスタイム・エラーレート・CPU / メモリ使用率を継続的に計測する。</p>
+              <p>
+                Prometheus + Grafana。RPS・P95 レスポンスタイム・エラーレート・CPU /
+                メモリ使用率を継続的に計測する。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconNotes size={20} color="var(--c-purple-500)" /> ログ
               </h4>
-              <p>構造化ログ（JSON 形式）で出力する。リクエスト ID を付与して追跡可能にする。ELK Stack や Loki + Grafana で集中管理。</p>
+              <p>
+                構造化ログ（JSON 形式）で出力する。リクエスト ID を付与して追跡可能にする。ELK Stack
+                や Loki + Grafana で集中管理。
+              </p>
             </div>
             <div className="card">
               <h4>
                 <IconTopologyRing size={20} color="var(--c-coral-500)" /> トレース
               </h4>
-              <p>Jaeger / OpenTelemetry でリクエストの処理経路を可視化する。DB クエリの実行時間を含め、ボトルネックを特定できる。</p>
+              <p>
+                Jaeger / OpenTelemetry でリクエストの処理経路を可視化する。DB
+                クエリの実行時間を含め、ボトルネックを特定できる。
+              </p>
             </div>
           </div>
 
@@ -1927,7 +2157,10 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <h2 className="section-title">実践：EC サイト完全実装例</h2>
           </div>
 
-          <p>これまで学んだ知識を EC サイトの例で統合します。モノリシックアーキテクチャで EC サイトを構築する場合の全体図と、注文処理の完全なフローを確認しましょう。</p>
+          <p>
+            これまで学んだ知識を EC サイトの例で統合します。モノリシックアーキテクチャで EC
+            サイトを構築する場合の全体図と、注文処理の完全なフローを確認しましょう。
+          </p>
 
           <h3 className="subsection-title">EC サイト全体アーキテクチャ</h3>
 
@@ -2007,7 +2240,8 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <div>
               <strong>モノリスだからこそ実現できること</strong>
               <br />
-              注文→在庫引き当て→決済→通知の一連のフローを、単一のデータベーストランザクションで囲めることがモノリスの最大の強みです。マイクロサービスでは分散トランザクション（Saga パターンなど）が必要になり、実装が格段に複雑になります。
+              注文→在庫引き当て→決済→通知の一連のフローを、単一のデータベーストランザクションで囲めることがモノリスの最大の強みです。マイクロサービスでは分散トランザクション（Saga
+              パターンなど）が必要になり、実装が格段に複雑になります。
             </div>
           </div>
         </section>
@@ -2021,7 +2255,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <h2 className="section-title">マイクロサービスへの段階的移行</h2>
           </div>
 
-          <p>モノリスからマイクロサービスへの移行は「必要になったときに、段階的に」行うものです。移行の必要性を判断するフローと、安全な移行パターンを紹介します。</p>
+          <p>
+            モノリスからマイクロサービスへの移行は「必要になったときに、段階的に」行うものです。移行の必要性を判断するフローと、安全な移行パターンを紹介します。
+          </p>
 
           <h3 className="subsection-title">移行判断のフロー</h3>
 
@@ -2040,35 +2276,46 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
 
           <h3 className="subsection-title">Strangler Fig パターン（安全な段階的移行）</h3>
 
-          <p>Strangler Fig（絞め殺しのイチジク）パターンは、モノリスを徐々に置き換えていく移行パターンです。いきなり全機能を移行せず、一部の機能から段階的に切り出します。</p>
+          <p>
+            Strangler
+            Fig（絞め殺しのイチジク）パターンは、モノリスを徐々に置き換えていく移行パターンです。いきなり全機能を移行せず、一部の機能から段階的に切り出します。
+          </p>
 
           <div className="phase-timeline">
             <div className="phase-item phase-1">
               <div className="phase-badge">P1</div>
               <div>
                 <h4>Phase 1：モノリスをモジュラー化する</h4>
-                <p>先にモジュール境界を明確にします。これをしないと、マイクロサービスに分割したとき依存が複雑で失敗します。</p>
+                <p>
+                  先にモジュール境界を明確にします。これをしないと、マイクロサービスに分割したとき依存が複雑で失敗します。
+                </p>
               </div>
             </div>
             <div className="phase-item phase-2">
               <div className="phase-badge">P2</div>
               <div>
                 <h4>Phase 2：最初の 1 サービスを切り出す（通知など）</h4>
-                <p>最も独立性が高く、他モジュールへの影響が少ない機能から始めます。通知・メール送信・レポート生成がよい候補です。</p>
+                <p>
+                  最も独立性が高く、他モジュールへの影響が少ない機能から始めます。通知・メール送信・レポート生成がよい候補です。
+                </p>
               </div>
             </div>
             <div className="phase-item phase-3">
               <div className="phase-badge">P3</div>
               <div>
                 <h4>Phase 3：API ゲートウェイを導入する</h4>
-                <p>クライアントはゲートウェイだけを知り、背後でモノリスと各マイクロサービスに振り分けます。移行中も既存クライアントは変更不要です。</p>
+                <p>
+                  クライアントはゲートウェイだけを知り、背後でモノリスと各マイクロサービスに振り分けます。移行中も既存クライアントは変更不要です。
+                </p>
               </div>
             </div>
             <div className="phase-item phase-4">
               <div className="phase-badge">P4</div>
               <div>
                 <h4>Phase 4：段階的に移行を続ける</h4>
-                <p>高負荷・独立性が高い機能から順に切り出します。モノリスのコアが残っても問題ありません。無理に全部分割する必要はありません。</p>
+                <p>
+                  高負荷・独立性が高い機能から順に切り出します。モノリスのコアが残っても問題ありません。無理に全部分割する必要はありません。
+                </p>
               </div>
             </div>
           </div>
@@ -2097,7 +2344,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">Sam Newman — Strangler Fig Application</div>
-                <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">https://martinfowler.com/bliki/StranglerFigApplication.html</Ext>
+                <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">
+                  https://martinfowler.com/bliki/StranglerFigApplication.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -2179,7 +2428,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
 
           <h3 className="subsection-title">モノリス成熟度モデル</h3>
 
-          <p>以下の成熟度モデルは、自分のシステムの現在地を把握するための指標です。焦らず段階的にレベルを上げていくことが重要です。</p>
+          <p>
+            以下の成熟度モデルは、自分のシステムの現在地を把握するための指標です。焦らず段階的にレベルを上げていくことが重要です。
+          </p>
 
           <div className="maturity-steps">
             <div className="maturity-item maturity-0">
@@ -2236,17 +2487,23 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <h2 className="section-title">アンチパターン</h2>
           </div>
 
-          <p>アンチパターン（＝よく見られる失敗パターン）を知ることで、同じ間違いを避けられます。以下は特に注意すべき 5 つのアンチパターンです。</p>
+          <p>
+            アンチパターン（＝よく見られる失敗パターン）を知ることで、同じ間違いを避けられます。以下は特に注意すべき
+            5 つのアンチパターンです。
+          </p>
 
           <div className="anti-pattern-item">
             <div className="anti-pattern-header">
               <IconX size={16} /> アンチパターン 1：大きな泥の塊（Big Ball of Mud）
             </div>
             <div className="anti-pattern-body">
-              <p style={{ fontSize: "14.5px" }}>コード構造がなくすべてが密結合している状態。変更のたびに予期しないバグが発生し、テストも書けない。最初は速く開発できるが、時間とともに保守コストが爆発的に増大する。</p>
+              <p style={{ fontSize: "14.5px" }}>
+                コード構造がなくすべてが密結合している状態。変更のたびに予期しないバグが発生し、テストも書けない。最初は速く開発できるが、時間とともに保守コストが爆発的に増大する。
+              </p>
             </div>
             <div className="anti-pattern-fix">
-              <IconCheck size={16} /> 解決：レイヤードアーキテクチャを採用し、責務を明確に分離する。テストを書きやすい設計から始める。
+              <IconCheck size={16} />{" "}
+              解決：レイヤードアーキテクチャを採用し、責務を明確に分離する。テストを書きやすい設計から始める。
             </div>
           </div>
 
@@ -2255,10 +2512,16 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconX size={16} /> アンチパターン 2：コントローラーにビジネスロジック
             </div>
             <div className="anti-pattern-body">
-              <p style={{ fontSize: "14.5px" }}>コントローラーメソッドが 100 行を超え、DB 操作・計算・メール送信がすべて入っている状態。テストが困難で再利用できない。「Fat Controller（太ったコントローラー）」とも呼ばれる。</p>
+              <p style={{ fontSize: "14.5px" }}>
+                コントローラーメソッドが 100 行を超え、DB
+                操作・計算・メール送信がすべて入っている状態。テストが困難で再利用できない。「Fat
+                Controller（太ったコントローラー）」とも呼ばれる。
+              </p>
             </div>
             <div className="anti-pattern-fix">
-              <IconCheck size={16} /> 解決：ユースケースクラスを作成してロジックを移す。コントローラーは HTTP 変換のみを担当する。
+              <IconCheck size={16} />{" "}
+              解決：ユースケースクラスを作成してロジックを移す。コントローラーは HTTP
+              変換のみを担当する。
             </div>
           </div>
 
@@ -2267,10 +2530,15 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconX size={16} /> アンチパターン 3：神クラス（God Class）
             </div>
             <div className="anti-pattern-body">
-              <p style={{ fontSize: "14.5px" }}><code>OrderManager</code> クラスが注文・在庫・決済・通知・配送・顧客をすべて処理している状態。数千行のクラスは変更のたびに恐怖を感じる。単一責任原則の違反の典型。</p>
+              <p style={{ fontSize: "14.5px" }}>
+                <code>OrderManager</code>{" "}
+                クラスが注文・在庫・決済・通知・配送・顧客をすべて処理している状態。数千行のクラスは変更のたびに恐怖を感じる。単一責任原則の違反の典型。
+              </p>
             </div>
             <div className="anti-pattern-fix">
-              <IconCheck size={16} /> 解決：単一責任原則を適用して機能ごとにクラスを分割する。各クラスは 1 つのことだけを担当する。
+              <IconCheck size={16} />{" "}
+              解決：単一責任原則を適用して機能ごとにクラスを分割する。各クラスは 1
+              つのことだけを担当する。
             </div>
           </div>
 
@@ -2279,10 +2547,14 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconX size={16} /> アンチパターン 4：コピー&ペーストプログラミング
             </div>
             <div className="anti-pattern-body">
-              <p style={{ fontSize: "14.5px" }}>同じバリデーションロジックが 10 か所にコピーされている状態。1 か所修正すると他 9 か所に漏れが発生する。技術的負債（＝将来の変更コストの増大）が急速に蓄積される。</p>
+              <p style={{ fontSize: "14.5px" }}>
+                同じバリデーションロジックが 10 か所にコピーされている状態。1 か所修正すると他 9
+                か所に漏れが発生する。技術的負債（＝将来の変更コストの増大）が急速に蓄積される。
+              </p>
             </div>
             <div className="anti-pattern-fix">
-              <IconCheck size={16} /> 解決：DRY 原則（Don't Repeat Yourself）を適用する。共通ロジックは値オブジェクトや共通クラスに集約する。
+              <IconCheck size={16} /> 解決：DRY 原則（Don't Repeat
+              Yourself）を適用する。共通ロジックは値オブジェクトや共通クラスに集約する。
             </div>
           </div>
 
@@ -2291,10 +2563,13 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconX size={16} /> アンチパターン 5：分散モノリス
             </div>
             <div className="anti-pattern-body">
-              <p style={{ fontSize: "14.5px" }}>サービスに分割したのに、デプロイを常に同時にしないと動かない状態。マイクロサービスの複雑さ（ネットワーク遅延・分散トレーシング・サービスディスカバリ）だけを得て、モノリスのシンプルさも失った最悪の形態。</p>
+              <p style={{ fontSize: "14.5px" }}>
+                サービスに分割したのに、デプロイを常に同時にしないと動かない状態。マイクロサービスの複雑さ（ネットワーク遅延・分散トレーシング・サービスディスカバリ）だけを得て、モノリスのシンプルさも失った最悪の形態。
+              </p>
             </div>
             <div className="anti-pattern-fix">
-              <IconCheck size={16} /> 解決：潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから再分割する。
+              <IconCheck size={16} />{" "}
+              解決：潔くモノリスに戻すか、サービス間の依存を徹底的に排除してから再分割する。
             </div>
           </div>
 
@@ -2418,42 +2693,58 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">Martin Fowler — MonolithFirst パターン</div>
-                <Ext href="https://martinfowler.com/bliki/MonolithFirst.html">https://martinfowler.com/bliki/MonolithFirst.html</Ext>
+                <Ext href="https://martinfowler.com/bliki/MonolithFirst.html">
+                  https://martinfowler.com/bliki/MonolithFirst.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
-                <div className="source-label">Martin Fowler — Presentation Domain Data Layering</div>
-                <Ext href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html">https://martinfowler.com/bliki/PresentationDomainDataLayering.html</Ext>
+                <div className="source-label">
+                  Martin Fowler — Presentation Domain Data Layering
+                </div>
+                <Ext href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html">
+                  https://martinfowler.com/bliki/PresentationDomainDataLayering.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
-                <div className="source-label">Martin Fowler — Anemic Domain Model（アンチパターン）</div>
-                <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html">https://martinfowler.com/bliki/AnemicDomainModel.html</Ext>
+                <div className="source-label">
+                  Martin Fowler — Anemic Domain Model（アンチパターン）
+                </div>
+                <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html">
+                  https://martinfowler.com/bliki/AnemicDomainModel.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Martin Fowler — Repository Pattern</div>
-                <Ext href="https://martinfowler.com/eaaCatalog/repository.html">https://martinfowler.com/eaaCatalog/repository.html</Ext>
+                <Ext href="https://martinfowler.com/eaaCatalog/repository.html">
+                  https://martinfowler.com/eaaCatalog/repository.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Clean Architecture — Uncle Bob</div>
-                <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</Ext>
+                <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
+                  https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Hexagonal Architecture — Alistair Cockburn</div>
-                <Ext href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/">Alistair Cockburn - Hexagonal Architecture (Web Archive)</Ext>
+                <Ext href="https://web.archive.org/web/20210615175905/https://alistair.cockburn.us/hexagonal-architecture/">
+                  Alistair Cockburn - Hexagonal Architecture (Web Archive)
+                </Ext>
               </div>
             </div>
             <div className="source-item">
@@ -2467,7 +2758,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">Sam Newman — Strangler Fig Application</div>
-                <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">https://martinfowler.com/bliki/StranglerFigApplication.html</Ext>
+                <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">
+                  https://martinfowler.com/bliki/StranglerFigApplication.html
+                </Ext>
               </div>
             </div>
           </div>
@@ -2514,7 +2807,9 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">TestContainers（統合テスト）</div>
-                <Ext href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/">https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/</Ext>
+                <Ext href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/">
+                  https://testcontainers.com/guides/getting-started-with-testcontainers-for-python/
+                </Ext>
               </div>
             </div>
             <div className="source-item">
@@ -2556,14 +2851,18 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
               <IconLink size={16} />
               <div>
                 <div className="source-label">PostgreSQL パフォーマンスチューニング</div>
-                <Ext href="https://www.postgresql.org/docs/current/performance-tips.html">https://www.postgresql.org/docs/current/performance-tips.html</Ext>
+                <Ext href="https://www.postgresql.org/docs/current/performance-tips.html">
+                  https://www.postgresql.org/docs/current/performance-tips.html
+                </Ext>
               </div>
             </div>
             <div className="source-item">
               <IconLink size={16} />
               <div>
                 <div className="source-label">Docker Dockerfile Best Practices</div>
-                <Ext href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</Ext>
+                <Ext href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">
+                  https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+                </Ext>
               </div>
             </div>
           </div>
@@ -2587,83 +2886,129 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
             <div className="glossary-body">
               <div className="glossary-item">
                 <span className="glossary-term">モノリシック</span>
-                <span className="glossary-def">「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造。</span>
+                <span className="glossary-def">
+                  「一枚岩」の意。すべての機能を 1 つのアプリケーションにまとめた構造。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">デプロイ単位</span>
-                <span className="glossary-def">アプリケーションをサーバーに配備するときの最小まとまり。モノリスは全機能が 1 単位。</span>
+                <span className="glossary-def">
+                  アプリケーションをサーバーに配備するときの最小まとまり。モノリスは全機能が 1
+                  単位。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">SOLID 原則</span>
-                <span className="glossary-def">Single Responsibility / Open-Closed / Liskov Substitution / Interface Segregation / Dependency Inversion の 5 原則。</span>
+                <span className="glossary-def">
+                  Single Responsibility / Open-Closed / Liskov Substitution / Interface Segregation
+                  / Dependency Inversion の 5 原則。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">依存性注入（DI）</span>
-                <span className="glossary-def">クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモックに差し替えられる。</span>
+                <span className="glossary-def">
+                  クラスが必要とするオブジェクトを外から渡す仕組み。テスト時にモックに差し替えられる。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">疎結合</span>
-                <span className="glossary-def">コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。</span>
+                <span className="glossary-def">
+                  コンポーネント間の依存が少ない状態。変更の影響範囲が限定される。反対は「密結合」。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">エンティティ</span>
-                <span className="glossary-def">ID を持ちライフサイクルを持つビジネスオブジェクト。例：注文・ユーザー。</span>
+                <span className="glossary-def">
+                  ID を持ちライフサイクルを持つビジネスオブジェクト。例：注文・ユーザー。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">値オブジェクト</span>
-                <span className="glossary-def">ID を持たない値で識別されるオブジェクト。イミュータブル。例：Money・Email・Address。</span>
+                <span className="glossary-def">
+                  ID
+                  を持たない値で識別されるオブジェクト。イミュータブル。例：Money・Email・Address。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">リポジトリ</span>
-                <span className="glossary-def">DB へのアクセスを抽象化したクラス。ドメイン層は抽象のみを知り実装はインフラ層が担当。</span>
+                <span className="glossary-def">
+                  DB
+                  へのアクセスを抽象化したクラス。ドメイン層は抽象のみを知り実装はインフラ層が担当。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">DTO</span>
-                <span className="glossary-def">Data Transfer Object。層をまたいでデータを運ぶための入れ物。ロジックを持たない。</span>
+                <span className="glossary-def">
+                  Data Transfer Object。層をまたいでデータを運ぶための入れ物。ロジックを持たない。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">モジュラーモノリス</span>
-                <span className="glossary-def">単一デプロイを保ちつつ機能ドメインごとにモジュール分割されたモノリス。</span>
+                <span className="glossary-def">
+                  単一デプロイを保ちつつ機能ドメインごとにモジュール分割されたモノリス。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ドメインイベント</span>
-                <span className="glossary-def">ビジネス上の出来事（注文確定など）を表すオブジェクト。Pub/Sub で他モジュールに通知する。</span>
+                <span className="glossary-def">
+                  ビジネス上の出来事（注文確定など）を表すオブジェクト。Pub/Sub
+                  で他モジュールに通知する。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ACID トランザクション</span>
-                <span className="glossary-def">原子性・一貫性・独立性・耐久性の 4 性質でデータ整合性を保証する仕組み。</span>
+                <span className="glossary-def">
+                  原子性・一貫性・独立性・耐久性の 4 性質でデータ整合性を保証する仕組み。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">ステートレス</span>
-                <span className="glossary-def">サーバー自身が状態（セッション・データ）を持たない設計。水平スケーリングの前提条件。</span>
+                <span className="glossary-def">
+                  サーバー自身が状態（セッション・データ）を持たない設計。水平スケーリングの前提条件。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">テストピラミッド</span>
-                <span className="glossary-def">ユニット（多数）→ 統合（中程度）→ E2E（少数）の比率でテストを配置する考え方。</span>
+                <span className="glossary-def">
+                  ユニット（多数）→ 統合（中程度）→ E2E（少数）の比率でテストを配置する考え方。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">Strangler Fig パターン</span>
-                <span className="glossary-def">モノリスの機能を段階的に別サービスに置き換えていく移行パターン。絞め殺しのイチジクが木を包んで置き換える様子から命名。</span>
+                <span className="glossary-def">
+                  モノリスの機能を段階的に別サービスに置き換えていく移行パターン。絞め殺しのイチジクが木を包んで置き換える様子から命名。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">分散モノリス</span>
-                <span className="glossary-def">見た目はマイクロサービスでも実際は密結合な最悪の形態。両方のデメリットを受ける。</span>
+                <span className="glossary-def">
+                  見た目はマイクロサービスでも実際は密結合な最悪の形態。両方のデメリットを受ける。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">DRY 原則</span>
-                <span className="glossary-def">Don't Repeat Yourself。同じロジックを複数の場所にコピーしない。1 か所だけに集約する。</span>
+                <span className="glossary-def">
+                  Don't Repeat Yourself。同じロジックを複数の場所にコピーしない。1
+                  か所だけに集約する。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">水平スケーリング</span>
-                <span className="glossary-def">同一アプリを複数サーバーで起動して負荷を分散する方法。ロードバランサーが前段に必要。</span>
+                <span className="glossary-def">
+                  同一アプリを複数サーバーで起動して負荷を分散する方法。ロードバランサーが前段に必要。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">リッチドメインモデル</span>
-                <span className="glossary-def">エンティティ自身がビジネスロジックを持つパターン。反対はアネミック（貧血）ドメインモデル。</span>
+                <span className="glossary-def">
+                  エンティティ自身がビジネスロジックを持つパターン。反対はアネミック（貧血）ドメインモデル。
+                </span>
               </div>
               <div className="glossary-item">
                 <span className="glossary-term">マイグレーション</span>
-                <span className="glossary-def">DB のスキーマを安全に変更するためのバージョン管理されたスクリプト群。</span>
+                <span className="glossary-def">
+                  DB のスキーマを安全に変更するためのバージョン管理されたスクリプト群。
+                </span>
               </div>
             </div>
           </div>
@@ -2671,7 +3016,10 @@ CMD [<span class="st">"gunicorn"</span>, <span class="st">"main:app"</span>, <sp
 
         <div className="footer">
           <p>モノリシックアーキテクチャ 完全ガイド v1.0 — 最終更新 2026-06-23</p>
-          <p style={{ marginTop: 6 }}>本ドキュメントは公式ドキュメント・書籍・Martin Fowler 氏らの論文を参照して作成されています。各ツールの最新情報は公式ドキュメントをご確認ください。</p>
+          <p style={{ marginTop: 6 }}>
+            本ドキュメントは公式ドキュメント・書籍・Martin Fowler
+            氏らの論文を参照して作成されています。各ツールの最新情報は公式ドキュメントをご確認ください。
+          </p>
         </div>
       </main>
     </div>

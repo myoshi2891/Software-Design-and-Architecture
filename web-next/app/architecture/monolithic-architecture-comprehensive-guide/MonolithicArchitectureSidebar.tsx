@@ -24,7 +24,10 @@ type Props = {
  */
 export default function MonolithicArchitectureSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
-  const activeId = useScrollSpy("section.section, section.doc-section", groups[0]?.items[0]?.id ?? null);
+  const activeId = useScrollSpy(
+    "section.section, section.doc-section",
+    groups[0]?.items[0]?.id ?? null
+  );
 
   return (
     <>
