@@ -64,6 +64,9 @@ bun run check-links
   - `app/architecture/microservices-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/microservices-architecture-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`MicroservicesArchitectureSidebar.tsx`）に分離。
+  - `app/architecture/monolithic-architecture-comprehensive-guide/page.tsx`
+    （URL `/architecture/monolithic-architecture-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`MonolithicArchitectureSidebar.tsx`）に分離。
   - `app/design-principles/api-first-design-comprehensive-guide/page.tsx`
     （URL `/design-principles/api-first-design-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`ApiFirstSidebar.tsx`）に分離。
