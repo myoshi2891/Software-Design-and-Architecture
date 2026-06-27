@@ -5603,6 +5603,31 @@ body.has-common-header .api-first-design-comprehensive-guide section {
   scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
 
+@media (max-width: 900px) {
+  .api-first-design-comprehensive-guide {
+    --sidebar-w: 0px;
+    .sidebar {
+      display: none;
+    }
+    .main {
+      margin-left: 0;
+    }
+    .content,
+    .hero,
+    .footer {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .hero h1 {
+      font-size: 36px;
+    }
+    .comp-grid,
+    .card-grid-2 {
+      grid-template-columns: 1fr;
+    }
+    .maturity-row {
+      flex-direction: column;
+    }
     .progress-bar {
       left: 0;
     }
