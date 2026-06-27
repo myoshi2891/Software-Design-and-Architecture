@@ -6820,6 +6820,19 @@ body.has-common-header .monolithic-architecture-comprehensive-guide section {
     align-items: center;
     gap: 6px;
   }
+  .mermaid-wrap {
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid-wrap svg,
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
 
   /* ── Code ── */
   .cb {
