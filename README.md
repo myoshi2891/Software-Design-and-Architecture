@@ -75,6 +75,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/design-principles/api-first-design-comprehensive-guide`](web-next/app/design-principles/api-first-design-comprehensive-guide/page.tsx)
     — API-First設計完全ガイドを移植（16 セクション・Mermaid 27 図・table 10・コードブロック 7）。
     固定サイドバー・進捗バー・scroll-spy を [`ApiFirstSidebar.tsx`](web-next/app/design-principles/api-first-design-comprehensive-guide/ApiFirstSidebar.tsx) でクライアント描画
+  - [`/design-principles/component-oriented-development-comprehensive-guide`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/page.tsx)
+    — コンポーネント指向開発完全ガイドを移植（15 セクション・Mermaid 21 図・table 7・コードブロック 14）。
+    固定サイドバー・進捗バー・scroll-spy を [`CodSidebar.tsx`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/CodSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
