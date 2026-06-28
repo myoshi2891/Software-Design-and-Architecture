@@ -1,11 +1,10 @@
 "use client";
-import { IconBuilding } from "@tabler/icons-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
 export type NavItem = {
   id: string;
-  emoji: string;
+  num: string;
   label: string;
 };
 
@@ -19,35 +18,39 @@ type Props = {
 };
 
 /**
- * Renders the guide sidebar with navigation links and a scroll progress bar.
+ * Renders the sidebar navigation for the microservices architecture guide.
  *
- * @param groups - Navigation groups to display in the sidebar
+ * @param groups - Grouped navigation items to display in the sidebar
  */
-export default function SoaSidebar({ groups }: Props) {
+export default function MicroservicesArchitectureSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
   const activeId = useScrollSpy("section.section", groups[0]?.items[0]?.id ?? null);
 
   return (
     <>
-      <div className="progress-bar" ref={progressRef} />
-      <aside className="sidebar">
-        <div className="sb-logo">
-          <IconBuilding size={20} className="sb-logo-icon" />
-          <div className="sb-logo-title">SOA 完全ガイド</div>
-          <div className="sb-logo-sub">サービス指向アーキテクチャ</div>
+      <div id="pb" ref={progressRef} style={{ transformOrigin: "0 50%" }} />
+      <aside className="sb" id="sb">
+        <div className="sb-hd">
+          <div className="sb-logo">
+            <div className="sb-icon">⚙️</div>
+            <div>
+              <div className="sb-title">マイクロサービス</div>
+              <div className="sb-sub">完全ガイド 2026</div>
+            </div>
+          </div>
         </div>
         <nav className="sb-nav">
           {groups.map((group) => (
             <div key={group.title}>
-              <div className="sb-label">{group.title}</div>
+              <div className="nav-grp">{group.title}</div>
               {group.items.map((item) => (
                 <a
                   key={item.id}
-                  className={activeId === item.id ? "active" : ""}
+                  className={`nl ${activeId === item.id ? "on" : ""}`}
                   href={`#${item.id}`}
                   aria-current={activeId === item.id ? "location" : undefined}
                 >
-                  <span className="nav-em">{item.emoji}</span>
+                  <span className="nn">{item.num}</span>
                   {item.label}
                 </a>
               ))}

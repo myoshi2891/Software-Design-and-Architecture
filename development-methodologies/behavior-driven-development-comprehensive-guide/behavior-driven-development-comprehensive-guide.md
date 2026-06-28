@@ -2168,7 +2168,7 @@ flowchart TD
 |---------|-----|
 | **pytest-bdd 公式ドキュメント** | https://pytest-bdd.readthedocs.io/ |
 | **pytest-bdd GitHub** | https://github.com/pytest-dev/pytest-bdd |
-| **Behave 公式ドキュメント** | https://behave.readthedocs.io/ |
+| **Behave 公式ドキュメント** | https://behave.readthedocs.io/en/stable/ |
 | **pytest 公式ドキュメント** | https://docs.pytest.org/ |
 
 #### テストレポート・CI/CD

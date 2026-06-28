@@ -8,8 +8,8 @@ description: >
   TRIGGER when the user says any of the following (Japanese or English):
   - "新規ガイドページを追加" / "ガイドページを移行" / "ページを保守"
   - "add new guide page" / "migrate guide page" / "nextjs page migration"
-  Applies this repo's patterns: globals.css scoped class styling, hand-written span
-  syntax highlighting via dangerouslySetInnerHTML, @tabler/icons-react, lazy Mermaid.
+  このリポジトリ固有のパターンを適用します：globals.css のスコープ付きクラススタイリング（CSSネスト - 各ページスコープは独自の .kw/.fn/.st/.cm/.nu 構文ハイライトクラスを定義する必要があり、他のページスコープから継承しません）、dangerouslySetInnerHTML を介した手書きの span 構文ハイライト（pre は直接 span を受け取り、code ラッパーを持たないため、パディングとフォントファミリーは cd pre code だけでなく cd pre 自体に設定する必要があります）、@tabler/icons-react、遅延 Mermaid。
+
 invocation: explicit
 allowed-tools:
   - Read
@@ -222,6 +222,27 @@ Server Component の children のまま**にする。本文を `"use client"` �
 
 - バッククォートはインデント・改行をそのまま保持する。コード内に `` ` `` や `${` が無いことを確認
 - `class=`（`className` ではなく生 HTML 属性）で書く
+- **`<pre>` に直接スパンを差し込む（`<code>` ラッパーなし）** ため、コンテナスタイルは
+  `.cd pre` に書く（`.cd pre code` のパディング／フォント指定は `<code>` 子要素が
+  存在しない限り適用されない）:
+
+  ```css
+  .<page-scope> {
+    .cd pre {
+      margin: 0;
+      overflow-x: auto;
+      background: var(--bg-code) !important;
+      border: none;
+      border-radius: 0;
+      padding: 18px 20px;       /* ← <code> ラッパーがないのでここに書く */
+      font-family: var(--fm);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+  }
+  ```
+
 - biome の `noDangerouslySetInnerHtml` は `biome.json` の `overrides` で**当該ページのみ off** にする:
 
 ```jsonc
@@ -231,8 +252,32 @@ Server Component の children のまま**にする。本文を `"use client"` �
 ]
 ```
 
-ハイライト用クラス（`globals.css` に定義済み）: `kw`（キーワード）/ `cm`（コメント・斜体）/
-`st`（文字列）/ `fn`（関数名）/ `nu`（数値）。
+ハイライト用クラスは **ページのスコープクラス内**に定義する
+（`globals.css` は CSS Nesting でスコープを分割しているため、他ページのスコープで定義された
+`.kw`/`.fn` 等は一切継承されない。定義を書き忘れると着色がゼロになる）:
+
+```css
+/* globals.css — 新規ページのスコープブロック末尾に追加 */
+.<page-scope> {
+  /* 手書き span ハイライト（highlight.js 非依存） */
+  .kw { color: #c4b5fd; }                          /* キーワード（紫） */
+  .st { color: #6ee7b7; }                          /* 文字列（緑） */
+  .fn { color: #7ab3f0; }                          /* 関数名（青） */
+  .cm { color: var(--text-muted); font-style: italic; }  /* コメント（斜体） */
+  .nu { color: #fcd34d; }                          /* 数値（黄） */
+}
+```
+
+色は既存ページと同値（`--text-muted` は各ページスコープの変数名に合わせて調整すること）。
+
+##### コードブロック CSS 既知のワナ
+
+| 症状 | 原因 | 対処 |
+|------|------|------|
+| span に着色されない | ページスコープ内に `.kw`/`.fn` 等が未定義 | スコープブロック末尾に定義を追加 |
+| コードが余白ゼロで表示される | `.cd pre code` にパディングを書いたが `<code>` 子要素がない | `.cd pre` 自体にパディングを移動 |
+| フォントが等幅にならない | `font-family: var(--fm)` が `.cd pre code` だけにある | `.cd pre` に `font-family` を追加 |
+| 他ページの `.kw` 色が使われる | CSS が期待どおりカスケードしていると思い込んでいる | CSS Nesting ではスコープをまたぐ継承はゼロ |
 
 ##### 実行時ハイライタ由来ソース（highlight.js / Prism）の扱い
 
@@ -327,6 +372,8 @@ bun run build       # Next.js production build
 - **要約・省略しない** — faithful 転写を最優先
 - **`"use client"` を不必要に使わない** — Server Component デフォルト
 - **shiki / CSS Modules を導入しない** — 本リポジトリは手書き span + globals.css スコープ方式
+- **`.kw` 等のシンタックスクラスをページスコープ外に書かない** — CSS Nesting により他スコープから継承されない
+- **`.cd pre code` だけにパディングを書かない** — `dangerouslySetInnerHTML` の `<pre>` は `<code>` を持たないので `.cd pre` に書く
 - **`<i class="ti …">` を残さない** — `@tabler/icons-react` へ変換
 - **Mermaid ラベルの `\n` を実改行にしない** — テンプレートリテラルでは `\\n`
 - **`dangerouslySetInnerHTML` に外部入力を渡さない** — 静的な手書きハイライト文字列のみ
@@ -339,11 +386,17 @@ bun run build       # Next.js production build
 
 ## 参考文献・ソース一覧
 
-- **TDDコミットワークフロー**: [tdd-commit-workflow.md](./.claude/rules/tdd-commit-workflow.md) - テスト駆動開発での実装とコミット手順を定義
+- **TDDコミットワークフロー**: [tdd-commit-workflow.md](../../rules/tdd-commit-workflow.md) - テスト駆動開発での実装とコミット手順を定義
 - **移行の参照実装**:
-  - [page.tsx](./web-next/app/general/comprehensive-guide/page.tsx) - 最初のガイド移行ページ実装
-  - [globals.css](./web-next/app/globals.css) - グローバルCSSと共通デザイン定義
+  - [page.tsx](../../../web-next/app/general/comprehensive-guide/page.tsx) - 最初のガイド移行ページ実装
+  - [globals.css](../../../web-next/app/globals.css) - グローバルCSSと共通デザイン定義
+  - [microservices page.tsx](../../../web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx) - `.cd pre` + 手書き span ハイライトの実装例（実行時ハイライタ → 手書き span 変換を含む）
+  - `.microservices-architecture-comprehensive-guide` スコープ（`globals.css` 内）- ページスコープ内 `.kw`/`.cd pre` 定義の参照パターン
 - **Mermaid.js**: [Mermaid Documentation](https://mermaid.js.org) - クライアント側ダイアグラム描画ツール
 - **React 19**: [React 19 Documentation](https://react.dev) - UIライブラリ
 - **Tabler Icons**: [@tabler/icons-react](https://tabler.io/icons) - 使用するSVGアイコンコンポーネントライブラリ
+
+---
+
+*作成者：Software Architect Guide | バージョン 1.0 | Next.js Page Migration Skill*
 

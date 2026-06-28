@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XP（エクストリームプログラミング）完全ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* ─── CSS Variables ─── */
+:root {
+  --bg-primary:   #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary:  #1c2128;
+  --bg-info:      #0d2137;
+  --bg-danger:    #1a0d0d;
+  --bg-success:   #0d1a0f;
+  --bg-warning:   #1a150d;
+
+  --text-primary:   #e6edf3;
+  --text-secondary: #8b949e;
+  --text-tertiary:  #6e7681;
+  --text-info:      #79c0ff;
+  --text-danger:    #ff7b72;
+  --text-success:   #7ee787;
+  --text-warning:   #e3b341;
+
+  --border-primary:   #30363d;
+  --border-secondary: #21262d;
+  --border-tertiary:  #1a1f26;
+
+  --c-teal-200: #99f6e4;
+  --c-teal-400: #2dd4bf;
+  --c-teal-600: #0d9488;
+  --c-purple-200: #c4b5fd;
+  --c-purple-400: #a78bfa;
+  --c-purple-600: #7c3aed;
+  --c-coral-200: #fed7aa;
+  --c-coral-400: #fb923c;
+  --c-blue-200: #bfdbfe;
+  --c-blue-400: #60a5fa;
+  --c-green-200: #bbf7d0;
+  --c-green-400: #4ade80;
+  --c-amber-200: #fde68a;
+  --c-amber-400: #fbbf24;
+  --c-red-200: #fecaca;
+  --c-red-400: #f87171;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --sidebar-w: 230px;
+}
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  display: flex;
+  min-height: 100vh;
+}
+h1 { font-size: 22px; font-weight: 500; }
+h2 { font-size: 18px; font-weight: 500; }
+h3 { font-size: 16px; font-weight: 500; }
+h4 { font-size: 14px; font-weight: 500; }
+a { color: var(--c-teal-400); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { list-style: disc; padding-left: 18px; }
+li { margin-bottom: 3px; }
+
+/* ─── Layout ─── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: #0a0f16;
+  border-right: 1px solid var(--border-primary);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-primary) transparent;
+  flex-shrink: 0;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border-primary); border-radius: 2px; }
+
+.sidebar-header {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border-primary);
+}
+.sidebar-logo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-teal-400);
+  letter-spacing: 0.05em;
+}
+.sidebar-sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.sidebar-nav {
+  flex: 1;
+  padding: 6px 0;
+}
+.nav-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  background: none;
+  border: none;
+  border-right: 2px solid transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-btn:hover { color: var(--text-primary); background: var(--bg-secondary); }
+.nav-btn.active {
+  color: var(--c-teal-400);
+  background: rgba(45, 212, 191, 0.06);
+  border-right-color: var(--c-teal-600);
+}
+.sidebar-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-primary);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+#content {
+  flex: 1;
+  min-width: 0;
+}
+.content-inner {
+  width: 100%;
+  padding: 24px 16px 80px;
+}
+
+/* ─── Section ─── */
+.section-anchor { scroll-margin-top: 24px; }
+.divider { border: none; border-top: 1px solid var(--border-primary); margin: 32px 0; }
+
+/* ─── Hero ─── */
+.hero {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-primary);
+}
+.hero h1 { color: var(--c-teal-400); font-size: 22px; margin: 8px 0 6px; }
+.hero p { color: var(--text-secondary); font-size: 13px; max-width: 640px; }
+
+/* ─── Section Header ─── */
+.sec-header { margin-bottom: 20px; }
+.sec-header h2 { color: var(--c-teal-400); margin: 6px 0 0; }
+.sec-header p { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+
+/* ─── Badges ─── */
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: 3px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.badge-teal   { background: rgba(13,148,136,0.15); color: var(--c-teal-200);   border-color: var(--c-teal-600); }
+.badge-purple { background: rgba(124,58,237,0.15); color: var(--c-purple-200); border-color: var(--c-purple-600); }
+.badge-coral  { background: rgba(234,88,12,0.15);  color: var(--c-coral-200);  border-color: #ea580c; }
+.badge-blue   { background: rgba(37,99,235,0.15);  color: var(--c-blue-200);   border-color: #2563eb; }
+.badge-green  { background: rgba(22,163,74,0.15);  color: var(--c-green-200);  border-color: #16a34a; }
+.badge-amber  { background: rgba(217,119,6,0.15);  color: var(--c-amber-200);  border-color: #d97706; }
+
+/* ─── Callouts ─── */
+.callout {
+  padding: 10px 14px;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-left: 3px solid;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.callout-info    { background: var(--bg-info);    border-color: var(--c-blue-400); }
+.callout-ok      { background: var(--bg-success); border-color: var(--c-green-400); }
+.callout-warn    { background: var(--bg-warning); border-color: var(--c-amber-400); }
+.callout-err     { background: var(--bg-danger);  border-color: var(--c-red-400); }
+.callout strong  { font-weight: 500; }
+.callout-info  strong { color: var(--c-blue-400); }
+.callout-ok    strong { color: var(--c-green-400); }
+.callout-warn  strong { color: var(--c-amber-400); }
+.callout-err   strong { color: var(--c-red-400); }
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+.card-title { font-weight: 500; margin-bottom: 8px; }
+
+/* ─── Grid ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+@media (max-width: 700px) {
+  .grid-2, .grid-3, .grid-5 { grid-template-columns: 1fr; }
+}
+
+/* ─── Sub-title ─── */
+.sub-title {
+  color: var(--c-purple-400);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 24px 0 10px;
+}
+
+/* ─── Value Cards ─── */
+.vcard {
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  border: 1px solid;
+}
+.vcard-label { font-weight: 500; margin-bottom: 4px; font-size: 13px; }
+.vcard-desc  { font-size: 12px; color: var(--text-secondary); }
+.vcard-blue   { background: rgba(37,99,235,0.08);  border-color: #2563eb; }
+.vcard-green  { background: rgba(22,163,74,0.08);  border-color: #16a34a; }
+.vcard-amber  { background: rgba(217,119,6,0.08);  border-color: #d97706; }
+.vcard-red    { background: rgba(220,38,38,0.08);  border-color: #dc2626; }
+.vcard-purple { background: rgba(124,58,237,0.08); border-color: #7c3aed; }
+.vcard-teal   { background: rgba(13,148,136,0.08); border-color: #0d9488; }
+.vcard-coral  { background: rgba(234,88,12,0.08);  border-color: #ea580c; }
+.vcard-label-blue   { color: var(--c-blue-400); }
+.vcard-label-green  { color: var(--c-green-400); }
+.vcard-label-amber  { color: var(--c-amber-400); }
+.vcard-label-red    { color: var(--c-red-400); }
+.vcard-label-purple { color: var(--c-purple-400); }
+.vcard-label-teal   { color: var(--c-teal-400); }
+.vcard-label-coral  { color: var(--c-coral-400); }
+
+/* ─── Table ─── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: var(--bg-tertiary); }
+th { padding: 8px 12px; text-align: left; font-weight: 500; border: 1px solid var(--border-primary); color: var(--text-secondary); }
+td { padding: 8px 12px; border: 1px solid var(--border-primary); vertical-align: top; }
+tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
+
+/* ─── Mermaid ─── */
+.mermaid-wrap {
+  background: #0a0f16;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 8px auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* ─── Code ─── */
+pre[class*="language-"] {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 12px !important;
+  line-height: 1.6 !important;
+  overflow-x: auto !important;
+  padding: 14px 16px !important;
+  margin: 8px 0 !important;
+}
+code[class*="language-"] { font-size: 12px !important; background: transparent !important; }
+:not(pre) > code {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+/* ─── Source list ─── */
+.src-list { list-style: none; padding: 0; margin: 0; }
+.src-list li { margin-bottom: 4px; font-size: 12px; }
+.src-list a { color: var(--c-teal-400); }
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-primary); border-radius: 3px; }
+
+/* ─── Level bar ─── */
+.level-bar {
+  display: flex; gap: 12px; align-items: center; margin-bottom: 8px;
+}
+.level-pill {
+  border-radius: 4px; padding: 3px 10px;
+  min-width: 52px; text-align: center;
+  font-size: 11px; font-weight: 500; color: #fff; flex-shrink: 0;
+}
+
+/* ─── Practice tag ─── */
+.pt { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: rgba(45,212,191,0.1); color: var(--c-teal-200); border: 1px solid var(--c-teal-600); margin-right: 4px; }
+        /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
+        .mermaid-wrap,
+        .diagram-wrap .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .mermaid-wrap svg,
+        .diagram-wrap .mermaid svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ SIDEBAR ════════════════════════════ -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">XP完全ガイド</div>
+    <div class="sidebar-sub">Extreme Programming</div>
+  </div>
+  <nav class="sidebar-nav" id="nav">
+    <button class="nav-btn active" onclick="goTo('s1')">1. XPとは何か</button>
+    <button class="nav-btn" onclick="goTo('s2')">2. 5つの価値</button>
+    <button class="nav-btn" onclick="goTo('s3')">3. 13のプラクティス</button>
+    <button class="nav-btn" onclick="goTo('s4')">4. TDD</button>
+    <button class="nav-btn" onclick="goTo('s5')">5. ペアプログラミング</button>
+    <button class="nav-btn" onclick="goTo('s6')">6. 継続的インテグレーション</button>
+    <button class="nav-btn" onclick="goTo('s7')">7. リファクタリング</button>
+    <button class="nav-btn" onclick="goTo('s8')">8. シンプルな設計</button>
+    <button class="nav-btn" onclick="goTo('s9')">9. 小さなリリース</button>
+    <button class="nav-btn" onclick="goTo('s10')">10. 計画ゲーム</button>
+    <button class="nav-btn" onclick="goTo('s11')">11. コレクティブオーナーシップ</button>
+    <button class="nav-btn" onclick="goTo('s12')">12. コーディング規約</button>
+    <button class="nav-btn" onclick="goTo('s13')">13. オンサイト顧客</button>
+    <button class="nav-btn" onclick="goTo('s14')">14. 週40時間労働</button>
+    <button class="nav-btn" onclick="goTo('s15')">15. メタファー</button>
+    <button class="nav-btn" onclick="goTo('s16')">16. システム全体テスト</button>
+    <button class="nav-btn" onclick="goTo('s17')">17. ロールと責務</button>
+    <button class="nav-btn" onclick="goTo('s18')">18. イテレーションサイクル</button>
+    <button class="nav-btn" onclick="goTo('s19')">19. XP vs Scrum</button>
+    <button class="nav-btn" onclick="goTo('s20')">20. 導入ロードマップ</button>
+    <button class="nav-btn" onclick="goTo('s21')">21. アンチパターン</button>
+    <button class="nav-btn" onclick="goTo('s22')">22. ベストプラクティス</button>
+    <button class="nav-btn" onclick="goTo('s23')">23. 参考文献</button>
+  </nav>
+  <div class="sidebar-footer">Kent Beck, 1999 — 2004</div>
+</aside>
+
+<!-- ════════════════════════════ MAIN CONTENT ════════════════════════════ -->
+<main id="content">
+<div class="content-inner">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <div class="badges">
+    <span class="badge badge-teal">Agile</span>
+    <span class="badge badge-purple">Engineering Practices</span>
+    <span class="badge badge-coral">初学者向け</span>
+  </div>
+  <h1>XP（エクストリームプログラミング）完全ガイド</h1>
+  <p>Kent Beck が提唱したアジャイル開発方法論。5つの価値・13のプラクティスをステップバイステップで解説します。</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S1: XPとは何か
+════════════════════════════════════════════════════════════════ -->
+<div id="s1" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 01</span></div>
+    <h2>XPとは何か</h2>
+    <p>Extreme Programming の定義・背景・全体像</p>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>一言で言うと：</strong>「変化を受け入れ、顧客価値を最速で届けるために、最も効果的な開発プラクティスを組み合わせた方法論」
+  </div>
+
+  <p style="color:var(--text-secondary);margin-bottom:16px;">
+    Extreme Programming（XP）は Kent Beck が1990年代後半に提唱したアジャイルソフトウェア開発の方法論です。
+    1999年の著書「Extreme Programming Explained」によって広く知られるようになりました。
+    XPは「良いプラクティスを極限まで実践すれば、品質・速度・適応力のすべてを同時に高められる」という思想に基づいています。
+  </p>
+
+  <p class="sub-title">1.1 XPの歴史的背景</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-1"></div>
+  </div>
+
+  <p class="sub-title">1.2 XPの全体像</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-2"></div>
+  </div>
+
+  <p class="sub-title">1.3 XPが解決する問題</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>問題</th><th>XPの対策プラクティス</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-red-400)">仕様変更で大幅なやり直しが発生</td><td style="color:var(--c-green-400)">小さなリリース・計画ゲーム</td></tr>
+      <tr><td style="color:var(--c-red-400)">バグが後になって大量発見</td><td style="color:var(--c-green-400)">TDD・継続的インテグレーション</td></tr>
+      <tr><td style="color:var(--c-red-400)">コードの品質低下で変更コスト上昇</td><td style="color:var(--c-green-400)">リファクタリング・シンプルな設計</td></tr>
+      <tr><td style="color:var(--c-red-400)">特定のコードを1人しか理解していない</td><td style="color:var(--c-green-400)">コレクティブオーナーシップ・ペアプロ</td></tr>
+      <tr><td style="color:var(--c-red-400)">過労・燃え尽き症候群</td><td style="color:var(--c-green-400)">週40時間労働</td></tr>
+      <tr><td style="color:var(--c-red-400)">顧客との認識齟齬</td><td style="color:var(--c-green-400)">オンサイト顧客・受け入れテスト</td></tr>
+    </tbody>
+  </table></div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="http://www.extremeprogramming.org/" target="_blank">extremeprogramming.org（XP公式サイト）</a></li>
+    <li><a href="https://martinfowler.com/bliki/ExtremeProgramming.html" target="_blank">Martin Fowler — Extreme Programming</a></li>
+    <li><a href="https://agilemanifesto.org/iso/ja/manifesto.html" target="_blank">アジャイルマニフェスト（日本語）</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S2: 5つの価値
+════════════════════════════════════════════════════════════════ -->
+<div id="s2" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 02</span></div>
+    <h2>XPの5つの価値（Values）</h2>
+    <p>すべてのプラクティスは5つの価値から導かれる</p>
+  </div>
+
+  <p style="color:var(--text-secondary);margin-bottom:16px;">
+    価値を理解せずにプラクティスだけを実践しても、本来の効果は得られません。まず価値を理解することが最初のステップです。
+  </p>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="vcard vcard-blue">
+      <div class="vcard-label vcard-label-blue">💬 コミュニケーション</div>
+      <div class="vcard-desc">チーム全員が同じ情報を持つ。直接対話を最優先し、問題を一人で抱え込まない。ペアプロ・スタンドアップで実現。</div>
+    </div>
+    <div class="vcard vcard-green">
+      <div class="vcard-label vcard-label-green">✂️ シンプルさ</div>
+      <div class="vcard-desc">今必要なことだけを行う。過剰設計・過剰実装をせず、YAGNIを守る。シンプルな設計・リファクタリングで実現。</div>
+    </div>
+    <div class="vcard vcard-amber">
+      <div class="vcard-label vcard-label-amber">🔄 フィードバック</div>
+      <div class="vcard-desc">早く・頻繁に・積極的にフィードバックを求め、活かす。テスト・小さなリリース・CI で実現。</div>
+    </div>
+    <div class="vcard vcard-red">
+      <div class="vcard-label vcard-label-red">💪 勇気</div>
+      <div class="vcard-desc">悪いコードを直す・設計を変える・真実を伝える勇気を持つ。リファクタリング・技術的負債の解消で実現。</div>
+    </div>
+    <div class="vcard vcard-purple" style="grid-column:1/-1;">
+      <div class="vcard-label vcard-label-purple">🤝 尊重</div>
+      <div class="vcard-desc">全チームメンバーを尊重する。貢献と努力を認め合い、失敗を学習機会とする。コレクティブオーナーシップ・ペアプロで実現。</div>
+    </div>
+  </div>
+
+  <p class="sub-title">価値とプラクティスの対応関係</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>価値</th><th>主なプラクティス</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-blue-400)">コミュニケーション</td><td>ペアプログラミング・計画ゲーム・オンサイト顧客</td></tr>
+      <tr><td style="color:var(--c-green-400)">シンプルさ</td><td>シンプルな設計・YAGNI・リファクタリング</td></tr>
+      <tr><td style="color:var(--c-amber-400)">フィードバック</td><td>TDD・継続的インテグレーション・小さなリリース</td></tr>
+      <tr><td style="color:var(--c-red-400)">勇気</td><td>リファクタリング・TDD・技術的負債への対処</td></tr>
+      <tr><td style="color:var(--c-purple-400)">尊重</td><td>コレクティブオーナーシップ・コーディング規約</td></tr>
+    </tbody>
+  </table></div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://www.agilealliance.org/glossary/xp/" target="_blank">Agile Alliance — XP用語集</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S3: 13のプラクティス
+════════════════════════════════════════════════════════════════ -->
+<div id="s3" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 03</span></div>
+    <h2>XPの13のプラクティス完全解説</h2>
+    <p>プラクティスの全体マップと相互依存関係</p>
+  </div>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-3"></div>
+  </div>
+
+  <p class="sub-title">プラクティスの相互依存関係</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-4"></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S4: TDD
+════════════════════════════════════════════════════════════════ -->
+<div id="s4" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 04</span></div>
+    <h2>プラクティス① テスト駆動開発（TDD）</h2>
+    <p>コードを書く前にテストを書く革新的アプローチ</p>
+  </div>
+
+  <div class="callout callout-ok" style="margin-bottom:16px;">
+    <strong>XPの最重要プラクティス：</strong>TDDはXPの根幹です。「動くソフトウェア」を保証し、リファクタリングを安全にし、設計品質を高めます。
+  </div>
+
+  <p class="sub-title">Red-Green-Refactor サイクル</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-5"></div>
+  </div>
+
+  <p class="sub-title">良いテストのFIRST原則</p>
+  <div class="grid-2">
+    <div class="vcard vcard-red">
+      <div class="vcard-label vcard-label-red">F — Fast（高速）</div>
+      <div class="vcard-desc">ミリ秒単位で実行できる。DBや外部APIに依存しない。いつでも気軽に実行できる。</div>
+    </div>
+    <div class="vcard vcard-blue">
+      <div class="vcard-label vcard-label-blue">I — Independent（独立）</div>
+      <div class="vcard-desc">テスト間に依存関係がない。任意の順序で実行できる。単独でも全体でも動く。</div>
+    </div>
+    <div class="vcard vcard-green">
+      <div class="vcard-label vcard-label-green">R — Repeatable（再現可能）</div>
+      <div class="vcard-desc">何度実行しても同じ結果。環境に依存しない。時刻・乱数は注入して制御。</div>
+    </div>
+    <div class="vcard vcard-amber">
+      <div class="vcard-label vcard-label-amber">S — Self-validating（自己検証）</div>
+      <div class="vcard-desc">Pass/Failが自動判定される。目視確認が不要。明確なアサーションがある。</div>
+    </div>
+    <div class="vcard vcard-purple" style="grid-column:1/-1;">
+      <div class="vcard-label vcard-label-purple">T — Timely（タイムリー）</div>
+      <div class="vcard-desc">本番コードの直前に書く。後回しにしない。TDDならコードの前に書く。</div>
+    </div>
+  </div>
+
+  <p class="sub-title">TDD実装例（Python）— Red-Green-Refactor</p>
+<pre class="language-python"><code class="language-python"># ─── Step 1：RED フェーズ ─── まずテストを書く ───
+import pytest
+from order import Order  # まだ存在しない！
+
+class TestOrder:
+    def test_新規注文の合計金額は0円(self):
+        order = Order()
+        assert order.total == 0
+
+    def test_商品追加後に合計金額が更新される(self):
+        order = Order()
+        order.add_item("Tシャツ", price=1000, quantity=2)
+        assert order.total == 2000
+
+    def test_数量0の商品は追加できない(self):
+        order = Order()
+        with pytest.raises(ValueError, match="数量は1以上"):
+            order.add_item("Tシャツ", price=1000, quantity=0)
+
+# → この時点でテストを実行すると全てFAIL ✅（RED）
+
+
+# ─── Step 2：GREEN フェーズ ─── 最小実装を書く ───
+class Order:
+    def __init__(self):
+        self._items = []
+
+    def add_item(self, name: str, price: int, quantity: int) -> None:
+        if quantity <= 0:
+            raise ValueError("数量は1以上でなければなりません")
+        self._items.append({"name": name, "price": price, "quantity": quantity})
+
+    @property
+    def total(self) -> int:
+        return sum(item["price"] * item["quantity"] for item in self._items)
+
+# → 全テストがPASS ✅（GREEN）
+
+
+# ─── Step 3：REFACTOR フェーズ ─── コードを整理 ───
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class OrderItem:
+    name: str
+    price: int
+    quantity: int
+
+    def __post_init__(self):
+        if self.quantity <= 0:
+            raise ValueError("数量は1以上でなければなりません")
+
+    @property
+    def subtotal(self) -> int:
+        return self.price * self.quantity
+
+class Order:
+    def __init__(self):
+        self._items: list[OrderItem] = []
+
+    def add_item(self, name: str, price: int, quantity: int) -> None:
+        self._items.append(OrderItem(name=name, price=price, quantity=quantity))
+
+    @property
+    def total(self) -> int:
+        return sum(item.subtotal for item in self._items)
+
+# → リファクタリング後もテストが全てPASS ✅（REFACTOR）
+</code></pre>
+
+  <p class="sub-title">TDDベストプラクティス</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>項目</th><th>推奨</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>テスト名</td><td style="color:var(--c-teal-400)">日本語や自然言語で意図を明確に</td><td style="color:var(--text-secondary)">仕様書として読めるようにする</td></tr>
+      <tr><td>1テスト1アサーション</td><td style="color:var(--c-teal-400)">可能な限り守る</td><td style="color:var(--text-secondary)">失敗の原因を素早く特定できる</td></tr>
+      <tr><td>テスト独立性</td><td style="color:var(--c-teal-400)">共有状態を避ける</td><td style="color:var(--text-secondary)">実行順序に依存しないようにする</td></tr>
+      <tr><td>AAAパターン</td><td style="color:var(--c-teal-400)">Arrange→Act→Assert の順</td><td style="color:var(--text-secondary)">構造が明確でレビューしやすい</td></tr>
+      <tr><td>テストダブル</td><td style="color:var(--c-teal-400)">Mock/Stub/Fake を適切に使用</td><td style="color:var(--text-secondary)">外部依存を制御してテストを安定させる</td></tr>
+      <tr><td>カバレッジ</td><td style="color:var(--c-teal-400)">ビジネスロジックは90%以上</td><td style="color:var(--text-secondary)">リグレッションを防ぐ</td></tr>
+    </tbody>
+  </table></div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" target="_blank">Martin Fowler — Test Driven Development</a></li>
+    <li><a href="https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html" target="_blank">Uncle Bob — TDDの3つのルール</a></li>
+    <li><a href="https://agileinaflash.blogspot.com/2009/02/first.html" target="_blank">FIRST原則（詳細解説）</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S5: ペアプログラミング
+════════════════════════════════════════════════════════════════ -->
+<div id="s5" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 05</span></div>
+    <h2>プラクティス② ペアプログラミング</h2>
+    <p>2人で1台のPCでコードを書く</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-title" style="color:var(--c-blue-400)">⌨️ ドライバー（Driver）</div>
+      <ul>
+        <li>実際にコードを入力する</li>
+        <li>現在のタスクに集中</li>
+        <li>実装の詳細を考える</li>
+        <li>定期的にナビゲーターと交代</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-green-400)">🧭 ナビゲーター（Navigator）</div>
+      <ul>
+        <li>全体の方向性を考える</li>
+        <li>コードをリアルタイムでレビュー</li>
+        <li>問題・改善点を指摘する</li>
+        <li>次のステップを考える</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="sub-title">セッション設計フロー</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-6"></div>
+  </div>
+
+  <p class="sub-title">実践すること / 避けること</p>
+  <div class="grid-2">
+    <div>
+      <div style="color:var(--c-green-400);font-weight:500;margin-bottom:8px;font-size:13px;">✅ 実践すること</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">定期的にロールを交代する</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">声に出して考える（思考の共有）</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">なぜを共有する（意図を説明する）</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">90分ごとに休憩を入れる</div>
+      <div class="callout callout-ok">ペアを定期的にローテーション</div>
+    </div>
+    <div>
+      <div style="color:var(--c-red-400);font-weight:500;margin-bottom:8px;font-size:13px;">❌ 避けること</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">ナビゲーターが別の仕事をする</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">コードを批判する（人を批判しない）</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">マウスやキーボードを奪う</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">同じペアを固定し続ける</div>
+      <div class="callout callout-err">全作業をペアで行う（単純作業は1人）</div>
+    </div>
+  </div>
+
+  <p class="sub-title">リモートペアプロのツール</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>ツール</th><th>特徴</th><th>推奨シーン</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-teal-400)">VS Code Live Share</td><td>リアルタイム共同編集・無料</td><td>VS Codeユーザー全般</td></tr>
+      <tr><td style="color:var(--c-teal-400)">JetBrains Code With Me</td><td>高機能な共同デバッグ</td><td>JetBrains IDEユーザー</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Tuple</td><td>ペアプロ専用・低レイテンシ</td><td>品質重視のチーム</td></tr>
+      <tr><td style="color:var(--c-teal-400)">GitHub Codespaces</td><td>ブラウザで完結・環境差異なし</td><td>環境を統一したいチーム</td></tr>
+    </tbody>
+  </table></div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://martinfowler.com/articles/on-pair-programming.html" target="_blank">Martin Fowler — On Pair Programming</a></li>
+    <li><a href="https://www.agilealliance.org/glossary/pairing/" target="_blank">Agile Alliance — Pair Programming</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S6: CI
+════════════════════════════════════════════════════════════════ -->
+<div id="s6" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 06</span></div>
+    <h2>プラクティス③ 継続的インテグレーション（CI）</h2>
+    <p>1日に複数回コードをメインブランチに統合する</p>
+  </div>
+
+  <p class="sub-title">CIパイプラインの設計</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-7"></div>
+  </div>
+
+  <p class="sub-title">XP流CI 10のルール</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>ルール</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">1</td><td>単一のメインブランチ（長命ブランチを作らない）</td><td style="color:var(--text-secondary)">統合コストを最小化</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">2</td><td>ビルドを自動化する（コマンド1つで再現可能）</td><td style="color:var(--text-secondary)">手作業によるミスを排除</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">3</td><td>テストを自動化する（コマンド1つで全実行）</td><td style="color:var(--text-secondary)">継続的な品質保証</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">4</td><td>全員が毎日mainブランチに統合する</td><td style="color:var(--text-secondary)">統合の問題を小さく保つ</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">5</td><td>ビルドは10分以内</td><td style="color:var(--text-secondary)">遅いCIは誰も待たない</td></tr>
+      <tr><td style="color:var(--c-red-400);font-weight:500">6</td><td>ビルド失敗は最優先で修正</td><td style="color:var(--text-secondary)">壊れたビルドを放置しない</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">7</td><td>テスト失敗はコミットしない</td><td style="color:var(--text-secondary)">赤いビルドを積み上げない</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">8</td><td>結果を全員に可視化</td><td style="color:var(--text-secondary)">誰もが状態を知っている</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">9</td><td>フィーチャーブランチは最小化（1日以内）</td><td style="color:var(--text-secondary)">長命ブランチは統合コストを増やす</td></tr>
+      <tr><td style="color:var(--c-green-400);font-weight:500">10</td><td>Trunk-Based Developmentを目指す</td><td style="color:var(--text-secondary)">常にデプロイ可能な状態</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub-title">GitHub Actions CI設定例</p>
+<pre class="language-yaml"><code class="language-yaml"># .github/workflows/ci.yml
+# XP流：プッシュのたびに自動実行されるCIパイプライン
+
+name: XP Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  fast-checks:
+    name: Lint & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Lint check (ruff)
+        run: ruff check .
+      - name: Type check (mypy)
+        run: mypy src/
+      - name: Unit tests with coverage
+        run: |
+          pytest tests/unit/ \
+            --cov=src \
+            --cov-fail-under=90 \
+            -v --tb=short -n auto
+
+  slow-checks:
+    name: Integration & E2E Tests
+    runs-on: ubuntu-latest
+    needs: fast-checks
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Integration tests
+        env:
+          DATABASE_URL: postgresql://test:test@localhost/test_db
+        run: pytest tests/integration/ -v
+      - name: Security scan
+        run: pip-audit
+
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [fast-checks, slow-checks]
+    if: failure()
+    steps:
+      - name: Slack notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: '{"text":"CIビルドが失敗しました！即座に修正してください"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+</code></pre>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://martinfowler.com/articles/continuousIntegration.html" target="_blank">Martin Fowler — Continuous Integration</a></li>
+    <li><a href="https://trunkbaseddevelopment.com/" target="_blank">Trunk Based Development 公式</a></li>
+    <li><a href="https://docs.github.com/ja/actions" target="_blank">GitHub Actions ドキュメント（日本語）</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S7: リファクタリング
+════════════════════════════════════════════════════════════════ -->
+<div id="s7" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 07</span></div>
+    <h2>プラクティス④ リファクタリング</h2>
+    <p>動作を変えずに内部のコード構造を改善する</p>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>ボーイスカウトルール：</strong>「来たときよりキャンプ場をきれいにして帰りなさい」— コードに触れたら少し良くして帰る。
+  </div>
+
+  <p class="sub-title">主要なリファクタリングパターン</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>カテゴリ</th><th>パターン名</th><th>目的</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-purple-400)">メソッドの整理</td><td style="color:var(--c-teal-400)">メソッドの抽出（Extract Method）</td><td style="color:var(--text-secondary)">長いメソッドを意味のある単位に分割</td></tr>
+      <tr><td style="color:var(--c-purple-400)">メソッドの整理</td><td style="color:var(--c-teal-400)">メソッドの移動（Move Method）</td><td style="color:var(--text-secondary)">正しいクラスにロジックを移動</td></tr>
+      <tr><td style="color:var(--c-purple-400)">命名の改善</td><td style="color:var(--c-teal-400)">変数名の変更（Rename Variable）</td><td style="color:var(--text-secondary)">意図が明確な名前に変える</td></tr>
+      <tr><td style="color:var(--c-purple-400)">命名の改善</td><td style="color:var(--c-teal-400)">メソッド名の変更（Rename Method）</td><td style="color:var(--text-secondary)">何をするかがわかる名前に</td></tr>
+      <tr><td style="color:var(--c-purple-400)">クラスの整理</td><td style="color:var(--c-teal-400)">クラスの抽出（Extract Class）</td><td style="color:var(--text-secondary)">責任が多すぎるクラスを分割</td></tr>
+      <tr><td style="color:var(--c-purple-400)">条件式の改善</td><td style="color:var(--c-teal-400)">条件式の分解（Decompose Conditional）</td><td style="color:var(--text-secondary)">複雑なif-elseを読みやすくする</td></tr>
+      <tr><td style="color:var(--c-purple-400)">条件式の改善</td><td style="color:var(--c-teal-400)">ガード節による早期リターン</td><td style="color:var(--text-secondary)">ネストを浅くし意図を明確に</td></tr>
+      <tr><td style="color:var(--c-purple-400)">重複の排除</td><td style="color:var(--c-teal-400)">DRY原則の適用</td><td style="color:var(--text-secondary)">同じロジックを1か所にまとめる</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub-title">リファクタリングのタイミング</p>
+  <div class="grid-2">
+    <div class="card"><div class="card-title" style="color:var(--c-amber-400)">新機能実装前</div><div style="color:var(--text-secondary);font-size:13px;">コードを理解しながら整理する。変更しやすい状態を作ってから機能追加。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-green-400)">TDDのRefactorフェーズ</div><div style="color:var(--text-secondary);font-size:13px;">機能実装直後が最もリスクが低い。テストが安全網になっている。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-red-400)">バグ修正時</div><div style="color:var(--text-secondary);font-size:13px;">原因となった複雑さを解消する。同じバグが再発しないように。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-purple-400)">コードレビュー後</div><div style="color:var(--text-secondary);font-size:13px;">指摘された問題をリファクタリングで解決する。</div></div>
+  </div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://martinfowler.com/books/refactoring.html" target="_blank">Martin Fowler — Refactoring（公式）</a></li>
+    <li><a href="https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html" target="_blank">ボーイスカウトルール（97 Things Every Programmer Should Know）</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S8: シンプルな設計
+════════════════════════════════════════════════════════════════ -->
+<div id="s8" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 08</span></div>
+    <h2>プラクティス⑤ シンプルな設計</h2>
+    <p>シンプルな設計の4つのルール（Kent Beck）</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="vcard vcard-red"><div class="vcard-label vcard-label-red">🥇 ルール1：テストをパスする</div><div class="vcard-desc">動くことが最優先。テストが通らない美しい設計は無価値。</div></div>
+    <div class="vcard vcard-blue"><div class="vcard-label vcard-label-blue">🥈 ルール2：意図が明確である</div><div class="vcard-desc">他の開発者が読んですぐ理解できる。自己文書化されたコード。</div></div>
+    <div class="vcard vcard-green"><div class="vcard-label vcard-label-green">🥉 ルール3：重複がない</div><div class="vcard-desc">DRY原則（Don't Repeat Yourself）。同じロジックを2か所以上に書かない。</div></div>
+    <div class="vcard vcard-amber"><div class="vcard-label vcard-label-amber">🏅 ルール4：要素が最小限</div><div class="vcard-desc">クラス・メソッドの数を最小化。不要な複雑さを持ち込まない。</div></div>
+  </div>
+
+  <p class="sub-title">YAGNI原則（You Aren't Gonna Need It）</p>
+  <div class="grid-2">
+    <div>
+      <div style="color:var(--c-red-400);font-weight:500;margin-bottom:8px;font-size:13px;">❌ YAGNIを無視した設計</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">「将来必要になるかも」で今実装する</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">「汎用性を持たせておこう」と抽象化しすぎる</div>
+      <div class="callout callout-err">「スケールするかもしれないから」と最適化する</div>
+    </div>
+    <div>
+      <div style="color:var(--c-green-400);font-weight:500;margin-bottom:8px;font-size:13px;">✅ YAGNIを守った設計</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">今必要なものだけ実装する</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">具体的な要件が出てから抽象化する</div>
+      <div class="callout callout-ok">実際の問題が来てから最適化する（時期尚早な最適化は万悪の元）</div>
+    </div>
+  </div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://martinfowler.com/bliki/BeckDesignRules.html" target="_blank">Martin Fowler — Beck Design Rules（4つのルール）</a></li>
+    <li><a href="https://martinfowler.com/bliki/Yagni.html" target="_blank">Martin Fowler — YAGNI</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S9–S16: 残りのプラクティス
+════════════════════════════════════════════════════════════════ -->
+<div id="s9" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 09</span></div>
+    <h2>プラクティス⑥ 小さなリリース</h2>
+    <p>1〜2週間ごとに価値ある機能を届ける</p>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div style="color:var(--c-red-400);font-weight:500;margin-bottom:8px;font-size:13px;">❌ 大きなリリース（従来型）</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">6〜12ヶ月かけて大量機能を実装</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">リリース後に大量のバグ発見</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">ユーザーが求めていない機能が大量に</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">問題の原因特定が困難</div>
+      <div class="callout callout-err">フィードバックサイクルが長い</div>
+    </div>
+    <div>
+      <div style="color:var(--c-green-400);font-weight:500;margin-bottom:8px;font-size:13px;">✅ 小さなリリース（XP）</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">1〜2週間ごとに価値ある機能を届ける</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">少ない変更なのでバグも少ない</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">ユーザーの反応をすぐに確認できる</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">問題があっても少ない変更から特定</div>
+      <div class="callout callout-ok">素早いフィードバックで方向修正できる</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div id="s10" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 10</span></div>
+    <h2>プラクティス⑦ 計画ゲーム</h2>
+    <p>ビジネスと開発者が協力して計画を立てる</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-title" style="color:var(--c-blue-400)">💼 ビジネス側が決めること</div>
+      <ul><li>何を作るか（機能の範囲・内容）</li><li>優先順位（どれが最も重要か）</li><li>リリースの日程（いつ必要か）</li><li>ビジネス価値（なぜ必要か）</li></ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-green-400)">⚙️ 開発者が決めること</div>
+      <ul><li>どのくらいかかるか（見積もり）</li><li>技術的なリスク（何が難しいか）</li><li>実装の順序（依存関係の考慮）</li><li>開発プロセス（どう作るか）</li></ul>
+    </div>
+  </div>
+
+  <p class="sub-title">ユーザーストーリーとINVEST原則</p>
+  <div class="callout callout-info" style="margin-bottom:12px;">
+    <strong>ユーザーストーリーの形式：</strong><br>
+    As a（役割として）：〇〇として<br>
+    I want（したいこと）：△△したい<br>
+    So that（理由）：□□できるように
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>頭文字</th><th>条件</th><th>説明</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">I</td><td>Independent（独立）</td><td style="color:var(--text-secondary)">他のストーリーに依存しない</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">N</td><td>Negotiable（交渉可能）</td><td style="color:var(--text-secondary)">詳細は話し合いで決まる</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">V</td><td>Valuable（価値がある）</td><td style="color:var(--text-secondary)">ユーザーに明確な価値を届ける</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">E</td><td>Estimable（見積もり可能）</td><td style="color:var(--text-secondary)">チームが規模を把握できる</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">S</td><td>Small（小さい）</td><td style="color:var(--text-secondary)">1イテレーション以内で完成</td></tr>
+      <tr><td style="color:var(--c-teal-400);font-weight:500">T</td><td>Testable（テスト可能）</td><td style="color:var(--text-secondary)">完了条件が明確に書ける</td></tr>
+    </tbody>
+  </table></div>
+
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://xp123.com/invest-in-good-stories-and-smart-tasks/" target="_blank">INVEST原則（Bill Wake）</a></li>
+    <li><a href="https://www.agilealliance.org/glossary/planning-poker/" target="_blank">プランニングポーカー解説</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<div id="s11" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 11</span></div>
+    <h2>プラクティス⑧ コレクティブオーナーシップ</h2>
+    <p>チーム全員がすべてのコードに責任を持つ</p>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div style="color:var(--c-red-400);font-weight:500;margin-bottom:8px;font-size:13px;">❌ 個人所有（アンチパターン）</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">「このコードは山田さんしか知らない」</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">山田さんが休むと作業が止まる</div>
+      <div class="callout callout-err" style="margin-bottom:6px;">バスファクター = 1（1人辞めると崩壊）</div>
+      <div class="callout callout-err">コードが属人的で保守困難</div>
+    </div>
+    <div>
+      <div style="color:var(--c-green-400);font-weight:500;margin-bottom:8px;font-size:13px;">✅ 集合所有（XP）</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">誰でもどのコードにも触れられる</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">バグを見つけたら誰でもすぐ修正</div>
+      <div class="callout callout-ok" style="margin-bottom:6px;">チームとして全コードに責任を持つ</div>
+      <div class="callout callout-ok">誰でも理解できるコードが自然に生まれる</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div id="s12" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 12</span></div>
+    <h2>プラクティス⑨ コーディング規約</h2>
+    <p>全員が同じスタイルでコードを書く</p>
+  </div>
+  <div class="callout callout-warn" style="margin-bottom:16px;">
+    <strong>目標：</strong>コードスタイルについての議論をゼロにする。自動化ツールで一貫性を保つ。
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>言語</th><th>ツール</th><th>役割</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-teal-400)">Python</td><td style="color:var(--c-purple-400)">ruff</td><td>Lint・フォーマット</td><td style="color:var(--text-secondary)">超高速。flake8+isort+blackの代替</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Python</td><td style="color:var(--c-purple-400)">mypy / pyright</td><td>型チェック</td><td style="color:var(--text-secondary)">型安全性を強制する</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Python</td><td style="color:var(--c-purple-400)">pre-commit</td><td>コミット前に自動実行</td><td style="color:var(--text-secondary)">問題のあるコードはコミット不可</td></tr>
+      <tr><td style="color:var(--c-teal-400)">JS/TS</td><td style="color:var(--c-purple-400)">ESLint</td><td>Linter</td><td style="color:var(--text-secondary)">ルールを柔軟にカスタマイズ</td></tr>
+      <tr><td style="color:var(--c-teal-400)">JS/TS</td><td style="color:var(--c-purple-400)">Prettier</td><td>フォーマッター</td><td style="color:var(--text-secondary)">議論なしに一貫したスタイル</td></tr>
+      <tr><td style="color:var(--c-teal-400)">CI</td><td style="color:var(--c-purple-400)">CI Lint Check</td><td>CIで強制</td><td style="color:var(--text-secondary)">PRがLint通らないとマージ不可</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="src-list" style="margin-top:12px;">
+    <li><a href="https://docs.astral.sh/ruff/" target="_blank">Ruff（Python Linter）公式</a></li>
+    <li><a href="https://eslint.org/docs/" target="_blank">ESLint 公式</a></li>
+    <li><a href="https://prettier.io/docs/en/" target="_blank">Prettier 公式</a></li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<div id="s13" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 13</span></div>
+    <h2>プラクティス⑩ オンサイト顧客</h2>
+    <p>顧客が開発チームと同じ場所にいる</p>
+  </div>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-8"></div>
+  </div>
+  <p class="sub-title">現代的な代替手段（リモート対応）</p>
+  <div class="grid-2">
+    <div class="vcard vcard-blue"><div class="vcard-label vcard-label-blue">Slack/Teamsでの即時対応</div><div class="vcard-desc">担当者を決め30分以内に返答。アサインされた顧客代表者を設置。</div></div>
+    <div class="vcard vcard-teal"><div class="vcard-label vcard-label-teal">毎日の短いビデオ通話</div><div class="vcard-desc">15〜30分のデイリーチェックイン。進捗共有と質問解決。</div></div>
+    <div class="vcard vcard-purple"><div class="vcard-label vcard-label-purple">プロダクトオーナー制</div><div class="vcard-desc">スクラムのPOが顧客の代わり。優先順位の決定権を持つ。</div></div>
+    <div class="vcard vcard-green"><div class="vcard-label vcard-label-green">デモ環境の共有</div><div class="vcard-desc">常に最新のステージング環境。顧客がいつでも確認できる。</div></div>
+  </div>
+  <div class="callout callout-info" style="margin-top:12px;">
+    <strong>核心原則：</strong>フィードバックの遅延を最小化すること。24時間以内に返答を得られる体制を作る。
+  </div>
+</div>
+
+<hr class="divider">
+
+<div id="s14" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 14</span></div>
+    <h2>プラクティス⑪ 週40時間労働</h2>
+    <p>持続可能なペース（Sustainable Pace）</p>
+  </div>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-9"></div>
+  </div>
+  <div class="callout callout-warn" style="margin-top:12px;">
+    <strong>残業は警告サイン：</strong>計画が間違っているサインとして扱う。スコープを削るか、計画を見直す。
+  </div>
+  <div class="grid-2" style="margin-top:12px;">
+    <div class="card"><div class="card-title" style="color:var(--c-teal-400)">計画を見直す</div><div style="color:var(--text-secondary);font-size:13px;">過剰なコミットメントをやめる。現実的な見積もりを徹底する。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-teal-400)">スコープを削る</div><div style="color:var(--text-secondary);font-size:13px;">Must Haveだけにフォーカス。「将来必要かも」を排除する。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-teal-400)">スキル向上に投資</div><div style="color:var(--text-secondary);font-size:13px;">TDD・ペアプロで生産性を上げる。長期的な投資として捉える。</div></div>
+    <div class="card"><div class="card-title" style="color:var(--c-teal-400)">ボトルネックを除去</div><div style="color:var(--text-secondary);font-size:13px;">開発プロセスの無駄を削る。自動化できることを自動化する。</div></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div id="s15" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 15</span></div>
+    <h2>プラクティス⑫ メタファー</h2>
+    <p>システム全体を1つの比喩で説明する</p>
+  </div>
+  <p style="color:var(--text-secondary);margin-bottom:16px;">
+    システム全体の設計を説明するわかりやすい比喩（アナロジー）を使い、全員が共通のメンタルモデルを持ちます。
+  </p>
+  <div class="grid-2">
+    <div class="card"><div class="card-title" style="color:var(--c-purple-400)">ECサイト = 百貨店</div><ul style="font-size:12px;color:var(--text-secondary)"><li>顧客（Customer）= 来店客</li><li>カート（Cart）= 買い物かご</li><li>注文（Order）= レジでの精算</li><li>在庫（Inventory）= 商品棚</li></ul></div>
+    <div class="card"><div class="card-title" style="color:var(--c-purple-400)">メッセージシステム = 郵便局</div><ul style="font-size:12px;color:var(--text-secondary)"><li>メッセージ（Message）= 手紙</li><li>キュー（Queue）= 郵便ポスト</li><li>ワーカー（Worker）= 配達員</li><li>デッドレター = 不達郵便</li></ul></div>
+    <div class="card"><div class="card-title" style="color:var(--c-purple-400)">認証システム = 会員証</div><ul style="font-size:12px;color:var(--text-secondary)"><li>トークン（Token）= 会員証</li><li>有効期限（Expiry）= 更新期限</li><li>スコープ（Scope）= 利用可能サービス</li><li>リフレッシュ = 更新手続き</li></ul></div>
+    <div class="card"><div class="card-title" style="color:var(--c-green-400)">メタファーの効果</div><ul style="font-size:12px;color:var(--text-secondary)"><li>チーム全員の共通言語になる</li><li>クラス名・メソッド名が自然に決まる</li><li>新メンバーへの説明が容易になる</li><li>顧客との会話がスムーズになる</li></ul></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div id="s16" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 16</span></div>
+    <h2>プラクティス⑬ システム全体のテスト（受け入れテスト）</h2>
+    <p>顧客が定義する「完了の基準」を自動化する</p>
+  </div>
+  <p class="sub-title">テストの階層</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-10"></div>
+  </div>
+  <p class="sub-title">受け入れテストのフロー</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-11"></div>
+  </div>
+  <div class="callout callout-info" style="margin-top:12px;">
+    <strong>XPのルール：</strong>コードを書く前にテストを書く（TDD）。受け入れテストは顧客と一緒に定義する。全テストは自動化して毎回実行する。
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S17: ロールと責務
+════════════════════════════════════════════════════════════════ -->
+<div id="s17" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 17</span></div>
+    <h2>XPのロールと責務</h2>
+    <p>チームを構成する5つのロール</p>
+  </div>
+  <div class="grid-2">
+    <div class="vcard vcard-blue"><div class="vcard-label vcard-label-blue">👤 顧客（Customer）</div><div class="vcard-desc"><ul><li>ユーザーストーリーを書く</li><li>優先順位を決める</li><li>受け入れテストを定義する</li><li>機能の完了を承認する</li></ul></div></div>
+    <div class="vcard vcard-green"><div class="vcard-label vcard-label-green">💻 開発者（Developer）</div><div class="vcard-desc"><ul><li>ユーザーストーリーを見積もる</li><li>TDDでコードを書く</li><li>ペアプログラミングを行う</li><li>設計・リファクタリングを担当</li></ul></div></div>
+    <div class="vcard vcard-amber"><div class="vcard-label vcard-label-amber">🎓 コーチ（Coach）</div><div class="vcard-desc"><ul><li>XPのプロセスをガイドする</li><li>プラクティスの定着を支援</li><li>チームの自律を促進する</li><li>経験者が担当</li></ul></div></div>
+    <div class="vcard vcard-purple"><div class="vcard-label vcard-label-purple">📊 トラッカー（Tracker）</div><div class="vcard-desc"><ul><li>進捗を追跡・可視化する</li><li>ベロシティを計測する</li><li>計画との差異を報告する</li></ul></div></div>
+    <div class="vcard vcard-coral" style="grid-column:1/-1;"><div class="vcard-label vcard-label-coral">📋 マネージャー（Manager）</div><div class="vcard-desc"><ul style="columns:2;"><li>チームが集中できる環境を作る</li><li>外部からの干渉をブロックする</li><li>リソースを確保する</li></ul></div></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S18: イテレーションサイクル
+════════════════════════════════════════════════════════════════ -->
+<div id="s18" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 18</span></div>
+    <h2>XPのイテレーションサイクル</h2>
+    <p>1〜2週間のリズムで回すフロー</p>
+  </div>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-12"></div>
+  </div>
+
+  <p class="sub-title">KPT 振り返りフレームワーク</p>
+  <div class="grid-3">
+    <div class="vcard vcard-green">
+      <div class="vcard-label vcard-label-green">✅ Keep（続けること）</div>
+      <div class="vcard-desc">良かったこと・うまくいったこと。次のイテレーションも継続する。<br>例：ペアプロで品質が上がった</div>
+    </div>
+    <div class="vcard vcard-red">
+      <div class="vcard-label vcard-label-red">❌ Problem（問題点）</div>
+      <div class="vcard-desc">うまくいかなかったこと。困ったこと・障害になったこと。<br>例：CIが遅くてストレスだった</div>
+    </div>
+    <div class="vcard vcard-blue">
+      <div class="vcard-label vcard-label-blue">🚀 Try（試すこと）</div>
+      <div class="vcard-desc">次回試すアイデア・改善案。担当者と期限を決める。<br>例：テストを並列化してCIを速くする</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S19: XP vs Scrum
+════════════════════════════════════════════════════════════════ -->
+<div id="s19" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 19</span></div>
+    <h2>XPとScrumの比較・組み合わせ</h2>
+    <p>XPとScrumは相補的な関係にある</p>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>観点</th><th style="color:var(--c-teal-400)">XP</th><th style="color:var(--c-blue-400)">Scrum</th><th style="color:var(--c-purple-400)">Kanban</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:500">主な焦点</td><td>技術的品質</td><td>チームプロセス</td><td>フロー最適化</td></tr>
+      <tr><td style="font-weight:500">イテレーション</td><td>1〜2週間（固定）</td><td>2〜4週間（固定）</td><td>継続的（固定なし）</td></tr>
+      <tr><td style="font-weight:500">変更対応</td><td style="color:var(--c-green-400)">歓迎（即対応）</td><td>制限（スプリント中不可）</td><td>随時対応可</td></tr>
+      <tr><td style="font-weight:500">技術プラクティス</td><td style="color:var(--c-green-400)">詳細に規定</td><td>規定なし</td><td>規定なし</td></tr>
+      <tr><td style="font-weight:500">適用場面</td><td>技術的品質を上げたい</td><td>チームの自己組織化</td><td>保守・運用・サポート</td></tr>
+      <tr><td style="font-weight:500">チームサイズ</td><td>2〜12人</td><td>3〜9人</td><td>1〜チーム全体</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout callout-ok" style="margin-top:12px;">
+    <strong>最強の組み合わせ：</strong>Scrum（プロセス管理）+ XP（技術プラクティス）= スケーラブルなアジャイル開発。スクラムが「いつ・何を」を管理し、XPが「どう高品質に作るか」を保証する。
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S20: 導入ロードマップ
+════════════════════════════════════════════════════════════════ -->
+<div id="s20" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 20</span></div>
+    <h2>XP導入ロードマップ</h2>
+    <p>段階的導入アプローチ（6ヶ月）</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><span class="badge badge-blue">Phase 1（1〜2ヶ月）</span><span style="font-weight:500">基礎固め</span></div>
+      <ul style="font-size:12px;color:var(--text-secondary);"><li>TDD勉強会・ハンズオン実施</li><li>CI環境構築（GitHub Actions）</li><li>デイリースタンドアップ開始</li><li>コーディング規約を自動化</li></ul>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><span class="badge badge-green">Phase 2（2〜3ヶ月）</span><span style="font-weight:500">定着</span></div>
+      <ul style="font-size:12px;color:var(--text-secondary);"><li>ペアプログラミング導入</li><li>イテレーション計画ゲーム開始</li><li>KPT振り返りの定期化</li><li>ベロシティの計測開始</li></ul>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><span class="badge badge-amber">Phase 3（3〜6ヶ月）</span><span style="font-weight:500">拡張</span></div>
+      <ul style="font-size:12px;color:var(--text-secondary);"><li>小さなリリースの実現</li><li>コレクティブオーナーシップ強化</li><li>受け入れテスト自動化</li><li>リファクタリングの習慣化</li></ul>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><span class="badge badge-purple">Phase 4（継続）</span><span style="font-weight:500">成熟</span></div>
+      <ul style="font-size:12px;color:var(--text-secondary);"><li>全プラクティスの統合</li><li>プロセスのカスタマイズ</li><li>他チームへの展開検討</li><li>自律的な改善サイクル</li></ul>
+    </div>
+  </div>
+
+  <p class="sub-title">導入の障壁と対策</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>よくある障壁</th><th>対策と説得材料</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-red-400)">「TDDは時間がかかる」</td><td style="color:var(--c-green-400)">短期的には遅いが、長期的にはバグ修正コストが減る。データで示す。</td></tr>
+      <tr><td style="color:var(--c-red-400)">「ペアプロはリソースの無駄」</td><td style="color:var(--c-green-400)">2人で書くとレビューコストが大幅削減。知識共有の副作用も大きい。</td></tr>
+      <tr><td style="color:var(--c-red-400)">「毎日コミットするのは怖い」</td><td style="color:var(--c-green-400)">CIがあれば問題は自動的に検出される。まず試してみる。</td></tr>
+      <tr><td style="color:var(--c-red-400)">「顧客が一緒にいられない」</td><td style="color:var(--c-green-400)">Slack・デモ環境・PO制で代替できる。フィードバック遅延を最小化する。</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S21: アンチパターン
+════════════════════════════════════════════════════════════════ -->
+<div id="s21" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 21</span></div>
+    <h2>XPのアンチパターンと対策</h2>
+    <p>よくある失敗パターンを知り、対策する</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">Flaccid Scrum（貧弱なスクラム）</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">プロセスはスクラムだが、TDDもCIも何もやっていない。形式だけのアジャイル。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>具体的な技術プラクティスを導入する。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">TDDのふり</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">テストを後から書いて「TDDをやっています」と言う。本来のTDDではない。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>レッド→グリーン→リファクタの順序を厳守する。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">ペアプロの形骸化</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">片方がPCを見てもう片方がスマホを見ている状態。意味のない「ペア」。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>ロール交代・集中・フィードバックを徹底する。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">壊れたCIの放置</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">「後で直す」と言ってビルドが数日間赤いまま。CIへの信頼が失われる。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>壊れたビルドは最優先修正をチームルールとする。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">技術的負債の蓄積</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">「今はMVPだから」を言い訳にリファクタリングをしない。後から対処不能になる。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>ボーイスカウトルールを守る。常に少し良くする。</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-red-400)">顧客との距離</div>
+      <div style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">ストーリーを決めたら数週間顧客と話さない。認識齟齬が積み重なる。</div>
+      <div class="callout callout-ok" style="padding:6px 10px;"><strong>対策：</strong>最低週2回は顧客とコンタクトする。</div>
+    </div>
+  </div>
+
+  <p class="sub-title">XP健全性チェック</p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-13"></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S22: ベストプラクティス
+════════════════════════════════════════════════════════════════ -->
+<div id="s22" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 22</span></div>
+    <h2>ベストプラクティス総まとめ</h2>
+    <p>XP実践の黄金律10箇条</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">1</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">価値から始める</div><div style="color:var(--text-secondary);font-size:13px;">5つの価値を理解してからプラクティスを導入する。価値なきプラクティスは形骸化する。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">2</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">TDDは最初から</div><div style="color:var(--text-secondary);font-size:13px;">後からテストを追加するのは困難。最初から習慣にする。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">3</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">小さく早くリリース</div><div style="color:var(--text-secondary);font-size:13px;">大きなリリースより小さなリリースを。学習速度が上がる。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">4</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">ペアを定期的に変える</div><div style="color:var(--text-secondary);font-size:13px;">固定ペアは知識の孤立を生む。毎日・毎週ローテーションする。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">5</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">CIを神聖に扱う</div><div style="color:var(--text-secondary);font-size:13px;">壊れたビルドを最優先で修正。赤いCIを放置しない。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">6</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">シンプルに保つ</div><div style="color:var(--text-secondary);font-size:13px;">「将来必要かも」で複雑にしない。YAGNI・KISSを守る。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">7</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">顧客を巻き込む</div><div style="color:var(--text-secondary);font-size:13px;">技術チームだけで決めない。常にビジネス価値を確認する。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">8</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">振り返りを欠かさない</div><div style="color:var(--text-secondary);font-size:13px;">KPTをイテレーションごとに。改善のサイクルを回す。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">9</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">持続可能なペースを守る</div><div style="color:var(--text-secondary);font-size:13px;">残業はプロセスの失敗のサイン。計画を見直すきっかけにする。</div></div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="color:var(--c-teal-400);font-size:18px;font-weight:500;min-width:24px;">10</div>
+      <div><div style="font-weight:500;margin-bottom:4px;">全プラクティスは連携している</div><div style="color:var(--text-secondary);font-size:13px;">1つだけ導入しても効果は薄い。相互依存を理解して組み合わせる。</div></div>
+    </div>
+  </div>
+
+  <p class="sub-title">XP成熟度モデル</p>
+  <div class="level-bar"><div class="level-pill" style="background:#dc2626;">Lv.0</div><div><span style="font-weight:500">XP未実践</span> <span style="color:var(--text-secondary);font-size:13px;">アドホックな開発。プロセスが個人依存。</span></div></div>
+  <div class="level-bar"><div class="level-pill" style="background:#ea580c;">Lv.1</div><div><span style="font-weight:500">基礎プラクティス導入</span> <span style="color:var(--text-secondary);font-size:13px;">デイリースタンドアップ。バージョン管理・基本的CI。</span></div></div>
+  <div class="level-bar"><div class="level-pill" style="background:#d97706;">Lv.2</div><div><span style="font-weight:500">技術品質の確立</span> <span style="color:var(--text-secondary);font-size:13px;">TDDの実践。CI/CDの整備。コーディング規約。</span></div></div>
+  <div class="level-bar"><div class="level-pill" style="background:#16a34a;">Lv.3</div><div><span style="font-weight:500">チームプラクティスの定着</span> <span style="color:var(--text-secondary);font-size:13px;">ペアプログラミング。コレクティブオーナーシップ。計画ゲーム。</span></div></div>
+  <div class="level-bar"><div class="level-pill" style="background:#2563eb;">Lv.4</div><div><span style="font-weight:500">顧客との統合</span> <span style="color:var(--text-secondary);font-size:13px;">オンサイト顧客。受け入れテスト。小さなリリースの確立。</span></div></div>
+  <div class="level-bar"><div class="level-pill" style="background:#7c3aed;">Lv.5</div><div><span style="font-weight:500">XPの体質化</span> <span style="color:var(--text-secondary);font-size:13px;">全プラクティスが自然に機能。状況に合わせてカスタマイズ。他チームへ伝播できる。</span></div></div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S23: 参考文献
+════════════════════════════════════════════════════════════════ -->
+<div id="s23" class="section-anchor">
+  <div class="sec-header">
+    <div class="badges"><span class="badge badge-teal">Section 23</span></div>
+    <h2>参考文献・ソース一覧</h2>
+    <p>XP学習のための厳選リソース</p>
+  </div>
+
+  <p class="sub-title">必読書籍</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>タイトル</th><th>著者</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--c-teal-400)">Extreme Programming Explained（第2版）</td><td style="color:var(--c-purple-400)">Kent Beck, Cynthia Andres</td><td style="color:var(--text-secondary)">XPの原典・バイブル。価値・原則・プラクティスを体系化</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Test-Driven Development: By Example</td><td style="color:var(--c-purple-400)">Kent Beck</td><td style="color:var(--text-secondary)">TDDの実践書。最も具体的なTDD解説</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Refactoring（第2版）</td><td style="color:var(--c-purple-400)">Martin Fowler</td><td style="color:var(--text-secondary)">リファクタリングパターンの決定版</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Clean Code</td><td style="color:var(--c-purple-400)">Robert C. Martin</td><td style="color:var(--text-secondary)">読みやすいコードの書き方</td></tr>
+      <tr><td style="color:var(--c-teal-400)">The Art of Agile Development</td><td style="color:var(--c-purple-400)">James Shore, Shane Warden</td><td style="color:var(--text-secondary)">XPの現代的な実践ガイド。無料公開あり</td></tr>
+      <tr><td style="color:var(--c-teal-400)">Growing Object-Oriented Software, Guided by Tests</td><td style="color:var(--c-purple-400)">Freeman &amp; Pryce</td><td style="color:var(--text-secondary)">TDD × OOP の実践的な組み合わせ</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="sub-title">公式ドキュメント・参考URL</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">XPコア概念</div>
+      <ul class="src-list">
+        <li><a href="http://www.extremeprogramming.org/" target="_blank">extremeprogramming.org（XP公式）</a></li>
+        <li><a href="https://martinfowler.com/bliki/ExtremeProgramming.html" target="_blank">Martin Fowler — Extreme Programming</a></li>
+        <li><a href="https://www.agilealliance.org/glossary/xp/" target="_blank">Agile Alliance — XP用語集</a></li>
+        <li><a href="https://agilemanifesto.org/iso/ja/manifesto.html" target="_blank">アジャイルマニフェスト（日本語）</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">TDD</div>
+      <ul class="src-list">
+        <li><a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" target="_blank">Martin Fowler — TestDrivenDevelopment</a></li>
+        <li><a href="https://martinfowler.com/bliki/TestPyramid.html" target="_blank">Martin Fowler — テストピラミッド</a></li>
+        <li><a href="https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html" target="_blank">Uncle Bob — TDDの3つのルール</a></li>
+        <li><a href="https://agileinaflash.blogspot.com/2009/02/first.html" target="_blank">FIRST原則（詳細解説）</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">ペアプログラミング</div>
+      <ul class="src-list">
+        <li><a href="https://martinfowler.com/articles/on-pair-programming.html" target="_blank">Martin Fowler — On Pair Programming</a></li>
+        <li><a href="https://www.agilealliance.org/glossary/pairing/" target="_blank">Agile Alliance — Pair Programming</a></li>
+        <li><a href="https://learn.microsoft.com/ja-jp/visualstudio/liveshare/" target="_blank">VS Code Live Share 公式</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">継続的インテグレーション</div>
+      <ul class="src-list">
+        <li><a href="https://martinfowler.com/articles/continuousIntegration.html" target="_blank">Martin Fowler — Continuous Integration</a></li>
+        <li><a href="https://trunkbaseddevelopment.com/" target="_blank">Trunk Based Development 公式</a></li>
+        <li><a href="https://docs.github.com/ja/actions" target="_blank">GitHub Actions ドキュメント（日本語）</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">リファクタリング・シンプルな設計</div>
+      <ul class="src-list">
+        <li><a href="https://martinfowler.com/books/refactoring.html" target="_blank">Martin Fowler — Refactoring</a></li>
+        <li><a href="https://martinfowler.com/bliki/BeckDesignRules.html" target="_blank">Martin Fowler — BeckDesignRules</a></li>
+        <li><a href="https://martinfowler.com/bliki/Yagni.html" target="_blank">Martin Fowler — YAGNI</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--c-teal-400)">計画ゲーム・ストーリー</div>
+      <ul class="src-list">
+        <li><a href="https://xp123.com/invest-in-good-stories-and-smart-tasks/" target="_blank">INVEST原則（Bill Wake）</a></li>
+        <li><a href="https://www.agilealliance.org/glossary/planning-poker/" target="_blank">プランニングポーカー解説</a></li>
+        <li><a href="https://www.jamesshore.com/v2/books/aoad2" target="_blank">The Art of Agile Development（無料公開）</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;padding:12px 16px;background:var(--bg-tertiary);border-radius:var(--radius-md);font-size:12px;color:var(--text-secondary);">
+    本ドキュメントは2025年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
+  </div>
+</div>
+
+</div><!-- /content-inner -->
+</main><!-- /content -->
+
+<!-- ════════════════════════════ SCRIPTS ════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+
+<script>
+const DIAGRAMS = {
+  'diag-1': `
+timeline
+    title XPの歴史的背景
+    1990年代初頭 : ウォーターフォール開発の限界が顕在化
+    1996年 : Kent BeckがC3プロジェクト（Chrysler社）でXPを実践
+    1999年 : Extreme Programming Explained 初版出版
+    2001年 : アジャイルマニフェストに参加
+    2004年 : 第2版出版（5つの価値と13のプラクティスへ体系化）
+    2010年代 : TDD・CI/CD・ペアプロが業界標準のプラクティスへ
+`,
+  'diag-2': `
+graph TD
+    XP["Extreme Programming"] --> V["5つの価値 Values"]
+    XP --> PR["原則 Principles"]
+    XP --> P["13のプラクティス Practices"]
+    V --> PR --> P
+    P --> P1["TDD"] & P2["ペアプログラミング"] & P3["継続的インテグレーション"]
+    P --> P4["リファクタリング"] & P5["シンプルな設計"] & P6["小さなリリース"]
+    P --> P7["計画ゲーム"] & P8["コレクティブオーナーシップ"] & P9["コーディング規約"]
+`,
+  'diag-3': `
+graph TD
+    subgraph FINE["細粒度フィードバック（コードレベル）"]
+        TDD["TDD"]
+        PAIR["ペアプログラミング"]
+        CI["継続的インテグレーション"]
+        REF["リファクタリング"]
+    end
+    subgraph CONT["継続的なプロセス"]
+        SIM["シンプルな設計"]
+        SR["小さなリリース"]
+        COL["コレクティブオーナーシップ"]
+        STD["コーディング規約"]
+    end
+    subgraph TEAM["共有理解（チームレベル）"]
+        PG["計画ゲーム"]
+        OC["オンサイト顧客"]
+        MET["メタファー"]
+    end
+    subgraph WELL["チームの健全性"]
+        HRS["週40時間労働"]
+        ACC["システム全体のテスト"]
+    end
+`,
+  'diag-4': `
+graph LR
+    TDD -->|安全に変更できる| RF["リファクタリング"]
+    RF -->|設計を改善する| SD["シンプルな設計"]
+    SD -->|変更しやすいコード| TDD
+    CI2["CI"] -->|素早いフィードバック| TDD
+    TDD -->|テストがあるから統合できる| CI2
+    PP["ペアプロ"] -->|知識共有| CO["コレクティブOW"]
+    CO -->|誰でも変更できる| RF
+    PG2["計画ゲーム"] --> SR2["小さなリリース"] --> PG2
+`,
+  'diag-5': `
+flowchart TD
+    START(["新機能を実装する"])
+    RED["🔴 RED フェーズ\n失敗するテストを書く\nまだ実装コードは存在しない\nテストは必ず失敗する"]
+    GREEN["🟢 GREEN フェーズ\n最小限の実装コードを書く\nテストを通すだけの最小限\n美しさより動作を優先"]
+    REFACTOR["🔵 REFACTOR フェーズ\nコードを整理・改善する\nテストを壊さない範囲で\n重複排除・命名改善"]
+    CHECK{"全機能実装完了？"}
+    DONE(["実装完了"])
+    START --> RED --> GREEN --> REFACTOR --> CHECK
+    CHECK -->|No| RED
+    CHECK -->|Yes| DONE
+`,
+  'diag-6': `
+flowchart TD
+    PREP["セッション開始前 5分\nタスクの目標を2人で確認\n担当範囲を明確にする"]
+    DRIVE["ドライバー開始\nコードを書き始める"]
+    NAV["ナビゲーターの活動\nリアルタイムレビュー・改善提案"]
+    SWITCH["ロール交代 15〜30分ごと"]
+    BREAK["休憩 90分ごと\n適切な休憩で集中力回復"]
+    END["セッション終了後 5分\n学んだことを共有・コミット"]
+    PREP --> DRIVE --> NAV --> SWITCH --> DRIVE
+    DRIVE -->|90分経過| BREAK --> DRIVE
+    NAV --> END
+`,
+  'diag-7': `
+flowchart TD
+    COMMIT["git commit and push"]
+    TRIGGER["CIトリガー\nプッシュ・PR作成時に自動起動"]
+    subgraph FAST["高速チェック 2〜3分"]
+        LINT["Lint・型チェック"]
+        UNIT["ユニットテスト"]
+        BUILD["ビルド確認"]
+    end
+    subgraph SLOW["詳細チェック 5〜15分"]
+        INT["統合テスト"]
+        E2E["E2Eテスト"]
+        SEC["セキュリティスキャン"]
+        COV["カバレッジ確認"]
+    end
+    OK["全チェック通過\nマージ可能"]
+    FAIL["チェック失敗\n即座に通知・修正最優先"]
+    COMMIT --> TRIGGER --> FAST
+    FAST -->|通過| SLOW
+    FAST -->|失敗| FAIL
+    SLOW -->|通過| OK
+    SLOW -->|失敗| FAIL
+`,
+  'diag-8': `
+sequenceDiagram
+    participant DEV as 開発チーム
+    participant CUST as 顧客（オンサイト）
+    DEV->>CUST: この仕様、〇〇の場合はどうしますか？
+    CUST-->>DEV: その場合は△△にしてください
+    Note over DEV: 即座に理解・実装開始
+    DEV->>CUST: できました。確認してもらえますか？
+    CUST->>CUST: 動作を確認する
+    CUST-->>DEV: ほぼOKですが、ここを変えてほしい
+    DEV->>CUST: 修正しました
+    CUST-->>DEV: 完璧です！
+`,
+  'diag-9': `
+graph LR
+    O1["残業・過労"] -->|短期| P1["生産性一時上昇"]
+    O1 -->|中期| P2["疲弊・ミス増加"]
+    O1 -->|長期| P3["燃え尽き症候群"]
+    P3 --> P4["コード品質低下・技術的負債"]
+    S1["週40時間以内"] --> S2["集中力維持・高品質"]
+    S2 --> S3["チームの士気・健康維持"]
+    S3 --> S4["長期的なプロダクト品質"]
+`,
+  'diag-10': `
+graph TD
+    ACC["受け入れテスト\n顧客が定義した完了の基準\nユーザーストーリーの検証\n数十件"]
+    INT["統合テスト\nコンポーネント間の連携\nDB・外部サービスとの統合\n数百件"]
+    UNIT["ユニットテスト\nTDDで書く細かいテスト\n個々の関数・クラスの動作\n数千件"]
+    UNIT --> INT --> ACC
+`,
+  'diag-11': `
+flowchart LR
+    S1["顧客がストーリーを書く"] --> S2["顧客と開発者で受け入れ条件を共同定義"]
+    S2 --> S3["開発者が受け入れテストを自動化"]
+    S3 --> S4["実装完了後に受け入れテスト実行"]
+    S4 --> S5["全テスト通過 = 機能完了の証明"]
+    S5 --> S6["顧客が確認・承認"]
+`,
+  'diag-12': `
+flowchart TD
+    MON["月曜日：計画ゲーム\n前回の振り返り 30分\nベロシティの確認\n今回のストーリー選択\nタスク分解と見積もり"]
+    DEV["火〜木：開発\nTDDでコードを書く\nペアプログラミング\n継続的インテグレーション\nデイリースタンドアップ 15分"]
+    FRI["金曜日：レビュー & 振り返り\nデモ（完成した機能を顧客に）\n受け入れテストの実行\nKPT振り返り\n次のイテレーションへの準備"]
+    MON --> DEV --> FRI --> MON
+`,
+  'diag-13': `
+flowchart TD
+    Q1{"毎日mainへプッシュしているか？"}
+    Q2{"コードの前にテストを書いているか？"}
+    Q3{"全員がすべてのコードに触れているか？"}
+    Q4{"イテレーションごとにリリースできるか？"}
+    Q5{"週40時間以内で働けているか？"}
+    Q6{"顧客との対話が週2回以上か？"}
+    OK["健全なXPプロジェクト"]
+    F1["Trunk-Based Developmentへ移行"]
+    F2["TDDのサイクルを学び直す"]
+    F3["ペアプロとコレクティブOWを強化"]
+    F4["ストーリーをさらに小さく分割"]
+    F5["計画を見直す・スコープを削る"]
+    F6["オンサイト顧客またはPO制を導入"]
+    Q1 -->|No| F1
+    Q1 -->|Yes| Q2
+    Q2 -->|No| F2
+    Q2 -->|Yes| Q3
+    Q3 -->|No| F3
+    Q3 -->|Yes| Q4
+    Q4 -->|No| F4
+    Q4 -->|Yes| Q5
+    Q5 -->|No| F5
+    Q5 -->|Yes| Q6
+    Q6 -->|No| F6
+    Q6 -->|Yes| OK
+`,
+};
+
+mermaid.initialize({
+  startOnLoad: false,
+                securityLevel: 'loose',
+  theme: 'dark',
+  themeVariables: {
+    darkMode: true,
+    background: '#0a0f16',
+    primaryColor: '#1e3a5f',
+    primaryTextColor: '#bfdbfe',
+    primaryBorderColor: '#2563eb',
+    lineColor: '#4b5563',
+    secondaryColor: '#134e4a',
+    tertiaryColor: '#3b0764',
+    clusterBkg: '#111827',
+    clusterBorder: '#374151',
+    titleColor: '#e2e8f0',
+    edgeLabelBackground: '#1f2937',
+    nodeTextColor: '#e2e8f0',
+    fontFamily: 'JetBrains Mono, monospace',
+    fontSize: '13px',
+    cScale0: '#1d4ed8',
+    cScale1: '#0891b2',
+    cScale2: '#7c3aed',
+    cScale3: '#be185d',
+    cScale4: '#b91c1c',
+    cScale5: '#b45309',
+    cScaleLabel0: '#ffffff',
+    cScaleLabel1: '#ffffff',
+    cScaleLabel2: '#ffffff',
+    cScaleLabel3: '#ffffff',
+    cScaleLabel4: '#ffffff',
+    cScaleLabel5: '#ffffff',
+  },
+  flowchart: { htmlLabels: true, curve: 'basis' },
+  sequence: { useMaxWidth: true },
+});
+
+// Sidebar active tracking
+const navBtns = document.querySelectorAll('.nav-btn');
+const sectionIds = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10',
+                    's11','s12','s13','s14','s15','s16','s17','s18','s19',
+                    's20','s21','s22','s23'];
+
+function updateActive() {
+  const scrollY = window.scrollY + 90;
+  let current = sectionIds[0];
+  for (const id of sectionIds) {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) current = id;
+  }
+  navBtns.forEach(btn => {
+    const target = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+    btn.classList.toggle('active', target === current);
+  });
+}
+
+window.addEventListener('scroll', updateActive, { passive: true });
+
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (el) window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+}
+
+            // --- mermaid render pipeline (apply_render_pipeline.ts) ---
+            function applySvgFixups(svgEl, src) {
+                svgEl.removeAttribute('width');
+                svgEl.removeAttribute('height');
+                svgEl.style.height = 'auto';
+                svgEl.style.maxWidth = '100%';
+                svgEl.style.overflow = 'visible';
+                svgEl.style.marginBottom = '10px';
+                const viewBox = svgEl.getAttribute('viewBox');
+                if (!viewBox) return;
+                const parts = viewBox.split(/\s+/).map(Number);
+                if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+                const trimmed = src.trim();
+                const isSequenceOrState =
+                    trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+                const extraHeight = isSequenceOrState ? 110 : 15;
+                const [x, y, w, h] = parts;
+                // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+                svgEl.style.width = w + 'px';
+                svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+            }
+
+            (async () => {
+                if (document.fonts && document.fonts.ready) {
+                    try {
+                        await document.fonts.ready;
+                    } catch (_e) {
+                        /* フォント待機に失敗しても描画は継続する */
+                    }
+                }
+                for (const [id, src] of Object.entries(DIAGRAMS)) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    try {
+                        const { svg } = await mermaid.render('svg-' + id, src);
+                        el.innerHTML = svg;
+                        const svgEl = el.querySelector('svg');
+                        if (svgEl) applySvgFixups(svgEl, src);
+                    } catch (err) {
+                        el.innerHTML =
+                            '<pre style="color:#ff8888;white-space:pre-wrap">' +
+                            (err && err.message ? err.message : String(err)) +
+                            '</pre>';
+                    }
+                }
+            })();
+        </script>
+</body>
+</html>

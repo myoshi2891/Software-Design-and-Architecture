@@ -1317,7 +1317,7 @@ graph TD
 | **Eric Ries 公式サイト（Lean Startup）** | https://theleanstartup.com/ |
 | **Lean Startup - Wikipedia（詳細解説）** | https://en.wikipedia.org/wiki/Lean_startup |
 | **Ash Maurya - Running Lean（Lean Stack）** | https://leanstack.com/lean-canvas |
-| **Y Combinator - How to Validate Your Startup Idea** | https://www.ycombinator.com/library/7x-how-to-get-and-test-ideas |
+| **Y Combinator - How to Validate Your Startup Idea** | https://www.youtube.com/watch?v=Do3mS7p6G3A |
 | **Paul Graham - Do Things That Don't Scale** | https://paulgraham.com/ds.html |
 | **a16z - Product-Market Fit（解説）** | https://a16z.com/12-things-about-product-market-fit/ |
 

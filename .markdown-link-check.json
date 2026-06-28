@@ -182,6 +182,24 @@
     },
     {
       "pattern": "^https?://(www\\.)?goodreads\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?nngroup\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?oreilly\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?theleanstartup\\.com"
+    },
+    {
+      "pattern": "^https?://(www\\.)?rfc-editor\\.org/rfc/"
+    },
+    {
+      "pattern": "^https?://storybook\\.js\\.org/docs"
+    },
+    {
+      "pattern": "^https?://(www\\.)?ycombinator\\.com/library"
     }
   ],
   "replacementPatterns": [],

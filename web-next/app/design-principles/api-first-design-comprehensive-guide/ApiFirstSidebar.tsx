@@ -1,5 +1,5 @@
 "use client";
-import { IconBuilding } from "@tabler/icons-react";
+import { IconApi } from "@tabler/icons-react";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
@@ -19,11 +19,11 @@ type Props = {
 };
 
 /**
- * Renders the guide sidebar with navigation links and a scroll progress bar.
+ * Renders the sidebar navigation for the API-First design guide.
  *
- * @param groups - Navigation groups to display in the sidebar
+ * @param groups - Navigation groups displayed in the sidebar
  */
-export default function SoaSidebar({ groups }: Props) {
+export default function ApiFirstSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
   const activeId = useScrollSpy("section.section", groups[0]?.items[0]?.id ?? null);
 
@@ -32,9 +32,9 @@ export default function SoaSidebar({ groups }: Props) {
       <div className="progress-bar" ref={progressRef} />
       <aside className="sidebar">
         <div className="sb-logo">
-          <IconBuilding size={20} className="sb-logo-icon" />
-          <div className="sb-logo-title">SOA 完全ガイド</div>
-          <div className="sb-logo-sub">サービス指向アーキテクチャ</div>
+          <IconApi size={20} className="sb-logo-icon" />
+          <div className="sb-logo-title">API-First設計</div>
+          <div className="sb-logo-sub">完全ガイド — 初学者から実践者まで</div>
         </div>
         <nav className="sb-nav">
           {groups.map((group) => (

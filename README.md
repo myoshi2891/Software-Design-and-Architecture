@@ -66,6 +66,21 @@ Testing Library（契約テスト）を採用しています。
   - [`/architecture/service-oriented-architecture-comprehensive-guide`](web-next/app/architecture/service-oriented-architecture-comprehensive-guide/page.tsx)
     — SOA 完全ガイドを移植（17 セクション・Mermaid 20 図・table 8・コードブロック 5）。
     固定サイドバー・進捗バー・scroll-spy を [`SoaSidebar.tsx`](web-next/app/architecture/service-oriented-architecture-comprehensive-guide/SoaSidebar.tsx) でクライアント描画
+  - [`/architecture/hexagonal-architecture-comprehensive-guide`](web-next/app/architecture/hexagonal-architecture-comprehensive-guide/page.tsx)
+    — ヘキサゴナルアーキテクチャ完全ガイドを移植（15 セクション・Mermaid 14 図・table 6・コードブロック 11）。
+    固定サイドバー・進捗バー・scroll-spy を [`HexagonalArchitectureSidebar.tsx`](web-next/app/architecture/hexagonal-architecture-comprehensive-guide/HexagonalArchitectureSidebar.tsx) でクライアント描画
+  - [`/architecture/microservices-architecture-comprehensive-guide`](web-next/app/architecture/microservices-architecture-comprehensive-guide/page.tsx)
+    — マイクロサービス完全ガイドを移植（18 セクション・Mermaid 22 図・table 8・コードブロック 9）。
+    固定サイドバー・進捗バー・scroll-spy を [`MicroservicesArchitectureSidebar.tsx`](web-next/app/architecture/microservices-architecture-comprehensive-guide/MicroservicesArchitectureSidebar.tsx) でクライアント描画
+  - [`/architecture/monolithic-architecture-comprehensive-guide`](web-next/app/architecture/monolithic-architecture-comprehensive-guide/page.tsx)
+    — モノリシックアーキテクチャ完全ガイドを移植（19 セクション・Mermaid 16 図・table 7・コードブロック 9）。
+    固定サイドバー・進捗バー・scroll-spy を [`MonolithicArchitectureSidebar.tsx`](web-next/app/architecture/monolithic-architecture-comprehensive-guide/MonolithicArchitectureSidebar.tsx) でクライアント描画
+  - [`/design-principles/api-first-design-comprehensive-guide`](web-next/app/design-principles/api-first-design-comprehensive-guide/page.tsx)
+    — API-First設計完全ガイドを移植（16 セクション・Mermaid 27 図・table 10・コードブロック 7）。
+    固定サイドバー・進捗バー・scroll-spy を [`ApiFirstSidebar.tsx`](web-next/app/design-principles/api-first-design-comprehensive-guide/ApiFirstSidebar.tsx) でクライアント描画
+  - [`/design-principles/component-oriented-development-comprehensive-guide`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/page.tsx)
+    — コンポーネント指向開発完全ガイドを移植（15 セクション・Mermaid 21 図・table 7・コードブロック 14）。
+    固定サイドバー・進捗バー・scroll-spy を [`CodSidebar.tsx`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/CodSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
