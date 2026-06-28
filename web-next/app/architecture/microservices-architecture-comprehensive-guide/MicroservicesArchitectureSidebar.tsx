@@ -18,9 +18,9 @@ type Props = {
 };
 
 /**
- * Renders the microservices architecture guide sidebar navigation.
+ * Renders the sidebar navigation for the microservices architecture guide.
  *
- * @param groups - Navigation groups to display in the sidebar
+ * @param groups - Grouped navigation items to display in the sidebar
  */
 export default function MicroservicesArchitectureSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
