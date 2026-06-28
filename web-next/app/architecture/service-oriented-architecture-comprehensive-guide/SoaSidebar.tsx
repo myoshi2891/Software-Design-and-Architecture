@@ -19,9 +19,9 @@ type Props = {
 };
 
 /**
- * Renders the sidebar navigation and scroll progress bar for the guide.
+ * Renders the guide sidebar with navigation links and a scroll progress bar.
  *
- * @param groups - Navigation groups displayed in the sidebar
+ * @param groups - Navigation groups to display in the sidebar
  */
 export default function SoaSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();

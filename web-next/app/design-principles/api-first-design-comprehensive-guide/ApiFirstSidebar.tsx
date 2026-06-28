@@ -19,10 +19,10 @@ type Props = {
 };
 
 /**
-  Renders the API-First design guide sidebar navigation.
-  *
-  * @param groups - Navigation groups to display in the sidebar
-  */
+ * Renders the sidebar navigation for the API-First design guide.
+ *
+ * @param groups - Navigation groups displayed in the sidebar
+ */
 export default function ApiFirstSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
   const activeId = useScrollSpy("section.section", groups[0]?.items[0]?.id ?? null);

@@ -1,10 +1,9 @@
 /**
- * CSSコンテンツから指定したスコープクラスのブロックを抽出します。
- * ネストされた中カッコ {} のペア数をカウントし、対象スコープが閉じるまでのブロックを返します。
+ * Extracts the CSS block for the specified scope class.
  *
- * @param cssContent 全体のCSS文字列
- * @param scopeClass 抽出対象のスコープクラス（例: ".hexagonal-architecture-comprehensive-guide"）
- * @returns 抽出されたCSSブロック。見つからない場合は空の文字列。
+ * @param cssContent - The full CSS source to search.
+ * @param scopeClass - The scope class to match, such as `.hexagonal-architecture-comprehensive-guide`.
+ * @returns The matching CSS block, or an empty string if no matching block is found.
  */
 export function extractScopedCssBlock(cssContent: string, scopeClass: string): string {
   let searchStart = 0;
@@ -93,6 +92,13 @@ export function extractScopedCssBlock(cssContent: string, scopeClass: string): s
   }
 }
 
+/**
+ * Determines whether a position falls within a CSS comment.
+ *
+ * @param cssContent - The CSS text to inspect
+ * @param index - The position to check
+ * @returns `true` if `index` is inside a `/* ... */` comment, `false` otherwise
+ */
 function isInComment(cssContent: string, index: number): boolean {
   let inComment = false;
   for (let i = 0; i < index; i++) {

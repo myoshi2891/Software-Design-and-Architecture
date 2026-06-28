@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Custom hook that updates the scaleX transform of a progress bar element based on the page scroll position.
- * Returns a React ref to be attached to the progress bar element.
+ * Tracks page scroll progress on a progress bar element.
+ *
+ * @returns A ref for the progress bar element.
  */
 export function useScrollProgress() {
   const progressRef = useRef<HTMLDivElement>(null);

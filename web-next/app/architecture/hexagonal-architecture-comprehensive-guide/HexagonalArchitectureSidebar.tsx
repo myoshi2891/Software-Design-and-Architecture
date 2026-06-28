@@ -19,7 +19,7 @@ type Props = {
 };
 
 /**
- * Renders the hexagonal architecture guide sidebar navigation.
+ * Renders the sidebar navigation for the hexagonal architecture guide.
  *
  * @param groups - Navigation groups to display in the sidebar
  */
