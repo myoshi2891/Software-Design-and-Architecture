@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
 /**
- * Custom hook to track the active section id based on scrolling position and IntersectionObserver.
+ * Tracks the id of the section currently in view.
  *
- * @param sectionSelector - CSS selector to query section elements (e.g. "section.section")
- * @param initialActiveId - Initial active section id
+ * @param sectionSelector - CSS selector used to find the sections to observe.
+ * @param initialActiveId - Initial value for the active section id.
+ * @returns The id of the section currently considered active, or `null` when none is active.
  */
 export function useScrollSpy(sectionSelector: string, initialActiveId: string | null) {
   const [activeId, setActiveId] = useState<string | null>(initialActiveId);

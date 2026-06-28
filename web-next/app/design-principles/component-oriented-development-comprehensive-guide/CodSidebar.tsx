@@ -18,6 +18,11 @@ type Props = {
   groups: NavGroup[];
 };
 
+/**
+ * Renders the COD guide sidebar with section navigation and scroll progress.
+ *
+ * @param groups - Sidebar section groups and their navigation items.
+ */
 export default function CodSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
   const activeId = useScrollSpy("section.section", groups[0]?.items[0]?.id ?? null);

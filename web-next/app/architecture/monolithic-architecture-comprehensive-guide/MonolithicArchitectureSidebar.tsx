@@ -20,7 +20,8 @@ type Props = {
 /**
  * Renders the monolithic architecture guide sidebar navigation.
  *
- * @param groups - Navigation groups to display in the sidebar
+ * @param groups - Navigation groups displayed in the sidebar
+ * @returns The sidebar navigation for the monolithic architecture guide
  */
 export default function MonolithicArchitectureSidebar({ groups }: Props) {
   const progressRef = useScrollProgress();
