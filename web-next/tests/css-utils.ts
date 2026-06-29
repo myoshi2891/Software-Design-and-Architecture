@@ -91,13 +91,12 @@ export function extractScopedCssBlock(cssContent: string, scopeClass: string): s
     }
   }
 }
-
 /**
  * Determines whether a position falls within a CSS comment.
  *
  * @param cssContent - The CSS text to inspect
  * @param index - The position to check
- * @returns `true` if `index` is inside a `/* ... */` comment, `false` otherwise
+ * @returns `true` if `index` is inside a comment block, `false` otherwise
  */
 function isInComment(cssContent: string, index: number): boolean {
   let inComment = false;
