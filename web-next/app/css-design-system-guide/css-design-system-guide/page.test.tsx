@@ -82,9 +82,7 @@ describe("css-design-system-guide page", () => {
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
-    const section = cssContent.slice(
-      cssContent.indexOf(".css-design-system-guide")
-    );
+    const section = cssContent.slice(cssContent.indexOf(".css-design-system-guide"));
     expect(cssContent).toContain(".css-design-system-guide");
 
     const mainStyleRegex =

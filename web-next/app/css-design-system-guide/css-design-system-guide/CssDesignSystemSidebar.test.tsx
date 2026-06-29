@@ -76,11 +76,7 @@ describe("CssDesignSystemSidebar", () => {
 
     const links = container.querySelectorAll("nav.sb-nav a.nav-item");
     expect(links).toHaveLength(3);
-    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual([
-      "#s1",
-      "#s2",
-      "#s3",
-    ]);
+    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s3"]);
 
     const activeInitial = container.querySelectorAll("nav.sb-nav a.active");
     expect(activeInitial).toHaveLength(1);

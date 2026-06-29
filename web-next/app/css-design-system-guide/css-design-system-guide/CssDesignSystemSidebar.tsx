@@ -73,7 +73,11 @@ export default function CssDesignSystemSidebar({ groups }: Props) {
         <div className="sb-brand">
           <div className="sb-brand-title flex items-center gap-1">
             <IconPalette size={20} className="sb-brand-icon" style={{ color: "var(--cyan)" }} />
-            <span>CSSデザインシステム<br />完全ガイド</span>
+            <span>
+              CSSデザインシステム
+              <br />
+              完全ガイド
+            </span>
           </div>
           <div className="sb-brand-sub">初学者から実践者まで対応</div>
         </div>
@@ -90,9 +94,7 @@ export default function CssDesignSystemSidebar({ groups }: Props) {
                   <span className="nav-num">{item.num}</span>
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className={`nav-badge b-${item.badge.variant}`}>
-                      {item.badge.text}
-                    </span>
+                    <span className={`nav-badge b-${item.badge.variant}`}>{item.badge.text}</span>
                   )}
                 </a>
               ))}
