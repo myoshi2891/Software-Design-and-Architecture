@@ -200,6 +200,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?ycombinator\\.com/library"
+    },
+    {
+      "pattern": "^https://cube\\.fyi"
     }
   ],
   "replacementPatterns": [],
