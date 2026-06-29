@@ -7396,7 +7396,7 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
   .nav-item.active{color:var(--acc-hi);border-left-color:var(--acc);background:rgba(108,71,255,.1)}
 
   /* MAIN */
-  .main{margin-left:var(--sw);flex:1;max-width:calc(100% - var(--sw));overflow-x:hidden}
+  .main{margin-left:var(--sw);flex:1;max-width:calc(100% - var(--sw));overflow-x:hidden;}
 
   /* HERO */
   .hero{padding:80px 64px 60px;background:linear-gradient(135deg,var(--bg-deep) 0%,#091726 60%,#0d1535 100%);border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
