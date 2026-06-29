@@ -196,7 +196,10 @@
       "pattern": "^https?://(www\\.)?rfc-editor\\.org/rfc/"
     },
     {
-      "pattern": "^https?://storybook\\.js\\.org/docs"
+      "pattern": "^https?://storybook\\.js\\.org"
+    },
+    {
+      "pattern": "^https?://(www\\.)?web\\.dev"
     },
     {
       "pattern": "^https?://(www\\.)?ycombinator\\.com/library"
