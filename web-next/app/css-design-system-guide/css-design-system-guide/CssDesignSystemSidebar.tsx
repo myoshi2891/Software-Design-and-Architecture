@@ -48,16 +48,19 @@ export default function CssDesignSystemSidebar({ groups }: Props) {
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("section.section"));
     if (sections.length === 0) return;
+    const intersectingSections = new Set<HTMLElement>();
     const observer = new IntersectionObserver(
       (entries) => {
-        const intersecting = entries.filter((e) => e.isIntersecting);
-        if (intersecting.length > 0) {
-          const topmost = intersecting.reduce((prev, curr) => {
-            return curr.target.getBoundingClientRect().y < prev.target.getBoundingClientRect().y
-              ? curr
-              : prev;
-          });
-          setActiveId(topmost.target.id);
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            intersectingSections.add(entry.target as HTMLElement);
+          } else {
+            intersectingSections.delete(entry.target as HTMLElement);
+          }
+        }
+        const topmost = sections.find((s) => intersectingSections.has(s));
+        if (topmost) {
+          setActiveId(topmost.id);
         }
       },
       { rootMargin: "-20% 0px -60% 0px", threshold: 0 }

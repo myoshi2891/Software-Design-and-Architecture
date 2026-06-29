@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -31,11 +34,31 @@ describe("css-color-typography-spacing-systems page", () => {
       .map((s) => s.id)
       .filter((id) => id !== "");
     expect(ids).toEqual([
-      "s31", "s32", "s33", "s34", "s35",
-      "s41", "s42", "s43", "s44", "s45", "s46",
-      "s51", "s52", "s53", "s54", "s55", "s56",
-      "s61", "s62", "s63", "s64", "s65", "s66",
-      "summary", "refs"
+      "s31",
+      "s32",
+      "s33",
+      "s34",
+      "s35",
+      "s41",
+      "s42",
+      "s43",
+      "s44",
+      "s45",
+      "s46",
+      "s51",
+      "s52",
+      "s53",
+      "s54",
+      "s55",
+      "s56",
+      "s61",
+      "s62",
+      "s63",
+      "s64",
+      "s65",
+      "s66",
+      "summary",
+      "refs",
     ]);
   });
 
@@ -68,8 +91,7 @@ describe("css-color-typography-spacing-systems page", () => {
   });
 
   it("globals.css に .css-color-typography-spacing-systems .main のレイアウト調整が含まれている", () => {
-    const fs = require("node:fs");
-    const path = require("node:path");
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 

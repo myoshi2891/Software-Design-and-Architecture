@@ -1,6 +1,8 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import CssColorTypographySpacingSidebar, { type NavGroup } from "./CssColorTypographySpacingSidebar";
+import CssColorTypographySpacingSidebar, {
+  type NavGroup,
+} from "./CssColorTypographySpacingSidebar";
 
 const GROUPS: NavGroup[] = [
   {
@@ -14,9 +16,7 @@ const GROUPS: NavGroup[] = [
   {
     title: "カラーシステム",
     chNum: "Ch.4",
-    items: [
-      { id: "s41", num: "4.1", label: "カラーシステムの目的" },
-    ],
+    items: [{ id: "s41", num: "4.1", label: "カラーシステムの目的" }],
   },
 ];
 

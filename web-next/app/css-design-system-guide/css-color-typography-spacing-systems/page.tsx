@@ -845,8 +845,8 @@ export default function Page() {
             </div>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`flowchart LR
+              <MermaidDiagram
+                chart={`flowchart LR
     subgraph DEFINE["定義（:root）"]
         V1["--color-primary: #6C47FF"]
         V2["--space-4: 16px"]
@@ -861,9 +861,11 @@ export default function Page() {
     V2 --> U2
     V3 --> U3
     style DEFINE fill:#1e2d1e,stroke:#22c55e,color:#86efac
-    style USE fill:#1e1e2d,stroke:#6C47FF,color:#c4b5fd`
-              } />
-              <div className="diagram-caption">▲ CSS変数の定義（:root）→ コンポーネントへの参照フロー</div>
+    style USE fill:#1e1e2d,stroke:#6C47FF,color:#c4b5fd`}
+              />
+              <div className="diagram-caption">
+                ▲ CSS変数の定義（:root）→ コンポーネントへの参照フロー
+              </div>
             </div>
 
             <h3>CSS変数 vs SASS変数 — 何が違うか</h3>
@@ -927,8 +929,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph TD
+              <MermaidDiagram
+                chart={`graph TD
     ROOT[":root\n--color-primary: #6C47FF\n--font-size: 16px"] --> SECTION
     ROOT --> HEADER
     SECTION["section.alert\n--color-primary: #ef4444\n（ローカルで上書き）"] --> CARD
@@ -939,8 +941,8 @@ export default function Page() {
     style SECTION fill:#4a2d2d,color:#fca5a5,stroke:#ef4444
     style HEADER fill:#2d4a2d,color:#86efac,stroke:#22c55e
     style CARD fill:#3d2424,color:#fca5a5,stroke:#ef4444
-    style NAV fill:#243d24,color:#86efac,stroke:#22c55e`
-              } />
+    style NAV fill:#243d24,color:#86efac,stroke:#22c55e`}
+              />
               <div className="diagram-caption">
                 ▲ 変数のスコープはDOMツリーに従う。section内でローカル上書きすると子のみ影響を受ける
               </div>
@@ -981,15 +983,15 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph TD
+              <MermaidDiagram
+                chart={`graph TD
     P["第1層：プリミティブトークン\n生の値を定義\n--purple-500: #6C47FF\n--gray-100: #f4f4f5\n--size-16: 16px"] --> S
     S["第2層：セマンティックトークン\n意味を持つ名前で参照\n--color-action-primary: var(--purple-500)\n--color-background: var(--gray-100)\n--spacing-md: var(--size-16)"] --> C
     C["第3層：コンポーネントトークン\nコンポーネント固有の変数\n--button-bg: var(--color-action-primary)\n--button-padding: var(--spacing-md)\n--card-bg: var(--color-background)"]
     style P fill:#1e2d3d,color:#93c5fd,stroke:#3b82f6
     style S fill:#2d1e3d,color:#c4b5fd,stroke:#8b5cf6
-    style C fill:#1e3d2d,color:#86efac,stroke:#22c55e`
-              } />
+    style C fill:#1e3d2d,color:#86efac,stroke:#22c55e`}
+              />
               <div className="diagram-caption">
                 ▲ 3層トークン設計：生の値→意味→コンポーネント固有、と抽象化レベルが上がる
               </div>
@@ -1086,7 +1088,9 @@ export default function Page() {
           <section className="section" id="s35">
             <span className="sec-lbl">3.5</span>
             <h2>CSSカスタムプロパティ — ベストプラクティス</h2>
-            <p className="sec-sub">CSS変数を長期的に保守しやすくするための重要なルールを解説します。</p>
+            <p className="sec-sub">
+              CSS変数を長期的に保守しやすくするための重要なルールを解説します。
+            </p>
 
             <h3>✅ 命名は「カテゴリ-役割-修飾子」で統一する</h3>
             <div className="bp-grid">
@@ -1156,8 +1160,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     subgraph GOALS["カラーシステムの目標"]
         G1["一貫性\n同じ意味 = 同じ色"]
         G2["アクセシビリティ\n十分なコントラスト比"]
@@ -1168,8 +1172,8 @@ export default function Page() {
     style G1 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style G2 fill:#1e4a2d,color:#86efac,stroke:#22c55e
     style G3 fill:#4a3d1e,color:#fcd34d,stroke:#f59e0b
-    style G4 fill:#3d2a1e,color:#fb923c,stroke:#ea580c`
-              } />
+    style G4 fill:#3d2a1e,color:#fb923c,stroke:#ea580c`}
+              />
               <div className="diagram-caption">▲ カラーシステムが達成すべき4つの目標</div>
             </div>
 
@@ -1192,8 +1196,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     C50["50\n最も淡い\n背景・ホバー"] --> C100["100"] --> C200["200"] --> C300["300"] --> C400["400"] --> C500["500\nベース\nメインUI"] --> C600["600\nホバー"] --> C700["700"] --> C800["800"] --> C900["900\n最も濃い\nテキスト"]
     style C50 fill:#f5f3ff,color:#4c1d95,stroke:#c4b5fd
     style C100 fill:#ede9fe,color:#4c1d95,stroke:#c4b5fd
@@ -1204,9 +1208,11 @@ export default function Page() {
     style C600 fill:#7c3aed,color:#fff,stroke:#5b21b6
     style C700 fill:#6d28d9,color:#fff,stroke:#4c1d95
     style C800 fill:#5b21b6,color:#fff,stroke:#3b0f8c
-    style C900 fill:#4c1d95,color:#ede9fe,stroke:#3b0f8c`
-              } />
-              <div className="diagram-caption">▲ パープルスケール 50〜900。50が最も淡く、900が最も濃い</div>
+    style C900 fill:#4c1d95,color:#ede9fe,stroke:#3b0f8c`}
+              />
+              <div className="diagram-caption">
+                ▲ パープルスケール 50〜900。50が最も淡く、900が最も濃い
+              </div>
             </div>
 
             <h3>パープルスケールの実装例</h3>
@@ -1284,8 +1290,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`flowchart TD
+              <MermaidDiagram
+                chart={`flowchart TD
     subgraph PRIMITIVE["プリミティブ層（What — 何色か）"]
         PR1["--blue-500: #3b82f6"]
         PR2["--green-500: #22c55e"]
@@ -1309,9 +1315,11 @@ export default function Page() {
     PR5 --> SE5
     PR6 --> SE6
     style PRIMITIVE fill:#1e1e2e,stroke:#45475a,color:#cdd6f4
-    style SEMANTIC fill:#1e2d1e,stroke:#22c55e,color:#86efac`
-              } />
-              <div className="diagram-caption">▲ プリミティブ層（What）→ セマンティック層（Why）への変換</div>
+    style SEMANTIC fill:#1e2d1e,stroke:#22c55e,color:#86efac`}
+              />
+              <div className="diagram-caption">
+                ▲ プリミティブ層（What）→ セマンティック層（Why）への変換
+              </div>
             </div>
 
             <h3>セマンティックカラートークン完全定義例</h3>
@@ -1341,8 +1349,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`flowchart LR
+              <MermaidDiagram
+                chart={`flowchart LR
     subgraph LIGHT["ライトモード"]
         L1["--color-bg-base\n#fafafa"]
         L2["--color-text-primary\n#18181b"]
@@ -1363,8 +1371,8 @@ export default function Page() {
     L3 & D3 --> C3
     style LIGHT fill:#f5f5f0,stroke:#d4d4aa,color:#18181b
     style DARK fill:#18181b,stroke:#3f3f46,color:#fafafa
-    style COMP fill:#2d1e4a,stroke:#8b5cf6,color:#c4b5fd`
-              } />
+    style COMP fill:#2d1e4a,stroke:#8b5cf6,color:#c4b5fd`}
+              />
               <div className="diagram-caption">
                 ▲ ライト・ダーク両方から同じコンポーネント変数を参照するアーキテクチャ
               </div>
@@ -1390,19 +1398,22 @@ export default function Page() {
             <h2>アクセシビリティとコントラスト比</h2>
             <p className="sec-sub">
               <strong style={{ color: "var(--txt-hi)" }}>WCAG 2.1</strong>
-              （Web Content Accessibility Guidelines）では、テキストの読みやすさを保証するためにコントラスト比の基準を定めています。
+              （Web Content Accessibility
+              Guidelines）では、テキストの読みやすさを保証するためにコントラスト比の基準を定めています。
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     C1["3:1 未満\n不合格（使用禁止）"] --> C2["3:1〜4.5:1\n大テキストのみ AA合格"] --> C3["4.5:1 以上\n通常テキスト AA合格"] --> C4["7:1 以上\nAAA合格（最高基準）"]
     style C1 fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
     style C2 fill:#4a3d1e,color:#fcd34d,stroke:#f59e0b
     style C3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
-    style C4 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6`
-              } />
-              <div className="diagram-caption">▲ コントラスト比と合格基準の対応。3:1未満は使用禁止</div>
+    style C4 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6`}
+              />
+              <div className="diagram-caption">
+                ▲ コントラスト比と合格基準の対応。3:1未満は使用禁止
+              </div>
             </div>
 
             <h3>WCAG 2.1 コントラスト比基準</h3>
@@ -1460,9 +1471,9 @@ export default function Page() {
                 <Ext href="https://webaim.org/resources/contrastchecker/">
                   WebAIM Contrast Checker
                 </Ext>{" "}
-                や
-                <Ext href="https://www.whocanuse.com/">Who Can Use</Ext>{" "}
-                でリアルタイムに確認できます。 Chrome DevToolsの「Inspect」パネルにもコントラスト比が表示されます。
+                や<Ext href="https://www.whocanuse.com/">Who Can Use</Ext>{" "}
+                でリアルタイムに確認できます。 Chrome
+                DevToolsの「Inspect」パネルにもコントラスト比が表示されます。
               </div>
             </div>
           </section>
@@ -1575,13 +1586,16 @@ export default function Page() {
             <h2>タイポグラフィの重要性</h2>
             <p className="sec-sub">
               ウェブサイトのコンテンツの
-              <strong style={{ color: "var(--txt-hi)" }}>95%はタイポグラフィで構成されています</strong>
-              （iA Inc. 調査）。タイポグラフィシステムは、読みやすさ・情報ヒエラルキー・ブランドの一貫性を同時に保証します。
+              <strong style={{ color: "var(--txt-hi)" }}>
+                95%はタイポグラフィで構成されています
+              </strong>
+              （iA Inc.
+              調査）。タイポグラフィシステムは、読みやすさ・情報ヒエラルキー・ブランドの一貫性を同時に保証します。
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph TD
+              <MermaidDiagram
+                chart={`graph TD
     T["タイポグラフィシステムの要素"] --> A["タイプスケール\nサイズの段階"]
     T --> B["フォントファミリー\n書体の選択"]
     T --> C["フォントウェイト\n太さのレベル"]
@@ -1594,8 +1608,8 @@ export default function Page() {
     style C fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
     style D fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
     style E fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
-    style F fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`
-              } />
+    style F fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`}
+              />
               <div className="diagram-caption">▲ タイポグラフィシステムを構成する6つの要素</div>
             </div>
 
@@ -1614,7 +1628,8 @@ export default function Page() {
             <h2>タイプスケールの設計</h2>
             <p className="sec-sub">
               <strong style={{ color: "var(--txt-hi)" }}>モジュラースケール</strong>
-              （等比数列）を使って、視覚的に調和したサイズ体系を作ります。全サイズが一定 of 比率で増加するため、統一感が生まれます。
+              （等比数列）を使って、視覚的に調和したサイズ体系を作ります。全サイズが一定 of
+              比率で増加するため、統一感が生まれます。
             </p>
 
             <h3>Major Third（1.25倍）スケールの計算例</h3>
@@ -1631,8 +1646,8 @@ export default function Page() {
             </div>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     XS["xs\n0.64rem\n10px\n注釈"] --> SM["sm\n0.875rem\n14px\nラベル"] --> BASE["base\n1rem\n16px\n本文★"] --> LG["lg\n1.125rem\n18px\nリード"] --> XL["xl\n1.25rem\n20px\nh4"] --> XXL["2xl\n1.5rem\n24px\nh3"] --> XXXL["3xl\n1.875rem\n30px\nh2"] --> XXXXL["4xl\n2.25rem\n36px\nh1"]
     style XS fill:#1e1e2e,color:#71717a,stroke:#3f3f46
     style SM fill:#1e1e2e,color:#a1a1aa,stroke:#3f3f46
@@ -1641,9 +1656,11 @@ export default function Page() {
     style XL fill:#2d2d4a,color:#c4b5fd,stroke:#8b5cf6
     style XXL fill:#2d2d4a,color:#c4b5fd,stroke:#8b5cf6
     style XXXL fill:#3d2d4a,color:#e9d5ff,stroke:#a855f7
-    style XXXXL fill:#4a2d4a,color:#f5d0fe,stroke:#d946ef`
-              } />
-              <div className="diagram-caption">▲ タイプスケールの視覚化。xs から 4xl へと段階的に大きくなる</div>
+    style XXXXL fill:#4a2d4a,color:#f5d0fe,stroke:#d946ef`}
+              />
+              <div className="diagram-caption">
+                ▲ タイプスケールの視覚化。xs から 4xl へと段階的に大きくなる
+              </div>
             </div>
 
             <h3>タイプスケールのCSSトークン定義</h3>
@@ -1717,8 +1734,8 @@ export default function Page() {
 
             <h3>行高（Line Height）</h3>
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     subgraph LINE_HEIGHT["行高の使い分け"]
         LH1["tight: 1.25\n見出し・短いテキスト\n行間が詰まっている"]
         LH2["normal: 1.5\nUIコンポーネント\nボタン・ラベルなど"]
@@ -1729,8 +1746,8 @@ export default function Page() {
     style LH2 fill:#2d3d2d,color:#86efac,stroke:#22c55e
     style LH3 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style LH4 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
-    style LINE_HEIGHT fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`
-              } />
+    style LINE_HEIGHT fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`}
+              />
               <div className="diagram-caption">
                 ▲ 行高の4段階。見出しは tight（1.25）、本文は relaxed（1.7）が基本
               </div>
@@ -1775,16 +1792,16 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     subgraph FLUID["フルイドタイポグラフィ — clamp()"]
         S["320px\nモバイル\n最小サイズ適用"] --> M["768px\nタブレット\nサイズが線形補間"] --> L["1280px\nデスクトップ\n最大サイズ適用"]
     end
     style S fill:#3d2a1e,color:#fb923c,stroke:#ea580c
     style M fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style L fill:#1e4a2d,color:#86efac,stroke:#22c55e
-    style FLUID fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`
-              } />
+    style FLUID fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`}
+              />
               <div className="diagram-caption">
                 ▲ フルイドタイポグラフィ：320px〜1280pxの範囲で最小値〜最大値の間を線形補間
               </div>
@@ -1887,8 +1904,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     subgraph BEFORE["スペーシングシステムなし"]
         B1["margin: 13px\n（なぜ13px？）"]
         B2["padding: 17px\n（なぜ17px？）"]
@@ -1900,8 +1917,8 @@ export default function Page() {
         A3["gap: var(--space-3)\n= 12px（4×3）"]
     end
     style BEFORE fill:#4a1e1e,stroke:#ef4444,color:#fca5a5
-    style AFTER fill:#1e4a2d,stroke:#22c55e,color:#86efac`
-              } />
+    style AFTER fill:#1e4a2d,stroke:#22c55e,color:#86efac`}
+              />
               <div className="diagram-caption">
                 ▲ スペーシングシステムなし vs あり。マジックナンバーをトークンで置き換える
               </div>
@@ -1924,12 +1941,13 @@ export default function Page() {
             <p className="sec-sub">
               ほとんどのデザインシステムは
               <strong style={{ color: "var(--txt-hi)" }}>4px を基準単位</strong>
-              として採用しています。デバイスのピクセル密度（1x / 2x / 3x）でキレイに割り切れるためです。
+              として採用しています。デバイスのピクセル密度（1x / 2x /
+              3x）でキレイに割り切れるためです。
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     U["4px\n基準単位"] --> T2["8px\n×2"] --> T3["12px\n×3"] --> T4["16px\n×4\n★頻出"] --> T6["24px\n×6"] --> T8["32px\n×8"] --> T12["48px\n×12"] --> T16["64px\n×16"]
     style U fill:#6C47FF,color:#fff,stroke:none
     style T2 fill:#2d3d2d,color:#86efac,stroke:#22c55e
@@ -1938,8 +1956,8 @@ export default function Page() {
     style T6 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style T8 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
     style T12 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
-    style T16 fill:#4a2d2d,color:#fca5a5,stroke:#ef4444`
-              } />
+    style T16 fill:#4a2d2d,color:#fca5a5,stroke:#ef4444`}
+              />
               <div className="diagram-caption">
                 ▲ 4pxを基準に倍数で展開するスペーシングスケール（Material Design 等の業界標準）
               </div>
@@ -1960,7 +1978,8 @@ export default function Page() {
                       <strong style={{ color: "var(--txt-hi)" }}>デバイス解像度との相性</strong>
                     </td>
                     <td>
-                      4px は 1x / 2x / 3x すべての画面密度で割り切れ、サブピクセルレンダリングの問題が起きない
+                      4px は 1x / 2x / 3x
+                      すべての画面密度で割り切れ、サブピクセルレンダリングの問題が起きない
                     </td>
                   </tr>
                   <tr>
@@ -2027,16 +2046,18 @@ export default function Page() {
 
             <h3>高さスケール（コンポーネント用）</h3>
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph LR
+              <MermaidDiagram
+                chart={`graph LR
     XS["xs: 24px\nチップ・タグ"] --> SM["sm: 32px\n小ボタン"] --> MD["md: 40px\n標準ボタン★\n（推奨）"] --> LG["lg: 48px\n大ボタン"] --> XL["xl: 56px\n特大ボタン"]
     style XS fill:#1e1e2e,color:#71717a,stroke:#3f3f46
     style SM fill:#1e2d3d,color:#93c5fd,stroke:#3b82f6
     style MD fill:#1e4a2d,color:#86efac,stroke:#22c55e
     style LG fill:#3d2a1e,color:#fb923c,stroke:#ea580c
-    style XL fill:#4a1e4a,color:#e9d5ff,stroke:#a855f7`
-              } />
-              <div className="diagram-caption">▲ 5段階のコンポーネント高さスケール。md（40px）が標準</div>
+    style XL fill:#4a1e4a,color:#e9d5ff,stroke:#a855f7`}
+              />
+              <div className="diagram-caption">
+                ▲ 5段階のコンポーネント高さスケール。md（40px）が標準
+              </div>
             </div>
 
             <div className="code-wrap">
@@ -2075,8 +2096,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph TD
+              <MermaidDiagram
+                chart={`graph TD
     subgraph PROXIMITY["近接の原則 — スペースで関連性を表現する"]
         G1["関連が強い\n→ --space-1〜--space-2（4〜8px）\n例：ラベルと入力フォーム、見出しと本文"]
         G2["関連が中程度\n→ --space-4〜--space-6（16〜24px）\n例：フォームフィールド間、リストアイテム間"]
@@ -2085,8 +2106,8 @@ export default function Page() {
     style G1 fill:#1e4a2d,color:#86efac,stroke:#22c55e
     style G2 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style G3 fill:#4a1e4a,color:#e9d5ff,stroke:#a855f7
-    style PROXIMITY fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`
-              } />
+    style PROXIMITY fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`}
+              />
               <div className="diagram-caption">
                 ▲ 近接の原則：関連が強い→小スペース、中程度→中スペース、弱い→大スペース
               </div>
@@ -2216,8 +2237,8 @@ export default function Page() {
             </p>
 
             <div className="mermaid-wrap">
-              <MermaidDiagram chart={
-`graph TD
+              <MermaidDiagram
+                chart={`graph TD
     CSS["CSSカスタムプロパティシステム\n基盤インフラ\n変数定義・スコープ・テーマ切り替えの仕組み"] --> COLOR
     CSS --> TYPE
     CSS --> SPACE
@@ -2231,8 +2252,8 @@ export default function Page() {
     style COLOR fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
     style TYPE fill:#2d3d2d,color:#86efac,stroke:#22c55e
     style SPACE fill:#3d2a1e,color:#fb923c,stroke:#ea580c
-    style DS fill:#1e1e2e,color:#cdd6f4,stroke:#6C47FF`
-              } />
+    style DS fill:#1e1e2e,color:#cdd6f4,stroke:#6C47FF`}
+              />
               <div className="diagram-caption">
                 ▲ 4システムの依存関係。CSS変数が基盤となり、3システムがその上に構築される
               </div>
@@ -2318,12 +2339,18 @@ export default function Page() {
                   developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties
                 </div>
               </Ext>
-              <Ext className="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property">
+              <Ext
+                className="ref-card"
+                href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+              >
                 <div className="rc-cat">MDN Web Docs</div>
                 <div className="rc-ttl">@property — CSS Houdini 型定義</div>
                 <div className="rc-url">developer.mozilla.org/en-US/docs/Web/CSS/@property</div>
               </Ext>
-              <Ext className="ref-card" href="https://css-tricks.com/a-complete-guide-to-custom-properties/">
+              <Ext
+                className="ref-card"
+                href="https://css-tricks.com/a-complete-guide-to-custom-properties/"
+              >
                 <div className="rc-cat">CSS-Tricks</div>
                 <div className="rc-ttl">A Complete Guide to Custom Properties</div>
                 <div className="rc-url">css-tricks.com/a-complete-guide-to-custom-properties</div>
@@ -2379,7 +2406,10 @@ export default function Page() {
                 <div className="rc-ttl">Google Fonts Knowledge — タイポグラフィ学習</div>
                 <div className="rc-url">fonts.google.com/knowledge</div>
               </Ext>
-              <Ext className="ref-card" href="https://ia.net/topics/the-web-is-all-about-typography-period">
+              <Ext
+                className="ref-card"
+                href="https://ia.net/topics/the-web-is-all-about-typography-period"
+              >
                 <div className="rc-cat">iA Inc.</div>
                 <div className="rc-ttl">The Web Is All About Typography, Period</div>
                 <div className="rc-url">ia.net/topics/the-web-is-all-about-typography-period</div>
