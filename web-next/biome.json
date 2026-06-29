@@ -51,7 +51,10 @@
   },
   "overrides": [
     {
-      "includes": ["app/css-design-system-guide/css-design-system-guide/page.tsx"],
+      "includes": [
+        "app/css-design-system-guide/css-design-system-guide/page.tsx",
+        "app/css-design-system-guide/css-color-typography-spacing-systems/page.tsx"
+      ],
       "linter": {
         "rules": {
           "security": {
