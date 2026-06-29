@@ -79,7 +79,7 @@ describe("css-design-system-guide page", () => {
   it("globals.css に .css-design-system-guide .main のレイアウト調整が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../../globals.css");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
     const section = cssContent.slice(
