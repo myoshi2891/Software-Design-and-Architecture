@@ -7346,7 +7346,7 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
   .mat-ttl{font-family:var(--font-d);font-size:1rem;font-weight:600;line-height:1.2;margin:.2rem 0}
   .mat-desc{font-size:1rem;opacity:0.75;line-height:1.4}
 
-  @media(max-width:1024px){&{--sw:240px}.content{padding:1.5rem}}
+  @media(max-width:1024px){--sw:240px;.content{padding:1.5rem}}
   @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;max-width:100%}.cmp-grid{grid-template-columns:1fr}.content{padding:1rem}.maturity{grid-template-columns:repeat(3,1fr)}}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 

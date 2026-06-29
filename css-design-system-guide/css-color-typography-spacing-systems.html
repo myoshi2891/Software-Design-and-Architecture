@@ -1190,21 +1190,20 @@ p  { font-size: var(--font-size-body); }</code></pre>
 <section class="sec" id="s62">
   <span class="sec-lbl">6.2</span>
   <h2>ベースグリッドと数列</h2>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const observer = new IntersectionObserver((entries) => {
-        const visibleSections = new Set();
-        entries.forEach(entry => {
-          if (entry.isIntersecting) visibleSections.add(entry.target);
-        });
-        if (visibleSections.size > 0) {
-          const topSection = [...visibleSections].sort((a, b) => a.offsetTop - b.offsetTop)[0];
-          updateScrollProgress(topSection.id);
-        }
-      }, { threshold: 0.1, rootMargin: "-10% 0px -80% 0px" });
-      document.querySelectorAll(".sec").forEach(sec => observer.observe(sec));
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">JavaScript — scroll-spy.js</span></div>
+  <pre><code class="language-javascript">document.addEventListener("DOMContentLoaded", () => {
+  const observer = new IntersectionObserver((entries) => {
+    const visibleSections = new Set();
+    entries.forEach(entry => {
+      if (entry.isIntersecting) visibleSections.add(entry.target);
     });
-  </script>
+    if (visibleSections.size > 0) {
+      const topSection = [...visibleSections].sort((a, b) => a.offsetTop - b.offsetTop)[0];
+      updateScrollProgress(topSection.id);
+    }
+  }, { threshold: 0.1, rootMargin: "-10% 0px -80% 0px" });
+  document.querySelectorAll(".sec").forEach(sec => observer.observe(sec));
+});</code></pre>
   <p class="sec-sub">ほとんどのデザインシステムは<strong style="color:var(--txt-hi)">4px を基準単位</strong>として採用しています。デバイスのピクセル密度（1x / 2x / 3x）でキレイに割り切れるためです。</p>
 
   <div class="mmd-wrap" id="diag-14"><div class="mmd-ph">図を読み込み中...</div></div>
