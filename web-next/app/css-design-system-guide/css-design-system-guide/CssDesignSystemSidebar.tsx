@@ -22,7 +22,7 @@ type Props = {
 };
 
 /**
- * Renders the CSS design system guide sidebar navigation.
+ * Renders the CSS design system guide sidebar with section navigation and scroll progress.
  *
  * @param groups - Navigation groups to display in the sidebar
  */

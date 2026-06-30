@@ -18,9 +18,9 @@ type Props = {
 };
 
 /**
- * Renders the CSS color, typography, and spacing systems guide sidebar navigation.
+ * Renders the guide sidebar navigation and scroll progress indicator.
  *
- * @param groups - Navigation groups to display in the sidebar
+ * @param groups - Navigation groups displayed in the sidebar
  */
 export default function CssColorTypographySpacingSidebar({ groups }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);

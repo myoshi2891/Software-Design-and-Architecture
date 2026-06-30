@@ -1,9 +1,9 @@
 /**
- * Extracts the CSS block for the specified scope class.
+ * Extracts the CSS selector and block for the specified scope class.
  *
- * @param cssContent - The full CSS source to search.
- * @param scopeClass - The scope class to match, such as `.hexagonal-architecture-comprehensive-guide`.
- * @returns The matching CSS block, or an empty string if no matching block is found.
+ * @param cssContent - The CSS source to search.
+ * @param scopeClass - The scope class selector to match.
+ * @returns The matching selector and block, or an empty string if no match is found.
  */
 export function extractScopedCssBlock(cssContent: string, scopeClass: string): string {
   let searchStart = 0;
