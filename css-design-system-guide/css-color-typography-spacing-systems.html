@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSSデザインシステム完全ガイド — カスタムプロパティ / カラー / タイポグラフィ / スペーシング</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#07111e;--bg-surf:#0c1a2e;--bg-card:#0f2035;--bg-code:#060e1a;
+  --brd:#1a3050;--brd-sub:#0e2035;
+  --txt-hi:#dde8f8;--txt-md:#a6cae5;--txt-lo:#8ebbe4;
+  --acc:#6C47FF;--acc-hi:#9070ff;--acc-glo:rgba(108,71,255,0.12);
+  --cyan:#38bdf8;--grn:#22c55e;--red:#ef4444;--amb:#f59e0b;
+  --f-head:'Space Grotesk',system-ui,sans-serif;
+  --f-body:'Inter',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono','Fira Code',monospace;
+  --sw:260px;--r:10px;--r-sm:6px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--f-body);background:var(--bg-deep);color:var(--txt-hi);line-height:1.65;font-size:1rem}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;z-index:9999;height:3px;background:linear-gradient(90deg,var(--acc),var(--cyan));width:0%;transition:width .1s linear}
+
+/* SIDEBAR */
+#sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg-surf);border-right:1px solid var(--brd);overflow-y:auto;overflow-x:hidden;z-index:200;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
+.sb-head{padding:22px 18px 16px;border-bottom:1px solid var(--brd-sub);flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-icon{width:34px;height:34px;background:var(--acc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;font-family:var(--f-mono);flex-shrink:0}
+.sb-title{font-family:var(--f-head);font-size:.78rem;font-weight:600;color:var(--txt-hi);line-height:1.4}
+.sb-badge{display:inline-block;background:rgba(56,189,248,.1);color:var(--cyan);border:1px solid rgba(56,189,248,.3);font-size:.62rem;font-family:var(--f-mono);padding:2px 8px;border-radius:99px;font-weight:500}
+.sb-nav{flex:1;padding:10px 0 40px}
+.nav-group{margin-bottom:2px}
+.nav-ch{display:flex;align-items:center;gap:6px;padding:10px 18px 3px;font-family:var(--f-head);font-size:.64rem;font-weight:700;color:var(--txt-lo);text-transform:uppercase;letter-spacing:.12em}
+.nav-ch-num{background:var(--acc-glo);border:1px solid rgba(108,71,255,.25);color:var(--acc-hi);font-family:var(--f-mono);font-size:.58rem;padding:1px 6px;border-radius:4px}
+.nav-a{display:block;padding:5px 18px 5px 34px;font-size:.76rem;color:var(--txt-md);text-decoration:none;transition:all .15s;border-left:2px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-a:hover{color:var(--txt-hi);background:rgba(108,71,255,.05)}
+.nav-a.active{color:var(--acc-hi);border-left-color:var(--acc);background:rgba(108,71,255,.1)}
+
+/* MAIN */
+#main{margin-left:var(--sw);min-height:100vh}
+
+/* HERO */
+.hero{padding:80px 64px 60px;background:linear-gradient(135deg,var(--bg-deep) 0%,#091726 60%,#0d1535 100%);border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:480px;height:480px;background:radial-gradient(circle,var(--acc-glo) 0%,transparent 70%);pointer-events:none}
+.hero-ew{display:inline-flex;align-items:center;gap:8px;background:rgba(108,71,255,.1);border:1px solid rgba(108,71,255,.3);border-radius:99px;padding:4px 14px;font-family:var(--f-mono);font-size:.72rem;color:var(--acc-hi);margin-bottom:22px}
+.hero-ew-dot{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+.hero h1{font-family:var(--f-head);font-size:clamp(1.8rem,3.5vw,2.9rem);font-weight:700;line-height:1.15;color:var(--txt-hi);margin-bottom:18px;max-width:720px}
+.hero h1 em{color:var(--acc-hi);font-style:normal}
+.hero-desc{font-size:1rem;color:var(--txt-md);line-height:1.75;max-width:580px;margin-bottom:36px}
+.hero-meta{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.meta-tag{font-family:var(--f-mono);font-size:.72rem;color:var(--txt-lo);background:var(--bg-card);border:1px solid var(--brd);padding:4px 10px;border-radius:4px}
+.ch-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:40px}
+.ch-card{background:var(--bg-card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;text-decoration:none;transition:all .2s;display:block}
+.ch-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cc-bar{width:3px;height:20px;border-radius:99px;margin-bottom:12px}
+.cc-num{font-family:var(--f-mono);font-size:.65rem;color:var(--txt-lo);margin-bottom:6px}
+.cc-ttl{font-family:var(--f-head);font-size:.88rem;font-weight:600;color:var(--txt-hi);margin-bottom:5px}
+.cc-desc{font-size:.72rem;color:var(--txt-md);line-height:1.5}
+
+/* CHAPTER HEADER */
+.ch-hdr{padding:22px 64px;background:linear-gradient(90deg,var(--bg-surf),var(--bg-deep));border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:14px}
+.ch-hdr-num{font-family:var(--f-mono);font-size:.72rem;color:var(--acc-hi);background:var(--acc-glo);border:1px solid rgba(108,71,255,.3);padding:4px 12px;border-radius:4px;white-space:nowrap}
+.ch-hdr h2{font-family:var(--f-head);font-size:1.5rem;font-weight:700;color:var(--txt-hi)}
+
+/* SECTIONS */
+.sec{padding:60px 64px 48px;border-bottom:1px solid var(--brd-sub);max-width:100%}
+.sec-lbl{display:inline-block;font-family:var(--f-mono);font-size:.68rem;color:var(--txt-lo);letter-spacing:.08em;margin-bottom:8px}
+.sec h2{font-family:var(--f-head);font-size:clamp(1.35rem,2.5vw,1.75rem);font-weight:700;line-height:1.25;color:var(--txt-hi);margin-bottom:6px}
+.sec-sub{font-size:.95rem;color:var(--txt-md);line-height:1.7;margin-bottom:28px;max-width:700px}
+.sec h3{font-family:var(--f-head);font-size:1.05rem;font-weight:600;color:var(--txt-hi);margin:30px 0 12px;display:flex;align-items:center;gap:9px}
+.sec h3::before{content:'';display:inline-block;width:4px;height:15px;background:var(--acc);border-radius:2px;flex-shrink:0}
+.sec h4{font-family:var(--f-head);font-size:.9rem;font-weight:600;color:var(--cyan);margin:22px 0 8px}
+.sec p{color:var(--txt-md);line-height:1.8;margin-bottom:14px;max-width:740px}
+.sec ul,.sec ol{padding-left:22px;color:var(--txt-md);line-height:1.85;margin-bottom:14px}
+.sec li{margin-bottom:4px}
+
+/* CODE */
+pre{position:relative;border-radius:var(--r);margin:18px 0;overflow-x:auto;border:1px solid var(--brd)}
+pre code.hljs{background:var(--bg-code) !important;color:var(--txt-hi) !important;font-family:var(--f-mono) !important;font-size:.825rem;line-height:1.7;padding:22px 24px !important;border-radius:var(--r)}
+.hljs-comment,.hljs-quote{color:#7a8fa6 !important;font-style:italic}
+.hljs-keyword,.hljs-selector-tag,.hljs-addition{color:#b392ff !important}
+.hljs-number,.hljs-string,.hljs-meta,.hljs-subst,.hljs-type,.hljs-symbol,.hljs-bullet{color:#8ee88e !important}
+.hljs-title,.hljs-section,.hljs-name,.hljs-selector-id,.hljs-selector-class{color:#8bb2f7 !important}
+.hljs-variable,.hljs-template-variable,.hljs-tag,.hljs-attr,.hljs-attribute{color:#8bd4ff !important}
+.c-hdr{display:flex;align-items:center;background:#040b14;border-bottom:1px solid var(--brd);padding:7px 14px;border-radius:var(--r) var(--r) 0 0;gap:8px}
+.c-dots{display:flex;gap:5px}
+.c-dots span{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#ff5f57}.dot-y{background:#ffbd2e}.dot-g{background:#28c841}
+.c-lang{font-family:var(--f-mono);font-size:.62rem;color:var(--txt-lo);margin-left:auto;text-transform:uppercase;letter-spacing:.08em}
+.c-hdr+pre{border-top:0;border-radius:0 0 var(--r) var(--r)}
+.c-hdr+pre code.hljs{border-radius:0 0 var(--r) var(--r)}
+
+/* MERMAID */
+.mmd-wrap{background:var(--bg-card);border:1px solid var(--brd);border-radius:var(--r);padding:26px 20px;margin:22px 0;overflow-x:auto;text-align:center}
+.mmd-wrap svg{max-width:100%;height:auto}
+.mmd-cap{text-align:center;font-size:.7rem;color:var(--txt-lo);font-family:var(--f-mono);margin-top:10px}
+.mmd-ph{min-height:120px;display:flex;align-items:center;justify-content:center;color:var(--txt-lo);font-size:.8rem}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;margin:18px 0;border-radius:var(--r);border:1px solid var(--brd)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead th{background:var(--bg-card);padding:11px 16px;text-align:left;color:var(--acc-hi);font-family:var(--f-head);font-weight:600;font-size:.78rem;border-bottom:1px solid var(--brd);white-space:nowrap}
+tbody td{padding:10px 16px;border-bottom:1px solid var(--brd-sub);color:var(--txt-md);line-height:1.55;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+
+/* BEST PRACTICE */
+.bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.bp-box{border-radius:var(--r-sm);overflow:hidden}
+.bp-head{padding:7px 14px;font-family:var(--f-head);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.bp-ok{border:1px solid rgba(34,197,94,.28)}
+.bp-ng{border:1px solid rgba(239,68,68,.22)}
+.bp-ok .bp-head{background:rgba(34,197,94,.1);color:var(--grn);border-bottom:1px solid rgba(34,197,94,.2)}
+.bp-ng .bp-head{background:rgba(239,68,68,.08);color:var(--red);border-bottom:1px solid rgba(239,68,68,.15)}
+.bp-box pre{margin:0;border:none;border-radius:0}
+.bp-box pre code.hljs{border-radius:0;font-size:.78rem;padding:16px 18px !important}
+
+/* CALLOUTS */
+.callout{border-radius:var(--r-sm);padding:13px 16px;margin:14px 0;display:flex;gap:10px;align-items:flex-start;font-size:.875rem;line-height:1.65}
+.c-ico{font-size:.95rem;flex-shrink:0;margin-top:1px}
+.callout-info{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);color:var(--txt-md)}
+.callout-tip{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);color:var(--txt-md)}
+.callout-warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:var(--txt-md)}
+.callout strong{color:var(--txt-hi)}
+
+/* REFS */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-top:18px}
+.ref-card{background:var(--bg-card);border:1px solid var(--brd);border-radius:var(--r-sm);padding:14px 16px;text-decoration:none;transition:all .2s;display:block}
+.ref-card:hover{border-color:var(--acc);background:rgba(108,71,255,.05)}
+.rc-cat{font-family:var(--f-mono);font-size:.62rem;color:var(--txt-lo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.rc-ttl{font-size:.82rem;font-weight:500;color:var(--txt-hi);margin-bottom:3px}
+.rc-url{font-family:var(--f-mono);font-size:.65rem;color:var(--txt-lo);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* INLINE CODE */
+code:not(.hljs){font-family:var(--f-mono);font-size:.84em;background:rgba(108,71,255,.12);color:var(--acc-hi);padding:2px 6px;border-radius:4px;border:1px solid rgba(108,71,255,.2)}
+.section-hr{border:none;border-top:1px solid var(--brd-sub);margin:36px 0}
+
+/* BACK TO TOP */
+#btt{position:fixed;bottom:26px;right:26px;width:42px;height:42px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;opacity:0;pointer-events:none;transition:opacity .3s;z-index:100;color:#fff;font-size:1.1rem}
+#btt.show{opacity:1;pointer-events:auto}
+#btt:hover{background:var(--acc-hi)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:99px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #sidebar{display:none}#main{margin-left:0}
+  .sec,.ch-hdr,.hero{padding-left:24px;padding-right:24px}
+  .bp-grid{grid-template-columns:1fr}
+  .ch-cards{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){.ch-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">
+      <div class="sb-icon">CSS</div>
+      <div class="sb-title">CSSデザインシステム<br>完全ガイド</div>
+    </div>
+    <span class="sb-badge">初学者〜中級者</span>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-group">
+      <div class="nav-ch"><span class="nav-ch-num">Ch.3</span>CSSカスタムプロパティ</div>
+      <a class="nav-a" href="#s31">3.1 カスタムプロパティとは</a>
+      <a class="nav-a" href="#s32">3.2 定義・参照・スコープ</a>
+      <a class="nav-a" href="#s33">3.3 トークンの階層設計</a>
+      <a class="nav-a" href="#s34">3.4 JavaScriptとの連携</a>
+      <a class="nav-a" href="#s35">3.5 ベストプラクティス</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-ch"><span class="nav-ch-num">Ch.4</span>カラーシステム</div>
+      <a class="nav-a" href="#s41">4.1 カラーシステムの目的</a>
+      <a class="nav-a" href="#s42">4.2 カラーパレットの構造</a>
+      <a class="nav-a" href="#s43">4.3 セマンティックカラー</a>
+      <a class="nav-a" href="#s44">4.4 ダークモード対応</a>
+      <a class="nav-a" href="#s45">4.5 アクセシビリティ</a>
+      <a class="nav-a" href="#s46">4.6 ベストプラクティス</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-ch"><span class="nav-ch-num">Ch.5</span>タイポグラフィシステム</div>
+      <a class="nav-a" href="#s51">5.1 タイポグラフィの重要性</a>
+      <a class="nav-a" href="#s52">5.2 タイプスケールの設計</a>
+      <a class="nav-a" href="#s53">5.3 フォントファミリー・ウェイト</a>
+      <a class="nav-a" href="#s54">5.4 行高・文字間隔・行長</a>
+      <a class="nav-a" href="#s55">5.5 レスポンシブタイポグラフィ</a>
+      <a class="nav-a" href="#s56">5.6 ベストプラクティス</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-ch"><span class="nav-ch-num">Ch.6</span>スペーシング・サイジング</div>
+      <a class="nav-a" href="#s61">6.1 スペーシングの目的</a>
+      <a class="nav-a" href="#s62">6.2 ベースグリッドと数列</a>
+      <a class="nav-a" href="#s63">6.3 スペーシングトークン設計</a>
+      <a class="nav-a" href="#s64">6.4 コンポーネントサイジング</a>
+      <a class="nav-a" href="#s65">6.5 スペーシング適用パターン</a>
+      <a class="nav-a" href="#s66">6.6 ベストプラクティス</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-ch">まとめ</div>
+      <a class="nav-a" href="#summary">4システムの関係性</a>
+      <a class="nav-a" href="#refs">参考リソース</a>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ew"><span class="hero-ew-dot"></span>CSS Design System — Complete Guide 2025</div>
+  <h1>CSSデザインシステム<br><em>完全ガイド</em></h1>
+  <p class="hero-desc">CSSカスタムプロパティ・カラーシステム・タイポグラフィ・スペーシングの4つの柱を体系的に学び、保守性の高いデザインシステムを構築する力を身につけましょう。</p>
+  <div class="hero-meta">
+    <span class="meta-tag">🟡 基礎〜中級</span>
+    <span class="meta-tag">📖 4チャプター</span>
+    <span class="meta-tag">🎯 17 図解</span>
+    <span class="meta-tag">💡 ベストプラクティス付き</span>
+  </div>
+  <div class="ch-cards">
+    <a class="ch-card" href="#s31">
+      <div class="cc-bar" style="background:var(--acc)"></div>
+      <div class="cc-num">Chapter 3</div>
+      <div class="cc-ttl">CSSカスタムプロパティ</div>
+      <div class="cc-desc">変数の定義・スコープ・3層トークン設計・JS連携</div>
+    </a>
+    <a class="ch-card" href="#s41">
+      <div class="cc-bar" style="background:var(--cyan)"></div>
+      <div class="cc-num">Chapter 4</div>
+      <div class="cc-ttl">カラーシステム</div>
+      <div class="cc-desc">カラーパレット・セマンティック・ダークモード・WCAG</div>
+    </a>
+    <a class="ch-card" href="#s51">
+      <div class="cc-bar" style="background:var(--grn)"></div>
+      <div class="cc-num">Chapter 5</div>
+      <div class="cc-ttl">タイポグラフィシステム</div>
+      <div class="cc-desc">タイプスケール・フォント・行高・clamp()レスポンシブ</div>
+    </a>
+    <a class="ch-card" href="#s61">
+      <div class="cc-bar" style="background:var(--amb)"></div>
+      <div class="cc-num">Chapter 6</div>
+      <div class="cc-ttl">スペーシング・サイジング</div>
+      <div class="cc-desc">4pxグリッド・トークン設計・近接の原則・コンポーネント高さ</div>
+    </a>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 3 ===================== -->
+<div class="ch-hdr">
+  <span class="ch-hdr-num">Chapter 3</span>
+  <h2>CSSカスタムプロパティ（変数）システム</h2>
+</div>
+
+<!-- 3.1 -->
+<section class="sec" id="s31">
+  <span class="sec-lbl">3.1</span>
+  <h2>カスタムプロパティとは何か</h2>
+  <p class="sec-sub">CSSカスタムプロパティ（CSS変数）は、<strong style="color:var(--txt-hi)">CSS内で定義・再利用できる値の入れ物</strong>です。<code>--</code> で始まる名前で定義し、<code>var()</code> 関数で参照します。</p>
+
+  <div class="callout callout-info">
+    <span class="c-ico">💡</span>
+    <div><strong>なぜ必要か？</strong><br>
+    同じ色やサイズを何度も書くと、変更時に全箇所を修正する必要があります。CSS変数を使えば<strong>1箇所を変えるだけで全体に反映</strong>されます。</div>
+  </div>
+
+  <h3>定義と参照の基本構文</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* ── 定義：:root に書くとページ全体で使える ── */
+:root {
+  --color-primary: #6C47FF;   /* ブランドカラー */
+  --space-4:       16px;      /* スペース */
+  --font-size-lg:  1.125rem;  /* フォントサイズ */
+}
+
+/* ── 参照：var() で呼び出す ── */
+.button {
+  background:  var(--color-primary);
+  padding:     var(--space-4);
+  font-size:   var(--font-size-lg);
+}
+
+/* ── フォールバック値（第2引数）── */
+/* --color-brand が未定義のとき #6C47FF を使用 */
+.button {
+  background: var(--color-brand, #6C47FF);
+
+  /* フォールバックに別の変数も可能 */
+  color: var(--text-on-brand, var(--color-white, #ffffff));
+}</code></pre>
+
+  <div class="mmd-wrap" id="diag-01"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ CSS変数の定義（:root）→ コンポーネントへの参照フロー</p>
+
+  <h3>CSS変数 vs SASS変数 — 何が違うか</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>特性</th><th>CSS変数（<code>--name</code>）</th><th>SASS変数（<code>$name</code>）</th></tr></thead>
+      <tbody>
+        <tr><td>処理タイミング</td><td>ブラウザが実行時に解決</td><td>コンパイル時に解決</td></tr>
+        <tr><td>JavaScriptから操作</td><td>✅ できる</td><td>❌ できない</td></tr>
+        <tr><td>スコープ</td><td>DOM階層に従う</td><td>ファイルスコープ</td></tr>
+        <tr><td>ダークモード切り替え</td><td>✅ 変数の再定義だけでOK</td><td>❌ 不可</td></tr>
+        <tr><td>カスケード・継承</td><td>✅ する</td><td>❌ しない</td></tr>
+        <tr><td>ブラウザ開発ツールで確認</td><td>✅ できる</td><td>❌ できない</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 3.2 -->
+<section class="sec" id="s32">
+  <span class="sec-lbl">3.2</span>
+  <h2>定義・参照・スコープ</h2>
+  <p class="sec-sub">CSS変数は<strong style="color:var(--txt-hi)">DOMツリーの階層構造に従って継承</strong>されます。子要素は親の変数を参照でき、より近い祖先で定義された値が優先されます。</p>
+
+  <div class="mmd-wrap" id="diag-02"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 変数のスコープはDOMツリーに従う。section内でローカル上書きすると子のみ影響を受ける</p>
+
+  <h3>スコープを意識した実装例</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* グローバルスコープ ── ページ全体で有効 */
+:root {
+  --color-primary: #6C47FF;
+}
+
+/* ローカルスコープ ── .card 内だけ有効 */
+.card {
+  --card-bg: #1e1e2e;
+  background: var(--card-bg);
+}
+
+/* .section 内だけ --color-primary を赤に上書き */
+.section--alert {
+  --color-primary: #ef4444;
+  /* この中の子要素は赤を参照する */
+}
+
+/* .dark-theme 内でまとめてテーマを上書き */
+.dark-theme {
+  --color-primary: #9070ff;   /* 暗い背景に合わせて明るく */
+  --card-bg:       #2d1e3d;
+}</code></pre>
+
+  <div class="callout callout-tip">
+    <span class="c-ico">✅</span>
+    <div><strong>ポイント：</strong>グローバルな値は <code>:root</code> に、コンポーネント固有の値はそのコンポーネントのセレクタに定義することで、スコープが明確になります。</div>
+  </div>
+</section>
+
+<!-- 3.3 -->
+<section class="sec" id="s33">
+  <span class="sec-lbl">3.3</span>
+  <h2>トークンの階層設計</h2>
+  <p class="sec-sub">プロダクション品質のシステムでは、デザイントークンを<strong style="color:var(--txt-hi)">3つの層（プリミティブ→セマンティック→コンポーネント）</strong>に分けて管理します。</p>
+
+  <div class="mmd-wrap" id="diag-03"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 3層トークン設計：生の値→意味→コンポーネント固有、と抽象化レベルが上がる</p>
+
+  <h3>第1層：プリミティブトークン（生の値）</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — primitives.css</span></div>
+  <pre><code class="language-css">:root {
+  /* カラースケール（色の名前 + 濃淡番号） */
+  --purple-50:  #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-500: #6C47FF;  /* ← ベースカラー */
+  --purple-600: #5a38e0;
+  --purple-900: #1e0a5c;
+
+  --gray-50:  #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-500: #71717a;
+  --gray-900: #18181b;
+
+  --red-500:   #ef4444;
+  --green-500: #22c55e;
+  --amber-500: #f59e0b;
+
+  /* 基本スペース値（4px刻み） */
+  --size-1:  4px;   --size-2:  8px;
+  --size-3:  12px;  --size-4:  16px;
+  --size-6:  24px;  --size-8:  32px;
+  --size-12: 48px;  --size-16: 64px;
+}</code></pre>
+
+  <h3>第2層：セマンティックトークン（意味を持つ名前）</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — semantic.css</span></div>
+  <pre><code class="language-css">:root {
+  /* 「何色か」ではなく「何のための色か」で命名 */
+  --color-action-primary:        var(--purple-500);
+  --color-action-primary-hover:  var(--purple-600);
+  --color-action-primary-subtle: var(--purple-50);
+
+  --color-feedback-danger:   var(--red-500);
+  --color-feedback-success:  var(--green-500);
+  --color-feedback-warning:  var(--amber-500);
+
+  --color-bg-base:           var(--gray-50);
+  --color-bg-surface:        var(--white);
+  --color-text-primary:      var(--gray-900);
+  --color-text-muted:        var(--gray-500);
+
+  /* スペーシングも意味付け */
+  --spacing-xs:  var(--size-1);   /* 4px  */
+  --spacing-sm:  var(--size-2);   /* 8px  */
+  --spacing-md:  var(--size-4);   /* 16px */
+  --spacing-lg:  var(--size-6);   /* 24px */
+  --spacing-xl:  var(--size-8);   /* 32px */
+}</code></pre>
+
+  <h3>第3層：コンポーネントトークン（コンポーネント専用）</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — components/button.css</span></div>
+  <pre><code class="language-css">:root {
+  /* セマンティックトークンをコンポーネント名で包む */
+  --button-bg:         var(--color-action-primary);
+  --button-bg-hover:   var(--color-action-primary-hover);
+  --button-padding-x:  var(--spacing-md);
+  --button-padding-y:  var(--spacing-sm);
+
+  --card-bg:           var(--color-bg-surface);
+  --card-padding:      var(--spacing-lg);
+  --card-border:       var(--color-border-default);
+}
+
+/* コンポーネント実装は第3層を参照 */
+.button {
+  background:  var(--button-bg);
+  padding:     var(--button-padding-y) var(--button-padding-x);
+}
+.button:hover {
+  background: var(--button-bg-hover);
+}</code></pre>
+
+  <div class="callout callout-info">
+    <span class="c-ico">ℹ️</span>
+    <div><strong>なぜ3層構造なのか：</strong>デザイントークンを3層に分けることで、将来的にプリミティブ（生の色）を変えても、セマンティック・コンポーネント層は変更不要。変更の影響を最小限に抑えられます。</div>
+  </div>
+</section>
+
+<!-- 3.4 -->
+<section class="sec" id="s34">
+  <span class="sec-lbl">3.4</span>
+  <h2>JavaScriptとの連携</h2>
+  <p class="sec-sub">CSS変数の最大の強みは<strong style="color:var(--txt-hi)">JavaScriptからリアルタイムに読み書きできる</strong>ことです。テーマ切り替えやアニメーション制御に活用できます。</p>
+
+  <h3>基本的な読み書き</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">JavaScript</span></div>
+  <pre><code class="language-javascript">const root = document.documentElement; // = :root 要素
+
+// ── 読み取り ──
+const primary = getComputedStyle(root)
+  .getPropertyValue('--color-action-primary')
+  .trim();
+// => "#6C47FF"
+
+// ── 書き込み（リアルタイムに変更）──
+root.style.setProperty('--color-action-primary', '#ff6b6b');
+// 即座にページ全体の --color-action-primary が更新される
+
+// ── 削除（:root の宣言に戻る）──
+root.style.removeProperty('--color-action-primary');</code></pre>
+
+  <h3>テーマ切り替え実装例</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">JavaScript</span></div>
+  <pre><code class="language-javascript">// テーマ定義オブジェクト
+const THEMES = {
+  light: {
+    '--color-bg-base':      '#fafafa',
+    '--color-bg-surface':   '#ffffff',
+    '--color-text-primary': '#18181b',
+    '--color-text-muted':   '#71717a',
+    '--color-border':       '#e4e4e7',
+  },
+  dark: {
+    '--color-bg-base':      '#09090b',
+    '--color-bg-surface':   '#18181b',
+    '--color-text-primary': '#fafafa',
+    '--color-text-muted':   '#a1a1aa',
+    '--color-border':       '#27272a',
+  }
+};
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+
+  // 全トークンを一括更新
+  Object.entries(THEMES[theme]).forEach(([key, value]) => {
+    root.style.setProperty(key, value);
+  });
+
+  // 設定を永続化
+  localStorage.setItem('preferred-theme', theme);
+}
+
+// ── 初期化：保存済みテーマ or OS設定 ──
+const saved = localStorage.getItem('preferred-theme');
+const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+applyTheme(saved ?? (osDark ? 'dark' : 'light'));</code></pre>
+</section>
+
+<!-- 3.5 -->
+<section class="sec" id="s35">
+  <span class="sec-lbl">3.5</span>
+  <h2>CSSカスタムプロパティ — ベストプラクティス</h2>
+  <p class="sec-sub">CSS変数を長期的に保守しやすくするための重要なルールを解説します。</p>
+
+  <h3>✅ 命名は「カテゴリ-役割-修飾子」で統一する</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — 意味不明な名前</div>
+      <pre><code class="language-css">/* 何を表しているか全くわからない */
+--c1: #6C47FF;
+--blue: #3b82f6;
+--big: 24px;
+--p: 16px;</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — カテゴリ-役割-修飾子</div>
+      <pre><code class="language-css">/* 一目で役割がわかる命名 */
+--color-action-primary:       #6C47FF;
+--color-action-primary-hover: #5a38e0;
+--color-feedback-danger:      #ef4444;
+--font-size-heading-lg:       1.5rem;
+--spacing-component-gap:      16px;</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ @property で型定義する（アニメーション対応）</h3>
+  <div class="callout callout-info">
+    <span class="c-ico">🧪</span>
+    <div><strong>CSS Houdini（@property）</strong>：型を宣言することで、CSS変数をアニメーション対象にできます。Chrome 85+、Safari 16.4+、Firefox 128+ で対応。</div>
+  </div>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* @property で型・初期値・継承を宣言 */
+@property --progress {
+  syntax:        '&lt;number&gt;';  /* 数値型 */
+  inherits:      false;
+  initial-value: 0;
+}
+
+/* アニメーション可能なプログレスバー */
+.progress-bar {
+  --progress: 0;
+  width: calc(var(--progress) * 1%);
+  transition: --progress 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* JavaScript から数値を渡すだけ */
+/* el.style.setProperty('--progress', 75); */</code></pre>
+
+  <h3>✅ デザイントークンファイルを独立させて管理する</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">File Structure</span></div>
+  <pre><code class="language-css">/* ── 推奨ファイル構造 ──
+
+  tokens/
+  ├── primitives.css    ← プリミティブトークン（生の値）
+  ├── semantic.css      ← セマンティックトークン（意味）
+  └── themes/
+      ├── light.css     ← ライトテーマ
+      └── dark.css      ← ダークテーマ
+
+  components/
+  ├── button.css        ← コンポーネントトークン + スタイル
+  └── card.css
+
+トークンファイルは定期的に棚卸しし、
+未使用変数を削除することで肥大化を防ぐ */</code></pre>
+</section>
+
+<!-- ===================== CHAPTER 4 ===================== -->
+<div class="ch-hdr">
+  <span class="ch-hdr-num">Chapter 4</span>
+  <h2>カラーシステム</h2>
+</div>
+
+<!-- 4.1 -->
+<section class="sec" id="s41">
+  <span class="sec-lbl">4.1</span>
+  <h2>カラーシステムの目的</h2>
+  <p class="sec-sub">カラーシステムとは、<strong style="color:var(--txt-hi)">プロダクト全体で一貫した色の使い方を保証する仕組み</strong>です。「なんとなく合う色」を選ぶのではなく、<em style="color:var(--cyan)">目的・意味・アクセシビリティ</em>に基づいて色を定義します。</p>
+
+  <div class="mmd-wrap" id="diag-04"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ カラーシステムが達成すべき4つの目標</p>
+
+  <div class="callout callout-info">
+    <span class="c-ico">🎯</span>
+    <div><strong>カラーシステムがないと起こること：</strong>デザイナーとエンジニアが別の青を使う、ダークモード対応が困難、コントラスト不足でアクセシビリティ違反、変更時に修正箇所が散在する。</div>
+  </div>
+</section>
+
+<!-- 4.2 -->
+<section class="sec" id="s42">
+  <span class="sec-lbl">4.2</span>
+  <h2>カラーパレットの構造</h2>
+  <p class="sec-sub">各カラーを<strong style="color:var(--txt-hi)">50〜900の10段階スケール</strong>で定義します。数値が大きいほど暗くなり、システム全体で一貫した濃淡を使えます。</p>
+
+  <div class="mmd-wrap" id="diag-05"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ パープルスケール 50〜900。50が最も淡く、900が最も濃い</p>
+
+  <h3>パープルスケールの実装例</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --purple-50:  #f5f3ff;  /* 最も淡い。背景・ホバー用 */
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-300: #c4b5fd;
+  --purple-400: #a78bfa;
+  --purple-500: #8b5cf6;  /* ベースカラー。メインUI用 */
+  --purple-600: #7c3aed;  /* ホバー状態 */
+  --purple-700: #6d28d9;
+  --purple-800: #5b21b6;
+  --purple-900: #4c1d95;  /* 最も濃い。ダークテキスト用 */
+}</code></pre>
+
+  <h3>カラーカテゴリの分類</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>カテゴリ</th><th>用途</th><th>代表例</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--acc-hi)">Brand</strong></td><td>ブランドの主色・アクセント</td><td><code>--purple-500</code></td></tr>
+        <tr><td><strong style="color:var(--txt-hi)">Neutral</strong></td><td>背景・テキスト・ボーダー</td><td><code>--gray-100〜900</code></td></tr>
+        <tr><td><strong style="color:var(--grn)">Semantic</strong></td><td>UI状態を表す色</td><td>danger / success / warning / info</td></tr>
+        <tr><td><strong style="color:var(--txt-md)">Overlay</strong></td><td>モーダル背景・影</td><td><code>rgba(0,0,0,0.5)</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 4.3 -->
+<section class="sec" id="s43">
+  <span class="sec-lbl">4.3</span>
+  <h2>セマンティックカラートークン</h2>
+  <p class="sec-sub"><strong style="color:var(--txt-hi)">「何色か（What）」ではなく「何のための色か（Why）」</strong>で命名します。セマンティックトークンがあれば、テーマ切り替え時にプリミティブの参照先を変えるだけです。</p>
+
+  <div class="mmd-wrap" id="diag-06"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ プリミティブ層（What）→ セマンティック層（Why）への変換</p>
+
+  <h3>セマンティックカラートークン完全定義例</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — semantic-colors.css</span></div>
+  <pre><code class="language-css">:root {
+  /* ── アクション系 ──  */
+  --color-action-primary:          var(--purple-500);
+  --color-action-primary-hover:    var(--purple-600);
+  --color-action-primary-active:   var(--purple-700);
+  --color-action-primary-subtle:   var(--purple-50);
+
+  /* ── フィードバック系 ── */
+  --color-feedback-danger:         var(--red-500);
+  --color-feedback-danger-subtle:  var(--red-50);
+  --color-feedback-success:        var(--green-500);
+  --color-feedback-success-subtle: var(--green-50);
+  --color-feedback-warning:        var(--amber-500);
+  --color-feedback-warning-subtle: var(--amber-50);
+  --color-feedback-info:           var(--blue-500);
+  --color-feedback-info-subtle:    var(--blue-50);
+
+  /* ── 背景系 ── */
+  --color-bg-base:       var(--gray-50);   /* ページ背景 */
+  --color-bg-surface:    var(--white);     /* カード・パネル */
+  --color-bg-overlay:    var(--gray-100);  /* ドロップダウン等 */
+
+  /* ── テキスト系 ── */
+  --color-text-primary:  var(--gray-900);  /* メインテキスト */
+  --color-text-secondary:var(--gray-600);  /* 補助テキスト */
+  --color-text-muted:    var(--gray-400);  /* ヒント・プレースホルダー */
+  --color-text-on-primary: var(--white);  /* プライマリ背景上のテキスト */
+  --color-text-disabled: var(--gray-300); /* 無効状態 */
+
+  /* ── ボーダー系 ── */
+  --color-border-default: var(--gray-200);
+  --color-border-strong:  var(--gray-400);
+  --color-border-focus:   var(--purple-500); /* フォーカスリング */
+}</code></pre>
+</section>
+
+<!-- 4.4 -->
+<section class="sec" id="s44">
+  <span class="sec-lbl">4.4</span>
+  <h2>ダークモード対応</h2>
+  <p class="sec-sub">CSS変数を使えば、ダークモードの切り替えは<strong style="color:var(--txt-hi)">セマンティックトークンの値を置き換えるだけ</strong>です。コンポーネントのコードは一切変更不要です。</p>
+
+  <div class="mmd-wrap" id="diag-07"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ ライト・ダーク両方から同じコンポーネント変数を参照するアーキテクチャ</p>
+
+  <h3>2つのダークモード実装パターン</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* ━━ パターン1: OSのダークモード設定に自動追従 ━━ */
+:root {
+  --color-bg-base:        #fafafa;
+  --color-bg-surface:     #ffffff;
+  --color-text-primary:   #18181b;
+  --color-text-muted:     #71717a;
+  --color-border-default: #e4e4e7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-base:        #09090b;
+    --color-bg-surface:     #18181b;
+    --color-text-primary:   #fafafa;
+    --color-text-muted:     #a1a1aa;
+    --color-border-default: #27272a;
+  }
+}
+
+/* ━━ パターン2: ボタンで手動切り替え ━━ */
+/* data-theme="dark" を html 要素に付与 */
+[data-theme="dark"] {
+  --color-bg-base:        #09090b;
+  --color-bg-surface:     #18181b;
+  --color-text-primary:   #fafafa;
+  --color-text-muted:     #a1a1aa;
+  --color-border-default: #27272a;
+}
+
+/* ━━ コンポーネントはセマンティックトークンを使うだけ ━━ */
+/* テーマが変わっても一切修正不要！ */
+.card {
+  background:    var(--color-bg-surface);
+  color:         var(--color-text-primary);
+  border:        1px solid var(--color-border-default);
+}</code></pre>
+</section>
+
+<!-- 4.5 -->
+<section class="sec" id="s45">
+  <span class="sec-lbl">4.5</span>
+  <h2>アクセシビリティとコントラスト比</h2>
+  <p class="sec-sub"><strong style="color:var(--txt-hi)">WCAG 2.1</strong>（Web Content Accessibility Guidelines）では、テキストの読みやすさを保証するためにコントラスト比の基準を定めています。</p>
+
+  <div class="mmd-wrap" id="diag-08"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ コントラスト比と合格基準の対応。3:1未満は使用禁止</p>
+
+  <h3>WCAG 2.1 コントラスト比基準</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>基準レベル</th><th>通常テキスト（〜17px）</th><th>大きなテキスト（18pt以上/14pt太字以上）</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--grn)">AA（推奨最低基準）</strong></td>
+          <td>4.5:1 以上</td>
+          <td>3:1 以上</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--cyan)">AAA（理想基準）</strong></td>
+          <td>7:1 以上</td>
+          <td>4.5:1 以上</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--red)">不合格（使用禁止）</strong></td>
+          <td>3:1 未満</td>
+          <td>3:1 未満</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>コントラストを意識したカラー設計</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — コントラスト不足</div>
+      <pre><code class="language-css">/* 薄い背景 + 薄いテキスト */
+.badge-bad {
+  /* #ede9fe 背景に */
+  background: var(--purple-100);
+  /* #c4b5fd テキスト */
+  /* コントラスト比: 約2.3:1 → 不合格 */
+  color: var(--purple-300);
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — AAA基準を満たす</div>
+      <pre><code class="language-css">/* 薄い背景 + 濃いテキスト */
+.badge-good {
+  /* #ede9fe 背景に */
+  background: var(--purple-100);
+  /* #5b21b6 テキスト */
+  /* コントラスト比: 約7.5:1 → AAA合格 */
+  color: var(--purple-800);
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <span class="c-ico">🔍</span>
+    <div><strong>確認ツール：</strong>
+      <a href="https://webaim.org/resources/contrastchecker/" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">WebAIM Contrast Checker</a> や
+      <a href="https://www.whocanuse.com/" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">Who Can Use</a> でリアルタイムに確認できます。
+      Chrome DevToolsの「Inspect」パネルにもコントラスト比が表示されます。
+    </div>
+  </div>
+</section>
+
+<!-- 4.6 -->
+<section class="sec" id="s46">
+  <span class="sec-lbl">4.6</span>
+  <h2>カラーシステム — ベストプラクティス</h2>
+
+  <h3>✅ セマンティックトークンはプリミティブを参照する</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — ハードコード</div>
+      <pre><code class="language-css">:root {
+  /* 直接値を書くと変更時に
+     全箇所を探す必要がある */
+  --color-danger: #ef4444;
+  --color-danger-subtle: #fef2f2;
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — プリミティブを参照</div>
+      <pre><code class="language-css">:root {
+  /* プリミティブ（1箇所で管理） */
+  --red-500: #ef4444;
+  --red-50:  #fef2f2;
+  /* セマンティックはプリミティブを参照 */
+  --color-danger:        var(--red-500);
+  --color-danger-subtle: var(--red-50);
+}</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ コンポーネントには必ずセマンティックカラーを使う</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — プリミティブを直接使う</div>
+      <pre><code class="language-css">.alert-error {
+  /* 意味が不明確。テーマ変更に弱い */
+  background: var(--red-50);
+  color:      var(--red-900);
+  border:     1px solid var(--red-200);
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — セマンティックを使う</div>
+      <pre><code class="language-css">.alert-error {
+  /* 用途が明確。テーマ変更に強い */
+  background: var(--color-feedback-danger-subtle);
+  color:      var(--color-feedback-danger);
+  border:     1px solid var(--color-feedback-danger);
+}</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ カラー用途を5つに分類して設計する</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>カテゴリ</th><th>代表トークン</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong style="color:var(--txt-hi)">Background</strong></td><td><code>bg-base, bg-surface, bg-overlay</code></td><td>ページ・カード・オーバーレイ背景</td></tr>
+        <tr><td>2</td><td><strong style="color:var(--txt-hi)">Text</strong></td><td><code>text-primary, text-secondary, text-muted</code></td><td>本文・補助・ヒントテキスト</td></tr>
+        <tr><td>3</td><td><strong style="color:var(--acc-hi)">Action</strong></td><td><code>action-primary, action-secondary</code></td><td>ボタン・リンク・インタラクティブ要素</td></tr>
+        <tr><td>4</td><td><strong style="color:var(--grn)">Feedback</strong></td><td><code>danger, success, warning, info</code></td><td>アラート・バッジ・バリデーション</td></tr>
+        <tr><td>5</td><td><strong style="color:var(--txt-hi)">Border</strong></td><td><code>border-default, border-strong, border-focus</code></td><td>区切り線・入力枠・フォーカスリング</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 5 ===================== -->
+<div class="ch-hdr">
+  <span class="ch-hdr-num">Chapter 5</span>
+  <h2>タイポグラフィシステム</h2>
+</div>
+
+<!-- 5.1 -->
+<section class="sec" id="s51">
+  <span class="sec-lbl">5.1</span>
+  <h2>タイポグラフィの重要性</h2>
+  <p class="sec-sub">ウェブサイトのコンテンツの<strong style="color:var(--txt-hi)">95%はタイポグラフィで構成されています</strong>（iA Inc. 調査）。タイポグラフィシステムは、読みやすさ・情報ヒエラルキー・ブランドの一貫性を同時に保証します。</p>
+
+  <div class="mmd-wrap" id="diag-09"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ タイポグラフィシステムを構成する6つの要素</p>
+
+  <div class="callout callout-info">
+    <span class="c-ico">📖</span>
+    <div><strong>なぜタイポグラフィシステムが必要か：</strong>場当たり的なフォントサイズ指定では、ページごとに一貫性が失われます。スケールとルールを事前定義することで、どこでも同じ品質の読みやすさを実現できます。</div>
+  </div>
+</section>
+
+<!-- 5.2 -->
+<section class="sec" id="s52">
+  <span class="sec-lbl">5.2</span>
+  <h2>タイプスケールの設計</h2>
+  <p class="sec-sub"><strong style="color:var(--txt-hi)">モジュラースケール</strong>（等比数列）を使って、視覚的に調和したサイズ体系を作ります。全サイズが一定の比率で増加するため、統一感が生まれます。</p>
+
+  <h3>Major Third（1.25倍）スケールの計算例</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">計算式</span></div>
+  <pre><code class="language-css">/*
+  比率: 1.25（Major Third）
+  base = 1rem = 16px
+
+  xs:   1rem ÷ 1.25² = 0.64rem  ≈ 10px  → 注釈・キャプション
+  sm:   1rem ÷ 1.25  = 0.8rem   = 12.8px → ラベル・補足
+  base: 1rem          = 1rem    = 16px   → 本文テキスト ★基準
+  lg:   1rem × 1.25  = 1.25rem = 20px   → リード文
+  xl:   1rem × 1.25² = 1.563rem= 25px   → h4 見出し
+  2xl:  1rem × 1.25³ = 1.953rem= 31px   → h3 見出し
+  3xl:  1rem × 1.25⁴ = 2.441rem≈ 39px  → h2 見出し
+  4xl:  1rem × 1.25⁵ = 3.052rem≈ 49px  → h1 見出し
+*/</code></pre>
+
+  <div class="mmd-wrap" id="diag-10"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ タイプスケールの視覚化。xs から 4xl へと段階的に大きくなる</p>
+
+  <h3>タイプスケールのCSSトークン定義</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --font-size-xs:   0.64rem;   /* 10px  注釈・キャプション      */
+  --font-size-sm:   0.875rem;  /* 14px  ラベル・補足テキスト    */
+  --font-size-base: 1rem;      /* 16px  本文テキスト（基準）    */
+  --font-size-lg:   1.125rem;  /* 18px  リード文・強調テキスト  */
+  --font-size-xl:   1.25rem;   /* 20px  h4・小見出し            */
+  --font-size-2xl:  1.5rem;    /* 24px  h3・セクション見出し    */
+  --font-size-3xl:  1.875rem;  /* 30px  h2・主要見出し          */
+  --font-size-4xl:  2.25rem;   /* 36px  h1・ページタイトル      */
+  --font-size-5xl:  3rem;      /* 48px  ヒーロー・超大見出し    */
+}
+
+/* 使用例 */
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+p  { font-size: var(--font-size-base); }
+small { font-size: var(--font-size-sm); }</code></pre>
+</section>
+
+<!-- 5.3 -->
+<section class="sec" id="s53">
+  <span class="sec-lbl">5.3</span>
+  <h2>フォントファミリーとウェイト</h2>
+  <p class="sec-sub">フォントの役割を明確に分けることで、<strong style="color:var(--txt-hi)">読みやすさとブランドの一貫性</strong>を両立します。</p>
+
+  <h3>フォントファミリーの役割分担</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  /* サンセリフ：本文・UIコンポーネント用
+     英語フォント + 日本語フォールバック + システムフォント */
+  --font-sans:
+    'Inter',
+    'Hiragino Kaku Gothic ProN', 'Hiragino Sans',  /* macOS / iOS */
+    'Meiryo', 'Yu Gothic',                          /* Windows */
+    'Noto Sans JP',                                 /* Android / 汎用 */
+    system-ui, sans-serif;
+
+  /* セリフ：長文・印刷物・特定ブランド向け */
+  --font-serif:
+    'Georgia',
+    'Noto Serif JP',
+    serif;
+
+  /* モノスペース：コード・等幅表示専用 */
+  --font-mono:
+    'JetBrains Mono', 'Fira Code', 'Source Code Pro',
+    monospace;
+}</code></pre>
+
+  <div class="callout callout-warn">
+    <span class="c-ico">⚠️</span>
+    <div><strong>日本語フォントは必ずフォールバックを含める：</strong>英語フォント（Inter等）は日本語グリフを持たないため、日本語フォントを明示しないとOSデフォルトで表示されます。OSごとに異なるフォントになり、見た目が統一できません。</div>
+  </div>
+
+  <h3>フォントウェイト（太さ）の体系</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --font-weight-regular:  400;  /* 通常テキスト・本文     */
+  --font-weight-medium:   500;  /* ラベル・UIテキスト     */
+  --font-weight-semibold: 600;  /* 小見出し・強調テキスト */
+  --font-weight-bold:     700;  /* 見出し・重要情報       */
+}
+
+/* 推奨の使い分け */
+body        { font-weight: var(--font-weight-regular);  }
+.label      { font-weight: var(--font-weight-medium);   }
+h3, h4      { font-weight: var(--font-weight-semibold); }
+h1, h2      { font-weight: var(--font-weight-bold);     }
+
+/* Web フォントの @font-face 定義 */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-var.woff2') format('woff2');
+  font-weight: 100 900;   /* バリアブルフォントは範囲指定 */
+  font-style: normal;
+  font-display: swap;     /* 読込中はシステムフォントで表示 */
+}</code></pre>
+</section>
+
+<!-- 5.4 -->
+<section class="sec" id="s54">
+  <span class="sec-lbl">5.4</span>
+  <h2>行高・文字間隔・行長</h2>
+  <p class="sec-sub">フォントサイズと同様に、<strong style="color:var(--txt-hi)">行高・文字間隔・行長</strong>もトークン化することで、読みやすさを体系的に管理できます。</p>
+
+  <h3>行高（Line Height）</h3>
+  <div class="mmd-wrap" id="diag-11"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 行高の4段階。見出しは tight（1.25）、本文は relaxed（1.7）が基本</p>
+
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --line-height-none:    1;     /* アイコン・ロゴ（行間なし）  */
+  --line-height-tight:   1.25;  /* 見出し・短いテキスト       */
+  --line-height-normal:  1.5;   /* UIコンポーネント・ボタン   */
+  --line-height-relaxed: 1.7;   /* 本文テキスト（長文）       */
+  --line-height-loose:   2;     /* 補足文・注釈               */
+}
+
+/* 推奨の使い分け */
+h1, h2, h3 {
+  line-height: var(--line-height-tight);    /* 1.25 詰める */
+}
+p, li {
+  line-height: var(--line-height-relaxed);  /* 1.7 ゆったり */
+}
+button, label {
+  line-height: var(--line-height-normal);   /* 1.5 中間 */
+}</code></pre>
+
+  <h3>文字間隔（Letter Spacing）と行長（Line Length）</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --tracking-tight:  -0.025em;  /* 大きな見出し（詰める）      */
+  --tracking-normal:  0em;      /* 通常テキスト                */
+  --tracking-wide:    0.025em;  /* 小さなラベル・UIテキスト    */
+  --tracking-wider:   0.05em;   /* 大文字テキスト（UPPERCASE） */
+}
+
+/* 見出しは字間を詰める */
+h1, h2 { letter-spacing: var(--tracking-tight); }
+
+/* 大文字テキストは必ず字間を広げる */
+.label-uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+/* ── 行長（1行の文字数）── */
+/* 理想は 45〜75文字/行。英語では約60ch、日本語は35〜40em */
+.prose {
+  max-width: 65ch;   /* ch = 「0」の文字幅 */
+}
+
+.prose-ja {
+  max-width: 40em;   /* 日本語の場合 */
+}</code></pre>
+</section>
+
+<!-- 5.5 -->
+<section class="sec" id="s55">
+  <span class="sec-lbl">5.5</span>
+  <h2>レスポンシブタイポグラフィ</h2>
+  <p class="sec-sub"><code>clamp()</code> 関数を使うと、<strong style="color:var(--txt-hi)">画面幅に応じてなめらかにフォントサイズが変化</strong>するフルイドタイポグラフィを実現できます。</p>
+
+  <div class="mmd-wrap" id="diag-12"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ フルイドタイポグラフィ：320px〜1280pxの範囲で最小値〜最大値の間を線形補間</p>
+
+  <h3>clamp() の構文と使い方</h3>
+  <div class="callout callout-info">
+    <span class="c-ico">📐</span>
+    <div><strong><code>clamp(最小値, 推奨値, 最大値)</code></strong><br>
+    推奨値はビューポート幅に依存する計算式。画面が狭ければ最小値、広ければ最大値で自動的にクランプされます。</div>
+  </div>
+
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* clamp(最小, ビューポート依存の計算値, 最大) */
+
+/* h1: 320px画面では 1.75rem → 1280px画面では 3rem へなめらかに変化 */
+h1 {
+  font-size: clamp(1.75rem, 3vw + 1rem, 3rem);
+}
+
+h2 { font-size: clamp(1.375rem, 2vw + 1rem, 2.25rem); }
+h3 { font-size: clamp(1.125rem, 1.5vw + 0.75rem, 1.5rem); }
+
+/* 本文は最小・最大を小さな範囲に固定 */
+p {
+  font-size: clamp(1rem, 1.25vw + 0.75rem, 1.125rem);
+}
+
+/* ── CSS変数との組み合わせ（推奨） ── */
+:root {
+  --font-size-h1:   clamp(1.75rem, 3vw + 1rem, 3rem);
+  --font-size-h2:   clamp(1.375rem, 2vw + 1rem, 2.25rem);
+  --font-size-h3:   clamp(1.125rem, 1.5vw + 0.75rem, 1.5rem);
+  --font-size-body: clamp(1rem, 1.25vw + 0.5rem, 1.125rem);
+}
+
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+p  { font-size: var(--font-size-body); }</code></pre>
+
+  <div class="callout callout-tip">
+    <span class="c-ico">🛠</span>
+    <div><strong>計算ツール：</strong><a href="https://clamp.font-size.app/" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">clamp.font-size.app</a> でビューポートサイズと最小・最大フォントサイズを入力すると、<code>clamp()</code> の値を自動計算してくれます。</div>
+  </div>
+</section>
+
+<!-- 5.6 -->
+<section class="sec" id="s56">
+  <span class="sec-lbl">5.6</span>
+  <h2>タイポグラフィ — ベストプラクティス</h2>
+
+  <h3>✅ 見出しの階層を飛ばさない（SEO・アクセシビリティ）</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — h2 をスキップ</div>
+      <pre><code class="language-html">&lt;!-- h1 の次に h3 は禁止 --&gt;
+&lt;h1&gt;ページタイトル&lt;/h1&gt;
+&lt;h3&gt;サブセクション&lt;/h3&gt;
+&lt;!-- スクリーンリーダーが
+  構造を正しく読めない --&gt;</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — 階層順に使う</div>
+      <pre><code class="language-html">&lt;!-- 階層を守って使う --&gt;
+&lt;h1&gt;ページタイトル&lt;/h1&gt;
+&lt;h2&gt;セクション&lt;/h2&gt;
+&lt;h3&gt;サブセクション&lt;/h3&gt;
+&lt;!-- 意味的にも正しく
+  SEOにも有効 --&gt;</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ px ではなく rem を使う</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — px 指定</div>
+      <pre><code class="language-css">/* ブラウザの文字サイズ設定を
+   無視してしまう */
+.text {
+  font-size: 14px;
+  line-height: 21px;
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — rem 指定</div>
+      <pre><code class="language-css">/* ユーザーのブラウザ設定に
+   追従する（アクセシブル） */
+.text {
+  /* 16px × 0.875 = 14px */
+  font-size: 0.875rem;
+  line-height: 1.5;
+}</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ font-display: swap を設定する</h3>
+  <div class="callout callout-tip">
+    <span class="c-ico">⚡</span>
+    <div><strong><code>font-display: swap</code></strong>：Webフォントの読み込み中はシステムフォントで表示し、読み込み完了後に切り替えます。<code>font-display: block</code>（デフォルト）はフォント読み込み中に文字が非表示になりCLSが悪化します。</div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 6 ===================== -->
+<div class="ch-hdr">
+  <span class="ch-hdr-num">Chapter 6</span>
+  <h2>スペーシング・サイジングシステム</h2>
+</div>
+
+<!-- 6.1 -->
+<section class="sec" id="s61">
+  <span class="sec-lbl">6.1</span>
+  <h2>スペーシングシステムの目的</h2>
+  <p class="sec-sub"><strong style="color:var(--txt-hi)">余白・サイズを一定のルールに従って統一する仕組み</strong>です。「なんとなく16pxにした」ではなく、<em style="color:var(--cyan)">すべての余白が理由を持つ</em>状態を目指します。</p>
+
+  <div class="mmd-wrap" id="diag-13"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ スペーシングシステムなし vs あり。マジックナンバーをトークンで置き換える</p>
+
+  <div class="callout callout-warn">
+    <span class="c-ico">⚠️</span>
+    <div><strong>マジックナンバーの問題：</strong><code>margin: 13px</code> や <code>padding: 17px</code> のような根拠不明な数値が積み重なると、デザインの一貫性が失われ、変更のたびに全体を見直す必要が生じます。</div>
+  </div>
+</section>
+
+<!-- 6.2 -->
+<section class="sec" id="s62">
+  <span class="sec-lbl">6.2</span>
+  <h2>ベースグリッドと数列</h2>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">JavaScript — scroll-spy.js</span></div>
+  <pre><code class="language-javascript">document.addEventListener("DOMContentLoaded", () =&gt; {
+  const visibleSections = new Set();
+  const observer = new IntersectionObserver((entries) =&gt; {
+    entries.forEach(entry =&gt; {
+      if (entry.isIntersecting) {
+        visibleSections.add(entry.target);
+      } else {
+        visibleSections.delete(entry.target);
+      }
+    });
+    if (visibleSections.size &gt; 0) {
+      const topSection = [...visibleSections].sort((a, b) =&gt; a.offsetTop - b.offsetTop)[0];
+      updateScrollProgress(topSection.id);
+    }
+  }, { threshold: 0.1, rootMargin: "-10% 0px -80% 0px" });
+  document.querySelectorAll(".sec").forEach(sec =&gt; observer.observe(sec));
+});</code></pre>
+  <p class="sec-sub">ほとんどのデザインシステムは<strong style="color:var(--txt-hi)">4px を基準単位</strong>として採用しています。デバイスのピクセル密度（1x / 2x / 3x）でキレイに割り切れるためです。</p>
+
+  <div class="mmd-wrap" id="diag-14"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 4pxを基準に倍数で展開するスペーシングスケール（Material Design 等の業界標準）</p>
+
+  <h3>なぜ 4px なのか</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>理由</th><th>詳細</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--txt-hi)">デバイス解像度との相性</strong></td><td>4px は 1x / 2x / 3x すべての画面密度で割り切れ、サブピクセルレンダリングの問題が起きない</td></tr>
+        <tr><td><strong style="color:var(--txt-hi)">視覚的な調和</strong></td><td>4の倍数（8, 16, 24, 32…）は黄金比に近く、自然に調和したレイアウトになる</td></tr>
+        <tr><td><strong style="color:var(--txt-hi)">業界標準</strong></td><td>Material Design・Tailwind CSS・Figma などの主要ツールが採用</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 6.3 -->
+<section class="sec" id="s63">
+  <span class="sec-lbl">6.3</span>
+  <h2>スペーシングトークンの設計</h2>
+  <p class="sec-sub">プリミティブトークン（生の4px刻みの値）と、セマンティックトークン（用途別の名前）の2層で管理します。</p>
+
+  <h3>プリミティブスペーシングトークン</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — spacing-primitives.css</span></div>
+  <pre><code class="language-css">:root {
+  --space-px:  1px;    /* ボーダー・デバイダー専用           */
+  --space-0:   0px;
+  --space-0-5: 2px;    /* 極小の微調整                      */
+  --space-1:   4px;    /* アイコンとラベルの間など           */
+  --space-2:   8px;    /* 関連要素のタイトな結合             */
+  --space-3:   12px;   /* コンポーネント内要素間             */
+  --space-4:   16px;   /* コンポーネント標準パディング ★頻出 */
+  --space-5:   20px;
+  --space-6:   24px;   /* セクション内の余白                */
+  --space-8:   32px;   /* カード・パネルの余白              */
+  --space-10:  40px;
+  --space-12:  48px;   /* セクション間の余白                */
+  --space-16:  64px;   /* ページレベルの余白                */
+  --space-20:  80px;
+  --space-24:  96px;   /* ヒーロー・大セクション            */
+}</code></pre>
+
+  <h3>セマンティックスペーシングトークン</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS — spacing-semantic.css</span></div>
+  <pre><code class="language-css">:root {
+  /* ── インセット（コンポーネント内部の余白）── */
+  --spacing-inset-xs:  var(--space-2);   /*  8px バッジ・タグ      */
+  --spacing-inset-sm:  var(--space-3);   /* 12px 小ボタン          */
+  --spacing-inset-md:  var(--space-4);   /* 16px 標準ボタン・入力  */
+  --spacing-inset-lg:  var(--space-6);   /* 24px カード・パネル    */
+  --spacing-inset-xl:  var(--space-8);   /* 32px モーダル          */
+
+  /* ── スタック（縦方向の間隔）── */
+  --spacing-stack-xs:  var(--space-2);   /*  8px タイトなリスト    */
+  --spacing-stack-sm:  var(--space-4);   /* 16px フォームフィールド間 */
+  --spacing-stack-md:  var(--space-6);   /* 24px セクション内要素間  */
+  --spacing-stack-lg:  var(--space-12);  /* 48px セクション間        */
+  --spacing-stack-xl:  var(--space-16);  /* 64px ページセクション間  */
+
+  /* ── インライン（横方向の間隔）── */
+  --spacing-inline-xs: var(--space-1);   /*  4px アイコン + ラベル  */
+  --spacing-inline-sm: var(--space-2);   /*  8px ボタン内要素間     */
+  --spacing-inline-md: var(--space-4);   /* 16px カラム間           */
+  --spacing-inline-lg: var(--space-6);   /* 24px 広めのカラム間     */
+}</code></pre>
+</section>
+
+<!-- 6.4 -->
+<section class="sec" id="s64">
+  <span class="sec-lbl">6.4</span>
+  <h2>コンポーネントサイジング</h2>
+  <p class="sec-sub">ボタン・入力フォームなどのインタラクティブ要素は<strong style="color:var(--txt-hi)">統一された高さスケール</strong>を持つことで、UIの整合性が保たれます。</p>
+
+  <h3>高さスケール（コンポーネント用）</h3>
+  <div class="mmd-wrap" id="diag-15"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 5段階のコンポーネント高さスケール。md（40px）が標準</p>
+
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --size-component-xs: 24px;   /* チップ・タグ・スモールバッジ         */
+  --size-component-sm: 32px;   /* 小ボタン・小入力フォーム             */
+  --size-component-md: 40px;   /* 標準ボタン・入力フォーム（推奨）★   */
+  --size-component-lg: 48px;   /* 大ボタン・大入力フォーム             */
+  --size-component-xl: 56px;   /* 特大ボタン（LPのCTAなど）            */
+}
+
+/* インタラクティブ要素の最小タッチターゲット */
+/* WCAG 2.5.5: 最低 44×44px を推奨 */
+.button, .input, .select {
+  min-height: var(--size-component-md); /* 40px */
+  min-width:  44px;
+}
+
+/* 具体的な実装例 */
+.button {
+  height:         var(--size-component-md);
+  padding-inline: var(--spacing-inset-md);
+  border-radius:  6px;
+  font-size:      var(--font-size-base);
+  font-weight:    var(--font-weight-medium);
+}
+
+.button--sm {
+  height:         var(--size-component-sm);
+  padding-inline: var(--spacing-inset-sm);
+  font-size:      var(--font-size-sm);
+}</code></pre>
+
+  <h3>コンテナ幅スケール</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">:root {
+  --container-xs:  320px;   /* 超狭コンテンツ（モーダル等）        */
+  --container-sm:  480px;   /* 狭コンテンツ（フォーム等）          */
+  --container-md:  768px;   /* 中程度（ブログ本文等）              */
+  --container-lg:  1024px;  /* 標準コンテンツ                     */
+  --container-xl:  1280px;  /* 広いレイアウト                     */
+  --container-2xl: 1536px;  /* フルワイドレイアウト               */
+}
+
+/* 汎用コンテナクラス */
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-inline: auto;             /* 中央寄せ */
+  padding-inline: var(--space-4);  /* 16px サイドマージン */
+}
+
+@media (min-width: 768px) {
+  .container { padding-inline: var(--space-6); }  /* 24px */
+}
+@media (min-width: 1280px) {
+  .container { padding-inline: var(--space-8); }  /* 32px */
+}</code></pre>
+</section>
+
+<!-- 6.5 -->
+<section class="sec" id="s65">
+  <span class="sec-lbl">6.5</span>
+  <h2>スペーシングの適用パターン</h2>
+  <p class="sec-sub"><strong style="color:var(--txt-hi)">近接の原則</strong>に従い、関連性の強い要素を近く、弱い要素を遠く配置することで、視覚的なグルーピングを実現します。</p>
+
+  <div class="mmd-wrap" id="diag-16"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 近接の原則：関連が強い→小スペース、中程度→中スペース、弱い→大スペース</p>
+
+  <h3>近接の原則をCSSで実装する</h3>
+  <div class="c-hdr"><div class="c-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div><span class="c-lang">CSS</span></div>
+  <pre><code class="language-css">/* ラベルと入力：最も近い（強い関連） */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);     /* 4px — ラベルと入力の間 */
+}
+
+/* フォームフィールド間：中程度の関連 */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);     /* 16px — フィールド間 */
+}
+
+/* フォームとボタン：少し広め */
+.form-actions {
+  margin-top: var(--space-6);  /* 24px */
+}
+
+/* セクション間：弱い関連（独立したブロック） */
+.page-section + .page-section {
+  margin-top: var(--space-16); /* 64px */
+}</code></pre>
+
+  <h3>padding と gap の使い分け</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — margin で間隔指定</div>
+      <pre><code class="language-css">/* 最後の要素にも
+   余分なマージンが付く */
+.list-item {
+  margin-bottom: var(--space-4);
+}
+/* 末尾の :last-child で
+   別途打ち消しが必要 */</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — 親要素の gap で管理</div>
+      <pre><code class="language-css">/* 全アイテム間に等間隔
+   最後の要素には付かない */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+/* :last-child 打ち消し不要！ */</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 6.6 -->
+<section class="sec" id="s66">
+  <span class="sec-lbl">6.6</span>
+  <h2>スペーシング — ベストプラクティス</h2>
+
+  <h3>✅ マジックナンバーを排除し、必ずトークンを使う</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — 根拠のない数値</div>
+      <pre><code class="language-css">.component {
+  padding: 13px 17px;
+  margin-bottom: 22px;
+  gap: 11px;
+  /* なぜこの数値？変更できない */
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — トークン（4px刻み）</div>
+      <pre><code class="language-css">.component {
+  padding: var(--space-3) var(--space-4); /* 12px 16px */
+  margin-bottom: var(--space-6);           /* 24px */
+  gap: var(--space-3);                     /* 12px */
+}</code></pre>
+    </div>
+  </div>
+
+  <h3>✅ スペースを「意味」で選ぶ早見表</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>用途</th><th>推奨トークン範囲</th><th>実際の値</th></tr></thead>
+      <tbody>
+        <tr><td>コンポーネント内の密接な関係</td><td><code>--space-1〜--space-2</code></td><td>4px〜8px</td></tr>
+        <tr><td>コンポーネント内の標準的な間隔</td><td><code>--space-3〜--space-4</code></td><td>12px〜16px</td></tr>
+        <tr><td>コンポーネント間の余白</td><td><code>--space-6〜--space-8</code></td><td>24px〜32px</td></tr>
+        <tr><td>セクション間の余白</td><td><code>--space-12〜--space-16</code></td><td>48px〜64px</td></tr>
+        <tr><td>ページレベルの大きな余白</td><td><code>--space-20〜--space-24</code></td><td>80px〜96px</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>✅ padding は論理プロパティで指定する（RTL対応）</h3>
+  <div class="bp-grid">
+    <div class="bp-box bp-ng">
+      <div class="bp-head">❌ NG — 4値でバラバラ</div>
+      <pre><code class="language-css">.button {
+  /* 意図が読み取りにくい
+     RTL言語でも変わらない */
+  padding: 8px 16px 10px 14px;
+}</code></pre>
+    </div>
+    <div class="bp-box bp-ok">
+      <div class="bp-head">✅ OK — 論理プロパティ</div>
+      <pre><code class="language-css">.button {
+  /* 上下・左右が明確
+     RTL言語でも自動対応！ */
+  padding-block:  var(--space-2); /* 8px 上下 */
+  padding-inline: var(--space-4); /* 16px 左右 */
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SUMMARY ===================== -->
+<div class="ch-hdr" id="summary">
+  <span class="ch-hdr-num">まとめ</span>
+  <h2>4システムの関係性</h2>
+</div>
+
+<section class="sec">
+  <span class="sec-lbl">Summary</span>
+  <h2>CSSデザインシステム — 全体像</h2>
+  <p class="sec-sub">4つのシステムは独立して存在するのではなく、<strong style="color:var(--txt-hi)">CSSカスタムプロパティという基盤の上に積み重なって</strong>デザインシステムを構成します。</p>
+
+  <div class="mmd-wrap" id="diag-17"><div class="mmd-ph">図を読み込み中...</div></div>
+  <p class="mmd-cap">▲ 4システムの依存関係。CSS変数が基盤となり、3システムがその上に構築される</p>
+
+  <h3>構築のロードマップ</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>ステップ</th><th>作業内容</th><th>ファイル</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--acc-hi)">Step 1</strong></td>
+          <td>プリミティブカラートークンを定義</td>
+          <td><code>tokens/primitives.css</code></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--acc-hi)">Step 2</strong></td>
+          <td>セマンティックカラー・スペーシングトークンを定義</td>
+          <td><code>tokens/semantic.css</code></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--acc-hi)">Step 3</strong></td>
+          <td>タイプスケール・フォントファミリートークンを定義</td>
+          <td><code>tokens/typography.css</code></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--acc-hi)">Step 4</strong></td>
+          <td>ダークモードのセマンティックトークンを定義</td>
+          <td><code>tokens/themes/dark.css</code></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--acc-hi)">Step 5</strong></td>
+          <td>コンポーネントトークンを定義してUIを構築</td>
+          <td><code>components/*.css</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== REFERENCES ===================== -->
+<div class="ch-hdr" id="refs">
+  <span class="ch-hdr-num">参考リソース</span>
+  <h2>学習に役立つ公式ドキュメント</h2>
+</div>
+
+<section class="sec">
+  <h3>CSSカスタムプロパティ</h3>
+  <div class="ref-grid">
+    <a class="ref-card" href="https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">MDN Web Docs</div>
+      <div class="rc-ttl">CSS カスタムプロパティの使用</div>
+      <div class="rc-url">developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties</div>
+    </a>
+    <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">MDN Web Docs</div>
+      <div class="rc-ttl">@property — CSS Houdini 型定義</div>
+      <div class="rc-url">developer.mozilla.org/en-US/docs/Web/CSS/@property</div>
+    </a>
+    <a class="ref-card" href="https://css-tricks.com/a-complete-guide-to-custom-properties/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">CSS-Tricks</div>
+      <div class="rc-ttl">A Complete Guide to Custom Properties</div>
+      <div class="rc-url">css-tricks.com/a-complete-guide-to-custom-properties</div>
+    </a>
+    <a class="ref-card" href="https://www.w3.org/TR/css-variables-1/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">W3C Specification</div>
+      <div class="rc-ttl">CSS Custom Properties for Cascading Variables</div>
+      <div class="rc-url">w3.org/TR/css-variables-1</div>
+    </a>
+  </div>
+
+  <h3>カラーシステム</h3>
+  <div class="ref-grid">
+    <a class="ref-card" href="https://m3.material.io/styles/color/overview" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Google / Material Design</div>
+      <div class="rc-ttl">Material Design 3 — Color System</div>
+      <div class="rc-url">m3.material.io/styles/color/overview</div>
+    </a>
+    <a class="ref-card" href="https://www.radix-ui.com/colors" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Radix UI</div>
+      <div class="rc-ttl">Radix Colors — アクセシブルなカラーパレット</div>
+      <div class="rc-url">radix-ui.com/colors</div>
+    </a>
+    <a class="ref-card" href="https://webaim.org/resources/contrastchecker/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">WebAIM</div>
+      <div class="rc-ttl">Contrast Checker — WCAG コントラスト確認ツール</div>
+      <div class="rc-url">webaim.org/resources/contrastchecker</div>
+    </a>
+    <a class="ref-card" href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">W3C / WCAG 2.1</div>
+      <div class="rc-ttl">Success Criterion 1.4.3 — Contrast (Minimum)</div>
+      <div class="rc-url">w3.org/WAI/WCAG21/Understanding/contrast-minimum</div>
+    </a>
+  </div>
+
+  <h3>タイポグラフィシステム</h3>
+  <div class="ref-grid">
+    <a class="ref-card" href="https://www.modularscale.com/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Tool</div>
+      <div class="rc-ttl">Modular Scale — タイプスケール計算ツール</div>
+      <div class="rc-url">modularscale.com</div>
+    </a>
+    <a class="ref-card" href="https://developer.mozilla.org/ja/docs/Web/CSS/clamp" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">MDN Web Docs</div>
+      <div class="rc-ttl">clamp() — フルイドタイポグラフィ関数</div>
+      <div class="rc-url">developer.mozilla.org/ja/docs/Web/CSS/clamp</div>
+    </a>
+    <a class="ref-card" href="https://fonts.google.com/knowledge" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Google Fonts</div>
+      <div class="rc-ttl">Google Fonts Knowledge — タイポグラフィ学習</div>
+      <div class="rc-url">fonts.google.com/knowledge</div>
+    </a>
+    <a class="ref-card" href="https://ia.net/topics/the-web-is-all-about-typography-period" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">iA Inc.</div>
+      <div class="rc-ttl">The Web Is All About Typography, Period</div>
+      <div class="rc-url">ia.net/topics/the-web-is-all-about-typography-period</div>
+    </a>
+  </div>
+
+  <h3>スペーシング・デザイントークン</h3>
+  <div class="ref-grid">
+    <a class="ref-card" href="https://m3.material.io/foundations/layout/understanding-layout/spacing" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Google / Material Design</div>
+      <div class="rc-ttl">Material Design 3 — Spacing</div>
+      <div class="rc-url">m3.material.io/foundations/layout/understanding-layout/spacing</div>
+    </a>
+    <a class="ref-card" href="https://spec.fm/specifics/8-pt-grid" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Spec</div>
+      <div class="rc-ttl">8-Point Grid System — スペーシングの原則</div>
+      <div class="rc-url">spec.fm/specifics/8-pt-grid</div>
+    </a>
+    <a class="ref-card" href="https://styledictionary.com/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">Amazon / Style Dictionary</div>
+      <div class="rc-ttl">Style Dictionary — デザイントークン管理ツール</div>
+      <div class="rc-url">styledictionary.com</div>
+    </a>
+    <a class="ref-card" href="https://www.w3.org/community/design-tokens/" target="_blank" rel="noopener noreferrer">
+      <div class="rc-cat">W3C Community Group</div>
+      <div class="rc-ttl">Design Tokens Community Group</div>
+      <div class="rc-url">w3.org/community/design-tokens</div>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="トップへ戻る">↑</button>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   MERMAID DIAGRAM SOURCES
+   textContent への注入（innerHTML 使用禁止）
+═══════════════════════════════════════════════════════ */
+const DIAGRAMS = {
+
+'diag-01': `flowchart LR
+    subgraph DEFINE["定義（:root）"]
+        V1["--color-primary: #6C47FF"]
+        V2["--space-4: 16px"]
+        V3["--font-size-lg: 1.125rem"]
+    end
+    subgraph USE["参照（コンポーネント）"]
+        U1["background: var(--color-primary)"]
+        U2["padding: var(--space-4)"]
+        U3["font-size: var(--font-size-lg)"]
+    end
+    V1 --> U1
+    V2 --> U2
+    V3 --> U3
+    style DEFINE fill:#1e2d1e,stroke:#22c55e,color:#86efac
+    style USE fill:#1e1e2d,stroke:#6C47FF,color:#c4b5fd`,
+
+'diag-02': `graph TD
+    ROOT[":root\n--color-primary: #6C47FF\n--font-size: 16px"] --> SECTION
+    ROOT --> HEADER
+    SECTION["section.alert\n--color-primary: #ef4444\n（ローカルで上書き）"] --> CARD
+    HEADER["header\n（変数を継承）"] --> NAV
+    CARD["div.card\nvar(--color-primary)\n→ #ef4444 を参照"]
+    NAV["nav\nvar(--color-primary)\n→ #6C47FF を参照"]
+    style ROOT fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style SECTION fill:#4a2d2d,color:#fca5a5,stroke:#ef4444
+    style HEADER fill:#2d4a2d,color:#86efac,stroke:#22c55e
+    style CARD fill:#3d2424,color:#fca5a5,stroke:#ef4444
+    style NAV fill:#243d24,color:#86efac,stroke:#22c55e`,
+
+'diag-03': `graph TD
+    P["第1層：プリミティブトークン\n生の値を定義\n--purple-500: #6C47FF\n--gray-100: #f4f4f5\n--size-16: 16px"] --> S
+    S["第2層：セマンティックトークン\n意味を持つ名前で参照\n--color-action-primary: var(--purple-500)\n--color-background: var(--gray-100)\n--spacing-md: var(--size-16)"] --> C
+    C["第3層：コンポーネントトークン\nコンポーネント固有の変数\n--button-bg: var(--color-action-primary)\n--button-padding: var(--spacing-md)\n--card-bg: var(--color-background)"]
+    style P fill:#1e2d3d,color:#93c5fd,stroke:#3b82f6
+    style S fill:#2d1e3d,color:#c4b5fd,stroke:#8b5cf6
+    style C fill:#1e3d2d,color:#86efac,stroke:#22c55e`,
+
+'diag-04': `graph LR
+    subgraph GOALS["カラーシステムの目標"]
+        G1["一貫性\n同じ意味 = 同じ色"]
+        G2["アクセシビリティ\n十分なコントラスト比"]
+        G3["スケーラビリティ\nテーマ切り替えが容易"]
+        G4["伝達力\n色が意味を持つ"]
+    end
+    style GOALS fill:#1e1e2e,stroke:#6C47FF,color:#cdd6f4
+    style G1 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style G2 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style G3 fill:#4a3d1e,color:#fcd34d,stroke:#f59e0b
+    style G4 fill:#3d2a1e,color:#fb923c,stroke:#ea580c`,
+
+'diag-05': `graph LR
+    C50["50\n最も淡い\n背景・ホバー"] --> C100["100"] --> C200["200"] --> C300["300"] --> C400["400"] --> C500["500\nベース\nメインUI"] --> C600["600\nホバー"] --> C700["700"] --> C800["800"] --> C900["900\n最も濃い\nテキスト"]
+    style C50 fill:#f5f3ff,color:#4c1d95,stroke:#c4b5fd
+    style C100 fill:#ede9fe,color:#4c1d95,stroke:#c4b5fd
+    style C200 fill:#ddd6fe,color:#4c1d95,stroke:#a78bfa
+    style C300 fill:#c4b5fd,color:#3b1e8c,stroke:#8b5cf6
+    style C400 fill:#a78bfa,color:#fff,stroke:#7c3aed
+    style C500 fill:#8b5cf6,color:#fff,stroke:#6d28d9
+    style C600 fill:#7c3aed,color:#fff,stroke:#5b21b6
+    style C700 fill:#6d28d9,color:#fff,stroke:#4c1d95
+    style C800 fill:#5b21b6,color:#fff,stroke:#3b0f8c
+    style C900 fill:#4c1d95,color:#ede9fe,stroke:#3b0f8c`,
+
+'diag-06': `flowchart TD
+    subgraph PRIMITIVE["プリミティブ層（What — 何色か）"]
+        PR1["--blue-500: #3b82f6"]
+        PR2["--green-500: #22c55e"]
+        PR3["--red-500: #ef4444"]
+        PR4["--amber-500: #f59e0b"]
+        PR5["--gray-100: #f4f4f5"]
+        PR6["--gray-900: #18181b"]
+    end
+    subgraph SEMANTIC["セマンティック層（Why — 何のための色か）"]
+        SE1["--color-info: var(--blue-500)"]
+        SE2["--color-success: var(--green-500)"]
+        SE3["--color-danger: var(--red-500)"]
+        SE4["--color-warning: var(--amber-500)"]
+        SE5["--color-bg-surface: var(--gray-100)"]
+        SE6["--color-text-primary: var(--gray-900)"]
+    end
+    PR1 --> SE1
+    PR2 --> SE2
+    PR3 --> SE3
+    PR4 --> SE4
+    PR5 --> SE5
+    PR6 --> SE6
+    style PRIMITIVE fill:#1e1e2e,stroke:#45475a,color:#cdd6f4
+    style SEMANTIC fill:#1e2d1e,stroke:#22c55e,color:#86efac`,
+
+'diag-07': `flowchart LR
+    subgraph LIGHT["ライトモード"]
+        L1["--color-bg-base\n#fafafa"]
+        L2["--color-text-primary\n#18181b"]
+        L3["--color-border-default\n#e4e4e7"]
+    end
+    subgraph DARK["ダークモード（data-theme=dark）"]
+        D1["--color-bg-base\n#09090b"]
+        D2["--color-text-primary\n#fafafa"]
+        D3["--color-border-default\n#27272a"]
+    end
+    subgraph COMP["コンポーネント（変更一切不要）"]
+        C1["background: var(--color-bg-base)"]
+        C2["color: var(--color-text-primary)"]
+        C3["border: 1px solid var(--color-border-default)"]
+    end
+    L1 & D1 --> C1
+    L2 & D2 --> C2
+    L3 & D3 --> C3
+    style LIGHT fill:#f5f5f0,stroke:#d4d4aa,color:#18181b
+    style DARK fill:#18181b,stroke:#3f3f46,color:#fafafa
+    style COMP fill:#2d1e4a,stroke:#8b5cf6,color:#c4b5fd`,
+
+'diag-08': `graph LR
+    C1["3:1 未満\n不合格（使用禁止）"] --> C2["3:1〜4.5:1\n大テキストのみ AA合格"] --> C3["4.5:1 以上\n通常テキスト AA合格"] --> C4["7:1 以上\nAAA合格（最高基準）"]
+    style C1 fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+    style C2 fill:#4a3d1e,color:#fcd34d,stroke:#f59e0b
+    style C3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style C4 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6`,
+
+'diag-09': `graph TD
+    T["タイポグラフィシステムの要素"] --> A["タイプスケール\nサイズの段階"]
+    T --> B["フォントファミリー\n書体の選択"]
+    T --> C["フォントウェイト\n太さのレベル"]
+    T --> D["行高 Line Height\n縦方向の余白"]
+    T --> E["文字間隔 Letter Spacing\n横方向の余白"]
+    T --> F["行長 Line Length\n1行の文字数"]
+    style T fill:#6C47FF,color:#fff,stroke:none
+    style A fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+    style B fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+    style C fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+    style D fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+    style E fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+    style F fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`,
+
+'diag-10': `graph LR
+    XS["xs\n0.64rem\n10px\n注釈"] --> SM["sm\n0.875rem\n14px\nラベル"] --> BASE["base\n1rem\n16px\n本文★"] --> LG["lg\n1.125rem\n18px\nリード"] --> XL["xl\n1.25rem\n20px\nh4"] --> XXL["2xl\n1.5rem\n24px\nh3"] --> XXXL["3xl\n1.875rem\n30px\nh2"] --> XXXXL["4xl\n2.25rem\n36px\nh1"]
+    style XS fill:#1e1e2e,color:#71717a,stroke:#3f3f46
+    style SM fill:#1e1e2e,color:#a1a1aa,stroke:#3f3f46
+    style BASE fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style LG fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style XL fill:#2d2d4a,color:#c4b5fd,stroke:#8b5cf6
+    style XXL fill:#2d2d4a,color:#c4b5fd,stroke:#8b5cf6
+    style XXXL fill:#3d2d4a,color:#e9d5ff,stroke:#a855f7
+    style XXXXL fill:#4a2d4a,color:#f5d0fe,stroke:#d946ef`,
+
+'diag-11': `graph LR
+    subgraph LINE_HEIGHT["行高の使い分け"]
+        LH1["tight: 1.25\n見出し・短いテキスト\n行間が詰まっている"]
+        LH2["normal: 1.5\nUIコンポーネント\nボタン・ラベルなど"]
+        LH3["relaxed: 1.7\n本文テキスト\n長文の読みやすさ重視"]
+        LH4["loose: 2.0\n補足文・注釈\nゆったりした行間"]
+    end
+    style LH1 fill:#3d2a1e,color:#fb923c,stroke:#ea580c
+    style LH2 fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style LH3 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style LH4 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
+    style LINE_HEIGHT fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`,
+
+'diag-12': `graph LR
+    subgraph FLUID["フルイドタイポグラフィ — clamp()"]
+        S["320px\nモバイル\n最小サイズ適用"] --> M["768px\nタブレット\nサイズが線形補間"] --> L["1280px\nデスクトップ\n最大サイズ適用"]
+    end
+    style S fill:#3d2a1e,color:#fb923c,stroke:#ea580c
+    style M fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style L fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style FLUID fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`,
+
+'diag-13': `graph LR
+    subgraph BEFORE["スペーシングシステムなし"]
+        B1["margin: 13px\n（なぜ13px？）"]
+        B2["padding: 17px\n（なぜ17px？）"]
+        B3["gap: 11px\n（なぜ11px？）"]
+    end
+    subgraph AFTER["スペーシングシステムあり"]
+        A1["margin: var(--space-3)\n= 12px（4×3）"]
+        A2["padding: var(--space-4)\n= 16px（4×4）"]
+        A3["gap: var(--space-3)\n= 12px（4×3）"]
+    end
+    style BEFORE fill:#4a1e1e,stroke:#ef4444,color:#fca5a5
+    style AFTER fill:#1e4a2d,stroke:#22c55e,color:#86efac`,
+
+'diag-14': `graph LR
+    U["4px\n基準単位"] --> T2["8px\n×2"] --> T3["12px\n×3"] --> T4["16px\n×4\n★頻出"] --> T6["24px\n×6"] --> T8["32px\n×8"] --> T12["48px\n×12"] --> T16["64px\n×16"]
+    style U fill:#6C47FF,color:#fff,stroke:none
+    style T2 fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style T3 fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style T4 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style T6 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style T8 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
+    style T12 fill:#3d2d4a,color:#c4b5fd,stroke:#8b5cf6
+    style T16 fill:#4a2d2d,color:#fca5a5,stroke:#ef4444`,
+
+'diag-15': `graph LR
+    XS["xs: 24px\nチップ・タグ"] --> SM["sm: 32px\n小ボタン"] --> MD["md: 40px\n標準ボタン★\n（推奨）"] --> LG["lg: 48px\n大ボタン"] --> XL["xl: 56px\n特大ボタン"]
+    style XS fill:#1e1e2e,color:#71717a,stroke:#3f3f46
+    style SM fill:#1e2d3d,color:#93c5fd,stroke:#3b82f6
+    style MD fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style LG fill:#3d2a1e,color:#fb923c,stroke:#ea580c
+    style XL fill:#4a1e4a,color:#e9d5ff,stroke:#a855f7`,
+
+'diag-16': `graph TD
+    subgraph PROXIMITY["近接の原則 — スペースで関連性を表現する"]
+        G1["関連が強い\n→ --space-1〜--space-2（4〜8px）\n例：ラベルと入力フォーム、見出しと本文"]
+        G2["関連が中程度\n→ --space-4〜--space-6（16〜24px）\n例：フォームフィールド間、リストアイテム間"]
+        G3["関連が弱い\n→ --space-12〜--space-16（48〜64px）\n例：セクションとセクション、独立したブロック間"]
+    end
+    style G1 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style G2 fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style G3 fill:#4a1e4a,color:#e9d5ff,stroke:#a855f7
+    style PROXIMITY fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`,
+
+'diag-17': `graph TD
+    CSS["CSSカスタムプロパティシステム\n基盤インフラ\n変数定義・スコープ・テーマ切り替えの仕組み"] --> COLOR
+    CSS --> TYPE
+    CSS --> SPACE
+    COLOR["カラーシステム\nプリミティブ→セマンティック→コンポーネント\nアクセシビリティ・ダークモード対応"]
+    TYPE["タイポグラフィシステム\nタイプスケール・フォント・行高・行長\nフルイドタイポグラフィ"]
+    SPACE["スペーシング・サイジングシステム\n4pxグリッド・トークン階層・近接の原則\nコンポーネント高さ・コンテナ幅"]
+    COLOR --> DS["デザインシステム\n一貫した・アクセシブルな\n保守しやすい UI"]
+    TYPE --> DS
+    SPACE --> DS
+    style CSS fill:#6C47FF,color:#fff,stroke:none
+    style COLOR fill:#2d4a6e,color:#93c5fd,stroke:#3b82f6
+    style TYPE fill:#2d3d2d,color:#86efac,stroke:#22c55e
+    style SPACE fill:#3d2a1e,color:#fb923c,stroke:#ea580c
+    style DS fill:#1e1e2e,color:#cdd6f4,stroke:#6C47FF`
+
+}; /* end DIAGRAMS */
+
+/* ═══════════════════════════════════════════════════════
+   MAIN INITIALIZATION
+═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+
+  /* ── 1. Mermaid 初期化 ── */
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#0f2035',
+      primaryColor: '#6C47FF',
+      primaryTextColor: '#dde8f8',
+      primaryBorderColor: '#1a3050',
+      lineColor: '#4a7090',
+      secondaryColor: '#0c1a2e',
+      tertiaryColor: '#0f2035',
+      fontSize: '13px',
+      fontFamily: 'Inter, system-ui, sans-serif',
+    },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+    graph:     { useMaxWidth: true }
+  });
+
+  /* ── 2. プレースホルダーへダイアグラム注入（textContent 経由）── */
+  for (const [id, src] of Object.entries(DIAGRAMS)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = src; /* ← innerHTML 禁止、textContent のみ使用 */
+    el.innerHTML = '';
+    el.appendChild(div);
+  }
+
+  /* ── 3. Mermaid レンダリング実行 ── */
+  try {
+    await mermaid.run({ querySelector: '.mermaid' });
+  } catch(e) {
+    console.warn('Mermaid render error:', e);
+  }
+
+  /* ── 4. SVG の固定幅を除去（レスポンシブ化）── */
+  document.querySelectorAll('.mermaid-wrap svg').forEach(svg => {
+    svg.removeAttribute('width');
+    svg.style.maxWidth = '100%';
+    svg.style.height   = 'auto';
+    svg.style.width    = '100%';
+  });
+
+  /* ── 5. highlight.js 初期化 ── */
+  document.querySelectorAll('pre code').forEach(el => {
+    el.classList.remove('hljs');
+  });
+  hljs.highlightAll();
+
+  /* ── 6. IntersectionObserver でサイドバーのアクティブ状態を更新 ── */
+  const navLinks = document.querySelectorAll('.nav-a');
+  const sections = Array.from(navLinks).map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+
+  const activeSections = new Set();
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        activeSections.add(entry.target);
+      } else {
+        activeSections.delete(entry.target);
+      }
+    });
+
+    const topmost = sections.find(s => activeSections.has(s));
+    if (topmost) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + topmost.id);
+      });
+    }
+  }, {
+    rootMargin: '-60px 0px -65% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(s => observer.observe(s));
+
+  /* ── 7. スクロールプログレスバー ── */
+  const progress = document.getElementById('progress');
+  const btt = document.getElementById('btt');
+
+  const updateScrollState = () => {
+    const scrolled = window.scrollY;
+    const total    = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (total > 0 ? (scrolled / total * 100) : 0) + '%';
+    btt.classList.toggle('show', scrolled > 400);
+  };
+
+  updateScrollState();
+  window.addEventListener('scroll', updateScrollState, { passive: true });
+
+});
+</script>
+</body>
+</html>

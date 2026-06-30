@@ -1,9 +1,9 @@
 /**
- * Extracts the CSS block for the specified scope class.
+ * Extracts the CSS selector and block for the specified scope class.
  *
- * @param cssContent - The full CSS source to search.
- * @param scopeClass - The scope class to match, such as `.hexagonal-architecture-comprehensive-guide`.
- * @returns The matching CSS block, or an empty string if no matching block is found.
+ * @param cssContent - The CSS source to search.
+ * @param scopeClass - The scope class selector to match.
+ * @returns The matching selector and block, or an empty string if no match is found.
  */
 export function extractScopedCssBlock(cssContent: string, scopeClass: string): string {
   let searchStart = 0;
@@ -91,13 +91,12 @@ export function extractScopedCssBlock(cssContent: string, scopeClass: string): s
     }
   }
 }
-
 /**
  * Determines whether a position falls within a CSS comment.
  *
  * @param cssContent - The CSS text to inspect
  * @param index - The position to check
- * @returns `true` if `index` is inside a `/* ... */` comment, `false` otherwise
+ * @returns `true` if `index` is inside a comment block, `false` otherwise
  */
 function isInComment(cssContent: string, index: number): boolean {
   let inComment = false;

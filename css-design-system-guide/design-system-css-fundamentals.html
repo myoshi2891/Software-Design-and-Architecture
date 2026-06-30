@@ -1,0 +1,3136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>デザインシステムとCSS設計の基礎 | フロントエンド入門ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+/* ===== CSS CUSTOM PROPERTIES ===== */
+:root {
+  --bg-base:        #07111e;
+  --bg-card:        #0d1b2a;
+  --bg-card2:       #101e2f;
+  --bg-code:        #0a1520;
+  --bg-sidebar:     #060f1b;
+  --border:         #162030;
+  --border2:        #1e3347;
+  --accent:         #6C47FF;
+  --accent-dim:     #4f34c7;
+  --accent-glow:    rgba(108,71,255,0.15);
+  --sky:            #38bdf8;
+  --emerald:        #34d399;
+  --amber:          #fbbf24;
+  --rose:           #f87171;
+  --violet:         #a78bfa;
+  --cyan:           #22d3ee;
+  --text-primary:   #e2e8f0;
+  --text-secondary: #bdcee5;
+  --text-muted:     #a4c6e7;
+  --sidebar-w:      272px;
+  --font-head:      "Space Grotesk", sans-serif;
+  --font-body:      "Inter", sans-serif;
+  --font-mono:      "JetBrains Mono", monospace;
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  display: flex;
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sb-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-logo h1 {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sb-logo p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.sb-progress {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-progress-bar {
+  height: 2px;
+  background: var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sb-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+.sb-progress-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+.sb-nav { padding: 12px 0 24px; flex: 1; }
+.sb-group { margin-bottom: 4px; }
+.sb-group-label {
+  padding: 6px 20px 3px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.sb-link {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 20px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+.sb-link:hover { color: var(--text-primary); background: rgba(108,71,255,0.06); }
+.sb-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-glow); }
+.sb-link .num {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.sb-link.sub { padding-left: 32px; font-size: 1rem; }
+
+/* ===== MAIN CONTENT ===== */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-width: 0;
+  padding: 0 48px 120px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 64px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(108,71,255,0.3);
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--accent); }
+.hero p {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 640px;
+  line-height: 1.7;
+}
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.hero-meta span {
+  font-size: 1rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.hero-meta span::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* ===== SECTIONS ===== */
+.section { margin-bottom: 80px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid rgba(108,71,255,0.3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+.section h2 {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subsection { margin-bottom: 56px; scroll-margin-top: 24px; }
+.subsection h3 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent);
+}
+
+p { color: var(--text-secondary); margin-bottom: 14px; line-height: 1.8; }
+p:last-child { margin-bottom: 0; }
+strong { color: var(--text-primary); font-weight: 600; }
+em { color: var(--amber); font-style: normal; font-weight: 500; }
+a { color: var(--sky); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== MERMAID DIAGRAMS ===== */
+.mermaid-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 20px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+.mermaid-wrap .mermaid {
+  display: flex;
+  justify-content: center;
+  min-height: 60px;
+}
+.mermaid-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+}
+
+/* ===== CODE BLOCKS ===== */
+.code-wrap { margin: 20px 0; }
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
+  border-radius: 10px 10px 0 0;
+  padding: 8px 16px;
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.code-desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+.code-wrap pre {
+  margin: 0;
+  border-radius: 0 0 10px 10px;
+  border: 1px solid var(--border);
+  border-top: none;
+  overflow-x: auto;
+}
+.code-wrap pre code {
+  font-family: var(--font-mono) !important;
+  font-size: 1rem !important;
+  line-height: 1.7 !important;
+  padding: 18px 20px !important;
+  background: var(--bg-code) !important;
+}
+
+/* ===== COMPARISON GRID ===== */
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.comp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.comp-card.good { border-color: rgba(52,211,153,0.3); }
+.comp-card.bad  { border-color: rgba(248,113,113,0.3); }
+.comp-head {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.comp-card.good .comp-head { background: rgba(52,211,153,0.08); color: var(--emerald); }
+.comp-card.bad  .comp-head { background: rgba(248,113,113,0.08); color: var(--rose); }
+.comp-card pre { margin: 0; border-radius: 0; border: none; }
+.comp-card pre code { font-size: 1rem !important; padding: 14px 16px !important; }
+
+/* ===== CALLOUT BOXES ===== */
+.callout {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 1px solid;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.callout-body h4 { font-size: 1rem; font-weight: 600; margin-bottom: 5px; }
+.callout-body p  { font-size: 1rem; margin-bottom: 0; }
+.callout.info    { background: rgba(56,189,248,0.06); border-color: rgba(56,189,248,0.25); }
+.callout.info .callout-body h4 { color: var(--sky); }
+.callout.warn    { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.25); }
+.callout.warn .callout-body h4 { color: var(--amber); }
+.callout.success { background: rgba(52,211,153,0.06); border-color: rgba(52,211,153,0.25); }
+.callout.success .callout-body h4 { color: var(--emerald); }
+.callout.danger  { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.25); }
+.callout.danger .callout-body h4  { color: var(--rose); }
+
+/* ===== TABLES ===== */
+.tbl-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--bg-code); }
+th {
+  padding: 11px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: left;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+td {
+  padding: 11px 16px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+td code, th code {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  background: rgba(108,71,255,0.12);
+  color: var(--violet);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+/* ===== BADGE / PILL ===== */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.badge.high   { background: rgba(248,113,113,0.15); color: var(--rose); }
+.badge.medium { background: rgba(251,191,36,0.15);  color: var(--amber); }
+.badge.low    { background: rgba(52,211,153,0.15);   color: var(--emerald); }
+
+/* ===== GRID CARDS ===== */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.card-icon { font-size: 22px; margin-bottom: 10px; }
+.card h4 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+.card p  { font-size: 1rem; color: var(--text-secondary); margin: 0; }
+
+/* ===== STEP LIST ===== */
+.step-list { margin: 20px 0; }
+.step-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  position: relative;
+}
+.step-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  width: 2px;
+  height: calc(100% - 8px);
+  background: var(--border2);
+}
+.step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  border: 1px solid rgba(108,71,255,0.4);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-content h4 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.step-content p  { font-size: 1rem; color: var(--text-secondary); margin: 0; }
+
+/* ===== REFERENCE LINKS ===== */
+.ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin: 20px 0; }
+.ref-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.ref-link:hover { border-color: rgba(56,189,248,0.4); background: rgba(56,189,248,0.04); text-decoration: none; }
+.ref-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.ref-text h5 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.ref-text span { font-size: 1rem; color: var(--text-muted); font-family: var(--font-mono); }
+.ref-tag {
+  font-size: 1rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(108,71,255,0.12);
+  color: var(--violet);
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* ===== SPECIFICITY VISUAL ===== */
+.spec-visual {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+.spec-box {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 17px;
+}
+.spec-a { background: rgba(248,113,113,0.15); color: var(--rose); }
+.spec-b { background: rgba(251,191,36,0.15);  color: var(--amber); }
+.spec-c { background: rgba(56,189,248,0.15);  color: var(--sky); }
+.spec-d { background: rgba(52,211,153,0.15);  color: var(--emerald); }
+.spec-sep { color: var(--text-muted); font-size: 1rem; }
+
+/* ===== UTILITY CLASSES ===== */
+.mt8  { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+.mb16 { margin-bottom: 16px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+.tag.purple  { background: rgba(108,71,255,0.1); border-color: rgba(108,71,255,0.3); color: var(--violet); }
+.tag.blue    { background: rgba(56,189,248,0.1);  border-color: rgba(56,189,248,0.3);  color: var(--sky); }
+.tag.green   { background: rgba(52,211,153,0.1);  border-color: rgba(52,211,153,0.3);  color: var(--emerald); }
+.tag.yellow  { background: rgba(251,191,36,0.1);  border-color: rgba(251,191,36,0.3);  color: var(--amber); }
+
+/* ===== DIVIDER ===== */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin: 40px 0;
+}
+
+/* ===== BACK TO TOP ===== */
+#top-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(108,71,255,0.4);
+  transition: transform 0.2s, opacity 0.2s;
+  z-index: 200;
+}
+#top-btn:hover { transform: translateY(-2px); }
+#top-btn.visible { display: flex; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  #main { margin-left: 0; padding: 0 20px 80px; }
+  .comp-grid { grid-template-columns: 1fr; }
+}
+
+/* fix: hljs background */
+.hljs { background: var(--bg-code) !important; }
+</style>
+</head>
+<body>
+<button id="top-btn" title="先頭へ戻る">&#8679;</button>
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <h1>🎨 フロントエンド入門</h1>
+    <p>デザインシステムとCSS設計の基礎</p>
+  </div>
+  <div class="sb-progress">
+    <div class="sb-progress-bar"><div class="sb-progress-fill" id="progress-fill"></div></div>
+    <div class="sb-progress-label" id="progress-label">読書進捗: 0%</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-group">
+      <div class="sb-group-label">第1章</div>
+      <a href="#s1"   class="sb-link"><span class="num">1</span>デザインシステムとは</a>
+      <a href="#s1-1" class="sb-link sub"><span class="num">1.1</span>定義と目的</a>
+      <a href="#s1-2" class="sb-link sub"><span class="num">1.2</span>なぜ必要か</a>
+      <a href="#s1-3" class="sb-link sub"><span class="num">1.3</span>構成要素</a>
+      <a href="#s1-4" class="sb-link sub"><span class="num">1.4</span>代表的な事例</a>
+      <a href="#s1-5" class="sb-link sub"><span class="num">1.5</span>構築ステップ</a>
+      <a href="#s1-6" class="sb-link sub"><span class="num">1.6</span>ベストプラクティス</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">第2章</div>
+      <a href="#s2"   class="sb-link"><span class="num">2</span>CSS設計の基礎原則</a>
+      <a href="#s2-1" class="sb-link sub"><span class="num">2.1</span>カスケードと詳細度</a>
+      <a href="#s2-2" class="sb-link sub"><span class="num">2.2</span>主要CSS設計手法</a>
+      <a href="#s2-3" class="sb-link sub"><span class="num">2.3</span>CSS変数</a>
+      <a href="#s2-4" class="sb-link sub"><span class="num">2.4</span>レイアウト設計</a>
+      <a href="#s2-5" class="sb-link sub"><span class="num">2.5</span>レスポンシブデザイン</a>
+      <a href="#s2-6" class="sb-link sub"><span class="num">2.6</span>ベストプラクティス</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">付録</div>
+      <a href="#s3"   class="sb-link"><span class="num">3</span>まとめと参考リソース</a>
+    </div>
+  </nav>
+</nav>
+<!-- ===== MAIN ===== -->
+<main id="main">
+<div class="hero" id="top">
+  <div class="hero-badge">🎓 入門ガイド</div>
+  <h1>デザインシステムと<br><span>CSS設計</span>の基礎</h1>
+  <p>フロントエンド開発における「再利用可能・保守しやすい・一貫した」UIを構築するための原則と実践パターンをステップバイステップで解説します。</p>
+  <div class="hero-meta">
+    <span>対象：フロントエンド初学者</span>
+    <span>難易度：🟢 入門〜中級</span>
+    <span>最終更新：2025年</span>
+    <span>推定読了：45〜60分</span>
+  </div>
+</div>
+
+<!-- ====================================================
+     SECTION 1: デザインシステムとは何か
+     ==================================================== -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">Ch. 1</span>
+    <h2>デザインシステムとは何か</h2>
+  </div>
+
+  <!-- 1.1 定義と目的 -->
+  <div class="subsection" id="s1-1">
+    <h3>1.1 定義と目的</h3>
+
+    <p>デザインシステムとは、<strong>プロダクト全体で一貫したUIを構築するための「単一の信頼できる情報源（Single Source of Truth）」</strong> です。デザインの原則・再利用可能なコンポーネント・ガイドラインをひとつのシステムとして統合したものを指します。</p>
+
+    <div class="callout info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <h4>Single Source of Truth とは？</h4>
+        <p>「情報の唯一の正しい出所」という概念です。色、フォント、スペースなどの値をひとつの場所で定義し、すべての画面・コンポーネントがそこを参照します。変更が必要になったときも1か所を修正するだけで全体に反映されます。</p>
+      </div>
+    </div>
+
+    <p>デザインシステムを構成する4つの柱を図で確認しましょう。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="ds_overview"></div>
+      <div class="mermaid-label">図1.1 — デザインシステムの全体構造</div>
+    </div>
+
+    <p>デザインシステムが<strong>ない</strong>と、以下のような問題が発生します。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>問題カテゴリ</th>
+            <th>具体的な症状</th>
+            <th>影響度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>見た目のばらつき</strong></td><td>ページAは青いボタン、ページBは緑のボタン</td><td><span class="badge high">高</span></td></tr>
+          <tr><td><strong>コードの重複</strong></td><td>同じようなコンポーネントが複数箇所に散在</td><td><span class="badge high">高</span></td></tr>
+          <tr><td><strong>開発速度の低下</strong></td><td>毎回ゼロからUIを実装する</td><td><span class="badge medium">中</span></td></tr>
+          <tr><td><strong>保守コストの増大</strong></td><td>色を変えるだけで数十ファイルを修正</td><td><span class="badge high">高</span></td></tr>
+          <tr><td><strong>チーム間の認識ずれ</strong></td><td>デザイナーとエンジニアで「プライマリカラー」が違う</td><td><span class="badge high">高</span></td></tr>
+          <tr><td><strong>アクセシビリティ後退</strong></td><td>コントラスト比などが各自バラバラに設定される</td><td><span class="badge medium">中</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 1.2 なぜ必要か -->
+  <div class="subsection" id="s1-2">
+    <h3>1.2 なぜデザインシステムが必要か</h3>
+    <p>デザインシステムがあるとないとでは、チームの動き方が根本的に変わります。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="ds_without_with"></div>
+      <div class="mermaid-label">図1.2 — デザインシステムあり vs なしの比較</div>
+    </div>
+
+    <div class="card-grid mt16">
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h4>一貫性の確保</h4>
+        <p>ユーザーが迷わない統一されたUIをどのページでも提供できます。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h4>開発効率の向上</h4>
+        <p>再利用可能なコンポーネントにより、新機能の実装スピードが大幅に上がります。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <h4>スケーラビリティ</h4>
+        <p>チームが10人になっても100人になっても品質を一定に保てます。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤝</div>
+        <h4>共通言語の形成</h4>
+        <p>デザイナーとエンジニアが同じ用語・同じコンポーネント名で話せます。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">♿</div>
+        <h4>アクセシビリティ</h4>
+        <p>コントラスト比・フォーカス・ARIA属性を一元管理できます。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔧</div>
+        <h4>保守性の向上</h4>
+        <p>デザイン変更が1か所の修正で全コンポーネントに即座に反映されます。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 構成要素 -->
+  <div class="subsection" id="s1-3">
+    <h3>1.3 デザインシステムの構成要素</h3>
+
+    <p>デザインシステムは「<strong>原子設計（Atomic Design）</strong>」の考え方で整理されることが多いです。Brad Frost が提唱したこの手法は、UIを5段階の抽象度で分類します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="atomic_design"></div>
+      <div class="mermaid-label">図1.3 — Atomic Design の5段階階層</div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">📚</span>
+      <div class="callout-body">
+        <h4>参考：Atomic Design by Brad Frost</h4>
+        <p>出典: <a href="https://atomicdesign.bradfrost.com/" target="_blank">https://atomicdesign.bradfrost.com/</a> — 原子設計の概念を詳細に解説した書籍（ウェブでも無料公開されています）</p>
+      </div>
+    </div>
+
+    <p>デザインシステムの最も根底にある概念が「<strong>デザイントークン（Design Tokens）</strong>」です。色・スペース・タイポグラフィなどの「値」を変数として定義し、全コンポーネントから参照します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="token_hierarchy"></div>
+      <div class="mermaid-label">図1.4 — デザイントークンの階層構造（プリミティブ → セマンティック → コンポーネント）</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">デザイントークンの全体設計例</span>
+      </div>
+      <pre><code class="language-css">/* =============================================
+   レイヤー1: プリミティブトークン（生の値）
+   絶対に直接コンポーネントで使わない。
+   セマンティックトークンを介してのみ参照する。
+   ============================================= */
+:root {
+  /* カラースケール */
+  --purple-100: #ede9fe;
+  --purple-300: #c4b5fd;
+  --purple-500: #6C47FF;   /* ブランドカラー */
+  --purple-700: #5b21b6;
+  --purple-900: #2e1065;
+
+  --neutral-50:  #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-400: #94a3b8;
+  --neutral-700: #334155;
+  --neutral-900: #0f172a;
+
+  --red-500: #ef4444;
+  --green-500: #22c55e;
+  --yellow-500: #eab308;
+
+  /* スペーススケール（4px基準グリッド） */
+  --primitive-space-1: 4px;
+  --primitive-space-2: 8px;
+  --primitive-space-3: 12px;
+  --primitive-space-4: 16px;
+  --primitive-space-6: 24px;
+  --primitive-space-8: 32px;
+  --primitive-space-12: 48px;
+  --primitive-space-16: 64px;
+
+  /* タイポグラフィスケール */
+  --primitive-text-xs:   0.75rem;   /* 12px */
+  --primitive-text-sm:   0.875rem;  /* 14px */
+  --primitive-text-base: 1rem;      /* 16px */
+  --primitive-text-lg:   1.125rem;  /* 18px */
+  --primitive-text-xl:   1.25rem;   /* 20px */
+  --primitive-text-2xl:  1.5rem;    /* 24px */
+  --primitive-text-3xl:  1.875rem;  /* 30px */
+}
+
+/* =============================================
+   レイヤー2: セマンティックトークン（意味付き）
+   「何のために使うか」を名前で表現する。
+   ============================================= */
+:root {
+  /* 色 — 役割ベース */
+  --color-primary:          var(--purple-500);
+  --color-primary-hover:    var(--purple-700);
+  --color-danger:           var(--red-500);
+  --color-success:          var(--green-500);
+  --color-warning:          var(--yellow-500);
+
+  --color-bg-base:          var(--neutral-900);
+  --color-bg-surface:       var(--neutral-700);
+  --color-text-primary:     var(--neutral-50);
+  --color-text-secondary:   var(--neutral-400);
+  --color-border:           var(--neutral-700);
+
+  /* スペース — 用途ベース */
+  --space-component-xs:  var(--primitive-space-1);  /* 4px  */
+  --space-component-sm:  var(--primitive-space-2);  /* 8px  */
+  --space-component-md:  var(--primitive-space-4);  /* 16px */
+  --space-component-lg:  var(--primitive-space-6);  /* 24px */
+  --space-layout-md:     var(--primitive-space-8);  /* 32px */
+  --space-layout-lg:     var(--primitive-space-12); /* 48px */
+
+  /* タイポグラフィ — 用途ベース */
+  --text-body:     var(--primitive-text-base);
+  --text-body-sm:  var(--primitive-text-sm);
+  --text-label:    var(--primitive-text-xs);
+  --text-heading:  var(--primitive-text-2xl);
+  --text-display:  var(--primitive-text-3xl);
+
+  /* ボーダー半径 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+}
+
+/* =============================================
+   レイヤー3: コンポーネントトークン
+   特定コンポーネントのみで参照する変数
+   ============================================= */
+.button {
+  --btn-bg:         var(--color-primary);
+  --btn-bg-hover:   var(--color-primary-hover);
+  --btn-text:       white;
+  --btn-padding-v:  var(--space-component-sm);
+  --btn-padding-h:  var(--space-component-md);
+  --btn-radius:     var(--radius-md);
+
+  /* ↑ 上記変数をここで使用 */
+  display: inline-flex;
+  align-items: center;
+  padding: var(--btn-padding-v) var(--btn-padding-h);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-radius: var(--btn-radius);
+  transition: background 0.15s ease;
+}
+
+.button:hover { background: var(--btn-bg-hover); }
+</code></pre>
+    </div>
+  </div>
+
+  <!-- 1.4 代表的な事例 -->
+  <div class="subsection" id="s1-4">
+    <h3>1.4 代表的なデザインシステムの事例</h3>
+    <p>世界の主要テック企業は独自のデザインシステムを公開しています。特徴を把握して設計の参考にしましょう。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>システム名</th>
+            <th>企業</th>
+            <th>主な特徴</th>
+            <th>技術スタック</th>
+            <th>公式URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Material Design 3</strong></td>
+            <td>Google</td>
+            <td>物理的なマテリアルの振る舞いを模倣。ダイナミックカラー対応。</td>
+            <td>Web / Android / iOS</td>
+            <td><a href="https://m3.material.io/" target="_blank">m3.material.io</a></td>
+          </tr>
+          <tr>
+            <td><strong>Lightning DS</strong></td>
+            <td>Salesforce</td>
+            <td>エンタープライズ向け。アクセシビリティの基準が特に高い。</td>
+            <td>Web Components / LWC</td>
+            <td><a href="https://www.lightningdesignsystem.com/" target="_blank">lightningdesignsystem.com</a></td>
+          </tr>
+          <tr>
+            <td><strong>Carbon DS</strong></td>
+            <td>IBM</td>
+            <td>WCAG準拠に強み。4つのテーマ（白・グレー・黒・暗）。</td>
+            <td>React / Web</td>
+            <td><a href="https://carbondesignsystem.com/" target="_blank">carbondesignsystem.com</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ant Design</strong></td>
+            <td>Alibaba</td>
+            <td>React向けに最適化。豊富なUIコンポーネント数。</td>
+            <td>React / Vue / Angular</td>
+            <td><a href="https://ant.design/" target="_blank">ant.design</a></td>
+          </tr>
+          <tr>
+            <td><strong>Polaris</strong></td>
+            <td>Shopify</td>
+            <td>Eコマース特化。マーチャントの業務フローを起点に設計。</td>
+            <td>React</td>
+            <td><a href="https://polaris.shopify.com/" target="_blank">polaris.shopify.com</a></td>
+          </tr>
+          <tr>
+            <td><strong>Primer</strong></td>
+            <td>GitHub</td>
+            <td>開発者ツール向け。コードの可読性・開発者体験を重視。</td>
+            <td>React / CSS</td>
+            <td><a href="https://primer.style/" target="_blank">primer.style</a></td>
+          </tr>
+          <tr>
+            <td><strong>Fluent UI</strong></td>
+            <td>Microsoft</td>
+            <td>Office 365との統一感。Windows・Web・iOS横断。</td>
+            <td>React / Web Components</td>
+            <td><a href="https://fluent2.microsoft.design/" target="_blank">fluent2.microsoft.design</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout success">
+      <span class="callout-icon">🎯</span>
+      <div class="callout-body">
+        <h4>初学者へのアドバイス</h4>
+        <p>既存のデザインシステムのソースコードを読むことは、CSS設計の最良の教材です。特に <a href="https://carbondesignsystem.com/" target="_blank">Carbon Design System</a> はデザイントークンの設計が特に参考になります。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.5 構築ステップ -->
+  <div class="subsection" id="s1-5">
+    <h3>1.5 デザインシステムの構築ステップ</h3>
+    <p>ゼロからデザインシステムを構築する際の推奨フローを示します。一気に完成させようとせず、<strong>段階的に育てていくアプローチ</strong>が成功の鍵です。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="ds_build_steps"></div>
+      <div class="mermaid-label">図1.5 — デザインシステム構築の7ステップフロー</div>
+    </div>
+
+    <div class="step-list mt24">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>既存UIの棚卸し</h4>
+          <p>現在使用されているすべての色・フォント・スペース・コンポーネントをリストアップします。意外にも数十〜数百種類の値が散在していることが多いです。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>デザイン原則の言語化</h4>
+          <p>「シンプルさを大切にする」「常にアクセシブルであること」など、設計の意思決定を支える価値観を文書化します。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>デザイントークンの設定</h4>
+          <p>プリミティブ → セマンティックの2層構造でトークンを定義します（CSS カスタムプロパティ推奨）。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>基本コンポーネントの作成</h4>
+          <p>Button・Input・Label・Badge などの原子（Atom）レベルのコンポーネントを定義します。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>複合コンポーネントの組み合わせ</h4>
+          <p>原子を組み合わせた SearchBar・Card・Modal などの分子（Molecule）・有機体（Organism）を構築します。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h4>ドキュメントの整備</h4>
+          <p>Storybook などを活用してコンポーネントの使い方・バリアント・禁止事項を記録します。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h4>継続的なメンテナンス</h4>
+          <p>デザインシステムは「完成」しません。プロダクトの進化に合わせて継続的に更新・改善します。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.6 ベストプラクティス -->
+  <div class="subsection" id="s1-6">
+    <h3>1.6 ベストプラクティス</h3>
+
+    <p>デザインシステムの設計・運用で陥りやすいミスと、その解決策を示します。</p>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP1：トークンは階層化して定義する</h4>
+    <p>直接ハードコードされた値を使うと変更に弱くなります。必ずプリミティブ → セマンティックの2層構造を使います。</p>
+
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — ハードコード</div>
+        <pre><code class="language-css">.button {
+  /* 直書き。ブランドカラー変更時に
+     全ファイルを検索・置換する必要あり */
+  background: #6C47FF;
+  border-radius: 8px;
+  font-size: 14px;
+}
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — トークン経由</div>
+        <pre><code class="language-css">.button {
+  /* トークン変数を参照。
+     :root の値を変えれば全体に反映 */
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-sm);
+}
+</code></pre>
+      </div>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP2：コンポーネントは「単一責任の原則」で設計する</h4>
+    <p>コンポーネント自身は<strong>見た目だけ</strong>を担当し、配置（マージン・幅）は使う側が決めます。</p>
+
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — レイアウトを持つコンポーネント</div>
+        <pre><code class="language-css">.button {
+  background: var(--color-primary);
+  /* ↓ コンポーネントが外部のレイアウトに干渉 */
+  margin: 0 auto;
+  width: 100%;
+  display: block;
+}
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — 見た目だけを担当</div>
+        <pre><code class="language-css">.button {
+  /* コンポーネント固有の見た目のみ */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-component-xs);
+  padding: var(--btn-padding-v) var(--btn-padding-h);
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  /* margin・width は使う側に任せる */
+}
+</code></pre>
+      </div>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP3：バリアントはクラス修飾子で表現する（BEM方式）</h4>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">HTML + CSS</span>
+        <span class="code-desc">BEMによるバリアント設計</span>
+      </div>
+      <pre><code class="language-html">&lt;!-- HTML: Block__Element--Modifier 記法 --&gt;
+&lt;button class="button button--primary"&gt;送信&lt;/button&gt;
+&lt;button class="button button--secondary"&gt;キャンセル&lt;/button&gt;
+&lt;button class="button button--danger"&gt;削除&lt;/button&gt;
+&lt;button class="button button--primary button--sm"&gt;小ボタン&lt;/button&gt;
+&lt;button class="button button--primary" disabled&gt;無効&lt;/button&gt;</code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">BEMスタイル定義</span>
+      </div>
+      <pre><code class="language-css">/* === ベーススタイル（共通） === */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-component-xs);
+  padding: var(--btn-padding-v, 8px) var(--btn-padding-h, 16px);
+  font-family: inherit;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s, transform 0.1s;
+}
+
+.button:active   { transform: scale(0.97); }
+.button:disabled { opacity: 0.4; cursor: not-allowed; }
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* === カラーバリアント（スキン） === */
+.button--primary {
+  background: var(--color-primary);
+  color: white;
+}
+.button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.button--secondary:hover:not(:disabled) {
+  background: rgba(108,71,255,0.08);
+}
+
+.button--danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* === サイズバリアント === */
+.button--sm {
+  --btn-padding-v: 4px;
+  --btn-padding-h: 12px;
+  font-size: var(--text-label);
+}
+
+.button--lg {
+  --btn-padding-v: 12px;
+  --btn-padding-h: 24px;
+  font-size: var(--text-body);
+}
+</code></pre>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP4：ダークモード対応はトークンで自動化する</h4>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">メディアクエリ + CSS変数によるダークモード自動切り替え</span>
+      </div>
+      <pre><code class="language-css">/* ライトモード（デフォルト） */
+:root {
+  --color-bg-base:        #ffffff;
+  --color-bg-surface:     #f1f5f9;
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #64748b;
+  --color-border:         #e2e8f0;
+}
+
+/* ダークモード（OS設定に自動対応） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-base:        #07111e;
+    --color-bg-surface:     #0d1b2a;
+    --color-text-primary:   #e2e8f0;
+    --color-text-secondary: #94a3b8;
+    --color-border:         #162030;
+  }
+}
+
+/* data属性でユーザーが手動切り替えもできる */
+[data-theme="dark"] {
+  --color-bg-base:        #07111e;
+  /* ... */
+}
+
+body {
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  /* ↑ すべてのコンポーネントがトークンを参照しているので
+     :root の変数を切り替えるだけで全体が変わる */
+}
+</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================
+     SECTION 2: CSS設計の基礎原則
+     ==================================================== -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">Ch. 2</span>
+    <h2>CSS設計の基礎原則</h2>
+  </div>
+
+  <!-- 2.1 カスケードと詳細度 -->
+  <div class="subsection" id="s2-1">
+    <h3>2.1 CSSカスケードと詳細度</h3>
+
+    <p>CSSで最も重要な概念のひとつが「<strong>カスケード（Cascade）</strong>」です。複数のスタイルが同じ要素に適用された場合、どれが優先されるかを3つのルールで決定します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="css_cascade"></div>
+      <div class="mermaid-label">図2.1 — CSSカスケードの優先度決定ルール</div>
+    </div>
+
+    <h4 style="color:var(--text-primary);margin:28px 0 12px;font-size:1rem;">詳細度（Specificity）の計算方法</h4>
+    <p>詳細度は <strong>(a, b, c)</strong> の3桁で計算します（インラインは特別扱い）。大きい桁が優先されます。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>セレクタの種類</th>
+            <th>詳細度</th>
+            <th>ビジュアル</th>
+            <th>例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>インラインスタイル</strong></td>
+            <td><code>(1,0,0,0)</code></td>
+            <td>
+              <div class="spec-visual">
+                <div class="spec-box spec-a">1</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-b">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-c">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-d">0</div>
+              </div>
+            </td>
+            <td><code>style="color:red"</code></td>
+          </tr>
+          <tr>
+            <td><strong>IDセレクタ</strong></td>
+            <td><code>(0,1,0,0)</code></td>
+            <td>
+              <div class="spec-visual">
+                <div class="spec-box spec-a">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-b">1</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-c">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-d">0</div>
+              </div>
+            </td>
+            <td><code>#header</code></td>
+          </tr>
+          <tr>
+            <td><strong>クラス・属性・疑似クラス</strong></td>
+            <td><code>(0,0,1,0)</code></td>
+            <td>
+              <div class="spec-visual">
+                <div class="spec-box spec-a">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-b">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-c">1</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-d">0</div>
+              </div>
+            </td>
+            <td><code>.button</code>, <code>[type="text"]</code>, <code>:hover</code></td>
+          </tr>
+          <tr>
+            <td><strong>タグ・疑似要素</strong></td>
+            <td><code>(0,0,0,1)</code></td>
+            <td>
+              <div class="spec-visual">
+                <div class="spec-box spec-a">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-b">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-c">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-d">1</div>
+              </div>
+            </td>
+            <td><code>div</code>, <code>p</code>, <code>::before</code></td>
+          </tr>
+          <tr>
+            <td><strong>ユニバーサル・継承</strong></td>
+            <td><code>(0,0,0,0)</code></td>
+            <td>
+              <div class="spec-visual">
+                <div class="spec-box spec-a">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-b">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-c">0</div>
+                <span class="spec-sep">,</span>
+                <div class="spec-box spec-d">0</div>
+              </div>
+            </td>
+            <td><code>*</code>, <code>inherit</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">詳細度の計算例 — 数値を比べることで適用順が決まる</span>
+      </div>
+      <pre><code class="language-css">/* 詳細度: (0,0,0,1) — タグ1個 */
+p { color: black; }
+
+/* 詳細度: (0,0,1,0) — クラス1個 → 上より勝つ */
+.text { color: blue; }
+
+/* 詳細度: (0,1,0,0) — ID1個 → さらに勝つ */
+#content { color: green; }
+
+/* 詳細度: (0,1,1,1) — ID+クラス+タグ → 最も強い */
+p.text#content { color: red; }
+
+/* =========================================
+   複合セレクタの計算練習
+   ========================================= */
+
+/* (0,0,1,1) — クラス1 + タグ1 */
+nav li { color: gray; }
+
+/* (0,0,2,1) — クラス2 + タグ1 */
+.nav .nav-item { color: blue; }  /* こちらが勝つ */
+
+/* (0,0,1,2) — クラス1 + タグ2 */
+ul li.active { color: red; }    /* (0,0,1,2) vs (0,0,2,1) → (0,0,2,1) が勝つ */
+
+/* =========================================
+   !important — 最終手段（基本的に使わない）
+   ========================================= */
+
+/* 詳細度がどれだけ高くても !important が勝つ */
+#very-specific-selector.and-class { color: purple; }
+.simple-class { color: orange !important; } /* これが勝つ */
+</code></pre>
+    </div>
+
+    <div class="callout danger">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <h4>!important の多用は厳禁</h4>
+        <p><code>!important</code> は「詳細度の戦争」を引き起こし、後からスタイルを変更することが困難になります。<code>!important</code> を使いたくなったら、設計を見直すサインです。CSS設計手法（BEM等）を適切に使えば、ほぼ必要ありません。出典: <a href="https://developer.mozilla.org/ja/docs/Web/CSS/Specificity" target="_blank">MDN — 詳細度</a></p>
+      </div>
+    </div>
+
+    <h4 style="color:var(--text-primary);margin:28px 0 12px;font-size:1rem;">CSS Cascade Layers（@layer）— 最新の解決策</h4>
+    <p>CSS Layers を使うと、詳細度に依存せずスタイルの優先順位を明示的に制御できます（2023年以降、全主要ブラウザ対応）。</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">@layer — レイヤーで優先度を明示管理</span>
+      </div>
+      <pre><code class="language-css">/* レイヤーの優先順位を宣言（後のレイヤーが強い） */
+@layer base, tokens, components, utilities;
+
+@layer base {
+  /* リセットCSS・デフォルトスタイル */
+  * { box-sizing: border-box; }
+  p { margin: 0; }
+}
+
+@layer tokens {
+  /* デザイントークン */
+  :root {
+    --color-primary: #6C47FF;
+  }
+}
+
+@layer components {
+  /* コンポーネント（詳細度が高くてもbaseに勝てる） */
+  .button {
+    background: var(--color-primary);
+  }
+}
+
+@layer utilities {
+  /* ユーティリティクラス — 最強 */
+  .bg-transparent { background: transparent !important; }
+}
+</code></pre>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">🔗</span>
+      <div class="callout-body">
+        <h4>参考：CSS Cascade について深く学ぶ</h4>
+        <p><a href="https://developer.mozilla.org/ja/docs/Web/CSS/Cascade" target="_blank">MDN — カスケード、詳細度、継承</a> | <a href="https://web.dev/learn/css/the-cascade" target="_blank">web.dev — The Cascade</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.2 主要CSS設計手法 -->
+  <div class="subsection" id="s2-2">
+    <h3>2.2 主要なCSS設計手法</h3>
+    <p>CSS設計には複数のアプローチがあります。それぞれの特徴を理解し、プロジェクトに合ったものを選択しましょう。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="css_methodologies"></div>
+      <div class="mermaid-label">図2.2 — 主要CSS設計手法の概要</div>
+    </div>
+
+    <h4 style="color:var(--sky);margin:28px 0 12px;font-size:1rem;">🔷 BEM（Block Element Modifier）</h4>
+    <p>最も広く普及しているCSS命名規則です。<strong>Block__Element--Modifier</strong> の形式でクラス名を構成します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="bem_structure"></div>
+      <div class="mermaid-label">図2.3 — BEM の3要素と命名規則</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">HTML + CSS</span>
+        <span class="code-desc">BEM — カードコンポーネントの完全な例</span>
+      </div>
+      <pre><code class="language-html">&lt;!-- Block: .card（独立したコンポーネント）
+     Modifier: .card--featured（状態・バリアント）
+     Element: .card__image .card__title などのBlock内要素 --&gt;
+&lt;article class="card card--featured"&gt;
+  &lt;img     class="card__image" src="thumbnail.jpg" alt="記事のサムネイル"&gt;
+  &lt;div     class="card__body"&gt;
+    &lt;span  class="card__category"&gt;デザイン&lt;/span&gt;
+    &lt;h2    class="card__title"&gt;デザインシステム入門&lt;/h2&gt;
+    &lt;p     class="card__description"&gt;UIの一貫性を保つ方法を解説...&lt;/p&gt;
+    &lt;div   class="card__footer"&gt;
+      &lt;a   class="card__link card__link--primary" href="#"&gt;続きを読む →&lt;/a&gt;
+      &lt;span class="card__meta"&gt;5分で読める&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">BEM スタイル定義（フラットで詳細度が低い）</span>
+      </div>
+      <pre><code class="language-css">/* Block — 独立したコンポーネントの基本スタイル */
+.card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Block Modifier — カードのバリアント */
+.card--featured {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* Elements — Block の内部要素 */
+.card__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.card__body {
+  padding: var(--space-component-lg);
+}
+
+.card__category {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.card__title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: var(--space-component-xs) 0;
+  line-height: 1.3;
+}
+
+.card__description {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-component-md);
+}
+
+.card__link {
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Element Modifier */
+.card__link--primary { color: var(--color-primary); }
+
+.card__meta {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+</code></pre>
+    </div>
+
+    <div class="divider"></div>
+
+    <h4 style="color:var(--amber);margin:0 0 12px;font-size:1rem;">🔶 OOCSS（Object-Oriented CSS）</h4>
+    <p>「<strong>構造（Structure）</strong>」と「<strong>スキン（Skin）</strong>」を分離し、再利用性を高めるアプローチです。Nicole Sullivan が提唱しました。</p>
+
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — 構造とスキンが混在（重複多数）</div>
+        <pre><code class="language-css">.button-primary {
+  display: inline-flex;   /* ← 重複 */
+  padding: 8px 16px;      /* ← 重複 */
+  border-radius: 6px;     /* ← 重複 */
+  font-weight: 500;       /* ← 重複 */
+  background: #6C47FF;
+  color: white;
+}
+
+.button-danger {
+  display: inline-flex;   /* 同じ */
+  padding: 8px 16px;      /* 同じ */
+  border-radius: 6px;     /* 同じ */
+  font-weight: 500;       /* 同じ */
+  background: #ef4444;
+  color: white;
+}
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — 構造とスキンを分離</div>
+        <pre><code class="language-css">/* 構造クラス（Shape / Structure） */
+.btn {
+  display: inline-flex;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* スキンクラス（Skin） */
+.btn-primary {
+  background: #6C47FF;
+  color: white;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* HTML: 組み合わせて使う */
+/* &lt;button class="btn btn-primary"&gt; */
+/* &lt;button class="btn btn-danger"&gt; */
+</code></pre>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">📚</span>
+      <div class="callout-body">
+        <h4>参考：OOCSS</h4>
+        <p>Nicole Sullivan による OOCSS の原典: <a href="https://github.com/stubbornella/oocss/wiki" target="_blank">github.com/stubbornella/oocss</a></p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h4 style="color:var(--emerald);margin:0 0 12px;font-size:1rem;">🔷 SMACSS（Scalable and Modular Architecture for CSS）</h4>
+    <p>CSSのルールを5つのカテゴリに分類する設計手法です。Jonathan Snook が考案しました。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="smacss_categories"></div>
+      <div class="mermaid-label">図2.4 — SMACSS の5カテゴリ分類</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">SMACSS — 各カテゴリの実装例</span>
+      </div>
+      <pre><code class="language-css">/* =======================================
+   1. Base — リセット・デフォルトスタイル
+   ======================================= */
+*, *::before, *::after { box-sizing: border-box; }
+body   { font-family: var(--font-body); line-height: 1.7; }
+img    { max-width: 100%; display: block; }
+a      { color: var(--color-primary); }
+
+/* =======================================
+   2. Layout — ページレイアウト構造
+   プレフィックス: .l-
+   ======================================= */
+.l-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-layout-md);
+}
+
+.l-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: var(--space-layout-md);
+}
+
+.l-sidebar  { grid-column: 1; }
+.l-main     { grid-column: 2; }
+
+/* =======================================
+   3. Module — 再利用可能なUI部品
+   BEM記法と組み合わせることが多い
+   ======================================= */
+.card { /* ... */ }
+.card__title { /* ... */ }
+.card--featured { /* ... */ }
+
+.nav { display: flex; gap: 0; }
+.nav__item { /* ... */ }
+.nav__link { /* ... */ }
+
+/* =======================================
+   4. State — 状態変化
+   プレフィックス: .is-  .has-
+   ======================================= */
+.is-active   { background: var(--color-primary); }
+.is-hidden   { display: none !important; }
+.is-loading  { opacity: 0.5; pointer-events: none; }
+.is-disabled { cursor: not-allowed; opacity: 0.4; }
+.has-error   { border-color: var(--color-danger); }
+
+/* =======================================
+   5. Theme — ビジュアルテーマ切り替え
+   プレフィックス: .theme-
+   ======================================= */
+.theme-dark {
+  --color-bg-base:      #07111e;
+  --color-text-primary: #e2e8f0;
+}
+
+.theme-high-contrast {
+  --color-primary: #0000ff;
+  --color-text-primary: #000000;
+}
+</code></pre>
+    </div>
+
+    <div class="divider"></div>
+
+    <h4 style="color:var(--violet);margin:0 0 12px;font-size:1rem;">⚡ Utility-First（Tailwind CSS的アプローチ）</h4>
+    <p>単一の目的を持つ小さなクラス（ユーティリティ）を組み合わせてスタイルを構成します。Tailwind CSS がこのアプローチを普及させました。</p>
+
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">従来のアプローチ</div>
+        <pre><code class="language-html">&lt;button class="submit-btn"&gt;送信&lt;/button&gt;</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ Utility-First（Tailwind CSS風）</div>
+        <pre><code class="language-html">&lt;button class="px-4 py-2 bg-purple-600
+  text-white font-medium rounded-md
+  hover:bg-purple-700 focus:outline-none
+  focus:ring-2 focus:ring-purple-500
+  focus:ring-offset-2 transition-colors"&gt;
+  送信
+&lt;/button&gt;</code></pre>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚡</span>
+      <div class="callout-body">
+        <h4>Utility-First のトレードオフ</h4>
+        <p>クラス名を覚えれば実装が速く、CSSファイルが肥大化しません。一方でHTMLが長くなり、チームで一貫性を保つには規律が必要です。参考: <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS 公式ドキュメント</a></p>
+      </div>
+    </div>
+
+    <h4 style="color:var(--text-primary);margin:28px 0 12px;font-size:1rem;">各手法の比較</h4>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>手法</th>
+            <th>学習コスト</th>
+            <th>保守性</th>
+            <th>柔軟性</th>
+            <th>HTML可読性</th>
+            <th>適したプロジェクト</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>BEM</strong></td>
+            <td><span class="badge low">低</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td>中〜大規模、チーム開発</td>
+          </tr>
+          <tr>
+            <td><strong>OOCSS</strong></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge medium">中</span></td>
+            <td>大規模、再利用性重視</td>
+          </tr>
+          <tr>
+            <td><strong>SMACSS</strong></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td>大規模、構造化重視</td>
+          </tr>
+          <tr>
+            <td><strong>Utility-First</strong></td>
+            <td><span class="badge low">低*</span></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge high">低</span></td>
+            <td>小〜大規模、プロトタイプ</td>
+          </tr>
+          <tr>
+            <td><strong>CSS Modules</strong></td>
+            <td><span class="badge medium">中</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge low">高</span></td>
+            <td><span class="badge low">高</span></td>
+            <td>React/Vue コンポーネント</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:1rem;color:var(--text-muted);">*ユーティリティ名は Tailwind CSS の命名規則を学習する必要がある</p>
+  </div>
+
+  <!-- 2.3 CSS変数 -->
+  <div class="subsection" id="s2-3">
+    <h3>2.3 CSS変数（カスタムプロパティ）</h3>
+    <p>CSS変数（正式名称：CSSカスタムプロパティ）は、現代のCSS設計の核心です。JavaScriptからも操作でき、動的なテーマ切り替えが可能になります。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="css_var_scope"></div>
+      <div class="mermaid-label">図2.5 — CSS変数のスコープと継承の仕組み</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">CSS変数の基本 — 定義・使用・フォールバック・スコープ</span>
+      </div>
+      <pre><code class="language-css">/* ===== 1. 定義（:root = グローバルスコープ） ===== */
+:root {
+  --color-primary: #6C47FF;
+  --spacing-unit: 4px;
+}
+
+/* ===== 2. 使用 ===== */
+.component {
+  color: var(--color-primary);
+  padding: calc(var(--spacing-unit) * 4); /* → 16px */
+}
+
+/* ===== 3. フォールバック値（変数が未定義の場合） ===== */
+.component {
+  /* 第2引数がフォールバック。ネストも可能。 */
+  color: var(--color-primary, var(--color-accent, #6C47FF));
+}
+
+/* ===== 4. スコープ（コンポーネントレベルの変数） ===== */
+.card {
+  /* .card の中でのみ有効。外部に漏れない。 */
+  --card-padding: 24px;
+  --card-bg: var(--color-bg-surface);
+
+  padding: var(--card-padding);
+  background: var(--card-bg);
+}
+
+/* スコープ変数をコンポーネント内で上書き */
+.card--compact {
+  --card-padding: 12px; /* コンパクト版は狭くする */
+}
+
+/* ===== 5. calc() と組み合わせる ===== */
+:root {
+  --base-size: 16px;
+  --scale-ratio: 1.25;
+}
+
+.text-sm   { font-size: calc(var(--base-size) / var(--scale-ratio)); }
+.text-base { font-size: var(--base-size); }
+.text-lg   { font-size: calc(var(--base-size) * var(--scale-ratio)); }
+.text-xl   { font-size: calc(var(--base-size) * var(--scale-ratio) * var(--scale-ratio)); }
+
+/* ===== 6. JavaScript との連携 ===== */
+/* CSS変数はJSから動的に変更できる */
+
+/* JS:
+   // 読み取り
+   const color = getComputedStyle(document.documentElement)
+     .getPropertyValue('--color-primary');
+
+   // 書き込み（全体に影響）
+   document.documentElement.style
+     .setProperty('--color-primary', '#ff6b35');
+
+   // 要素スコープで書き込み
+   element.style.setProperty('--card-padding', '32px');
+*/
+</code></pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">実践的なダークモード実装 — CSS変数を活用した完全な例</span>
+      </div>
+      <pre><code class="language-css">/* ========================================
+   テーマシステム全体設計
+   ======================================== */
+
+/* デフォルト（ライトモード） */
+:root {
+  color-scheme: light;
+
+  /* 背景 */
+  --bg-base:    #ffffff;
+  --bg-surface: #f1f5f9;
+  --bg-overlay: rgba(0,0,0,0.5);
+
+  /* テキスト */
+  --text-primary:   #0f172a;
+  --text-secondary: #64748b;
+  --text-disabled:  #94a3b8;
+
+  /* ボーダー */
+  --border-default: #e2e8f0;
+  --border-strong:  #cbd5e1;
+
+  /* ブランドカラーはモード間で不変 */
+  --color-primary:        #6C47FF;
+  --color-primary-hover:  #5a38e0;
+
+  /* シャドウ */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ダークモード — OS設定を優先 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg-base:        #07111e;
+    --bg-surface:     #0d1b2a;
+    --bg-overlay:     rgba(0,0,0,0.7);
+    --text-primary:   #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-disabled:  #475569;
+    --border-default: #162030;
+    --border-strong:  #1e3347;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+  }
+}
+
+/* 手動切り替え（ユーザーの明示的な選択） */
+[data-theme="dark"]  { /* ↑と同じ変数を定義 */ }
+[data-theme="light"] { /* ↑ライトモードの値を再定義 */ }
+
+/* ↓ コンポーネントはトークンのみ参照。テーマを意識不要。 */
+body    { background: var(--bg-base); color: var(--text-primary); }
+.card   { background: var(--bg-surface); border-color: var(--border-default); }
+.button { background: var(--color-primary); } /* ブランドカラーは変わらない */
+</code></pre>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">🔗</span>
+      <div class="callout-body">
+        <h4>参考：CSS カスタムプロパティ</h4>
+        <p><a href="https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties" target="_blank">MDN — CSS カスタムプロパティの使用</a> | <a href="https://web.dev/learn/css/custom-properties" target="_blank">web.dev — CSS 変数</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.4 レイアウト設計 -->
+  <div class="subsection" id="s2-4">
+    <h3>2.4 レイアウト設計の基礎</h3>
+    <p>現代のCSSレイアウトは「<strong>Flexbox</strong>（1次元）」と「<strong>CSS Grid</strong>（2次元）」を組み合わせて設計します。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="layout_comparison"></div>
+      <div class="mermaid-label">図2.6 — Flexbox vs CSS Grid の使い分け</div>
+    </div>
+
+    <h4 style="color:var(--sky);margin:28px 0 12px;font-size:1rem;">🔷 Flexbox — 1次元レイアウト</h4>
+    <p>ナビゲーション・ツールバー・カードのアイテム整列など、<strong>1方向（行または列）</strong>のレイアウトに最適です。</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">Flexbox の主要プロパティと典型的パターン</span>
+      </div>
+      <pre><code class="language-css">/* ============================================
+   Flexbox コンテナプロパティ
+   ============================================ */
+.flex-container {
+  display: flex;
+
+  /* 主軸方向（アイテムの並び方向） */
+  flex-direction: row;          /* 横並び（デフォルト） */
+  /* flex-direction: column; */  /* 縦並び */
+
+  /* 主軸方向の揃え */
+  justify-content: flex-start;   /* 左揃え */
+  /* justify-content: center; */   /* 中央揃え */
+  /* justify-content: flex-end; */ /* 右揃え */
+  /* justify-content: space-between; */ /* 両端揃え、均等 */
+  /* justify-content: space-around; */  /* 均等スペース */
+
+  /* 交差軸方向の揃え */
+  align-items: stretch;    /* 引き伸ばし（デフォルト） */
+  /* align-items: center; */  /* 交差軸中央 */
+  /* align-items: flex-start; */
+
+  /* 折り返し */
+  flex-wrap: nowrap;    /* 折り返さない（デフォルト） */
+  /* flex-wrap: wrap; */ /* 折り返す */
+
+  /* アイテム間スペース */
+  gap: 16px;            /* 均等 */
+  /* gap: 16px 8px; */  /* 縦 横 */
+}
+
+/* ============================================
+   Flexbox アイテムプロパティ
+   ============================================ */
+.flex-item {
+  /* 伸縮比率: grow shrink basis */
+  flex: 1;           /* 等幅で伸びる */
+  /* flex: 0 0 200px; */ /* 固定幅200px */
+  /* flex: 2; */         /* 他のアイテムの2倍の幅 */
+
+  /* 個別の交差軸揃え上書き */
+  align-self: center;
+}
+
+/* ============================================
+   実践的なパターン集
+   ============================================ */
+
+/* パターン1: ナビゲーションバー */
+.navbar {
+  display: flex;
+  justify-content: space-between; /* ロゴ ←→ メニュー */
+  align-items: center;
+  padding: 0 var(--space-layout-md);
+  height: 60px;
+  background: var(--bg-surface);
+}
+
+/* パターン2: 中央揃えのページ全体 */
+.page-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* パターン3: メディアオブジェクト（画像+テキスト） */
+.media-object {
+  display: flex;
+  gap: var(--space-component-md);
+  align-items: flex-start;
+}
+
+.media-object__image { flex-shrink: 0; } /* 画像は縮まない */
+.media-object__body  { flex: 1; }        /* テキストは残り幅を取る */
+
+/* パターン4: フレキシブルフォームフィールド */
+.input-group {
+  display: flex;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+}
+
+.input-group input  { flex: 1; border: none; padding: 10px 14px; }
+.input-group button { flex-shrink: 0; padding: 10px 20px; }
+
+/* パターン5: スティッキーフッター */
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.page-layout main   { flex: 1; } /* メインが残り高さを全部取る */
+.page-layout footer { flex-shrink: 0; }
+</code></pre>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:28px 0 12px;font-size:1rem;">🔷 CSS Grid — 2次元レイアウト</h4>
+    <p>ページ全体の骨格・複雑なダッシュボードなど、<strong>行と列の両方向</strong>を同時に制御したい場合に使います。</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">CSS Grid — 主要プロパティと実践的なレイアウトパターン</span>
+      </div>
+      <pre><code class="language-css">/* ============================================
+   CSS Grid の基本
+   ============================================ */
+.grid-container {
+  display: grid;
+
+  /* カラム定義 */
+  grid-template-columns: 200px 1fr 1fr;     /* 固定幅 + 可変幅2列 */
+  grid-template-columns: repeat(3, 1fr);     /* 等幅3列 */
+  grid-template-columns: repeat(12, 1fr);    /* 12カラムグリッド */
+
+  /* 行定義（省略可、コンテンツに合わせて自動調整） */
+  grid-template-rows: auto 1fr auto;  /* ヘッダー・メイン・フッター */
+
+  /* アイテム間のスペース */
+  gap: 24px;           /* 縦横同じ */
+  /* gap: 32px 16px; */ /* 縦 横 */
+}
+
+/* ============================================
+   パターン1: レスポンシブカードグリッド（auto-fill）
+   ============================================ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* auto-fill: 可能な限りカラムを作る
+     minmax(280px, 1fr): 最小280px、最大1fr
+     → 画面幅に応じて自動的にカラム数が変わる */
+  gap: var(--space-component-lg);
+}
+
+/* ============================================
+   パターン2: 聖杯レイアウト（Holy Grail Layout）
+   ============================================ */
+.holy-grail {
+  display: grid;
+  grid-template-areas:
+    "header  header  header"
+    "sidebar main    aside"
+    "footer  footer  footer";
+  grid-template-columns: 220px 1fr 220px;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  gap: 0;
+}
+
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main    { grid-area: main; }
+.aside   { grid-area: aside; }
+.footer  { grid-area: footer; }
+
+/* ============================================
+   パターン3: ダッシュボードグリッド
+   ============================================ */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto 1fr;
+  gap: 16px;
+}
+
+/* 特定アイテムを複数カラム・行にまたがらせる */
+.dashboard__kpi      { /* デフォルト: 1x1 */ }
+.dashboard__chart-main {
+  grid-column: span 2;  /* 2カラム幅 */
+  grid-row: span 2;     /* 2行分の高さ */
+}
+.dashboard__wide {
+  grid-column: 1 / -1;  /* 全カラム幅 */
+}
+
+/* ============================================
+   パターン4: サブグリッド（CSS Grid Level 2）
+   親グリッドの行列を子に継承させる
+   ============================================ */
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: masonry; /* 将来の仕様 */
+}
+
+.card {
+  display: grid;
+  grid-row: span 3; /* 3行分 */
+  grid-template-rows: subgrid; /* 親のグリッドトラックを継承 */
+}
+/* → すべてのカードのタイトル・本文・フッターが横方向で揃う */
+</code></pre>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">🔗</span>
+      <div class="callout-body">
+        <h4>参考：レイアウトを深く学ぶ</h4>
+        <p>
+          <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank">CSS-Tricks — A Complete Guide to Flexbox</a> |
+          <a href="https://css-tricks.com/snippets/css/complete-guide-grid/" target="_blank">CSS-Tricks — A Complete Guide to Grid</a> |
+          <a href="https://every-layout.dev/" target="_blank">Every Layout（Heydon Pickering &amp; Andy Bell）</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.5 レスポンシブデザイン -->
+  <div class="subsection" id="s2-5">
+    <h3>2.5 レスポンシブデザイン</h3>
+    <p>あらゆる画面サイズで最適なUIを提供するための設計手法です。<strong>モバイルファースト</strong>（小さい画面から設計を始める）が現在の標準アプローチです。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="responsive_design"></div>
+      <div class="mermaid-label">図2.7 — モバイルファーストのレスポンシブ設計フロー</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">モバイルファースト — 推奨の実装パターン</span>
+      </div>
+      <pre><code class="language-css">/* =============================================
+   ブレークポイント定義（コメントで管理）
+   CSS変数はmedia query内では使えないため注意
+   /* --bp-sm: 640px  */
+   /* --bp-md: 768px  */
+   /* --bp-lg: 1024px */
+   /* --bp-xl: 1280px */
+   ============================================= */
+
+/* =============================================
+   モバイル（デフォルト・min-width なし）
+   320px 〜 767px をカバー
+   ============================================= */
+.container {
+  padding: var(--space-component-md);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;  /* 1カラム */
+  gap: var(--space-component-md);
+}
+
+.navbar__menu {
+  display: none; /* モバイルでは隠す */
+}
+
+.navbar__hamburger {
+  display: flex; /* ハンバーガーメニューを表示 */
+}
+
+/* =============================================
+   タブレット（768px 以上）
+   ============================================= */
+@media (min-width: 768px) {
+  .container {
+    padding: var(--space-component-lg);
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2カラム */
+  }
+
+  .navbar__menu { display: flex; }
+  .navbar__hamburger { display: none; }
+}
+
+/* =============================================
+   デスクトップ（1024px 以上）
+   ============================================= */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-layout-md);
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3カラム */
+  }
+}
+
+/* =============================================
+   大画面（1280px 以上）
+   ============================================= */
+@media (min-width: 1280px) {
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4カラム */
+  }
+}
+
+/* =============================================
+   コンテナクエリ（Container Queries）— 最新手法
+   親要素のサイズに応じてスタイルを変える
+   2023年全主要ブラウザ対応
+   ============================================= */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* カードが400px以上の幅を持つ場合 */
+@container card (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 120px 1fr; /* 横並びレイアウト */
+  }
+}
+
+/* =============================================
+   流動的なタイポグラフィ（clamp()）
+   ビューポート幅に応じてフォントサイズが滑らかに変化
+   ============================================= */
+.heading-fluid {
+  /* clamp(最小値, 理想値, 最大値) */
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  /* 最小24px、4vw（画面幅の4%）、最大48px */
+}
+
+.spacing-fluid {
+  padding: clamp(16px, 3vw, 48px);
+}
+</code></pre>
+    </div>
+
+    <div class="callout success">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <h4>モバイルファーストが推奨される理由</h4>
+        <p>モバイル向けのシンプルなスタイルを書いてから大きな画面向けに追加するのは、逆よりも<strong>認知負荷が低く</strong>パフォーマンスも優れます（モバイルデバイスが不要なスタイルを読み込まなくて済む）。出典: <a href="https://web.dev/learn/design/intro/" target="_blank">web.dev — Responsive design</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.6 ベストプラクティス -->
+  <div class="subsection" id="s2-6">
+    <h3>2.6 ベストプラクティス</h3>
+
+    <h4 style="color:var(--emerald);margin:20px 0 12px;font-size:1rem;">✅ BP1：セレクタのネストは3階層以内に保つ</h4>
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — 深すぎるネスト</div>
+        <pre><code class="language-css">/* 詳細度が高くなりすぎて後から
+   上書きが困難になる */
+.page .content .section
+  .card .card__body .card__title {
+  font-size: 1.2rem;
+}
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — BEMで扁平に保つ</div>
+        <pre><code class="language-css">/* 詳細度が低く、どこからでも上書き可能 */
+.card__title {
+  font-size: var(--text-lg);
+}
+
+/* バリアントはModifierで */
+.card--compact .card__title {
+  font-size: var(--text-base);
+}
+</code></pre>
+      </div>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP2：マジックナンバーを排除し変数とcalc()を使う</h4>
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — 意味不明な数値</div>
+        <pre><code class="language-css">.modal {
+  /* なぜ72pxなのか、後から読む人が
+     わからない（ヘッダーの高さだが…） */
+  top: 72px;
+  height: calc(100vh - 72px);
+}
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — 変数で意図を表現</div>
+        <pre><code class="language-css">:root {
+  --header-height: 60px;
+}
+
+.modal {
+  /* 意図が明確。ヘッダー高さ変更時も1箇所のみ */
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+}
+</code></pre>
+      </div>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP3：アクセシビリティを標準で組み込む</h4>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">アクセシビリティのCSSベストプラクティス（WCAG 2.1準拠）</span>
+      </div>
+      <pre><code class="language-css">/* 1. フォーカスインジケーターを絶対に消さない
+      視覚的なフォーカスはキーボードユーザーの命綱 */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;  /* 要素と少し離す */
+  border-radius: 3px;   /* 角を丸くして見やすく */
+}
+
+/* outline: none は禁止。どうしても消す場合は代替スタイルを必ず提供 */
+.custom-button:focus-visible {
+  outline: none; /* ← これだけはダメ */
+  box-shadow: 0 0 0 3px var(--color-primary); /* 代替フォーカスリング */
+}
+
+/* 2. コントラスト比を確保する（WCAG AA基準: 4.5:1以上）
+      デザイントークンでコントラスト値を管理する */
+:root {
+  /* これらの組み合わせはコントラスト比チェック済み */
+  --text-on-white:  #374151;  /* 4.6:1 ✓ */
+  --text-on-dark:   #f1f5f9;  /* 13:1  ✓ */
+  --text-muted:     #6b7280;  /* 4.6:1 ✓ */
+
+  /* NG 例: #999 on #fff = 2.85:1 → 基準未満 */
+}
+
+/* 3. 動きを減らす設定を尊重する */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 4. スクリーンリーダー専用テキスト（視覚的に隠すが読み上げはされる） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 5. 高コントラストモード対応 */
+@media (forced-colors: active) {
+  .button {
+    border: 2px solid ButtonText; /* システムカラーを使用 */
+  }
+}
+</code></pre>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP4：論理プロパティで国際化対応</h4>
+
+    <div class="comp-grid">
+      <div class="comp-card bad">
+        <div class="comp-head">❌ NG — 方向固定（RTL対応不可）</div>
+        <pre><code class="language-css">.element {
+  margin-left: 16px;
+  padding-right: 8px;
+  border-left: 2px solid;
+  text-align: left;
+}
+/* アラビア語・ヘブライ語（右から左）
+   の言語では崩れる */
+</code></pre>
+      </div>
+      <div class="comp-card good">
+        <div class="comp-head">✅ OK — 論理プロパティ（RTL自動対応）</div>
+        <pre><code class="language-css">.element {
+  margin-inline-start: 16px;  /* LTR→左, RTL→右 */
+  padding-inline-end: 8px;    /* LTR→右, RTL→左 */
+  border-inline-start: 2px solid;
+  text-align: start; /* LTR→左, RTL→右 */
+}
+/* html[dir="rtl"] を設定するだけで
+   レイアウトが自動的に反転する */
+</code></pre>
+      </div>
+    </div>
+
+    <h4 style="color:var(--emerald);margin:24px 0 12px;font-size:1rem;">✅ BP5：パフォーマンスを意識したCSSを書く</h4>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">CSS</span>
+        <span class="code-desc">CSS パフォーマンス最適化のベストプラクティス</span>
+      </div>
+      <pre><code class="language-css">/* 1. アニメーションは transform / opacity のみを使う
+      これらはGPUで処理され、レイアウトを再計算しない */
+
+/* ❌ NG: レイアウトに影響するプロパティをアニメーション */
+.element-bad {
+  transition: width 0.3s, height 0.3s, top 0.3s;
+  /* → 毎フレームレイアウト再計算が発生（重い） */
+}
+
+/* ✅ OK: transform / opacity のみ */
+.element-good {
+  transition: transform 0.3s, opacity 0.3s;
+  /* → GPUで処理。60fps維持可能 */
+}
+
+.slide-in { transform: translateX(100%); opacity: 0; }
+.slide-in.active { transform: translateX(0); opacity: 1; }
+
+/* 2. will-change で事前にGPUレイヤーを作る
+      多用するとメモリ使用量が増えるので必要箇所のみ */
+.modal {
+  will-change: transform; /* アニメーション開始前に設定 */
+}
+/* アニメーション終了後は削除 */
+.modal.done { will-change: auto; }
+
+/* 3. contain プロパティで再計算範囲を限定 */
+.isolated-component {
+  contain: layout style paint; /* このコンポーネント外に影響しない */
+}
+
+/* 4. content-visibility で画面外のレンダリングをスキップ */
+.article-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px; /* スキップ時の推定サイズ */
+}
+</code></pre>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">🔗</span>
+      <div class="callout-body">
+        <h4>参考：アクセシビリティとパフォーマンス</h4>
+        <p>
+          <a href="https://waic.jp/translations/WCAG21/" target="_blank">WCAG 2.1 日本語訳</a> |
+          <a href="https://developer.mozilla.org/ja/docs/Web/Accessibility" target="_blank">MDN — アクセシビリティ</a> |
+          <a href="https://web.dev/articles/content-visibility" target="_blank">web.dev — content-visibility</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================
+     SECTION 3: まとめと参考リソース
+     ==================================================== -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">付録</span>
+    <h2>まとめと参考リソース</h2>
+  </div>
+
+  <div class="subsection">
+    <h3>学習ロードマップ</h3>
+    <p>本ガイドで学んだ内容の全体像と、次に進むべき学習パスを俯瞰しましょう。</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid" data-diagram="learning_path"></div>
+      <div class="mermaid-label">図3.1 — CSS設計・デザインシステムの学習ロードマップ</div>
+    </div>
+
+    <h3 style="margin-top:40px;">重要ポイントの総復習</h3>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>章</th>
+            <th>トピック</th>
+            <th>核心のポイント</th>
+            <th>難易度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1.1</strong></td>
+            <td>デザインシステムの定義</td>
+            <td>Single Source of Truth。色・スペース・コンポーネントを一元管理</td>
+            <td><span class="badge low">入門</span></td>
+          </tr>
+          <tr>
+            <td><strong>1.3</strong></td>
+            <td>Atomic Design</td>
+            <td>原子→分子→有機体→テンプレート→ページの5階層でUI部品を分類</td>
+            <td><span class="badge low">入門</span></td>
+          </tr>
+          <tr>
+            <td><strong>1.3</strong></td>
+            <td>デザイントークン</td>
+            <td>プリミティブ（raw値）→セマンティック（意味付き）→コンポーネントの3層構造</td>
+            <td><span class="badge medium">中級</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.1</strong></td>
+            <td>CSSカスケード</td>
+            <td>優先度は「重要度 → 詳細度 → ソース順」。!importantは最終手段</td>
+            <td><span class="badge low">入門</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.2</strong></td>
+            <td>BEM記法</td>
+            <td>Block__Element--Modifier。詳細度を低く保ちながら構造を表現</td>
+            <td><span class="badge low">入門</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.3</strong></td>
+            <td>CSS変数</td>
+            <td>:rootで定義しvar()で参照。スコープ・フォールバック・JS連携が可能</td>
+            <td><span class="badge low">入門</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.4</strong></td>
+            <td>Flexbox vs Grid</td>
+            <td>1方向→Flexbox、2方向→Grid。組み合わせて使う</td>
+            <td><span class="badge medium">中級</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.5</strong></td>
+            <td>レスポンシブデザイン</td>
+            <td>モバイルファースト + min-width メディアクエリ + clamp()</td>
+            <td><span class="badge medium">中級</span></td>
+          </tr>
+          <tr>
+            <td><strong>2.6</strong></td>
+            <td>アクセシビリティ</td>
+            <td>:focus-visible・コントラスト比4.5:1・prefers-reduced-motion</td>
+            <td><span class="badge medium">中級</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>📚 公式ドキュメント・仕様</h3>
+    <div class="ref-grid">
+      <a href="https://developer.mozilla.org/ja/docs/Web/CSS" class="ref-link" target="_blank">
+        <span class="ref-icon">📖</span>
+        <div class="ref-text">
+          <h5>MDN Web Docs — CSS</h5>
+          <span>developer.mozilla.org</span>
+        </div>
+        <span class="ref-tag">必読</span>
+      </a>
+      <a href="https://developer.mozilla.org/ja/docs/Web/CSS/Cascade" class="ref-link" target="_blank">
+        <span class="ref-icon">🌊</span>
+        <div class="ref-text">
+          <h5>MDN — カスケード・詳細度・継承</h5>
+          <span>developer.mozilla.org</span>
+        </div>
+        <span class="ref-tag">必読</span>
+      </a>
+      <a href="https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties" class="ref-link" target="_blank">
+        <span class="ref-icon">🎨</span>
+        <div class="ref-text">
+          <h5>MDN — CSS カスタムプロパティ</h5>
+          <span>developer.mozilla.org</span>
+        </div>
+        <span class="ref-tag">必読</span>
+      </a>
+      <a href="https://www.w3.org/TR/css-cascade-5/" class="ref-link" target="_blank">
+        <span class="ref-icon">📄</span>
+        <div class="ref-text">
+          <h5>W3C — CSS Cascade Level 5（@layer仕様）</h5>
+          <span>w3.org</span>
+        </div>
+        <span class="ref-tag">仕様書</span>
+      </a>
+      <a href="https://www.designtokens.org/" class="ref-link" target="_blank">
+        <span class="ref-icon">🪙</span>
+        <div class="ref-text">
+          <h5>Design Tokens Community Group (W3C)</h5>
+          <span>designtokens.org</span>
+        </div>
+        <span class="ref-tag">仕様書</span>
+      </a>
+    </div>
+
+    <h3 style="margin-top:36px;">🎓 デザインシステム学習</h3>
+    <div class="ref-grid">
+      <a href="https://atomicdesign.bradfrost.com/" class="ref-link" target="_blank">
+        <span class="ref-icon">⚛️</span>
+        <div class="ref-text">
+          <h5>Atomic Design by Brad Frost</h5>
+          <span>atomicdesign.bradfrost.com</span>
+        </div>
+        <span class="ref-tag">無料</span>
+      </a>
+      <a href="https://m3.material.io/" class="ref-link" target="_blank">
+        <span class="ref-icon">🎭</span>
+        <div class="ref-text">
+          <h5>Material Design 3 — Google</h5>
+          <span>m3.material.io</span>
+        </div>
+        <span class="ref-tag">事例</span>
+      </a>
+      <a href="https://carbondesignsystem.com/" class="ref-link" target="_blank">
+        <span class="ref-icon">🔲</span>
+        <div class="ref-text">
+          <h5>Carbon Design System — IBM</h5>
+          <span>carbondesignsystem.com</span>
+        </div>
+        <span class="ref-tag">事例</span>
+      </a>
+      <a href="https://polaris.shopify.com/" class="ref-link" target="_blank">
+        <span class="ref-icon">🛍️</span>
+        <div class="ref-text">
+          <h5>Polaris — Shopify</h5>
+          <span>polaris.shopify.com</span>
+        </div>
+        <span class="ref-tag">事例</span>
+      </a>
+      <a href="https://www.designbetter.co/design-systems-handbook" class="ref-link" target="_blank">
+        <span class="ref-icon">📘</span>
+        <div class="ref-text">
+          <h5>Design Systems Handbook — InVision</h5>
+          <span>designbetter.co</span>
+        </div>
+        <span class="ref-tag">無料</span>
+      </a>
+      <a href="https://storybook.js.org/" class="ref-link" target="_blank">
+        <span class="ref-icon">📚</span>
+        <div class="ref-text">
+          <h5>Storybook — コンポーネント管理ツール</h5>
+          <span>storybook.js.org</span>
+        </div>
+        <span class="ref-tag">ツール</span>
+      </a>
+    </div>
+
+    <h3 style="margin-top:36px;">🎨 CSS設計手法</h3>
+    <div class="ref-grid">
+      <a href="https://getbem.com/" class="ref-link" target="_blank">
+        <span class="ref-icon">🧱</span>
+        <div class="ref-text">
+          <h5>BEM 公式サイト</h5>
+          <span>getbem.com</span>
+        </div>
+        <span class="ref-tag">手法</span>
+      </a>
+      <a href="https://smacss.com/" class="ref-link" target="_blank">
+        <span class="ref-icon">🗂️</span>
+        <div class="ref-text">
+          <h5>SMACSS 公式サイト</h5>
+          <span>smacss.com</span>
+        </div>
+        <span class="ref-tag">手法</span>
+      </a>
+      <a href="https://tailwindcss.com/docs" class="ref-link" target="_blank">
+        <span class="ref-icon">💨</span>
+        <div class="ref-text">
+          <h5>Tailwind CSS ドキュメント</h5>
+          <span>tailwindcss.com</span>
+        </div>
+        <span class="ref-tag">ツール</span>
+      </a>
+      <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" class="ref-link" target="_blank">
+        <span class="ref-icon">📐</span>
+        <div class="ref-text">
+          <h5>CSS-Tricks — Complete Guide to Flexbox</h5>
+          <span>css-tricks.com</span>
+        </div>
+        <span class="ref-tag">ガイド</span>
+      </a>
+      <a href="https://css-tricks.com/snippets/css/complete-guide-grid/" class="ref-link" target="_blank">
+        <span class="ref-icon">📊</span>
+        <div class="ref-text">
+          <h5>CSS-Tricks — Complete Guide to Grid</h5>
+          <span>css-tricks.com</span>
+        </div>
+        <span class="ref-tag">ガイド</span>
+      </a>
+      <a href="https://every-layout.dev/" class="ref-link" target="_blank">
+        <span class="ref-icon">🔧</span>
+        <div class="ref-text">
+          <h5>Every Layout — Heydon Pickering &amp; Andy Bell</h5>
+          <span>every-layout.dev</span>
+        </div>
+        <span class="ref-tag">ガイド</span>
+      </a>
+    </div>
+
+    <h3 style="margin-top:36px;">♿ アクセシビリティ</h3>
+    <div class="ref-grid">
+      <a href="https://waic.jp/translations/WCAG21/" class="ref-link" target="_blank">
+        <span class="ref-icon">♿</span>
+        <div class="ref-text">
+          <h5>WCAG 2.1 日本語訳</h5>
+          <span>waic.jp</span>
+        </div>
+        <span class="ref-tag">仕様書</span>
+      </a>
+      <a href="https://developer.mozilla.org/ja/docs/Web/Accessibility" class="ref-link" target="_blank">
+        <span class="ref-icon">🦮</span>
+        <div class="ref-text">
+          <h5>MDN — アクセシビリティ</h5>
+          <span>developer.mozilla.org</span>
+        </div>
+        <span class="ref-tag">必読</span>
+      </a>
+      <a href="https://webaim.org/resources/contrastchecker/" class="ref-link" target="_blank">
+        <span class="ref-icon">🎨</span>
+        <div class="ref-text">
+          <h5>WebAIM — コントラストチェッカー</h5>
+          <span>webaim.org</span>
+        </div>
+        <span class="ref-tag">ツール</span>
+      </a>
+    </div>
+
+    <h3 style="margin-top:36px;">🚀 発展学習・プラットフォーム</h3>
+    <div class="ref-grid">
+      <a href="https://web.dev/learn/css/" class="ref-link" target="_blank">
+        <span class="ref-icon">🌐</span>
+        <div class="ref-text">
+          <h5>web.dev — Learn CSS (Google)</h5>
+          <span>web.dev</span>
+        </div>
+        <span class="ref-tag">無料</span>
+      </a>
+      <a href="https://css-for-js.dev/" class="ref-link" target="_blank">
+        <span class="ref-icon">⚛️</span>
+        <div class="ref-text">
+          <h5>CSS for JavaScript Developers — Josh W. Comeau</h5>
+          <span>css-for-js.dev</span>
+        </div>
+        <span class="ref-tag">有料</span>
+      </a>
+      <a href="https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/" class="ref-link" target="_blank">
+        <span class="ref-icon">🎮</span>
+        <div class="ref-text">
+          <h5>Interactive Guide to Flexbox — Josh W. Comeau</h5>
+          <span>joshwcomeau.com</span>
+        </div>
+        <span class="ref-tag">無料</span>
+      </a>
+      <a href="https://github.com/amzn/style-dictionary" class="ref-link" target="_blank">
+        <span class="ref-icon">🪙</span>
+        <div class="ref-text">
+          <h5>Style Dictionary — Amazon（トークン管理ツール）</h5>
+          <span>amzn.github.io/style-dictionary</span>
+        </div>
+        <span class="ref-tag">ツール</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main><!-- /#main -->
+<script>
+/* =====================================================
+   MERMAID DIAGRAM DEFINITIONS
+   ===================================================== */
+const DIAGRAMS = {
+
+  ds_overview: `graph TD
+    A["🎨 デザインシステム<br/><small>Single Source of Truth</small>"] --> B["🪙 デザイントークン<br/>色・スペース・タイポグラフィ"]
+    A --> C["🧱 UIコンポーネント<br/>ボタン・フォーム・カード"]
+    A --> D["📐 デザイン原則<br/>一貫性・アクセシビリティ"]
+    A --> E["📚 ドキュメント<br/>Storybook・ガイドライン"]
+    B --> F["プリミティブトークン<br/>raw値"]
+    B --> G["セマンティックトークン<br/>意味を持つ値"]
+    C --> H["Atoms 原子"]
+    C --> I["Molecules 分子"]
+    C --> J["Organisms 有機体"]
+    style A fill:#6C47FF,color:#fff,stroke:none
+    style B fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style C fill:#1a3328,color:#86efac,stroke:#22c55e
+    style D fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b
+    style E fill:#2a1a3a,color:#c084fc,stroke:#a855f7
+    style F fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6,stroke-dasharray:4
+    style G fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6
+    style H fill:#0d1b2a,color:#86efac,stroke:#22c55e,stroke-dasharray:4
+    style I fill:#0d1b2a,color:#86efac,stroke:#22c55e
+    style J fill:#0d1b2a,color:#86efac,stroke:#22c55e`,
+
+  ds_without_with: `flowchart LR
+    subgraph WITHOUT["❌ デザインシステムなし"]
+      direction TB
+      DA["デザイナーA"] --> P1["ページ1<br/>青ボタン"]
+      DB["デザイナーB"] --> P2["ページ2<br/>緑ボタン"]
+      DC["エンジニアC"] --> P3["ページ3<br/>赤ボタン"]
+      P1 -. "スタイル不一致" .- P2
+      P2 -. "スタイル不一致" .- P3
+    end
+    subgraph WITH["✅ デザインシステムあり"]
+      direction TB
+      DS["🎨 デザインシステム"] --> Q1["ページ1"]
+      DS --> Q2["ページ2"]
+      DS --> Q3["ページ3"]
+      Q1 --> Q2
+      Q2 --> Q3
+    end
+    WITHOUT --> WITH
+    style DS fill:#6C47FF,color:#fff,stroke:none
+    style WITHOUT fill:#1f1215,stroke:#f87171,color:#f87171
+    style WITH fill:#0f1f15,stroke:#34d399,color:#34d399`,
+
+  atomic_design: `graph BT
+    A["⚡ 原子 Atoms<br/>Button · Input · Label · Icon"] --> B["🧬 分子 Molecules<br/>SearchBar · FormField · Card"]
+    B --> C["🦠 有機体 Organisms<br/>Header · ProductGrid · Sidebar"]
+    C --> D["📄 テンプレート Templates<br/>ページレイアウト骨格"]
+    D --> E["🖥️ ページ Pages<br/>実際のコンテンツを含む完成画面"]
+    style A fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style B fill:#1a3328,color:#86efac,stroke:#22c55e
+    style C fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b
+    style D fill:#2a1a3a,color:#c084fc,stroke:#a855f7
+    style E fill:#1a3020,color:#4ade80,stroke:#16a34a`,
+
+  token_hierarchy: `graph LR
+    subgraph L1["Layer 1: プリミティブトークン（raw値）"]
+      P1["--purple-500: #6C47FF"]
+      P2["--space-4: 16px"]
+      P3["--text-base: 1rem"]
+    end
+    subgraph L2["Layer 2: セマンティックトークン（意味付き）"]
+      S1["--color-primary"]
+      S2["--space-component-md"]
+      S3["--text-body"]
+    end
+    subgraph L3["Layer 3: コンポーネントトークン"]
+      C1[".button → --btn-bg"]
+      C2[".card → --card-padding"]
+    end
+    P1 --> S1
+    P2 --> S2
+    P3 --> S3
+    S1 --> C1
+    S2 --> C2
+    style L1 fill:#0d1b2a,stroke:#3b82f6,color:#93c5fd
+    style L2 fill:#0d2a1a,stroke:#22c55e,color:#86efac
+    style L3 fill:#1a0d2a,stroke:#a855f7,color:#c084fc`,
+
+  ds_build_steps: `flowchart TD
+    S1["Step 1 🔍<br/>既存UIの棚卸し<br/>現状の色・フォント・コンポーネントを洗い出す"] --> S2
+    S2["Step 2 🧭<br/>デザイン原則の言語化<br/>どんな価値観でデザインするかを明文化"] --> S3
+    S3["Step 3 🪙<br/>デザイントークンの設定<br/>色・スペース・タイポグラフィを変数化"] --> S4
+    S4["Step 4 ⚡<br/>基本コンポーネントの作成<br/>Button · Input · Icon などの原子を定義"] --> S5
+    S5["Step 5 🔗<br/>複合コンポーネントの構築<br/>分子・有機体レベルを組み合わせる"] --> S6
+    S6["Step 6 📚<br/>ドキュメントの整備<br/>Storybookなどで使い方・禁止事項を記録"] --> S7
+    S7["Step 7 🔄<br/>継続的なメンテナンス<br/>フィードバックを収集して継続改善"]
+    style S1 fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6
+    style S2 fill:#0d1b2a,color:#fcd34d,stroke:#f59e0b
+    style S3 fill:#0d1b2a,color:#c084fc,stroke:#a855f7
+    style S4 fill:#0d1b2a,color:#86efac,stroke:#22c55e
+    style S5 fill:#0d1b2a,color:#f97316,stroke:#ea580c
+    style S6 fill:#0d1b2a,color:#fb923c,stroke:#f97316
+    style S7 fill:#6C47FF,color:#fff,stroke:none`,
+
+  css_cascade: `graph TD
+    A["スタイルの衝突が発生"] --> B{"優先度ステップ1<br/>重要度チェック"}
+    B -->|"!important あり"| WIN1["!important スタイルが勝つ"]
+    B -->|"通常スタイル"| C{"優先度ステップ2<br/>詳細度（Specificity）比較"}
+    C -->|"詳細度が高い"| WIN2["詳細度の高いセレクタが勝つ"]
+    C -->|"詳細度が同じ"| D{"優先度ステップ3<br/>ソース順（記述順）"}
+    D -->|"後に書かれている"| WIN3["後のスタイルが勝つ"]
+    WIN1 --> APPLY["✅ そのスタイルを適用"]
+    WIN2 --> APPLY
+    WIN3 --> APPLY
+    style A fill:#1a0d2a,color:#c084fc,stroke:#a855f7
+    style WIN1 fill:#3a1515,color:#f87171,stroke:#ef4444
+    style WIN2 fill:#152a3a,color:#93c5fd,stroke:#3b82f6
+    style WIN3 fill:#153a25,color:#86efac,stroke:#22c55e
+    style APPLY fill:#6C47FF,color:#fff,stroke:none`,
+
+  css_methodologies: `graph LR
+    M["CSS設計手法"] --> BEM["BEM<br/>Block__Element--Modifier<br/>命名規則ベース"]
+    M --> OOCSS["OOCSS<br/>構造とスキンの分離<br/>再利用性重視"]
+    M --> SMACSS["SMACSS<br/>5カテゴリ分類<br/>Base/Layout/Module/State/Theme"]
+    M --> UTIL["Utility-First<br/>Tailwind CSS的<br/>単機能クラスの組み合わせ"]
+    M --> CSSM["CSS Modules<br/>ローカルスコープ<br/>React/Vueコンポーネント向け"]
+    style M fill:#6C47FF,color:#fff,stroke:none
+    style BEM fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style OOCSS fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b
+    style SMACSS fill:#1a3328,color:#86efac,stroke:#22c55e
+    style UTIL fill:#2a1a3a,color:#c084fc,stroke:#a855f7
+    style CSSM fill:#1a1a2a,color:#94a3b8,stroke:#64748b`,
+
+  bem_structure: `graph LR
+    BEM["BEM"] --> B["🟦 Block<br/>独立したコンポーネント<br/>.card  .button  .nav"]
+    BEM --> E["🟨 Element<br/>Blockを構成する部品<br/>.card__title  .nav__item"]
+    BEM --> MOD["🟧 Modifier<br/>状態・バリアント<br/>.card--featured  .button--primary"]
+    B -->|"__"| E
+    B -->|"--"| MOD
+    style BEM fill:#6C47FF,color:#fff,stroke:none
+    style B fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style E fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b
+    style MOD fill:#1a3328,color:#86efac,stroke:#22c55e`,
+
+  smacss_categories: `graph TD
+    S["SMACSS の5カテゴリ"] --> S1["1️⃣ Base<br/>リセット・デフォルトスタイル<br/>body · p · a · img"]
+    S --> S2["2️⃣ Layout<br/>ページ構造<br/>.l-header · .l-sidebar · .l-grid"]
+    S --> S3["3️⃣ Module<br/>再利用可能なUI部品<br/>.card · .button · .nav"]
+    S --> S4["4️⃣ State<br/>状態変化スタイル<br/>.is-active · .is-hidden · .has-error"]
+    S --> S5["5️⃣ Theme<br/>ビジュアルテーマ<br/>.theme-dark · .theme-brand"]
+    style S fill:#6C47FF,color:#fff,stroke:none
+    style S1 fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6
+    style S2 fill:#1a2a0d,color:#86efac,stroke:#22c55e
+    style S3 fill:#2a1a0d,color:#fcd34d,stroke:#f59e0b
+    style S4 fill:#2a0d1a,color:#f87171,stroke:#ef4444
+    style S5 fill:#1a0d2a,color:#c084fc,stroke:#a855f7`,
+
+  css_var_scope: `graph TD
+    ROOT[":root<br/>グローバルスコープ<br/>--color-primary: #6C47FF"] --> BODY["body<br/>--bg-color を継承"]
+    ROOT --> CARD[".card<br/>--card-padding: 24px<br/>コンポーネントスコープ"]
+    CARD --> COMPACT[".card--compact<br/>--card-padding: 12px<br/>Modifierでスコープ上書き"]
+    ROOT --> DARK["@media prefers-color-scheme: dark<br/>--bg-base: #07111e<br/>メディアクエリスコープ"]
+    CARD --> CHILD[".card__body<br/>--card-padding を継承"]
+    style ROOT fill:#6C47FF,color:#fff,stroke:none
+    style CARD fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style COMPACT fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6,stroke-dasharray:4
+    style DARK fill:#1a1a0d,color:#fcd34d,stroke:#f59e0b
+    style BODY fill:#0d1b2a,color:#94a3b8,stroke:#475569
+    style CHILD fill:#0d1b2a,color:#94a3b8,stroke:#475569`,
+
+  layout_comparison: `flowchart LR
+    Q{"レイアウトの次元"} -->|"1方向のみ<br/>行 OR 列"| F["Flexbox<br/>display: flex"]
+    Q -->|"行と列の両方<br/>2次元"| G["CSS Grid<br/>display: grid"]
+    F --> F1["ナビゲーションバー"]
+    F --> F2["カードのアイテム整列"]
+    F --> F3["フォーム入力グループ"]
+    G --> G1["ページ全体の骨格"]
+    G --> G2["ダッシュボード"]
+    G --> G3["レスポンシブカードグリッド"]
+    style Q fill:#6C47FF,color:#fff,stroke:none
+    style F fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style G fill:#1a3328,color:#86efac,stroke:#22c55e`,
+
+  responsive_design: `flowchart LR
+    M["📱 モバイル<br/>320px〜767px<br/>1カラム・シンプル"] -->|"min-width: 768px"| T["💻 タブレット<br/>768px〜1023px<br/>2カラム対応"]
+    T -->|"min-width: 1024px"| D["🖥️ デスクトップ<br/>1024px〜<br/>3〜4カラム"]
+    M -->|"デフォルトスタイル"| BASE["モバイルファースト<br/>まずモバイル向けを書く<br/>@media min-width で上書き"]
+    style M fill:#3a1a0d,color:#fb923c,stroke:#ea580c
+    style T fill:#1a2a44,color:#93c5fd,stroke:#3b82f6
+    style D fill:#1a3328,color:#86efac,stroke:#22c55e
+    style BASE fill:#6C47FF,color:#fff,stroke:none`,
+
+  learning_path: `mindmap
+  root((CSS設計の<br/>学習パス))
+    基礎知識
+      ボックスモデル
+      カスケードと詳細度
+      セレクタの種類
+      単位px/rem/em/%/vw
+    レイアウト
+      Flexbox 1次元
+      CSS Grid 2次元
+      レスポンシブ設計
+      コンテナクエリ
+    設計手法
+      BEM命名規則
+      OOCSS構造分離
+      SMACSS5分類
+      Utility-First Tailwind
+    デザインシステム
+      デザイントークン
+      Atomic Design
+      コンポーネント設計
+      ダークモード対応
+    アクセシビリティ
+      WCAG 2.1
+      フォーカス管理
+      コントラスト比
+      reduced-motion
+    発展トピック
+      CSS-in-JS
+      Sass PostCSS
+      CSS Layers
+      Container Queries`
+};
+
+/* =====================================================
+   INIT — MERMAID
+   ===================================================== */
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    primaryColor:       '#1a2a44',
+    primaryTextColor:   '#e2e8f0',
+    primaryBorderColor: '#3b82f6',
+    lineColor:          '#4a6177',
+    secondaryColor:     '#0d1b2a',
+    tertiaryColor:      '#07111e',
+    background:         '#07111e',
+    mainBkg:            '#0d1b2a',
+    nodeBorder:         '#1e3347',
+    clusterBkg:         '#0a1520',
+    titleColor:         '#e2e8f0',
+    edgeLabelBackground:'#07111e',
+    fontFamily:         'Inter, sans-serif',
+    fontSize:           '13px',
+  },
+  flowchart: { htmlLabels: true, curve: 'basis', padding: 20 },
+  mindmap:   { padding: 16 },
+});
+
+function applySvgFixups(svgEl, src) {
+  svgEl.removeAttribute('width');
+  svgEl.removeAttribute('height');
+  svgEl.style.height = 'auto';
+  svgEl.style.maxWidth = '100%';
+  svgEl.style.overflow = 'visible';
+  svgEl.style.marginBottom = '10px';
+  const viewBox = svgEl.getAttribute('viewBox');
+  if (!viewBox) return;
+  const parts = viewBox.split(/\s+/).map(Number);
+  if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+  const trimmed = src.trim();
+  const isSequenceOrState =
+      trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+  const extraHeight = isSequenceOrState ? 110 : 15;
+  const [x, y, w, h] = parts;
+  // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+  svgEl.style.width = w + 'px';
+  svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+}
+
+async function renderDiagrams() {
+  const elements = document.querySelectorAll('.mermaid[data-diagram]');
+  for (const el of elements) {
+    const key = el.dataset.diagram;
+    if (!DIAGRAMS[key]) continue;
+    try {
+      const { svg } = await mermaid.render('m-' + key + '-' + Math.random().toString(36).slice(2), DIAGRAMS[key]);
+      el.innerHTML = svg;
+      const svgEl = el.querySelector('svg');
+      if (svgEl) {
+        applySvgFixups(svgEl, DIAGRAMS[key]);
+      }
+    } catch (e) {
+      el.innerHTML = '<p style="color:#f87171;font-size:1rem;padding:10px;">⚠️ 図の描画に失敗しました: ' + key + '</p>';
+    }
+  }
+}
+
+/* =====================================================
+   INIT — HIGHLIGHT.JS
+   ===================================================== */
+function initHighlight() {
+  document.querySelectorAll('pre code').forEach(block => {
+    hljs.highlightElement(block);
+  });
+}
+
+/* =====================================================
+   SIDEBAR — IntersectionObserver
+   ===================================================== */
+function initSidebarObserver() {
+  const links   = document.querySelectorAll('.sb-link[href^="#"]');
+  const targets = Array.from(links)
+    .map(l => document.querySelector(l.getAttribute('href')))
+    .filter(Boolean);
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const id   = '#' + entry.target.id;
+      const link = document.querySelector(`.sb-link[href="${id}"]`);
+      if (!link) return;
+      document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  targets.forEach(t => observer.observe(t));
+}
+
+/* =====================================================
+   READING PROGRESS
+   ===================================================== */
+function initProgress() {
+  const fill  = document.getElementById('progress-fill');
+  const label = document.getElementById('progress-label');
+  window.addEventListener('scroll', () => {
+    const docH   = document.documentElement.scrollHeight - window.innerHeight;
+    const pct    = docH > 0 ? Math.round((window.scrollY / docH) * 100) : 0;
+    fill.style.width  = pct + '%';
+    label.textContent = '読書進捗: ' + pct + '%';
+  }, { passive: true });
+}
+
+/* =====================================================
+   BACK TO TOP
+   ===================================================== */
+function initTopBtn() {
+  const btn = document.getElementById('top-btn');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+/* =====================================================
+   BOOT
+   ===================================================== */
+document.addEventListener('DOMContentLoaded', async () => {
+  await renderDiagrams();
+  initHighlight();
+  initSidebarObserver();
+  initProgress();
+  initTopBtn();
+});
+</script>
+</body>
+</html>
