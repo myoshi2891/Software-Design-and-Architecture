@@ -196,16 +196,16 @@
       "pattern": "^https?://(www\\.)?rfc-editor\\.org/rfc/"
     },
     {
-      "pattern": "^https?://storybook\\.js\\.org"
+      "pattern": "^https?://storybook\\.js\\.org(?:/|$)"
     },
     {
-      "pattern": "^https?://(www\\.)?web\\.dev"
+      "pattern": "^https?://(www\\.)?web\\.dev(?:/|$)"
     },
     {
-      "pattern": "^https?://(www\\.)?ycombinator\\.com/library"
+      "pattern": "^https?://(www\\.)?ycombinator\\.com/library(?:/|$)"
     },
     {
-      "pattern": "^https://cube\\.fyi"
+      "pattern": "^https://cube\\.fyi(?:/|$)"
     }
   ],
   "replacementPatterns": [],
