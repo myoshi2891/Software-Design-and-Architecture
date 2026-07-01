@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アニメーション・CSSアーキテクチャ・デザイントークン完全ガイド | Vol.4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<style>
+/* ============================================================
+   0. デザイントークン（Settings層）
+   ============================================================ */
+:root{
+  /* --- ベースカラー（ダークネイビー） --- */
+  --bg-base:        #07111e;
+  --bg-raised:      #0c1a2c;
+  --bg-surface:     #0f2236;
+  --bg-surface-2:   #122941;
+  --bg-overlay:     rgba(108,71,255,0.08);
+
+  /* --- ボーダー --- */
+  --border-default: #1b3450;
+  --border-subtle:  #142840;
+  --border-focus:   #8b6bff;
+
+  /* --- テキスト --- */
+  --text-primary:   #eef2f9;
+  --text-secondary: #aebbd1;
+  --text-muted:     #6e84a3;
+  --text-on-accent: #ffffff;
+
+  /* --- アクセント（紫系グラデーション） --- */
+  --accent-1:  #6C47FF;
+  --accent-2:  #8b6bff;
+  --accent-3:  #4a2dcc;
+  --accent-glow: rgba(108,71,255,0.35);
+
+  /* --- 機能色 --- */
+  --c-blue:    #3b82f6;
+  --c-blue-bg: #1e2d4a;
+  --c-blue-tx: #93c5fd;
+  --c-green:   #22c55e;
+  --c-green-bg:#1e4a2d;
+  --c-green-tx:#86efac;
+  --c-orange:  #ea580c;
+  --c-orange-bg:#4a2d1e;
+  --c-orange-tx:#fb923c;
+  --c-purple:  #8b5cf6;
+  --c-purple-bg:#2d1e4a;
+  --c-purple-tx:#c4b5fd;
+  --c-red:     #f43f5e;
+  --c-red-bg:  #4a1e2d;
+  --c-red-tx:  #fda4af;
+
+  /* --- スペーシング --- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px;
+
+  /* --- 角丸 --- */
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-xl: 22px; --radius-full: 999px;
+
+  /* --- タイポグラフィ --- */
+  --font-display: 'Inter','Noto Sans JP',sans-serif;
+  --font-body: 'Noto Sans JP','Inter',sans-serif;
+  --font-mono: 'JetBrains Mono',ui-monospace,monospace;
+
+  /* --- イージング・デュレーション（本ガイド内のUI自体に適用） --- */
+  --ease-out: cubic-bezier(0,0,0.2,1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+  --dur-fast: 120ms;
+  --dur-normal: 220ms;
+
+  --sidebar-w: 300px;
+  --content-max: 100%;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+*,*::before,*::after{ box-sizing: border-box; }
+*{ margin:0; }
+html{ scroll-behavior: smooth; }
+
+body{
+  background: radial-gradient(ellipse 1200px 800px at 15% -10%, rgba(108,71,255,0.12), transparent 60%),
+              radial-gradient(ellipse 900px 700px at 100% 10%, rgba(59,130,246,0.08), transparent 55%),
+              var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a{ color: var(--accent-2); text-decoration: none; }
+a:hover{ text-decoration: underline; }
+a:focus-visible, button:focus-visible, summary:focus-visible{
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+img{ max-width:100%; display:block; }
+
+::selection{ background: var(--accent-glow); color: #fff; }
+
+/* スクロールバー */
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background: var(--bg-base); }
+::-webkit-scrollbar-thumb{ background: var(--border-default); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover{ background: var(--accent-3); }
+
+/* ============================================================
+   1. レイアウト骨格
+   ============================================================ */
+.layout{
+  display:grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* --- サイドバー --- */
+.sidebar{
+  position: sticky;
+  top:0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-12);
+  border-right: 1px solid var(--border-subtle);
+  scrollbar-width: thin;
+}
+.sidebar__brand{
+  display:flex;
+  align-items:center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-8);
+}
+.sidebar__brand-mark{
+  width:36px;height:36px;border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  display:flex;align-items:center;justify-content:center;
+  font-family: var(--font-display); font-weight:800; font-size:15px; color:#fff;
+  flex-shrink:0;
+  box-shadow: 0 4px 18px var(--accent-glow);
+}
+.sidebar__brand-text{ font-family: var(--font-display); font-weight:700; font-size:14px; letter-spacing:0.02em; line-height:1.3; }
+.sidebar__brand-text span{ display:block; font-weight:500; font-size:11px; color: var(--text-muted); margin-top:2px; }
+
+.toc-group{ margin-bottom: var(--sp-6); }
+.toc-group__label{
+  font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  color: var(--text-muted); font-weight:600; margin-bottom: var(--sp-2);
+  padding-left: var(--sp-3);
+}
+.toc-link{
+  display:flex; align-items:baseline; gap: var(--sp-2);
+  padding: 7px var(--sp-3);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  border-left: 2px solid transparent;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.toc-link:hover{ background: var(--bg-surface); color: var(--text-primary); text-decoration:none; }
+.toc-link .num{ font-family: var(--font-mono); font-size:11px; color: var(--text-muted); flex-shrink:0; width:18px; }
+.toc-link.is-active{
+  background: var(--bg-overlay);
+  color: #fff;
+  border-left-color: var(--accent-2);
+  font-weight:600;
+}
+.toc-link.is-active .num{ color: var(--accent-2); }
+
+.sidebar__progress{
+  margin-top: var(--sp-8);
+  padding: var(--sp-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+.sidebar__progress-label{ font-size:11px; color: var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; }
+.sidebar__progress-track{ height:5px; background: var(--bg-base); border-radius:99px; overflow:hidden; }
+.sidebar__progress-bar{ height:100%; width:0%; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); border-radius:99px; transition: width 120ms linear; }
+
+/* --- メインコンテンツ --- */
+.main{ min-width:0; padding-bottom: var(--sp-20); }
+
+/* --- ヒーロー --- */
+.hero{
+  padding: var(--sp-20) var(--sp-12) var(--sp-16);
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  overflow:hidden;
+}
+.hero::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 700px 400px at 20% 0%, black, transparent 70%);
+  opacity:0.4;
+  pointer-events:none;
+}
+.hero__eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family: var(--font-mono); font-size:12px; letter-spacing:0.08em;
+  color: var(--accent-2); background: var(--bg-overlay);
+  border:1px solid rgba(139,107,255,0.35);
+  padding: 6px 14px; border-radius: var(--radius-full);
+  margin-bottom: var(--sp-6);
+  position:relative;
+}
+.hero__title{
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 4vw, 3.1rem);
+  font-weight:800;
+  line-height:1.18;
+  letter-spacing:-0.01em;
+  max-width: 16ch;
+  margin-bottom: var(--sp-5);
+  position:relative;
+}
+.hero__title em{
+  font-style:normal;
+  background: linear-gradient(120deg, var(--accent-2), #b9a3ff 60%, var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero__lead{
+  font-size:17px; color: var(--text-secondary); max-width:62ch; line-height:1.85;
+  position:relative; margin-bottom: var(--sp-8);
+}
+.hero__meta{ display:flex; flex-wrap:wrap; gap: var(--sp-3); position:relative; }
+.meta-chip{
+  display:flex; align-items:center; gap:7px;
+  font-size:12.5px; color: var(--text-secondary);
+  background: var(--bg-surface); border:1px solid var(--border-default);
+  padding: 7px 13px; border-radius: var(--radius-full);
+}
+.meta-chip b{ color: var(--text-primary); font-weight:600; }
+.dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
+
+/* ============================================================
+   2. セクション共通スタイル
+   ============================================================ */
+.chapter{
+  padding: var(--sp-16) var(--sp-12);
+  border-bottom: 1px solid var(--border-subtle);
+  max-width: var(--content-max);
+}
+.chapter__kicker{
+  display:flex; align-items:center; gap: var(--sp-4); margin-bottom: var(--sp-4);
+}
+.chapter__num{
+  font-family: var(--font-display); font-size:13px; font-weight:700;
+  color: var(--accent-2); letter-spacing:0.1em;
+}
+.chapter__rule{ flex:1; height:1px; background: var(--border-default); }
+.chapter h2{
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.15rem);
+  font-weight:800; letter-spacing:-0.01em;
+  margin-bottom: var(--sp-4);
+  scroll-margin-top: 24px;
+}
+.chapter__intro{
+  font-size:15.5px; color: var(--text-secondary); line-height:1.9;
+  margin-bottom: var(--sp-8);
+  max-width: 68ch;
+}
+.chapter__intro strong{ color: var(--text-primary); }
+
+.sub{ margin-top: var(--sp-12); }
+.sub h3{
+  font-family: var(--font-display);
+  font-size:1.28rem; font-weight:700;
+  margin-bottom: var(--sp-3);
+  display:flex; align-items:center; gap:10px;
+  scroll-margin-top:24px;
+}
+.sub h3 .ico{
+  width:30px;height:30px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.sub h4{
+  font-family: var(--font-display); font-size:1.02rem; font-weight:700;
+  margin: var(--sp-6) 0 var(--sp-2);
+  color: var(--text-primary);
+}
+.sub p{ color: var(--text-secondary); margin-bottom: var(--sp-4); max-width:68ch; }
+.sub p strong{ color: var(--text-primary); }
+.sub ul, .sub ol{ color: var(--text-secondary); margin: 0 0 var(--sp-4) var(--sp-5); max-width:66ch; }
+.sub li{ margin-bottom:6px; }
+.sub li::marker{ color: var(--accent-2); }
+
+/* --- 初学者向けボックス --- */
+.beginner-box{
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--c-blue);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+  margin: var(--sp-5) 0 var(--sp-6);
+}
+.beginner-box__label{
+  display:flex; align-items:center; gap:8px;
+  font-family: var(--font-display); font-size:12.5px; font-weight:700;
+  color: var(--c-blue-tx); letter-spacing:0.04em; margin-bottom: var(--sp-2);
+  text-transform:uppercase;
+}
+.beginner-box p{ font-size:14.5px; margin-bottom: var(--sp-2); }
+.beginner-box p:last-child{ margin-bottom:0; }
+
+/* --- ベストプラクティスボックス --- */
+.bp-box{
+  background: linear-gradient(180deg, rgba(34,197,94,0.07), rgba(34,197,94,0.02));
+  border:1px solid rgba(34,197,94,0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6);
+  margin: var(--sp-6) 0;
+}
+.bp-box__title{
+  display:flex; align-items:center; gap:9px;
+  font-family: var(--font-display); font-weight:700; font-size:14.5px;
+  color: var(--c-green-tx); margin-bottom: var(--sp-4);
+}
+.bp-grid{ display:grid; grid-template-columns:1fr 1fr; gap: var(--sp-5); }
+@media (max-width:760px){ .bp-grid{ grid-template-columns:1fr; } }
+.bp-col__h{ font-size:12px; font-weight:700; letter-spacing:0.05em; margin-bottom: var(--sp-2); display:flex; align-items:center; gap:6px;}
+.bp-col--do .bp-col__h{ color: var(--c-green-tx); }
+.bp-col--dont .bp-col__h{ color: var(--c-red-tx); }
+.bp-col ul{ margin:0; padding-left: var(--sp-5); }
+.bp-col li{ font-size:13.5px; color: var(--text-secondary); margin-bottom:7px; }
+
+.pitfall-box{
+  background: linear-gradient(180deg, rgba(244,63,94,0.08), rgba(244,63,94,0.02));
+  border:1px solid rgba(244,63,94,0.32);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+  margin: var(--sp-5) 0;
+}
+.pitfall-box__title{
+  display:flex; align-items:center; gap:8px;
+  font-family: var(--font-display); font-weight:700; font-size:13.5px;
+  color: var(--c-red-tx); margin-bottom: var(--sp-2);
+}
+.pitfall-box p,.pitfall-box li{ font-size:14px; color: var(--text-secondary); }
+
+/* --- Mermaid 図 --- */
+.diagram-card{
+  background: var(--bg-raised);
+  border:1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6);
+  margin: var(--sp-6) 0;
+  overflow-x:auto;
+}
+.diagram-card__cap{
+  font-size:12px; color: var(--text-muted); margin-top: var(--sp-3);
+  display:flex; align-items:center; gap:6px;
+}
+.mermaid{ display:flex; justify-content:center; }
+
+/* --- コードブロック --- */
+.code-card{
+  background:#0b1424;
+  border:1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  margin: var(--sp-5) 0;
+  overflow:hidden;
+}
+.code-card__bar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 9px 16px;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-default);
+  font-family: var(--font-mono); font-size:11.5px; color: var(--text-muted);
+}
+.code-card__dots{ display:flex; gap:6px; }
+.code-card__dots span{ width:9px;height:9px;border-radius:50%; }
+.code-card pre{ margin:0; padding: var(--sp-5); overflow-x:auto; }
+.code-card pre code{ font-family: var(--font-mono) !important; font-size:13px !important; line-height:1.7 !important; background:transparent !important; }
+.code-card pre code.hljs{ padding:0; }
+
+/* --- テーブル --- */
+.table-wrap{ overflow-x:auto; margin: var(--sp-5) 0; border-radius: var(--radius-lg); border:1px solid var(--border-default); }
+table{ width:100%; border-collapse:collapse; font-size:13.5px; background: var(--bg-raised); }
+thead th{
+  text-align:left; padding:11px 16px; background: var(--bg-surface-2);
+  font-family: var(--font-display); font-weight:700; color: var(--text-primary);
+  border-bottom:1px solid var(--border-default); white-space:nowrap;
+  font-size:12.5px; letter-spacing:0.02em;
+}
+tbody td{ padding:11px 16px; border-bottom:1px solid var(--border-subtle); color: var(--text-secondary); vertical-align:top; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr:hover{ background: var(--bg-surface); }
+td code, p code, li code{
+  font-family: var(--font-mono); font-size:0.86em; background: var(--bg-surface-2);
+  color:#c9b8ff; padding:2px 7px; border-radius:5px; border:1px solid var(--border-default);
+}
+
+/* --- フローチャート風 選定ガイドカード --- */
+.decision-flow{ display:flex; flex-direction:column; gap: var(--sp-3); margin: var(--sp-6) 0; }
+
+/* --- ステップ --- */
+.steps{ counter-reset: step; margin: var(--sp-6) 0; display:flex; flex-direction:column; gap:0; }
+.step{ display:grid; grid-template-columns:40px 1fr; gap: var(--sp-4); padding-bottom: var(--sp-6); position:relative; }
+.step:not(:last-child)::before{ content:""; position:absolute; left:19px; top:40px; bottom:0; width:1px; background: var(--border-default); }
+.step__num{
+  counter-increment: step;
+  width:40px;height:40px; border-radius:50%;
+  background: var(--bg-surface); border:1.5px solid var(--accent-2);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-display); font-weight:700; font-size:14px; color: var(--accent-2);
+  flex-shrink:0; z-index:1;
+}
+.step__num::before{ content: counter(step); }
+.step__body h4{ margin-top:2px; }
+.step__body p{ margin-bottom: var(--sp-2); }
+
+/* --- 参考文献 --- */
+.refs{ margin-top: var(--sp-6); }
+.refs__title{
+  font-family: var(--font-display); font-size:12.5px; font-weight:700;
+  color: var(--text-muted); letter-spacing:0.06em; text-transform:uppercase;
+  margin-bottom: var(--sp-3); display:flex; align-items:center; gap:8px;
+}
+.refs ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.refs li{ font-size:13px; }
+.refs a{
+  display:flex; align-items:baseline; gap:8px; color: var(--text-secondary);
+  padding:8px 12px; border-radius: var(--radius-md); border:1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  transition: border-color var(--dur-fast), color var(--dur-fast);
+}
+.refs a:hover{ color: var(--accent-2); border-color: var(--accent-2); text-decoration:none; }
+.refs a .src-name{ color: var(--text-primary); font-weight:600; flex-shrink:0; }
+.refs a .src-url{ font-family: var(--font-mono); font-size:11.5px; color: var(--text-muted); word-break:break-all; }
+
+/* --- バッジ --- */
+.badge{ display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:99px; font-size:11.5px; font-weight:600; font-family:var(--font-mono); }
+
+/* --- フッター --- */
+.site-footer{
+  padding: var(--sp-12);
+  text-align:center;
+  color: var(--text-muted);
+  font-size:13px;
+}
+.site-footer a{ color: var(--text-secondary); }
+
+/* --- ナビ用トップバー（モバイル） --- */
+.mobile-bar{ display:none; }
+
+@media (max-width: 980px){
+  .layout{ grid-template-columns:1fr; }
+  .sidebar{ position:static; height:auto; border-right:none; border-bottom:1px solid var(--border-subtle); }
+  .chapter{ padding: var(--sp-12) var(--sp-5); }
+  .hero{ padding: var(--sp-12) var(--sp-5); }
+}
+
+/* スクロールアニメーション（控えめ） */
+.fade-in{ opacity:0; transform: translateY(10px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
+.fade-in.is-visible{ opacity:1; transform:none; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ============ サイドバー ============ -->
+  <nav class="sidebar" aria-label="目次">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark">CSS</div>
+      <div class="sidebar__brand-text">CSS設計 完全ガイド<span>Vol.4 — Animation &amp; Architecture</span></div>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group__label">導入</div>
+      <a href="#top" class="toc-link" data-toc><span class="num">―</span>はじめに</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group__label">本編</div>
+      <a href="#ch11" class="toc-link" data-toc><span class="num">11</span>アニメーション・トランジション</a>
+      <a href="#ch12" class="toc-link" data-toc><span class="num">12</span>CSSアーキテクチャパターン</a>
+      <a href="#ch13" class="toc-link" data-toc><span class="num">13</span>デザイントークン</a>
+      <a href="#ch14" class="toc-link" data-toc><span class="num">14</span>実践：Modal実装例</a>
+      <a href="#ch15" class="toc-link" data-toc><span class="num">15</span>パフォーマンス最適化</a>
+      <a href="#ch16" class="toc-link" data-toc><span class="num">16</span>ツール・エコシステム</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group__label">まとめ</div>
+      <a href="#maturity" class="toc-link" data-toc><span class="num">―</span>成熟度モデル</a>
+      <a href="#allrefs" class="toc-link" data-toc><span class="num">―</span>参考文献一覧</a>
+    </div>
+
+    <div class="sidebar__progress">
+      <div class="sidebar__progress-label"><span>読了進捗</span><span id="progressPct">0%</span></div>
+      <div class="sidebar__progress-track"><div class="sidebar__progress-bar" id="progressBar"></div></div>
+    </div>
+  </nav>
+
+  <!-- ============ メイン ============ -->
+  <main class="main" id="top">
+
+    <header class="hero">
+      <span class="hero__eyebrow">🔴 上級編 ・ 6 Chapters ・ 最終更新 2026-05-27</span>
+      <h1 class="hero__title">アニメーション・<em>CSSアーキテクチャ</em>・デザイントークン<br>完全ガイド</h1>
+      <p class="hero__lead">
+        「動きで伝える」アニメーション設計から、大規模開発を支えるCSSアーキテクチャ、
+        Figma〜コードを繋ぐデザイントークン、そして実践的なコンポーネント実装・パフォーマンス最適化・開発ツールチェーンまで。
+        初学者にもわかるように一歩ずつ、しかし実務でそのまま使える解像度で解説します。
+      </p>
+      <div class="hero__meta">
+        <span class="meta-chip"><span class="dot" style="background:var(--c-blue)"></span>対象：中級〜上級者</span>
+        <span class="meta-chip"><span class="dot" style="background:var(--c-orange)"></span>全6章 + 実践1章</span>
+        <span class="meta-chip"><span class="dot" style="background:var(--c-green)"></span>Mermaid図 30+</span>
+        <span class="meta-chip"><span class="dot" style="background:var(--c-purple)"></span>参考ソースURL付き</span>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         Chapter 11: アニメーション・トランジションシステム
+         ============================================================ -->
+    <section class="chapter" id="ch11">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 11</span><span class="chapter__rule"></span></div>
+      <h2>アニメーション・トランジションシステム</h2>
+      <p class="chapter__intro">
+        CSSアニメーションは「画面を派手にする飾り」ではありません。<strong>ユーザーに今何が起きているかを伝えるための言語</strong>です。
+        この章では、なぜアニメーションが必要なのか、どんな速さ・どんな動き方が適切なのかをトークン（変数）として体系化し、
+        実装方法（Transition / Animation / View Transitions API）からアクセシビリティ配慮までを一気通貫で解説します。
+      </p>
+
+      <div class="beginner-box">
+        <div class="beginner-box__label">🔰 初学者向け：そもそも transition と animation の違いは？</div>
+        <p><code>transition</code> は「ある状態からある状態へ」変化する時の橋渡し役です。例えば、ボタンに <code>:hover</code> が当たった瞬間の色変化に使います。2つの状態（前と後）さえ指定すれば、間の動きはブラウザが自動補間してくれます。</p>
+        <p><code>animation</code>（<code>@keyframes</code>）は、もっと自由な動きを「振り付け」できる仕組みです。0%地点・50%地点・100%地点…と細かく状態を指定でき、ループさせたり、ページを開いた瞬間に自動再生させたりできます。「2点間の単純な変化」なら transition、「複雑な一連の動き」なら animation、と覚えておくと選択に迷いません。</p>
+      </div>
+
+      <div class="sub" id="ch11-1">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">①</span>11.1 アニメーションシステムの目的</h3>
+        <p>
+          優れたアニメーションには必ず「目的」があります。なんとなく動かすのではなく、以下の5つの役割のどれを果たすために動かすのかを、実装前に言語化する習慣をつけましょう。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    A["アニメーションの役割"] --> B["フィードバック<br/>ボタンを押したら反応する"]
+    A --> C["継続性<br/>画面遷移の文脈を保つ"]
+    A --> D["状態変化の通知<br/>新しい要素が追加された"]
+    A --> E["階層の表現<br/>モーダルは手前に出てくる"]
+    A --> F["注目の誘導<br/>ここが重要な情報"]
+
+    style A fill:#6C47FF,color:#fff,stroke:none
+    style B fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style C fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style D fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style E fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style F fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+          </script>
+          <div class="mermaid" role="img" aria-label="アニメーションの5つの役割：フィードバック、継続性、状態変化の通知、階層の表現、注目の誘導"></div>
+          <p class="diagram-card__cap">📊 図11-1：アニメーションが果たすべき5つの役割</p>
+        </div>
+
+        <p>
+          逆に言えば、この5つのどれにも当てはまらないアニメーション（例：ページを開いた瞬間に意味もなく要素が回転する）は、ユーザーの注意力を奪うだけのノイズになりがちです。実装の前に「このアニメーションは誰の何を助けるのか」を一言で説明できるか、自分に問いかけてみてください。
+        </p>
+      </div>
+
+      <div class="sub" id="ch11-2">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">②</span>11.2 イージング（Easing）システム</h3>
+        <p>
+          イージングとは「アニメーションの速度変化のカーブ」のことです。現実世界の物体は急に動き出して急に止まったりはせず、加速・減速を伴います。CSSのデフォルト挙動である<code>ease</code>のままでもそれっぽく見えますが、デザインシステムとしては用途別にイージングを定義し、一貫した「動きの質感」をプロダクト全体で統一することが重要です。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph LR
+    subgraph EASING["イージングの種類と用途"]
+        E1["linear<br/>一定速度<br/>ローディングバーなど"]
+        E2["ease-in<br/>最初ゆっくり→加速<br/>要素が消える（退場）"]
+        E3["ease-out<br/>最初速い→減速<br/>要素が現れる（登場）"]
+        E4["ease-in-out<br/>両端ゆっくり<br/>画面遷移・モーダル"]
+        E5["cubic-bezier<br/>カスタム曲線<br/>ブランド独自の動き"]
+    end
+
+    style E1 fill:#1e1e2e,color:#a1a1aa,stroke:#3f3f46
+    style E2 fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+    style E3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style E4 fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style E5 fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style EASING fill:#16243a,stroke:#6C47FF,color:#cdd6f4
+          </script>
+          <div class="mermaid" role="img" aria-label="イージングの種類: linear, ease-in, ease-out, ease-in-out, cubic-bezier とそれぞれの用途"></div>
+          <p class="diagram-card__cap">📊 図11-2：5種類のイージングと適した用途</p>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：覚え方のコツ</div>
+          <p><strong>ease-out（出口がゆっくり）は「登場」に、ease-in（入口がゆっくり）は「退場」に使う</strong>、と覚えるのが一番簡単です。新しく現れる要素は最初は元気よく動き出し最後はそっと収まる方が自然に見え（ease-out）、消える要素は逆に最初はゆっくり、最後は加速して消えていく方が自然に見えます（ease-in）。迷ったら、まず <code>ease-out</code> を使ってみましょう。</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>tokens/easing.css</span></div>
+          <pre><code class="language-css">/* ===== イージングトークンの定義 ===== */
+:root {
+  /* 標準イージング */
+  --ease-linear:     linear;
+  --ease-in:         cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:        cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ブランド固有のイージング */
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);  /* バネのような弾み */
+  --ease-smooth:     cubic-bezier(0.25, 0.1, 0.25, 1);    /* なめらかな動き */
+  --ease-anticipate: cubic-bezier(0.36, 0, 0.66, -0.56);  /* 少し引いてから進む */
+
+  /* 物理ベースのイージング（Material Design 3） */
+  --ease-emphasized:            cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-standard:              cubic-bezier(0.2, 0, 0, 1);
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-3">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">③</span>11.3 デュレーション（Duration）システム</h3>
+        <p>
+          デュレーションは「動きの長さ」です。短すぎると気づかれず、長すぎるとユーザーを待たせてしまいます。経験則として、<strong>操作対象が画面内で小さいほど短く、画面全体が変わるほど長く</strong>するのが基本です。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph LR
+    D1["instant<br/>0ms<br/>即時（アニメーションなし）"] --> D2
+    D2["fast<br/>100ms<br/>ホバー・フォーカス"] --> D3
+    D3["normal<br/>200ms<br/>フェード・スライド"] --> D4
+    D4["slow<br/>300ms<br/>モーダル・ドロワー"] --> D5
+    D5["slower<br/>500ms<br/>画面遷移"] --> D6
+    D6["slowest<br/>700ms〜<br/>ヒーロー・複雑なアニメーション"]
+
+    style D1 fill:#1e1e2e,color:#a1a1aa,stroke:#3f3f46
+    style D2 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style D3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style D4 fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style D5 fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style D6 fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+          </script>
+          <div class="mermaid" role="img" aria-label="デュレーションの段階: instant 0ms から slowest 700ms以上まで、用途とともに6段階"></div>
+          <p class="diagram-card__cap">📊 図11-3：用途別デュレーションの6段階スケール</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>tokens/duration.css</span></div>
+          <pre><code class="language-css">/* ===== デュレーショントークン ===== */
+:root {
+  --duration-instant:  0ms;
+  --duration-fast:     100ms;
+  --duration-normal:   200ms;
+  --duration-slow:     300ms;
+  --duration-slower:   500ms;
+  --duration-slowest:  700ms;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>11.4 CSS Transition の完全ガイド</h3>
+        <p>
+          <code>transition</code> プロパティは「どのCSSプロパティを」「どれくらいの時間で」「どんな速度カーブで」「どれだけ遅らせて」変化させるかを宣言します。複数のプロパティを別々のタイミングで動かすこともでき、これによってアニメーションに「リズム」を作ることができます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>components/button.css</span></div>
+          <pre><code class="language-css">/* ===== transition の構文 ===== */
+/* transition: プロパティ名 デュレーション イージング 遅延; */
+
+.button {
+  background: var(--color-action-primary);
+  transform: scale(1);
+  box-shadow: none;
+
+  /* 複数プロパティを個別に制御 */
+  transition:
+    background-color var(--duration-fast)   var(--ease-out),
+    transform        var(--duration-normal) var(--ease-spring),
+    box-shadow       var(--duration-normal) var(--ease-out);
+}
+
+.button:hover {
+  background: var(--color-action-primary-hover);
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(108, 71, 255, 0.3);
+}</code></pre>
+        </div>
+
+        <h4>GPUが扱えるプロパティだけを動かす</h4>
+        <p>
+          ブラウザの描画パイプラインには「軽い処理」と「重い処理」があります。<code>transform</code> と <code>opacity</code> は GPU の合成（コンポジット）処理だけで完結するため非常に滑らかに動きますが、<code>width</code>・<code>height</code>・<code>top</code>・<code>left</code> などはレイアウト全体の再計算（リフロー）を引き起こし、カクつきの原因になります。
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>プロパティ種別</th><th>該当プロパティ例</th><th>処理コスト</th><th>推奨度</th></tr></thead>
+            <tbody>
+              <tr><td>合成（Composite）のみ</td><td><code>transform</code> / <code>opacity</code> / <code>filter</code> / <code>clip-path</code></td><td>低（GPU処理）</td><td>✅ 推奨</td></tr>
+              <tr><td>ペイントが発生</td><td><code>background-color</code> / <code>color</code> / <code>box-shadow</code></td><td>中</td><td>△ 許容範囲</td></tr>
+              <tr><td>レイアウトが再計算</td><td><code>width</code> / <code>height</code> / <code>top</code> / <code>left</code> / <code>margin</code> / <code>padding</code></td><td>高（リフロー発生）</td><td>❌ 非推奨</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>components/menu.css</span></div>
+          <pre><code class="language-css">/* NG: レイアウトに影響するプロパティをアニメーション */
+.menu {
+  height: 0;
+  transition: height 300ms ease; /* レイアウト再計算が毎フレーム発生 */
+}
+.menu.is-open { height: 200px; }
+
+/* OK: transform + opacity でアニメーション */
+.menu {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity   200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+  pointer-events: none;
+}
+.menu.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-5">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">⑤</span>11.5 CSS Animation（@keyframes）の完全ガイド</h3>
+        <p>
+          <code>@keyframes</code> は0%〜100%の間に好きなだけ中間状態を定義できる仕組みです。ローディングスピナーの回転、エラー時のシェイク（揺れ）、注目を集めるパルスなど、単純な「前後の変化」では表現できない動きに使います。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>animations/keyframes.css</span></div>
+          <pre><code class="language-css">/* ===== @keyframes の定義 ===== */
+
+/* フェードイン */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* スライドアップ */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ローディングスピナー */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* パルス（注目を引く） */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.05); opacity: 0.8; }
+}
+
+/* シェイク（エラー通知） */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+/* ===== animation プロパティの構文 ===== */
+.element {
+  /* animation: 名前 デュレーション イージング 遅延 回数 方向 フィルモード 再生状態 */
+  animation: slide-up 300ms var(--ease-out) 0ms 1 normal both running;
+}
+
+/* ===== ユーティリティクラスとして定義 ===== */
+.animate-fade-in  { animation: fade-in  200ms var(--ease-out) both; }
+.animate-slide-up { animation: slide-up 300ms var(--ease-out) both; }
+.animate-spin     { animation: spin     1s    var(--ease-linear) infinite; }
+.animate-pulse    { animation: pulse    2s    var(--ease-in-out) infinite; }
+.animate-shake    { animation: shake   400ms  var(--ease-out) both; }</code></pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>サブプロパティ</th><th>役割</th><th>主な値</th></tr></thead>
+            <tbody>
+              <tr><td><code>animation-iteration-count</code></td><td>繰り返し回数</td><td><code>1</code> / <code>3</code> / <code>infinite</code></td></tr>
+              <tr><td><code>animation-direction</code></td><td>再生方向</td><td><code>normal</code> / <code>reverse</code> / <code>alternate</code></td></tr>
+              <tr><td><code>animation-fill-mode</code></td><td>開始前・終了後の状態保持</td><td><code>forwards</code>（最後を維持）/ <code>backwards</code>（最初から）/ <code>both</code></td></tr>
+              <tr><td><code>animation-play-state</code></td><td>再生・停止の制御</td><td><code>running</code> / <code>paused</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-6">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">⑥</span>11.6 View Transitions API（ページ遷移アニメーション）</h3>
+        <p>
+          View Transitions API は、ページ遷移やDOM更新の前後でブラウザが自動的にスクリーンショットを撮り、滑らかにクロスフェード・モーフィングしてくれるモダンAPIです（Chrome 111+、Safari 18+対応）。これまでJavaScriptで複雑に実装していた「要素が次のページでも同じ場所に存在し続けているように見せる」演出が、CSSの数行で実現できます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>view-transitions.css</span></div>
+          <pre><code class="language-css">/* ===== View Transitions API ===== */
+
+/* デフォルトのクロスフェードをカスタマイズ */
+::view-transition-old(root) {
+  animation: fade-out 200ms var(--ease-in) both;
+}
+
+::view-transition-new(root) {
+  animation: fade-in 300ms var(--ease-out) both;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* ===== 要素レベルの遷移 ===== */
+.hero-image {
+  view-transition-name: hero;  /* ユニークな名前を設定 */
+}
+
+::view-transition-old(hero),
+::view-transition-new(hero) {
+  animation-duration: 400ms;
+  animation-timing-function: var(--ease-emphasized);
+}</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>router.js</span></div>
+          <pre><code class="language-javascript">// View Transitions API の使用例
+async function navigateTo(url) {
+  if (!document.startViewTransition) {
+    window.location.href = url;
+    return;
+  }
+
+  document.startViewTransition(async () => {
+    const response = await fetch(url);
+    const html = await response.text();
+    document.documentElement.innerHTML = html;
+    window.history.pushState({}, '', url);
+  });
+}</code></pre>
+        </div>
+
+        <div class="pitfall-box">
+          <div class="pitfall-box__title">⚠️ 注意：非対応ブラウザへのフォールバック</div>
+          <p><code>document.startViewTransition</code> の存在チェックを必ず行いましょう。未対応ブラウザでは即座に通常のページ遷移にフォールバックさせることで、機能の有無に関わらず操作自体は破綻しないようにします（プログレッシブ・エンハンスメント）。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-7">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">⑦</span>11.7 アクセシビリティへの配慮</h3>
+        <p>
+          前庭障害（めまいや乗り物酔いに似た症状）を持つユーザーにとって、過剰なアニメーションは単なる好みの問題ではなく、健康上の問題になり得ます。OSの「視差効果を減らす」設定（<code>prefers-reduced-motion</code>）は、CSSで必ず尊重しましょう。これは「やった方が良い」ではなく「やらなければならない」アクセシビリティ要件です。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>accessibility/motion.css</span></div>
+          <pre><code class="language-css">/* ===== prefers-reduced-motion: アニメーション削減設定を必ず尊重する ===== */
+
+/* 方法1: メディアクエリで上書き */
+.animated-element {
+  animation: slide-up 300ms var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-element {
+    animation: fade-in 150ms ease both; /* 動きを排除してフェードのみに */
+  }
+}
+
+/* 方法2: カスタムプロパティで制御（推奨） */
+:root {
+  --motion-duration-normal: 200ms;
+  --motion-easing-default:  var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-normal: 0ms; /* 全てのアニメーションを瞬時に */
+  }
+}
+
+.button {
+  transition: background-color var(--motion-duration-normal) var(--motion-easing-default);
+}</code></pre>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：方法2が推奨される理由</div>
+          <p>方法1（個別の<code>@media</code>上書き）は要素1つずつにメディアクエリを書く必要があり、規模が大きくなると漏れが発生しがちです。方法2はカスタムプロパティ自体を1箇所で <code>0ms</code> に切り替えるだけで、それを参照している全てのコンポーネントに一括反映できます。デザインシステム全体に展開するなら方法2を基本方針にしましょう。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch11-8">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">⑧</span>11.8 ベストプラクティス</h3>
+
+        <div class="bp-box">
+          <div class="bp-box__title">✅ アニメーション設計のベストプラクティス</div>
+          <div class="bp-grid">
+            <div class="bp-col bp-col--do">
+              <div class="bp-col__h">👍 DO</div>
+              <ul>
+                <li>ユーザー操作への明確なフィードバックとして使う</li>
+                <li>コンテンツの変化（追加・削除・並び替え）を補足説明する</li>
+                <li><code>transform</code>・<code>opacity</code> を中心に組み立てる</li>
+                <li><code>prefers-reduced-motion</code> を必ず尊重する</li>
+                <li>アニメーション開始直前に <code>will-change</code> を設定する</li>
+              </ul>
+            </div>
+            <div class="bp-col bp-col--dont">
+              <div class="bp-col__h">👎 DON'T</div>
+              <ul>
+                <li>意味のない装飾だけのページロードアニメーション</li>
+                <li>ユーザーを待たせるだけの長いロード演出</li>
+                <li>100ms以下の微細な動きを乱用する</li>
+                <li>ループし続けて注意を散らすアニメーション</li>
+                <li><code>*{ will-change: transform; }</code> のような全要素への適用</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>will-change.css</span></div>
+          <pre><code class="language-css">/* GPU レイヤーに事前昇格させてカクつきを防ぐ */
+.modal {
+  will-change: transform, opacity; /* アニメーション開始前に設定 */
+}
+
+/* アニメーション終了後は外す（メモリを解放） */
+.modal.animation-done {
+  will-change: auto;
+}
+
+/* NG: すべての要素に適用（過剰なメモリ消費） */
+* { will-change: transform; }</code></pre>
+        </div>
+      </div>
+
+      <div class="refs">
+        <div class="refs__title">📚 第11章 参考文献</div>
+        <ul>
+          <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_transitions" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Transitions</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/CSS_transitions</span></a></li>
+          <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_animations" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Animations</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/CSS_animations</span></a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — View Transitions API</span><span class="src-url">developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API</span></a></li>
+          <li><a href="https://m3.material.io/styles/motion/overview" target="_blank" rel="noopener noreferrer"><span class="src-name">Material Design 3 — Motion</span><span class="src-url">m3.material.io/styles/motion/overview</span></a></li>
+          <li><a href="https://web.dev/articles/animations-guide" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — Animations Guide</span><span class="src-url">web.dev/articles/animations-guide</span></a></li>
+          <li><a href="https://css-tricks.com/css-animation-tricks/" target="_blank" rel="noopener noreferrer"><span class="src-name">CSS-Tricks — Animation Performance</span><span class="src-url">css-tricks.com/css-animation-tricks</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         Chapter 12: CSSアーキテクチャパターン
+         ============================================================ -->
+    <section class="chapter" id="ch12">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 12</span><span class="chapter__rule"></span></div>
+      <h2>CSSアーキテクチャパターン</h2>
+      <p class="chapter__intro">
+        CSSには「コンパイルエラー」がありません。書けば書くだけ、矛盾したルールがあっても黙って動いてしまいます。
+        だからこそ、<strong>プロジェクト全体でCSSをどう整理し、どう詳細度を管理するか</strong>という設計方針＝CSSアーキテクチャが、
+        チーム開発の生命線になります。本章では代表的な4つのアプローチを比較し、選定基準を提示します。
+      </p>
+
+      <div class="beginner-box">
+        <div class="beginner-box__label">🔰 初学者向け：なぜCSSは「荒れやすい」のか</div>
+        <p>CSSのルールは基本的に「後に書いたものが勝つ」「より詳細なセレクタが勝つ」という単純な仕組みで動いています。これはシンプルですが、ファイル数が増えチームの人数が増えると「なぜこの色が反映されないのか分からない」「<code>!important</code> だらけになってしまった」という事態を招きます。CSSアーキテクチャとは、この力学を事前にルール化し、誰が書いても秩序が保たれる仕組みを作ることです。</p>
+      </div>
+
+      <div class="diagram-card">
+        <script type="text/plain" class="mermaid-src">
+graph TD
+    ARCH["CSSアーキテクチャの選択肢"] --> ITCSS
+    ARCH --> CUBE
+    ARCH --> UTILITY
+    ARCH --> MODULES
+    ARCH --> CSS_IN_JS
+
+    ITCSS["ITCSS<br/>逆三角形の詳細度管理<br/>大規模チーム向け"]
+    CUBE["CUBE CSS<br/>ユーティリティ+BEMの融合<br/>中〜大規模"]
+    UTILITY["Utility-First<br/>Tailwind CSS<br/>高速開発・小〜大規模"]
+    MODULES["CSS Modules<br/>コンポーネントスコープ<br/>React/Vue/Svelte"]
+    CSS_IN_JS["CSS-in-JS<br/>Styled Components/Emotion<br/>JS駆動の動的スタイル"]
+
+    style ARCH fill:#6C47FF,color:#fff,stroke:none
+    style ITCSS fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style CUBE fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style UTILITY fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style MODULES fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style CSS_IN_JS fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+        </script>
+        <div class="mermaid" role="img" aria-label="CSSアーキテクチャの選択肢: ITCSS, CUBE CSS, Utility-First, CSS Modules, CSS-in-JSの5種"></div>
+        <p class="diagram-card__cap">📊 図12-1：代表的な5つのCSSアーキテクチャ</p>
+      </div>
+
+      <div class="sub" id="ch12-1">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">①</span>12.1 ITCSS（Inverted Triangle CSS）</h3>
+        <p>
+          Harry Roberts が考案した、<strong>詳細度の低いものから高いものへ順番にCSSファイルを積み上げていく</strong>アーキテクチャです。「逆三角形」という名前の通り、上から下に行くほどセレクタの詳細度が高く、適用範囲が狭くなります。レイヤーの順番さえ守れば、原則として <code>!important</code> は不要になります。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    S1["Settings<br/>CSS変数・デザイントークン<br/>詳細度: 0"] --> S2
+    S2["Tools<br/>ミックスイン・関数（Sass等）<br/>詳細度: 0"] --> S3
+    S3["Generic<br/>リセット・normalize<br/>詳細度: 極低"] --> S4
+    S4["Elements<br/>タグセレクタのデフォルト<br/>詳細度: 低"] --> S5
+    S5["Objects<br/>レイアウトパターン<br/>詳細度: 中"] --> S6
+    S6["Components<br/>UIコンポーネント<br/>詳細度: 中〜高"] --> S7
+    S7["Utilities<br/>上書き用ユーティリティ<br/>詳細度: 高"]
+
+    style S1 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style S2 fill:#1e3a4a,color:#7dd3fc,stroke:#0ea5e9
+    style S3 fill:#1e4a3a,color:#6ee7b7,stroke:#10b981
+    style S4 fill:#2a4a1e,color:#86efac,stroke:#22c55e
+    style S5 fill:#4a3a1e,color:#fcd34d,stroke:#f59e0b
+    style S6 fill:#4a2a1e,color:#fb923c,stroke:#ea580c
+    style S7 fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+          </script>
+          <div class="mermaid" role="img" aria-label="ITCSSの7層構造: Settings, Tools, Generic, Elements, Objects, Components, Utilitiesの順に詳細度が上がる"></div>
+          <p class="diagram-card__cap">📊 図12-2：ITCSSの7層構造（上から下へ詳細度が上昇）</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>project structure</span></div>
+          <pre><code class="language-bash">project/
+├── styles/
+│   ├── 1-settings/
+│   │   ├── _tokens.css          # デザイントークン
+│   │   └── _breakpoints.css     # ブレークポイント定数
+│   ├── 2-tools/
+│   │   └── _mixins.scss         # Sass ミックスイン
+│   ├── 3-generic/
+│   │   ├── _reset.css           # CSS リセット
+│   │   └── _box-sizing.css
+│   ├── 4-elements/
+│   │   ├── _base.css            # body, html のデフォルト
+│   │   ├── _typography.css      # h1-h6, p, a のデフォルト
+│   │   └── _forms.css           # input, button のデフォルト
+│   ├── 5-objects/
+│   │   ├── _container.css       # .o-container
+│   │   ├── _grid.css            # .o-grid
+│   │   └── _stack.css           # .o-stack
+│   ├── 6-components/
+│   │   ├── _button.css          # .c-button
+│   │   ├── _card.css            # .c-card
+│   │   └── _modal.css           # .c-modal
+│   └── 7-utilities/
+│       ├── _display.css         # .u-hidden, .u-sr-only
+│       ├── _spacing.css         # .u-mt-4, .u-p-6
+│       └── _text.css            # .u-text-center
+└── main.css                     # 全ファイルを @import</code></pre>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：接頭辞（プレフィックス）の意味</div>
+          <p>ITCSSではよく <code>.o-</code>（Object）・<code>.c-</code>（Component）・<code>.u-</code>（Utility）のような接頭辞をクラス名に付けます。これはクラス名を見ただけで「これはレイアウト用か、コンポーネントか、上書き用ユーティリティか」が一目で分かるようにするための慣習です。命名規則自体がドキュメントの役割を果たします。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch12-2">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">②</span>12.2 CUBE CSS</h3>
+        <p>
+          Andy Bell が提案した、<strong>Composition（構成）・Utility（ユーティリティ）・Block（ブロック）・Exception（例外）</strong> の4層からなるアーキテクチャです。ITCSSよりも軽量で、特に「コンポーネント単位のバリアント管理」に強みがあります。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph LR
+    C["Composition<br/>レイアウト・空間・フロー<br/>.stack .cluster .grid"] --> U
+    U["Utility<br/>単一目的のヘルパー<br/>.text-center .font-bold"] --> B
+    B["Block<br/>コンポーネント固有のスタイル<br/>.card .button .nav"] --> E
+    E["Exception<br/>data属性による例外処理<br/>[data-variant] [data-size]"]
+
+    style C fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style U fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style B fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style E fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+          </script>
+          <div class="mermaid" role="img" aria-label="CUBE CSSの4層: Composition, Utility, Block, Exception"></div>
+          <p class="diagram-card__cap">📊 図12-3：CUBE CSSの4層構造</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>button.html</span></div>
+          <pre><code class="language-xml">&lt;!-- CUBE CSS の実装例 --&gt;
+&lt;a
+  class="button | text-base font-medium"
+  data-variant="primary"
+  data-size="lg"
+  href="/get-started"
+&gt;
+  始める
+&lt;/a&gt;
+&lt;!-- | は Composition と Utility の境界を示す慣習 --&gt;</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>button.css</span></div>
+          <pre><code class="language-css">/* Block: コアスタイル */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+/* Exception: data属性でバリアント管理 */
+.button[data-variant="primary"] {
+  background: var(--color-action-primary);
+  color: var(--color-text-on-primary);
+}
+
+.button[data-variant="ghost"] {
+  background: transparent;
+  color: var(--color-action-primary);
+}
+
+.button[data-size="lg"] {
+  height: var(--size-component-lg);
+  padding-inline: var(--space-6);
+  font-size: var(--font-size-base);
+}</code></pre>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：なぜ data属性でバリアントを管理するの？</div>
+          <p>従来は <code>.button--primary</code>・<code>.button--lg</code> のようにクラスを複数組み合わせる（BEMのModifier）方法が主流でした。data属性方式の利点は、「バリアント＝コンポーネントの状態」という意味がHTMLを見ただけで明確になることと、JavaScriptから <code>el.dataset.variant</code> で簡単に読み書きできることです。どちらが正解というわけではなく、チームの好みやツールチェーンとの相性で選びます。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch12-3">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">③</span>12.3 CSS Layers（@layer）</h3>
+        <p>
+          CSS Cascade Layers（<code>@layer</code>）は、<strong>詳細度の戦争を終わらせる</strong>ためにW3Cが標準化した仕組みで、2022年までに全モダンブラウザで利用可能になりました。レイヤー間では「セレクタの詳細度」よりも「レイヤーの宣言順」が優先されるため、ユーティリティクラスのような単純なセレクタでも、複雑なセレクタのコンポーネントスタイルに確実に勝てるようになります。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    subgraph LAYERS["@layer の優先順序（後に宣言したものが強い）"]
+        L1["@layer reset<br/>リセットCSS（最弱）"]
+        L2["@layer base<br/>要素デフォルトスタイル"]
+        L3["@layer tokens<br/>デザイントークン"]
+        L4["@layer objects<br/>レイアウトオブジェクト"]
+        L5["@layer components<br/>UIコンポーネント"]
+        L6["@layer utilities<br/>ユーティリティ（最強）"]
+    end
+
+    L1 --> L2 --> L3 --> L4 --> L5 --> L6
+
+    style L1 fill:#1e1e2e,color:#a1a1aa,stroke:#3f3f46
+    style L2 fill:#1e2d3d,color:#93c5fd,stroke:#3b82f6
+    style L3 fill:#1e3d2d,color:#86efac,stroke:#22c55e
+    style L4 fill:#3d2d1e,color:#fcd34d,stroke:#f59e0b
+    style L5 fill:#3d1e1e,color:#fb923c,stroke:#ea580c
+    style L6 fill:#6C47FF,color:#fff,stroke:none
+          </script>
+          <div class="mermaid" role="img" aria-label="@layerの優先順序: reset, base, tokens, objects, components, utilitiesの順で後ほど強い"></div>
+          <p class="diagram-card__cap">📊 図12-4：@layer の宣言順がそのまま優先順位になる</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>layers.css</span></div>
+          <pre><code class="language-css">/* ===== @layer の宣言（順序を最初に定義） ===== */
+@layer reset, base, tokens, objects, components, utilities;
+
+/* ===== 各レイヤーへの割り当て ===== */
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; }
+}
+
+@layer tokens {
+  :root {
+    --color-primary: #6C47FF;
+    --space-4: 16px;
+  }
+}
+
+@layer components {
+  .button {
+    background: var(--color-primary);
+    padding: var(--space-2) var(--space-4);
+  }
+}
+
+@layer utilities {
+  /* utilities は詳細度が低くても components に勝つ */
+  .bg-transparent { background: transparent !important; }
+  .hidden { display: none; }
+}
+
+/* ===== レイヤー外のスタイルは常に最強 ===== */
+.override { color: red; } /* レイヤーに属さないので全レイヤーに勝つ */</code></pre>
+        </div>
+
+        <div class="pitfall-box">
+          <div class="pitfall-box__title">⚠️ 落とし穴：レイヤー外のCSSは常に最優先</div>
+          <p><code>@layer</code> に属さない通常のCSSルールは、どのレイヤーよりも強い詳細度を持ちます。サードパーティのCSS（外部ライブラリのスタイルなど）が <code>@layer</code> の外側に書かれている場合、自分たちの <code>utilities</code> レイヤーで上書きしようとしても効かないことがあるため注意が必要です。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch12-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>12.4 アーキテクチャの選定指針</h3>
+        <p>
+          「どれが一番優れているか」という問いに唯一の正解はありません。<strong>使用しているフレームワーク・チーム規模・開発速度の優先度</strong>によって最適解は変わります。以下のフローチャートを目安にしてください。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+flowchart TD
+    Q1{"Reactなどの<br/>コンポーネント<br/>フレームワーク使用？"} -->|Yes| Q2
+    Q1 -->|No| Q3
+
+    Q2{"スタイルをJSで<br/>動的に操作する？"} -->|頻繁に| CSSINJS["CSS-in-JS<br/>(Styled Components<br/>Emotion / Panda CSS)"]
+    Q2 -->|あまり| MODULES["CSS Modules<br/>+ CSS変数"]
+
+    Q3{"チームの規模は？"} -->|大規模10人以上| ITCSS_L["ITCSS + @layer<br/>厳格な詳細度管理"]
+    Q3 -->|中規模| CUBE_L["CUBE CSS<br/>バランス型"]
+    Q3 -->|小規模・高速開発| TAILWIND["Utility-First<br/>(Tailwind CSS)"]
+
+    style CSSINJS fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+    style MODULES fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style ITCSS_L fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style CUBE_L fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style TAILWIND fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+          </script>
+          <div class="mermaid" role="img" aria-label="CSSアーキテクチャ選定フローチャート：フレームワーク利用有無、JS動的操作の頻度、チーム規模に応じて分岐"></div>
+          <p class="diagram-card__cap">📊 図12-5：CSSアーキテクチャの選定フローチャート</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>アーキテクチャ</th><th>学習コスト</th><th>適したチーム規模</th><th>強み</th></tr></thead>
+            <tbody>
+              <tr><td>ITCSS</td><td>中〜高</td><td>大規模（10人以上）</td><td>厳格な詳細度管理、長期保守性</td></tr>
+              <tr><td>CUBE CSS</td><td>低〜中</td><td>中規模</td><td>バランスの良さ、習得の速さ</td></tr>
+              <tr><td>Utility-First（Tailwind）</td><td>低</td><td>小〜大規模</td><td>圧倒的な開発速度</td></tr>
+              <tr><td>CSS Modules</td><td>低</td><td>React/Vue/Svelte全般</td><td>コンポーネント単位のスコープ分離</td></tr>
+              <tr><td>CSS-in-JS</td><td>中</td><td>JS駆動の動的UIが多いチーム</td><td>状態に応じた動的スタイリング</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bp-box">
+        <div class="bp-box__title">✅ CSSアーキテクチャ運用のベストプラクティス</div>
+        <div class="bp-grid">
+          <div class="bp-col bp-col--do">
+            <div class="bp-col__h">👍 DO</div>
+            <ul>
+              <li>プロジェクト開始時にアーキテクチャ方針をドキュメント化する</li>
+              <li><code>@layer</code> を使い詳細度の問題を構造的に解決する</li>
+              <li>命名規則（BEM・接頭辞など）をLintで強制する</li>
+              <li>レイアウト用とコンポーネント用のクラスを明確に分離する</li>
+            </ul>
+          </div>
+          <div class="bp-col bp-col--dont">
+            <div class="bp-col__h">👎 DON'T</div>
+            <ul>
+              <li>複数のアーキテクチャを無秩序に混在させる</li>
+              <li><code>!important</code> を詳細度問題の応急処置に使い続ける</li>
+              <li>1つのセレクタに4階層以上のネストを重ねる</li>
+              <li>命名規則をドキュメント化せず暗黙知に頼る</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="refs">
+        <div class="refs__title">📚 第12章 参考文献</div>
+        <ul>
+          <li><a href="https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528" target="_blank" rel="noopener noreferrer"><span class="src-name">ITCSS（Harry Roberts）</span><span class="src-url">creativebloq.com — manage-large-css-projects-itcss</span></a></li>
+          <li><a href="https://cube.fyi/" target="_blank" rel="noopener noreferrer"><span class="src-name">CUBE CSS（Andy Bell）</span><span class="src-url">cube.fyi</span></a></li>
+          <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@layer" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Cascade Layers (@layer)</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/@layer</span></a></li>
+          <li><a href="https://www.smashingmagazine.com/2022/01/new-layer-tools-for-css/" target="_blank" rel="noopener noreferrer"><span class="src-name">Smashing Magazine — Cascade Layers (Miriam Suzanne)</span><span class="src-url">smashingmagazine.com/2022/01/new-layer-tools-for-css</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         Chapter 13: デザイントークン
+         ============================================================ -->
+    <section class="chapter" id="ch13">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 13</span><span class="chapter__rule"></span></div>
+      <h2>デザイントークン</h2>
+      <p class="chapter__intro">
+        デザイントークンとは、<strong>色・スペース・タイポグラフィなどのデザインの意思決定を、特定のプラットフォームに依存しない形式で1箇所に保存したもの</strong>です。
+        JSONで一度定義すれば、CSS・iOS・Android・Figmaなど、あらゆる出力先に自動変換できます。「デザインとコードの真実の源（Single Source of Truth）」を作る取り組みだと考えてください。
+      </p>
+
+      <div class="diagram-card">
+        <script type="text/plain" class="mermaid-src">
+graph TD
+    TOKEN["デザイントークン<br/>(JSON / YAML)<br/>単一の定義"] --> CSS["CSS<br/>--color-primary"]
+    TOKEN --> IOS["iOS / Swift<br/>Color.primary"]
+    TOKEN --> ANDROID["Android / Kotlin<br/>R.color.primary"]
+    TOKEN --> FIGMA["Figma<br/>Variables"]
+    TOKEN --> DOCS["Storybook<br/>ドキュメント"]
+
+    style TOKEN fill:#6C47FF,color:#fff,stroke:none
+    style CSS fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style IOS fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style ANDROID fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style FIGMA fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style DOCS fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+        </script>
+        <div class="mermaid" role="img" aria-label="デザイントークンは単一のJSON定義からCSS, iOS, Android, Figma, Storybookへ変換される"></div>
+        <p class="diagram-card__cap">📊 図13-1：1つのトークン定義から複数プラットフォームへ展開</p>
+      </div>
+
+      <div class="beginner-box">
+        <div class="beginner-box__label">🔰 初学者向け：CSS変数とデザイントークンは何が違うの？</div>
+        <p>CSS変数（カスタムプロパティ）は「CSSの中だけ」で使える仕組みです。一方デザイントークンはもっと広い概念で、「色は<code>#6C47FF</code>」という決定そのものをJSONなどの中立な形式で管理し、そこからCSS変数・Swiftのコード・Androidのリソースファイルなど<strong>複数の出力</strong>を自動生成するための「元データ」を指します。つまり、CSS変数はデザイントークンを実現する手段の一つです。</p>
+      </div>
+
+      <div class="sub" id="ch13-1">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">①</span>13.1 W3C Design Tokens 仕様</h3>
+        <p>
+          W3Cが標準化を進めるデザイントークンのJSON形式です。各値は <code>$value</code>（実際の値）と <code>$type</code>（値の種類：色・寸法・デュレーションなど）を持ち、<code>{color.purple.500}</code> のような中括弧記法で他のトークンを参照（エイリアス化）できます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>tokens/primitive.tokens.json</span></div>
+          <pre><code class="language-json">{
+  "color": {
+    "purple": {
+      "50":  { "$value": "#f5f3ff", "$type": "color" },
+      "500": { "$value": "#6C47FF", "$type": "color" },
+      "900": { "$value": "#1e0a5c", "$type": "color" }
+    },
+    "action": {
+      "primary": {
+        "$value": "{color.purple.500}",
+        "$type": "color",
+        "$description": "メインのアクションカラー（ボタン・リンクなど）"
+      }
+    }
+  },
+  "spacing": {
+    "4": { "$value": "16px", "$type": "dimension" },
+    "6": { "$value": "24px", "$type": "dimension" }
+  },
+  "font-size": {
+    "base": { "$value": "1rem", "$type": "dimension" },
+    "lg":   { "$value": "1.125rem", "$type": "dimension" }
+  },
+  "duration": {
+    "fast":   { "$value": "100ms", "$type": "duration" },
+    "normal": { "$value": "200ms", "$type": "duration" }
+  },
+  "border-radius": {
+    "md": { "$value": "8px",  "$type": "dimension" },
+    "lg": { "$value": "12px", "$type": "dimension" }
+  }
+}</code></pre>
+        </div>
+
+        <p>
+          ポイントは <code>color.action.primary</code> が直接 <code>#6C47FF</code> を持たず、<code>{color.purple.500}</code> というエイリアスで参照している点です。これにより、もしブランドカラーが変わっても <code>color.purple.500</code> の1箇所を変えるだけで、それを参照している全てのセマンティックトークンに変更が波及します。
+        </p>
+      </div>
+
+      <div class="sub" id="ch13-2">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">②</span>13.2 Style Dictionary による自動変換</h3>
+        <p>
+          Amazon がOSSで公開している <strong>Style Dictionary</strong> は、トークンのJSONから各プラットフォーム向けのファイルを自動生成するビルドツールです。「1つのJSONを書けば、CSS・JS・Swift・Android用ファイルが同時に生成される」状態を作れます。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+flowchart LR
+    JSON["tokens/*.json<br/>(単一の定義)"] -->|"Style Dictionary<br/>build"| CSSOUT["CSS<br/>カスタムプロパティ"]
+    JSON -->|build| JSOUT["JS / TypeScript<br/>定数 + 型定義"]
+    JSON -->|build| IOSOUT["iOS Swift<br/>クラス定義"]
+    JSON -->|build| ANDOUT["Android<br/>XMLリソース"]
+
+    style JSON fill:#6C47FF,color:#fff,stroke:none
+    style CSSOUT fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style JSOUT fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style IOSOUT fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style ANDOUT fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+          </script>
+          <div class="mermaid" role="img" aria-label="Style Dictionaryによるビルド: 単一のJSONからCSS, JS/TypeScript, iOS Swift, Android XMLへ変換"></div>
+          <p class="diagram-card__cap">📊 図13-2：Style Dictionary によるマルチプラットフォーム出力</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>style-dictionary.config.js</span></div>
+          <pre><code class="language-javascript">import StyleDictionary from 'style-dictionary';
+
+export default {
+  source: ['tokens/**/*.json'],
+
+  platforms: {
+    /* CSS カスタムプロパティへの変換 */
+    css: {
+      transformGroup: 'css',
+      prefix: '',
+      buildPath: 'dist/css/',
+      files: [
+        {
+          destination: 'tokens.css',
+          format: 'css/variables',
+          options: { selector: ':root', outputReferences: true },
+        },
+      ],
+    },
+
+    /* JavaScript / TypeScript への変換 */
+    js: {
+      transformGroup: 'js',
+      buildPath: 'dist/js/',
+      files: [
+        { destination: 'tokens.js', format: 'javascript/es6' },
+        { destination: 'tokens.d.ts', format: 'typescript/es6-declarations' },
+      ],
+    },
+
+    /* iOS Swift への変換 */
+    ios: {
+      transformGroup: 'ios-swift',
+      buildPath: 'dist/ios/',
+      files: [
+        {
+          destination: 'StyleDictionaryColor.swift',
+          format: 'ios-swift/class.swift',
+          filter: { attributes: { category: 'color' } },
+        },
+      ],
+    },
+
+    /* Android Compose への変換 */
+    android: {
+      transformGroup: 'android',
+      buildPath: 'dist/android/',
+      files: [{ destination: 'tokens.xml', format: 'android/resources' }],
+    },
+  },
+};</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>terminal</span></div>
+          <pre><code class="language-bash"># トークンのビルド
+npx style-dictionary build --config style-dictionary.config.js</code></pre>
+        </div>
+
+        <h4>生成されるCSSの例</h4>
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>dist/css/tokens.css（自動生成）</span></div>
+          <pre><code class="language-css">:root {
+  --color-purple-50: #f5f3ff;
+  --color-purple-500: #6C47FF;
+  --color-purple-900: #1e0a5c;
+  --color-action-primary: var(--color-purple-500);
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch13-3">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">③</span>13.3 Figma Variables との連携</h3>
+        <p>
+          デザイナーが Figma 上で管理する Variables（変数）と、エンジニアが扱う JSON トークンを橋渡しするのが <strong>Tokens Studio</strong> という Figma プラグインです。デザイナーがFigma上で色を変更すると、JSONファイルにエクスポートされ、それがGitにコミットされてCI上で自動的にCSS等へビルドされる、という一気通貫のパイプラインを構築できます。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+flowchart LR
+    FIGMA["Figma Variables<br/>（デザイナーが管理）"] -->|"Tokens Studio<br/>プラグイン"| JSON["tokens.json<br/>（Git管理）"]
+    JSON -->|"Style Dictionary<br/>自動ビルド"| CSS["CSS Variables"]
+    JSON --> IOS2["Swift"]
+    JSON --> AND2["XML / Kotlin"]
+    CSS -->|"npm publish"| COMP["コンポーネント<br/>ライブラリ"]
+
+    style FIGMA fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style JSON fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style CSS fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style IOS2 fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style AND2 fill:#1e4a1e,color:#86efac,stroke:#22c55e
+    style COMP fill:#6C47FF,color:#fff,stroke:none
+          </script>
+          <div class="mermaid" role="img" aria-label="Figma Variablesから Tokens StudioでJSON化し、Style Dictionaryで各種出力に変換しコンポーネントライブラリに配布する流れ"></div>
+          <p class="diagram-card__cap">📊 図13-3：Figma〜コードを繋ぐトークンパイプライン</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch13-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>13.4 ベストプラクティス</h3>
+
+        <h4>トークンファイルをGitで管理し、変更を追跡する</h4>
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>tokens/ ディレクトリ構成</span></div>
+          <pre><code class="language-bash">tokens/
+├── primitive/
+│   ├── color.json       # カラースケール（生の値）
+│   ├── spacing.json     # スペーシングスケール
+│   └── typography.json  # タイポグラフィスケール
+├── semantic/
+│   ├── light.json       # ライトモードのセマンティック
+│   └── dark.json        # ダークモードのセマンティック
+└── component/
+    ├── button.json      # ボタン固有トークン
+    └── card.json        # カード固有トークン</code></pre>
+        </div>
+
+        <h4>セマンティックトークンは必ずプリミティブを参照する</h4>
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>semantic/light.json</span></div>
+          <pre><code class="language-json">{
+  "color": {
+    "action": {
+      "primary": {
+        "$value": "{color.purple.500}",
+        "$type": "color"
+      }
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：プリミティブとセマンティックの違い</div>
+          <p><strong>プリミティブトークン</strong>は「生の値」です（<code>purple.500 = #6C47FF</code>）。<strong>セマンティックトークン</strong>は「その値が何の役割を持つか」を表します（<code>color.action.primary = purple.500</code>）。コンポーネントのCSSでは必ずセマンティックトークン（<code>--color-action-primary</code>）を参照し、プリミティブ（<code>--color-purple-500</code>）を直接使わないようにすると、後でブランドカラーやダークモード切り替えをする際に変更箇所が劇的に少なくなります。</p>
+        </div>
+
+        <div class="bp-box">
+          <div class="bp-box__title">✅ デザイントークン運用のベストプラクティス</div>
+          <div class="bp-grid">
+            <div class="bp-col bp-col--do">
+              <div class="bp-col__h">👍 DO</div>
+              <ul>
+                <li>プリミティブ → セマンティック → コンポーネントの3階層で管理</li>
+                <li>W3C Design Tokens仕様に準拠したJSON形式を使う</li>
+                <li>CIでトークンのビルドを自動化する</li>
+                <li>命名にプラットフォーム固有の言葉を含めない（<code>--btn-blue-android</code>のような名前は避ける）</li>
+              </ul>
+            </div>
+            <div class="bp-col bp-col--dont">
+              <div class="bp-col__h">👎 DON'T</div>
+              <ul>
+                <li>コンポーネントCSSにプリミティブの値を直接ハードコードする</li>
+                <li>Figmaとコードのトークンを手動で同期し続ける</li>
+                <li>トークンのバージョン管理をせずに直接上書きする</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="refs">
+        <div class="refs__title">📚 第13章 参考文献</div>
+        <ul>
+          <li><a href="https://www.w3.org/TR/design-tokens/" target="_blank" rel="noopener noreferrer"><span class="src-name">W3C — Design Tokens 仕様</span><span class="src-url">w3.org/TR/design-tokens</span></a></li>
+          <li><a href="https://styledictionary.com" target="_blank" rel="noopener noreferrer"><span class="src-name">Style Dictionary（Amazon）</span><span class="src-url">styledictionary.com</span></a></li>
+          <li><a href="https://tokens.studio/" target="_blank" rel="noopener noreferrer"><span class="src-name">Tokens Studio for Figma</span><span class="src-url">tokens.studio</span></a></li>
+          <li><a href="https://github.com/salesforce-ux/theo" target="_blank" rel="noopener noreferrer"><span class="src-name">Theo（Salesforce）</span><span class="src-url">github.com/salesforce-ux/theo</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         Chapter 14: 実践：完全なコンポーネント実装例
+         ============================================================ -->
+    <section class="chapter" id="ch14">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 14</span><span class="chapter__rule"></span></div>
+      <h2>実践：完全なコンポーネント実装例</h2>
+      <p class="chapter__intro">
+        ここまでの「アニメーション」「アーキテクチャ」「デザイントークン」の知識を1つに統合し、
+        <strong>Modal（モーダルダイアログ）コンポーネント</strong>を実際に組み立てます。アクセシビリティ・アニメーション・BEM命名・トークン参照のすべてを盛り込んだ、実務でそのまま使える実装例です。
+      </p>
+
+      <div class="beginner-box">
+        <div class="beginner-box__label">🔰 初学者向け：なぜModalが「総合演習」として最適なのか</div>
+        <p>Modal（モーダル）は、見た目はシンプルですが「フォーカス管理」「キーボード操作」「アニメーション」「スクロールロック」「ARIA属性」など、フロントエンド実装で気をつけるべきポイントがほぼ全て詰まったコンポーネントです。Modalを正しく作れるようになれば、他の大半のインタラクティブUI（ドロワー・ツールチップ・ドロップダウンなど）にも同じ考え方を応用できます。</p>
+      </div>
+
+      <div class="sub" id="ch14-1">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">①</span>14.1 状態遷移の設計</h3>
+        <p>
+          実装に入る前に、コンポーネントが取りうる状態を整理します。Modalには「閉じている」「開く途中」「開いている」「閉じる途中」という4つの状態があり、それぞれの遷移のきっかけ（トリガー）を明確にしておくことで、CSSとJSの実装がブレなくなります。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+stateDiagram-v2
+    [*] --> Closed: 初期状態
+    Closed --> Opening: trigger クリック
+    Opening --> Open: アニメーション完了
+    Open --> Closing: Esc / 閉じるボタン / 背景クリック
+    Closing --> Closed: アニメーション完了
+    Open --> Open: コンテンツ操作
+          </script>
+          <div class="mermaid" role="img" aria-label="Modalの状態遷移図: Closed, Opening, Open, Closingの4状態とトリガー"></div>
+          <p class="diagram-card__cap">📊 図14-1：Modalコンポーネントの状態遷移</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch14-2">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">②</span>14.2 HTML構造（セマンティック＋ARIA）</h3>
+        <p>
+          スクリーンリーダーがこの要素を「ダイアログ」として正しく認識できるよう、<code>role="dialog"</code>・<code>aria-modal="true"</code>・<code>aria-labelledby</code>・<code>aria-describedby</code> を設定します。初期状態では <code>hidden</code> 属性で完全にDOMから読み上げ対象外にしておきます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>modal.html</span></div>
+          <pre><code class="language-xml">&lt;!-- トリガー --&gt;
+&lt;button
+  class="button button--primary"
+  type="button"
+  data-modal-trigger="confirm-modal"
+&gt;
+  確認ダイアログを開く
+&lt;/button&gt;
+
+&lt;!-- モーダル本体 --&gt;
+&lt;div
+  id="confirm-modal"
+  class="modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  aria-describedby="modal-description"
+  hidden
+&gt;
+  &lt;!-- 背景オーバーレイ --&gt;
+  &lt;div class="modal__overlay" data-modal-close&gt;&lt;/div&gt;
+
+  &lt;!-- ダイアログ本体 --&gt;
+  &lt;div class="modal__dialog"&gt;
+    &lt;header class="modal__header"&gt;
+      &lt;h2 class="modal__title" id="modal-title"&gt;削除の確認&lt;/h2&gt;
+      &lt;button class="modal__close" type="button" aria-label="ダイアログを閉じる" data-modal-close&gt;
+        &lt;svg class="modal__close-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20"&gt;
+          &lt;path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/&gt;
+        &lt;/svg&gt;
+      &lt;/button&gt;
+    &lt;/header&gt;
+
+    &lt;div class="modal__body"&gt;
+      &lt;p class="modal__description" id="modal-description"&gt;
+        このアイテムを削除しますか？この操作は元に戻せません。
+      &lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;footer class="modal__footer"&gt;
+      &lt;button class="button button--secondary" type="button" data-modal-close&gt;キャンセル&lt;/button&gt;
+      &lt;button class="button button--danger" type="button" id="confirm-delete"&gt;削除する&lt;/button&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ARIA属性</th><th>意味</th></tr></thead>
+            <tbody>
+              <tr><td><code>role="dialog"</code></td><td>この要素がダイアログであることをスクリーンリーダーに伝える</td></tr>
+              <tr><td><code>aria-modal="true"</code></td><td>背後のコンテンツが操作不可能であることを伝える</td></tr>
+              <tr><td><code>aria-labelledby</code></td><td>ダイアログのタイトルとなる要素のIDを指定</td></tr>
+              <tr><td><code>aria-describedby</code></td><td>ダイアログの説明文となる要素のIDを指定</td></tr>
+              <tr><td><code>aria-label</code>（閉じるボタン）</td><td>アイコンのみのボタンに音声で読み上げる代替テキストを与える</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub" id="ch14-3">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">③</span>14.3 CSS実装（BEM + トークン）</h3>
+        <p>
+          BEM（Block Element Modifier）命名規則で <code>.modal</code>・<code>.modal__overlay</code>・<code>.modal__dialog</code> のように構造化し、すべての色・スペース・デュレーションはトークン（カスタムプロパティ）から参照します。これにより、第11章で学んだアニメーション設計と第13章のトークンがそのまま実装に活かされます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>modal.css（1/2）</span></div>
+          <pre><code class="language-css">/* --- Block --- */
+.modal {
+  --modal-duration: var(--duration-slow, 300ms);
+  --modal-easing:   var(--ease-out, cubic-bezier(0, 0, 0.2, 1));
+
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity    var(--modal-duration) var(--modal-easing),
+    visibility 0ms linear var(--modal-duration);
+}
+
+.modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition:
+    opacity    var(--modal-duration) var(--modal-easing),
+    visibility 0ms linear 0ms;
+}
+
+/* --- Elements --- */
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal__overlay { backdrop-filter: none; }
+}
+
+.modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, var(--container-sm, 480px));
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl, 16px);
+  border: 1px solid var(--color-border-default);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100svh - var(--space-8));
+  overflow: hidden;
+
+  transform: translateY(16px) scale(0.97);
+  transition: transform var(--modal-duration) var(--modal-easing);
+}
+
+.modal.is-open .modal__dialog {
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal__dialog { transform: none; transition: none; }
+}</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>modal.css（2/2）</span></div>
+          <pre><code class="language-css">.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-semibold, 600);
+  line-height: var(--line-height-tight, 1.25);
+  color: var(--color-text-primary);
+}
+
+.modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.modal__close:hover { background: var(--color-bg-overlay); }
+
+.modal__close:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.modal__body {
+  padding: var(--space-6);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch14-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>14.4 JavaScript実装（アクセシブル）</h3>
+        <p>
+          見た目だけでなく「キーボードだけで完結して操作できるか」がアクセシブルなModalの鍵です。開いた時に最初の要素へフォーカスを移し、<kbd>Tab</kbd>キーがモーダルの外に出ないように「フォーカストラップ」を実装し、閉じた時には元いた場所にフォーカスを戻す、という3点が必須要件です。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>modal.js</span></div>
+          <pre><code class="language-javascript">class Modal {
+  #modal;
+  #trigger;
+  #focusableElements;
+  #previouslyFocused;
+
+  constructor(modalId) {
+    this.#modal   = document.getElementById(modalId);
+    this.#trigger = document.querySelector(`[data-modal-trigger="${modalId}"]`);
+    if (!this.#modal || !this.#trigger) return;
+    this.#init();
+  }
+
+  #init() {
+    this.#trigger.addEventListener('click', () => this.open());
+
+    this.#modal.querySelectorAll('[data-modal-close]').forEach(el => {
+      el.addEventListener('click', () => this.close());
+    });
+
+    this.#modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.close();
+      if (e.key === 'Tab')    this.#trapFocus(e);
+    });
+  }
+
+  open() {
+    this.#previouslyFocused = document.activeElement;
+
+    this.#modal.removeAttribute('hidden');
+    this.#modal.removeAttribute('aria-hidden');
+
+    requestAnimationFrame(() => {
+      this.#modal.classList.add('is-open');
+    });
+
+    this.#getFocusableElements();
+    this.#focusableElements[0]?.focus();
+
+    document.body.style.overflow = 'hidden';
+  }
+
+  close() {
+    this.#modal.classList.remove('is-open');
+
+    const duration = getComputedStyle(this.#modal)
+      .getPropertyValue('--modal-duration').trim();
+    const ms = parseFloat(duration) * (duration.endsWith('s') && !duration.endsWith('ms') ? 1000 : 1);
+
+    setTimeout(() => {
+      this.#modal.setAttribute('hidden', '');
+      this.#modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      this.#previouslyFocused?.focus();
+    }, ms);
+  }
+
+  #getFocusableElements() {
+    this.#focusableElements = [
+      ...this.#modal.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      ),
+    ];
+  }
+
+  #trapFocus(e) {
+    if (!this.#focusableElements.length) return;
+    const first = this.#focusableElements[0];
+    const last  = this.#focusableElements[this.#focusableElements.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      last.focus();
+      e.preventDefault();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      first.focus();
+      e.preventDefault();
+    }
+  }
+}
+
+const confirmModal = new Modal('confirm-modal');</code></pre>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：フォーカストラップとは？</div>
+          <p>モーダルが開いている間に <kbd>Tab</kbd> キーを押し続けると、本来は背後のページの要素にもフォーカスが移動してしまいます。これではユーザーが「今どこを操作しているか」見失ってしまいます。フォーカストラップは、モーダル内の最後の要素で <kbd>Tab</kbd> を押したら最初の要素に、最初の要素で <kbd>Shift+Tab</kbd> を押したら最後の要素にフォーカスを戻すことで、フォーカスをモーダルの中だけに「閉じ込める」仕組みです。</p>
+        </div>
+
+        <div class="pitfall-box">
+          <div class="pitfall-box__title">⚠️ 落とし穴：アニメーション完了前に hidden を付けてしまう</div>
+          <p>閉じる処理で <code>classList.remove('is-open')</code> と同時に <code>hidden</code> 属性を付けてしまうと、CSSのトランジションが始まる前に要素が消えてアニメーションが機能しません。上記の実装のように <code>setTimeout</code> でアニメーション時間（<code>--modal-duration</code>）の分だけ待ってから <code>hidden</code> を付与するようにしましょう。</p>
+        </div>
+      </div>
+
+      <div class="bp-box">
+        <div class="bp-box__title">✅ コンポーネント実装のベストプラクティス</div>
+        <div class="bp-grid">
+          <div class="bp-col bp-col--do">
+            <div class="bp-col__h">👍 DO</div>
+            <ul>
+              <li>状態遷移図を先に書いてから実装に入る</li>
+              <li>開閉時にフォーカスを正しく移動・復元する</li>
+              <li><kbd>Esc</kbd>キー・背景クリックの両方で閉じられるようにする</li>
+              <li>CSSのデュレーション値をJS側でも参照し二重管理を避ける</li>
+            </ul>
+          </div>
+          <div class="bp-col bp-col--dont">
+            <div class="bp-col__h">👎 DON'T</div>
+            <ul>
+              <li>マウス操作だけを前提に実装する</li>
+              <li><code>display: none</code> だけで開閉しアニメーションを諦める</li>
+              <li>背景のスクロールをロックし忘れる</li>
+              <li>モーダルを開いたままbodyの内容を読み上げ可能にしておく</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         Chapter 15: パフォーマンス最適化
+         ============================================================ -->
+    <section class="chapter" id="ch15">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 15</span><span class="chapter__rule"></span></div>
+      <h2>パフォーマンス最適化</h2>
+      <p class="chapter__intro">
+        どれだけ美しいデザインシステムを構築しても、表示が遅ければユーザーは離脱してしまいます。
+        本章では、ブラウザがCSSをどう処理しているかという基礎から、クリティカルCSS・ロード最適化・セレクタ効率・バンドルサイズ削減、
+        そしてGoogleの品質指標である<strong>Core Web Vitals</strong>との関係までを解説します。
+      </p>
+
+      <div class="sub" id="ch15-1">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">①</span>15.1 CSSパフォーマンスの基礎：レンダリングパイプライン</h3>
+        <p>
+          ブラウザは画面を表示するまでに6つの段階を経ます。どの段階で再計算が起きるかによって処理コストが大きく異なり、<strong>レイアウト（Layout）の再計算が最も重く、合成（Composite）だけで済む変更が最も軽い</strong>という覚えておくべき序列があります。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    subgraph RENDER["ブラウザのレンダリングパイプライン"]
+        P1["Parse HTML<br/>DOMツリーの構築"] --> P2
+        P2["Parse CSS<br/>CSSOMの構築"] --> P3
+        P3["Render Tree<br/>DOMとCSSOMを結合"] --> P4
+        P4["Layout<br/>要素のサイズ・位置を計算"] --> P5
+        P5["Paint<br/>ピクセルを塗る"] --> P6
+        P6["Composite<br/>レイヤーを重ねて表示"]
+    end
+
+    subgraph COST["コスト比較"]
+        C1["Layout 最も重い<br/>width/height/top変更で発生"]
+        C2["Paint 中程度<br/>color/background変更で発生"]
+        C3["Composite 最も軽い<br/>transform/opacity変更"]
+    end
+
+    P4 -.->|再計算| C1
+    P5 -.->|再計算| C2
+    P6 -.->|のみで済む| C3
+
+    style P1 fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style P2 fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style P3 fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style P4 fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+    style P5 fill:#4a2d1e,color:#fcd34d,stroke:#f59e0b
+    style P6 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style C1 fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+    style C2 fill:#4a2d1e,color:#fcd34d,stroke:#f59e0b
+    style C3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+          </script>
+          <div class="mermaid" role="img" aria-label="レンダリングパイプライン: Parse HTML, Parse CSS, Render Tree, Layout, Paint, Compositeの6段階とコスト比較"></div>
+          <p class="diagram-card__cap">📊 図15-1：レンダリングパイプラインと各段階の処理コスト</p>
+        </div>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：「リフロー」「リペイント」って何？</div>
+          <p>「リフロー」は要素のサイズや位置を再計算すること、「リペイント」は色や見た目を塗り直すことです。<code>width</code> を変えると要素の大きさが変わるので、それに引っ張られて周囲の要素も配置し直す必要があり「リフロー」が起きます。一方 <code>transform</code> で要素を動かしても、他の要素のレイアウトには一切影響しないため、リフローもリペイントも起きずGPUの合成だけで完結します。第11章で「<code>transform</code>・<code>opacity</code>を使う」と繰り返し強調していたのは、まさにこの仕組みが理由です。</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch15-2">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">②</span>15.2 クリティカルCSS</h3>
+        <p>
+          通常、ブラウザは<code>&lt;link rel="stylesheet"&gt;</code>でCSSファイル全体をダウンロードし終えるまで、画面の描画をブロックします。CSSファイルが数百KBある場合、ユーザーは真っ白な画面を見続けることになります。<strong>クリティカルCSS</strong>とは、最初に見える範囲（ファーストビュー、Above the fold）のスタイルだけを抜き出してHTMLに直接埋め込み、即座に描画を開始させるテクニックです。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+flowchart TB
+    subgraph PROBLEM["問題: レンダリングブロッキング"]
+        A["HTML解析"] -->|"link rel=stylesheet"| B["CSS全体のダウンロード<br/>（数百KB）"]
+        B --> C["画面表示"]
+        D["ユーザーは白い画面を見て待つ"]
+    end
+
+    subgraph SOLUTION["解決: クリティカルCSSのインライン化"]
+        E["HTML解析"] --> F["style要素でビューポートのCSSを即時適用"]
+        F --> G["初期表示"]
+        G --> H["残りのCSSを非同期ロード"]
+    end
+
+    style PROBLEM fill:#2a1414,stroke:#ef4444,color:#fca5a5
+    style SOLUTION fill:#142a1e,stroke:#22c55e,color:#86efac
+          </script>
+          <div class="mermaid" role="img" aria-label="問題: レンダリングブロッキングにより白い画面で待たされる。解決: クリティカルCSSのインライン化で即時表示"></div>
+          <p class="diagram-card__cap">📊 図15-2：クリティカルCSSによるレンダリングブロック回避</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>index.html</span></div>
+          <pre><code class="language-xml">&lt;head&gt;
+  &lt;!-- Above the fold のCSSをインラインに --&gt;
+  &lt;style&gt;
+    :root { --color-bg-base: #fafafa; --color-text-primary: #18181b; }
+    body { font-family: system-ui, sans-serif; background: var(--color-bg-base); margin: 0; }
+    .header { display: flex; align-items: center; height: 64px; padding: 0 24px; }
+    .hero { padding: 80px 24px; text-align: center; }
+  &lt;/style&gt;
+
+  &lt;!-- 残りのCSSは非同期ロード --&gt;
+  &lt;link
+    rel="preload"
+    href="/styles/main.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  &gt;
+  &lt;noscript&gt;&lt;link rel="stylesheet" href="/styles/main.css"&gt;&lt;/noscript&gt;
+&lt;/head&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch15-3">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">③</span>15.3 CSSのロード最適化</h3>
+        <p>
+          フォントのプリロード、メディアクエリによる条件付きロード、可変フォント（Variable Fonts）の活用に加え、モダンCSSの <code>contain</code> と <code>content-visibility</code> を使うことで、ブラウザに「ここはレンダリングを省略してよい」というヒントを与えられます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>index.html</span></div>
+          <pre><code class="language-xml">&lt;head&gt;
+  &lt;!-- 使用するフォントファイルを事前にロード --&gt;
+  &lt;link rel="preload" href="/fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin&gt;
+  &lt;link rel="preload" href="/fonts/NotoSansJP-Regular.woff2" as="font" type="font/woff2" crossorigin&gt;
+&lt;/head&gt;
+
+&lt;!-- メディアクエリで条件ロード --&gt;
+&lt;link rel="stylesheet" href="print.css" media="print"&gt;
+&lt;link rel="stylesheet" href="mobile.css" media="(max-width: 768px)"&gt;</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>fonts.css</span></div>
+          <pre><code class="language-css">/* ===== @font-face の最適化 ===== */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-var.woff2') format('woff2');
+  font-weight: 100 900;          /* 可変フォント：1ファイルで複数ウェイトをカバー */
+  font-style: normal;
+  font-display: swap;            /* FLASHを防ぎ、FOUTを許容 */
+  unicode-range: U+0000-00FF, U+0131; /* 使用する文字範囲のみ */
+}
+
+/* ===== contain プロパティ: ブラウザの最適化ヒント ===== */
+.widget {
+  contain: layout style; /* この変更が外部レイアウトに影響しないことを宣言 */
+}
+
+.card-list {
+  contain: strict; /* layout + style + paint + size */
+}
+
+/* ===== content-visibility: 画面外要素のレンダリングをスキップ ===== */
+.article-card {
+  content-visibility: auto;             /* 画面外はレンダリングスキップ */
+  contain-intrinsic-size: auto 400px;  /* スキップ時の推定サイズ（レイアウトシフト防止） */
+}</code></pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>用語</th><th>意味</th></tr></thead>
+            <tbody>
+              <tr><td>FOUT (Flash of Unstyled Text)</td><td>フォント読み込み中は代替フォントで表示し、読み込み完了後に切り替わる現象</td></tr>
+              <tr><td>FOIT (Flash of Invisible Text)</td><td>フォント読み込みが完了するまでテキストが非表示になる現象（避けるべき）</td></tr>
+              <tr><td><code>font-display: swap</code></td><td>FOITを避け、即座に代替フォントで表示してから本番フォントへ差し替える設定</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub" id="ch15-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>15.4 CSSセレクタのパフォーマンス</h3>
+        <p>
+          ブラウザはセレクタを<strong>右から左に</strong>評価します。つまり <code>.header ul li a</code> というセレクタがあれば、まず全ての <code>a</code> 要素を見つけ出してから、その親が <code>li</code>か、さらにその親が<code>ul</code>か…と遡って絞り込みます。右端（キーセレクタ）が広すぎると、無駄な走査が大量に発生します。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>selectors.css</span></div>
+          <pre><code class="language-css">/* NG: 右端が広すぎるセレクタ（多くの要素にマッチして走査が重い） */
+.page .content * { color: inherit; }        /* * は全要素にマッチ */
+.sidebar div + div { margin-top: 8px; }      /* 全divを走査 */
+.header ul li a { color: var(--link); }      /* 深いネスト */
+
+/* OK: 具体的なクラスセレクタ（マッチが速い） */
+.sidebar__item { margin-top: 8px; }
+.nav__link { color: var(--link); }
+
+/* ===== :is() / :where() で冗長な繰り返しを排除 ===== */
+
+/* NG: 同じスタイルの繰り返し */
+h1, h2, h3, h4, h5, h6 { font-weight: 600; }
+
+/* OK: :is() でまとめる（詳細度は引数の中で最も高いもの） */
+:is(h1, h2, h3, h4, h5, h6) { font-weight: 600; }
+
+/* :where() は詳細度0のため上書きしやすい */
+:where(h1, h2, h3, h4, h5, h6) { font-weight: 600; }</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch15-5">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">⑤</span>15.5 CSSバンドルサイズの最適化</h3>
+        <p>
+          未使用のCSSを検出して削除する <strong>PurgeCSS</strong>、そして高速なRust製CSS処理系である <strong>Lightning CSS</strong> を組み合わせることで、本番ビルドのファイルサイズを大幅に削減できます。動的に付与されるクラス名（例：JSで追加される<code>is-open</code>）は誤って削除されないよう、セーフリストへの登録が必須です。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>postcss.config.js</span></div>
+          <pre><code class="language-javascript">/* ===== PurgeCSS: 未使用CSSの削除 ===== */
+export default {
+  plugins: {
+    '@fullhuman/postcss-purgecss': {
+      content: [
+        './src/**/*.html',
+        './src/**/*.jsx',
+        './src/**/*.tsx',
+        './src/**/*.vue',
+      ],
+      defaultExtractor: (content) =>
+        content.match(/[\w-/:]+(?&lt;!:)/g) || [],
+      /* セーフリスト: 動的に追加されるクラスは削除しない */
+      safelist: {
+        standard: ['is-open', 'is-loading', 'is-error'],
+        patterns: [/^animate-/, /^modal/],
+      },
+    },
+  },
+};</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>vite.config.js</span></div>
+          <pre><code class="language-javascript">/* ===== CSS の圧縮（Lightning CSS） ===== */
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  css: {
+    transformer: 'lightningcss',    /* Rust製の超高速CSS処理ツール */
+    lightningcss: {
+      minify: true,
+      browserslist: 'last 2 versions, > 1%',
+    },
+  },
+  build: { cssMinify: 'lightningcss' },
+});</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch15-6">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">⑥</span>15.6 Core Web Vitalsとの関係</h3>
+        <p>
+          Core Web Vitals は Google が定める3つの品質指標で、検索順位にも影響します。CSSの書き方一つで、これらの数値は大きく改善できます。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    CWV["Core Web Vitals<br/>（Googleの品質指標）"] --> LCP
+    CWV --> CLS
+    CWV --> INP
+
+    LCP["LCP<br/>Largest Contentful Paint<br/>最大コンテンツの描画時間<br/>目標: 2.5秒以内"] --> LCP_FIX["改善策:<br/>クリティカルCSS<br/>フォントプリロード<br/>サイズ指定"]
+
+    CLS["CLS<br/>Cumulative Layout Shift<br/>予期しないレイアウトシフト<br/>目標: 0.1以下"] --> CLS_FIX["改善策:<br/>imgにwidth/height指定<br/>aspect-ratioで事前確保<br/>content-visibility併用"]
+
+    INP["INP<br/>Interaction to Next Paint<br/>ユーザー操作への応答速度<br/>目標: 200ms以内"] --> INP_FIX["改善策:<br/>transform/opacityのみ<br/>animateで操作をブロックしない<br/>will-changeの事前設定"]
+
+    style CWV fill:#6C47FF,color:#fff,stroke:none
+    style LCP fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style CLS fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style INP fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style LCP_FIX fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style CLS_FIX fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style INP_FIX fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+          </script>
+          <div class="mermaid" role="img" aria-label="Core Web Vitals: LCP, CLS, INPの3指標とそれぞれの目標値・改善策"></div>
+          <p class="diagram-card__cap">📊 図15-3：Core Web Vitals 3指標とCSS視点での改善策</p>
+        </div>
+
+        <p>
+          HTML側で <code>width</code> と <code>height</code> 属性（または <code>srcset</code>）を適切に指定し、CSS側で <code>width: 100%; height: auto;</code> を指定することで、モダンブラウザは自動的に画像のアスペクト比を計算し、表示領域を事前に確保（CLSを防止）します。
+        </p>
+
+        <div class="pitfall-box">
+          <div class="pitfall-box__title">⚠️ 注意：attr() によるアスペクト比指定は避ける</div>
+          <p>かつて一部の例で見られた <code>aspect-ratio: attr(width) / attr(height)</code> のようなCSSでの <code>attr()</code> 関数を用いたアスペクト比の動的指定は、実験的な仕様であり、多くのブラウザでサポートされていません。これを記述すると、非サポート環境でアスペクト比が正しく適用されない（または無視される）リスクがあります。そのため、HTML側の属性でアスペクト比の情報をブラウザに提供するのが最も安全で確実なCLS対策です。</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>cls-prevention.css</span></div>
+          <pre><code class="language-css">/* ===== CLS 対策: 画像にサイズ（アスペクト比）を確保する ===== */
+img {
+  /* HTML側で width="..." height="..." を指定し、CSSで以下を適用します。
+     ブラウザが自動的にアスペクト比（auto width / height）を計算し、領域を確保します。 */
+  width: 100%;
+  height: auto;
+}
+
+/* ===== CLS 対策: カスタムフォントのレイアウトシフト軽減 ===== */
+/* size-adjust で代替フォントのサイズを本番フォントに近づける */
+@font-face {
+  font-family: 'InterFallback';
+  src: local('Arial');
+  size-adjust: 107%;       /* InterとArialのサイズ差を調整 */
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="bp-box">
+        <div class="bp-box__title">✅ パフォーマンス最適化のベストプラクティス</div>
+        <div class="bp-grid">
+          <div class="bp-col bp-col--do">
+            <div class="bp-col__h">👍 DO</div>
+            <ul>
+              <li>ファーストビューのCSSはインライン化する</li>
+              <li>画像・動画には常に <code>width</code>/<code>height</code> を指定する</li>
+              <li>画面外コンテンツに <code>content-visibility: auto</code> を活用する</li>
+              <li>本番ビルドで未使用CSSを自動的にパージする</li>
+            </ul>
+          </div>
+          <div class="bp-col bp-col--dont">
+            <div class="bp-col__h">👎 DON'T</div>
+            <ul>
+              <li>深くネストした非効率なセレクタを多用する</li>
+              <li>サイズ未指定の画像・広告枠を埋め込む</li>
+              <li>実験的なCSS機能（<code>attr()</code>のアスペクト比利用等）に依存する</li>
+              <li>全CSSを1つの巨大ファイルとして同期ロードする</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="refs">
+        <div class="refs__title">📚 第15章 参考文献</div>
+        <ul>
+          <li><a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — Core Web Vitals</span><span class="src-url">web.dev/articles/vitals</span></a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — content-visibility</span><span class="src-url">developer.mozilla.org/en-US/docs/Web/CSS/content-visibility</span></a></li>
+          <li><a href="https://web.dev/articles/fast#optimize_your_css" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — CSS Performance</span><span class="src-url">web.dev/articles/fast</span></a></li>
+          <li><a href="https://lightningcss.dev/" target="_blank" rel="noopener noreferrer"><span class="src-name">Lightning CSS</span><span class="src-url">lightningcss.dev</span></a></li>
+          <li><a href="https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources" target="_blank" rel="noopener noreferrer"><span class="src-name">Chrome Developers — Eliminate render-blocking resources</span><span class="src-url">developer.chrome.com/docs/lighthouse/performance/render-blocking-resources</span></a></li>
+          <li><a href="https://web.dev/articles/avoid-invisible-text" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — font-display</span><span class="src-url">web.dev/articles/avoid-invisible-text</span></a></li>
+          <li><a href="https://purgecss.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">PurgeCSS</span><span class="src-url">purgecss.com</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         Chapter 16: ツール・エコシステム
+         ============================================================ -->
+    <section class="chapter" id="ch16">
+      <div class="chapter__kicker"><span class="chapter__num">CHAPTER 16</span><span class="chapter__rule"></span></div>
+      <h2>ツール・エコシステム</h2>
+      <span class="badge" style="background:var(--c-orange-bg);color:var(--c-orange-tx);margin-bottom:var(--sp-4);display:inline-block;">🟠 中級編</span>
+      <p class="chapter__intro">
+        ここまでの設計思想（アニメーション・アーキテクチャ・トークン）を、チームで継続的に運用していくためには「自動化」が欠かせません。
+        本章ではコンポーネントカタログ・CSSトランスパイル・Lint・ビジュアルリグレッションテストという4つの代表的なツールカテゴリと、
+        プロジェクト規模別の推奨スタックを紹介します。
+      </p>
+
+      <div class="diagram-card">
+        <script type="text/plain" class="mermaid-src">
+graph TD
+    DEV["フロントエンド開発のツールチェーン"] --> DESIGN
+    DEV --> BUILD
+    DEV --> COMPONENT
+    DEV --> TEST
+    DEV --> LINT
+
+    DESIGN["デザインツール連携<br/>Figma / Tokens Studio"]
+    BUILD["ビルドツール<br/>Vite / Lightning CSS / PostCSS"]
+    COMPONENT["コンポーネント開発<br/>Storybook / Ladle / Histoire"]
+    TEST["テスト<br/>Playwright / axe-core / Chromatic"]
+    LINT["品質管理<br/>Stylelint / Prettier / ESLint"]
+
+    style DEV fill:#6C47FF,color:#fff,stroke:none
+    style DESIGN fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style BUILD fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style COMPONENT fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style TEST fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style LINT fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+        </script>
+        <div class="mermaid" role="img" aria-label="フロントエンド開発のツールチェーン: デザインツール連携、ビルドツール、コンポーネント開発、テスト、品質管理の5カテゴリ"></div>
+        <p class="diagram-card__cap">📊 図16-1：フロントエンド開発ツールチェーンの全体像</p>
+      </div>
+
+      <div class="sub" id="ch16-1">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">①</span>16.1 Storybook：コンポーネントカタログ</h3>
+        <p>
+          Storybook は、コンポーネントを実際のアプリケーションから切り離して単独で表示・操作できる「カタログ」を作るツールです。デザイナーやQA担当者がコードを読まなくても全パターンを確認でき、コンポーネントのドキュメントとしても機能します。
+        </p>
+
+        <div class="beginner-box">
+          <div class="beginner-box__label">🔰 初学者向け：Storybookがあると何が嬉しいの？</div>
+          <p>新しいボタンコンポーネントを作ったとき、それをアプリの本番画面に組み込まないと見た目を確認できないのは非効率です。Storybookでは <code>variant="primary"</code> や <code>size="lg"</code> のような全組み合わせを一覧表示でき、「ボタンの全パターン」を1ページで見渡せます。デザインレビューやアクセシビリティチェックもこの単位で完結できるため、チーム開発のコミュニケーションコストが大きく下がります。</p>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>Button.stories.tsx</span></div>
+          <pre><code class="language-typescript">import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+const meta: Meta&lt;typeof Button&gt; = {
+  title: 'Components/Button',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'ユーザーのアクションを起動するためのインタラクティブ要素。',
+      },
+    },
+  },
+  argTypes: {
+    variant: { control: { type: 'select' }, options: ['primary', 'secondary', 'ghost', 'danger'] },
+    size:    { control: { type: 'radio' }, options: ['sm', 'md', 'lg'] },
+    disabled: { control: 'boolean' },
+    loading:  { control: 'boolean' },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof Button&gt;;
+
+export const Primary: Story = {
+  args: { variant: 'primary', size: 'md', children: '送信する' },
+};
+
+export const Danger: Story = {
+  args: { variant: 'danger', size: 'md', children: '削除する' },
+};
+
+export const Loading: Story = {
+  args: { variant: 'primary', size: 'md', loading: true, children: '処理中...' },
+};
+
+/* すべてのバリアントを一覧表示 */
+export const AllVariants: Story = {
+  render: () => (
+    &lt;div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}&gt;
+      {['primary', 'secondary', 'ghost', 'danger'].map(variant =&gt;
+        ['sm', 'md', 'lg'].map(size =&gt; (
+          &lt;Button key={`${variant}-${size}`} variant={variant} size={size}&gt;
+            {variant} / {size}
+          &lt;/Button&gt;
+        ))
+      )}
+    &lt;/div&gt;
+  ),
+};</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch16-2">
+        <h3><span class="ico" style="background:var(--c-blue-bg);color:var(--c-blue-tx);">②</span>16.2 PostCSS：CSSのトランスパイル</h3>
+        <p>
+          PostCSS は、CSSをJavaScriptで処理するためのプラットフォームです。プラグインを組み合わせることで、まだブラウザが対応していない最新構文（CSS Nestingなど）を古いブラウザ向けに変換したり、ベンダープレフィックスを自動付与したり、本番ビルド時にファイルを圧縮したりできます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>postcss.config.js</span></div>
+          <pre><code class="language-javascript">export default {
+  plugins: [
+    /* ===== 構文拡張 ===== */
+    'postcss-import',          // @import を解決してバンドル
+    'postcss-nesting',         // CSS Nesting（W3C仕様）をサポート
+
+    /* ===== 互換性 ===== */
+    'autoprefixer',            // ベンダープレフィックスを自動付与
+    'postcss-preset-env',      // モダンCSSを古いブラウザ向けに変換
+
+    /* ===== 最適化 ===== */
+    'cssnano',                 // CSSの圧縮・最適化（本番ビルドのみ）
+  ],
+};</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>card.css</span></div>
+          <pre><code class="language-css">/* postcss-nesting の使用例（W3C CSS Nesting に準拠） */
+.card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+
+  /* ネストされたセレクタ */
+  & .card__title {
+    font-size: var(--font-size-xl);
+  }
+
+  &:hover {
+    border-color: var(--color-action-primary);
+  }
+
+  /* メディアクエリもネスト可能 */
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch16-3">
+        <h3><span class="ico" style="background:var(--c-green-bg);color:var(--c-green-tx);">③</span>16.3 Stylelint：CSSのLint</h3>
+        <p>
+          Stylelint は、第12章で決めた命名規則やプロパティの並び順を「自動でチェックする」ためのLintツールです。第13章のデザイントークンと連携させ、カラーコードのハードコーディングを禁止するルールも設定できます。レビューでの指摘事項をルール化して自動化することで、コードレビューの負担を技術的な議論に集中させられます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>.stylelintrc.json</span></div>
+          <pre><code class="language-json">{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-scss"
+  ],
+  "plugins": ["stylelint-order"],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(__[a-z][a-z0-9]*)?(--[a-z][a-z0-9]*)?$",
+      { "message": "BEM 命名規則に従ってください" }
+    ],
+    "custom-property-pattern": "^[a-z][a-z0-9-]*$",
+
+    "declaration-property-value-disallowed-list": {
+      "/.*/": ["#[0-9a-fA-F]{3,8}"],
+      "message": "カスタムプロパティを使用してください（ハードコードされた色は禁止）"
+    },
+
+    "order/properties-order": [
+      "display", "flex-direction", "align-items", "justify-content", "gap",
+      "grid-template-columns", "grid-template-rows",
+      "position", "top", "right", "bottom", "left", "z-index",
+      "width", "min-width", "max-width", "height", "min-height", "max-height",
+      "padding", "padding-block", "padding-inline",
+      "margin", "margin-block", "margin-inline",
+      "border", "border-radius",
+      "background", "color",
+      "font-size", "font-weight", "line-height",
+      "transition", "animation"
+    ],
+
+    "no-descending-specificity": true,
+    "color-no-invalid-hex": true,
+    "shorthand-property-no-redundant-values": true
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="sub" id="ch16-4">
+        <h3><span class="ico" style="background:var(--c-orange-bg);color:var(--c-orange-tx);">④</span>16.4 Chromatic：ビジュアルリグレッションテスト</h3>
+        <p>
+          CSSの変更は、意図しない箇所の見た目を壊してしまう「副作用」が起きやすいという特徴があります。Chromatic は、Storybookの各コンポーネントのスクリーンショットをPull Requestごとに撮影し、直前のバージョンと自動比較してくれるサービスです。意図しない見た目の変化があれば、マージ前に検出できます。
+        </p>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>package.json（抜粋）</span></div>
+          <pre><code class="language-json">{
+  "scripts": {
+    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
+    "test:storybook": "test-storybook --url http://localhost:6006"
+  }
+}</code></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card__bar"><div class="code-card__dots"><span style="background:#f43f5e"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div><span>.github/workflows/chromatic.yml</span></div>
+          <pre><code class="language-yaml">name: "Chromatic"
+
+on: push
+
+jobs:
+  chromatic-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Chromaticには履歴が必要
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}</code></pre>
+        </div>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+flowchart LR
+    subgraph CI["CI/CD パイプライン"]
+        PR["Pull Request"] --> BUILD["Storybookビルド"]
+        BUILD --> CHROMATIC["Chromaticへアップロード"]
+        CHROMATIC --> COMPARE["スクリーンショット比較<br/>（前のビルドと差分検出）"]
+        COMPARE --> REVIEW["差分がある場合<br/>レビュー要求"]
+        REVIEW -->|承認| MERGE["マージ"]
+        REVIEW -->|意図しない変更| FIX["修正してPush"]
+    end
+
+    style PR fill:#16243a,color:#cdd6f4,stroke:#3b5b8c
+    style BUILD fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+    style CHROMATIC fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+    style COMPARE fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+    style REVIEW fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+    style MERGE fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style FIX fill:#4a1e1e,color:#fca5a5,stroke:#ef4444
+          </script>
+          <div class="mermaid" role="img" aria-label="ChromaticのCIパイプライン: PRからStorybookビルド、アップロード、比較、レビュー、マージまたは修正の流れ"></div>
+          <p class="diagram-card__cap">📊 図16-2：Chromaticを組み込んだビジュアルテストのCIフロー</p>
+        </div>
+      </div>
+
+      <div class="sub" id="ch16-5">
+        <h3><span class="ico" style="background:var(--c-purple-bg);color:var(--c-purple-tx);">⑤</span>16.5 ツールの推奨スタック</h3>
+        <p>
+          全てのツールを最初から導入する必要はありません。プロジェクトの規模に応じて、段階的に拡張していくのが現実的です。
+        </p>
+
+        <div class="diagram-card">
+          <script type="text/plain" class="mermaid-src">
+graph TD
+    subgraph STARTER["スターターセット（小〜中規模）"]
+        S1["Vite<br/>ビルドツール"] --> S2["Tailwind CSS<br/>ユーティリティCSS"] --> S3["Storybook<br/>コンポーネントカタログ"] --> S4["Stylelint<br/>Lint"]
+    end
+
+    subgraph PRO["プロセット（中〜大規模）"]
+        P1["Turborepo<br/>モノレポ管理"] --> P2["CSS Modules<br/>+ CSS変数"] --> P3["Style Dictionary<br/>トークン変換"] --> P4["Chromatic<br/>ビジュアルテスト"] --> P5["axe-core<br/>a11yテスト"]
+    end
+
+    subgraph ENTERPRISE["エンタープライズ"]
+        E1["Nx<br/>モノレポ"] --> E2["Panda CSS<br/>CSS-in-JS型安全"] --> E3["Zeroheight<br/>デザインドキュメント"] --> E4["Tokens Studio<br/>Figma連携"] --> E5["Playwright<br/>E2Eテスト"]
+    end
+
+    style STARTER fill:#142a1e,stroke:#22c55e,color:#86efac
+    style PRO fill:#16243a,stroke:#3b82f6,color:#93c5fd
+    style ENTERPRISE fill:#241640,stroke:#8b5cf6,color:#c4b5fd
+          </script>
+          <div class="mermaid" role="img" aria-label="ツールの推奨スタック: スターターセット, プロセット, エンタープライズの3段階"></div>
+          <p class="diagram-card__cap">📊 図16-3：プロジェクト規模別の推奨ツールスタック</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>カテゴリ</th><th>ツール例</th><th>主な役割</th></tr></thead>
+            <tbody>
+              <tr><td>デザイン連携</td><td>Figma / Tokens Studio / Figma to Code</td><td>デザインとコードのトークン同期</td></tr>
+              <tr><td>ビルド</td><td>Vite / Turbopack / Lightning CSS / PostCSS</td><td>変換・圧縮・バンドル</td></tr>
+              <tr><td>コンポーネント開発</td><td>Storybook / Ladle / Histoire</td><td>独立した環境でのUI構築・確認</td></tr>
+              <tr><td>テスト</td><td>Playwright / axe-core / Chromatic</td><td>機能・アクセシビリティ・見た目の検証</td></tr>
+              <tr><td>品質管理</td><td>Stylelint / Prettier / ESLint</td><td>コードスタイルと規約の自動チェック</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bp-box">
+        <div class="bp-box__title">✅ ツール導入のベストプラクティス</div>
+        <div class="bp-grid">
+          <div class="bp-col bp-col--do">
+            <div class="bp-col__h">👍 DO</div>
+            <ul>
+              <li>まずStylelint等の静的解析からスモールスタートする</li>
+              <li>Storybookをデザイナー・QAとの共通言語にする</li>
+              <li>CIにビジュアルリグレッションテストを組み込む</li>
+              <li>ツール導入の目的（何を防ぎたいか）を明文化する</li>
+            </ul>
+          </div>
+          <div class="bp-col bp-col--dont">
+            <div class="bp-col__h">👎 DON'T</div>
+            <ul>
+              <li>チーム規模に見合わない過剰なツールチェーンを一気に導入する</li>
+              <li>Lintルールを厳しくしすぎて開発速度を著しく落とす</li>
+              <li>ビジュアルテストの差分を確認せず機械的に承認する</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="refs">
+        <div class="refs__title">📚 第16章 参考文献</div>
+        <ul>
+          <li><a href="https://storybook.js.org/" target="_blank" rel="noopener noreferrer"><span class="src-name">Storybook 公式</span><span class="src-url">storybook.js.org</span></a></li>
+          <li><a href="https://postcss.org/" target="_blank" rel="noopener noreferrer"><span class="src-name">PostCSS 公式</span><span class="src-url">postcss.org</span></a></li>
+          <li><a href="https://stylelint.io/" target="_blank" rel="noopener noreferrer"><span class="src-name">Stylelint 公式</span><span class="src-url">stylelint.io</span></a></li>
+          <li><a href="https://www.chromatic.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Chromatic（ビジュアルテスト）</span><span class="src-url">chromatic.com</span></a></li>
+          <li><a href="https://www.deque.com/axe/" target="_blank" rel="noopener noreferrer"><span class="src-name">axe DevTools</span><span class="src-url">deque.com/axe</span></a></li>
+          <li><a href="https://vitejs.dev/" target="_blank" rel="noopener noreferrer"><span class="src-name">Vite 公式</span><span class="src-url">vitejs.dev</span></a></li>
+          <li><a href="https://turbo.build/repo" target="_blank" rel="noopener noreferrer"><span class="src-name">Turborepo（Vercel）</span><span class="src-url">turbo.build/repo</span></a></li>
+          <li><a href="https://panda-css.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Panda CSS</span><span class="src-url">panda-css.com</span></a></li>
+          <li><a href="https://zeroheight.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Zeroheight（デザインドキュメント）</span><span class="src-url">zeroheight.com</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         全体まとめ
+         ============================================================ -->
+    <section class="chapter" id="maturity">
+      <div class="chapter__kicker"><span class="chapter__num">SUMMARY</span><span class="chapter__rule"></span></div>
+      <h2>全体まとめ：デザインシステムの成熟度モデル</h2>
+      <p class="chapter__intro">
+        本ガイドで扱った内容を、デザインシステムの成熟度という軸で振り返ります。
+        Level 1の基礎的なCSS変数の導入から、Level 5の組織横断的なパフォーマンス最適化・CI/CD統合まで、
+        段階を踏んで着実にレベルアップしていくのが現実的な進め方です。<strong>一足飛びにLevel 5を目指す必要はありません。</strong>
+        自分たちのチームが今どの段階にいるかを把握し、次の一歩を選んでください。
+      </p>
+
+      <div class="diagram-card">
+        <script type="text/plain" class="mermaid-src">
+graph LR
+    L1["Level 1<br/>入門<br/>CSS変数<br/>BEM命名<br/>基本レイアウト"] --> L2
+    L2["Level 2<br/>基礎<br/>カラー・タイポ<br/>スペーシングシステム<br/>レスポンシブ対応"] --> L3
+    L3["Level 3<br/>中級<br/>コンポーネント設計<br/>アクセシビリティ<br/>コンテナクエリ"] --> L4
+    L4["Level 4<br/>上級<br/>アニメーションシステム<br/>CSSアーキテクチャ<br/>デザイントークン"] --> L5
+    L5["Level 5<br/>エキスパート<br/>パフォーマンス最適化<br/>CI/CD統合<br/>クロスプラットフォームトークン"]
+
+    style L1 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+    style L2 fill:#2d4a1e,color:#bef264,stroke:#84cc16
+    style L3 fill:#4a3a1e,color:#fcd34d,stroke:#f59e0b
+    style L4 fill:#4a1e1e,color:#fb923c,stroke:#ea580c
+    style L5 fill:#6C47FF,color:#fff,stroke:none
+        </script>
+        <div class="mermaid" role="img" aria-label="デザインシステムの成熟度モデル: Level1入門からLevel5エキスパートまでの5段階"></div>
+        <p class="diagram-card__cap">📊 図S-1：デザインシステム成熟度モデルの5段階（本ガイドはLevel 4〜5を中心に解説）</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>レベル</th><th>本ガイドの対応章</th><th>到達目安</th></tr></thead>
+          <tbody>
+            <tr><td>Level 4：上級</td><td>第11章（アニメーション）・第12章（アーキテクチャ）・第13章（トークン）</td><td>一貫した動きの言語と、崩れない設計の仕組みを持つ</td></tr>
+            <tr><td>Level 4→5の橋渡し</td><td>第14章（実践：Modal実装）</td><td>学んだ概念を1つのコンポーネントに統合して実装できる</td></tr>
+            <tr><td>Level 5：エキスパート</td><td>第15章（パフォーマンス）・第16章（ツール）</td><td>数値で計測し、自動化されたプロセスで品質を維持する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bp-box">
+        <div class="bp-box__title">✅ 次の一歩を選ぶためのチェックリスト</div>
+        <div class="bp-grid">
+          <div class="bp-col bp-col--do">
+            <div class="bp-col__h">🟢 まだLevel 3以下の場合</div>
+            <ul>
+              <li>まずCSS変数でカラー・スペーシングをトークン化する</li>
+              <li>BEMなど命名規則を1つ選んでチームで統一する</li>
+              <li>主要コンポーネントにアクセシビリティ属性を付与する</li>
+            </ul>
+          </div>
+          <div class="bp-col bp-col--dont">
+            <div class="bp-col__h">🟣 Level 4以上を目指す場合</div>
+            <ul>
+              <li>イージング・デュレーションのトークン化からアニメーション言語を統一する</li>
+              <li>@layer導入で詳細度問題を構造的に解決する</li>
+              <li>Style DictionaryでFigma〜コードのトークンパイプラインを構築する</li>
+              <li>Core Web Vitalsを定期計測しCIに組み込む</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" id="allrefs" style="border-bottom:none;">
+      <div class="chapter__kicker"><span class="chapter__num">REFERENCES</span><span class="chapter__rule"></span></div>
+      <h2>参考文献・ソース一覧</h2>
+      <p class="chapter__intro">
+        本ガイドの記述は、以下の一次情報・公式ドキュメントを根拠としています。最新の仕様変更やブラウザ対応状況は、各リンク先で随時ご確認ください。
+      </p>
+
+      <div class="sub">
+        <h4>🎬 アニメーション・トランジション</h4>
+        <div class="refs">
+          <ul>
+            <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_transitions" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Transitions</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/CSS_transitions</span></a></li>
+            <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_animations" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Animations</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/CSS_animations</span></a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — View Transitions API</span><span class="src-url">developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API</span></a></li>
+            <li><a href="https://m3.material.io/styles/motion/overview" target="_blank" rel="noopener noreferrer"><span class="src-name">Material Design 3 — Motion</span><span class="src-url">m3.material.io/styles/motion/overview</span></a></li>
+            <li><a href="https://web.dev/articles/animations-guide" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — Animations Guide</span><span class="src-url">web.dev/articles/animations-guide</span></a></li>
+            <li><a href="https://css-tricks.com/css-animation-tricks/" target="_blank" rel="noopener noreferrer"><span class="src-name">CSS-Tricks — Animation Performance</span><span class="src-url">css-tricks.com/css-animation-tricks</span></a></li>
+          </ul>
+        </div>
+
+        <h4>🏗️ CSSアーキテクチャ</h4>
+        <div class="refs">
+          <ul>
+            <li><a href="https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528" target="_blank" rel="noopener noreferrer"><span class="src-name">ITCSS（Harry Roberts）</span><span class="src-url">creativebloq.com — manage-large-css-projects-itcss</span></a></li>
+            <li><a href="https://cube.fyi/" target="_blank" rel="noopener noreferrer"><span class="src-name">CUBE CSS（Andy Bell）</span><span class="src-url">cube.fyi</span></a></li>
+            <li><a href="https://developer.mozilla.org/ja/docs/Web/CSS/@layer" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — CSS Cascade Layers (@layer)</span><span class="src-url">developer.mozilla.org/ja/docs/Web/CSS/@layer</span></a></li>
+            <li><a href="https://www.smashingmagazine.com/2022/01/new-layer-tools-for-css/" target="_blank" rel="noopener noreferrer"><span class="src-name">Smashing Magazine — Cascade Layers (Miriam Suzanne)</span><span class="src-url">smashingmagazine.com/2022/01/new-layer-tools-for-css</span></a></li>
+          </ul>
+        </div>
+
+        <h4>🎨 デザイントークン</h4>
+        <div class="refs">
+          <ul>
+            <li><a href="https://www.w3.org/TR/design-tokens/" target="_blank" rel="noopener noreferrer"><span class="src-name">W3C — Design Tokens 仕様</span><span class="src-url">w3.org/TR/design-tokens</span></a></li>
+            <li><a href="https://styledictionary.com" target="_blank" rel="noopener noreferrer"><span class="src-name">Style Dictionary（Amazon）</span><span class="src-url">styledictionary.com</span></a></li>
+            <li><a href="https://tokens.studio/" target="_blank" rel="noopener noreferrer"><span class="src-name">Tokens Studio for Figma</span><span class="src-url">tokens.studio</span></a></li>
+            <li><a href="https://github.com/salesforce-ux/theo" target="_blank" rel="noopener noreferrer"><span class="src-name">Theo（Salesforce）</span><span class="src-url">github.com/salesforce-ux/theo</span></a></li>
+          </ul>
+        </div>
+
+        <h4>⚡ パフォーマンス最適化</h4>
+        <div class="refs">
+          <ul>
+            <li><a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — Core Web Vitals</span><span class="src-url">web.dev/articles/vitals</span></a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility" target="_blank" rel="noopener noreferrer"><span class="src-name">MDN — content-visibility</span><span class="src-url">developer.mozilla.org/en-US/docs/Web/CSS/content-visibility</span></a></li>
+            <li><a href="https://web.dev/articles/fast#optimize_your_css" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — CSS Performance</span><span class="src-url">web.dev/articles/fast</span></a></li>
+            <li><a href="https://lightningcss.dev/" target="_blank" rel="noopener noreferrer"><span class="src-name">Lightning CSS</span><span class="src-url">lightningcss.dev</span></a></li>
+            <li><a href="https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources" target="_blank" rel="noopener noreferrer"><span class="src-name">Chrome Developers — Eliminate render-blocking resources</span><span class="src-url">developer.chrome.com/docs/lighthouse/performance/render-blocking-resources</span></a></li>
+            <li><a href="https://web.dev/articles/avoid-invisible-text" target="_blank" rel="noopener noreferrer"><span class="src-name">web.dev — font-display</span><span class="src-url">web.dev/articles/avoid-invisible-text</span></a></li>
+            <li><a href="https://purgecss.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">PurgeCSS</span><span class="src-url">purgecss.com</span></a></li>
+          </ul>
+        </div>
+
+        <h4>🛠️ ツール・エコシステム</h4>
+        <div class="refs">
+          <ul>
+            <li><a href="https://storybook.js.org/" target="_blank" rel="noopener noreferrer"><span class="src-name">Storybook 公式</span><span class="src-url">storybook.js.org</span></a></li>
+            <li><a href="https://postcss.org/" target="_blank" rel="noopener noreferrer"><span class="src-name">PostCSS 公式</span><span class="src-url">postcss.org</span></a></li>
+            <li><a href="https://stylelint.io/" target="_blank" rel="noopener noreferrer"><span class="src-name">Stylelint 公式</span><span class="src-url">stylelint.io</span></a></li>
+            <li><a href="https://www.chromatic.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Chromatic（ビジュアルテスト）</span><span class="src-url">chromatic.com</span></a></li>
+            <li><a href="https://www.deque.com/axe/" target="_blank" rel="noopener noreferrer"><span class="src-name">axe DevTools</span><span class="src-url">deque.com/axe</span></a></li>
+            <li><a href="https://vitejs.dev/" target="_blank" rel="noopener noreferrer"><span class="src-name">Vite 公式</span><span class="src-url">vitejs.dev</span></a></li>
+            <li><a href="https://turbo.build/repo" target="_blank" rel="noopener noreferrer"><span class="src-name">Turborepo（Vercel）</span><span class="src-url">turbo.build/repo</span></a></li>
+            <li><a href="https://panda-css.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Panda CSS</span><span class="src-url">panda-css.com</span></a></li>
+            <li><a href="https://zeroheight.com/" target="_blank" rel="noopener noreferrer"><span class="src-name">Zeroheight（デザインドキュメント）</span><span class="src-url">zeroheight.com</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <footer class="site-footer">
+      <p>著者：Software Architect Guide ｜ ソフトウェアアーキテクチャ設計プロジェクト ｜ 最終更新日 2026-05-27</p>
+      <p style="margin-top:6px;">本ガイドは教育目的の技術解説資料です。各社・各プロジェクトの仕様変更に伴い記載内容が古くなる場合があります。最新情報は各参考文献の一次情報をご確認ください。</p>
+    </footer>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+mermaid.initialize({
+  startOnLoad:false,
+  theme:"dark",
+  fontFamily:"Inter, Noto Sans JP, sans-serif",
+  themeVariables:{
+    background:"#0c1a2c",
+    primaryColor:"#16243a",
+    primaryTextColor:"#eef2f9",
+    primaryBorderColor:"#3b5b8c",
+    lineColor:"#3b5b8c",
+    secondaryColor:"#1e2d4a",
+    tertiaryColor:"#122941",
+    fontSize:"14px",
+    edgeLabelBackground:"#0c1a2c"
+  },
+  flowchart:{ curve:"basis", htmlLabels:true, padding:12 },
+  securityLevel:"loose"
+});
+
+// script[type=text/plain] に格納した Mermaid 定義を、直後の .mermaid 要素へ textContent 経由で
+// 安全に流し込んでからレンダリングする（HTMLエスケープ問題を回避する定番パターン）
+async function renderMermaids(){
+  const sources = document.querySelectorAll('script.mermaid-src');
+  for (const src of sources){
+    const target = src.nextElementSibling;
+    if (!target || !target.classList.contains('mermaid')) continue;
+    const graphDef = src.textContent.trim();
+    try{
+      const { svg } = await mermaid.render('m-' + Math.random().toString(36).slice(2), graphDef);
+      target.innerHTML = svg;
+    }catch(e){
+      target.innerHTML = '<p style="color:#fda4af;font-size:13px;">図の描画に失敗しました: ' + e.message + '</p>';
+      console.error(e, graphDef);
+    }
+  }
+}
+renderMermaids();
+
+// highlight.js
+hljs.configure({ languages:['css','javascript','typescript','json','xml','bash','yaml'] });
+document.querySelectorAll('pre code').forEach((block)=>{ hljs.highlightElement(block); });
+
+// IntersectionObserver によるサイドバーのアクティブハイライト
+const tocLinks = document.querySelectorAll('[data-toc]');
+const sections = Array.from(tocLinks).map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    const id = '#' + entry.target.id;
+    const link = document.querySelector(`[data-toc][href="${id}"]`);
+    if (!link) return;
+    if (entry.isIntersecting){
+      tocLinks.forEach(l=>l.classList.remove('is-active'));
+      link.classList.add('is-active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+
+// 読了プログレスバー
+const progressBar = document.getElementById('progressBar');
+const progressPct = document.getElementById('progressPct');
+function updateProgress(){
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = scrollable > 0 ? Math.min(100, Math.round((window.scrollY / scrollable) * 100)) : 0;
+  progressBar.style.width = pct + '%';
+  progressPct.textContent = pct + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive:true });
+updateProgress();
+
+// フェードイン演出（控えめ）
+const fadeObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-visible'); fadeObserver.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.sub, .diagram-card, .bp-box').forEach(el=>{ el.classList.add('fade-in'); fadeObserver.observe(el); });
+</script>
+</body>
+</html>
