@@ -91,7 +91,8 @@
 ### Step 3: 試験対策章（第 9・10 章）と参考文献（第 11 章）の更新
 
 - 第 9 章の頻出テーマを Foundation/Practitioner の新試験構成に対応させる（特に Practitioner のシナリオ 8 問形式に合わせた解答アプローチ節を追加）。
-- 960 行目付近の公式テキスト参照を「TOGAF® Standard, 10th Edition」へ更新し、公式 URL（opengroup.org の certification portfolio と 10th Edition 資格 FAQ）を参考文献に追加。
+- 960 行目付近の公式テキスト参照を「TOGAF® Standard, 10th Edition」へ更新し、公式 URL（opengroup.org の certification portfolio と試験データシート PDF）を参考文献に追加。
+- **リンクチェック CI の制約**: help.opengroup.org（Zendesk）は自動リンクチェックをボットブロック（HTTP 403）するため、同ホストの URL をガイドに追加してはならない。FAQ の内容を引用する場合は記事タイトルの文字列参照に留めるか、`.markdown-link-check.json` の `ignorePatterns` に `^https://help\.opengroup\.org` を追加した上でリンクする（後者を選ぶ場合のみ同設定ファイルを In scope に加えてよい）。
 
 **Verify**: `bun run fix-markdown && bun run check-links` → exit 0
 
@@ -137,6 +138,5 @@
 ## 参考文献・ソース一覧
 
 - [The Open Group: TOGAF Certification Portfolio](https://www.opengroup.org/certifications/togaf-certification-portfolio)
-- [The Open Group FAQ: 10th Edition で利用可能な資格](https://help.opengroup.org/hc/en-us/articles/11147047948305-What-certifications-are-available-for-the-TOGAF-Standard-10th-Edition)
-- [The Open Group FAQ: なぜ「TOGAF 10 Foundation/Practitioner」ではないのか](https://help.opengroup.org/hc/en-us/articles/11148120224785-Why-Is-There-No-TOGAF-10-Foundation-or-TOGAF-10-Practitioner)
+- The Open Group ヘルプセンター FAQ（記事タイトルで検索: "What certifications are available for the TOGAF Standard, 10th Edition" / "Why Is There No TOGAF 10 Foundation or TOGAF 10 Practitioner"。ホスト help.opengroup.org はリンクチェック CI がボットブロックされるため URL 直リンクなし — Step 3 の CI 制約参照）
 - [TOGAF Examinations データシート (PDF)](https://certification.opengroup.org/docs/datasheets/togaf-exams.pdf)

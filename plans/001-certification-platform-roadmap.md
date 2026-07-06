@@ -137,7 +137,8 @@ graph LR
 - [iSAQB CPSA-Foundation Level Exam](https://www.isaqb.org/certifications/cpsa-exams/foundation-level-exam/)
 - [iSAQB CPSA-Advanced Level](https://www.isaqb.org/certifications/cpsa-certifications/cpsa-advanced-level/)
 - [The Open Group: TOGAF Certification Portfolio](https://www.opengroup.org/certifications/togaf-certification-portfolio)
-- [The Open Group: TOGAF Standard 10th Edition の資格体系](https://help.opengroup.org/hc/en-us/articles/11147047948305-What-certifications-are-available-for-the-TOGAF-Standard-10th-Edition)
+- [TOGAF Examinations データシート (PDF)](https://certification.opengroup.org/docs/datasheets/togaf-exams.pdf)
+- 補足: The Open Group ヘルプセンター（help.opengroup.org）の FAQ「What certifications are available for the TOGAF Standard, 10th Edition」も一次情報として有用だが、同ホストは自動リンクチェックをボットブロック（HTTP 403）するため URL 直リンクは記載しない（Plan 004 の Maintenance notes 参照）
 - [DAMA CDMP Certification Levels](https://dama.org/certification/cdmp-certification-levels/)
 - [DAMA CDMP Exam Information & Pricing](https://dama.org/certification/exam-information-and-pricing/)
 - [AWS Certified Solutions Architect – Professional](https://aws.amazon.com/certification/certified-solutions-architect-professional/)
