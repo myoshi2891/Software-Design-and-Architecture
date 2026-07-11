@@ -236,7 +236,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="t">CSS Design System</div>
     <div class="s">Ch.7–10 · フロントエンド完全ガイド</div>
   </div>
-  <div class="ng"><div class="ng-label">Chapter 7 · グリッド</div><ul>
+  <div class="ng"><div class="ng-label">Chapter 7 · グリッド</div><ul role="list">
     <li><a href="#s7"><span class="n">7</span>レイアウトシステム</a></li>
     <li><a href="#s7-1"><span class="n">7.1</span>レイアウトとは</a></li>
     <li><a href="#s7-2"><span class="n">7.2</span>Flexbox 完全ガイド</a></li>
@@ -245,7 +245,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <li><a href="#s7-5"><span class="n">7.5</span>使い分けの判断軸</a></li>
     <li><a href="#s7-6"><span class="n">7.6</span>ベストプラクティス</a></li>
   </ul></div>
-  <div class="ng"><div class="ng-label">Chapter 8 · コンポーネント</div><ul>
+  <div class="ng"><div class="ng-label">Chapter 8 · コンポーネント</div><ul role="list">
     <li><a href="#s8"><span class="n">8</span>コンポーネント設計</a></li>
     <li><a href="#s8-1"><span class="n">8.1</span>設計の5原則</a></li>
     <li><a href="#s8-2"><span class="n">8.2</span>BEM 完全ガイド</a></li>
@@ -254,7 +254,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <li><a href="#s8-5"><span class="n">8.5</span>状態管理</a></li>
     <li><a href="#s8-6"><span class="n">8.6</span>ベストプラクティス</a></li>
   </ul></div>
-  <div class="ng"><div class="ng-label">Chapter 9 · レスポンシブ</div><ul>
+  <div class="ng"><div class="ng-label">Chapter 9 · レスポンシブ</div><ul role="list">
     <li><a href="#s9"><span class="n">9</span>レスポンシブデザイン</a></li>
     <li><a href="#s9-1"><span class="n">9.1</span>設計の考え方</a></li>
     <li><a href="#s9-2"><span class="n">9.2</span>ブレークポイント</a></li>
@@ -263,7 +263,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <li><a href="#s9-5"><span class="n">9.5</span>レスポンシブ画像</a></li>
     <li><a href="#s9-6"><span class="n">9.6</span>ベストプラクティス</a></li>
   </ul></div>
-  <div class="ng"><div class="ng-label">Chapter 10 · アクセシビリティ</div><ul>
+  <div class="ng"><div class="ng-label">Chapter 10 · アクセシビリティ</div><ul role="list">
     <li><a href="#s10"><span class="n">10</span>アクセシビリティ</a></li>
     <li><a href="#s10-1"><span class="n">10.1</span>a11y とは何か</a></li>
     <li><a href="#s10-2"><span class="n">10.2</span>WCAG ガイドライン</a></li>
@@ -273,13 +273,13 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <li><a href="#s10-6"><span class="n">10.6</span>カラーとコントラスト</a></li>
     <li><a href="#s10-7"><span class="n">10.7</span>ベストプラクティス</a></li>
   </ul></div>
-  <div class="ng"><div class="ng-label">まとめ・リソース</div><ul>
+  <div class="ng"><div class="ng-label">まとめ・リソース</div><ul role="list">
     <li><a href="#summary"><span class="n">〆</span>4トピック関係性</a></li>
     <li><a href="#refs"><span class="n">🔗</span>参考リソース</a></li>
   </ul></div>
 </nav>
 
-<main class="main" id="main">
+<main class="main" id="main" tabindex="-1">
 <div class="hero">
   <div class="h-badge">🎨 CSS Design System · Ch.7–10</div>
   <h1>グリッド・コンポーネント・<br>レスポンシブ・アクセシビリティ<br>完全設計ガイド</h1>
@@ -1419,6 +1419,7 @@ test('Button にアクセシビリティ違反がないこと', async () => {
   <a class="rg-a" href="https://inclusive-components.design/" target="_blank" rel="noopener"><div class="rg-l">Inclusive Components</div><div class="rg-t">Inclusive Components</div><div class="rg-u">inclusive-components.design</div></a>
 </div>
 </section>
+</main>
 
 <script>
 const DIAGRAMS = {
