@@ -214,13 +214,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
   html{scroll-behavior:auto}
 }
         /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
-        .mermaid-wrap,
-        .diagram-wrap .mermaid {
+        .mbox > .mermaid {
             display: flex;
             justify-content: center;
         }
-        .mermaid-wrap svg,
-        .diagram-wrap .mermaid svg {
+        .mbox > .mermaid svg {
             display: block;
             margin: 0 auto;
             max-width: 100%;
