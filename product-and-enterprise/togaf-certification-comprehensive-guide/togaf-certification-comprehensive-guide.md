@@ -934,7 +934,7 @@ graph TD
 | **The Open Group Architecture Forum** | <https://www.opengroup.org/architecture> |
 | **TOGAF ADM リファレンスガイド** | <https://pubs.opengroup.org/architecture/togaf9-doc/arch/> |
 | **Zachman Framework** | <https://www.zachman.com/about-the-zachman-framework> |
-| **FEAF（米国連邦政府EA）** | <https://www.cio.gov/> |
+| **FEAF（米国連邦政府EA）** | <https://cio.gov/> |
 
 #### 学習プラットフォーム
 
