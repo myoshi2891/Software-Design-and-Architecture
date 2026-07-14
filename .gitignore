@@ -55,3 +55,4 @@ coverage/
 bun.lockb
 bun.lock
 bun-cache/
+/plans/
