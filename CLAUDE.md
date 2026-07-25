@@ -52,6 +52,17 @@ bun run build      # production build
   - `web-next/`: `postcss`（`next` が exact pin）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.6` 配下）
 - 変更後は `bun run audit` が exit 0 であること、加えて `web-next/` の `lint` / `typecheck` / `test` / `build` 全通過を必須とする。
 
+```mermaid
+flowchart TD
+    Start[bun run audit] --> AuditRoot[root: bun audit --json]
+    AuditRoot --> AuditWebNext[web-next: bun audit --json]
+    AuditWebNext --> ExecCheck{実行・パース成功?}
+    ExecCheck -- No --> Exit2[エラー終了: exit 2]
+    ExecCheck -- Yes --> ThresholdCheck{閾値以上の脆弱性あり?}
+    ThresholdCheck -- Yes --> Exit1[脆弱性検知: exit 1]
+    ThresholdCheck -- No --> Exit0[正常終了: exit 0]
+```
+
 ## 絶対ルール（OVERRIDE 不可）
 
 1. **JavaScript 禁止**: スクリプト・ツールは必ず TypeScript (`.ts`)。ランタイムは Bun。

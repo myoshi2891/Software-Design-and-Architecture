@@ -48,7 +48,18 @@ bun run test    # scripts/ の単体テスト（監査ロジックの純関数�
 bun run audit   # ルートと web-next/ の両ワークスペースを監査
 ```
 
-`bun run audit`（`scripts/audit-dependencies.ts`）は各ワークスペースで `bun audit --json` を実行し、閾値（既定 `low`）以上の脆弱性が 1 件でもあれば exit 1 で失敗する。閾値は `--threshold=moderate` で変更可能。ネットワーク断などで監査自体が失敗した場合はエラーを握りつぶさず exit 2 とする。
+`bun run audit`（`scripts/audit-dependencies.ts`）は各ワークスペースで `bun audit --json` を実行し、閾値（既定 `low`）以上の脆弱性が 1 件でもあれば exit 1 で失敗する。閾値は `--threshold=moderate` で変更可能。ネットワーク断やパース失敗などで監査自体が正常に行えなかった場合はエラーを握りつぶさず exit 2 とする。
+
+```mermaid
+flowchart TD
+    Start[bun run audit] --> AuditRoot[root: bun audit --json]
+    AuditRoot --> AuditWebNext[web-next: bun audit --json]
+    AuditWebNext --> ExecCheck{実行・パース成功?}
+    ExecCheck -- No --> Exit2[エラー終了: exit 2]
+    ExecCheck -- Yes --> ThresholdCheck{閾値以上の脆弱性あり?}
+    ThresholdCheck -- Yes --> Exit1[脆弱性検知: exit 1]
+    ThresholdCheck -- No --> Exit0[正常終了: exit 0]
+```
 
 **脆弱性の修正方針:** `bun.lock` は `.gitignore` 対象で共有されないため、lockfile の更新だけでは修正が残らない。必ず `package.json` に反映すること。
 
