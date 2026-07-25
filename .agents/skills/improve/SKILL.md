@@ -96,11 +96,16 @@ export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[
     }
 
     console.log(`Checking drift against commit: ${verifiedSha}`);
-    const output = execFileSync("git", ["diff", "--name-only", "-z", verifiedSha, "HEAD", "--", ...targetFiles], {
+    const diffOutput = execFileSync("git", ["diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles], {
+      encoding: "utf-8",
+    });
+    const untrackedOutput = execFileSync("git", ["ls-files", "--others", "--exclude-standard", "-z", "--", ...targetFiles], {
       encoding: "utf-8",
     });
 
-    const changedFiles = output.split("\0").filter(Boolean);
+    const changedFiles = Array.from(
+      new Set([...diffOutput.split("\0").filter(Boolean), ...untrackedOutput.split("\0").filter(Boolean)])
+    );
 
     if (changedFiles.length > 0) {
       console.warn("警告: 対象ファイルに計画作成後の変更（ドリフト）が検知されました:");

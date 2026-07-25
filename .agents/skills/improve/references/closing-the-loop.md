@@ -56,11 +56,11 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 
 アドバイザーによる PR レビューと同等の検証プロセスを実行します（アドバイザー自身はコード修正を行いません）：
 
-1. **ベース SHA（`${BASE_SHA}...HEAD`）による差分検証**:
-   - ディスパッチ前に保存したベース SHA (`BASE_SHA`) と Worktree の HEAD 間の差分（`${BASE_SHA}...HEAD`）を検証します。
-   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}...HEAD`
-   - Executor が Worktree 内で作成したコミットを含め、変更された全ファイルが計画のインスコープ（In Scope）一覧と合致するか確認します。スコープ外のファイル変更は原則レビュー失敗とします。
-   - 詳細差分の確認: `git -C <worktree> diff ${BASE_SHA}...HEAD` で実装内容を読み、コード規約や目的に適合しているか判定します。
+1. **ベース SHA（`${BASE_SHA}`）および作業ツリーの差分・未追跡ファイル検証**:
+   - ディスパッチ前に保存したベース SHA (`BASE_SHA`) からの変更（コミット済み・作業ツリー含む）および未追跡ファイルを検証します。
+   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}` および `git -C <worktree> ls-files --others --exclude-standard`
+   - Executor が Worktree 内で作成したコミット・変更に加え、未追跡のスコープ外ファイルも含めた変更ファイル全体が計画のインスコープ（In Scope）一覧と合致するか確認します。スコープ外のファイル（コミット済み・未追跡問わず）が1つでも検知された場合はレビュー失敗とします。
+   - 詳細差分の確認: `git -C <worktree> diff ${BASE_SHA}` で実装内容を読み、コード規約や目的に適合しているか判定します。
 2. **完了条件（Done criteria）の再実行**:
    - Executor の自己報告を鵜呑みにせず、Worktree 内で全検証コマンドを再実行します。
 3. **新規テストの検証**:
