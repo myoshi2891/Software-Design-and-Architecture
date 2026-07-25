@@ -70,6 +70,16 @@ describe('parseAuditJson', () => {
     expect(result).toEqual({ ok: true, value: {} });
   });
 
+  test('exitCode が非ゼロかつ空文字列の場合はエラーとして返す', () => {
+    // Arrange & Act
+    const result = parseAuditJson('', { exitCode: 1 });
+
+    // Assert
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toContain('非ゼロの終了コード (1)');
+  });
+
   test('空オブジェクトの出力を空レポートとして扱う', () => {
     // Arrange & Act
     const result = parseAuditJson('{}');

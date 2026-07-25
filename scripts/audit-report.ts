@@ -94,13 +94,24 @@ function parseAdvisory(raw: unknown, path: string): Result<AuditAdvisory> {
   };
 }
 
+export interface ParseAuditOptions {
+  exitCode?: number;
+}
+
 /**
  * `bun audit --json` の標準出力文字列を AuditReport へ変換する。
- * 脆弱性ゼロのとき bun は何も出力しない場合があるため、空文字列は空レポートとして扱う。
+ * 脆弱性ゼロのとき bun は何も出力しない場合があるため、正常終了（exitCode 0 または未指定）の空文字列は空レポートとして扱う。
+ * 非ゼロ終了かつ空文字列の場合は監査実行失敗としてエラーを返す。
  */
-export function parseAuditJson(rawText: string): Result<AuditReport> {
+export function parseAuditJson(rawText: string, options?: ParseAuditOptions): Result<AuditReport> {
   const trimmed = rawText.trim();
   if (trimmed === '') {
+    if (options?.exitCode !== undefined && options.exitCode !== 0) {
+      return {
+        ok: false,
+        error: `監査コマンドが非ゼロの終了コード (${options.exitCode}) で終了し、出力が得られませんでした`,
+      };
+    }
     return { ok: true, value: {} };
   }
 

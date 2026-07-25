@@ -64,9 +64,9 @@ async function auditWorkspace(workspace: Workspace, threshold: Severity): Promis
     new Response(proc.stdout).text(),
     new Response(proc.stderr).text(),
   ]);
-  await proc.exited;
+  const exitCode = await proc.exited;
 
-  const parsed = parseAuditJson(stdout);
+  const parsed = parseAuditJson(stdout, { exitCode });
   if (!parsed.ok) {
     // 監査が実行できなかった場合（ネットワーク断など）はエラーを握りつぶさず中断する
     console.error(`エラー: ${workspace.name} の監査に失敗しました - ${parsed.error}`);
