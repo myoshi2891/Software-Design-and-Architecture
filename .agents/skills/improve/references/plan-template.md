@@ -166,7 +166,7 @@ export function parsePlanFile(planFilePath: string): PlanHeader {
   const titleMatch = content.match(/^# Plan \d+:\s*(.+)$/m);
   const shaMatch = content.match(/-\s*\*\*(?:Planned at|計画作成時コミット)\*\*:\s*(?:commit\s*)?`([a-f0-9]{40})`/i);
 
-  const inScopeBlock = content.match(/\*\*(?:In scope|スコープ内)\*\*\s*[\s\S]*?(?=\*\*(?:Out of scope|スコープ外)\*\*|$)/i);
+  const inScopeBlock = content.match(/\*\*(?:In scope|スコープ内(?:\s*\(In scope\))?|In scope\s*\(スコープ内\))\*\*\s*[\s\S]*?(?=\*\*(?:Out of scope|スコープ外(?:\s*\(Out of scope\))?|Out of scope\s*\(スコープ外\))\*\*|$)/i);
   const inScopeFiles: string[] = [];
   if (inScopeBlock) {
     const fileMatches = inScopeBlock[0].matchAll(/-\s*`([^`]+)`/g);
