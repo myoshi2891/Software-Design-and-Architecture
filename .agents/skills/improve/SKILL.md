@@ -70,7 +70,7 @@ plans/
   002-<slug>.md
 ```
 
-計画書作成前に `git rev-parse --short HEAD` を記録し、計画書を作成したコミット SHA を明記します。
+計画書作成前に `git rev-parse HEAD` を記録し、計画書を作成した完全なコミット SHA（40 桁）を明記します。
 
 ## スクリプト例（TypeScript / Bun）
 
@@ -83,10 +83,17 @@ import { execFileSync } from "node:child_process";
  * リポジトリの計画書用ドリフト検証スニペット (Bun / TypeScript)
  */
 export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[]): boolean {
+  if (!/^[0-9a-f]{40}$/i.test(baseCommitSha)) {
+    throw new Error(`無効なベースコミット SHA 形式です: ${baseCommitSha}`);
+  }
   try {
     const verifiedSha = execFileSync("git", ["rev-parse", "--verify", `${baseCommitSha}^{commit}`], {
       encoding: "utf-8",
     }).trim();
+
+    if (!/^[0-9a-f]{40}$/i.test(verifiedSha)) {
+      throw new Error(`検証済み SHA が完全形式ではありません: ${verifiedSha}`);
+    }
 
     console.log(`Checking drift against commit: ${verifiedSha}`);
     const output = execFileSync("git", ["diff", "--name-only", "-z", verifiedSha, "HEAD", "--", ...targetFiles], {

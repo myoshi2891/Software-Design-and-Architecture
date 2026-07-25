@@ -28,7 +28,7 @@
 - **リスク**: LOW | MED | HIGH
 - **依存関係**: plans/NNN-*.md (なしの場合は "none")
 - **カテゴリ**: bug | security | perf | tests | tech-debt | migration | dx | docs | direction
-- **計画作成時コミット**: `<short SHA>`, <YYYY-MM-DD>
+- **計画作成時コミット**: `<commit SHA (40桁)>`, <YYYY-MM-DD>
 - **Issue**: <GitHub issue URL — `--issues` で発行した場合のみ記述。それ以外は省略>
 
 ## なぜこれが重要か (Why this matters)
@@ -164,7 +164,7 @@ export function parsePlanFile(planFilePath: string): PlanHeader {
 
   const content = readFileSync(planFilePath, "utf-8");
   const titleMatch = content.match(/^# Plan \d+:\s*(.+)$/m);
-  const shaMatch = content.match(/-\s*\*\*(?:Planned at|計画作成時コミット)\*\*:\s*(?:commit\s*)?`([a-f0-9]+)`/i);
+  const shaMatch = content.match(/-\s*\*\*(?:Planned at|計画作成時コミット)\*\*:\s*(?:commit\s*)?`([a-f0-9]{40})`/i);
 
   const inScopeBlock = content.match(/\*\*(?:In scope|スコープ内)\*\*\s*[\s\S]*?(?=\*\*(?:Out of scope|スコープ外)\*\*|$)/i);
   const inScopeFiles: string[] = [];

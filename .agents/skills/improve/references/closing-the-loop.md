@@ -28,7 +28,7 @@ sequenceDiagram
 ディスパッチ前に以下のすべてを確認してください：
 - リポジトリが git 管理下にあること（worktree 隔離に必須）。
 - 対象の計画書が存在し、依存関係となる計画が `plans/README.md` で `DONE` になっていること。
-- ディスパッチ直前の HEAD コミット SHA を変数 `BASE_SHA` 等に保存しておくこと。
+- ディスパッチ直前の HEAD コミット SHA を変数 `BASE_SHA` 等に完全 SHA（40 桁）として保存しておくこと。
 
 ### Dispatch（ディスパッチ）
 
@@ -117,11 +117,19 @@ export function reviewExecutorDiff(options: ReviewOptions): {
 } {
   const { worktreePath, baseSha, inScopeFiles } = options;
 
+  if (!/^[0-9a-f]{40}$/i.test(baseSha)) {
+    throw new Error(`無効なベースコミット SHA 形式です: ${baseSha}`);
+  }
+
   const verifiedBase = execFileSync(
     "git",
     ["-C", worktreePath, "rev-parse", "--verify", `${baseSha}^{commit}`],
     { encoding: "utf-8" }
   ).trim();
+
+  if (!/^[0-9a-f]{40}$/i.test(verifiedBase)) {
+    throw new Error(`検証済み SHA が完全形式ではありません: ${verifiedBase}`);
+  }
 
   const output = execFileSync(
     "git",
