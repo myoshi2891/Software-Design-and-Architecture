@@ -1,197 +1,194 @@
-# Handoff Plan Template
+# Handoff Plan Template（引き継ぎ計画書テンプレート）
 
-Every plan is written for an executor model that has **zero context**: it has not seen the advisor session, the audit, the other plans, or any prior conversation. It may be a smaller/cheaper model. Assume it is competent at following explicit instructions and weak at filling gaps, recovering from ambiguity, or knowing when to stop.
+すべての計画書は、**コンテキストを一切持たない** Executor エージェント向けに作成されます。Executor はアドバイザーのセッション、事前調査、他の計画書、あるいは過去の会話を一切知りません。指示の遵守には優れているものの、曖昧さからの復帰や作業停止時期の判断が苦手であることを前提とします。
 
-Three properties make a plan executable by a weaker model:
+計画書を実行可能にする 3 つの要素：
+1. **完全自己完結型のコンテキスト** — パス、コード抜粋、規約、実行コマンドなど必要な情報をすべてファイル内に記載する。
+2. **検証ゲート (Verification gates)** — すべてのステップがコマンドと期待される結果で終了し、判断に迷わないようにする。
+3. **境界線と停止条件 (Hard boundaries & STOP conditions)** — スコープ外の一覧を明記し、想定と異なる場合は勝手に即興対応せず作業を停止して報告させる。
 
-1. **Self-contained context** — everything needed is in the file: paths, code excerpts, conventions, commands.
-2. **Verification gates** — every step ends with a command and its expected result. The executor never has to *judge* whether it succeeded.
-3. **Hard boundaries and escape hatches** — explicit out-of-scope list, and "STOP and report" conditions instead of letting the model improvise when reality doesn't match the plan.
-
-File naming: `plans/NNN-short-slug.md`, numbered in recommended execution order.
+ファイル命名規則: `plans/NNN-short-slug.md` （推奨実行順にナンバリング）
 
 ---
 
-## Template
+## 計画書テンプレート (Template)
 
 ```markdown
-# Plan NNN: <Imperative title — what will be true after this plan>
+# Plan NNN: <命令形のタイトル — この計画完了後に達成される状態>
 
-> **Executor instructions**: Follow this plan step by step. Run every
-> verification command and confirm the expected result before moving to the
-> next step. If anything in the "STOP conditions" section occurs, stop and
-> report — do not improvise. When done, update the status row for this plan
-> in `plans/README.md` — unless a reviewer dispatched you and told you they
-> maintain the index.
+> **Executor 向け指示**: この計画書にステップバイステップで従ってください。次のステップに進む前に、必ずすべての検証コマンドを実行し、期待される結果を確認してください。「STOP条件」セクションのいずれかが発生した場合は、即座に作業を停止して報告してください（即興での回避行動は厳禁です）。完了後は、`plans/README.md` 内の該当行のステータスを更新してください（レビュアーからインデックス保守を自身で行うよう指示されている場合を除く）。
 >
-> **Drift check (run first)**: `git diff --stat <planned-at SHA>..HEAD -- <in-scope paths>`
-> If any in-scope file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before proceeding; on a
-> mismatch, treat it as a STOP condition.
+> **ドリフトチェック (最初に実行)**: `git diff --stat <planned-at SHA>..HEAD -- <in-scope paths>`
+> 計画作成時以降に対象ファイルに変更がある場合、「現在の状態」のコード抜粋と実際のコードを比較し、不一致がある場合は STOP 条件として扱ってください。
 
-## Status
+## ステータス (Status)
 
-- **Priority**: P1 | P2 | P3
-- **Effort**: S | M | L
-- **Risk**: LOW | MED | HIGH
-- **Depends on**: plans/NNN-*.md (or "none")
-- **Category**: bug | security | perf | tests | tech-debt | migration | dx | docs | direction
-- **Planned at**: commit `<short SHA>`, <YYYY-MM-DD>
-- **Issue**: <GitHub issue URL — only when published via `--issues`; omit otherwise>
+- **優先度**: P1 | P2 | P3
+- **工数**: S | M | L
+- **リスク**: LOW | MED | HIGH
+- **依存関係**: plans/NNN-*.md (なしの場合は "none")
+- **カテゴリ**: bug | security | perf | tests | tech-debt | migration | dx | docs | direction
+- **計画作成時コミット**: `<short SHA>`, <YYYY-MM-DD>
+- **Issue**: <GitHub issue URL — `--issues` で発行した場合のみ記述。それ以外は省略>
 
-## Why this matters
+## なぜこれが重要か (Why this matters)
 
-2–5 sentences. The problem, its concrete cost, and what improves when this
-lands. Written so the executor (and a human reviewer) understands the intent —
-intent is what lets a correct judgment call happen when a detail is off.
+2〜5文で記述。問題点、具体的コスト、完了時に何が改善されるか。Executor やレビュアーが意図を理解できるように記述します。
 
-## Current state
+## 現在の状態 (Current state)
 
-The facts the executor needs, inlined — never "as discussed" or "see audit":
+Executor に必要な事実をインラインで記述（「上記で議論した通り」などは不可）：
 
-- The relevant files, each with one line on its role:
-  - `src/orders/api.ts` — order-list endpoint; contains the N+1 (lines 130–160)
-- Excerpts of the code as it exists today (short, with `file:line` markers),
-  enough that the executor can confirm it's looking at the right thing.
-- The repo conventions that apply here, with a pointer to one exemplar file:
-  "Error handling follows the Result pattern — see `src/lib/result.ts` and its
-  use in `src/users/api.ts:40-60`. Match it."
-- Any documented vocabulary or design constraints the plan must honor, inlined
-  from the intent/design docs found in recon: the relevant `CONTEXT.md` terms
-  the executor should use in names and comments, the `DESIGN.md` tokens/components
-  to reuse, or the ADR whose decision this work must stay consistent with. Quote
-  the specific lines — the executor has not read those docs.
+- 関連ファイルと各役割:
+  - `src/orders/api.ts` — 注文一覧エンドポイント (130–160行に N+1 が存在)
+- 現在のコード抜粋（`file:line` 付きの短い抜き出し）。
+- 適用されるリポジトリの規約と模範ファイルのポインタ。
+- Recon で発見された用語や設計上の制約（`CONTEXT.md` や `DESIGN.md` からの引用）。
 
-## Commands you will need
+## 必要なコマンド (Commands you will need)
 
-| Purpose   | Command                  | Expected on success |
-|-----------|--------------------------|---------------------|
-| Install   | `pnpm install`           | exit 0              |
-| Typecheck | `pnpm typecheck`         | exit 0, no errors   |
-| Tests     | `pnpm test -- <filter>`  | all pass            |
-| Lint      | `pnpm lint`              | exit 0              |
+> **注意**: 以下のコマンドは **Recon フェーズで発見・検証されたこのリポジトリ固有の実際のコマンド** に置き換えてください（以下の表はプレースホルダーおよび例です）。すべてのリポジトリで pnpm / npm / bun / pytest が共通で使えると仮定してはなりません。
 
-(Exact commands from this repo — verified during recon, not guessed.)
+| 目的 | コマンド (例/プレースホルダー) | 正常時の期待される出力 |
+|---|---|---|
+| 依存関係インストール | `<install-command>` (例: `npm install`) | exit 0 |
+| 型チェック | `<typecheck-command>` (例: `npx tsc --noEmit`) | exit 0, エラーなし |
+| テスト実行 | `<test-command>` (例: `npm test -- <filter>`) | 全テストパス |
+| Lint | `<lint-command>` (例: `npm run lint`) | exit 0 |
 
-## Suggested executor toolkit
+## スコープ (Scope)
 
-(Optional — include only when relevant skills/tools plausibly exist in the
-executor's environment. Skip the section otherwise.)
-
-- Skills the executor should invoke if available, and for what:
-  "use `vercel-react-best-practices` when writing the memoization in step 3".
-- Reference docs worth reading before starting, by path or URL.
-
-## Scope
-
-**In scope** (the only files you should modify):
+**スコープ内 (In scope)**（変更が許可されているファイルのみ）:
 - `src/orders/api.ts`
-- `src/orders/api.test.ts` (create)
+- `src/orders/api.test.ts` (新規作成)
 
-**Out of scope** (do NOT touch, even though they look related):
-- `src/orders/legacy-api.ts` — deprecated path, scheduled for deletion;
-  changing it wastes effort and risks the v1 clients still pinned to it.
-- Any change to the public response shape — clients depend on it.
+**スコープ外 (Out of scope)**（関連しそうに見えても絶対に手を出さないファイル）:
+- `src/orders/legacy-api.ts` — 削除予定の非推奨パス。
+- パブリックレスポンス形状の変更。
 
-## Git workflow
+## Git ワークフロー (Git workflow)
 
-(Filled from recon — match the repo's observed conventions.)
+- ブランチ名: `advisor/NNN-<slug>`
+- コミット単位: ステップごと、または論理単位ごと。メッセージはリポジトリの規約に従う。
+- 指示がない限り、プッシュや PR の作成は行わない。
 
-- Branch: `advisor/NNN-<slug>` (or the repo's branch-naming convention if one is evident)
-- Commit per step or per logical unit; message style: <match repo, e.g. conventional commits — include an example from `git log`>
-- Do NOT push or open a PR unless the operator instructed it.
+## ステップ (Steps)
 
-## Steps
+### Step 1: <命令形タイトル>
 
-### Step 1: <imperative title>
+行うべき作業を正確に記述。影響を受けるファイル/シンボルを指定。
 
-What to do, precisely. Reference exact files/symbols. Include the target code
-shape when it's load-bearing (the pattern to produce, not necessarily every
-line).
-
-**Verify**: `<command>` → <expected output>
+**検証**: `<command>` → <期待される出力>
 
 ### Step 2: ...
 
-(Each step small enough to verify independently. Order steps so the codebase
-is never broken between steps when possible — e.g. add new path, switch
-callers, then remove old path.)
+## テスト計画 (Test plan)
 
-## Test plan
+- 作成する新規テスト、ファイルパス、カバーするケース。
+- 参照する既存テストのパターン。
+- 検証コマンド。
 
-- New tests to write, in which file, covering which cases (list them:
-  happy path, the specific bug/regression this plan fixes, named edge cases).
-- Which existing test to use as the structural pattern:
-  "model after `src/users/api.test.ts`".
-- Verification: `<test command>` → all pass, including N new tests.
+## 完了条件 (Done criteria)
 
-## Done criteria
+自動検証可能な基準。すべて満たす必要があります：
 
-Machine-checkable. ALL must hold:
+- [ ] `<typecheck-command>` が exit 0 で終了すること
+- [ ] `<test-command>` が exit 0 で終了し、新規テストがパスすること
+- [ ] スコープ外のファイルが変更されていないこと (`git status`)
+- [ ] `plans/README.md` のステータス行が更新されていること
 
-- [ ] `pnpm typecheck` exits 0
-- [ ] `pnpm test` exits 0; new tests for <X> exist and pass
-- [ ] `grep -rn "<old pattern>" src/` returns no matches
-- [ ] No files outside the in-scope list are modified (`git status`)
-- [ ] `plans/README.md` status row updated
+## STOP 条件 (STOP conditions)
 
-## STOP conditions
+以下が発生した場合、即座に作業を停止して報告してください：
 
-Stop and report back (do not improvise) if:
+- 「現在の状態」のコードが実際のコードと一致しない場合（計画作成後にドリフトが発生）。
+- ステップの検証が適切な修正試行後も2回連続で失敗した場合。
+- 修正にスコープ外のファイルの編集が必要と判明した場合。
 
-- The code at the locations in "Current state" doesn't match the excerpts
-  (the codebase has drifted since this plan was written).
-- A step's verification fails twice after a reasonable fix attempt.
-- The fix appears to require touching an out-of-scope file.
-- You discover the assumption "<key assumption>" is false.
+## 保守に関するメモ (Maintenance notes)
 
-## Maintenance notes
-
-For the human/agent who owns this code after the change lands:
-
-- What future changes will interact with this (e.g. "if pagination is added
-  to this endpoint, the batching in step 2 must be revisited").
-- What a reviewer should scrutinize in the PR.
-- Any follow-up explicitly deferred out of this plan (and why).
+将来の変更に対する注意点やレビュアーへの申し送り事項。
 ```
 
 ---
 
-## Index file: `plans/README.md`
-
-Written once by the advisor after all plans, updated by executors:
+## インデックスファイル例: `plans/README.md`
 
 ```markdown
-# Implementation Plans
+# 実装計画一覧 (Implementation Plans)
 
-Generated by the improve skill on <date>. Execute in the order below unless
-dependencies say otherwise. Each executor: read the plan fully before starting,
-honor its STOP conditions, and update your row when done.
+<日付> に improve スキルによって生成されました。依存関係に指定がない限り、以下の順序で実行してください。
 
-## Execution order & status
+## 実行順序とステータス
 
-| Plan | Title | Priority | Effort | Depends on | Status |
+| 計画 | タイトル | 優先度 | 工数 | 依存関係 | ステータス |
 |------|-------|----------|--------|------------|--------|
 | 001  | ...   | P1       | S      | —          | TODO   |
 | 002  | ...   | P1       | M      | 001        | TODO   |
 
-Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
-
-## Dependency notes
-
-- 002 requires 001 because <reason>.
-
-## Findings considered and rejected
-
-- <finding>: not worth doing because <one line>. (So nobody re-audits it.)
+ステータス値: TODO | IN PROGRESS | DONE | BLOCKED | REJECTED
 ```
 
-## Quality bar — check before finishing each plan
+---
 
-- Could a model that has never seen this repo execute this with only the plan file and the repo? If any step requires knowledge from the advisor session, inline that knowledge.
-- Is every verification a command with an expected result, not a judgment ("make sure it works")?
-- Does every step name exact files and symbols, not "the relevant module"?
-- Are the STOP conditions specific to this plan's actual risks, not boilerplate?
-- Would a reviewer reading only "Why this matters" + "Done criteria" understand what they're approving?
-- No secret values anywhere in the file — locations and credential types only.
-- "Planned at" SHA is filled in and the in-scope paths in the drift check match the Scope section.
+## ワークフロー構造 (Mermaid)
+
+```mermaid
+flowchart LR
+    Sub[Recon フェーズ: コマンド・規約・依存関係の特定] --> Temp[計画書テンプレートへの流し込み]
+    Temp --> Check[検証ゲート & STOP条件の設定]
+    Check --> Out[plans/NNN-slug.md の出力]
+```
+
+---
+
+## 実装コード例（TypeScript / Bun）
+
+計画書のヘッダー情報やドリフト SHA をプログラムから評価・検証する Bun / TypeScript スクリプト例です：
+
+```typescript
+import { existsSync, readFileSync } from "node:fs";
+
+export interface PlanHeader {
+  title: string;
+  plannedAtSha: string;
+  inScopeFiles: string[];
+}
+
+export function parsePlanFile(planFilePath: string): PlanHeader {
+  if (!existsSync(planFilePath)) {
+    throw new Error(`計画書ファイルが存在しません: ${planFilePath}`);
+  }
+
+  const content = readFileSync(planFilePath, "utf-8");
+  const titleMatch = content.match(/^# Plan \d+:\s*(.+)$/m);
+  const shaMatch = content.match(/-\s*\*\*Planned at\*\*:\s*commit\s*`([a-f0-9]+)`/i);
+
+  const inScopeBlock = content.match(/\*\*In scope\*\*\s*[\s\S]*?(?=\*\*Out of scope\*\*|$)/);
+  const inScopeFiles: string[] = [];
+  if (inScopeBlock) {
+    const fileMatches = inScopeBlock[0].matchAll(/-\s*`([^`]+)`/g);
+    for (const m of fileMatches) {
+      inScopeFiles.push(m[1]);
+    }
+  }
+
+  return {
+    title: titleMatch ? titleMatch[1].trim() : "Untitled",
+    plannedAtSha: shaMatch ? shaMatch[1] : "",
+    inScopeFiles,
+  };
+}
+```
+
+---
+
+## 参考文献・ソース一覧
+
+- **Improve Skill (スキル本体)**: [../SKILL.md](../SKILL.md)
+- **Closing the Loop (実行・同期・Issue発行ガイド)**: [closing-the-loop.md](closing-the-loop.md)
+- **Audit Playbook (監査ガイド)**: [audit-playbook.md](audit-playbook.md)
+
+---
+
+*作成者：Software Architect Guide | バージョン 1.0 | Handoff Plan Template Reference Guide*
