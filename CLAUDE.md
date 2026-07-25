@@ -55,10 +55,12 @@ bun run build      # production build
 ```mermaid
 flowchart TD
     Start[bun run audit] --> AuditRoot[root: bun audit --json]
-    AuditRoot --> AuditWebNext[web-next: bun audit --json]
-    AuditWebNext --> ExecCheck{実行・パース成功?}
-    ExecCheck -- No --> Exit2[エラー終了: exit 2]
-    ExecCheck -- Yes --> ThresholdCheck{閾値以上の脆弱性あり?}
+    AuditRoot --> CheckRoot{root 実行・パース成功?}
+    CheckRoot -- No --> Exit2[エラー終了: exit 2]
+    CheckRoot -- Yes --> AuditWebNext[web-next: bun audit --json]
+    AuditWebNext --> CheckWebNext{web-next 実行・パース成功?}
+    CheckWebNext -- No --> Exit2
+    CheckWebNext -- Yes --> ThresholdCheck{閾値以上の脆弱性あり?}
     ThresholdCheck -- Yes --> Exit1[脆弱性検知: exit 1]
     ThresholdCheck -- No --> Exit0[正常終了: exit 0]
 ```
