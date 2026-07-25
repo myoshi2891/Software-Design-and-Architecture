@@ -65,6 +65,12 @@ flowchart TD
     ThresholdCheck -- No --> Exit0[正常終了: exit 0]
 ```
 
+### 参考文献・ソース一覧
+
+- **監査 CLI スクリプト**: [`scripts/audit-dependencies.ts`](./scripts/audit-dependencies.ts)
+- **監査判定ロジック・テスト**: [`scripts/audit-report.ts`](./scripts/audit-report.ts) / [`scripts/audit-report.test.ts`](./scripts/audit-report.test.ts)
+- **CI/CD ワークフロー (`dependency-audit` ジョブ)**: [`.github/workflows/link-check.yml`](./.github/workflows/link-check.yml)
+
 ## 絶対ルール（OVERRIDE 不可）
 
 1. **JavaScript 禁止**: スクリプト・ツールは必ず TypeScript (`.ts`)。ランタイムは Bun。

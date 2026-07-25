@@ -69,10 +69,19 @@ flowchart TD
 - transitive 依存は `overrides` で最低安全バージョンを宣言する（`bun update <pkg>` は未宣言パッケージを直接依存として追記してしまうため使用しない）。
 - 現在の `overrides`: ルートは `undici` / `js-yaml`、`web-next/` は `postcss` / `sharp` / `dompurify`。いずれも上流（`markdown-link-check`, `next`, `mermaid`）が古いバージョンを固定しているために必要。
 
+#### 参考文献・ソース一覧
+
+- **監査 CLI スクリプト**: [`scripts/audit-dependencies.ts`](./scripts/audit-dependencies.ts)
+- **監査判定ロジック・テスト**: [`scripts/audit-report.ts`](./scripts/audit-report.ts) / [`scripts/audit-report.test.ts`](./scripts/audit-report.test.ts)
+
 ### 3. CI/CD
 
 - GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックと依存関係の脆弱性監査（`dependency-audit` ジョブ）を実行する。
 - 毎週月曜日にスケジュール実行を行い、リンク切れと新規に公表された脆弱性を早期に発見する。
+
+#### 参考文献・ソース一覧
+
+- **CI/CD ワークフロー (`link-check` / `dependency-audit` ジョブ)**: [`.github/workflows/link-check.yml`](./.github/workflows/link-check.yml)
 
 ### 4. Web アプリ (`web-next/`) の開発
 
