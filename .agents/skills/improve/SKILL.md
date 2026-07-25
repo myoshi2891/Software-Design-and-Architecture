@@ -1,10 +1,6 @@
 ---
 name: improve
 description: Survey any codebase as a senior advisor and produce prioritized, self-contained implementation plans for OTHER models/agents to execute. Strictly read-only on source code — never implements, fixes, or refactors anything itself. Use when asked to audit a codebase, find improvement opportunities (bugs, security, performance, test coverage, tech debt, migrations, DX), suggest features or where to take the project next (roadmap, product direction), or generate handoff plans for another agent to implement.
-license: MIT
-metadata:
-  author: shadcn
-  version: "1.0.0"
 ---
 
 # Improve（改善スキル）
@@ -81,23 +77,27 @@ plans/
 以下は、計画書作成時にリポジトリ内のコード型チェックおよびドリフト状態を安全に検証するための動作可能な TypeScript スクリプト例です（`bun` ランタイムで実行可能）：
 
 ```typescript
-import { execSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 
 /**
  * リポジトリの計画書用ドリフト検証スニペット (Bun / TypeScript)
  */
 export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[]): boolean {
   try {
-    console.log(`Checking drift against commit: ${baseCommitSha}`);
-    const filesArg = targetFiles.join(" ");
-    const output = execSync(`git diff --stat ${baseCommitSha}..HEAD -- ${filesArg}`, {
+    const verifiedSha = execFileSync("git", ["rev-parse", "--verify", `${baseCommitSha}^{commit}`], {
+      encoding: "utf-8",
+    }).trim();
+
+    console.log(`Checking drift against commit: ${verifiedSha}`);
+    const output = execFileSync("git", ["diff", "--name-only", "-z", verifiedSha, "HEAD", "--", ...targetFiles], {
       encoding: "utf-8",
     });
 
-    if (output.trim().length > 0) {
+    const changedFiles = output.split("\0").filter(Boolean);
+
+    if (changedFiles.length > 0) {
       console.warn("警告: 対象ファイルに計画作成後の変更（ドリフト）が検知されました:");
-      console.warn(output);
+      console.warn(changedFiles.join("\n"));
       return true;
     }
     console.log("ドリフトは検知されませんでした。計画書は最新です。");

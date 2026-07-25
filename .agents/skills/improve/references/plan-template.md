@@ -94,6 +94,8 @@ Executor に必要な事実をインラインで記述（「上記で議論し�
 
 - [ ] `<typecheck-command>` が exit 0 で終了すること
 - [ ] `<test-command>` が exit 0 で終了し、新規テストがパスすること
+- [ ] `<build-command>` が exit 0 で終了すること (ビルドステップが存在する場合)
+- [ ] `<lint-command>` が exit 0 で終了すること (Lintステップが存在する場合)
 - [ ] スコープ外のファイルが変更されていないこと (`git status`)
 - [ ] `plans/README.md` のステータス行が更新されていること
 
@@ -162,9 +164,9 @@ export function parsePlanFile(planFilePath: string): PlanHeader {
 
   const content = readFileSync(planFilePath, "utf-8");
   const titleMatch = content.match(/^# Plan \d+:\s*(.+)$/m);
-  const shaMatch = content.match(/-\s*\*\*Planned at\*\*:\s*commit\s*`([a-f0-9]+)`/i);
+  const shaMatch = content.match(/-\s*\*\*(?:Planned at|計画作成時コミット)\*\*:\s*(?:commit\s*)?`([a-f0-9]+)`/i);
 
-  const inScopeBlock = content.match(/\*\*In scope\*\*\s*[\s\S]*?(?=\*\*Out of scope\*\*|$)/);
+  const inScopeBlock = content.match(/\*\*(?:In scope|スコープ内)\*\*\s*[\s\S]*?(?=\*\*(?:Out of scope|スコープ外)\*\*|$)/i);
   const inScopeFiles: string[] = [];
   if (inScopeBlock) {
     const fileMatches = inScopeBlock[0].matchAll(/-\s*`([^`]+)`/g);

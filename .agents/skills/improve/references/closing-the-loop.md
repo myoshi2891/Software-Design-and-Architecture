@@ -102,7 +102,7 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 以下は、`execute` レビュー時にディスパッチ前のベース SHA（`base`）と Worktree HEAD 間の差分（`base...HEAD`）を評価し、スコープ違反を検知する Bun / TypeScript スクリプト例です：
 
 ```typescript
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 
 export interface ReviewOptions {
   worktreePath: string;
@@ -117,14 +117,19 @@ export function reviewExecutorDiff(options: ReviewOptions): {
 } {
   const { worktreePath, baseSha, inScopeFiles } = options;
 
-  // base...HEAD 範囲でコミットされた変更を含む統計差分を取得
-  const cmd = `git -C "${worktreePath}" diff --stat --name-only ${baseSha}...HEAD`;
-  const output = execSync(cmd, { encoding: "utf-8" });
+  const verifiedBase = execFileSync(
+    "git",
+    ["-C", worktreePath, "rev-parse", "--verify", `${baseSha}^{commit}`],
+    { encoding: "utf-8" }
+  ).trim();
 
-  const changedFiles = output
-    .split("\n")
-    .map((f) => f.trim())
-    .filter(Boolean);
+  const output = execFileSync(
+    "git",
+    ["-C", worktreePath, "diff", "--name-only", "-z", `${verifiedBase}...HEAD`],
+    { encoding: "utf-8" }
+  );
+
+  const changedFiles = output.split("\0").filter(Boolean);
 
   const outOfScopeFiles = changedFiles.filter((file) => !inScopeFiles.includes(file));
 

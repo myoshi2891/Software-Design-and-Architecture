@@ -120,14 +120,49 @@ export interface AuditFinding {
 }
 
 export function validateFinding(finding: Partial<AuditFinding>): boolean {
-  if (!finding.id || !finding.evidence || !finding.impact) {
-    console.error("Finding 検証エラー: 必須フィールド (id, evidence, impact) が不足しています。");
+  const requiredFields: (keyof AuditFinding)[] = [
+    "id",
+    "category",
+    "evidence",
+    "impact",
+    "effort",
+    "risk",
+    "confidence",
+    "fixSketch",
+  ];
+  for (const field of requiredFields) {
+    if (!finding[field]) {
+      console.error(`Finding 検証エラー: 必須フィールド (${field}) が不足しています。`);
+      return false;
+    }
+  }
+
+  if (!["S", "M", "L"].includes(finding.effort!)) {
+    console.error("Finding 検証エラー: effort の値が無効です。");
+    return false;
+  }
+  if (!["LOW", "MED", "HIGH"].includes(finding.risk!)) {
+    console.error("Finding 検証エラー: risk の値が無効です。");
+    return false;
+  }
+  if (!["HIGH", "MED", "LOW"].includes(finding.confidence!)) {
+    console.error("Finding 検証エラー: confidence の値が無効です。");
     return false;
   }
 
-  if (finding.evidence.includes("AI_SECRET_KEY") || finding.evidence.includes("ghp_")) {
-    console.error("Finding 検証エラー: 機密情報（Secret）が含まれています。非開示原則に違反しています。");
-    return false;
+  const textFields = [
+    finding.id,
+    finding.category,
+    finding.evidence,
+    finding.impact,
+    finding.fixSketch,
+  ];
+  const secretPattern = /AI_SECRET_KEY|ghp_|github_pat_|sk-[a-zA-Z0-9]{32,}/;
+  for (const text of textFields) {
+    if (text && secretPattern.test(text)) {
+      console.error("Finding 検証エラー: 機密情報（Secret）が含まれています。非開示原則に違反しています。");
+      return false;
+    }
   }
 
   return true;
