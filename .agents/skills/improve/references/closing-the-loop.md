@@ -1,96 +1,155 @@
 # Closing the Loop — execute, reconcile, issues
 
-The advisor's job doesn't end at the plan. This file covers the three follow-through flows: dispatching an executor and reviewing its work (`execute`), keeping the plan backlog alive (`reconcile`), and publishing plans where work gets picked up (`--issues`).
+アドバイザーの役割は計画書の作成のみで終了するわけではありません。本ドキュメントでは、計画の実行と検証を行う `execute`、計画一覧の進捗と整合性を保つ `reconcile`、そして計画を GitHub Issue として発行する `--issues` の 3 つのフォローアップフローについて解説します。
 
-The founding rule survives unchanged: **the advisor never edits source code.** In `execute`, a *separate executor subagent* edits code in an isolated git worktree; the advisor dispatches, reviews, and renders a verdict — like a tech lead who doesn't push commits to your branch.
+基本方針は不変です：**アドバイザー自身は決してソースコードを編集しません。** `execute` フローにおいては、*隔離された git worktree 上で別の Executor サブエージェント*がコード編集を行います。アドバイザーはディスパッチ、レビュー、判定のみを担い、ユーザーの作業ブランチへの直接コミットやマージは行いません。
 
 ---
 
-## `execute <plan>` — dispatch and review
+## 1. `execute <plan>` — ディスパッチとレビュー手順
 
-### Preconditions (check all before dispatching)
+```mermaid
+sequenceDiagram
+    participant Advisor as Advisor (Main Session)
+    participant WT as Git Worktree (Isolated)
+    participant Executor as Executor Subagent
 
-- The repo is a git repository (worktree isolation requires it). If not: stop and say so.
-- The plan file exists and its dependencies show DONE in `plans/README.md`. If not: stop, name the missing dependency.
-- Run the plan's drift check yourself. If in-scope files changed since `Planned at`, reconcile the plan first (see below) — don't hand a stale plan to an executor.
-
-### Dispatch
-
-Spawn **one** `general-purpose` subagent with `isolation: "worktree"`. Executor model: default `sonnet`; use what the user named if they named one (`execute 003 haiku`).
-
-The subagent prompt must contain:
-
-1. **The full plan file text, inlined.** The worktree contains only committed files — if `plans/` is uncommitted, the executor can't read it. Never assume; always inline.
-2. The executor preamble:
-
-> You are the executor for the implementation plan below. Follow it step by
-> step. Run every verification command and confirm the expected result before
-> moving on. Touch only the files listed as in scope. If any STOP condition
-> occurs, stop immediately and report. Do not improvise around obstacles.
-> Commit your work in the worktree following the plan's git workflow section.
-> One override: SKIP the plan's instruction to update `plans/README.md` —
-> your reviewer maintains the index. Before reporting, audit every claim in
-> your report against an actual tool result from this session — only report
-> what you can point to evidence for; if a verification failed or was
-> skipped, say so plainly. When finished, reply with exactly the report
-> format below.
-
-3. The report format:
-
+    Advisor->>Advisor: 1. ディスパッチ前処理: BASE_SHA (HEAD) を保存
+    Advisor->>WT: 2. 隔離 Worktree の準備
+    Advisor->>Executor: 3. プロンプトと計画書をインライン化してディスパッチ
+    Executor->>WT: 4. 計画に基づくコード編集とステップごとのコミット
+    Executor-->>Advisor: 5. 実行レポートの返却 (STATUS, STEPS, NOTES等)
+    Advisor->>WT: 6. レビュー: git diff --stat base...HEAD によるスコープ検証
+    Advisor->>Advisor: 7. 判定 (APPROVE / REVISE / BLOCK)
 ```
+
+### Preconditions（前提条件チェック）
+
+ディスパッチ前に以下のすべてを確認してください：
+- リポジトリが git 管理下にあること（worktree 隔離に必須）。
+- 対象の計画書が存在し、依存関係となる計画が `plans/README.md` で `DONE` になっていること。
+- ディスパッチ直前の HEAD コミット SHA を変数 `BASE_SHA` 等に保存しておくこと。
+
+### Dispatch（ディスパッチ）
+
+`isolation: "worktree"` オプション付きで `general-purpose` サブエージェントを 1 つ起動します。
+サブエージェントプロンプトには以下を含めます：
+
+1. **計画書テキスト全体のインライン化**（未コミットの `plans/` を Executor が参照できるようにするため）。
+2. **Executor 向け指示文（Preamble）**:
+   - 計画書に従ってステップバイステップで作業し、各検証コマンドを実行すること。
+   - スコープ内のファイルのみを編集すること。
+   - 成果物は計画書の git ワークフローに従って Worktree 内でコミットすること。
+   - レポートは以下のフォーマットで返却すること。
+
+3. **レポートフォーマット**:
+
+```text
 STATUS: COMPLETE | STOPPED
-STEPS: per step — done/skipped + verification command result
-STOPPED BECAUSE: (only if STOPPED) which STOP condition, what was observed
-FILES CHANGED: list
-NOTES: anything the reviewer should know (deviations, surprises, judgment calls)
+STEPS: ステップごとの実行結果（完了/スキップ + 検証コマンド結果）
+STOPPED BECAUSE: (STOPPEDの場合のみ) 停止条件および観察された内容
+FILES CHANGED: 変更されたファイル一覧
+NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判断事項など）
 ```
 
-### Review (the advisor's real job here)
+### Review（アドバイザーによるレビュー）
 
-Note on fresh worktrees: they share git history but not `node_modules` or build artifacts — the executor must install dependencies first, and check tooling that resolves from `dist/` may need one build even though the plan's command table (recon'd in the main tree) didn't mention it. Expect this; it isn't a deviation.
+アドバイザーによる PR レビューと同等の検証プロセスを実行します（アドバイザー自身はコード修正を行いません）：
 
-Review like a tech lead reviewing a PR against the spec — never fix anything yourself:
+1. **ベース SHA（`base...HEAD`）による差分検証**:
+   - ディスパッチ前に保存したベース SHA (`BASE_SHA`) と Worktree の HEAD 間の差分（`base...HEAD`）を検証します。
+   - コマンド: `git -C <worktree> diff --stat base...HEAD`
+   - Executor が Worktree 内で作成したコミットを含め、変更された全ファイルが計画のインスコープ（In Scope）一覧と合致するか確認します。スコープ外のファイル変更は原則レビュー失敗とします。
+   - 詳細差分の確認: `git -C <worktree> diff base...HEAD` で実装内容を読み、コード規約や目的に適合しているか判定します。
+2. **完了条件（Done criteria）の再実行**:
+   - Executor の自己報告を鵜呑みにせず、Worktree 内で全検証コマンドを再実行します。
+3. **新規テストの検証**:
+   - 追加されたテストコードの内容を確認し、無意味なアサーションになっていないかチェックします。
 
-1. **Re-run every done criterion** in the worktree. Don't trust the executor's report — verify.
-2. **Scope compliance**: `git -C <worktree> diff --stat` against the plan's in-scope list. Any file outside scope fails review, full stop.
-3. **Read the full diff.** Judge it against "Why this matters" (does it solve the actual problem?) and the repo conventions named in the plan (does it look like the rest of the codebase?).
-4. **Audit the new tests.** Executors game criteria — a test that asserts nothing meaningful passes `pnpm test` and proves nothing. Read what the tests assert.
+### Verdict（判定）
 
-### Verdict
-
-**Documented deviations are judged on merit, not reflex-blocked.** "Do not improvise" exists to stop silent drift; an executor that hits a real obstacle (e.g. the plan's approach breaks existing test mocks), adapts minimally, and explains it in NOTES has done the right thing. Approve it if the adaptation serves the plan's intent and stays in scope; treat *undocumented* deviations as review failures.
-
-| Verdict | When | Action |
+| 判定 | 条件 | アクション |
 |---|---|---|
-| **APPROVE** | Criteria pass, scope clean, quality holds | Update index status to DONE. Present to the user: diff summary, worktree path and branch, anything from NOTES. **Merging is the user's decision — never merge, push, or commit to their branch.** |
-| **REVISE** | Fixable gaps | SendMessage to the same executor with specific, actionable feedback ("criterion 3 fails: X; the error handling in `api.ts:90` swallows the error — use the Result pattern per the plan"). **Max 2 revision rounds**, then BLOCK. |
-| **BLOCK** | STOP condition hit, scope violated unrecoverably, or revisions exhausted | Mark BLOCKED in the index with the reason. Refine or rewrite the plan with what was learned. Tell the user what happened and what changed in the plan. |
-
-Running verification commands inside the executor's worktree is fine — it's isolated and disposable. The no-mutating-commands rule protects the user's working tree, not the worktree.
+| **APPROVE** | 全条件パス、スコープ遵守、品質維持 | インデックスのステータスを `DONE` に更新。ユーザーに diff 概要と Worktree パスを報告。**マージの判断はユーザーに委ね、アドバイザーが直接マージやコミットを行うことはありません。** |
+| **REVISE** | 修正可能な不備が存在 | 具他的なフィードバックを添付して同一 Executor に再依頼（最大2回まで）。 |
+| **BLOCK** | STOP条件発生、深刻なスコープ違反 | インデックスを `BLOCKED` に変更し、理由を明記。必要に応じて計画書を改訂。 |
 
 ---
 
-## `reconcile` — keep `plans/` alive
+## 2. `reconcile` — 計画書の同期と整合性維持
 
-Process what happened since the last session. Read `plans/README.md` and every plan file, then per status:
+過去のセッションからの変更点を処理し、`plans/README.md` および各計画書を最新状態に保ちます：
 
-- **DONE** — spot-check that the done criteria still hold on the current HEAD (cheap ones only). Mark verified in the index. Don't delete plan files — they're the record.
-- **BLOCKED** — read the reason. Investigate the underlying obstacle in the codebase. Either rewrite the plan around it (new number if the approach changed fundamentally, in-place refresh otherwise) or mark REJECTED with one line of rationale.
-- **IN PROGRESS** (stale) — flag it to the user; an executor probably died mid-run. Check the worktree if one exists.
-- **TODO** — run the drift check. If drifted: re-verify the finding still exists (it may have been fixed in passing), then refresh the "Current state" excerpts and `Planned at` SHA. If the finding is gone, mark REJECTED ("fixed independently").
-
-Finish with a short report: what's verified done, what was refreshed, what's rejected, and what's executable right now.
+- **DONE**: 現状の HEAD で完了条件が引き続き満たされているか簡易確認。
+- **BLOCKED**: 理由を調査し、コードベースの変化に応じて計画を再構成または `REJECTED` に変更。
+- **IN PROGRESS**: 中断された Executor の状態を確認。
+- **TODO**: ドリフトチェックを実行。コードベースに変更がある場合は `Planned at` SHA やコード抜粋を更新。
 
 ---
 
-## `--issues` — publish plans as GitHub issues
+## 3. `--issues` — GitHub Issues への発行
 
-Modifier on any planning invocation (`/improve --issues`, `/improve security --issues`). The flag is the user's authorization to create issues — never create them without it.
+`/improve --issues` などの明示的なフラグ指定時、計画書を GitHub Issue として発行します：
 
-1. Preflight: `gh auth status` succeeds and the repo has a GitHub remote. If either fails, write the plan files as normal and say why issues were skipped.
-2. Visibility check: `gh repo view --json visibility`. If the repo is **public**, warn the user that issues are publicly visible and get explicit confirmation before publishing any plan that describes a security vulnerability, credential location, or other sensitive finding.
-3. Show the list of titles about to become issues; confirm once if interactive.
-4. Per plan: `gh issue create --title "<plan title>" --body-file <plan file>`. Labels: `improve` plus the category — apply only if the labels exist or can be created without erroring; skip labels rather than fail.
-5. Record each issue URL in the plan's Status block (`- **Issue**: <url>`) and the index.
+1. **事前検証**: `gh auth status` と リポジトリの確認。
+2. **可視性チェック**: `gh repo view --json visibility` でパブリックリポジトリの場合は機密情報（セキュリティ脆弱性や鍵の場所）が含まれていないか事前にユーザーの明示的確認を取得。
+3. **発行**: `gh issue create --title "<plan title>" --body-file <plan file>` を実行し、発行された Issue URL を計画書および `plans/README.md` に記載。
 
-The plan file remains the source of truth; the issue is distribution. The self-containment rule pays off here — the issue body needs no edits to make sense to whoever (or whatever) picks it up.
+---
+
+## 実装コード例（TypeScript / Bun）
+
+以下は、`execute` レビュー時にディスパッチ前のベース SHA（`base`）と Worktree HEAD 間の差分（`base...HEAD`）を評価し、スコープ違反を検知する Bun / TypeScript スクリプト例です：
+
+```typescript
+import { execSync } from "node:child_process";
+
+export interface ReviewOptions {
+  worktreePath: string;
+  baseSha: string;
+  inScopeFiles: string[];
+}
+
+export function reviewExecutorDiff(options: ReviewOptions): {
+  success: boolean;
+  changedFiles: string[];
+  outOfScopeFiles: string[];
+} {
+  const { worktreePath, baseSha, inScopeFiles } = options;
+
+  // base...HEAD 範囲でコミットされた変更を含む統計差分を取得
+  const cmd = `git -C "${worktreePath}" diff --stat --name-only ${baseSha}...HEAD`;
+  const output = execSync(cmd, { encoding: "utf-8" });
+
+  const changedFiles = output
+    .split("\n")
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  const outOfScopeFiles = changedFiles.filter((file) => !inScopeFiles.includes(file));
+
+  if (outOfScopeFiles.length > 0) {
+    console.error("レビュー失敗: スコープ外のファイルに変更が検出されました:");
+    for (const f of outOfScopeFiles) {
+      console.error(` - ${f}`);
+    }
+    return { success: false, changedFiles, outOfScopeFiles };
+  }
+
+  console.log("スコープ検証成功: すべての変更は計画されたスコープ内です。");
+  return { success: true, changedFiles, outOfScopeFiles: [] };
+}
+```
+
+---
+
+## 参考文献・ソース一覧
+
+- **Improve Skill (スキル本体)**: [../SKILL.md](../SKILL.md)
+- **Plan Template (計画書テンプレートガイド)**: [plan-template.md](plan-template.md)
+- **Audit Playbook (監査ガイド)**: [audit-playbook.md](audit-playbook.md)
+- **Git Worktree ドキュメント**: [Git Documentation - git-worktree](https://git-scm.com/docs/git-worktree)
+
+---
+
+*作成者：Software Architect Guide | バージョン 1.0 | Closing the Loop Reference Guide*
