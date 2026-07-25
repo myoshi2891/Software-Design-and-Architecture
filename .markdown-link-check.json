@@ -209,6 +209,9 @@
     },
     {
       "pattern": "^https://(www\\.)?ryanmulligan\\.dev"
+    },
+    {
+      "pattern": "^https?://(www\\.)?xp123\\.com"
     }
   ],
   "replacementPatterns": [],
