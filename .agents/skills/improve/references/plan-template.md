@@ -165,19 +165,21 @@ export function parsePlanFile(planFilePath: string): PlanHeader {
   const content = readFileSync(planFilePath, "utf-8");
   const titleMatch = content.match(/^# Plan \d+:\s*(.+)$/m);
   const shaMatch = content.match(/-\s*\*\*(?:Planned at|計画作成時コミット)\*\*:\s*(?:commit\s*)?`([a-f0-9]{40})`/i);
-
   const inScopeBlock = content.match(/\*\*(?:In scope|スコープ内(?:\s*\(In scope\))?|In scope\s*\(スコープ内\))\*\*\s*[\s\S]*?(?=\*\*(?:Out of scope|スコープ外(?:\s*\(Out of scope\))?|Out of scope\s*\(スコープ外\))\*\*|$)/i);
+
+  if (!shaMatch || !inScopeBlock) {
+    throw new Error(`不完全な計画書ファイルです: 必須フィールド (Planned at SHA または In scope ブロック) が見つかりません`);
+  }
+
   const inScopeFiles: string[] = [];
-  if (inScopeBlock) {
-    const fileMatches = inScopeBlock[0].matchAll(/-\s*`([^`]+)`/g);
-    for (const m of fileMatches) {
-      inScopeFiles.push(m[1]);
-    }
+  const fileMatches = inScopeBlock[0].matchAll(/-\s*`([^`]+)`/g);
+  for (const m of fileMatches) {
+    inScopeFiles.push(m[1]);
   }
 
   return {
     title: titleMatch ? titleMatch[1].trim() : "Untitled",
-    plannedAtSha: shaMatch ? shaMatch[1] : "",
+    plannedAtSha: shaMatch[1],
     inScopeFiles,
   };
 }
