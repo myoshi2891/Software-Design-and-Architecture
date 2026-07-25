@@ -168,7 +168,6 @@ async function verifyUrl(
     '-o', '/dev/null',
     '-w', '%{http_code}',
     '--max-time', String(timeoutSec),
-    '--http1.1',
     '-A', userAgent,
     '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   ];
