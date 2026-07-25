@@ -39,12 +39,29 @@ bun run check-links
 
 このコマンドは `scripts/verify-links.ts` を実行する。
 
-### 2. CI/CD
+### 2. 依存関係の脆弱性監査
 
-- GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックを実行する。
-- 毎週月曜日にスケジュール実行を行い、リンク切れを早期に発見する。
+依存パッケージの既知脆弱性を検査するために、以下のコマンドを実行する。
 
-### 3. Web アプリ (`web-next/`) の開発
+```bash
+bun run test    # scripts/ の単体テスト（監査ロジックの純関数）
+bun run audit   # ルートと web-next/ の両ワークスペースを監査
+```
+
+`bun run audit`（`scripts/audit-dependencies.ts`）は各ワークスペースで `bun audit --json` を実行し、閾値（既定 `low`）以上の脆弱性が 1 件でもあれば exit 1 で失敗する。閾値は `--threshold=moderate` で変更可能。ネットワーク断などで監査自体が失敗した場合はエラーを握りつぶさず exit 2 とする。
+
+**脆弱性の修正方針:** `bun.lock` は `.gitignore` 対象で共有されないため、lockfile の更新だけでは修正が残らない。必ず `package.json` に反映すること。
+
+- 直接依存はバージョンを上げる。
+- transitive 依存は `overrides` で最低安全バージョンを宣言する（`bun update <pkg>` は未宣言パッケージを直接依存として追記してしまうため使用しない）。
+- 現在の `overrides`: ルートは `undici` / `js-yaml`、`web-next/` は `postcss` / `sharp` / `dompurify`。いずれも上流（`markdown-link-check`, `next`, `mermaid`）が古いバージョンを固定しているために必要。
+
+### 3. CI/CD
+
+- GitHub Actions を使用して、プッシュ時およびプルリクエスト時に自動的にリンクチェックと依存関係の脆弱性監査（`dependency-audit` ジョブ）を実行する。
+- 毎週月曜日にスケジュール実行を行い、リンク切れと新規に公表された脆弱性を早期に発見する。
+
+### 4. Web アプリ (`web-next/`) の開発
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - 移行済み:
