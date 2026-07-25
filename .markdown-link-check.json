@@ -208,10 +208,10 @@
       "pattern": "^https://cube\\.fyi(?:/|$)"
     },
     {
-      "pattern": "^https://(www\\.)?ryanmulligan\\.dev"
+      "pattern": "^https://(www\\.)?ryanmulligan\\.dev(?::\\d+)?(?:[/?#]|$)"
     },
     {
-      "pattern": "^https?://(www\\.)?xp123\\.com"
+      "pattern": "^https?://(www\\.)?xp123\\.com(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],
