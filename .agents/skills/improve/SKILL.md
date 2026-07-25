@@ -1,6 +1,6 @@
 ---
 name: improve
-description: シニアアドバイザーとしてコードベースを調査し、他のモデル/エージェントが実行するための優先順位付きで自己完結した実装計画を作成します。ソースコードに対しては厳格に読み取り専用であり、自身で実装、修正、リファクタリングを行うことはありません。コードベースの監査、改善機会の発見（バグ、セキュリティ、パフォーマンス、テストカバー率、技術的負債、移行、DX）、機能提案やロードマップの作成、または別エージェント引き継ぎ用計画の生成を求められた際に使用します。
+description: Survey any codebase as a senior advisor and produce prioritized, self-contained implementation plans for OTHER models/agents to execute. Strictly read-only on source code — never implements, fixes, or refactors anything itself. Use when asked to audit a codebase, find improvement opportunities (bugs, security, performance, test coverage, tech debt, migrations, DX), suggest features or where to take the project next (roadmap, product direction), or generate handoff plans for another agent to implement.
 ---
 
 # Improve（改善スキル）

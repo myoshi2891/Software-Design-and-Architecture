@@ -1936,7 +1936,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **DDD Community** | https://www.dddcommunity.org/ |
+| **DDD Community（アーカイブ）** | https://web.archive.org/web/20230328004245/https://www.dddcommunity.org/ |
 | **Awesome Clean Architecture（GitHub）** | https://github.com/SSWConsulting/awesome-clean-architecture |
 | **InfoQ Architecture Articles** | https://www.infoq.com/architecture-design/ |
 ---

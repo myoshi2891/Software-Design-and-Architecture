@@ -1741,7 +1741,7 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **DDD Community** | https://www.dddcommunity.org/ |
+| **DDD Community（アーカイブ）** | https://web.archive.org/web/20230328004245/https://www.dddcommunity.org/ |
 | **Virtual DDD（Meetup・講演）** | [外部サイト（活動休止・アーカイブ）](https://web.archive.org/web/20230515120000/https://virtualddd.com/sessions) |
 | **DDD Crew（GitHub・リソース集）** | https://github.com/ddd-crew |
 | **Awesome DDD（GitHub）** | https://github.com/heynickc/awesome-ddd |

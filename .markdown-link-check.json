@@ -206,6 +206,9 @@
     },
     {
       "pattern": "^https://cube\\.fyi(?:/|$)"
+    },
+    {
+      "pattern": "^https://(www\\.)?ryanmulligan\\.dev"
     }
   ],
   "replacementPatterns": [],
