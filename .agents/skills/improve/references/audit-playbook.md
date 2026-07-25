@@ -131,8 +131,9 @@ export function validateFinding(finding: Partial<AuditFinding>): boolean {
     "fixSketch",
   ];
   for (const field of requiredFields) {
-    if (!finding[field]) {
-      console.error(`Finding 検証エラー: 必須フィールド (${field}) が不足しています。`);
+    const val = finding[field];
+    if (typeof val !== "string" || val.trim() === "") {
+      console.error(`Finding 検証エラー: 必須フィールド (${field}) が不足しているか無効です。`);
       return false;
     }
   }
