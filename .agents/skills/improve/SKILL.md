@@ -70,7 +70,7 @@ plans/ (または advisor-plans/)
   002-<slug>.md
 ```
 
-計画書作成前に `git rev-parse HEAD` を記録し、計画書を作成した完全なコミット SHA（40 桁）を明記します。
+計画書作成直前に `git rev-parse HEAD` を実行して識別名 `PLANNED_AT_SHA` として記録し、ドリフト検証の基準値として計画書作成後のコミットではなく作成直前の完全な 40 桁 SHA であることを明記します。
 
 ## スクリプト例（TypeScript / Bun）
 
