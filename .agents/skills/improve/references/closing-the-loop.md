@@ -19,7 +19,7 @@ sequenceDiagram
     Advisor->>Executor: 3. プロンプトと計画書をインライン化してディスパッチ
     Executor->>WT: 4. 計画に基づくコード編集とステップごとのコミット
     Executor-->>Advisor: 5. 実行レポートの返却 (STATUS, STEPS, NOTES等)
-    Advisor->>WT: 6. レビュー: git diff --stat base...HEAD によるスコープ検証
+    Advisor->>WT: 6. レビュー: git diff --stat ${BASE_SHA} によるスコープ検証
     Advisor->>Advisor: 7. 判定 (APPROVE / REVISE / BLOCK)
 ```
 
@@ -39,7 +39,8 @@ sequenceDiagram
 2. **Executor 向け指示文（Preamble）**:
    - 計画書に従ってステップバイステップで作業し、各検証コマンドを実行すること。
    - スコープ内のファイルのみを編集すること。
-   - 成果物は計画書の git ワークフローに従って Worktree 内でコミットすること。
+   - コミット前に `git diff` を確認し、個人の環境名・絶対パス・認証情報が差分に含まれていないことを検証すること。
+   - 検証後、成果物は計画書の git ワークフローに従って Worktree 内でコミットすること。
    - レポートは以下のフォーマットで返却すること。
 
 3. **レポートフォーマット**:
@@ -58,7 +59,7 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 
 1. **ベース SHA（`${BASE_SHA}`）および作業ツリーの差分・未追跡ファイル検証**:
    - ディスパッチ前に保存したベース SHA (`BASE_SHA`) からの変更（コミット済み・作業ツリー含む）および未追跡ファイルを検証します。
-   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}` および `git -C <worktree> ls-files --others`
+   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}` および `git -C <worktree> ls-files --others --ignored --exclude-standard`
    - Executor が Worktree 内で作成したコミット・変更に加え、未追跡のスコープ外ファイルも含めた変更ファイル全体が計画のインスコープ（In Scope）一覧と合致するか確認します。スコープ外のファイル（コミット済み・未追跡問わず）が1つでも検知された場合はレビュー失敗とします。
    - 詳細差分の確認: `git -C <worktree> diff ${BASE_SHA}` で実装内容を読み、コード規約や目的に適合しているか判定します。
 2. **完了条件（Done criteria）の再実行**:
@@ -139,7 +140,7 @@ export function reviewExecutorDiff(options: ReviewOptions): {
 
   const untrackedOutput = execFileSync(
     "git",
-    ["-C", worktreePath, "ls-files", "--others", "-z"],
+    ["-C", worktreePath, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"],
     { encoding: "utf-8" }
   );
 
