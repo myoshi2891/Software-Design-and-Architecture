@@ -58,8 +58,8 @@ function resolveThreshold(argv: string[]): Severity {
  * Audits a workspace and identifies advisories at or above the specified severity threshold.
  *
  * @param workspace - The workspace to audit.
- * @param threshold - The minimum advisory severity to report.
- * @returns Advisories that meet or exceed the threshold.
+ * @param threshold - The minimum severity to report.
+ * @returns Findings that meet or exceed the threshold.
  */
 async function auditWorkspace(workspace: Workspace, threshold: Severity): Promise<Finding[]> {
   const proc = Bun.spawn(['bun', 'audit', '--json'], {

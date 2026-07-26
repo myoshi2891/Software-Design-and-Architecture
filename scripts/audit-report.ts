@@ -60,10 +60,10 @@ function isSeverity(value: unknown): value is Severity {
 }
 
 /**
- * Determines whether a value is a non-null object with string keys.
+ * Determines whether a value is a record-like object.
  *
  * @param value - The value to inspect
- * @returns `true` if the value is a non-null, non-array object, `false` otherwise
+ * @returns `true` if the value is an object other than `null` or an array, `false` otherwise
  */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -113,14 +113,13 @@ export interface ParseAuditOptions {
 }
 
 /**
- * Parses `bun audit --json` output into an audit report.
+ * Parses `bun audit --json` output into a validated audit report.
  *
- * Empty output is treated as an empty report when the exit code is zero or unspecified.
- * Empty output with a nonzero exit code is reported as a parsing failure.
+ * Empty output produces an empty report when the exit code is zero or unspecified. Empty output with a nonzero exit code, invalid JSON, or invalid report structure produces an error.
  *
  * @param rawText - The audit command's standard output
  * @param options - Optional command exit code used to interpret empty output
- * @returns A successful audit report or an error describing invalid output
+ * @returns A validated audit report or an error describing invalid output
  */
 export function parseAuditJson(rawText: string, options?: ParseAuditOptions): Result<AuditReport> {
   const trimmed = rawText.trim();
