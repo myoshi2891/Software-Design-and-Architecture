@@ -99,7 +99,7 @@ export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[
     const diffOutput = execFileSync("git", ["--literal-pathspecs", "diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles], {
       encoding: "utf-8",
     });
-    const untrackedOutput = execFileSync("git", ["--literal-pathspecs", "ls-files", "--others", "--exclude-standard", "-z", "--", ...targetFiles], {
+    const untrackedOutput = execFileSync("git", ["--literal-pathspecs", "ls-files", "--others", "-z", "--", ...targetFiles], {
       encoding: "utf-8",
     });
 
