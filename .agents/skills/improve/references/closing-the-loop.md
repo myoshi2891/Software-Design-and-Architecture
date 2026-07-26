@@ -27,7 +27,7 @@ sequenceDiagram
 
 ディスパッチ前に以下のすべてを確認してください：
 - リポジトリが git 管理下にあること（worktree 隔離に必須）。
-- 対象の計画書が存在し、依存関係となる計画が `plans/README.md` で `DONE` になっていること。
+- 対象の計画書が存在し、依存関係となる計画が計画ルートの `README.md`（`plans/README.md` または `advisor-plans/README.md`）で `DONE` になっていること。
 - ディスパッチ直前の HEAD コミット SHA を変数 `BASE_SHA` 等に完全 SHA（40 桁）として保存しておくこと。
 
 ### Dispatch（ディスパッチ）
@@ -35,7 +35,7 @@ sequenceDiagram
 `isolation: "worktree"` オプション付きで `general-purpose` サブエージェントを 1 つ起動します。
 サブエージェントプロンプトには以下を含めます：
 
-1. **計画書テキスト全体のインライン化**（未コミットの `plans/` を Executor が参照できるようにするため）。
+1. **計画書テキスト全体のインライン化**（未コミットの計画ディレクトリ（`plans/` または `advisor-plans/`）を Executor が参照できるようにするため）。
 2. **Executor 向け指示文（Preamble）**:
    - 計画書に従ってステップバイステップで作業し、各検証コマンドを実行すること。
    - スコープ内のファイルのみを編集すること。
@@ -78,7 +78,7 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 
 ## 2. `reconcile` — 計画書の同期と整合性維持
 
-過去のセッションからの変更点を処理し、`plans/README.md` および各計画書を最新状態に保ちます：
+過去のセッションからの変更点を処理し、計画ルートの `README.md`（`plans/README.md` または `advisor-plans/README.md`）および各計画書を最新状態に保ちます：
 
 - **DONE**: 現状の HEAD で完了条件が引き続き満たされているか簡易確認。
 - **BLOCKED**: 理由を調査し、コードベースの変化に応じて計画を再構成または `REJECTED` に変更。
@@ -93,7 +93,7 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 
 1. **事前検証**: `gh auth status` と リポジトリの確認。
 2. **可視性チェック**: `gh repo view --json visibility` でパブリックリポジトリの場合は機密情報（セキュリティ脆弱性や鍵の場所）が含まれていないか事前にユーザーの明示的確認を取得。
-3. **発行**: `gh issue create --title "<plan title>" --body-file <plan file>` を実行し、発行された Issue URL を計画書および `plans/README.md` に記載。
+3. **発行**: `gh issue create --title "<plan title>" --body-file <plan file>` を実行し、発行された Issue URL を計画書および計画ルートの `README.md`（`plans/README.md` または `advisor-plans/README.md`）に記載。
 
 ---
 
