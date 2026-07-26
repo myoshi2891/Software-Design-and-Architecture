@@ -36,6 +36,12 @@ const WORKSPACES: Workspace[] = [
   { name: 'web-next', cwd: path.join(repoRoot, 'web-next') },
 ];
 
+/**
+ * Resolves the audit severity threshold from command-line arguments.
+ *
+ * @param argv - Command-line arguments to search for a `--threshold=` option
+ * @returns The specified severity threshold, or `low` when no threshold is provided
+ */
 function resolveThreshold(argv: string[]): Severity {
   const arg = argv.find((value) => value.startsWith('--threshold='));
   if (!arg) return 'low';
@@ -49,9 +55,11 @@ function resolveThreshold(argv: string[]): Severity {
 }
 
 /**
- * 1 ワークスペースを監査する。
- * bun audit は脆弱性検出時も非ゼロ終了しうるため、終了コードではなく
- * 標準出力が解析可能かどうかで成否を判定する。
+ * Audits a workspace and identifies advisories at or above the specified severity threshold.
+ *
+ * @param workspace - The workspace to audit.
+ * @param threshold - The minimum advisory severity to report.
+ * @returns Advisories that meet or exceed the threshold.
  */
 async function auditWorkspace(workspace: Workspace, threshold: Severity): Promise<Finding[]> {
   const proc = Bun.spawn(['bun', 'audit', '--json'], {
@@ -87,6 +95,9 @@ async function auditWorkspace(workspace: Workspace, threshold: Severity): Promis
   return evaluation.failing;
 }
 
+/**
+ * Audits all configured workspaces and exits with a vulnerability status when findings meet the selected severity threshold.
+ */
 async function main(): Promise<void> {
   const threshold = resolveThreshold(process.argv.slice(2));
   console.log(`依存関係の脆弱性を監査します（閾値: ${threshold} 以上）`);

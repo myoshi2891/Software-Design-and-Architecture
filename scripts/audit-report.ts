@@ -49,18 +49,32 @@ export interface AuditEvaluation {
 /** エラーを握りつぶさず呼び出し側へ返すための Result 型 */
 export type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 
+/**
+ * Determines whether a value is a recognized audit severity.
+ *
+ * @param value - The value to validate
+ * @returns `true` if the value is a recognized severity, `false` otherwise.
+ */
 function isSeverity(value: unknown): value is Severity {
   return typeof value === 'string' && (SEVERITIES as readonly string[]).includes(value);
 }
 
+/**
+ * Determines whether a value is a non-null object with string keys.
+ *
+ * @param value - The value to inspect
+ * @returns `true` if the value is a non-null, non-array object, `false` otherwise
+ */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**
- * Advisory 1 件分の型ガード。
- * 未知の深刻度は「安全側に倒して無視」ではなく検証エラーとして扱う
- * （深刻な脆弱性を静かに取りこぼすことを防ぐ）。
+ * Parses and validates an advisory object.
+ *
+ * @param raw - The unknown value to validate.
+ * @param path - The location used to identify validation errors.
+ * @returns A successful result containing the advisory, or an error describing the invalid field.
  */
 function parseAdvisory(raw: unknown, path: string): Result<AuditAdvisory> {
   if (!isRecord(raw)) {
@@ -99,9 +113,14 @@ export interface ParseAuditOptions {
 }
 
 /**
- * `bun audit --json` の標準出力文字列を AuditReport へ変換する。
- * 脆弱性ゼロのとき bun は何も出力しない場合があるため、正常終了（exitCode 0 または未指定）の空文字列は空レポートとして扱う。
- * 非ゼロ終了かつ空文字列の場合は監査実行失敗としてエラーを返す。
+ * Parses `bun audit --json` output into an audit report.
+ *
+ * Empty output is treated as an empty report when the exit code is zero or unspecified.
+ * Empty output with a nonzero exit code is reported as a parsing failure.
+ *
+ * @param rawText - The audit command's standard output
+ * @param options - Optional command exit code used to interpret empty output
+ * @returns A successful audit report or an error describing invalid output
  */
 export function parseAuditJson(rawText: string, options?: ParseAuditOptions): Result<AuditReport> {
   const trimmed = rawText.trim();
@@ -147,13 +166,21 @@ export function parseAuditJson(rawText: string, options?: ParseAuditOptions): Re
   return { ok: true, value: report };
 }
 
+/**
+ * Creates a severity count record initialized to zero.
+ *
+ * @returns A count of zero for each severity
+ */
 function emptyCounts(): Record<Severity, number> {
   return { info: 0, low: 0, moderate: 0, high: 0, critical: 0 };
 }
 
 /**
- * レポートを閾値で評価する。閾値以上の深刻度を持つ Advisory を failing として返す。
- * 並び順は「深刻度の降順 → パッケージ名の昇順 → Advisory ID の昇順」で決定論的にする。
+ * Evaluates audit advisories against a severity threshold.
+ *
+ * @param report - The audit report to evaluate
+ * @param threshold - The minimum severity that causes an advisory to fail
+ * @returns The failing advisories, severity counts, and total advisory count
  */
 export function evaluateAudit(report: AuditReport, threshold: Severity): AuditEvaluation {
   const thresholdRank = SEVERITY_RANK[threshold];
@@ -182,7 +209,12 @@ export function evaluateAudit(report: AuditReport, threshold: Severity): AuditEv
   return { failing, counts, total };
 }
 
-/** CLI 引数などの文字列を Severity に変換する */
+/**
+ * Converts a string value into a severity threshold.
+ *
+ * @param value - The severity value to parse
+ * @returns The parsed severity, or an error containing the valid severity values
+ */
 export function parseThreshold(value: string): Result<Severity> {
   if (isSeverity(value)) {
     return { ok: true, value };
@@ -193,7 +225,15 @@ export function parseThreshold(value: string): Result<Severity> {
   };
 }
 
-/** 深刻度別件数を 1 行のサマリ文字列にする（0 件の深刻度は省略） */
+/**
+ * Formats vulnerability counts as a one-line summary.
+ *
+ * Severities with zero counts are omitted, and the remaining severities are
+ * ordered from highest to lowest. Returns `脆弱性なし` when all counts are zero.
+ *
+ * @param counts - The number of vulnerabilities for each severity
+ * @returns A formatted severity-count summary
+ */
 export function formatCounts(counts: Record<Severity, number>): string {
   const parts = [...SEVERITIES]
     .reverse()
@@ -202,7 +242,12 @@ export function formatCounts(counts: Record<Severity, number>): string {
   return parts.length === 0 ? '脆弱性なし' : parts.join(' / ');
 }
 
-/** failing を人間可読な複数行テキストに整形する */
+/**
+ * Formats audit findings as human-readable multiline text.
+ *
+ * @param findings - The findings to format
+ * @returns The formatted findings, with one three-line block per finding
+ */
 export function formatFindings(findings: Finding[]): string {
   return findings
     .map(
