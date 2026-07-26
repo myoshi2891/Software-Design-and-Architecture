@@ -148,12 +148,13 @@ function curlAsync(
 }
 
 /**
- * Verifies if a URL is accessible by making HTTP requests.
+ * Checks whether a URL responds successfully to an HTTP request.
  *
- * Attempts a HEAD request first, and falls back to GET if HEAD fails or returns a non-2xx/3xx status.
- * A URL is considered accessible if the final response status code is between 200–399 (inclusive).
+ * Attempts a `HEAD` request first and falls back to `GET` when necessary. Responses with status codes from 200 through 399 are considered successful.
  *
- * @returns An object with `ok` (true if the URL is accessible), `status` (the HTTP response code, or 0 on error), and optionally `error` (a message describing any verification failure)
+ * @param url - The URL to verify
+ * @param timeoutSec - Maximum request duration in seconds
+ * @returns The verification result, including the HTTP status code and an error message when verification fails
  */
 async function verifyUrl(
   url: string,
@@ -168,7 +169,6 @@ async function verifyUrl(
     '-o', '/dev/null',
     '-w', '%{http_code}',
     '--max-time', String(timeoutSec),
-    '--http1.1',
     '-A', userAgent,
     '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   ];

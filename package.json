@@ -2,6 +2,8 @@
   "name": "software-architecture-design",
   "version": "1.0.0",
   "scripts": {
+    "test": "bun test ./scripts",
+    "audit": "bun ./scripts/audit-dependencies.ts",
     "check-links": "bun ./scripts/verify-links.ts",
     "format-markdown": "bun ./scripts/format-markdown.ts",
     "fix-markdown": "bun ./scripts/fix-markdown-errors.ts"
@@ -11,5 +13,9 @@
     "@types/node": "^25.9.1",
     "markdown-link-check": "^3.14.2",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "undici": "^7.29.0",
+    "js-yaml": "^4.3.0"
   }
 }

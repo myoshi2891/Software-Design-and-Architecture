@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS グリッド・コンポーネント・レスポンシブ・アクセシビリティ 完全設計ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js" integrity="sha256-mm3Re3y7xlvh+yCD+l/Zs1d+PU0AEad93MkWvljfm/s=" crossorigin="anonymous"></script>
+<style>
+:root{
+  --bg:#07111e;--sf:#0d1f35;--sf2:#112844;--sf3:#162f50;
+  --bd:#1e3a5f;--bd2:#2a4a72;
+  --ac:#6C47FF;--acd:rgba(108,71,255,.12);
+  --ac2:#3b82f6;--ac3:#22c55e;--ac4:#f97316;--ac5:#f43f5e;
+  --tx:#e2e8f0;--tx2:#bac8dc;--tx3:#adc5e8;
+  --sw:280px;
+  --fd:'Space Grotesk',sans-serif;
+  --fb:'Inter',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:15px;line-height:1.75;display:flex}
+a{color:var(--ac2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  width:var(--sw);min-height:100vh;position:sticky;top:0;height:100vh;
+  overflow-y:auto;background:var(--sf);border-right:1px solid var(--bd);
+  padding:0 0 60px;flex-shrink:0;
+  scrollbar-width:thin;scrollbar-color:var(--bd) transparent
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.sb-logo{
+  padding:20px 20px 16px;border-bottom:1px solid var(--bd);margin-bottom:8px;
+  position:sticky;top:0;background:var(--sf);z-index:10
+}
+.sb-logo .t{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--ac);letter-spacing:.08em;text-transform:uppercase}
+.sb-logo .s{font-size:11px;color:var(--tx3);margin-top:3px}
+.ng{margin-bottom:2px}
+.ng-label{padding:10px 20px 4px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+.ng ul{list-style:none}
+.ng ul li a{
+  display:flex;align-items:center;gap:8px;padding:5px 20px;
+  font-size:12.5px;color:var(--tx2);text-decoration:none;
+  border-left:2px solid transparent;transition:all 130ms
+}
+.ng ul li a:hover{color:var(--tx);background:var(--sf2)}
+.ng ul li a.active{color:var(--ac);border-left-color:var(--ac);background:var(--acd)}
+.ng ul li a .n{font-family:var(--fm);font-size:10px;color:var(--tx3);min-width:26px;flex-shrink:0}
+
+/* ---- MAIN ---- */
+.main{flex:1;min-width:0;padding:0 clamp(20px,5vw,80px) 120px;max-width:100%}
+
+/* ---- HERO ---- */
+.hero{padding:52px 0 44px;border-bottom:1px solid var(--bd);margin-bottom:56px}
+.h-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 12px;
+  border-radius:100px;background:var(--acd);border:1px solid rgba(108,71,255,.3);
+  font-size:12px;font-weight:600;color:var(--ac);margin-bottom:18px;letter-spacing:.04em
+}
+.hero h1{
+  font-family:var(--fd);font-size:clamp(24px,3.5vw,42px);font-weight:700;
+  line-height:1.2;letter-spacing:-.02em;margin-bottom:14px;
+  background:linear-gradient(130deg,var(--tx) 0%,var(--tx2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.hero p{max-width:680px;margin-bottom:20px}
+.h-meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px}
+.h-tag{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--tx2)}
+.h-tag .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ---- SECTIONS ---- */
+.section{margin-bottom:72px;scroll-margin-top:24px}
+.ch-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);margin-bottom:6px}
+.section>h2{
+  font-family:var(--fd);font-size:clamp(20px,2.8vw,28px);font-weight:700;
+  letter-spacing:-.02em;padding-bottom:14px;border-bottom:1px solid var(--bd);
+  margin-bottom:32px;color:var(--tx)
+}
+.section>h2 .n{color:var(--ac);margin-right:4px}
+.sub{margin-bottom:48px;scroll-margin-top:24px}
+.sub h3{
+  font-family:var(--fd);font-size:17px;font-weight:600;color:var(--tx);
+  margin-bottom:14px;padding-left:12px;border-left:3px solid var(--ac)
+}
+.sub h4{font-size:13px;font-weight:700;color:var(--tx3);margin:24px 0 10px;text-transform:uppercase;letter-spacing:.07em}
+p{color:var(--tx2);margin-bottom:14px;line-height:1.8}
+p strong{color:var(--tx)}
+ul.prose,ol.prose{padding-left:24px;margin-bottom:14px;color:var(--tx2);line-height:1.8}
+ul.prose li,ol.prose li{margin-bottom:6px}
+ul.prose li strong,ol.prose li strong{color:var(--tx)}
+code{font-family:var(--fm);font-size:12.5px;background:var(--sf2);padding:2px 6px;border-radius:4px;color:#a78bfa}
+
+/* ---- CODE BLOCKS ---- */
+.cb{margin:18px 0;border-radius:10px;overflow:hidden;border:1px solid var(--bd)}
+.cb-h{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px;background:var(--sf2);border-bottom:1px solid var(--bd)
+}
+.cb-lang{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
+.cb-name{font-size:12px;color:var(--tx2);font-family:var(--fm)}
+.cb pre{margin:0!important;padding:0!important;background:transparent!important;border-radius:0!important}
+.cb pre code.hljs{
+  background:var(--sf)!important;padding:18px 20px!important;
+  font-family:var(--fm)!important;font-size:12.5px!important;
+  line-height:1.65!important;display:block!important;overflow-x:auto;border-radius:0!important
+}
+
+/* ---- MERMAID ---- */
+.mbox{margin:22px 0;padding:22px;background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow-x:auto}
+.mbox-t{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
+.mbox svg{max-width:100%!important;height:auto!important}
+
+/* ---- CALLOUTS ---- */
+.co{
+  display:flex;gap:12px;padding:14px 18px;border-radius:10px;
+  margin:16px 0;border:1px solid;font-size:14px;line-height:1.7;color:var(--tx2)
+}
+.co.info{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25)}
+.co.ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25)}
+.co.warn{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.25)}
+.co.tip{background:var(--acd);border-color:rgba(108,71,255,.3)}
+.co .icon{font-size:16px;flex-shrink:0;margin-top:2px}
+.co .body strong{color:var(--tx)}
+
+/* ---- SIDE BY SIDE ---- */
+.sl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.sl-item{background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.sl-item.ok{border-color:rgba(34,197,94,.35)}
+.sl-item.ng{border-color:rgba(244,63,94,.35)}
+.sl-head{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.sl-item.ok .sl-head{background:rgba(34,197,94,.1);color:#86efac}
+.sl-item.ng .sl-head{background:rgba(244,63,94,.1);color:#fda4af}
+.sl-item .cb{margin:0;border-radius:0;border:none;border-top:1px solid var(--bd)}
+
+/* ---- TABLES ---- */
+.tw{overflow-x:auto;margin:18px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:var(--sf2);border-bottom:1px solid var(--bd)}
+th{padding:9px 13px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3)}
+td{padding:9px 13px;border-bottom:1px solid var(--bd);color:var(--tx2);line-height:1.6}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ---- BEST PRACTICE ---- */
+.bp{
+  background:var(--sf);border:1px solid var(--bd);
+  border-top:3px solid var(--ac3);border-radius:14px;
+  padding:22px;margin:20px 0
+}
+.bp-title{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.bp-item{display:flex;gap:10px;font-size:13.5px;color:var(--tx2);line-height:1.7;margin-bottom:14px}
+.bp-item:last-child{margin-bottom:0}
+.bp-item .mk{
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--ac3);flex-shrink:0;margin-top:3px
+}
+.bp-item strong{color:var(--tx)}
+
+/* ---- REFERENCE GRID ---- */
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:18px 0}
+.rg-a{
+  display:block;padding:14px 16px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:10px;text-decoration:none;
+  transition:border-color 130ms,background 130ms
+}
+.rg-a:hover{border-color:var(--ac);background:var(--acd);text-decoration:none}
+.rg-l{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px}
+.rg-t{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px;line-height:1.4}
+.rg-u{font-size:11px;color:var(--ac2);font-family:var(--fm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- SUMMARY CARDS ---- */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin:24px 0}
+.sc{padding:20px;border-radius:14px;border:1px solid}
+.sc.c1{background:rgba(108,71,255,.08);border-color:rgba(108,71,255,.25)}
+.sc.c2{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25)}
+.sc.c3{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25)}
+.sc.c4{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.25)}
+.sc .num{font-family:var(--fd);font-size:30px;font-weight:700;line-height:1;margin-bottom:8px}
+.sc.c1 .num{color:#a78bfa}.sc.c2 .num{color:#93c5fd}
+.sc.c3 .num{color:#86efac}.sc.c4 .num{color:#fdba74}
+.sc .lbl{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:5px}
+.sc .desc{font-size:12px;color:var(--tx2);line-height:1.5}
+
+/* ---- SKIP LINK ---- */
+.skip{
+  position:absolute;top:-100%;left:16px;padding:8px 16px;
+  background:var(--ac);color:#fff;border-radius:8px;
+  font-size:13px;font-weight:600;text-decoration:none;z-index:9999;transition:top 200ms
+}
+.skip:focus{top:16px}
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:860px){
+  .sidebar{display:none}
+  .sl{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:0ms!important;animation-play-state:paused!important}
+  html{scroll-behavior:auto}
+}
+        /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
+        .mbox > .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .mbox > .mermaid svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">メインコンテンツへスキップ</a>
+
+<nav class="sidebar" aria-label="ガイド目次">
+  <div class="sb-logo">
+    <div class="t">CSS Design System</div>
+    <div class="s">Ch.7–10 · フロントエンド完全ガイド</div>
+  </div>
+  <div class="ng"><div class="ng-label">Chapter 7 · グリッド</div><ul role="list">
+    <li><a href="#s7"><span class="n">7</span>レイアウトシステム</a></li>
+    <li><a href="#s7-1"><span class="n">7.1</span>レイアウトとは</a></li>
+    <li><a href="#s7-2"><span class="n">7.2</span>Flexbox 完全ガイド</a></li>
+    <li><a href="#s7-3"><span class="n">7.3</span>CSS Grid 完全ガイド</a></li>
+    <li><a href="#s7-4"><span class="n">7.4</span>レイアウトパターン集</a></li>
+    <li><a href="#s7-5"><span class="n">7.5</span>使い分けの判断軸</a></li>
+    <li><a href="#s7-6"><span class="n">7.6</span>ベストプラクティス</a></li>
+  </ul></div>
+  <div class="ng"><div class="ng-label">Chapter 8 · コンポーネント</div><ul role="list">
+    <li><a href="#s8"><span class="n">8</span>コンポーネント設計</a></li>
+    <li><a href="#s8-1"><span class="n">8.1</span>設計の5原則</a></li>
+    <li><a href="#s8-2"><span class="n">8.2</span>BEM 完全ガイド</a></li>
+    <li><a href="#s8-3"><span class="n">8.3</span>CSS Modules</a></li>
+    <li><a href="#s8-4"><span class="n">8.4</span>バリアント設計</a></li>
+    <li><a href="#s8-5"><span class="n">8.5</span>状態管理</a></li>
+    <li><a href="#s8-6"><span class="n">8.6</span>ベストプラクティス</a></li>
+  </ul></div>
+  <div class="ng"><div class="ng-label">Chapter 9 · レスポンシブ</div><ul role="list">
+    <li><a href="#s9"><span class="n">9</span>レスポンシブデザイン</a></li>
+    <li><a href="#s9-1"><span class="n">9.1</span>設計の考え方</a></li>
+    <li><a href="#s9-2"><span class="n">9.2</span>ブレークポイント</a></li>
+    <li><a href="#s9-3"><span class="n">9.3</span>コンテナクエリ</a></li>
+    <li><a href="#s9-4"><span class="n">9.4</span>流動的レイアウト</a></li>
+    <li><a href="#s9-5"><span class="n">9.5</span>レスポンシブ画像</a></li>
+    <li><a href="#s9-6"><span class="n">9.6</span>ベストプラクティス</a></li>
+  </ul></div>
+  <div class="ng"><div class="ng-label">Chapter 10 · アクセシビリティ</div><ul role="list">
+    <li><a href="#s10"><span class="n">10</span>アクセシビリティ</a></li>
+    <li><a href="#s10-1"><span class="n">10.1</span>a11y とは何か</a></li>
+    <li><a href="#s10-2"><span class="n">10.2</span>WCAG ガイドライン</a></li>
+    <li><a href="#s10-3"><span class="n">10.3</span>セマンティックHTML</a></li>
+    <li><a href="#s10-4"><span class="n">10.4</span>キーボード操作</a></li>
+    <li><a href="#s10-5"><span class="n">10.5</span>ARIA 完全ガイド</a></li>
+    <li><a href="#s10-6"><span class="n">10.6</span>カラーとコントラスト</a></li>
+    <li><a href="#s10-7"><span class="n">10.7</span>ベストプラクティス</a></li>
+  </ul></div>
+  <div class="ng"><div class="ng-label">まとめ・リソース</div><ul role="list">
+    <li><a href="#summary"><span class="n">〆</span>4トピック関係性</a></li>
+    <li><a href="#refs"><span class="n">🔗</span>参考リソース</a></li>
+  </ul></div>
+</nav>
+
+<main class="main" id="main" tabindex="-1">
+<div class="hero">
+  <div class="h-badge">🎨 CSS Design System · Ch.7–10</div>
+  <h1>グリッド・コンポーネント・<br>レスポンシブ・アクセシビリティ<br>完全設計ガイド</h1>
+  <p>CSS Flexbox / Grid から BEM 命名規則・コンテナクエリ・WCAG 準拠まで — <strong>プロレベルのフロントエンド設計力</strong>をステップバイステップで習得するリファレンスガイドです。</p>
+  <div class="h-meta">
+    <span class="h-tag"><span class="dot" style="background:#a78bfa"></span>Chapter 7–10</span>
+    <span class="h-tag"><span class="dot" style="background:#93c5fd"></span>対象：初学者〜中級者</span>
+    <span class="h-tag"><span class="dot" style="background:#86efac"></span>難易度：🟠 中級</span>
+    <span class="h-tag"><span class="dot" style="background:#fdba74"></span>2025年版</span>
+  </div>
+</div>
+
+<!-- ================================================================ CH7 -->
+<section class="section" id="s7">
+<div class="ch-label">Chapter 7</div>
+<h2><span class="n">7.</span>グリッド・レイアウトシステム</h2>
+
+<div class="sub" id="s7-1">
+<h3>7.1 レイアウトシステムとは</h3>
+<p>レイアウトシステムとは、<strong>ページ・コンポーネント内の要素配置ルールを体系化したもの</strong>です。一貫した空間リズムを生み出し、予測可能な構造を保証することで、チーム全体の設計判断のブレをなくします。</p>
+<p>レイアウトは<strong>3つのスケール</strong>に分かれており、それぞれ適切なツールが異なります。</p>
+<div class="mbox"><div class="mbox-t">図 7.1 — レイアウトの3スケールとツールの対応関係</div><div class="mermaid" id="d-layout-overview"></div></div>
+<div class="co info"><span class="icon">💡</span><div class="body"><strong>重要な原則：</strong>CSS Grid と Flexbox は競合ではなく<strong>補完関係</strong>にあります。Grid でページ骨格を組み、Flexbox でコンポーネント内部を整列する — このネストした使い方が現代のベストプラクティスです。</div></div>
+</div>
+
+<div class="sub" id="s7-2">
+<h3>7.2 CSS Flexbox の完全ガイド</h3>
+<p>Flexbox は <strong>1次元（行または列の一方向）</strong>のレイアウトを扱います。<strong>コンテナ（親）</strong>と<strong>アイテム（子）</strong>の2役でプロパティが分かれているのが特徴です。</p>
+<h4>主軸と交差軸の概念</h4>
+<div class="mbox"><div class="mbox-t">図 7.2 — 主軸（Main Axis）と交差軸（Cross Axis）</div><div class="mermaid" id="d-flex-axis"></div></div>
+<h4>コンテナプロパティ（親要素）</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">Flexコンテナの全プロパティ</span></div><pre><code class="language-css">.flex-container {
+  display: flex;                   /* Flexboxを有効化 */
+  flex-direction: row;             /* row | row-reverse | column | column-reverse */
+  flex-wrap: nowrap;               /* nowrap | wrap | wrap-reverse */
+  justify-content: flex-start;     /* 主軸方向の整列 */
+  align-items: stretch;            /* 交差軸方向の整列（単一行） */
+  align-content: stretch;          /* 複数行の交差軸整列（wrap時のみ有効） */
+  gap: 16px;                       /* アイテム間のすき間（row-gap / column-gap も可） */
+}
+
+/* justify-content の全値 */
+/*
+  flex-start    → 左端（デフォルト）
+  flex-end      → 右端
+  center        → 中央
+  space-between → 両端固定・均等間隔
+  space-around  → 全要素に等しい余白（端は半分）
+  space-evenly  → すべての間隔が完全に等しい
+*/
+
+/* align-items の全値 */
+/*
+  stretch    → 交差軸方向に引き伸ばす（デフォルト）
+  flex-start → 上揃え  |  flex-end → 下揃え
+  center     → 中央揃え  |  baseline → ベースライン揃え
+*/</code></pre></div>
+<h4>アイテムプロパティ（子要素）</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">Flexアイテムの全プロパティ</span></div><pre><code class="language-css">.flex-item {
+  flex-grow:   0;      /* 余白があるとき伸びる割合（0=伸びない） */
+  flex-shrink: 1;      /* 余白が足りないとき縮む割合（1=縮む） */
+  flex-basis:  auto;   /* 初期サイズ（auto=コンテンツサイズ基準） */
+
+  /* よく使うショートハンド */
+  flex: 1;      /* = 1 1 0%   → 等幅で伸縮する */
+  flex: auto;   /* = 1 1 auto → コンテンツ基準で伸縮 */
+  flex: none;   /* = 0 0 auto → 固定サイズ（縮まない・伸びない）*/
+
+  align-self: auto;  /* コンテナの align-items を個別上書き */
+  order: 0;          /* 表示順（小さいほど前に来る）*/
+}</code></pre></div>
+<h4>典型的な実装パターン4選</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">Flexboxの頻出パターン集</span></div><pre><code class="language-css">/* ① ナビゲーションバー（ロゴ左・アクション右）*/
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+}
+.navbar__actions { display: flex; gap: 8px; margin-inline-start: auto; }
+
+/* ② 完全中央揃え */
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100svh;  /* svh: ブラウザUIバーを除いた高さ */
+}
+
+/* ③ カードフッターを常に下部に固定 */
+.card {
+  display: flex;
+  flex-direction: column;
+}
+.card__body   { flex: 1; }    /* 余白をすべて吸収 */
+.card__footer { flex: none; } /* フッターは高さ固定 */
+
+/* ④ アイコン + テキストのリストアイテム */
+.list-item { display: flex; align-items: center; gap: 12px; }
+.list-item__icon { flex: none; width: 20px; }
+/* min-width:0 が必須 → text-overflow:ellipsis を有効にする */
+.list-item__text { flex: 1; min-width: 0; }</code></pre></div>
+<div class="co warn"><span class="icon">⚠️</span><div class="body"><strong><code>min-width: 0</code> の罠：</strong>Flexアイテムはデフォルトで <code>min-width: auto</code>（コンテンツ幅を最小値とする）になっているため、<code>text-overflow: ellipsis</code> が効かないことがあります。<code>flex: 1; min-width: 0</code> をセットで書くのが正解です。</div></div>
+</div>
+
+<div class="sub" id="s7-3">
+<h3>7.3 CSS Grid の完全ガイド</h3>
+<p>CSS Grid は <strong>行（Row）と列（Column）を同時に制御できる2次元レイアウトシステム</strong>です。複雑なページ構造も直感的なコードで表現できます。</p>
+<div class="mbox"><div class="mbox-t">図 7.3 — CSS Grid の重要用語</div><div class="mermaid" id="d-grid-concepts"></div></div>
+<h4>コンテナプロパティ</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">Gridコンテナの全プロパティ</span></div><pre><code class="language-css">.grid {
+  display: grid;
+
+  /* === カラム定義 === */
+  grid-template-columns: 200px 1fr 1fr;      /* 固定+均等2列 */
+  grid-template-columns: repeat(3, 1fr);     /* 3等分 */
+  grid-template-columns: repeat(12, 1fr);    /* 12カラムグリッド */
+
+  /* auto-fill: コンテナを可能な限り列で埋める */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  /* auto-fit: アイテム数に合わせて列数を調整（空列を詰める）*/
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+  /* === 行定義 === */
+  grid-template-rows: auto 1fr auto; /* ヘッダー可変/コンテンツ拡張/フッター可変 */
+
+  /* === 名前付きエリア（視覚的なレイアウト定義）=== */
+  grid-template-areas:
+    "header  header  header"
+    "sidebar main    main  "
+    "footer  footer  footer";
+
+  /* === ギャップ === */
+  gap: 16px;         /* 行・列両方 */
+  row-gap: 24px;     /* 行間のみ */
+  column-gap: 16px;  /* 列間のみ */
+
+  /* === セルの整列（全アイテム）=== */
+  place-items: center; /* align-items + justify-items のショートハンド */
+}</code></pre></div>
+<h4>アイテムプロパティ</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">Gridアイテムの配置プロパティ</span></div><pre><code class="language-css">.grid-item {
+  /* ライン番号で配置 */
+  grid-column: 1 / 3;       /* 列ライン1から3まで（2列分）*/
+  grid-column: 1 / span 2;  /* 列ライン1から2列分 */
+  grid-column: 1 / -1;      /* 左端から右端まで（全幅）*/
+  grid-row:    2 / 4;       /* 行ライン2から4まで（2行分）*/
+
+  /* 名前付きエリアで配置 */
+  grid-area: header;   /* grid-template-areas の名前と一致させる */
+  grid-area: sidebar;
+  grid-area: main;
+  grid-area: footer;
+
+  /* 個別のセル内整列 */
+  justify-self: center;   /* 列方向（水平）*/
+  align-self:   end;      /* 行方向（垂直）*/
+  place-self: center end; /* ショートハンド */
+}</code></pre></div>
+<h4>聖杯レイアウト（Holy Grail Layout）— 完全実装</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">名前付きエリアによるHoly Grail Layout</span></div><pre><code class="language-css">.holy-grail {
+  display: grid;
+  grid-template-areas:
+    "header  header  header"
+    "sidebar main    aside "
+    "footer  footer  footer";
+  grid-template-columns: 240px 1fr 200px;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100svh;
+  gap: 16px;
+}
+.holy-grail > header { grid-area: header;  }
+.holy-grail > nav    { grid-area: sidebar; }
+.holy-grail > main   { grid-area: main;    }
+.holy-grail > aside  { grid-area: aside;   }
+.holy-grail > footer { grid-area: footer;  }
+
+/* タブレット: サイドバーなし */
+@media (max-width: 1024px) {
+  .holy-grail {
+    grid-template-areas: "header" "main" "aside" "footer";
+    grid-template-columns: 1fr;
+  }
+  .holy-grail > nav { display: none; }
+}
+
+/* モバイル: シングルカラム */
+@media (max-width: 640px) {
+  .holy-grail {
+    grid-template-areas: "header" "main" "sidebar" "aside" "footer";
+    gap: 8px;
+  }
+  .holy-grail > nav { display: block; }
+}</code></pre></div>
+</div>
+
+<div class="sub" id="s7-4">
+<h3>7.4 レイアウトパターン集</h3>
+<p>業界でよく使われる汎用レイアウトパターンを体系的に整理します。これらは<strong>コンポーザブル（組み合わせ可能）なプリミティブ</strong>として再利用できます。</p>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">7つの汎用レイアウトパターン</span></div><pre><code class="language-css">/* ① RAMパターン（Repeat + Auto-fit + Minmax）
+   メディアクエリなしで自動レスポンシブになるグリッド */
+.ram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 24px;
+}
+/* min(280px, 100%): 親が280px未満でも列幅がはみ出さない */
+
+/* ② スタック（縦並び・等間隔）*/
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+/* ③ クラスター（タグ・バッジの折り返し）*/
+.cluster { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ④ インセット（コンテンツを中央に収める）*/
+.inset {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 5vw, 48px); /* 流動的な左右パディング */
+}
+
+/* ⑤ サイドバー付きレイアウト */
+.with-sidebar {
+  display: grid;
+  grid-template-columns: min-content 1fr; /* sidebar=コンテンツ幅, main=残り */
+  gap: 24px;
+}
+
+/* ⑥ フルブリード（本文の一要素だけ全幅に広げる）*/
+.content-grid {
+  --pad: clamp(16px, 5vw, 48px);
+  --content: 680px;
+  --breakout: 920px;
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(var(--pad), 1fr)
+    [breakout-start]
+      minmax(0, calc((var(--breakout) - var(--content)) / 2))
+      [content-start]
+        min(100% - (var(--pad) * 2), var(--content))
+      [content-end]
+      minmax(0, calc((var(--breakout) - var(--content)) / 2))
+    [breakout-end]
+    minmax(var(--pad), 1fr) [full-end];
+}
+.content-grid > *           { grid-column: content; }
+.content-grid > .breakout   { grid-column: breakout; }
+.content-grid > .full-width { grid-column: full-start / full-end; }
+
+/* ⑦ 等高カードグリッド */
+.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 768px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .card-grid { grid-template-columns: 1fr; } }</code></pre></div>
+</div>
+
+<div class="sub" id="s7-5">
+<h3>7.5 Flexbox と Grid の使い分け</h3>
+<p>「どちらを使うか？」という迷いは、以下のフローチャートで解消できます。</p>
+<div class="mbox"><div class="mbox-t">図 7.5 — Flexbox vs CSS Grid 判断フローチャート</div><div class="mermaid" id="d-flex-vs-grid"></div></div>
+<div class="tw"><table>
+<thead><tr><th>場面</th><th>推奨</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>ナビゲーションバー</td><td><code>Flexbox</code></td><td>横1列・アイテムの整列が主目的</td></tr>
+<tr><td>ボタン内のアイコン＋テキスト</td><td><code>Flexbox</code></td><td>1方向の整列・中央揃え</td></tr>
+<tr><td>タグ・バッジのリスト</td><td><code>Flexbox + wrap</code></td><td>コンテンツ量に応じた自然な折り返し</td></tr>
+<tr><td>ページ全体のレイアウト</td><td><code>Grid</code></td><td>行と列を同時管理、エリア名で直感的</td></tr>
+<tr><td>カードグリッド</td><td><code>Grid</code></td><td>等高・等幅の自動カラム配置</td></tr>
+<tr><td>フォームの入力群</td><td><code>Grid</code></td><td>複数列にまたがるラベルと入力の整列</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="sub" id="s7-6">
+<h3>7.6 ベストプラクティス</h3>
+<div class="bp">
+<div class="bp-title"><span>✅</span>レイアウト設計のベストプラクティス</div>
+<div class="bp-item"><div class="mk">✓</div><div><strong><code>margin</code>より<code>gap</code>でアイテム間隔を管理する</strong><br>margin は最後の要素に余分なスペースが残るなど計算が複雑。Flexbox/Gridの <code>gap</code> を使うと精確で予測可能な間隔管理ができます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong><code>min()</code>/<code>clamp()</code>でメディアクエリを最小化する</strong><br><code>repeat(auto-fit, minmax(min(280px, 100%), 1fr))</code> のようにすると、メディアクエリなしでレスポンシブなグリッドが実現します。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong><code>place-items</code>のショートハンドを活用する</strong><br><code>place-items: center</code> は <code>align-items + justify-items</code> を一括指定。Grid・Flex 両方で使えます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>コンポーネントは外側マージンを持たせない</strong><br>再利用性を損なうため、コンポーネント自体に <code>margin</code> をつけません。親コンテナの <code>gap</code> で管理するのが正解です。</div></div>
+</div>
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — marginで間隔管理</div><div class="cb"><pre><code class="language-css">/* 最後の要素に余分なスペースが出る */
+.card { margin-bottom: 16px; }
+.card:last-child {
+  margin-bottom: 0; /* 例外対応が必要 */
+}</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — gapで間隔管理</div><div class="cb"><pre><code class="language-css">/* 親の gap で一括管理 */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 例外対応不要 */
+}</code></pre></div></div>
+</div>
+</div>
+</section>
+
+<!-- ================================================================ CH8 -->
+<section class="section" id="s8">
+<div class="ch-label">Chapter 8</div>
+<h2><span class="n">8.</span>コンポーネント設計とBEM命名規則</h2>
+
+<div class="sub" id="s8-1">
+<h3>8.1 コンポーネント設計の5原則</h3>
+<p>コンポーネントとは<strong>単一の機能・見た目を持つ再利用可能なUI部品</strong>です。優れたコンポーネントは以下の5原則を備えています。</p>
+<div class="mbox"><div class="mbox-t">図 8.1 — コンポーネント設計の5原則</div><div class="mermaid" id="d-comp-principles"></div></div>
+<div class="co tip"><span class="icon">💜</span><div class="body"><strong>原則の優先順位：</strong>5原則のうち、<strong>単一責任</strong>が最も重要です。「このコンポーネントは何をするか？」を1文で説明できないなら、分割を検討しましょう。</div></div>
+</div>
+
+<div class="sub" id="s8-2">
+<h3>8.2 BEM の完全ガイド</h3>
+<p>BEM（Block Element Modifier）はCSSクラス命名の方法論です。命名規則だけでスタイルの<strong>スコープ・構造・バリアント</strong>を表現できるのが強みです。</p>
+<div class="mbox"><div class="mbox-t">図 8.2 — BEMの3層構造（Block / Element / Modifier）</div><div class="mermaid" id="d-bem"></div></div>
+<h4>BEM の構文</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">BEM命名規則の基本構文</span></div><pre><code class="language-css">/* Block: 独立したコンポーネント（それ自体が意味を持つ）*/
+.block {}
+
+/* Element: Blockの一部（__ で連結。Block なしでは存在できない）*/
+.block__element {}
+
+/* Modifier: Block/Elementのバリアント・状態（-- で連結）*/
+.block--modifier {}
+.block__element--modifier {}
+
+/* 具体例 */
+.card {}                    /* Block */
+.card__title {}             /* Element */
+.card__body {}              /* Element */
+.card--featured {}          /* Block Modifier（強調バリアント）*/
+.card__title--truncated {}  /* Element Modifier（省略表示）*/</code></pre></div>
+<h4>実装例：カードコンポーネント</h4>
+<div class="cb"><div class="cb-h"><span class="cb-lang">HTML</span><span class="cb-name">BEM構造のカードコンポーネント</span></div><pre><code class="language-html">&lt;article class="card card--featured"&gt;
+  &lt;div class="card__media"&gt;
+    &lt;img class="card__image" src="thumb.jpg" alt="記事サムネイル"&gt;
+    &lt;span class="card__badge card__badge--new"&gt;NEW&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="card__body"&gt;
+    &lt;div class="card__meta"&gt;
+      &lt;span class="card__category"&gt;テクノロジー&lt;/span&gt;
+      &lt;time class="card__date"&gt;2025年1月1日&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;h2 class="card__title"&gt;記事タイトル&lt;/h2&gt;
+    &lt;p class="card__description card__description--truncated"&gt;
+      記事の説明文がここに入ります...
+    &lt;/p&gt;
+  &lt;/div&gt;
+  &lt;footer class="card__footer"&gt;
+    &lt;a class="card__link" href="#"&gt;続きを読む&lt;/a&gt;
+    &lt;button class="card__action card__action--bookmark"
+            aria-label="ブックマークに追加"&gt;🔖&lt;/button&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">カードコンポーネントの完全スタイリング</span></div><pre><code class="language-css">/* ===== Block ===== */
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  overflow: hidden;
+  /* ❌ margin はここに書かない → 使う側のコンテナが決める */
+}
+/* Block Modifier */
+.card--featured {
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 1px var(--color-action-primary);
+}
+
+/* ===== Elements ===== */
+.card__media { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+.card__image { width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease; }
+.card:hover .card__image { transform: scale(1.03); }
+
+.card__badge {
+  position: absolute; top: 8px; right: 8px;
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+}
+/* Element Modifier */
+.card__badge--new { background: var(--color-action-primary); color: white; }
+
+.card__body {
+  flex: 1; /* フッターを押し下げる */
+  padding: 20px; display: flex; flex-direction: column; gap: 8px;
+}
+.card__title { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
+
+.card__description { color: var(--color-text-secondary); line-height: 1.7; }
+/* Element Modifier */
+.card__description--truncated {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.card__footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; border-top: 1px solid var(--color-border-default);
+}</code></pre></div>
+<h4>よくある BEM の間違いと正解</h4>
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — __ を2重にネスト</div><div class="cb"><pre><code class="language-html">&lt;!-- card__header__title は存在できない --&gt;
+&lt;div class="card"&gt;
+  &lt;header class="card__header"&gt;
+    &lt;!-- __ を2重にするのは禁止 --&gt;
+    &lt;h2 class="card__header__title"&gt;&lt;/h2&gt;
+  &lt;/header&gt;
+&lt;/div&gt;</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — 独立したElementとして定義</div><div class="cb"><pre><code class="language-html">&lt;!-- card__title は card の直接 Element --&gt;
+&lt;div class="card"&gt;
+  &lt;header class="card__header"&gt;
+    &lt;h2 class="card__title"&gt;&lt;/h2&gt;
+  &lt;/header&gt;
+&lt;/div&gt;</code></pre></div></div>
+</div>
+</div>
+
+<div class="sub" id="s8-3">
+<h3>8.3 CSS Modules / Scoped CSS</h3>
+<p>React・Vue などのコンポーネントフレームワークでは、<strong>CSSクラス名を自動でユニーク化</strong>してスコープを閉じ込める仕組みがあります。</p>
+<div class="cb"><div class="cb-h"><span class="cb-lang">JSX</span><span class="cb-name">React + CSS Modules</span></div><pre><code class="language-jsx">// Card.module.css
+// ビルド時に .card_xK2aP のようなユニーク名に自動変換される
+// .card { border-radius: 12px; }
+// .card__title { font-size: 1.125rem; }
+
+import styles from './Card.module.css';
+
+function Card({ title, featured }) {
+  return (
+    &lt;article className={`${styles.card} ${featured ? styles['card--featured'] : ''}`}&gt;
+      &lt;div className={styles['card__body']}&gt;
+        &lt;h2 className={styles['card__title']}&gt;{title}&lt;/h2&gt;
+      &lt;/div&gt;
+    &lt;/article&gt;
+  );
+}</code></pre></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">HTML</span><span class="cb-name">Vue の Scoped CSS</span></div><pre><code class="language-html">&lt;template&gt;
+  &lt;article class="card" :class="{ 'card--featured': featured }"&gt;
+    &lt;h2 class="card__title"&gt;{{ title }}&lt;/h2&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+/* data-v-XXXXXX 属性が自動付与されこのコンポーネントのみに適用 */
+.card { border-radius: 12px; }
+.card__title { font-size: 1.125rem; }
+.card--featured { border-color: var(--color-action-primary); }
+&lt;/style&gt;</code></pre></div>
+</div>
+
+<div class="sub" id="s8-4">
+<h3>8.4 コンポーネントのバリアント設計</h3>
+<p>1つのコンポーネントは<strong>バリアント（variant）・サイズ（size）・状態（state）</strong>の3軸で設計します。</p>
+<div class="mbox"><div class="mbox-t">図 8.4 — Buttonコンポーネントの3軸設計</div><div class="mermaid" id="d-btn-variants"></div></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">ボタンコンポーネントの完全実装</span></div><pre><code class="language-css">/* ===== ベーススタイル ===== */
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid transparent; border-radius: 8px;
+  font-family: inherit; font-size: 0.875rem; font-weight: 500; line-height: 1;
+  cursor: pointer; text-decoration: none; white-space: nowrap; outline: none;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-action-primary);
+  outline-offset: 2px;
+}
+
+/* ===== サイズバリアント ===== */
+.button--sm { height: 32px; padding-inline: 12px; font-size: 0.75rem; }
+.button--md { height: 40px; padding-inline: 16px; }
+.button--lg { height: 48px; padding-inline: 24px; font-size: 1rem; }
+.button--xl { height: 56px; padding-inline: 32px; font-size: 1.125rem; }
+
+/* ===== デザインバリアント ===== */
+.button--primary { background: var(--color-action-primary); color: white; }
+.button--primary:hover  { background: var(--color-action-primary-hover); }
+.button--primary:active { background: var(--color-action-primary-active); }
+
+.button--secondary {
+  background: transparent;
+  color: var(--color-action-primary);
+  border-color: var(--color-action-primary);
+}
+.button--secondary:hover { background: var(--color-action-primary-subtle); }
+
+.button--ghost { background: transparent; color: var(--color-text-secondary); }
+.button--ghost:hover {
+  background: var(--color-bg-overlay);
+  color: var(--color-text-primary);
+}
+
+.button--danger { background: #ef4444; color: white; }
+.button--danger:hover { background: #dc2626; }
+
+/* ===== 状態バリアント ===== */
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.4; cursor: not-allowed; pointer-events: none;
+}
+.button.is-loading { cursor: wait; opacity: 0.7; }</code></pre></div>
+</div>
+
+<div class="sub" id="s8-5">
+<h3>8.5 コンポーネントの状態管理</h3>
+<p>コンポーネントの状態には<strong>CSSが管理するインタラクション状態</strong>と<strong>JSが管理するアプリケーション状態</strong>の2種類があります。</p>
+<div class="mbox"><div class="mbox-t">図 8.5 — ボタンの状態遷移図（State Machine）</div><div class="mermaid" id="d-state-machine"></div></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">CSS と JS それぞれの状態管理パターン</span></div><pre><code class="language-css">/* === CSSが管理するインタラクション状態 === */
+.button:hover         { /* マウスオーバー */ }
+.button:focus-visible { /* キーボードフォーカス */ }
+.button:active        { /* クリック中 */ }
+.button:disabled      { /* 無効化 */ }
+
+/* === JSがクラスを付与するアプリケーション状態（is- prefix）=== */
+.button.is-loading { cursor: wait; opacity: 0.7; }
+.button.is-success { background: #22c55e; }
+.button.is-error   { background: #ef4444; }
+
+/* === ARIA属性と連動する状態 === */
+/* aria-pressed: トグルボタン */
+.button[aria-pressed="true"] {
+  background: var(--color-action-primary);
+  color: white;
+}
+/* aria-expanded: 展開パネルのトリガー */
+.button[aria-expanded="true"] .button__icon {
+  transform: rotate(180deg);
+  transition: transform 200ms ease;
+}
+/* aria-invalid: フォームのエラー状態 */
+.input[aria-invalid="true"] {
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.05);
+}</code></pre></div>
+</div>
+
+<div class="sub" id="s8-6">
+<h3>8.6 ベストプラクティス</h3>
+<div class="bp">
+<div class="bp-title"><span>✅</span>コンポーネント設計のベストプラクティス</div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>コンポーネントのCSSは外側マージンを持たない</strong><br>再利用性を損なうため、<code>.card { margin-bottom: 24px }</code> のような外側スペースはコンポーネント側に書きません。配置する親コンテナの <code>gap</code> で管理します。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>CSSセレクタの詳細度を上げない</strong><br><code>#sidebar .card</code> や <code>article.card</code> は詳細度が高くなり上書きが困難になります。<code>.card--sidebar</code> のようにクラスのみで表現します。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong><code>:is()</code>/<code>:not()</code>で冗長なセレクタを整理する</strong><br><code>.card:is(:hover, :focus-within)</code> でホバーとフォーカスを一括指定、<code>.list__item:not(:last-child)</code> で最後以外に区切り線を引けます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>状態は <code>is-</code> prefix クラスまたはARIA属性で表現する</strong><br><code>.is-loading</code>/<code>.is-active</code> のようなクラスかARIA属性（<code>aria-expanded</code>等）と連動するCSSを書くことで、JavaScriptとの明確な責任分担ができます。</div></div>
+</div>
+</div>
+</section>
+
+<!-- ================================================================ CH9 -->
+<section class="section" id="s9">
+<div class="ch-label">Chapter 9</div>
+<h2><span class="n">9.</span>レスポンシブデザインシステム</h2>
+
+<div class="sub" id="s9-1">
+<h3>9.1 レスポンシブ設計の考え方</h3>
+<p>レスポンシブデザインとは<strong>デバイスの画面サイズに関わらず、最適なUI/UXを提供する</strong>設計手法です。現代では<strong>モバイルファースト</strong>アプローチが強く推奨されています。</p>
+<div class="mbox"><div class="mbox-t">図 9.1 — モバイルファースト vs デスクトップファーストの比較</div><div class="mermaid" id="d-mobile-first"></div></div>
+<div class="co ok"><span class="icon">✅</span><div class="body"><strong>モバイルファーストが推奨される理由：</strong>モバイルで必要な最小限のCSSをまず定義し、画面が広くなるにつれて機能を追加する「Progressive Enhancement」の考え方と合致します。デスクトップファーストでは不要なCSSをモバイルでも読み込む無駄が生じます。</div></div>
+</div>
+
+<div class="sub" id="s9-2">
+<h3>9.2 ブレークポイントシステム</h3>
+<p>ブレークポイントは<strong>デバイスのサイズではなく、コンテンツが崩れるポイントで設定する</strong>のが正解です。</p>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">代表的なブレークポイントとメディアクエリの種類</span></div><pre><code class="language-css">/*
+  推奨ブレークポイント（Tailwind CSS 準拠）
+  sm:  640px  → スマートフォン横向き
+  md:  768px  → タブレット縦向き
+  lg: 1024px  → タブレット横向き・小型ラップトップ
+  xl: 1280px  → デスクトップ
+  2xl:1536px  → 大型ディスプレイ
+*/
+
+/* ===== モバイルファーストの記述順序 ===== */
+/* 1. デフォルト（0〜639px） → モバイル */
+.component { font-size: 1rem; padding: 16px; }
+
+/* 2. 640px 以上 */
+@media (min-width: 640px) {
+  .component { font-size: 1.125rem; }
+}
+
+/* 3. 768px 以上 */
+@media (min-width: 768px) {
+  .component { font-size: 1.25rem; padding: 24px; }
+}
+
+/* 4. 1024px 以上 */
+@media (min-width: 1024px) {
+  .component { font-size: 1.5rem; padding: 32px; }
+}
+
+/* ===== 範囲指定（CSS Level 4 モダン構文）===== */
+@media (640px <= width < 1024px) { /* タブレット専用 */ }
+
+/* ===== ユーザー設定メディアクエリ ===== */
+@media (prefers-color-scheme: dark)      { /* ダークモード */ }
+@media (prefers-reduced-motion: reduce)  { /* アニメーション抑制 */ }
+@media (prefers-contrast: more)          { /* 高コントラスト */ }
+@media (forced-colors: active)           { /* Windows 高コントラストモード */ }
+@media (hover: hover) and (pointer: fine){ /* マウスデバイスのみホバー */ }
+@media print                             { /* 印刷スタイル */ }</code></pre></div>
+</div>
+
+<div class="sub" id="s9-3">
+<h3>9.3 コンテナクエリ</h3>
+<p>コンテナクエリは2023年に全モダンブラウザが対応した<strong>ゲームチェンジャー</strong>です。ビューポートではなく<strong>親コンテナのサイズ</strong>に応じてスタイルを変えられます。</p>
+<div class="mbox"><div class="mbox-t">図 9.3 — メディアクエリ（従来）vs コンテナクエリ（新機能）</div><div class="mermaid" id="d-container-query"></div></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">コンテナクエリの実装パターン</span></div><pre><code class="language-css">/* ===== Step 1: 親要素をコンテナとして登録 ===== */
+.card-wrapper {
+  container-type: inline-size; /* 幅を参照するコンテナ */
+  container-name: card;         /* 名前付きコンテナ */
+}
+
+/* ===== Step 2: コンテナクエリでスタイルを分岐 ===== */
+/* コンテナが500px未満（デフォルト）→ 縦積みレイアウト */
+.card { display: flex; flex-direction: column; }
+
+/* コンテナが500px以上 → 横並びレイアウト */
+@container card (min-width: 500px) {
+  .card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+/* ===== 実践：サイドバーあり・なし両方に対応するカード ===== */
+.article-grid   { container-type: inline-size; }
+.sidebar-widget { container-type: inline-size; }
+
+/* コンテナが狭い → 縦積み */
+.article-card { flex-direction: column; }
+
+/* コンテナが広い → 横並び */
+@container (min-width: 480px) {
+  .article-card { flex-direction: row; }
+}
+
+/* コンテナが十分広い → サムネイル固定幅 */
+@container (min-width: 640px) {
+  .article-card {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+/* ===== コンテナ単位（cqi / cqb）===== */
+.card__title {
+  font-size: clamp(1rem, 4cqi, 1.5rem);
+  /* cqi: コンテナのインラインサイズ（幅）に対する%
+     cqb: コンテナのブロックサイズ（高さ）に対する% */
+}</code></pre></div>
+<div class="co info"><span class="icon">📱</span><div class="body"><strong>コンテナクエリの最大の恩恵：</strong>同じコンポーネントを<strong>どんな文脈（サイドバー内・メインコンテンツ内・モーダル内）</strong>に置いても適切に表示できます。ビューポート幅に依存する従来のメディアクエリでは不可能でした。</div></div>
+</div>
+
+<div class="sub" id="s9-4">
+<h3>9.4 流動的レイアウトの技術</h3>
+<p><code>min()</code>/<code>max()</code>/<code>clamp()</code>を活用すると、<strong>メディアクエリを書かずに</strong>流動的なレイアウトが実現できます。</p>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">min() / max() / clamp() 完全ガイド</span></div><pre><code class="language-css">/* ===== min(): 2つの値の小さい方を採用 ===== */
+.element {
+  width: min(600px, 100%);
+  /* 親の幅が600px未満なら100%（はみ出さない）
+     600px以上なら600px固定 */
+}
+
+/* ===== max(): 2つの値の大きい方を採用 ===== */
+.element {
+  padding: max(16px, 5vw);
+  /* 5vwが16pxを下回ったら16pxを保証
+     画面が広くなると5vwに追従 */
+}
+
+/* ===== clamp(最小, 推奨, 最大): 範囲内に収める ===== */
+.element {
+  width: clamp(300px, 50%, 800px);
+  /* 300px〜800pxの範囲で50%に追従 */
+}
+
+/* ===== 流体タイポグラフィ（最も重要なユースケース）===== */
+.heading-xl {
+  font-size: clamp(1.5rem, 4vw + 0.5rem, 3rem);
+  /* 小画面: 1.5rem → 大画面: 3rem でなめらかに変化
+     "4vw + 0.5rem" が推奨値（vwのみだと極端すぎる）*/
+}
+
+/* ===== 流体スペーシング ===== */
+.section {
+  padding-block: clamp(32px, 8vw, 96px);
+  /* 小画面: 32px → 大画面: 96px でなめらかに変化 */
+}
+
+/* ===== メディアクエリなしのレスポンシブグリッド ===== */
+.auto-grid {
+  display: grid;
+  /* min(280px, 100%): 親が280px未満でも列幅がはみ出さない */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 24px;
+}
+
+/* ===== 流体コンテナパディング ===== */
+.container {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 5vw, 48px);
+  /* モバイル16px → タブレット以降は画面幅の5%を確保 */
+}</code></pre></div>
+</div>
+
+<div class="sub" id="s9-5">
+<h3>9.5 レスポンシブ画像</h3>
+<div class="cb"><div class="cb-h"><span class="cb-lang">HTML</span><span class="cb-name">srcset / sizes / picture 要素の活用</span></div><pre><code class="language-html">&lt;!-- srcset + sizes: ブラウザが最適解像度の画像を選択する --&gt;
+&lt;img
+  src="image-800w.jpg"
+  srcset="
+    image-320w.jpg   320w,
+    image-640w.jpg   640w,
+    image-800w.jpg   800w,
+    image-1200w.jpg 1200w
+  "
+  sizes="
+    (max-width: 640px)  100vw,
+    (max-width: 1024px) 50vw,
+    33vw
+  "
+  alt="製品の説明画像"
+  loading="lazy"
+  decoding="async"
+&gt;
+
+&lt;!-- picture要素: アート・ディレクション（縦横比を変える）--&gt;
+&lt;picture&gt;
+  &lt;!-- モバイル: 正方形クロップ --&gt;
+  &lt;source media="(max-width: 767px)" srcset="hero-square.jpg"&gt;
+  &lt;!-- デスクトップ: ワイドクロップ --&gt;
+  &lt;source media="(min-width: 768px)" srcset="hero-wide.jpg"&gt;
+  &lt;!-- フォールバック（必須）--&gt;
+  &lt;img src="hero-wide.jpg" alt="ヒーロービジュアル"&gt;
+&lt;/picture&gt;</code></pre></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">CSSでのレスポンシブ画像処理</span></div><pre><code class="language-css">/* アスペクト比固定コンテナ */
+.img-frame {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.img-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top; /* 上部を優先（顔など）*/
+}
+
+/* 正方形アバター */
+.avatar {
+  width: 48px;
+  aspect-ratio: 1; /* = 1 / 1 */
+  border-radius: 50%;
+  object-fit: cover;
+}</code></pre></div>
+</div>
+
+<div class="sub" id="s9-6">
+<h3>9.6 ベストプラクティス</h3>
+<div class="bp">
+<div class="bp-title"><span>✅</span>レスポンシブデザインのベストプラクティス</div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>ブレークポイントはコンテンツが崩れた時点で設定する</strong><br>「iPhoneのサイズだから375px」ではなく、「このテキストが折り返される幅」「このカードが2列に入らなくなる幅」でブレークポイントを決めます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong><code>vh</code>より<code>svh</code>/<code>dvh</code>を使う</strong><br><code>100vh</code>はiOSのブラウザUIバーを考慮せず、アドレスバー表示時に画面が崩れます。<code>100svh</code>（Small Viewport Height）を使いましょう。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>タッチデバイスへのホバースタイルを適切に制御する</strong><br><code>@media (hover: hover) and (pointer: fine)</code>内にホバースタイルを書くことで、タッチデバイスで意図しないホバー状態が残り続けるのを防げます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>コンテナクエリとメディアクエリを使い分ける</strong><br>ページ全体のレイアウト変更は<strong>メディアクエリ</strong>、コンポーネント単位の見た目変更は<strong>コンテナクエリ</strong>が適切です。</div></div>
+</div>
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — デバイス幅でブレークポイント</div><div class="cb"><pre><code class="language-css">/* 特定デバイスへの依存 */
+@media (max-width: 375px) { } /* iPhone SE */
+@media (max-width: 428px) { } /* iPhone 14 Pro Max */
+/* 無数のデバイスに対応不可能 */</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — コンテンツ起点のブレークポイント</div><div class="cb"><pre><code class="language-css">/* コンテンツが崩れる幅で設定 */
+@media (max-width: 52rem) {
+  .grid { grid-template-columns: 1fr; }
+}
+/* デバイスに依存しない */</code></pre></div></div>
+</div>
+</div>
+</section>
+
+<!-- ================================================================ CH10 -->
+<section class="section" id="s10">
+<div class="ch-label">Chapter 10</div>
+<h2><span class="n">10.</span>アクセシビリティ（a11y）設計</h2>
+
+<div class="sub" id="s10-1">
+<h3>10.1 アクセシビリティとは何か</h3>
+<p>アクセシビリティ（a11y = accessibility の a と y の間に11文字）とは<strong>すべての人がウェブを利用できるよう設計すること</strong>です。障害を持つユーザーだけでなく、状況的制限のあるすべてのユーザーが対象です。</p>
+<div class="mbox"><div class="mbox-t">図 10.1 — アクセシビリティが対象とするユーザー</div><div class="mermaid" id="d-a11y-targets"></div></div>
+<div class="co tip"><span class="icon">💡</span><div class="body"><strong>カーブカット効果（Curb Cut Effect）：</strong>歩道の縁石カット（車椅子用）が、ベビーカー・スーツケース・自転車を使う人全員に恩恵をもたらすように、アクセシビリティ対応は<strong>すべてのユーザーのUXを向上させます</strong>。アクセシビリティはコンプライアンスではなく、品質の問題です。</div></div>
+</div>
+
+<div class="sub" id="s10-2">
+<h3>10.2 WCAG ガイドラインの構造</h3>
+<p>WCAG（Web Content Accessibility Guidelines）はW3Cが定める<strong>国際的なアクセシビリティ標準</strong>です。日本の公共機関ではAAレベルへの適合が求められます。</p>
+<div class="mbox"><div class="mbox-t">図 10.2 — WCAG 2.2 の4原則（POUR）と適合レベル</div><div class="mermaid" id="d-wcag"></div></div>
+<div class="tw"><table>
+<thead><tr><th>原則</th><th>意味</th><th>代表的な要件</th></tr></thead>
+<tbody>
+<tr><td><strong>Perceivable（知覚可能）</strong></td><td>情報を複数の手段で提供</td><td>altテキスト・字幕・色だけに頼らない</td></tr>
+<tr><td><strong>Operable（操作可能）</strong></td><td>キーボードでも操作できる</td><td>フォーカス可視化・スキップリンク</td></tr>
+<tr><td><strong>Understandable（理解可能）</strong></td><td>わかりやすいUIとエラー</td><td>ラベル・エラーメッセージ・予測可能な動作</td></tr>
+<tr><td><strong>Robust（堅牢）</strong></td><td>支援技術でも機能する</td><td>セマンティックHTML・ARIAの正しい使用</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="sub" id="s10-3">
+<h3>10.3 セマンティックHTML</h3>
+<p>セマンティックHTMLはアクセシビリティの<strong>最も重要な基礎</strong>です。適切な要素を使うだけで、多くのアクセシビリティ要件を自動的に満たします。</p>
+<div class="mbox"><div class="mbox-t">図 10.3 — 非セマンティック vs セマンティックHTMLの恩恵</div><div class="mermaid" id="d-semantic"></div></div>
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — divだけで構成</div><div class="cb"><pre><code class="language-html">&lt;div class="page"&gt;
+  &lt;div class="header"&gt;
+    &lt;div class="nav"&gt;
+      &lt;div class="link" onclick="..."&gt;ホーム&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="main"&gt;
+    &lt;div class="title"&gt;タイトル&lt;/div&gt;
+    &lt;div class="btn" onclick="..."&gt;送信&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- スクリーンリーダーが構造を読めない
+     キーボード操作ができない --&gt;</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — セマンティックなHTML</div><div class="cb"><pre><code class="language-html">&lt;body&gt;
+  &lt;header&gt;
+    &lt;nav aria-label="メインナビゲーション"&gt;
+      &lt;ul role="list"&gt;
+        &lt;li&gt;&lt;a href="/home"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main id="main-content"&gt;
+    &lt;section aria-labelledby="hero-h"&gt;
+      &lt;h1 id="hero-h"&gt;タイトル&lt;/h1&gt;
+      &lt;!-- Enter/Space で操作可能 --&gt;
+      &lt;button type="button"&gt;送信&lt;/button&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;</code></pre></div></div>
+</div>
+<div class="tw"><table>
+<thead><tr><th>要素</th><th>意味</th><th>なぜ div で代替できないか</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;button&gt;</code></td><td>クリック可能な操作</td><td>Enter/Space キー操作・role=button が自動付与</td></tr>
+<tr><td><code>&lt;a href&gt;</code></td><td>リンク（ナビゲーション）</td><td>Enter キー操作・role=link が自動付与</td></tr>
+<tr><td><code>&lt;input&gt;</code></td><td>フォーム入力</td><td>キーボード入力・<code>&lt;label&gt;</code>との関連付け</td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>ナビゲーション領域</td><td>スクリーンリーダーのランドマークとして認識</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>メインコンテンツ</td><td>スクリーンリーダーでスキップ先として機能</td></tr>
+<tr><td><code>&lt;h1&gt;〜&lt;h6&gt;</code></td><td>見出し階層</td><td>スクリーンリーダーの目次機能として機能</td></tr>
+<tr><td><code>&lt;table&gt;</code></td><td>表形式データ</td><td><code>&lt;th scope&gt;</code>/<code>&lt;caption&gt;</code>でセルの関係を明示</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="sub" id="s10-4">
+<h3>10.4 キーボード操作対応</h3>
+<p>視覚障害・運動障害のあるユーザーの多くは<strong>キーボードのみ</strong>でウェブを操作します。マウスなしで完全に動作するUI設計は必須要件です。</p>
+<div class="mbox"><div class="mbox-t">図 10.4 — キーボード操作の基本ショートカット</div><div class="mermaid" id="d-keyboard"></div></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">フォーカスインジケーターとスキップリンク</span></div><pre><code class="language-css">/* ===== 絶対に消してはいけない: フォーカスインジケーター ===== */
+
+/* ❌ 最悪のアンチパターン */
+*:focus { outline: none; }
+button:focus { outline: 0; }
+
+/* ✅ マウス操作時は非表示、キーボード時のみ表示 */
+:focus:not(:focus-visible) {
+  outline: none;  /* クリック時などのフォーカスはアウトラインなし */
+}
+:focus-visible {
+  outline: 2px solid #6C47FF;  /* キーボードフォーカス時は明確に表示 */
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ===== スキップリンク（ページ先頭のナビをスキップ）===== */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  padding: 8px 16px;
+  background: #6C47FF;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 200ms ease;
+}
+.skip-link:focus { top: 16px; } /* フォーカスで画面内に現れる */</code></pre></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">HTML</span><span class="cb-name">スキップリンクの実装</span></div><pre><code class="language-html">&lt;body&gt;
+  &lt;!-- ページ最初の要素としてスキップリンクを配置 --&gt;
+  &lt;a class="skip-link" href="#main-content"&gt;
+    メインコンテンツへスキップ
+  &lt;/a&gt;
+  &lt;header&gt;
+    &lt;nav&gt;&lt;!-- 長いナビゲーション --&gt;&lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;!-- tabindex="-1": JSでプログラム的にフォーカスできるように --&gt;
+  &lt;main id="main-content" tabindex="-1"&gt;
+    &lt;!-- メインコンテンツ --&gt;
+  &lt;/main&gt;
+&lt;/body&gt;</code></pre></div>
+<div class="cb"><div class="cb-h"><span class="cb-lang">JavaScript</span><span class="cb-name">フォーカストラップ（モーダル内にフォーカスを閉じ込める）</span></div><pre><code class="language-javascript">function trapFocus(modalElement) {
+  const focusable = modalElement.querySelectorAll(
+    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusable[0];
+  const last  = focusable[focusable.length - 1];
+
+  modalElement.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey) {
+      // Shift+Tab: 最初の要素にいたら最後に飛ぶ
+      if (document.activeElement === first) {
+        last.focus();
+        e.preventDefault();
+      }
+    } else {
+      // Tab: 最後の要素にいたら最初に飛ぶ
+      if (document.activeElement === last) {
+        first.focus();
+        e.preventDefault();
+      }
+    }
+  });
+}</code></pre></div>
+</div>
+
+<div class="sub" id="s10-5">
+<h3>10.5 スクリーンリーダー対応（ARIA）</h3>
+<p>ARIA（Accessible Rich Internet Applications）は、HTMLだけでは表現できないアクセシビリティ情報を補完します。<strong>第一原則：ネイティブHTMLを優先する。ARIAは最後の手段。</strong></p>
+<div class="mbox"><div class="mbox-t">図 10.5 — WAI-ARIAの3カテゴリ（roles / properties / states）</div><div class="mermaid" id="d-aria"></div></div>
+
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — div + ARIA で疑似ボタンを作る</div><div class="cb"><pre><code class="language-html">&lt;!-- 複雑でキーボード操作のJS実装が必要 --&gt;
+&lt;div role="button" tabindex="0" aria-pressed="false"
+     onkeydown="if(event.key==='Enter'||event.key===' ')handleClick()"
+     onclick="handleClick()"&gt;
+  クリック
+&lt;/div&gt;</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — ネイティブ button 要素を使う</div><div class="cb"><pre><code class="language-html">&lt;!-- 標準でキーボード操作に対応、ARIA属性も自動適用 --&gt;
+&lt;button type="button" aria-pressed="false"&gt;
+  クリック
+&lt;/button&gt;</code></pre></div></div>
+</div>
+
+<div class="cb"><div class="cb-h"><span class="cb-lang">HTML</span><span class="cb-name">よく使うARIAパターン集</span></div><pre><code class="language-html">&lt;!-- ① ラベルの提供: 視覚的ラベルがない場合 --&gt;
+&lt;button aria-label="メニューを閉じる"&gt;
+  &lt;!-- aria-hidden: スクリーンリーダーからアイコンを隠す --&gt;
+  &lt;svg aria-hidden="true" focusable="false"&gt;...&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- ② 追加説明の関連付け --&gt;
+&lt;label for="email"&gt;メールアドレス&lt;/label&gt;
+&lt;input
+  id="email" type="email"
+  aria-describedby="email-hint email-error"
+  aria-invalid="true"
+  aria-required="true"
+&gt;
+&lt;p id="email-hint"&gt;会社のメールアドレスを入力してください&lt;/p&gt;
+&lt;p id="email-error" role="alert"&gt;有効なメールアドレスを入力してください&lt;/p&gt;
+
+&lt;!-- ③ 展開・折り畳み（アコーディオン）--&gt;
+&lt;button aria-expanded="false" aria-controls="panel-1" id="trigger-1"&gt;
+  セクション1
+&lt;/button&gt;
+&lt;div id="panel-1" role="region" aria-labelledby="trigger-1" hidden&gt;
+  パネルのコンテンツ
+&lt;/div&gt;
+
+&lt;!-- ④ ライブリージョン（動的に変化するコンテンツ）--&gt;
+&lt;div role="status" aria-live="polite"&gt;   &lt;!-- 穏やかな通知 --&gt;
+  3件の結果が見つかりました
+&lt;/div&gt;
+&lt;div role="alert" aria-live="assertive"&gt;  &lt;!-- 緊急通知（エラー）--&gt;
+  エラーが発生しました。もう一度お試しください。
+&lt;/div&gt;
+
+&lt;!-- ⑤ ランドマーク（ページの主要エリアを明示）--&gt;
+&lt;header role="banner"&gt;...&lt;/header&gt;
+&lt;nav aria-label="パンくずリスト"&gt;...&lt;/nav&gt;
+&lt;nav aria-label="メインナビゲーション"&gt;...&lt;/nav&gt;
+&lt;main role="main"&gt;...&lt;/main&gt;
+&lt;aside aria-label="関連リンク"&gt;...&lt;/aside&gt;
+&lt;footer role="contentinfo"&gt;...&lt;/footer&gt;</code></pre></div>
+</div>
+
+<div class="sub" id="s10-6">
+<h3>10.6 カラーとコントラスト</h3>
+<p>色覚特性（色盲）のユーザーは人口の約8%（男性）に存在します。<strong>色だけで情報を伝えてはいけません</strong>。</p>
+<div class="sl">
+<div class="sl-item ng"><div class="sl-head">❌ NG — 赤いボーダーだけでエラーを示す</div><div class="cb"><pre><code class="language-html">&lt;!-- 色覚特性のユーザーには伝わらない --&gt;
+&lt;input class="is-error" type="text"&gt;</code></pre></div></div>
+<div class="sl-item ok"><div class="sl-head">✅ OK — 色+アイコン+テキストを組み合わせる</div><div class="cb"><pre><code class="language-html">&lt;div class="form-field"&gt;
+  &lt;input type="text" aria-invalid="true" aria-describedby="error-msg"&gt;
+  &lt;p id="error-msg" class="error-message"&gt;
+    &lt;svg aria-hidden="true" class="error-icon"&gt;...&lt;/svg&gt;
+    このフィールドは必須です
+  &lt;/p&gt;
+&lt;/div&gt;</code></pre></div></div>
+</div>
+
+<div class="cb"><div class="cb-h"><span class="cb-lang">CSS</span><span class="cb-name">エラー状態とアニメーション抑制のCSS</span></div><pre><code class="language-css">/* ===== フォームエラーの視覚的表現（色以外でも伝える） ===== */
+.form-field--error .input {
+  border-color: var(--color-feedback-danger);
+  border-width: 2px;
+  background-image: url("data:image/svg+xml,...");
+}
+
+/* prefers-reduced-motion: アニメーション抑制設定を尊重する */
+.modal {
+  transition: opacity 300ms ease, transform 300ms ease;
+  transform: translateY(8px);
+  opacity: 0;
+}
+.modal.is-open { transform: translateY(0); opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal {
+    transition: opacity 150ms ease; /* フェードのみ */
+    transform: none;
+  }
+  *, *::before, *::after {
+    animation-play-state: paused !important;
+  }
+  video[autoplay] {
+    animation-play-state: paused;
+  }
+}</code></pre></div>
+
+<div class="tw"><table>
+<thead><tr><th>要件</th><th>WCAG AA（推奨）</th><th>WCAG AAA（最高基準）</th></tr></thead>
+<tbody>
+<tr><td>通常テキスト（18px未満）</td><td>4.5:1 以上</td><td>7:1 以上</td></tr>
+<tr><td>大きいテキスト（18px以上 または 太字14px以上）</td><td>3:1 以上</td><td>4.5:1 以上</td></tr>
+<tr><td>UIコンポーネント・ボーダー・アイコン</td><td>3:1 以上</td><td>3:1 以上</td></tr>
+<tr><td>装飾目的のみ</td><td>要件なし</td><td>要件なし</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="sub" id="s10-7">
+<h3>10.7 ベストプラクティス</h3>
+<div class="bp">
+<div class="bp-title"><span>✅</span>アクセシビリティのベストプラクティス</div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>画像には常に適切なaltテキストを設定する</strong><br>情報を持つ画像は内容を説明するaltを、装飾的な画像は <code>alt=""</code>（空文字）を設定します。空altは「読み飛ばす」という明示的な指示です。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>フォームは <code>&lt;label&gt;</code> と <code>&lt;input&gt;</code> を必ず関連付ける</strong><br><code>placeholder</code>だけのラベルは入力時に消えてしまいます。<code>&lt;label for="id"&gt;</code>による明示的な関連付けが必須です。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>テーブルは <code>&lt;th scope&gt;</code> と <code>&lt;caption&gt;</code> を使う</strong><br><code>scope="col"</code>（列ヘッダー）・<code>scope="row"</code>（行ヘッダー）でスクリーンリーダーがデータとヘッダーの関係を正確に読み上げられます。</div></div>
+<div class="bp-item"><div class="mk">✓</div><div><strong>自動化テストで継続的にチェックする</strong><br>axe-coreなどのツールをCI/CDに組み込み、アクセシビリティの回帰を防止します。</div></div>
+</div>
+
+<div class="cb"><div class="cb-h"><span class="cb-lang">JavaScript</span><span class="cb-name">axe-coreによるアクセシビリティテスト自動化</span></div><pre><code class="language-javascript">// === CI でのコマンドラインチェック ===
+// npm install --save-dev @axe-core/cli
+// npx axe http://localhost:3000 --exit
+
+// === Jest / Vitest + React Testing Library ===
+import { render } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
+
+test('Button にアクセシビリティ違反がないこと', async () => {
+  const { container } = render(&lt;Button&gt;送信&lt;/Button&gt;);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});</code></pre></div>
+</div>
+</section>
+
+<!-- ================================================================ SUMMARY -->
+<section class="section" id="summary">
+<div class="ch-label">まとめ</div>
+<h2><span class="n">〆</span>4トピックの関係性</h2>
+<p>4つのトピックは独立したものではなく、<strong>相互に支え合う設計哲学</strong>として統合されます。</p>
+<div class="mbox"><div class="mbox-t">図 〆 — 優れたデザインシステムを構成する4つの柱</div><div class="mermaid" id="d-summary"></div></div>
+<div class="sg">
+  <div class="sc c1"><div class="num">7</div><div class="lbl">グリッド・レイアウト</div><div class="desc">Flexbox + Gridで要素をどこに置くかを決定する基盤</div></div>
+  <div class="sc c2"><div class="num">8</div><div class="lbl">コンポーネント設計</div><div class="desc">BEM + バリアント設計でUIを再利用可能な部品に分割</div></div>
+  <div class="sc c3"><div class="num">9</div><div class="lbl">レスポンシブ</div><div class="desc">コンテナクエリ + clamp()で全デバイスに最適化</div></div>
+  <div class="sc c4"><div class="num">10</div><div class="lbl">アクセシビリティ</div><div class="desc">セマンティックHTML + ARIAで全員が使えるUIを実現</div></div>
+</div>
+<div class="co ok"><span class="icon">🎯</span><div class="body"><strong>学習の進め方：</strong>まずCh.7（Flexbox/Grid）でレイアウトの基礎を固め → Ch.8（BEM）で命名規則を習得 → Ch.9（レスポンシブ）で実デバイス対応 → Ch.10（a11y）を後付けではなく設計段階から組み込む、という順序が最も効果的です。</div></div>
+</section>
+
+<!-- ================================================================ REFS -->
+<section class="section" id="refs">
+<div class="ch-label">参考リソース</div>
+<h2><span class="n">🔗</span>公式ドキュメント・学習リソース</h2>
+
+<h4>グリッド・レイアウトシステム</h4>
+<div class="rg">
+  <a class="rg-a" href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_grid_layout" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">CSS Grid Layout</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_flexible_box_layout" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">CSS Flexible Box Layout</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank" rel="noopener"><div class="rg-l">CSS-Tricks</div><div class="rg-t">A Complete Guide to Flexbox</div><div class="rg-u">css-tricks.com</div></a>
+  <a class="rg-a" href="https://css-tricks.com/snippets/css/complete-guide-grid/" target="_blank" rel="noopener"><div class="rg-l">CSS-Tricks</div><div class="rg-t">A Complete Guide to CSS Grid</div><div class="rg-u">css-tricks.com</div></a>
+  <a class="rg-a" href="https://every-layout.dev/" target="_blank" rel="noopener"><div class="rg-l">Every Layout</div><div class="rg-t">レイアウトプリミティブ集</div><div class="rg-u">every-layout.dev</div></a>
+  <a class="rg-a" href="https://ryanmulligan.dev/blog/layout-breakouts/" target="_blank" rel="noopener"><div class="rg-l">Ryan Mulligan</div><div class="rg-t">Full-Bleed Layout</div><div class="rg-u">ryanmulligan.dev</div></a>
+  <a class="rg-a" href="https://gridbyexample.com/" target="_blank" rel="noopener"><div class="rg-l">Rachel Andrew</div><div class="rg-t">Grid by Example</div><div class="rg-u">gridbyexample.com</div></a>
+</div>
+
+<h4>コンポーネント設計・BEM</h4>
+<div class="rg">
+  <a class="rg-a" href="https://getbem.com/introduction/" target="_blank" rel="noopener"><div class="rg-l">BEM</div><div class="rg-t">BEM 公式ドキュメント</div><div class="rg-u">getbem.com</div></a>
+  <a class="rg-a" href="https://getbem.com/" target="_blank" rel="noopener"><div class="rg-l">BEM Methodology</div><div class="rg-t">BEM Methodology (公式)</div><div class="rg-u">getbem.com</div></a>
+  <a class="rg-a" href="https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528" target="_blank" rel="noopener"><div class="rg-l">ITCSS (Harry Roberts)</div><div class="rg-t">Manage large CSS projects</div><div class="rg-u">creativebloq.com</div></a>
+  <a class="rg-a" href="https://github.com/css-modules/css-modules" target="_blank" rel="noopener"><div class="rg-l">CSS Modules</div><div class="rg-t">CSS Modules 公式</div><div class="rg-u">github.com</div></a>
+</div>
+
+<h4>レスポンシブデザインシステム</h4>
+<div class="rg">
+  <a class="rg-a" href="https://developer.mozilla.org/ja/docs/Learn_web_development/Core/CSS_layout/Responsive_Design" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">レスポンシブデザイン</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://developer.mozilla.org/ja/docs/Web/CSS/CSS_containment/Container_queries" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">コンテナクエリ</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://web.dev/learn/design/" target="_blank" rel="noopener"><div class="rg-l">web.dev</div><div class="rg-t">Responsive Design</div><div class="rg-u">web.dev</div></a>
+  <a class="rg-a" href="https://developer.mozilla.org/en-US/docs/Web/CSS/length#viewport-percentage_lengths" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">svh / dvh / lvh 単位</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://web.dev/articles/one-line-layouts" target="_blank" rel="noopener"><div class="rg-l">web.dev</div><div class="rg-t">Ten modern layouts in one line of CSS</div><div class="rg-u">web.dev</div></a>
+</div>
+
+<h4>アクセシビリティ（a11y）</h4>
+<div class="rg">
+  <a class="rg-a" href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener"><div class="rg-l">W3C</div><div class="rg-t">WCAG 2.1 公式</div><div class="rg-u">w3.org</div></a>
+  <a class="rg-a" href="https://waic.jp/translations/WCAG21/" target="_blank" rel="noopener"><div class="rg-l">WAIC</div><div class="rg-t">WCAG 2.1 日本語訳</div><div class="rg-u">waic.jp</div></a>
+  <a class="rg-a" href="https://www.w3.org/TR/wai-aria-1.2/" target="_blank" rel="noopener"><div class="rg-l">W3C</div><div class="rg-t">WAI-ARIA 1.2 公式</div><div class="rg-u">w3.org</div></a>
+  <a class="rg-a" href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener"><div class="rg-l">W3C APG</div><div class="rg-t">ARIA Authoring Practices Guide</div><div class="rg-u">w3.org</div></a>
+  <a class="rg-a" href="https://developer.mozilla.org/ja/docs/Web/Accessibility" target="_blank" rel="noopener"><div class="rg-l">MDN Web Docs</div><div class="rg-t">アクセシビリティ</div><div class="rg-u">developer.mozilla.org</div></a>
+  <a class="rg-a" href="https://www.a11yproject.com/" target="_blank" rel="noopener"><div class="rg-l">The A11Y Project</div><div class="rg-t">A11Y Project</div><div class="rg-u">a11yproject.com</div></a>
+  <a class="rg-a" href="https://github.com/dequelabs/axe-core" target="_blank" rel="noopener"><div class="rg-l">axe-core</div><div class="rg-t">axe-core テストツール</div><div class="rg-u">github.com</div></a>
+  <a class="rg-a" href="https://webaim.org/projects/screenreadersurvey9/" target="_blank" rel="noopener"><div class="rg-l">WebAIM</div><div class="rg-t">Screen Reader Survey</div><div class="rg-u">webaim.org</div></a>
+  <a class="rg-a" href="https://inclusive-components.design/" target="_blank" rel="noopener"><div class="rg-l">Inclusive Components</div><div class="rg-t">Inclusive Components</div><div class="rg-u">inclusive-components.design</div></a>
+</div>
+</section>
+</main>
+
+<script>
+const DIAGRAMS = {
+'d-layout-overview': `graph TD
+  L["レイアウトシステムの構成"] --> A["マクロレイアウト<br/>ページ全体の構造<br/>ヘッダー・サイドバー・コンテンツ"]
+  L --> B["メゾレイアウト<br/>セクション・カラム・グリッド"]
+  L --> C["マイクロレイアウト<br/>コンポーネント内部<br/>ボタン・フォーム・カード"]
+  A --> T1["CSS Grid<br/>2次元・複雑な配置"]
+  B --> T2["CSS Grid + Flexbox<br/>組み合わせて使用"]
+  C --> T3["Flexbox<br/>1次元・整列中心"]
+  style L fill:#6C47FF,color:#fff,stroke:none
+  style A fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style B fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style C fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style T1 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style T2 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style T3 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`,
+
+'d-flex-axis': `graph LR
+  subgraph CONTAINER["flex コンテナ（display: flex）"]
+    direction LR
+    subgraph MAIN["→ 主軸 Main Axis（justify-content で制御）"]
+      I1["Item 1"] --> I2["Item 2"] --> I3["Item 3"]
+    end
+  end
+  CROSS["↕ 交差軸 Cross Axis<br/>align-items で制御"] -.-> CONTAINER
+  style CONTAINER fill:#1e1e2e,stroke:#6C47FF,color:#cdd6f4
+  style MAIN fill:#2d1e4a,stroke:#8b5cf6,color:#c4b5fd
+  style I1 fill:#6C47FF,color:#fff,stroke:none
+  style I2 fill:#6C47FF,color:#fff,stroke:none
+  style I3 fill:#6C47FF,color:#fff,stroke:none
+  style CROSS fill:#1e4a2d,color:#86efac,stroke:#22c55e`,
+
+'d-grid-concepts': `graph TD
+  subgraph GRID["CSS Grid の主要用語"]
+    GT["Grid Container<br/>display: grid を指定した親要素"] --> GI["Grid Item<br/>コンテナの直接の子要素"]
+    GT --> GL["Grid Line<br/>列・行を区切る仮想の境界線<br/>番号または名前でアクセス"]
+    GT --> GC["Grid Cell<br/>行ラインと列ラインの交差で生まれる1マス"]
+    GT --> GA["Grid Area<br/>複数のCellにまたがる領域<br/>名前を付けて配置可能"]
+  end
+  style GT fill:#6C47FF,color:#fff,stroke:none
+  style GI fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style GL fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style GC fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style GA fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+  style GRID fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`,
+
+'d-flex-vs-grid': `flowchart TD
+  Q["レイアウトツールをどう選ぶ？"] --> Q1{"要素を縦か横の<br/>1方向に並べる？"}
+  Q1 -->|"Yes — 1次元"| FLEX["Flexbox<br/>整列・余白の分配が得意"]
+  Q1 -->|"No"| Q2{"行と列を同時に<br/>コントロールしたい？"}
+  Q2 -->|"Yes — 2次元"| GRID["CSS Grid<br/>複雑な配置・テンプレート定義"]
+  Q2 -->|"No"| Q3{"コンテンツサイズに<br/>合わせて自動的に並べたい？"}
+  Q3 -->|"Yes"| FLEX2["Flexbox + wrap<br/>自然な折り返し"]
+  Q3 -->|"No"| GRID2["CSS Grid<br/>auto-fill / auto-fit で自動カラム"]
+  style Q fill:#6C47FF,color:#fff,stroke:none
+  style FLEX fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style FLEX2 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style GRID fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style GRID2 fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style Q1 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style Q2 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style Q3 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`,
+
+'d-comp-principles': `graph LR
+  subgraph P["コンポーネント設計の5原則"]
+    P1["単一責任<br/>1つの役割だけ持つ"]
+    P2["独立性<br/>外部依存を最小化"]
+    P3["再利用性<br/>文脈を超えて使い回せる"]
+    P4["予測可能性<br/>同じ入力 → 同じ出力"]
+    P5["アクセシビリティ<br/>設計段階から全員が使える"]
+  end
+  style P1 fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style P2 fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style P3 fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style P4 fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+  style P5 fill:#4a1e2d,color:#fda4af,stroke:#f43f5e
+  style P fill:#1e1e2e,stroke:#45475a,color:#cdd6f4`,
+
+'d-bem': `graph TD
+  B["Block<br/>独立したコンポーネント<br/>それ自体が意味を持つ<br/>例: .card .button .nav"] --> E
+  B --> MB["Modifier（Block）<br/>Blockのバリアント・状態<br/>例: .card--featured .button--lg"]
+  E["Element<br/>Blockの一部<br/>Block なしでは存在しない<br/>例: .card__title .button__icon"] --> ME
+  ME["Modifier（Element）<br/>Elementのバリアント<br/>例: .card__title--truncated"]
+  style B fill:#6C47FF,color:#fff,stroke:none
+  style E fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style MB fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style ME fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6`,
+
+'d-btn-variants': `graph LR
+  BTN["Button<br/>ベースコンポーネント"] --> V["variant<br/>primary / secondary<br/>ghost / danger"]
+  BTN --> S["size<br/>sm / md / lg / xl"]
+  BTN --> ST["state<br/>default / hover / focus<br/>active / disabled / loading"]
+  style BTN fill:#6C47FF,color:#fff,stroke:none
+  style V fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style S fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style ST fill:#1e4a2d,color:#86efac,stroke:#22c55e`,
+
+'d-state-machine': `stateDiagram-v2
+  [*] --> Default: 初期状態
+  Default --> Hover: マウスオーバー
+  Default --> Focus: Tab またはクリック
+  Hover --> Default: マウスアウト
+  Hover --> Active: クリック開始
+  Focus --> Default: フォーカス外れる
+  Focus --> Active: Enter または Space
+  Active --> Default: クリック終了
+  Default --> Disabled: disabled 属性
+  Disabled --> [*]: コンポーネント除去
+  Default --> Loading: 非同期処理中
+  Loading --> Default: 処理完了
+  Loading --> Error: エラー発生
+  Error --> Default: 再試行`,
+
+'d-mobile-first': `flowchart LR
+  subgraph MF["モバイルファースト（推奨）"]
+    MF1["モバイル<br/>最小限のCSS<br/>min-width で拡張"] --> MF2["タブレット<br/>機能を追加"] --> MF3["デスクトップ<br/>機能を追加"]
+  end
+  subgraph DF["デスクトップファースト"]
+    DF1["デスクトップ<br/>フル機能のCSS"] --> DF2["タブレット<br/>機能を削除"] --> DF3["モバイル<br/>機能を削除"]
+  end
+  MF --> R1["軽量なCSS<br/>モバイルで余計な<br/>スタイルをロードしない"]
+  MF --> R2["Progressive Enhancement<br/>基本体験を全デバイスに<br/>保証できる"]
+  style MF fill:#1e1e2e,stroke:#22c55e,color:#86efac
+  style DF fill:#1e1e2e,stroke:#ef4444,color:#fca5a5
+  style R1 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style R2 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a`,
+
+'d-container-query': `graph LR
+  subgraph MQ["メディアクエリ（従来）"]
+    VP["ビューポート幅<br/>（画面全体のサイズ）"] -->|サイズを参照| ST1["スタイル変更"]
+  end
+  subgraph CQ["コンテナクエリ（新機能）"]
+    CON["コンテナの幅<br/>（親要素のサイズ）"] -->|サイズを参照| ST2["スタイル変更"]
+  end
+  subgraph WHY["なぜ重要か"]
+    W1["どの文脈に置いても<br/>最適表示できる"]
+    W2["サイドバーあり・なし<br/>両方に対応可能"]
+  end
+  CQ --> W1
+  CQ --> W2
+  style MQ fill:#1e1e2e,stroke:#ef4444,color:#fca5a5
+  style CQ fill:#1e1e2e,stroke:#22c55e,color:#86efac
+  style WHY fill:#1e1e2e,stroke:#6C47FF,color:#cdd6f4`,
+
+'d-a11y-targets': `graph TD
+  A["アクセシビリティの対象ユーザー"] --> V["視覚障害<br/>全盲・低視力・色覚特性"]
+  A --> H["聴覚障害<br/>難聴・聾"]
+  A --> M["運動障害<br/>手の麻痺・震え<br/>マウス操作困難"]
+  A --> C["認知・学習障害<br/>ADHD・ディスレクシア<br/>認知症"]
+  A --> S["状況的制限<br/>明るい屋外での操作<br/>片手しか使えない<br/>低速回線環境"]
+  style A fill:#6C47FF,color:#fff,stroke:none
+  style V fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style H fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style M fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style C fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+  style S fill:#4a1e2d,color:#fda4af,stroke:#f43f5e`,
+
+'d-wcag': `graph TD
+  WCAG["WCAG 2.1 / 2.2<br/>Web Content Accessibility Guidelines"] --> P
+  P["4つの原則 POUR"] --> P1["Perceivable<br/>知覚可能<br/>情報を複数の手段で提供"]
+  P --> P2["Operable<br/>操作可能<br/>キーボードでも操作できる"]
+  P --> P3["Understandable<br/>理解可能<br/>わかりやすいUI・エラー"]
+  P --> P4["Robust<br/>堅牢<br/>支援技術でも機能する"]
+  P1 --> L["A（最低限）<br/>AA（推奨・法的基準）<br/>AAA（最高基準）"]
+  P2 --> L
+  P3 --> L
+  P4 --> L
+  style WCAG fill:#6C47FF,color:#fff,stroke:none
+  style P fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style P1 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style P2 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style P3 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style P4 fill:#1e1e2e,color:#cdd6f4,stroke:#45475a
+  style L fill:#1e4a2d,color:#86efac,stroke:#22c55e`,
+
+'d-semantic': `graph LR
+  subgraph NON["非セマンティック"]
+    D1["div.header"] --> D2["div.nav"] --> D3["div.main"] --> D4["div.footer"]
+  end
+  subgraph SEM["セマンティック"]
+    S1["header"] --> S2["nav"] --> S3["main"] --> S4["footer"]
+  end
+  subgraph BEN["セマンティックHTMLの恩恵"]
+    B1["スクリーンリーダーが<br/>構造を正確に読み上げる"]
+    B2["キーボードナビゲーションが<br/>自動で機能する"]
+    B3["検索エンジンが<br/>コンテンツ構造を理解する"]
+  end
+  SEM --> B1
+  SEM --> B2
+  SEM --> B3
+  style NON fill:#1e1e2e,stroke:#ef4444,color:#fca5a5
+  style SEM fill:#1e1e2e,stroke:#22c55e,color:#86efac
+  style BEN fill:#1e1e2e,stroke:#6C47FF,color:#cdd6f4`,
+
+'d-keyboard': `flowchart LR
+  T["Tab キー<br/>次のフォーカス要素へ"] --> ST["Shift + Tab<br/>前の要素へ"]
+  ST --> EN["Enter<br/>リンク・ボタン実行"]
+  EN --> SP["Space<br/>ボタン・チェックボックス"]
+  SP --> AR["矢印キー<br/>ラジオ・タブ・選択メニュー"]
+  AR --> ES["Esc<br/>モーダル・ポップオーバーを閉じる"]
+  style T fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style ST fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style EN fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style SP fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style AR fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+  style ES fill:#4a1e2d,color:#fda4af,stroke:#f43f5e`,
+
+'d-aria': `graph TD
+  ARIA["WAI-ARIA"] --> ROLES["roles<br/>要素の種類・役割を定義<br/>role=dialog / alert / tablist"]
+  ARIA --> PROPS["properties<br/>変わらない属性情報<br/>aria-label / aria-describedby<br/>aria-required"]
+  ARIA --> STATES["states<br/>変化する状態情報<br/>aria-expanded / aria-checked<br/>aria-disabled / aria-hidden"]
+  style ARIA fill:#6C47FF,color:#fff,stroke:none
+  style ROLES fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style PROPS fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style STATES fill:#1e4a2d,color:#86efac,stroke:#22c55e`,
+
+'d-summary': `graph TD
+  LAYOUT["グリッド・レイアウト<br/>Flexbox / Grid / パターン集<br/>→ 要素をどこに置くか"] --> DS
+  COMP["コンポーネント設計<br/>BEM / バリアント / 状態管理<br/>→ UIをどう部品化するか"] --> DS
+  RESP["レスポンシブデザイン<br/>コンテナクエリ / clamp()<br/>→ 全デバイスで使えるか"] --> DS
+  A11Y["アクセシビリティ<br/>セマンティックHTML / ARIA<br/>→ 全員が使えるか"] --> DS
+  DS["優れたデザインシステム<br/>一貫性・堅牢性・アクセシビリティを<br/>すべて備えた高品質なUI"]
+  style LAYOUT fill:#2d1e4a,color:#c4b5fd,stroke:#8b5cf6
+  style COMP fill:#1e2d4a,color:#93c5fd,stroke:#3b82f6
+  style RESP fill:#1e4a2d,color:#86efac,stroke:#22c55e
+  style A11Y fill:#4a2d1e,color:#fb923c,stroke:#ea580c
+  style DS fill:#6C47FF,color:#fff,stroke:none`
+};
+
+// ============================================================
+// MERMAID 初期化
+// ============================================================
+mermaid.initialize({
+  startOnLoad: false,
+                securityLevel: 'loose',
+  theme: 'dark',
+  darkMode: true,
+  fontFamily: 'Inter, sans-serif',
+  fontSize: 13,
+  themeVariables: {
+    background: '#0d1f35',
+    primaryColor: '#6C47FF',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: '#8b5cf6',
+    lineColor: '#4a5568',
+    secondaryColor: '#1e2d4a',
+    tertiaryColor: '#1e1e2e',
+    edgeLabelBackground: '#0d1f35',
+    clusterBkg: '#1e1e2e',
+    titleColor: '#e2e8f0'
+  },
+  flowchart: { curve: 'basis', htmlLabels: true, padding: 20 },
+  stateDiagram: { defaultRenderer: 'dagre-wrapper' }
+});
+
+// ============================================================
+// HIGHLIGHT.JS
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('pre code').forEach(block => {
+    hljs.highlightElement(block);
+  });
+});
+
+// ============================================================
+// SIDEBAR ACTIVE STATE — IntersectionObserver
+// ============================================================
+const navLinks = document.querySelectorAll('.ng ul li a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const id = entry.target.id;
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+    });
+  });
+}, { root: null, rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+document.querySelectorAll('.section, .sub').forEach(el => {
+  if (el.id) observer.observe(el);
+});
+
+            // --- mermaid render pipeline (apply_render_pipeline.ts) ---
+            function applySvgFixups(svgEl, src) {
+                svgEl.removeAttribute('width');
+                svgEl.removeAttribute('height');
+                svgEl.style.height = 'auto';
+                svgEl.style.maxWidth = '100%';
+                svgEl.style.overflow = 'visible';
+                svgEl.style.marginBottom = '10px';
+                const viewBox = svgEl.getAttribute('viewBox');
+                if (!viewBox) return;
+                const parts = viewBox.split(/\s+/).map(Number);
+                if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
+                const trimmed = src.trim();
+                const isSequenceOrState =
+                    trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
+                const extraHeight = isSequenceOrState ? 110 : 15;
+                const [x, y, w, h] = parts;
+                // 自然幅で表示し拡大は抑制。親より広い図のみ maxWidth で縮小される。
+                svgEl.style.width = w + 'px';
+                svgEl.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + (h + extraHeight));
+            }
+
+            (async () => {
+                if (document.fonts && document.fonts.ready) {
+                    try {
+                        await document.fonts.ready;
+                    } catch (_e) {
+                        /* フォント待機に失敗しても描画は継続する */
+                    }
+                }
+                for (const [id, src] of Object.entries(DIAGRAMS)) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    try {
+                        const { svg } = await mermaid.render('svg-' + id, src);
+                        el.innerHTML = svg;
+                        const svgEl = el.querySelector('svg');
+                        if (svgEl) applySvgFixups(svgEl, src);
+                    } catch (err) {
+                        el.innerHTML =
+                            '<pre style="color:#ff8888;white-space:pre-wrap">' +
+                            (err && err.message ? err.message : String(err)) +
+                            '</pre>';
+                    }
+                }
+            })();
+        </script>
+</body>
+</html>

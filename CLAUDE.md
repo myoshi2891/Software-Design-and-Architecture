@@ -16,10 +16,14 @@
 ### ルート（コンテンツ検証 / Bun）
 
 ```bash
+bun run test             # scripts/ の単体テスト (bun test)
+bun run audit            # 両ワークスペースの依存脆弱性監査 (scripts/audit-dependencies.ts)
 bun run check-links      # Markdown 内の外部リンク有効性チェック (scripts/verify-links.ts)
 bun run format-markdown  # Markdown 整形 (scripts/format-markdown.ts)
 bun run fix-markdown     # markdownlint エラー自動修正 (scripts/fix-markdown-errors.ts)
 ```
+
+`bun run audit` はルートと `web-next/` の両方で `bun audit --json` を実行し、閾値（既定 `low`）以上の脆弱性が 1 件でもあれば exit 1 で失敗する。閾値は `bun run audit --threshold=moderate` で変更可能。判定ロジックは `scripts/audit-report.ts` の純関数に分離してあり `bun run test` で検証する。
 
 スクリプトは `.ts` のまま `bun` で直接実行する（トランスパイル不要）。設定: `.markdownlint.json`, `.markdown-link-check.json`。
 
@@ -36,6 +40,36 @@ bun run build      # production build
 ```
 
 移行作業の検証は `lint` / `typecheck` / `test` / `build` の**全通過が必須**。
+
+## 依存関係の脆弱性対応
+
+`bun.lock` は `.gitignore` 対象で**共有されない**。したがって「`bun update` で lockfile を更新する」だけの修正はリポジトリに残らず、CI や他クローンの fresh install では再発する。
+
+- 修正は必ず `package.json` に反映する。直接依存はバージョンを上げ、**transitive 依存は `overrides` で最低安全バージョンを宣言**する。
+- `bun update <pkg>` は未宣言パッケージを**直接依存として追記してしまう**ため、transitive 依存の引き上げには使わない（`overrides` を使う）。
+- 現在の `overrides`（いずれも上流が古いバージョンを固定しているため必要）:
+  - ルート: `undici` / `js-yaml` — `markdown-link-check` 配下の transitive
+  - `web-next/`: `postcss`（`next` が exact pin）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.6` 配下）
+- 変更後は `bun run audit` が exit 0 であること、加えて `web-next/` の `lint` / `typecheck` / `test` / `build` 全通過を必須とする。
+
+```mermaid
+flowchart TD
+    Start[bun run audit] --> AuditRoot[root: bun audit --json]
+    AuditRoot --> CheckRoot{root 実行・パース成功?}
+    CheckRoot -- No --> Exit2[エラー終了: exit 2]
+    CheckRoot -- Yes --> AuditWebNext[web-next: bun audit --json]
+    AuditWebNext --> CheckWebNext{web-next 実行・パース成功?}
+    CheckWebNext -- No --> Exit2
+    CheckWebNext -- Yes --> ThresholdCheck{閾値以上の脆弱性あり?}
+    ThresholdCheck -- Yes --> Exit1[脆弱性検知: exit 1]
+    ThresholdCheck -- No --> Exit0[正常終了: exit 0]
+```
+
+### 参考文献・ソース一覧
+
+- **監査 CLI スクリプト**: [`scripts/audit-dependencies.ts`](./scripts/audit-dependencies.ts)
+- **監査判定ロジック・テスト**: [`scripts/audit-report.ts`](./scripts/audit-report.ts) / [`scripts/audit-report.test.ts`](./scripts/audit-report.test.ts)
+- **CI/CD ワークフロー (`dependency-audit` ジョブ)**: [`.github/workflows/link-check.yml`](./.github/workflows/link-check.yml)
 
 ## 絶対ルール（OVERRIDE 不可）
 

@@ -122,6 +122,20 @@ bun run check-links
 bun ./scripts/verify-links.ts
 ```
 
+### 依存関係の脆弱性監査
+
+依存パッケージの既知脆弱性を検査するために `audit-dependencies`（[scripts/audit-dependencies.ts](scripts/audit-dependencies.ts)）を使用しています。ルートと `web-next/` の両ワークスペースで `bun audit` を実行し、閾値（既定 `low`）以上の脆弱性があれば失敗します。
+
+```bash
+bun run test    # 監査ロジック（scripts/audit-report.ts）の単体テスト
+bun run audit   # 両ワークスペースの脆弱性監査
+
+# 閾値を moderate 以上に変更する場合
+bun run audit --threshold=moderate
+```
+
+`bun.lock` はコミット対象外のため、脆弱性の修正は `package.json` に反映します。直接依存はバージョンを上げ、transitive 依存は `overrides` で最低安全バージョンを宣言してください。
+
 ### リンティング
 
 Markdownのスタイルを統一するために `markdownlint` を使用しています（設定ファイル: `.markdownlint.json`）。

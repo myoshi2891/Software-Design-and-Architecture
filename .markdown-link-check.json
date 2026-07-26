@@ -206,6 +206,30 @@
     },
     {
       "pattern": "^https://cube\\.fyi(?:/|$)"
+    },
+    {
+      "pattern": "^https://(www\\.)?ryanmulligan\\.dev(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?xp123\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?cdmp\\.info(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://biomejs\\.dev(?:/|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?stylelint\\.io(?:/|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?chromatic\\.com(?:/|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?zeroheight\\.com(?:/|$)"
+    },
+    {
+      "pattern": "^https?://postcss\\.org(?:/|$)"
     }
   ],
   "replacementPatterns": [],
