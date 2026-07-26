@@ -39,6 +39,7 @@ sequenceDiagram
 2. **Executor 向け指示文（Preamble）**:
    - 計画書に従ってステップバイステップで作業し、各検証コマンドを実行すること。
    - スコープ内のファイルのみを編集すること。
+   - 実装・移行タスクでは Red → Green → Refactor を必須とすること。実装前に失敗するテストを作成して Red を確認し、最小実装で Green にした後、Refactor と再検証を行うこと。各フェーズの結果をレポートの `STEPS` に記録してから差分確認・コミットへ進むこと。
    - コミット前に `git diff` を確認し、個人の環境名・絶対パス・認証情報が差分に含まれていないことを検証すること。
    - 検証後、成果物は計画書の git ワークフローに従って Worktree 内でコミットすること。
    - レポートは以下のフォーマットで返却すること。
@@ -59,9 +60,9 @@ NOTES: レビュアーへの注意事項（逸脱点、想定外の挙動、判�
 
 1. **ベース SHA（`${BASE_SHA}`）および作業ツリーの差分・未追跡ファイル検証**:
    - ディスパッチ前に保存したベース SHA (`BASE_SHA`) からの変更（コミット済み・作業ツリー含む）および未追跡ファイルを検証します。
-   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}` および `git -C <worktree> ls-files --others --ignored --exclude-standard`
+   - コマンド: `git -C <worktree> diff --stat ${BASE_SHA}`、通常の未追跡ファイルを収集する `git -C <worktree> ls-files --others --exclude-standard`、および ignored 未追跡ファイルを収集する `git -C <worktree> ls-files --others --ignored --exclude-standard`
    - Executor が Worktree 内で作成したコミット・変更に加え、未追跡のスコープ外ファイルも含めた変更ファイル全体が計画のインスコープ（In Scope）一覧と合致するか確認します。スコープ外のファイル（コミット済み・未追跡問わず）が1つでも検知された場合はレビュー失敗とします。
-   - 詳細差分の確認: `git -C <worktree> diff ${BASE_SHA}` で実装内容を読み、コード規約や目的に適合しているか判定します。
+   - 詳細差分の確認: `git -C <worktree> diff ${BASE_SHA}` の実装内容と、上記 2 コマンドで収集したすべての未追跡ファイルの内容を確認し、コード規約や目的に適合しているか判定します。
 2. **完了条件（Done criteria）の再実行**:
    - Executor の自己報告を鵜呑みにせず、Worktree 内で全検証コマンドを再実行します。
 3. **新規テストの検証**:
@@ -140,6 +141,12 @@ export function reviewExecutorDiff(options: ReviewOptions): {
 
   const untrackedOutput = execFileSync(
     "git",
+    ["-C", worktreePath, "ls-files", "--others", "--exclude-standard", "-z"],
+    { encoding: "utf-8" }
+  );
+
+  const ignoredUntrackedOutput = execFileSync(
+    "git",
     ["-C", worktreePath, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"],
     { encoding: "utf-8" }
   );
@@ -148,6 +155,7 @@ export function reviewExecutorDiff(options: ReviewOptions): {
     new Set([
       ...diffOutput.split("\0").filter(Boolean),
       ...untrackedOutput.split("\0").filter(Boolean),
+      ...ignoredUntrackedOutput.split("\0").filter(Boolean),
     ])
   );
 
