@@ -83,6 +83,9 @@ import { execFileSync } from "node:child_process";
  * リポジトリの計画書用ドリフト検証スニペット (Bun / TypeScript)
  */
 export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[]): boolean {
+  if (!targetFiles || targetFiles.length === 0 || targetFiles.some((f) => !f || f.trim() === "")) {
+    throw new Error("対象ファイルリスト (targetFiles) が空であるか、空のパス要素を含んでいます。");
+  }
   if (!/^[0-9a-f]{40}$/i.test(baseCommitSha)) {
     throw new Error(`無効なベースコミット SHA 形式です: ${baseCommitSha}`);
   }
