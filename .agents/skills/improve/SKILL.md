@@ -104,7 +104,10 @@ export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[
       throw new Error("対象ファイルリスト (targetFiles) には単一のリポジトリ相対ファイルパスのみ指定できます。");
     }
 
-    const verifiedSha = execFileSync("git", ["rev-parse", "--verify", `${baseCommitSha}^{commit}`], {
+    const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf-8",
+    }).trim();
+    const verifiedSha = execFileSync("git", ["-C", repoRoot, "rev-parse", "--verify", `${baseCommitSha}^{commit}`], {
       encoding: "utf-8",
     }).trim();
 
@@ -113,12 +116,16 @@ export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[
     }
 
     console.log(`Checking drift against commit: ${verifiedSha}`);
-    const diffOutput = execFileSync("git", ["--literal-pathspecs", "diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles], {
-      encoding: "utf-8",
-    });
-    const untrackedOutput = execFileSync("git", ["--literal-pathspecs", "ls-files", "--others", "-z", "--", ...targetFiles], {
-      encoding: "utf-8",
-    });
+    const diffOutput = execFileSync(
+      "git",
+      ["-C", repoRoot, "--literal-pathspecs", "diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles],
+      { encoding: "utf-8" }
+    );
+    const untrackedOutput = execFileSync(
+      "git",
+      ["-C", repoRoot, "--literal-pathspecs", "ls-files", "--others", "-z", "--", ...targetFiles],
+      { encoding: "utf-8" }
+    );
 
     const changedFiles = Array.from(
       new Set([...diffOutput.split("\0").filter(Boolean), ...untrackedOutput.split("\0").filter(Boolean)])
