@@ -78,18 +78,32 @@ plans/ (または advisor-plans/)
 
 ```typescript
 import { execFileSync } from "node:child_process";
+import { posix, win32 } from "node:path";
 
 /**
  * リポジトリの計画書用ドリフト検証スニペット (Bun / TypeScript)
  */
 export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[]): boolean {
-  if (!targetFiles || targetFiles.length === 0 || targetFiles.some((f) => !f || f.trim() === "")) {
-    throw new Error("対象ファイルリスト (targetFiles) が空であるか、空のパス要素を含んでいます。");
-  }
   if (!/^[0-9a-f]{40}$/i.test(baseCommitSha)) {
     throw new Error(`無効なベースコミット SHA 形式です: ${baseCommitSha}`);
   }
   try {
+    if (!targetFiles || targetFiles.length === 0 || targetFiles.some((f) => !f || f.trim() === "")) {
+      throw new Error("対象ファイルリスト (targetFiles) が空であるか、空のパス要素を含んでいます。");
+    }
+    if (
+      targetFiles.some((f) => {
+        const segments = f.split(/[\\/]/);
+        return (
+          posix.isAbsolute(f) ||
+          win32.isAbsolute(f) ||
+          segments.some((segment) => segment === "" || segment === "." || segment === "..")
+        );
+      })
+    ) {
+      throw new Error("対象ファイルリスト (targetFiles) には単一のリポジトリ相対ファイルパスのみ指定できます。");
+    }
+
     const verifiedSha = execFileSync("git", ["rev-parse", "--verify", `${baseCommitSha}^{commit}`], {
       encoding: "utf-8",
     }).trim();
