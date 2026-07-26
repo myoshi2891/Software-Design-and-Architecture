@@ -74,7 +74,7 @@ plans/
 
 ## スクリプト例（TypeScript / Bun）
 
-以下は、計画書作成時にリポジトリ内のコード型チェックおよびドリフト状態を安全に検証するための動作可能な TypeScript スクリプト例です（`bun` ランタイムで実行可能）：
+以下は、計画書作成時にリポジトリ内のドリフト状態を安全に検証するための動作可能な TypeScript スクリプト例です（`bun` ランタイムで実行可能）：
 
 ```typescript
 import { execFileSync } from "node:child_process";
@@ -96,10 +96,10 @@ export function checkRepositoryDrift(baseCommitSha: string, targetFiles: string[
     }
 
     console.log(`Checking drift against commit: ${verifiedSha}`);
-    const diffOutput = execFileSync("git", ["diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles], {
+    const diffOutput = execFileSync("git", ["--literal-pathspecs", "diff", "--name-only", "-z", verifiedSha, "--", ...targetFiles], {
       encoding: "utf-8",
     });
-    const untrackedOutput = execFileSync("git", ["ls-files", "--others", "--exclude-standard", "-z", "--", ...targetFiles], {
+    const untrackedOutput = execFileSync("git", ["--literal-pathspecs", "ls-files", "--others", "--exclude-standard", "-z", "--", ...targetFiles], {
       encoding: "utf-8",
     });
 
