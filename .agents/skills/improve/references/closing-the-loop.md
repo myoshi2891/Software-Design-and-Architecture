@@ -131,13 +131,24 @@ export function reviewExecutorDiff(options: ReviewOptions): {
     throw new Error(`検証済み SHA が完全形式ではありません: ${verifiedBase}`);
   }
 
-  const output = execFileSync(
+  const diffOutput = execFileSync(
     "git",
-    ["-C", worktreePath, "diff", "--name-only", "-z", `${verifiedBase}...HEAD`],
+    ["-C", worktreePath, "diff", "--name-only", "-z", verifiedBase],
     { encoding: "utf-8" }
   );
 
-  const changedFiles = output.split("\0").filter(Boolean);
+  const untrackedOutput = execFileSync(
+    "git",
+    ["-C", worktreePath, "ls-files", "--others", "--exclude-standard", "-z"],
+    { encoding: "utf-8" }
+  );
+
+  const changedFiles = Array.from(
+    new Set([
+      ...diffOutput.split("\0").filter(Boolean),
+      ...untrackedOutput.split("\0").filter(Boolean),
+    ])
+  );
 
   const outOfScopeFiles = changedFiles.filter((file) => !inScopeFiles.includes(file));
 
