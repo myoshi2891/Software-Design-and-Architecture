@@ -61,10 +61,10 @@ flowchart TD
 
 選定された指摘事項ごとに、[references/plan-template.md](references/plan-template.md) のテンプレートに基づいて計画書を作成します。
 
-ディレクトリ構造：
+ディレクトリ構造（`plans/` が別用途で存在する場合は `advisor-plans/` を使用）：
 
 ```text
-plans/
+plans/ (または advisor-plans/)
   README.md          ← インデックス: 優先順位、依存関係グラフ、ステータステーブル
   001-<slug>.md
   002-<slug>.md
