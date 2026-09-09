@@ -70,4 +70,43 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
       expect(spans.length).toBeGreaterThan(0);
     }
   });
+
+  describe("Category B: ツール & 実装 (s5 - s9)", () => {
+    it("Category B のセクション (s5, s6, s7, s8, s9) の見出しが存在する", () => {
+      const { container } = render(<Page />);
+      const s5 = container.querySelector("section#s5");
+      const s6 = container.querySelector("section#s6");
+      const s7 = container.querySelector("section#s7");
+      const s8 = container.querySelector("section#s8");
+      const s9 = container.querySelector("section#s9");
+
+      expect(s5?.querySelector("h2")?.textContent).toContain("ツールチェーンの選定");
+      expect(s6?.querySelector("h2")?.textContent).toContain("Cucumber 完全実装ガイド（Java）");
+      expect(s7?.querySelector("h2")?.textContent).toContain("pytest-bdd 完全実装ガイド");
+      expect(s8?.querySelector("h2")?.textContent).toContain("ステップ定義のベストプラクティス");
+      expect(s9?.querySelector("h2")?.textContent).toContain("フィクスチャとコンテキスト管理");
+    });
+
+    it("Mermaid 図 m-tools と m-cucumber-arch が追加され、合計 10 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(10);
+    });
+
+    it("s6-s9 に複数のコードブロック（Java, Python, pom.xml等）が存在する", () => {
+      const { container } = render(<Page />);
+      const s6 = container.querySelector("section#s6");
+      const s7 = container.querySelector("section#s7");
+      const s8 = container.querySelector("section#s8");
+      const s9 = container.querySelector("section#s9");
+
+      const s6Pres = s6?.querySelectorAll("pre") ?? [];
+      const s7Pres = s7?.querySelectorAll("pre") ?? [];
+      const s8Pres = s8?.querySelectorAll("pre") ?? [];
+      const s9Pres = s9?.querySelectorAll("pre") ?? [];
+
+      expect(s6Pres.length + s7Pres.length + s8Pres.length + s9Pres.length).toBeGreaterThanOrEqual(6);
+    });
+  });
 });
+
