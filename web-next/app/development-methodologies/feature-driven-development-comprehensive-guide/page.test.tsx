@@ -171,13 +171,13 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       const flow = s10?.querySelector(".status-flow");
       expect(flow).not.toBeNull();
       const steps = s10?.querySelectorAll(".status-step") ?? [];
-      expect(steps.length).toBe(6);
-      expect(s10?.textContent).toContain("ドメインウォークスルー");
+      expect(steps.length).toBe(7);
+      expect(s10?.textContent).toContain("未着手");
       expect(s10?.textContent).toContain("設計");
-      expect(s10?.textContent).toContain("設計インスペクション");
-      expect(s10?.textContent).toContain("コード実装");
-      expect(s10?.textContent).toContain("コードインスペクション");
-      expect(s10?.textContent).toContain("メイン統合");
+      expect(s10?.textContent).toContain("設計検査完了");
+      expect(s10?.textContent).toContain("コーディング");
+      expect(s10?.textContent).toContain("コード検査完了");
+      expect(s10?.textContent).toContain("プロモーション完了");
 
       const table = s10?.querySelector("table");
       expect(table).not.toBeNull();

@@ -2193,22 +2193,352 @@ style SATO fill:#074440,stroke:#14a8a2,color:#96f2ee`}
               </div>
             </div>
           </section>
+          {/* ========== SECTION 9 ========== */}
           <section id="s9">
             <div className="section-header">
               <span className="section-num">09</span>
               <h2>フィーチャーの記述と分解方法</h2>
             </div>
+            <p className="lead">
+              フィーチャーを適切な粒度に分解することはFDDの成否を決める最重要スキルです。大きすぎても小さすぎてもうまくいきません。
+            </p>
+
+            <h3>フィーチャー分解のステップ</h3>
+            <ol className="step-list">
+              <li>
+                <div className="step-content">
+                  <div className="step-title">ビジネスビジョンから出発</div>
+                  <div className="step-desc">例: 顧客がオンラインで商品を購入できるECサイト</div>
+                </div>
+              </li>
+              <li>
+                <div className="step-content">
+                  <div className="step-title">Subject Area への分解</div>
+                  <div className="step-desc">例: 顧客管理 / 商品管理 / 注文管理 / 決済</div>
+                </div>
+              </li>
+              <li>
+                <div className="step-content">
+                  <div className="step-title">Business Activity への分解</div>
+                  <div className="step-desc">例: 注文管理 → 注文処理 / 注文追跡 / 返品処理</div>
+                </div>
+              </li>
+              <li>
+                <div className="step-content">
+                  <div className="step-title">Feature への分解（2週間以内の粒度）</div>
+                  <div className="step-desc">
+                    例: 注文処理 → カートから注文を作成する / 注文確認メールを送信する /
+                    注文ステータスを更新する
+                  </div>
+                </div>
+              </li>
+            </ol>
+
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart TD
+A["ビジネスビジョン\\n例: 顧客がオンラインで商品を購入できるECサイト"] --> B["Subject Area への分解\\n例: 顧客管理 / 商品管理 / 注文管理 / 決済"]
+B --> C["Business Activity への分解\\n例: 注文管理 → 注文処理 / 注文追跡 / 返品処理"]
+C --> D["Feature への分解\\n例: 注文処理 → カートから注文を作成する\\n          → 注文確認メールを送信する\\n          → 注文ステータスを更新する"]
+D --> E["Task への分解(実装内部のみ・チームに非公開)\\n例: Orderクラスの作成 / OrderRepository実装 / ユニットテスト"]
+style A fill:#2e0e6e,stroke:#7c35f0,color:#d8bfff
+style B fill:#074440,stroke:#14a8a2,color:#96f2ee
+style C fill:#0d1f3c,stroke:#3b82f6,color:#93c5fd
+style D fill:#0d2818,stroke:#22c55e,color:#86efac
+style E fill:#1e2535,stroke:#2e3650,color:#5c6480`}
+                />
+              </div>
+            </div>
+
+            <h3>フィーチャーの粒度チェックフロー</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart TD
+A["フィーチャーの粒度チェック"] --> Q1{"2週間以内に\\n完了できるか？"}
+Q1 --> |"No(大きい)"| TOO_BIG["大きすぎる\\nさらに分解する"]
+Q1 --> |"Yes"| Q2{"ビジネス価値が\\n明確か？"}
+Q2 --> |"No"| TOO_SMALL["小さすぎる or 技術的すぎる\\nタスクレベル。まとめるか破棄する"]
+Q2 --> |"Yes"| Q3{"テスト可能か？"}
+Q3 --> |"No"| TOO_SMALL
+Q3 --> |"Yes"| Q4{"独立して\\nデリバリーできるか？"}
+Q4 --> |"No"| TOO_BIG
+Q4 --> |"Yes"| OK["適切な粒度\\nフィーチャーリストに追加"]
+style TOO_BIG fill:#2a1020,stroke:#ef4444,color:#fca5a5
+style TOO_SMALL fill:#2a1e0a,stroke:#f59e0b,color:#fde68a
+style OK fill:#0d2818,stroke:#22c55e,color:#86efac`}
+                />
+              </div>
+            </div>
           </section>
+
+          {/* ========== SECTION 10 ========== */}
           <section id="s10">
             <div className="section-header">
               <span className="section-num">10</span>
               <h2>進捗管理と報告</h2>
             </div>
+            <p className="lead">
+              FDDの最大の強みのひとつが、フィーチャー単位での細かい進捗可視化です。6段階の完了ステータスを使い、常に正確な現状を把握・報告できます。
+            </p>
+
+            <h3>6段階完了ステータス</h3>
+            <p>
+              FDDでは各フィーチャーに以下の6段階のステータスを割り当てます。「ほぼ完了」「だいたい終わり」は存在しません。
+            </p>
+
+            <div className="status-flow">
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#1e2535", borderColor: "#2e3650", color: "#5c6480" }}
+                >
+                  0%
+                </div>
+                <div className="status-label">未着手</div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#0d1f3c", borderColor: "#3b82f6", color: "#93c5fd" }}
+                >
+                  1%
+                </div>
+                <div className="status-label">
+                  設計
+                  <br />
+                  開始
+                </div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#0d1f3c", borderColor: "#3b82f6", color: "#93c5fd" }}
+                >
+                  40%
+                </div>
+                <div className="status-label">
+                  設計
+                  <br />
+                  完了
+                </div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#2a1e0a", borderColor: "#f59e0b", color: "#fde68a" }}
+                >
+                  45%
+                </div>
+                <div className="status-label">
+                  設計
+                  <br />
+                  検査完了
+                </div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#2a1e0a", borderColor: "#f59e0b", color: "#fde68a" }}
+                >
+                  50%
+                </div>
+                <div className="status-label">
+                  コーディング
+                  <br />
+                  開始
+                </div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#0d2818", borderColor: "#22c55e", color: "#86efac" }}
+                >
+                  99%
+                </div>
+                <div className="status-label">
+                  コード検査
+                  <br />
+                  完了
+                </div>
+              </div>
+              <div className="status-step">
+                <div
+                  className="status-pct"
+                  style={{ background: "#2e0e6e", borderColor: "#7c35f0", color: "#d8bfff" }}
+                >
+                  100%
+                </div>
+                <div className="status-label">
+                  プロモーション
+                  <br />
+                  完了
+                </div>
+              </div>
+            </div>
+
+            <div className="callout callout-warning">
+              <div className="callout-label">注意</div>
+              <p>
+                「コーディング開始が約50%」というのは直感に反するように見えますが、FDDでは「設計なき構築は半分も進んでいない」という考え方を反映しています。設計と検査に同等の重みを置くことで品質を確保します。
+              </p>
+            </div>
+
+            <h3>進捗管理のベストプラクティス</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>プラクティス</th>
+                  <th>詳細</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="badge badge-teal">1</span>
+                  </td>
+                  <td>フィーチャー単位で進捗を測る</td>
+                  <td>ストーリーポイントより完了フィーチャー数で測定する</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="badge badge-teal">2</span>
+                  </td>
+                  <td>週次レポートを欠かさない</td>
+                  <td>ステークホルダーに毎週現状を共有する</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="badge badge-teal">3</span>
+                  </td>
+                  <td>6段階ステータスを厳格に運用</td>
+                  <td>「ほぼ完了」は存在しない。明確なステータスを保つ</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="badge badge-teal">4</span>
+                  </td>
+                  <td>色分けで視覚化する</td>
+                  <td>赤（遅延）黄（注意）緑（正常）で全員が一目で把握できるようにする</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="badge badge-teal">5</span>
+                  </td>
+                  <td>バーンアップチャートを使う</td>
+                  <td>
+                    スコープ変更も反映できるバーンアップが推奨（バーンダウンよりも誤解が少ない）
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </section>
+
+          {/* ========== SECTION 11 ========== */}
           <section id="s11">
             <div className="section-header">
               <span className="section-num">11</span>
               <h2>FDDと他手法との比較・組み合わせ</h2>
+            </div>
+            <p className="lead">
+              FDDは他のアジャイル手法と排他的ではなく、組み合わせて使うことができます。それぞれの強みを理解した上で、プロジェクトの特性に合わせて選択・組み合わせることが重要です。
+            </p>
+
+            <h3>主要手法との比較</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>観点</th>
+                  <th>FDD</th>
+                  <th>Scrum</th>
+                  <th>XP</th>
+                  <th>Kanban</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>反復サイクル</td>
+                  <td>2週間（フィーチャー単位）</td>
+                  <td>1〜4週間</td>
+                  <td>1〜2週間</td>
+                  <td>なし（継続フロー）</td>
+                </tr>
+                <tr>
+                  <td>進捗の単位</td>
+                  <td>フィーチャー完了数</td>
+                  <td>ストーリーポイント</td>
+                  <td>テスト通過数</td>
+                  <td>スループット</td>
+                </tr>
+                <tr>
+                  <td>スケール</td>
+                  <td>
+                    <span className="badge badge-green">大規模向き</span>
+                  </td>
+                  <td>
+                    <span className="badge badge-teal">小〜中規模</span>
+                  </td>
+                  <td>
+                    <span className="badge badge-teal">小〜中規模</span>
+                  </td>
+                  <td>
+                    <span className="badge badge-blue">規模問わず</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>設計重視度</td>
+                  <td>
+                    <span className="badge badge-green">高（モデリング重視）</span>
+                  </td>
+                  <td>中</td>
+                  <td>高（TDD重視）</td>
+                  <td>低</td>
+                </tr>
+                <tr>
+                  <td>ロール定義</td>
+                  <td>明確（6種類）</td>
+                  <td>明確（3種類）</td>
+                  <td>明確（ペア）</td>
+                  <td>少ない</td>
+                </tr>
+                <tr>
+                  <td>適用ドメイン</td>
+                  <td>複雑なビジネスロジック</td>
+                  <td>幅広い</td>
+                  <td>技術品質重視</td>
+                  <td>保守・運用</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>FDDと他手法の組み合わせパターン</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart TD
+FDD["FDD(コアプロセス)"]
+FDD --> A["FDD + DDD\\nドメインモデルをDDDで設計\\nフィーチャー分解はFDDで実施\\n大規模・複雑ドメインに最適"]
+FDD --> B["FDD + TDD\\nフィーチャー設計フェーズで\\nテストを先に書く\\n品質とスピードのバランス"]
+FDD --> C["FDD + Scrum\\nフィーチャーリストを\\nProduct Backlogとして使用\\nアジャイル組織への導入がしやすい"]
+FDD --> D["FDD + CI/CD\\nフィーチャー完了ごとに自動ビルド\\n継続的デリバリーの実現"]
+style FDD fill:#2a1020,stroke:#f04838,color:#ffccc4
+style A fill:#2e0e6e,stroke:#7c35f0,color:#d8bfff
+style B fill:#074440,stroke:#14a8a2,color:#96f2ee
+style C fill:#0d2818,stroke:#22c55e,color:#86efac
+style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
+                />
+              </div>
+            </div>
+
+            <div className="callout callout-info">
+              <div className="callout-label">出典</div>
+              <p>
+                各手法の比較: Agile Alliance Glossary —{" "}
+                <Ext href="https://www.agilealliance.org/">https://www.agilealliance.org/</Ext> /{" "}
+                Scrum.org — <Ext href="https://www.scrum.org/">https://www.scrum.org/</Ext>
+              </p>
             </div>
           </section>
           <section id="s12">
