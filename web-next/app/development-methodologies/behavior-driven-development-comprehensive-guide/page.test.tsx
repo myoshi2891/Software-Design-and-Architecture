@@ -110,4 +110,43 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
       );
     });
   });
+
+  describe("Category C: 高度な実践 (s10 - s13)", () => {
+    it("Category C のセクション (s10, s11, s12, s13) の見出しが存在する", () => {
+      const { container } = render(<Page />);
+      const s10 = container.querySelector("section#s10");
+      const s11 = container.querySelector("section#s11");
+      const s12 = container.querySelector("section#s12");
+      const s13 = container.querySelector("section#s13");
+
+      expect(s10?.querySelector("h2")?.textContent).toContain("BDD と TDD の二重ループ");
+      expect(s11?.querySelector("h2")?.textContent).toContain("受け入れテスト自動化（ATDD）");
+      expect(s12?.querySelector("h2")?.textContent).toContain("BDD による API テスト");
+      expect(s13?.querySelector("h2")?.textContent).toContain("BDD による UI テスト");
+    });
+
+    it("Mermaid 図 m-doubleloop, m-atdd, m-ui-arch が追加され、合計 13 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(13);
+    });
+
+    it("s10-s13 にコードブロック（Feature, API, Playwright等）が存在する", () => {
+      const { container } = render(<Page />);
+      const s10 = container.querySelector("section#s10");
+      const s11 = container.querySelector("section#s11");
+      const s12 = container.querySelector("section#s12");
+      const s13 = container.querySelector("section#s13");
+
+      const s10Pres = s10?.querySelectorAll("pre") ?? [];
+      const s11Pres = s11?.querySelectorAll("pre") ?? [];
+      const s12Pres = s12?.querySelectorAll("pre") ?? [];
+      const s13Pres = s13?.querySelectorAll("pre") ?? [];
+
+      expect(s10Pres.length + s11Pres.length + s12Pres.length + s13Pres.length).toBeGreaterThanOrEqual(
+        4
+      );
+    });
+  });
 });
+
