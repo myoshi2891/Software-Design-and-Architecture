@@ -125,6 +125,39 @@ const DIAGRAM_ACCEPTANCE_FLOW = `flowchart LR
     S4 --> S5["全テスト通過 = 機能完了の証明"]
     S5 --> S6["顧客が確認・承認"]`;
 
+const DIAGRAM_ITERATION_CYCLE = `flowchart TD
+    MON["月曜日：計画ゲーム\\n前回の振り返り 30分\\nベロシティの確認\\n今回のストーリー選択\\nタスク分解と見積もり"]
+    DEV["火〜木：開発\\nTDDでコードを書く\\nペアプログラミング\\n継続的インテグレーション\\nデイリースタンドアップ 15分"]
+    FRI["金曜日：レビュー & 振り返り\\nデモ（完成した機能を顧客に）\\n受け入れテストの実行\\nKPT振り返り\\n次のイテレーションへの準備"]
+    MON --> DEV --> FRI --> MON`;
+
+const DIAGRAM_XP_HEALTH = `flowchart TD
+    Q1{"毎日mainへプッシュしているか？"}
+    Q2{"コードの前にテストを書いているか？"}
+    Q3{"全員がすべてのコードに触れているか？"}
+    Q4{"イテレーションごとにリリースできるか？"}
+    Q5{"週40時間以内で働けているか？"}
+    Q6{"顧客との対話が週2回以上か？"}
+    OK["健全なXPプロジェクト"]
+    F1["Trunk-Based Developmentへ移行"]
+    F2["TDDのサイクルを学び直す"]
+    F3["ペアプロとコレクティブOWを強化"]
+    F4["ストーリーをさらに小さく分割"]
+    F5["計画を見直す・スコープを削る"]
+    F6["オンサイト顧客またはPO制を導入"]
+    Q1 -->|No| F1
+    Q1 -->|Yes| Q2
+    Q2 -->|No| F2
+    Q2 -->|Yes| Q3
+    Q3 -->|No| F3
+    Q3 -->|Yes| Q4
+    Q4 -->|No| F4
+    Q4 -->|Yes| Q5
+    Q5 -->|No| F5
+    Q5 -->|Yes| Q6
+    Q6 -->|No| F6
+    Q6 -->|Yes| OK`;
+
 export default function ExtremeProgrammingGuidePage() {
   return (
     <div className="extreme-programming-comprehensive-guide">
@@ -1627,6 +1660,949 @@ export default function ExtremeProgrammingGuidePage() {
             <div className="callout callout-info" style={{ marginTop: 12 }}>
               <strong>XPのルール：</strong>
               コードを書く前にテストを書く（TDD）。受け入れテストは顧客と一緒に定義する。全テストは自動化して毎回実行する。
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S17: ロールと責務
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s17" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 17</span>
+              </div>
+              <h2>XPのロールと責務</h2>
+              <p>チームを構成する5つのロール</p>
+            </div>
+            <div className="grid-2">
+              <div className="vcard vcard-blue">
+                <div className="vcard-label vcard-label-blue">👤 顧客（Customer）</div>
+                <div className="vcard-desc">
+                  <ul>
+                    <li>ユーザーストーリーを書く</li>
+                    <li>優先順位を決める</li>
+                    <li>受け入れテストを定義する</li>
+                    <li>機能の完了を承認する</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="vcard vcard-green">
+                <div className="vcard-label vcard-label-green">💻 開発者（Developer）</div>
+                <div className="vcard-desc">
+                  <ul>
+                    <li>ユーザーストーリーを見積もる</li>
+                    <li>TDDでコードを書く</li>
+                    <li>ペアプログラミングを行う</li>
+                    <li>設計・リファクタリングを担当</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="vcard vcard-amber">
+                <div className="vcard-label vcard-label-amber">🎓 コーチ（Coach）</div>
+                <div className="vcard-desc">
+                  <ul>
+                    <li>XPのプロセスをガイドする</li>
+                    <li>プラクティスの定着を支援</li>
+                    <li>チームの自律を促進する</li>
+                    <li>経験者が担当</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="vcard vcard-purple">
+                <div className="vcard-label vcard-label-purple">📊 トラッカー（Tracker）</div>
+                <div className="vcard-desc">
+                  <ul>
+                    <li>進捗を追跡・可視化する</li>
+                    <li>ベロシティを計測する</li>
+                    <li>計画との差異を報告する</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="vcard vcard-coral" style={{ gridColumn: "1/-1" }}>
+                <div className="vcard-label vcard-label-coral">📋 マネージャー（Manager）</div>
+                <div className="vcard-desc">
+                  <ul style={{ columns: 2 }}>
+                    <li>チームが集中できる環境を作る</li>
+                    <li>外部からの干渉をブロックする</li>
+                    <li>リソースを確保する</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S18: イテレーションサイクル
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s18" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 18</span>
+              </div>
+              <h2>XPのイテレーションサイクル</h2>
+              <p>1〜2週間のリズムで回すフロー</p>
+            </div>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_ITERATION_CYCLE} preserveNaturalScale={true} />
+            </div>
+
+            <p className="sub-title">KPT 振り返りフレームワーク</p>
+            <div className="grid-3">
+              <div className="vcard vcard-green">
+                <div className="vcard-label vcard-label-green">✅ Keep（続けること）</div>
+                <div className="vcard-desc">
+                  良かったこと・うまくいったこと。次のイテレーションも継続する。
+                  <br />
+                  例：ペアプロで品質が上がった
+                </div>
+              </div>
+              <div className="vcard vcard-red">
+                <div className="vcard-label vcard-label-red">❌ Problem（問題点）</div>
+                <div className="vcard-desc">
+                  うまくいかなかったこと。困ったこと・障害になったこと。
+                  <br />
+                  例：CIが遅くてストレスだった
+                </div>
+              </div>
+              <div className="vcard vcard-blue">
+                <div className="vcard-label vcard-label-blue">🚀 Try（試すこと）</div>
+                <div className="vcard-desc">
+                  次回試すアイデア・改善案。担当者と期限を決める。
+                  <br />
+                  例：テストを並列化してCIを速くする
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S19: XP vs Scrum
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s19" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 19</span>
+              </div>
+              <h2>XPとScrumの比較・組み合わせ</h2>
+              <p>XPとScrumは相補的な関係にある</p>
+            </div>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>観点</th>
+                    <th style={{ color: "var(--c-teal-400)" }}>XP</th>
+                    <th style={{ color: "var(--c-blue-400)" }}>Scrum</th>
+                    <th style={{ color: "var(--c-purple-400)" }}>Kanban</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>主な焦点</td>
+                    <td>技術的品質</td>
+                    <td>チームプロセス</td>
+                    <td>フロー最適化</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>イテレーション</td>
+                    <td>1〜2週間（固定）</td>
+                    <td>2〜4週間（固定）</td>
+                    <td>継続的（固定なし）</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>変更対応</td>
+                    <td style={{ color: "var(--c-green-400)" }}>歓迎（即対応）</td>
+                    <td>制限（スプリント中不可）</td>
+                    <td>随時対応可</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>技術プラクティス</td>
+                    <td style={{ color: "var(--c-green-400)" }}>詳細に規定</td>
+                    <td>規定なし</td>
+                    <td>規定なし</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>適用場面</td>
+                    <td>技術的品質を上げたい</td>
+                    <td>チームの自己組織化</td>
+                    <td>保守・運用・サポート</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 500 }}>チームサイズ</td>
+                    <td>2〜12人</td>
+                    <td>3〜9人</td>
+                    <td>1〜チーム全体</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="callout callout-ok" style={{ marginTop: 12 }}>
+              <strong>最強の組み合わせ：</strong>
+              Scrum（プロセス管理）+ XP（技術プラクティス）=
+              スケーラブルなアジャイル開発。スクラムが「いつ・何を」を管理し、XPが「どう高品質に作るか」を保証する。
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S20: 導入ロードマップ
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s20" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 20</span>
+              </div>
+              <h2>XP導入ロードマップ</h2>
+              <p>段階的導入アプローチ（6ヶ月）</p>
+            </div>
+            <div className="grid-2" style={{ marginBottom: 16 }}>
+              <div className="card">
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span className="badge badge-blue">Phase 1（1〜2ヶ月）</span>
+                  <span style={{ fontWeight: 500 }}>基礎固め</span>
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>TDD勉強会・ハンズオン実施</li>
+                  <li>CI環境構築（GitHub Actions）</li>
+                  <li>デイリースタンドアップ開始</li>
+                  <li>コーディング規約を自動化</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span className="badge badge-green">Phase 2（2〜3ヶ月）</span>
+                  <span style={{ fontWeight: 500 }}>定着</span>
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>ペアプログラミング導入</li>
+                  <li>イテレーション計画ゲーム開始</li>
+                  <li>KPT振り返りの定期化</li>
+                  <li>ベロシティの計測開始</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span className="badge badge-amber">Phase 3（3〜6ヶ月）</span>
+                  <span style={{ fontWeight: 500 }}>拡張</span>
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>小さなリリースの実現</li>
+                  <li>コレクティブオーナーシップ強化</li>
+                  <li>受け入れテスト自動化</li>
+                  <li>リファクタリングの習慣化</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <span className="badge badge-purple">Phase 4（継続）</span>
+                  <span style={{ fontWeight: 500 }}>成熟</span>
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>全プラクティスの統合</li>
+                  <li>プロセスのカスタマイズ</li>
+                  <li>他チームへの展開検討</li>
+                  <li>自律的な改善サイクル</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="sub-title">導入の障壁と対策</p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>よくある障壁</th>
+                    <th>対策と説得材料</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-red-400)" }}>「TDDは時間がかかる」</td>
+                    <td style={{ color: "var(--c-green-400)" }}>
+                      短期的には遅いが、長期的にはバグ修正コストが減る。データで示す。
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-red-400)" }}>「ペアプロはリソースの無駄」</td>
+                    <td style={{ color: "var(--c-green-400)" }}>
+                      2人で書くとレビューコストが大幅削減。知識共有の副作用も大きい。
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-red-400)" }}>「毎日コミットするのは怖い」</td>
+                    <td style={{ color: "var(--c-green-400)" }}>
+                      CIがあれば問題は自動的に検出される。まず試してみる。
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-red-400)" }}>「顧客が一緒にいられない」</td>
+                    <td style={{ color: "var(--c-green-400)" }}>
+                      Slack・デモ環境・PO制で代替できる。フィードバック遅延を最小化する。
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S21: アンチパターン
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s21" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 21</span>
+              </div>
+              <h2>XPのアンチパターンと対策</h2>
+              <p>よくある失敗パターンを知り、対策する</p>
+            </div>
+            <div className="grid-2" style={{ marginBottom: 16 }}>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  Flaccid Scrum（貧弱なスクラム）
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  プロセスはスクラムだが、TDDもCIも何もやっていない。形式だけのアジャイル。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>具体的な技術プラクティスを導入する。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  TDDのふり
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  テストを後から書いて「TDDをやっています」と言う。本来のTDDではない。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>レッド→グリーン→リファクタの順序を厳守する。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  ペアプロの形骸化
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  片方がPCを見てもう片方がスマホを見ている状態。意味のない「ペア」。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>ロール交代・集中・フィードバックを徹底する。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  壊れたCIの放置
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  「後で直す」と言ってビルドが数日間赤いまま。CIへの信頼が失われる。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>壊れたビルドは最優先修正をチームルールとする。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  技術的負債の蓄積
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  「今はMVPだから」を言い訳にリファクタリングをしない。後から対処不能になる。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>ボーイスカウトルールを守る。常に少し良くする。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  顧客との距離
+                </div>
+                <div
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  ストーリーを決めたら数週間顧客と話さない。認識齟齬が積み重なる。
+                </div>
+                <div className="callout callout-ok" style={{ padding: "6px 10px" }}>
+                  <strong>対策：</strong>最低週2回は顧客とコンタクトする。
+                </div>
+              </div>
+            </div>
+
+            <p className="sub-title">XP健全性チェック</p>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_XP_HEALTH} preserveNaturalScale={true} />
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S22: ベストプラクティス
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s22" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 22</span>
+              </div>
+              <h2>ベストプラクティス総まとめ</h2>
+              <p>XP実践の黄金律10箇条</p>
+            </div>
+            <div className="grid-2" style={{ marginBottom: 24 }}>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  1
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>価値から始める</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    5つの価値を理解してからプラクティスを導入する。価値なきプラクティスは形骸化する。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  2
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>TDDは最初から</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    後からテストを追加するのは困難。最初から習慣にする。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  3
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>小さく早くリリース</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    大きなリリースより小さなリリースを。学習速度が上がる。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  4
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>ペアを定期的に変える</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    固定ペアは知識の孤立を生む。毎日・毎週ローテーションする。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  5
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>CIを神聖に扱う</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    壊れたビルドを最優先で修正。赤いCIを放置しない。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  6
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>シンプルに保つ</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    「将来必要かも」で複雑にしない。YAGNI・KISSを守る。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  7
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>顧客を巻き込む</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    技術チームだけで決めない。常にビジネス価値を確認する。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  8
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>振り返りを欠かさない</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    KPTをイテレーションごとに。改善のサイクルを回す。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  9
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>持続可能なペースを守る</div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    残業はプロセスの失敗のサイン。計画を見直すきっかけにする。
+                  </div>
+                </div>
+              </div>
+              <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div
+                  style={{
+                    color: "var(--c-teal-400)",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    minWidth: 24,
+                  }}
+                >
+                  10
+                </div>
+                <div>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>
+                    全プラクティスは連携している
+                  </div>
+                  <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                    1つだけ導入しても効果は薄い。相互依存を理解して組み合わせる。
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p className="sub-title">XP成熟度モデル</p>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#dc2626" }}>
+                Lv.0
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>XP未実践</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  アドホックな開発。プロセスが個人依存。
+                </span>
+              </div>
+            </div>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#ea580c" }}>
+                Lv.1
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>基礎プラクティス導入</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  デイリースタンドアップ。バージョン管理・基本的CI。
+                </span>
+              </div>
+            </div>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#d97706" }}>
+                Lv.2
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>技術品質の確立</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  TDDの実践。CI/CDの整備。コーディング規約。
+                </span>
+              </div>
+            </div>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#16a34a" }}>
+                Lv.3
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>チームプラクティスの定着</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  ペアプログラミング。コレクティブオーナーシップ。計画ゲーム。
+                </span>
+              </div>
+            </div>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#2563eb" }}>
+                Lv.4
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>顧客との統合</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  オンサイト顧客。受け入れテスト。小さなリリースの確立。
+                </span>
+              </div>
+            </div>
+            <div className="level-bar">
+              <div className="level-pill" style={{ background: "#7c3aed" }}>
+                Lv.5
+              </div>
+              <div>
+                <span style={{ fontWeight: 500 }}>XPの体質化</span>{" "}
+                <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  全プラクティスが自然に機能。状況に合わせてカスタマイズ。他チームへ伝播できる。
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S23: 参考文献
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s23" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 23</span>
+              </div>
+              <h2>参考文献・ソース一覧</h2>
+              <p>XP学習のための厳選リソース</p>
+            </div>
+
+            <p className="sub-title">必読書籍</p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>タイトル</th>
+                    <th>著者</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>
+                      Extreme Programming Explained（第2版）
+                    </td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Kent Beck, Cynthia Andres</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      XPの原典・バイブル。価値・原則・プラクティスを体系化
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>
+                      Test-Driven Development: By Example
+                    </td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Kent Beck</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      TDDの実践書。最も具体的なTDD解説
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Refactoring（第2版）</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Martin Fowler</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      リファクタリングパターンの決定版
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Clean Code</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Robert C. Martin</td>
+                    <td style={{ color: "var(--text-secondary)" }}>読みやすいコードの書き方</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>The Art of Agile Development</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>James Shore, Shane Warden</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      XPの現代的な実践ガイド。無料公開あり
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>
+                      Growing Object-Oriented Software, Guided by Tests
+                    </td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Freeman &amp; Pryce</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      TDD × OOP の実践的な組み合わせ
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="sub-title">公式ドキュメント・参考URL</p>
+            <div className="grid-2">
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  XPコア概念
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="http://www.extremeprogramming.org/">
+                      extremeprogramming.org（XP公式）
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://martinfowler.com/bliki/ExtremeProgramming.html">
+                      Martin Fowler — Extreme Programming
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://www.agilealliance.org/glossary/xp/">
+                      Agile Alliance — XP用語集
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://agilemanifesto.org/iso/ja/manifesto.html">
+                      アジャイルマニフェスト（日本語）
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  TDD
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">
+                      Martin Fowler — TestDrivenDevelopment
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://martinfowler.com/bliki/TestPyramid.html">
+                      Martin Fowler — テストピラミッド
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://blog.cleancoder.com/uncle-bob/2014/12/17/TheThreeRulesOfTdd.html">
+                      Uncle Bob — TDDの3つのルール
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://agileinaflash.blogspot.com/2009/02/first.html">
+                      FIRST原則（詳細解説）
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  ペアプログラミング
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="https://martinfowler.com/articles/on-pair-programming.html">
+                      Martin Fowler — On Pair Programming
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://www.agilealliance.org/glossary/pairing/">
+                      Agile Alliance — Pair Programming
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://learn.microsoft.com/ja-jp/visualstudio/liveshare/">
+                      VS Code Live Share 公式
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  継続的インテグレーション
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="https://martinfowler.com/articles/continuousIntegration.html">
+                      Martin Fowler — Continuous Integration
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://trunkbaseddevelopment.com/">
+                      Trunk Based Development 公式
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://docs.github.com/ja/actions">
+                      GitHub Actions ドキュメント（日本語）
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  リファクタリング・シンプルな設計
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="https://martinfowler.com/books/refactoring.html">
+                      Martin Fowler — Refactoring
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://martinfowler.com/bliki/BeckDesignRules.html">
+                      Martin Fowler — BeckDesignRules
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://martinfowler.com/bliki/Yagni.html">
+                      Martin Fowler — YAGNI
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  計画ゲーム・ストーリー
+                </div>
+                <ul className="src-list">
+                  <li>
+                    <Ext href="https://xp123.com/invest-in-good-stories-and-smart-tasks/">
+                      INVEST原則（Bill Wake）
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://www.agilealliance.org/glossary/planning-poker/">
+                      プランニングポーカー解説
+                    </Ext>
+                  </li>
+                  <li>
+                    <Ext href="https://www.jamesshore.com/v2/books/aoad2">
+                      The Art of Agile Development（無料公開）
+                    </Ext>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: 24,
+                padding: "12px 16px",
+                background: "var(--bg-tertiary)",
+                borderRadius: "var(--radius-md)",
+                fontSize: 12,
+                color: "var(--text-secondary)",
+              }}
+            >
+              本ドキュメントは2025年時点の情報を基に作成しています。各ツールのバージョンや仕様は変更される場合があります。実践前に必ず公式ドキュメントをご確認ください。
             </div>
           </div>
 
