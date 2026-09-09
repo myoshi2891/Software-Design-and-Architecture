@@ -1,4 +1,5 @@
 import {
+  IconAlertTriangle,
   IconBrain,
   IconBuilding,
   IconChartBar,
@@ -2541,28 +2542,662 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
               </p>
             </div>
           </section>
+          {/* ========== SECTION 12 ========== */}
           <section id="s12">
             <div className="section-header">
               <span className="section-num">12</span>
               <h2>FDD実践：ECサイト完全事例</h2>
             </div>
+            <p className="lead">
+              大手百貨店のECサイト構築プロジェクトを例に、FDDの5つのプロセスがどのように実践されるかをエンドツーエンドで解説します。
+            </p>
+
+            <h3>プロジェクト概要</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>プロジェクト名</td>
+                  <td>大手百貨店ECサイト構築</td>
+                </tr>
+                <tr>
+                  <td>チーム規模</td>
+                  <td>25名（チーフプログラマー3名・開発者20名・QA2名）</td>
+                </tr>
+                <tr>
+                  <td>期間</td>
+                  <td>6ヶ月（P1〜P3：1ヶ月 / P4〜P5：5ヶ月）</td>
+                </tr>
+                <tr>
+                  <td>フィーチャー総数</td>
+                  <td>120フィーチャー（顧客管理30件・商品管理35件・注文・決済55件）</td>
+                </tr>
+                <tr>
+                  <td>技術スタック</td>
+                  <td>Python（バックエンド）/ PostgreSQL / AWS</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>全体ドメインモデル（P1の成果物）</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`classDiagram
+  class Customer {
+    +register()
+    +login()
+    +updateProfile()
+    +viewOrderHistory()
+  }
+  class Cart {
+    +addItem()
+    +removeItem()
+    +updateQuantity()
+    +checkout()
+  }
+  class Order {
+    +create()
+    +confirm()
+    +cancel()
+    +track()
+  }
+  class Product {
+    +search()
+    +viewDetail()
+    +checkStock()
+  }
+  class Payment {
+    +process()
+    +refund()
+    +getStatus()
+  }
+  class Shipment {
+    +create()
+    +updateStatus()
+    +track()
+  }
+  class Review {
+    +submit()
+    +edit()
+    +delete()
+  }
+  Customer --> Cart : uses
+  Customer --> Order : places
+  Customer --> Review : writes
+  Cart --> Order : converts to
+  Order --> Payment : requires
+  Order --> Shipment : triggers
+  Product --> Cart : added to
+  Product --> Review : receives`}
+                />
+              </div>
+            </div>
+
+            <h3>注文作成フィーチャーの詳細シーケンス（P4の成果物）</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`sequenceDiagram
+  participant UI as フロントエンド
+  participant API as OrderAPI
+  participant ORDER_SVC as OrderService
+  participant CART_SVC as CartService
+  participant STOCK_SVC as StockService
+  participant ORDER_REPO as OrderRepository
+  participant EVENT_BUS as EventBus
+  UI->>API: POST /api/v1/orders
+  API->>ORDER_SVC: createOrder(customerId, cartId)
+  ORDER_SVC->>CART_SVC: getCartItems(cartId)
+  CART_SVC-->>ORDER_SVC: [CartItem...]
+  loop 各カートアイテム
+    ORDER_SVC->>STOCK_SVC: checkAvailability(productId, qty)
+    STOCK_SVC-->>ORDER_SVC: AvailabilityResult
+  end
+  ORDER_SVC->>ORDER_SVC: buildOrder(customerId, cartItems)
+  ORDER_SVC->>ORDER_SVC: calculateTotal()
+  ORDER_SVC->>ORDER_REPO: save(order)
+  ORDER_REPO-->>ORDER_SVC: savedOrder
+  ORDER_SVC->>EVENT_BUS: publish(OrderCreatedEvent)
+  EVENT_BUS-->>ORDER_SVC: ack
+  ORDER_SVC-->>API: OrderCreatedResult
+  API-->>UI: 201 {orderId, total, estimatedDelivery}`}
+                />
+              </div>
+            </div>
+
+            <h3>OrderService の実装例（P5の成果物）</h3>
+            <pre>
+              <code
+                className="language-python"
+                dangerouslySetInnerHTML={{
+                  __html: `<span class="kw">from</span> typing <span class="kw">import</span> List
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+
+<span class="kw">class</span> <span class="fn">InsufficientStockError</span>(Exception):
+    <span class="cm">"""在庫不足エラー（フィーチャー: 在庫不足の商品がある場合はエラーを返す）"""</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">class</span> <span class="fn">OrderService</span>:
+    <span class="cm">"""注文に関するビジネスロジックを集約するサービス（クラスオーナー: 田中さん）"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, cart_service, stock_service, order_repository, event_bus):
+        self._cart_service = cart_service
+        self._stock_service = stock_service
+        self._order_repository = order_repository
+        self._event_bus = event_bus
+
+    <span class="kw">def</span> <span class="fn">create_order</span>(self, customer_id: <span class="fn">str</span>, cart_id: <span class="fn">str</span>) -&gt; Order:
+        <span class="cm">"""
+        フィーチャー: カートから注文を作成する
+
+        受入基準:
+        - カート内の全商品が注文明細に変換される
+        - 在庫不足の商品がある場合はエラーを返す
+        - 注文IDが発行される
+        """</span>
+        cart_items = self._cart_service.get_cart_items(cart_id)
+
+        <span class="kw">for</span> item <span class="kw">in</span> cart_items:
+            availability = self._stock_service.check_availability(
+                item.product_id, item.quantity
+            )
+            <span class="kw">if not</span> availability.is_available:
+                <span class="kw">raise</span> <span class="fn">InsufficientStockError</span>(
+                    <span class="st">f"Product {item.product_id} has insufficient stock: "</span>
+                    <span class="st">f"requested={item.quantity}, available={availability.stock_count}"</span>
+                )
+
+        order = Order(
+            order_id=self._generate_order_id(),
+            customer_id=customer_id,
+            lines=[
+                OrderLine(
+                    product_id=item.product_id,
+                    product_name=item.product_name,
+                    quantity=item.quantity,
+                    unit_price=item.unit_price,
+                )
+                <span class="kw">for</span> item <span class="kw">in</span> cart_items
+            ],
+        )
+        order.calculate_total()
+
+        saved_order = self._order_repository.save(order)
+
+        self._event_bus.publish(OrderCreatedEvent(order_id=saved_order.order_id))
+
+        <span class="kw">return</span> saved_order
+
+    <span class="kw">def</span> <span class="fn">_generate_order_id</span>(self) -&gt; <span class="fn">str</span>:
+        <span class="kw">import</span> uuid
+        <span class="kw">return</span> <span class="fn">str</span>(uuid.uuid4())`,
+                }}
+              />
+            </pre>
           </section>
+
+          {/* ========== SECTION 13 ========== */}
           <section id="s13">
             <div className="section-header">
               <span className="section-num">13</span>
               <h2>FDDのベストプラクティス総まとめ</h2>
             </div>
+            <p className="lead">
+              5つのプロセスを横断する観点から、FDD実践で守るべき最重要プラクティスをまとめます。
+            </p>
+
+            <h3>プロセス別ベストプラクティス一覧</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart LR
+  subgraph P1["P1: 全体モデル"]
+    BP1_1["完璧なモデルより\\n共通理解を優先"]
+    BP1_2["ドメインエキスパートを\\n必ず参加させる"]
+    BP1_3["2週間以内に\\n完成させる"]
+  end
+  subgraph P2["P2: フィーチャーリスト"]
+    BP2_1["動詞+結果+オブジェクトで\\n記述する"]
+    BP2_2["2週間で完了できる\\n粒度に分解"]
+    BP2_3["ビジネス用語で書く\\n技術用語を使わない"]
+  end
+  subgraph P4["P4: 設計"]
+    BP4_1["シーケンス図は\\n必ず作成する"]
+    BP4_2["設計インスペクションを\\n省略しない"]
+    BP4_3["設計変更は\\nモデルを更新する"]
+  end
+  subgraph P5["P5: 構築"]
+    BP5_1["クラスオーナーが\\n実装する"]
+    BP5_2["コードインスペクションは\\n必須"]
+    BP5_3["完了条件を明確に\\n守る"]
+  end`}
+                />
+              </div>
+            </div>
+
+            <h3>FDD成熟度モデル</h3>
+            <p>FDDの導入は一度に完璧を目指さず、段階的に成熟させることが現実的です。</p>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart TD
+  L0["Level 0: FDD未適用\\n場当たり的な開発・進捗不透明"] --> L1
+  L1["Level 1: 基本的なFDD導入\\nフィーチャーリストの作成・5つのプロセスの実施"] --> L2
+  L2["Level 2: ロールの確立\\nチーフプログラマー・クラスオーナー制の運用"] --> L3
+  L3["Level 3: 可視化と計測\\n6段階ステータス・バーンアップチャートの活用"] --> L4
+  L4["Level 4: 継続的改善\\nレトロスペクティブ・プロセス改善の定着"] --> L5
+  L5["Level 5: 組織全体への展開\\n複数チームでのFDD標準化・スケール"]
+  style L0 fill:#2a1020,stroke:#ef4444,color:#fca5a5
+  style L1 fill:#2a1e0a,stroke:#f59e0b,color:#fde68a
+  style L2 fill:#2a1e0a,stroke:#f59e0b,color:#fde68a
+  style L3 fill:#0d2818,stroke:#22c55e,color:#86efac
+  style L4 fill:#074440,stroke:#14a8a2,color:#96f2ee
+  style L5 fill:#2e0e6e,stroke:#7c35f0,color:#d8bfff`}
+                />
+              </div>
+            </div>
+
+            <h3>FDD導入ロードマップ</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart LR
+  M1["Month 1\\n基礎理解\\nFDDの5プロセス学習\\nサンプルプロジェクトで実践\\nロールの理解"] --> M2["Month 2\\n小規模適用\\n5〜10人の試験的導入\\nフィーチャーリスト作成\\nクラスオーナーシップ試験運用"]
+  M2 --> M3["Month 3\\n計測と調整\\n進捗レポートの運用\\nフィーチャー完了率の計測\\nチームへのフィードバック"]
+  M3 --> M4["Month 4-6\\n本格展開\\n大規模プロジェクトへの適用\\n複数チームへのスケール\\n継続的改善の定着"]
+  style M1 fill:#0d1f3c,stroke:#3b82f6,color:#93c5fd
+  style M2 fill:#0d2818,stroke:#22c55e,color:#86efac
+  style M3 fill:#2a1e0a,stroke:#f59e0b,color:#fde68a
+  style M4 fill:#2e0e6e,stroke:#7c35f0,color:#d8bfff`}
+                />
+              </div>
+            </div>
           </section>
+
+          {/* ========== SECTION 14 ========== */}
           <section id="s14">
             <div className="section-header">
               <span className="section-num">14</span>
               <h2>FDDのアンチパターン</h2>
             </div>
+            <p className="lead">
+              FDDを導入したプロジェクトでよく見られる失敗パターンを把握し、事前に防ぎましょう。
+            </p>
+
+            <div className="antipattern-grid">
+              <div className="antipattern-card">
+                <div className="antipattern-header">
+                  <IconAlertTriangle size={18} />
+                  <div className="antipattern-header-title">
+                    アンチパターン1: Feature Bloat（フィーチャー肥大化）
+                  </div>
+                </div>
+                <div className="antipattern-body">
+                  <div className="antipattern-section">
+                    <p>
+                      1つのフィーチャーが2週間を大幅に超える規模になっている状態。例：「注文管理システムを実装する」
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-cause">原因</div>
+                    <p>
+                      フィーチャーリスト構築時の分解が不十分。ドメインエキスパートとの対話が少なく、機能の境界が曖昧なまま進んでしまう。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-fix">解決策</div>
+                    <p>
+                      「動詞+結果+オブジェクト」形式と粒度チェックフローを使い、2週間以内の粒度に必ず分解する。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="antipattern-card">
+                <div className="antipattern-header">
+                  <IconAlertTriangle size={18} />
+                  <div className="antipattern-header-title">
+                    アンチパターン2: Absent Domain Expert（ドメインエキスパート不在）
+                  </div>
+                </div>
+                <div className="antipattern-body">
+                  <div className="antipattern-section">
+                    <p>
+                      開発者だけでモデリングを行い、ビジネス知識が欠落したドメインモデルが作られる状態。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-cause">原因</div>
+                    <p>
+                      「ドメインエキスパートは忙しいから後で確認する」という先送り。P1からP5まで全プロセスでエキスパートの関与が必要。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-fix">解決策</div>
+                    <p>
+                      P1のキックオフからドメインエキスパートのカレンダーをブロックする。スケジュール調整はプロジェクトマネージャーの責任。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="antipattern-card">
+                <div className="antipattern-header">
+                  <IconAlertTriangle size={18} />
+                  <div className="antipattern-header-title">
+                    アンチパターン3: Ghost Class Owner（幽霊クラスオーナー）
+                  </div>
+                </div>
+                <div className="antipattern-body">
+                  <div className="antipattern-section">
+                    <p>
+                      クラスオーナーが名前だけで実際の責任を持っていない。誰でもクラスを変更でき、品質が不安定になる。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-cause">原因</div>
+                    <p>
+                      ロール定義の形骸化。「全員でコードを共有する」というアンチテーゼ的な文化との衝突。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-fix">解決策</div>
+                    <p>
+                      コードインスペクションでクラスオーナーシップを明確に問う。オーナー以外の変更はプルリクエストでオーナーが承認する運用を定着させる。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="antipattern-card">
+                <div className="antipattern-header">
+                  <IconAlertTriangle size={18} />
+                  <div className="antipattern-header-title">
+                    アンチパターン4: Skip Inspection（インスペクション省略）
+                  </div>
+                </div>
+                <div className="antipattern-body">
+                  <div className="antipattern-section">
+                    <p>
+                      忙しさや納期プレッシャーを理由に設計・コードインスペクションを省略・形骸化させてしまう。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-cause">原因</div>
+                    <p>
+                      短期的なスピードを優先する圧力。「インスペクションは時間の無駄」という誤解。
+                    </p>
+                  </div>
+                  <div className="antipattern-section">
+                    <div className="antipattern-section-label label-fix">解決策</div>
+                    <p>
+                      インスペクションをフィーチャー完了の必須ゲートとして定義し、ワークフローに組み込む。省略を認めないルールをチームと合意する。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3>健全性チェックフロー</h3>
+            <div className="mermaid-wrap">
+              <div className="mermaid">
+                <MermaidDiagram
+                  chart={`flowchart TD
+  A["FDDプロジェクトの健全性チェック"] --> Q1{"フィーチャーが\\n2週間以内に完了しているか？"}
+  Q1 --> |"Yes"| Q2{"ドメインエキスパートが\\nP1に参加しているか？"}
+  Q1 --> |"No"| W["要改善:\\n該当するアンチパターンに対処する"]
+  Q2 --> |"Yes"| Q3{"設計インスペクションが\\n毎回実施されているか？"}
+  Q2 --> |"No"| W
+  Q3 --> |"Yes"| Q4{"クラスオーナーが\\n自分のクラスに責任を持っているか？"}
+  Q3 --> |"No"| W
+  Q4 --> |"Yes"| Q5{"進捗が毎週\\n報告されているか？"}
+  Q4 --> |"No"| W
+  Q5 --> |"Yes"| OK["健全なFDDプロジェクト"]
+  Q5 --> |"No"| W
+  style OK fill:#0d2818,stroke:#22c55e,color:#86efac
+  style W fill:#2a1020,stroke:#ef4444,color:#fca5a5`}
+                />
+              </div>
+            </div>
           </section>
+
+          {/* ========== SECTION 15 ========== */}
           <section id="s15">
             <div className="section-header">
               <span className="section-num">15</span>
               <h2>参考文献・ソース一覧</h2>
+            </div>
+            <p className="lead">
+              本ガイドの根拠となる一次資料・公式ドキュメントの一覧です。さらに深く学びたい場合はこれらを参照してください。
+            </p>
+
+            <h3>必読書籍</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>タイトル</th>
+                  <th>著者</th>
+                  <th>難易度</th>
+                  <th>ポイント</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>A Practical Guide to Feature-Driven Development</strong>
+                  </td>
+                  <td>Stephen R. Palmer, John M. Felsing</td>
+                  <td>
+                    <span className="badge badge-amber">中〜上級</span>
+                  </td>
+                  <td>FDDの原典・最も詳細な実践ガイド</td>
+                </tr>
+                <tr>
+                  <td>Java Modeling in Color with UML</td>
+                  <td>Peter Coad, Jeff De Luca, Eric Lefebvre</td>
+                  <td>
+                    <span className="badge badge-amber">中〜上級</span>
+                  </td>
+                  <td>FDDのドメインモデリング手法（Color UML）の原典</td>
+                </tr>
+                <tr>
+                  <td>Agile Estimating and Planning</td>
+                  <td>Mike Cohn</td>
+                  <td>
+                    <span className="badge badge-teal">初〜中級</span>
+                  </td>
+                  <td>アジャイル計画手法の詳解</td>
+                </tr>
+                <tr>
+                  <td>Clean Agile</td>
+                  <td>Robert C. Martin</td>
+                  <td>
+                    <span className="badge badge-teal">初〜中級</span>
+                  </td>
+                  <td>アジャイル開発の原則と背景</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>公式ドキュメント・URL</h3>
+
+            <div className="ref-table-wrap">
+              <div className="ref-category">FDD コア概念・原典</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>リソース</th>
+                    <th>URL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Agile Alliance — FDD Glossary</td>
+                    <td>
+                      <Ext className="ref-link" href="https://www.agilealliance.org/glossary/fdd/">
+                        https://www.agilealliance.org/glossary/fdd/
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Martin Fowler — New Methodology（FDD含む）</td>
+                    <td>
+                      <Ext
+                        className="ref-link"
+                        href="https://martinfowler.com/articles/newMethodology.html"
+                      >
+                        https://martinfowler.com/articles/newMethodology.html
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>FDD原典論文（1997年シンガポールプロジェクト・アーカイブ）</td>
+                    <td>
+                      <Ext
+                        className="ref-link"
+                        href="https://web.archive.org/web/20201026042456/https://www.nebulon.com/articles/fdd/downloads/oreilly-fdd.pdf"
+                      >
+                        https://web.archive.org/web/... (Wayback Machine)
+                      </Ext>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="ref-table-wrap">
+              <div className="ref-category">アジャイル関連リソース</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>リソース</th>
+                    <th>URL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Agile Manifesto（公式）</td>
+                    <td>
+                      <Ext className="ref-link" href="https://agilemanifesto.org/">
+                        https://agilemanifesto.org/
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Agile Alliance</td>
+                    <td>
+                      <Ext className="ref-link" href="https://www.agilealliance.org/">
+                        https://www.agilealliance.org/
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Scrum.org（比較参考）</td>
+                    <td>
+                      <Ext className="ref-link" href="https://www.scrum.org/">
+                        https://www.scrum.org/
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Extreme Programming（XP公式）</td>
+                    <td>
+                      <Ext className="ref-link" href="http://www.extremeprogramming.org/">
+                        http://www.extremeprogramming.org/
+                      </Ext>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="ref-table-wrap">
+              <div className="ref-category">ドメインモデリング関連</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>リソース</th>
+                    <th>URL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UML公式仕様（Object Management Group）</td>
+                    <td>
+                      <Ext className="ref-link" href="https://www.uml.org/">
+                        https://www.uml.org/
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Martin Fowler — Domain Model</td>
+                    <td>
+                      <Ext
+                        className="ref-link"
+                        href="https://martinfowler.com/eaaCatalog/domainModel.html"
+                      >
+                        https://martinfowler.com/eaaCatalog/domainModel.html
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Martin Fowler — Analysis Patterns</td>
+                    <td>
+                      <Ext className="ref-link" href="https://martinfowler.com/books/ap.html">
+                        https://martinfowler.com/books/ap.html
+                      </Ext>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="ref-table-wrap">
+              <div className="ref-category">CI/CDとの統合</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>リソース</th>
+                    <th>URL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Continuous Integration（Martin Fowler）</td>
+                    <td>
+                      <Ext
+                        className="ref-link"
+                        href="https://martinfowler.com/articles/continuousIntegration.html"
+                      >
+                        https://martinfowler.com/articles/continuousIntegration.html
+                      </Ext>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>GitHub Actions 公式ドキュメント</td>
+                    <td>
+                      <Ext className="ref-link" href="https://docs.github.com/en/actions">
+                        https://docs.github.com/en/actions
+                      </Ext>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="callout callout-success">
+              <div className="callout-label">次のステップ</div>
+              <p>
+                本ガイドを読み終えたら、まず小規模プロジェクト（5〜10人）でフィーチャーリストの作成と6段階ステータスの運用から始めてみましょう。完璧なFDD導入より、継続的な改善が成功への近道です。
+              </p>
             </div>
           </section>
         </main>

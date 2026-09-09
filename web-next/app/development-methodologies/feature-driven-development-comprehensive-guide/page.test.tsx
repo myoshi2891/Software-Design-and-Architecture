@@ -262,12 +262,10 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(links.length).toBeGreaterThanOrEqual(12);
     });
 
-    it("全15セクションの Mermaid 図がすべて描画され、合計 21 個の mermaid-wrap が存在する", () => {
+    it("全15セクションの Mermaid 図がすべて描画され、合計 23 個の mermaid-wrap が存在する", () => {
       const { container } = render(<Page />);
       const wraps = container.querySelectorAll(".mermaid-wrap");
-      expect(wraps.length).toBe(21);
+      expect(wraps.length).toBe(23);
     });
   });
 });
-
-
