@@ -1,6 +1,6 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import XpSidebar, { type NavItem, NAV_ITEMS } from "./XpSidebar";
+import XpSidebar, { NAV_ITEMS, type NavItem } from "./XpSidebar";
 
 const TEST_ITEMS: NavItem[] = [
   { id: "s1", num: "1", label: "XPとは何か" },
