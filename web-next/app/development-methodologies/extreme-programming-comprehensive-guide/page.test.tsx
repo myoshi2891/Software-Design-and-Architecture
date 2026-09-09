@@ -1,0 +1,73 @@
+import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
+// Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
+vi.mock("@/components/MermaidDiagram", () => ({
+  default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
+}));
+
+import Page from "./page";
+
+describe("extreme-programming-comprehensive-guide page (Category A)", () => {
+  it("h1 見出しに XP（エクストリームプログラミング）完全ガイドが含まれる", () => {
+    const { container } = render(<Page />);
+    const h1 = container.querySelector("h1");
+    expect(h1).not.toBeNull();
+    expect(h1?.textContent).toContain("XP（エクストリームプログラミング）完全ガイド");
+  });
+
+  it("Hero セクションに説明文とバッジ群が含まれる", () => {
+    const { container } = render(<Page />);
+    const hero = container.querySelector(".hero");
+    expect(hero).not.toBeNull();
+    expect(hero?.textContent).toContain("Kent Beck");
+    expect(hero?.textContent).toContain("5つの価値");
+    expect(hero?.textContent).toContain("13のプラクティス");
+    expect(hero?.textContent).toContain("Agile");
+    expect(hero?.textContent).toContain("Engineering Practices");
+    expect(hero?.textContent).toContain("初学者向け");
+  });
+
+  it("Category A のセクション (s1, s2, s3, s4) が存在する", () => {
+    const { container } = render(<Page />);
+    const s1 = container.querySelector("#s1");
+    const s2 = container.querySelector("#s2");
+    const s3 = container.querySelector("#s3");
+    const s4 = container.querySelector("#s4");
+
+    expect(s1).not.toBeNull();
+    expect(s2).not.toBeNull();
+    expect(s3).not.toBeNull();
+    expect(s4).not.toBeNull();
+
+    expect(s1?.querySelector("h2")?.textContent).toContain("XPとは何か");
+    expect(s2?.querySelector("h2")?.textContent).toContain("5つの価値");
+    expect(s3?.querySelector("h2")?.textContent).toContain("13のプラクティス");
+    expect(s4?.querySelector("h2")?.textContent).toContain("TDD");
+  });
+
+  it("Category A の Mermaid 図 (diag-1 〜 diag-5) が描画される", () => {
+    const { container } = render(<Page />);
+    const mermaids = container.querySelectorAll(".mermaid");
+    expect(mermaids.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("内部リンクに .html を含まない", () => {
+    const { container } = render(<Page />);
+    for (const a of container.querySelectorAll("a")) {
+      const href = a.getAttribute("href") ?? "";
+      if (href.startsWith("http")) continue;
+      expect(href).not.toContain(".html");
+    }
+  });
+
+  it("s4 の Python コードブロックに構文ハイライト用 span が含まれている", () => {
+    const { container } = render(<Page />);
+    const pres = container.querySelectorAll("pre");
+    expect(pres.length).toBeGreaterThanOrEqual(1);
+    for (const pre of pres) {
+      const spans = pre.querySelectorAll("span.kw, span.cm, span.st, span.fn");
+      expect(spans.length).toBeGreaterThan(0);
+    }
+  });
+});
