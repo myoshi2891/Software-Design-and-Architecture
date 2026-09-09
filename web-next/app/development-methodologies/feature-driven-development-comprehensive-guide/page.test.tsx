@@ -202,4 +202,72 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(mermaids.length).toBeGreaterThanOrEqual(14);
     });
   });
+
+  describe("Category D: EC事例・ベストプラクティス・アンチパターン・参考文献 (s12 - s15)", () => {
+    it("Category D のセクション (s12, s13, s14, s15) が存在する", () => {
+      const { container } = render(<Page />);
+      expect(container.querySelector("#s12")).not.toBeNull();
+      expect(container.querySelector("#s13")).not.toBeNull();
+      expect(container.querySelector("#s14")).not.toBeNull();
+      expect(container.querySelector("#s15")).not.toBeNull();
+    });
+
+    it("s12 にプロジェクト概要表、シーケンス図、OrderService Python実装例コードブロックが存在する", () => {
+      const { container } = render(<Page />);
+      const s12 = container.querySelector("#s12");
+      const table = s12?.querySelector("table");
+      expect(table).not.toBeNull();
+      expect(s12?.textContent).toContain("大手百貨店ECサイト構築");
+
+      const codeBlock = s12?.querySelector("pre code");
+      expect(codeBlock).not.toBeNull();
+      expect(codeBlock?.textContent).toContain("class OrderService:");
+      expect(codeBlock?.textContent).toContain("create_order");
+    });
+
+    it("s13 にFDDベストプラクティス・成熟度モデル・ロードマップの見出しが存在する", () => {
+      const { container } = render(<Page />);
+      const s13 = container.querySelector("#s13");
+      expect(s13?.textContent).toContain("プロセス別ベストプラクティス一覧");
+      expect(s13?.textContent).toContain("FDD成熟度モデル");
+      expect(s13?.textContent).toContain("FDD導入ロードマップ");
+    });
+
+    it("s14 に 4つのアンチパターンカードと健全性チェックフローが存在する", () => {
+      const { container } = render(<Page />);
+      const s14 = container.querySelector("#s14");
+      const cards = s14?.querySelectorAll(".antipattern-card") ?? [];
+      expect(cards.length).toBe(4);
+      expect(s14?.textContent).toContain("Feature Bloat");
+      expect(s14?.textContent).toContain("Absent Domain Expert");
+      expect(s14?.textContent).toContain("Ghost Class Owner");
+      expect(s14?.textContent).toContain("Skip Inspection");
+      expect(s14?.textContent).toContain("健全性チェックフロー");
+    });
+
+    it("s15 に必読書籍表、4つのカテゴリ別リソース表、および外部リンクが存在する", () => {
+      const { container } = render(<Page />);
+      const s15 = container.querySelector("#s15");
+      const tables = s15?.querySelectorAll("table") ?? [];
+      expect(tables.length).toBe(5); // 必読書籍(1) + 公式ドキュメント(4)
+      expect(s15?.textContent).toContain("A Practical Guide to Feature-Driven Development");
+      expect(s15?.textContent).toContain("Java Modeling in Color with UML");
+      expect(s15?.textContent).toContain("Agile Estimating and Planning");
+      expect(s15?.textContent).toContain("Clean Agile");
+
+      const refWraps = s15?.querySelectorAll(".ref-table-wrap") ?? [];
+      expect(refWraps.length).toBe(4);
+
+      const links = s15?.querySelectorAll("a.ref-link") ?? [];
+      expect(links.length).toBeGreaterThanOrEqual(12);
+    });
+
+    it("全15セクションの Mermaid 図がすべて描画され、合計 21 個の mermaid-wrap が存在する", () => {
+      const { container } = render(<Page />);
+      const wraps = container.querySelectorAll(".mermaid-wrap");
+      expect(wraps.length).toBe(21);
+    });
+  });
 });
+
+
