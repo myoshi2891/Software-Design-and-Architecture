@@ -226,6 +226,180 @@ const DIAGRAM_UI_ARCH = `graph TD
     style POM fill:#231545,color:#bc8cff,stroke:#bc8cff
     style PW2 fill:#4a1212,color:#f85149,stroke:#f85149`;
 
+const DIAGRAM_GOOD_SCENARIO = `graph TD
+    ROOT["🎯 良いシナリオの条件"]
+    D1["📋 宣言的\\n「何を」するかを記述\\n「どのように」は書かない\\n実装詳細を隠す"]
+    D2["🔒 独立性\\n他シナリオに依存しない\\n単独で実行できる\\n順序に依存しない"]
+    D3["🎯 具体的\\n曖昧な言葉を使わない\\n具体的な数値・名前を使う\\n「いくつかの商品」→「3点の商品」"]
+    D4["🔍 焦点\\n1シナリオ1ふるまい\\n複数のことを検証しない\\nテストの意図が明確"]
+    D5["🗣️ ビジネス語彙\\n技術用語を使わない\\nドメイン言語で記述\\n非エンジニアにも理解できる"]
+    ROOT --> D1 & D2 & D3 & D4 & D5
+    style ROOT fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style D1 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style D2 fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style D3 fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style D4 fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style D5 fill:#0d2b15,color:#3fb950,stroke:#3fb950`;
+
+const DIAGRAM_DECLARATIVE = `graph TD
+    subgraph IMP["❌ 命令的（実装詳細が露出）"]
+        IMP1["Scenario: ログインしてカートに追加する\\n  Given ユーザーがブラウザを開く\\n  When 「example.com/login」にアクセスする\\n  And テキストフィールドにメールを入力する\\n  And パスワードフィールドにパスワードを入力する\\n  And 「ログイン」ボタンをクリックする\\n  And 商品ページに移動する\\n  And 「カートに追加」ボタンをクリックする\\n  Then カートに商品が追加される"]
+        IMP_NOTE["❌ UI変更のたびにシナリオが壊れる\\n❌ ビジネスルールが不明確\\n❌ 非エンジニアには読みにくい"]
+    end
+
+    subgraph DEC["✅ 宣言的（ビジネスルールが明確）"]
+        DEC1["Scenario: ログイン済み顧客が商品をカートに追加する\\n  Given 顧客「山田太郎」がログインしている\\n  When 商品「Tシャツ」を 1 点カートに追加する\\n  Then カートに 1 点の商品が入っている\\n  And カートの合計金額は 1,000円 である"]
+        DEC_NOTE["✅ UI変更の影響を受けない\\n✅ ビジネスルールが明確\\n✅ 誰でも読める仕様書"]
+    end
+
+    style IMP1 fill:#4a1212,color:#f85149,stroke:#f85149
+    style IMP_NOTE fill:#4a1212,color:#f85149,stroke:#f85149
+    style DEC1 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style DEC_NOTE fill:#0d2b15,color:#3fb950,stroke:#3fb950`;
+
+const DIAGRAM_EXAMPLE_MAPPING = `graph TD
+    subgraph EM["📋 Example Mapping セッション"]
+        STORY_CARD["🟡 ストーリーカード\\n注文にクーポンを適用できる"]
+
+        RULE1["🔵 ルール1\\n有効なクーポンは適用できる"]
+        RULE2["🔵 ルール2\\n無効なクーポンは適用できない"]
+        RULE3["🔵 ルール3\\nクーポンは1注文に1枚のみ"]
+
+        EX1["🟢 例1-1\\n10%OFFクーポン\\n5000円→4500円"]
+        EX2["🟢 例1-2\\n500円引きクーポン\\n5000円→4500円"]
+
+        EX3["🔴 例2-1\\n有効期限切れ\\n→エラー"]
+        EX4["🔴 例2-2\\n存在しないコード\\n→エラー"]
+        EX5["🔴 例2-3\\n最低注文額未満\\n→エラー"]
+
+        EX6["🟢 例3-1\\n2枚目を適用しようとする\\n→エラー（1枚目が適用済み）"]
+
+        QUESTION["❓ 質問カード\\nクーポンと送料無料は\\n同時に適用できるか？"]
+    end
+
+    STORY_CARD --> RULE1 & RULE2 & RULE3
+    RULE1 --> EX1 & EX2
+    RULE2 --> EX3 & EX4 & EX5
+    RULE3 --> EX6
+    STORY_CARD --> QUESTION
+
+    style STORY_CARD fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style RULE1 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style RULE2 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style RULE3 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style EX1 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style EX2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style EX3 fill:#4a1212,color:#f85149,stroke:#f85149
+    style EX4 fill:#4a1212,color:#f85149,stroke:#f85149
+    style EX5 fill:#4a1212,color:#f85149,stroke:#f85149
+    style QUESTION fill:#2d1508,color:#e07b39,stroke:#e07b39`;
+
+const DIAGRAM_CICD = `flowchart TD
+    subgraph LOCAL["💻 ローカル開発"]
+        L1["Feature ファイル編集"]
+        L2["@wip タグでシナリオ実行"]
+        L3["全シナリオ PASS を確認"]
+        L1 --> L2 --> L3
+    end
+    subgraph CI["🔄 CI パイプライン（PR 時）"]
+        C1["コードチェックアウト"]
+        C2["依存関係インストール"]
+        C3["ユニットテスト（TDD）"]
+        C4["BDD 受け入れ（@smoke）"]
+        C5["BDD リグレッション（全シナリオ）"]
+        C6["Allure レポート生成"]
+        C1 --> C2 --> C3 --> C4 --> C5 --> C6
+    end
+    subgraph CD["🚀 CD パイプライン（main マージ）"]
+        D1["ステージング環境デプロイ"]
+        D2["E2E BDD テスト（@e2e）"]
+        D3["レポートをステークホルダーへ共有"]
+        D4["本番環境デプロイ"]
+        D1 --> D2 --> D3 --> D4
+    end
+    LOCAL --> CI --> CD
+    style LOCAL fill:#0d2b15,stroke:#3fb950
+    style CI fill:#0e2140,stroke:#58a6ff
+    style CD fill:#2a1a00,stroke:#d4a017`;
+
+const DIAGRAM_LIVING_DOC = `flowchart LR
+    FEATURE_FILES2["📄 Feature ファイル\\n（Gherkin）"] --> CUCUMBER_REPORTS["📊 Cucumber Reports\\nHTML レポート\\nシナリオ実行結果付き"]
+    FEATURE_FILES2 --> ALLURE["📈 Allure Report\\nインタラクティブな\\nテストレポート"]
+    FEATURE_FILES2 --> LIVING_DOC["📚 Living Documentation\\nPickles / Relish\\n常に最新の仕様書として公開"]
+    FEATURE_FILES2 --> JIRA["🎫 Jira / Confluence\\nXray for Jira\\nチケットとシナリオを紐付け"]
+
+    style FEATURE_FILES2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style CUCUMBER_REPORTS fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style ALLURE fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style LIVING_DOC fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style JIRA fill:#4a1212,color:#f85149,stroke:#f85149`;
+
+const DIAGRAM_EC_MAP = `graph TD
+    ROOT["🛒 ECサイト BDD シナリオ全体像"]
+    C1["🔍 商品カタログ\\n・一覧表示・検索・カテゴリ絞込"]
+    C2["🛒 カート\\n・追加・数量変更・削除・クーポン"]
+    C3["💳 注文・決済\\n・確定・クレカ決済・確認メール"]
+    C4["👤 マイアカウント\\n・ログイン・注文履歴・会員情報変更"]
+    C5["⚙️ 管理機能\\n・在庫管理・注文管理・商品登録"]
+    ROOT --> C1 & C2 & C3 & C4 & C5
+    style ROOT fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style C1 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style C2 fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style C3 fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style C4 fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style C5 fill:#0d2b15,color:#3fb950,stroke:#3fb950`;
+
+const DIAGRAM_MATURITY = `graph TD
+    L0["Level 0\\n手動テストのみ\\n受け入れ基準が暗黙知"]
+    L1["Level 1\\nシナリオの文書化\\nGherkin を書くが自動化なし"]
+    L2["Level 2\\n基本的な自動化\\nハッピーパスが自動化済み"]
+    L3["Level 3\\nCI 統合\\n全シナリオを CI で自動実行"]
+    L4["Level 4\\nLiving Documentation\\nシナリオが常に最新の仕様書"]
+    L5["Level 5\\nBDD 文化の定着\\nPO がシナリオを書く文化"]
+    L0 --> L1 --> L2 --> L3 --> L4 --> L5
+    style L0 fill:#4a1212,color:#f85149,stroke:#f85149
+    style L1 fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style L2 fill:#2a1a00,color:#d4a017,stroke:#d4a017
+    style L3 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style L4 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style L5 fill:#231545,color:#bc8cff,stroke:#bc8cff`;
+
+const DIAGRAM_HEALTH = `flowchart TD
+    CHK["🔍 BDD 健全性チェック開始"]
+    Q1{"Three Amigos が\\nシナリオ作成に参加？"}
+    Q2{"ビジネス語彙で\\n書かれている？"}
+    Q3{"1 シナリオのステップ数\\nが 10 以下？"}
+    Q4{"シナリオが独立して\\n実行できる？"}
+    Q5{"CI で自動実行\\nされている？"}
+    Q6{"失敗シナリオを\\n即座に修正している？"}
+    OK["✅ 健全な BDD プロジェクト\\nLiving Documentation として機能"]
+    F1["👥 Three Amigos を導入する"]
+    F2["📝 シナリオをリファクタリング"]
+    F3["✂️ シナリオを分割する"]
+    F4["🔒 独立フィクスチャを使用"]
+    F5["⚙️ CI/CD に統合する"]
+    F6["🔧 Broken Window を放置しない"]
+    CHK --> Q1
+    Q1 -->|"No"| F1
+    Q1 -->|"Yes"| Q2
+    Q2 -->|"No"| F2
+    Q2 -->|"Yes"| Q3
+    Q3 -->|"No"| F3
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"No"| F4
+    Q4 -->|"Yes"| Q5
+    Q5 -->|"No"| F5
+    Q5 -->|"Yes"| Q6
+    Q6 -->|"No"| F6
+    Q6 -->|"Yes"| OK
+    style OK fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style F1 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F2 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F3 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F4 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F5 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style F6 fill:#0e2140,color:#58a6ff,stroke:#58a6ff`;
+
 export default function BehaviorDrivenDevelopmentGuidePage() {
   return (
     <div className="behavior-driven-development-comprehensive-guide">
@@ -2167,13 +2341,1019 @@ pip install testcontainers sqlalchemy`,
             </div>
           </section>
 
-          {/* Placeholders for remaining sections */}
-          <section className="sec" id="s14" />
-          <section className="sec" id="s15" />
-          <section className="sec" id="s16" />
-          <section className="sec" id="s17" />
-          <section className="sec" id="s18" />
-          <section className="sec" id="s19" />
+          {/* S14 */}
+          <section className="sec" id="s14">
+            <div className="sec-hd">
+              <span className="sec-num">14</span>
+              <h2 className="sec-title">シナリオ設計のベストプラクティス</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">14.1 良いシナリオの条件</div>
+              <p className="lead">
+                優れた BDD
+                シナリオは、単なるテストケースではなく「生きたドキュメント」として機能します。以下の
+                5 つの条件を満たすことが重要です。
+              </p>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_GOOD_SCENARIO} />
+              </div>
+              <div className="cg cg2">
+                <div className="card">
+                  <div className="ct">1. 宣言的（Declarative）</div>
+                  <div className="cd">
+                    「何をするか（What）」を記述し、「どのようにするか（How）」の実装詳細は隠蔽します。UI
+                    の変更があってもシナリオ自体は書き換える必要がありません。
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="ct">2. 独立性（Independent）</div>
+                  <div className="cd">
+                    他のシナリオの実行結果に依存せず、単独で実行可能です。テストデータのセットアップは
+                    Background や Fixture で毎回クリーンに行います。
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="ct">3. 具体的（Concrete）</div>
+                  <div className="cd">
+                    「いくつかの商品」「適切な値」のような曖昧な表現を排除し、「Tシャツ
+                    2点」「7,000円」のように具体的なドメインデータを使用します。
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="ct">4. 単一の焦点（Focused）</div>
+                  <div className="cd">
+                    1 シナリオで検証するビジネスルールは 1 つに絞ります。ステップ数は 5〜10
+                    個以内を目安とし、失敗時の原因特定を容易にします。
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">14.2 宣言的 vs 命令的シナリオ</div>
+              <p className="lead">
+                命令的（Imperative）なシナリオは、画面クリックや入力フィールドなど技術的詳細に依存し、UI
+                の少しの変更で壊れやすくなります。宣言的（Declarative）に書くことでビジネスの本質的な振る舞いを記述します。
+              </p>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_DECLARATIVE} />
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">14.3 Example Mapping（事例マッピング）技法</div>
+              <p className="lead">
+                Example Mapping は、Three
+                Amigos（PO・開発者・QA）が短時間（25分程度）でユーザーストーリーの受け入れ基準を明確化する強力なファシリテーション技法です。
+              </p>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_EXAMPLE_MAPPING} />
+              </div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>カード種別</th>
+                      <th>色</th>
+                      <th>役割</th>
+                      <th>具体例</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>ストーリー</strong>
+                      </td>
+                      <td>
+                        <span className="tag to">黄色</span>
+                      </td>
+                      <td>議論のスコープとなるユーザーストーリー</td>
+                      <td>注文にクーポンを適用できる</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>ルール</strong>
+                      </td>
+                      <td>
+                        <span className="tag tb">青色</span>
+                      </td>
+                      <td>ストーリーを成立させるビジネスルール（受け入れ基準）</td>
+                      <td>有効なクーポンは1注文に1枚のみ適用できる</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>具体例（Example）</strong>
+                      </td>
+                      <td>
+                        <span className="tag tg">緑 / 赤</span>
+                      </td>
+                      <td>ルールを具体化するシナリオ（正常系：緑、異常系：赤）</td>
+                      <td>10%OFFクーポン適用で5,000円が4,500円になる</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>質問</strong>
+                      </td>
+                      <td>
+                        <span className="tag tr2">赤 / 橙</span>
+                      </td>
+                      <td>その場で回答できない未決定事項や前提条件の疑問</td>
+                      <td>クーポンと送料無料は同時に併用できるか？</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          {/* S15 */}
+          <section className="sec" id="s15">
+            <div className="sec-hd">
+              <span className="sec-num">15</span>
+              <h2 className="sec-title">CI/CD パイプラインと BDD</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">15.1 BDD テストの CI/CD への統合</div>
+              <p className="lead">
+                BDD シナリオはローカル開発から Pull Request 検証、デプロイ後の E2E
+                スモークテストまで、CI/CD パイプラインの各段階で実行されます。
+              </p>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_CICD} />
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">15.2 GitHub Actions での BDD 自動化</div>
+              <p className="lead">
+                PR 作成時に Unit/API レベルの BDD テストを高速実行し、main マージ時に E2E テストと
+                Allure レポート生成を実行する GitHub Actions ワークフロー例です。
+              </p>
+              <div className="fp">.github/workflows/bdd-tests.yml</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang yl">YAML</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre>
+                    <code
+                      dangerouslySetInnerHTML={{
+                        __html: `<span class="cm"># .github/workflows/bdd-tests.yml</span>
+<span class="kw">name</span>: <span class="st">BDD Acceptance Tests</span>
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [<span class="st">main</span>, <span class="st">develop</span>]
+  <span class="kw">pull_request</span>:
+
+<span class="kw">jobs</span>:
+  <span class="kw">bdd-unit</span>:
+    <span class="kw">name</span>: <span class="st">BDD Unit Level Tests</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Set up Python</span>
+        <span class="kw">uses</span>: <span class="st">actions/setup-python@v5</span>
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="st">"3.11"</span>
+          <span class="kw">cache</span>: <span class="st">pip</span>
+      - <span class="kw">name</span>: <span class="st">Install dependencies</span>
+        <span class="kw">run</span>: |
+          pip install pytest pytest-bdd allure-pytest factory-boy
+      - <span class="kw">name</span>: <span class="st">Run BDD smoke tests</span>
+        <span class="kw">run</span>: |
+          pytest tests/bdd/ -m "smoke" --alluredir=allure-results -v --tb=short
+      - <span class="kw">name</span>: <span class="st">Run all BDD scenarios</span>
+        <span class="kw">run</span>: |
+          pytest tests/bdd/ --alluredir=allure-results -v --tb=short
+
+  <span class="kw">bdd-api</span>:
+    <span class="kw">name</span>: <span class="st">BDD API Integration Tests</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">needs</span>: <span class="st">bdd-unit</span>
+    <span class="kw">services</span>:
+      <span class="kw">postgres</span>:
+        <span class="kw">image</span>: <span class="st">postgres:16</span>
+        <span class="kw">env</span>:
+          <span class="kw">POSTGRES_DB</span>: <span class="st">test_db</span>
+          <span class="kw">POSTGRES_USER</span>: <span class="st">test</span>
+          <span class="kw">POSTGRES_PASSWORD</span>: <span class="st">test</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Set up Python</span>
+        <span class="kw">uses</span>: <span class="st">actions/setup-python@v5</span>
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="st">"3.11"</span>
+      - <span class="kw">name</span>: <span class="st">Run API BDD tests</span>
+        <span class="kw">env</span>:
+          <span class="kw">DATABASE_URL</span>: <span class="st">postgresql://test:test@localhost/test_db</span>
+        <span class="kw">run</span>: |
+          pytest tests/bdd/ -m "api" --alluredir=allure-results-api -v
+
+  <span class="kw">bdd-e2e</span>:
+    <span class="kw">name</span>: <span class="st">BDD E2E Tests</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">needs</span>: <span class="st">bdd-api</span>
+    <span class="kw">if</span>: github.ref == 'refs/heads/main'
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Install Playwright</span>
+        <span class="kw">run</span>: |
+          pip install playwright pytest-playwright
+          playwright install chromium
+      - <span class="kw">name</span>: <span class="st">Run E2E BDD tests</span>
+        <span class="kw">run</span>: |
+          pytest tests/bdd/ -m "e2e" --screenshot=on-failure`,
+                      }}
+                    />
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">15.3 Living Documentation の生成</div>
+              <p className="lead">
+                Gherkin で書かれた Feature
+                ファイルは、テスト結果と紐づくことで最新のビジネス仕様書（Living
+                Documentation）として閲覧可能になります。
+              </p>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_LIVING_DOC} />
+              </div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ツール</th>
+                      <th>種別</th>
+                      <th>主な特徴</th>
+                      <th>連携先</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>Allure Report</strong>
+                      </td>
+                      <td>テストレポート</td>
+                      <td>ステップごとの実行ログ・スクリーンショット・タイムラインの可視化</td>
+                      <td>GitHub Actions, Jenkins, GitLab</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Cucumber Reports</strong>
+                      </td>
+                      <td>公式ホスティング</td>
+                      <td>クラウド上で Feature の実行結果とドキュメントを直接共有</td>
+                      <td>Cucumber Cloud, GitHub</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Pickles / Relish</strong>
+                      </td>
+                      <td>ドキュメントビルダー</td>
+                      <td>Feature ファイルを静的 HTML や Word/PDF ドキュメントへ変換</td>
+                      <td>静的 Web サイトホスティング</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Xray for Jira</strong>
+                      </td>
+                      <td>テスト管理ツール</td>
+                      <td>Jira チケットに Gherkin シナリオを紐付け、カバレッジを管理</td>
+                      <td>Atlassian Jira / Confluence</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          {/* S16 */}
+          <section className="sec" id="s16">
+            <div className="sec-hd">
+              <span className="sec-num">16</span>
+              <h2 className="sec-title">実践：EC サイト完全事例</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">16.1 チェックアウトフローの完全シナリオ</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_EC_MAP} />
+              </div>
+              <div className="fp">features/checkout_flow.feature</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang gl">Gherkin</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="cm">@checkout @e2e</span>
+<span class="kw">Feature:</span> チェックアウトフロー
+  登録済み顧客として
+  カートの商品をまとめて注文したい
+  スムーズに購入を完了させるから
+
+  <span class="kw">Background:</span>
+    <span class="kw">Given</span> 顧客「山田太郎（yamada@example.com）」がログインしている
+    <span class="kw">And</span> 商品「Tシャツ（prod_001）1,000円」が在庫に 10 点ある
+    <span class="kw">And</span> 商品「ジーンズ（prod_002）5,000円」が在庫に 3 点ある
+
+  <span class="cm">@smoke @happy_path</span>
+  <span class="kw">Scenario:</span> 標準的なチェックアウトを完了する
+    <span class="kw">Given</span> カートに以下の商品が入っている
+      | 商品名   | 数量 |
+      | Tシャツ  | 2    |
+      | ジーンズ | 1    |
+    <span class="kw">When</span> 顧客が以下の配送先を入力する
+      | 郵便番号 | 150-0001    |
+      | 都道府県 | 東京都      |
+      | 市区町村 | 渋谷区      |
+      | 番地     | 神宮前1-1-1 |
+    <span class="kw">And</span> 支払い方法として「クレジットカード」を選択する
+    <span class="kw">And</span> 「注文を確定する」ボタンを押す
+    <span class="kw">Then</span> 注文確認ページが表示される
+    <span class="kw">And</span> 注文番号が発行されている
+    <span class="kw">And</span> 注文の合計金額は 7,000円 である
+    <span class="kw">And</span> 確認メールが「yamada@example.com」に送信される
+    <span class="kw">And</span> 在庫数が以下のように更新されている
+      | 商品名   | 残在庫数 |
+      | Tシャツ  | 8        |
+      | ジーンズ | 2        |
+
+  <span class="cm">@negative</span>
+  <span class="kw">Scenario:</span> 在庫数を超えた数量では注文できない
+    <span class="kw">Given</span> カートに「Tシャツ」が 10 点入っている
+    <span class="kw">When</span> さらに「Tシャツ」を 1 点追加しようとする
+    <span class="kw">Then</span> 「在庫が不足しています（残り10点）」というエラーが表示される
+    <span class="kw">And</span> カートの商品数は変わらない
+
+  <span class="kw">Scenario:</span> クーポン適用後に注文を確定できる
+    <span class="kw">Given</span> カートに「Tシャツ」が 5 点入っている
+    <span class="kw">And</span> 10%OFF クーポン「SAVE10」が有効である
+    <span class="kw">When</span> クーポンコード「SAVE10」を適用する
+    <span class="kw">And</span> 注文を確定する
+    <span class="kw">Then</span> 注文の小計は 5,000円 である
+    <span class="kw">And</span> 割引額は 500円 である
+    <span class="kw">And</span> 注文の合計金額は 4,500円 である`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">16.2 EC サイトのシナリオカバレッジマップ</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>機能領域</th>
+                      <th>シナリオ数目安</th>
+                      <th>主なシナリオ</th>
+                      <th>タグ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>🔍 商品カタログ</td>
+                      <td>5〜8</td>
+                      <td>一覧表示・検索・カテゴリ絞込</td>
+                      <td>
+                        <span className="tag tg">@catalog</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>🛒 ショッピングカート</td>
+                      <td>8〜12</td>
+                      <td>追加・削除・変更・クーポン適用</td>
+                      <td>
+                        <span className="tag tg">@cart</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>💳 注文・決済</td>
+                      <td>10〜15</td>
+                      <td>確定・クレカ決済・確認メール</td>
+                      <td>
+                        <span className="tag tb">@checkout</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>👤 マイアカウント</td>
+                      <td>6〜10</td>
+                      <td>ログイン・注文履歴・会員情報変更</td>
+                      <td>
+                        <span className="tag tp">@account</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>⚙️ 管理機能</td>
+                      <td>8〜12</td>
+                      <td>在庫管理・注文管理・商品登録</td>
+                      <td>
+                        <span className="tag to">@admin</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          {/* S17 */}
+          <section className="sec" id="s17">
+            <div className="sec-hd">
+              <span className="sec-num">17</span>
+              <h2 className="sec-title">BDD ベストプラクティス総まとめ</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">17.1 シナリオ設計ベストプラクティス一覧</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>カテゴリ</th>
+                      <th>ベストプラクティス</th>
+                      <th>理由</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>記述スタイル</td>
+                      <td>宣言的に書く（「何を」のみ）</td>
+                      <td>UI 変更の影響を受けない</td>
+                    </tr>
+                    <tr>
+                      <td>粒度</td>
+                      <td>1 シナリオ = 1 ビジネスルール</td>
+                      <td>失敗原因を特定しやすい</td>
+                    </tr>
+                    <tr>
+                      <td>命名</td>
+                      <td>ビジネス語彙で具体的に書く</td>
+                      <td>非エンジニアにも理解できる</td>
+                    </tr>
+                    <tr>
+                      <td>データ</td>
+                      <td>具体的な数値・名前を使う</td>
+                      <td>曖昧さをなくし期待値を明確に</td>
+                    </tr>
+                    <tr>
+                      <td>独立性</td>
+                      <td>Background に最小限の前提のみ</td>
+                      <td>シナリオ間の依存を排除</td>
+                    </tr>
+                    <tr>
+                      <td>タグ</td>
+                      <td>@smoke/@regression/@wip で分類</td>
+                      <td>必要なシナリオだけを幕別実行</td>
+                    </tr>
+                    <tr>
+                      <td>シナリオ数</td>
+                      <td>Feature あたり 5〜10 個が目安</td>
+                      <td>多すぎると保守困難</td>
+                    </tr>
+                    <tr>
+                      <td>パラメータ化</td>
+                      <td>類似シナリオは Scenario Outline で集約</td>
+                      <td>重複を排除し保守性向上</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">17.2 BDD 成熟度モデル</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_MATURITY} />
+              </div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>レベル</th>
+                      <th>状態</th>
+                      <th>特徴</th>
+                      <th>次へのステップ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <span className="tag tr2">Level 0</span>
+                      </td>
+                      <td>手動テストのみ</td>
+                      <td>受け入れ基準が暗黙知</td>
+                      <td>Gherkin 記法を学ぶ</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span className="tag to">Level 1</span>
+                      </td>
+                      <td>シナリオの文書化</td>
+                      <td>Gherkin を書くが自動化なし</td>
+                      <td>pytest-bdd でステップ実装</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span
+                          className="tag"
+                          style={{ background: "rgba(212,160,23,.15)", color: "#d4a017" }}
+                        >
+                          Level 2
+                        </span>
+                      </td>
+                      <td>基本的な自動化</td>
+                      <td>ハッピーパスが自動化済み</td>
+                      <td>CI/CD への統合</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span className="tag tg">Level 3</span>
+                      </td>
+                      <td>CI 統合</td>
+                      <td>全シナリオを CI で自動実行</td>
+                      <td>Allure レポート・異常系強化</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span className="tag tb">Level 4</span>
+                      </td>
+                      <td>Living Documentation</td>
+                      <td>シナリオが常に最新の仕様書</td>
+                      <td>PO をシナリオ作成に参加させる</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span className="tag tp">Level 5</span>
+                      </td>
+                      <td>BDD 文化の定着</td>
+                      <td>PO がシナリオを書く文化</td>
+                      <td>継続的改善・Example Mapping 定着</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">17.3 BDD 導入ロードマップ</div>
+              <ol className="sl">
+                <li>
+                  <span className="sl-n">Week 1-2</span>
+                  <div className="sl-c">
+                    <strong>基礎習得フェーズ</strong>
+                    <p>
+                      Gherkin 記法の学習 → pytest-bdd 基本実装 → Three Amigos の初回セッション実践
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">Week 3-6</span>
+                  <div className="sl-c">
+                    <strong>試験的導入フェーズ</strong>
+                    <p>1 機能をBDD で実装 → GitHub Actions への CI 統合 → Allure レポート設定</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">Week 7-14</span>
+                  <div className="sl-c">
+                    <strong>チーム展開フェーズ</strong>
+                    <p>
+                      全新機能を BDD で開発 → Example Mapping の定期実践 → Living Documentation 整備
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">Week 15+</span>
+                  <div className="sl-c">
+                    <strong>成熟化フェーズ</strong>
+                    <p>
+                      PO がシナリオを書く文化醸成 → Playwright UI テストへの拡張 → BDD
+                      全体方針の定期レビュー
+                    </p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          {/* S18 */}
+          <section className="sec" id="s18">
+            <div className="sec-hd">
+              <span className="sec-num">18</span>
+              <h2 className="sec-title">BDD のアンチパターン</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">18.1 主要アンチパターン一覧</div>
+              <div className="cg cg2">
+                <div className="card rc">
+                  <div className="ct">❌ 実装詳細の露出</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    「id=submit-btn のボタンをクリック」「POST /api/v1/orders
+                    を送信」など技術的詳細をステップに書く。UI 変更のたびにシナリオが壊れる。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：「注文を確定する」のようにビジネス語彙で記述する
+                  </div>
+                </div>
+                <div className="card rc">
+                  <div className="ct">❌ God Scenario（神シナリオ）</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    ログイン→検索→カート→決済→メール→在庫確認を 1 シナリオで検証。30
+                    ステップ超のモンスターシナリオ。デバッグ不能。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：1 シナリオ 1 振る舞いに分割。ステップ数 5〜10 個を目安に
+                  </div>
+                </div>
+                <div className="card rc">
+                  <div className="ct">❌ シナリオ間の依存</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    「前のシナリオで作った注文を参照する」のように実行順序に依存。並列実行や順序変更で壊れる。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：Background と Given で毎回データをセットアップする
+                  </div>
+                </div>
+                <div className="card rc">
+                  <div className="ct">❌ 技術者だけが書くシナリオ</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    PO や QA が参加せず開発者だけが Feature
+                    を書く。ビジネス要件からずれた「コードのテスト」になってしまう。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：Three Amigos を実践。PO・開発者・QA の 3 者で作成する
+                  </div>
+                </div>
+                <div className="card rc">
+                  <div className="ct">❌ 過剰なシナリオ数</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    すべての入力組み合わせをシナリオ化。類似シナリオが何十個も存在し保守コストが爆発する。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：Scenario Outline で集約。網羅的テストはユニットテストに委譲
+                  </div>
+                </div>
+                <div className="card rc">
+                  <div className="ct">❌ 失敗シナリオの放置</div>
+                  <div className="cd" style={{ marginTop: "6px" }}>
+                    「後で直す」と失敗シナリオをコミットし続ける。Broken Window
+                    効果でチーム全体のテスト品質が低下する。
+                  </div>
+                  <div className="cd" style={{ color: "var(--g)", marginTop: "8px" }}>
+                    ✅ 解決：失敗シナリオは即座に修正。一時的に @skip を使いチケット起票
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">18.2 BDD 健全性チェックフロー</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_HEALTH} />
+              </div>
+            </div>
+          </section>
+
+          {/* S19 */}
+          <section className="sec" id="s19">
+            <div className="sec-hd">
+              <span className="sec-num">19</span>
+              <h2 className="sec-title">参考文献・ソース一覧</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">19.1 必読書籍</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>タイトル</th>
+                      <th>著者</th>
+                      <th>難易度</th>
+                      <th>概要</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>The Cucumber Book（第 2 版）</strong>
+                      </td>
+                      <td>Aslak Hellesøy, Matt Wynne</td>
+                      <td>★★★☆☆</td>
+                      <td>BDD・Cucumber の決定版バイブル</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>BDD in Action</strong>
+                      </td>
+                      <td>John Ferguson Smart</td>
+                      <td>★★★★☆</td>
+                      <td>BDD の実践的実装・Serenity BDD 解説</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Specification by Example</strong>
+                      </td>
+                      <td>Gojko Adzic</td>
+                      <td>★★★★☆</td>
+                      <td>仕様の例示化・受け入れテストの本質</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Writing Great Specifications</strong>
+                      </td>
+                      <td>Kamil Nicieja</td>
+                      <td>★★★☆☆</td>
+                      <td>良い Gherkin シナリオの書き方</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Growing Object-Oriented Software, Guided by Tests</strong>
+                      </td>
+                      <td>Freeman &amp; Pryce</td>
+                      <td>★★★★☆</td>
+                      <td>Outside-in TDD/BDD の実践（GOOS 本）</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Fifty Quick Ideas to Improve Your Tests</strong>
+                      </td>
+                      <td>Gojko Adzic, David Evans</td>
+                      <td>★★★☆☆</td>
+                      <td>テスト改善の実践的アドバイス集</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">19.2 BDD・Gherkin コア概念</div>
+              <div className="rg">
+                <a
+                  className="rc2"
+                  href="https://dannorth.net/introducing-bdd/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">BDD の起源（Dan North 原文）</div>
+                  <div className="ru">https://dannorth.net/introducing-bdd/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://cucumber.io/docs/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Cucumber 公式ドキュメント</div>
+                  <div className="ru">https://cucumber.io/docs/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://cucumber.io/docs/gherkin/reference/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Gherkin 記法リファレンス</div>
+                  <div className="ru">https://cucumber.io/docs/gherkin/reference/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://martinfowler.com/bliki/GivenWhenThen.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Given-When-Then（Martin Fowler）</div>
+                  <div className="ru">https://martinfowler.com/bliki/GivenWhenThen.html</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://cucumber.io/blog/bdd/example-mapping-introduction/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Example Mapping 入門（Cucumber Blog）</div>
+                  <div className="ru">
+                    https://cucumber.io/blog/bdd/example-mapping-introduction/
+                  </div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://www.agilealliance.org/glossary/bdd/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">BDD 解説（Agile Alliance）</div>
+                  <div className="ru">https://www.agilealliance.org/glossary/bdd/</div>
+                </a>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">19.3 Python BDD フレームワーク</div>
+              <div className="rg">
+                <a
+                  className="rc2"
+                  href="https://pytest-bdd.readthedocs.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">pytest-bdd 公式ドキュメント</div>
+                  <div className="ru">https://pytest-bdd.readthedocs.io/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://github.com/pytest-dev/pytest-bdd"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">pytest-bdd GitHub</div>
+                  <div className="ru">https://github.com/pytest-dev/pytest-bdd</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://behave.readthedocs.io/en/stable/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Behave 公式ドキュメント</div>
+                  <div className="ru">https://behave.readthedocs.io/en/stable/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://docs.pytest.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">pytest 公式ドキュメント</div>
+                  <div className="ru">https://docs.pytest.org/</div>
+                </a>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">19.4 テストレポート・CI/CD</div>
+              <div className="rg">
+                <a
+                  className="rc2"
+                  href="https://allurereport.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Allure Framework 公式</div>
+                  <div className="ru">https://allurereport.org/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://reports.cucumber.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Cucumber Reports</div>
+                  <div className="ru">https://reports.cucumber.io/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://docs.github.com/en/actions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">GitHub Actions 公式</div>
+                  <div className="ru">https://docs.github.com/en/actions</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://www.picklesdoc.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Pickles（Living Documentation）</div>
+                  <div className="ru">https://www.picklesdoc.com/</div>
+                </a>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">19.5 UI テスト統合</div>
+              <div className="rg">
+                <a
+                  className="rc2"
+                  href="https://playwright.dev/python/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Playwright 公式（Python）</div>
+                  <div className="ru">https://playwright.dev/python/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://playwright.dev/python/docs/test-runners"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">pytest-playwright</div>
+                  <div className="ru">https://playwright.dev/python/docs/test-runners</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://playwright.dev/docs/pom"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Page Object Model（Playwright）</div>
+                  <div className="ru">https://playwright.dev/docs/pom</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://cucumber.io/docs/guides/browser-automation/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Selenium + Cucumber</div>
+                  <div className="ru">https://cucumber.io/docs/guides/browser-automation/</div>
+                </a>
+              </div>
+            </div>
+
+            <div className="sub">
+              <div className="sub-title">19.6 BDD 実践・コミュニティ</div>
+              <div className="rg">
+                <a
+                  className="rc2"
+                  href="https://school.cucumber.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Cucumber School（公式学習）</div>
+                  <div className="ru">https://school.cucumber.io/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://cucumber.io/docs/guides/10-minute-tutorial/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">BDD 10 分チュートリアル（Cucumber）</div>
+                  <div className="ru">https://cucumber.io/docs/guides/10-minute-tutorial/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://gojko.net/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Gojko Adzic Blog</div>
+                  <div className="ru">https://gojko.net/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://serenity-bdd.github.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">Serenity BDD（Java）</div>
+                  <div className="ru">https://serenity-bdd.github.io/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://specflow.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">SpecFlow（.NET BDD）</div>
+                  <div className="ru">https://specflow.org/</div>
+                </a>
+                <a
+                  className="rc2"
+                  href="https://www.agilealliance.org/glossary/atdd/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="rl">ATDD（Agile Alliance）</div>
+                  <div className="ru">https://www.agilealliance.org/glossary/atdd/</div>
+                </a>
+              </div>
+            </div>
+          </section>
+
+          <div className="footer">
+            📅 2026年版 — BDD 完全ガイド &nbsp;|&nbsp; Dan North（2006）の原著から最新の pytest-bdd
+            / Playwright 実践まで網羅 &nbsp;|&nbsp; Version 1.0
+          </div>
         </div>
       </main>
     </div>
