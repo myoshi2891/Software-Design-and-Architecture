@@ -7939,6 +7939,22 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     height: auto !important;
     display: block;
     margin: 0 auto !important;
+    overflow: visible;
+  }
+
+  /* foreignObject クリップ解除（emoji 採寸ズレによる右端切れ対策） */
+  .mbox svg foreignObject {
+    overflow: visible;
+  }
+
+  /* 採寸値（16px）と実描画値を一致させる（スキル fix-mermaid §採寸値と CSS 文字サイズを一致させる） */
+  .mbox svg foreignObject > div,
+  .mbox svg .nodeLabel,
+  .mbox svg .edgeLabel,
+  .mbox svg text,
+  .mbox svg tspan {
+    overflow: visible;
+    font-size: 16px !important;
   }
 
   .cb {

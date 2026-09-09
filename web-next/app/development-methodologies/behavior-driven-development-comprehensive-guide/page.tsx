@@ -454,7 +454,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">1.1 BDDが解決する4つの問題</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_PROBLEMS} />
+                <MermaidDiagram chart={DIAGRAM_PROBLEMS} preserveNaturalScale={true} />
               </div>
               <div className="cg cg2" style={{ marginTop: 16 }}>
                 <div className="card rc">
@@ -494,7 +494,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
                 <strong>TDD を補完する外側のループ</strong>として機能します。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_LEVELS} />
+                <MermaidDiagram chart={DIAGRAM_LEVELS} preserveNaturalScale={true} />
               </div>
               <div className="cg cg3" style={{ marginTop: 16 }}>
                 <div className="card bc">
@@ -573,7 +573,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
               ステップでシステムの振る舞いを誰でも読める形で表現します。
             </p>
             <div className="mbox">
-              <MermaidDiagram chart={DIAGRAM_GWT} />
+              <MermaidDiagram chart={DIAGRAM_GWT} preserveNaturalScale={true} />
             </div>
             <div className="sub">
               <div className="sub-title">2.1 各キーワードの役割</div>
@@ -701,7 +701,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
                 ストーリーから正常系・異常系の複数シナリオが生まれます。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_STORY} />
+                <MermaidDiagram chart={DIAGRAM_STORY} preserveNaturalScale={true} />
               </div>
             </div>
           </section>
@@ -720,7 +720,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">3.1 全キーワード体系</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_KEYWORDS} />
+                <MermaidDiagram chart={DIAGRAM_KEYWORDS} preserveNaturalScale={true} />
               </div>
               <div className="tw">
                 <table>
@@ -975,7 +975,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">4.1 BDD全体開発サイクル</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_CYCLE} />
+                <MermaidDiagram chart={DIAGRAM_CYCLE} preserveNaturalScale={true} />
               </div>
               <ol className="sl">
                 <li>
@@ -1032,7 +1032,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">4.2 Three Amigos ミーティング</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_AMIGOS} />
+                <MermaidDiagram chart={DIAGRAM_AMIGOS} preserveNaturalScale={true} />
               </div>
               <div className="co co-i">
                 <span className="co-ico">💬</span>
@@ -1049,7 +1049,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">4.3 スプリントへのBDD組み込み方</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_SPRINT} />
+                <MermaidDiagram chart={DIAGRAM_SPRINT} preserveNaturalScale={true} />
               </div>
             </div>
           </section>
@@ -1122,7 +1122,7 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             <div className="sub">
               <div className="sub-title">5.2 Python 推奨ツールスタック</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_TOOLS} />
+                <MermaidDiagram chart={DIAGRAM_TOOLS} preserveNaturalScale={true} />
               </div>
               <div className="co co-s">
                 <span className="co-ico">⭐</span>
@@ -1185,7 +1185,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">6.1 Cucumber のアーキテクチャ</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_CUCUMBER_ARCH} />
+                <MermaidDiagram chart={DIAGRAM_CUCUMBER_ARCH} preserveNaturalScale={true} />
               </div>
             </div>
             <div className="sub">
@@ -1869,7 +1869,7 @@ pip install testcontainers sqlalchemy`,
               ループが「どう作るか」を駆動します。
             </p>
             <div className="mbox">
-              <MermaidDiagram chart={DIAGRAM_DOUBLELOOP} />
+              <MermaidDiagram chart={DIAGRAM_DOUBLELOOP} preserveNaturalScale={true} />
             </div>
             <div className="sub">
               <div className="sub-title">10.1 二重ループの実践フロー</div>
@@ -1948,7 +1948,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">11.1 ATDD フロー</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_ATDD} />
+                <MermaidDiagram chart={DIAGRAM_ATDD} preserveNaturalScale={true} />
               </div>
             </div>
             <div className="sub">
@@ -2019,7 +2019,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">12.1 APIテストのBDD構造</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_API_BDD} />
+                <MermaidDiagram chart={DIAGRAM_API_BDD} preserveNaturalScale={true} />
               </div>
             </div>
             <div className="sub">
@@ -2230,7 +2230,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">13.1 UIテストのBDD戦略</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_UI_ARCH} />
+                <MermaidDiagram chart={DIAGRAM_UI_ARCH} preserveNaturalScale={true} />
               </div>
             </div>
             <div className="sub">
@@ -2355,7 +2355,7 @@ pip install testcontainers sqlalchemy`,
                 5 つの条件を満たすことが重要です。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_GOOD_SCENARIO} />
+                <MermaidDiagram chart={DIAGRAM_GOOD_SCENARIO} preserveNaturalScale={true} />
               </div>
               <div className="cg cg2">
                 <div className="card">
@@ -2396,7 +2396,7 @@ pip install testcontainers sqlalchemy`,
                 の少しの変更で壊れやすくなります。宣言的（Declarative）に書くことでビジネスの本質的な振る舞いを記述します。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_DECLARATIVE} />
+                <MermaidDiagram chart={DIAGRAM_DECLARATIVE} preserveNaturalScale={true} />
               </div>
             </div>
 
@@ -2407,7 +2407,7 @@ pip install testcontainers sqlalchemy`,
                 Amigos（PO・開発者・QA）が短時間（25分程度）でユーザーストーリーの受け入れ基準を明確化する強力なファシリテーション技法です。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_EXAMPLE_MAPPING} />
+                <MermaidDiagram chart={DIAGRAM_EXAMPLE_MAPPING} preserveNaturalScale={true} />
               </div>
               <div className="tw">
                 <table>
@@ -2479,7 +2479,7 @@ pip install testcontainers sqlalchemy`,
                 スモークテストまで、CI/CD パイプラインの各段階で実行されます。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_CICD} />
+                <MermaidDiagram chart={DIAGRAM_CICD} preserveNaturalScale={true} />
               </div>
             </div>
 
@@ -2584,7 +2584,7 @@ pip install testcontainers sqlalchemy`,
                 Documentation）として閲覧可能になります。
               </p>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_LIVING_DOC} />
+                <MermaidDiagram chart={DIAGRAM_LIVING_DOC} preserveNaturalScale={true} />
               </div>
               <div className="tw">
                 <table>
@@ -2644,7 +2644,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">16.1 チェックアウトフローの完全シナリオ</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_EC_MAP} />
+                <MermaidDiagram chart={DIAGRAM_EC_MAP} preserveNaturalScale={true} />
               </div>
               <div className="fp">features/checkout_flow.feature</div>
               <div className="cb">
@@ -2838,7 +2838,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">17.2 BDD 成熟度モデル</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_MATURITY} />
+                <MermaidDiagram chart={DIAGRAM_MATURITY} preserveNaturalScale={true} />
               </div>
               <div className="tw">
                 <table>
@@ -3024,7 +3024,7 @@ pip install testcontainers sqlalchemy`,
             <div className="sub">
               <div className="sub-title">18.2 BDD 健全性チェックフロー</div>
               <div className="mbox">
-                <MermaidDiagram chart={DIAGRAM_HEALTH} />
+                <MermaidDiagram chart={DIAGRAM_HEALTH} preserveNaturalScale={true} />
               </div>
             </div>
           </section>
