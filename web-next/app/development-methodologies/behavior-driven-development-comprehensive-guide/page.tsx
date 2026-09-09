@@ -165,6 +165,67 @@ const DIAGRAM_CUCUMBER_ARCH = `graph TD
     SUP -->|"前後処理"| SD
     SD --> RPT`;
 
+const DIAGRAM_DOUBLELOOP = `flowchart TD
+    subgraph OUTER["🔵 外側ループ — BDD / 受け入れテスト"]
+        BR["🔴 BDD RED\\nGherkin シナリオを書く\\n全シナリオが FAIL"]
+        BG["🟢 BDD GREEN\\n全シナリオが PASS\\n内側ループ繰り返し後"]
+        BF["🔵 BDD REFACTOR\\nシナリオを整理・改善"]
+    end
+    subgraph INNER["🔴 内側ループ — TDD / ユニットテスト"]
+        TR["🔴 TDD RED\\nユニットテストを書く\\nFAIL 状態"]
+        TG["🟢 TDD GREEN\\n最小実装で PASS"]
+        TF["🔵 TDD REFACTOR\\nコードを整理・改善"]
+    end
+    BR --> TR
+    TR --> TG --> TF
+    TF -->|"まだシナリオ FAIL"| TR
+    TF -->|"シナリオ PASS"| BG
+    BG --> BF
+    BF -->|"次のシナリオへ"| BR
+    style OUTER fill:#07111e,stroke:#58a6ff
+    style INNER fill:#07111e,stroke:#f85149
+    style BR fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style BG fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style TR fill:#4a1212,color:#f85149,stroke:#f85149
+    style TG fill:#0d2b15,color:#3fb950,stroke:#3fb950`;
+
+const DIAGRAM_ATDD = `flowchart TD
+    REQ["📋 要件（ユーザーストーリー）"]
+    ACC["✅ 受け入れ基準の定義\\nThree Amigos"]
+    GHK2["🥒 Gherkin シナリオ作成\\n具体的な例で仕様を記述"]
+    AUTO["⚙️ 自動受け入れテスト\\nシナリオが実行可能に"]
+    IMPL["💻 実装\\nテストをパスする"]
+    DONE["🎉 受け入れ\\n全シナリオが PASS"]
+    REQ --> ACC --> GHK2 --> AUTO --> IMPL --> DONE
+    DONE -->|"次のストーリーへ"| REQ
+    style REQ fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style ACC fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style GHK2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style AUTO fill:#4a1212,color:#f85149,stroke:#f85149
+    style DONE fill:#111827,color:#e6edf3,stroke:#30363d`;
+
+const DIAGRAM_API_BDD = `flowchart TD
+    subgraph API_BDD["🌐 APIテストのBDDレイヤー"]
+        GWT_API["Given: APIの初期状態を設定\\n・テストデータのDB投入\\n・認証トークンの取得\\n・モックサーバーの設定"]
+        WHEN_API["When: HTTPリクエストを送信\\n・メソッド・URL・ヘッダー\\n・リクエストボディ\\n・クエリパラメータ"]
+        THEN_API["Then: レスポンスを検証\\n・HTTPステータスコード\\n・レスポンスボディの内容\\n・ヘッダーの確認"]
+    end
+    GWT_API --> WHEN_API --> THEN_API
+    style GWT_API fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style WHEN_API fill:#2d1508,color:#e07b39,stroke:#e07b39
+    style THEN_API fill:#0d2b15,color:#3fb950,stroke:#3fb950`;
+
+const DIAGRAM_UI_ARCH = `graph TD
+    FEAT2["🥒 Gherkin Feature\\nビジネスシナリオを記述\\nUI 実装詳細は書かない"]
+    STEP2["⚙️ Step Definitions\\nPage Object Model を呼び出す\\nUI 操作の抽象化レイヤー"]
+    POM["📄 Page Object Model\\n各ページの UI 操作をメソッドで定義\\nセレクターを隠蔽する"]
+    PW2["🎭 Playwright / Selenium\\n実際のブラウザ操作\\n最下層の実装詳細"]
+    FEAT2 --> STEP2 --> POM --> PW2
+    style FEAT2 fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style STEP2 fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style POM fill:#231545,color:#bc8cff,stroke:#bc8cff
+    style PW2 fill:#4a1212,color:#f85149,stroke:#f85149`;
+
 export default function BehaviorDrivenDevelopmentGuidePage() {
   return (
     <div className="behavior-driven-development-comprehensive-guide">
@@ -1621,11 +1682,492 @@ pip install testcontainers sqlalchemy`,
             </div>
           </section>
 
+          {/* S10 */}
+          <section className="sec" id="s10">
+            <div className="sec-hd">
+              <span className="sec-num">10</span>
+              <h2 className="sec-title">BDD と TDD の二重ループ</h2>
+            </div>
+            <p className="lead">
+              BDD と TDD は対立するものではなく、
+              <strong>外側（BDD）と内側（TDD）の二重ループ</strong>
+              として連携します。外側の BDD ループが「何を作るか」を規定し、内側の TDD
+              ループが「どう作るか」を駆動します。
+            </p>
+            <div className="mbox">
+              <MermaidDiagram chart={DIAGRAM_DOUBLELOOP} />
+            </div>
+            <div className="sub">
+              <div className="sub-title">10.1 二重ループの実践フロー</div>
+              <ol className="sl">
+                <li>
+                  <span className="sl-n">1</span>
+                  <div className="sl-c">
+                    <strong>BDD RED — Gherkin シナリオを書く</strong>
+                    <p>
+                      新機能の Gherkin
+                      シナリオを作成。ステップ定義がないため「PENDING」か「FAIL」になる
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">2</span>
+                  <div className="sl-c">
+                    <strong>TDD RED — ユニットテストを書く</strong>
+                    <p>
+                      シナリオを実現するためのユースケース・ドメインモデルのユニットテストを書く（実装なし）
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">3</span>
+                  <div className="sl-c">
+                    <strong>TDD GREEN — 最小実装で PASS</strong>
+                    <p>ユニットテストをパスする最小限の実装コードを書く。過剰実装しない</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">4</span>
+                  <div className="sl-c">
+                    <strong>TDD REFACTOR — コードを整理</strong>
+                    <p>テストを壊さずにコードを改善。2〜4 を繰り返してドメインモデルを育てる</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">5</span>
+                  <div className="sl-c">
+                    <strong>BDD GREEN — シナリオが PASS</strong>
+                    <p>
+                      ステップ定義を完成させてシナリオを実行。すべて GREEN になったら次のシナリオへ
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="sl-n">6</span>
+                  <div className="sl-c">
+                    <strong>BDD REFACTOR — シナリオを整理</strong>
+                    <p>重複シナリオの統合・Background の整理・タグの見直しを行う</p>
+                  </div>
+                </li>
+              </ol>
+              <div className="co co-i">
+                <span className="co-ico">📌</span>
+                <div className="co-body">
+                  <div className="co-ttl">重要な原則</div>
+                  <p>
+                    BDD シナリオが「FAIL（赤）」の間は、TDD ループで着実に実装を積み重ねます。BDD
+                    シナリオが「PASS（緑）」になるまで TDD
+                    ループを繰り返すのが二重ループの本質です。「BDD を後から書く」アプローチは BDD
+                    ではありません。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S11 */}
+          <section className="sec" id="s11">
+            <div className="sec-hd">
+              <span className="sec-num">11</span>
+              <h2 className="sec-title">受け入れテスト自動化（ATDD）</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">11.1 ATDD フロー</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_ATDD} />
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">11.2 受け入れ基準の Gherkin 化例（クーポン機能）</div>
+              <div className="fp">features/coupon.feature</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang gl">Gherkin</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">Feature:</span> クーポンコードの適用
+  顧客として、クーポンコードを適用して割引を受けたい
+  理由：お得に買い物できるから
+
+  <span class="kw">Background:</span>
+    <span class="kw">Given</span> 以下のクーポンがシステムに登録されている
+      | コード   | 割引タイプ | 割引値 | 最低注文額 | 有効期限   |
+      | SAVE10  | 定率       | 10     | 0          | 2027-12-31 |
+      | FLAT500 | 定額       | 500    | 3000       | 2027-12-31 |
+      | EXPIRED | 定率       | 20     | 0          | 2020-01-01 |
+    <span class="kw">And</span> 顧客がカートに合計 5,000円 の商品を入れている
+
+  <span class="cm"># ─── 正常系：基本的な割引適用 ───</span>
+  <span class="kw">Scenario:</span> 定率クーポンを適用すると割引される
+    <span class="kw">When</span> クーポンコード「SAVE10」をカートに適用する
+    <span class="kw">Then</span> カートの割引額は 500円 である
+    <span class="kw">And</span> カートの合計金額は 4,500円 である
+
+  <span class="kw">Scenario:</span> 定額クーポンを適用すると割引される
+    <span class="kw">When</span> クーポンコード「FLAT500」をカートに適用する
+    <span class="kw">Then</span> カートの割引額は 500円 である
+    <span class="kw">And</span> カートの合計金額は 4,500円 である
+
+  <span class="cm"># ─── 異常系：エラーケース ───</span>
+  <span class="kw">Scenario:</span> 存在しないクーポンコードは適用できない
+    <span class="kw">When</span> クーポンコード「INVALID」をカートに適用しようとする
+    <span class="kw">Then</span> 「無効なクーポンコードです」というエラーが表示される
+    <span class="kw">And</span> カートの合計金額は変わらない
+
+  <span class="kw">Scenario:</span> 有効期限切れクーポンは適用できない
+    <span class="kw">When</span> クーポンコード「EXPIRED」をカートに適用しようとする
+    <span class="kw">Then</span> 「有効期限が切れています」というエラーが表示される
+
+  <span class="kw">Scenario:</span> 最低注文額未満の場合クーポンは適用できない
+    <span class="kw">Given</span> カートの合計金額が 2,000円 の状態である
+    <span class="kw">When</span> クーポンコード「FLAT500」をカートに適用しようとする
+    <span class="kw">Then</span> 「3,000円以上のご注文に適用できます」というエラーが表示される`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S12 */}
+          <section className="sec" id="s12">
+            <div className="sec-hd">
+              <span className="sec-num">12</span>
+              <h2 className="sec-title">BDD による API テスト</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">12.1 APIテストのBDD構造</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_API_BDD} />
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">12.2 APIテストのGherkin記述例</div>
+              <div className="fp">features/order_api.feature</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang gl">Gherkin</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="cm">@api @order</span>
+<span class="kw">Feature:</span> 注文APIの操作
+  開発者として
+  注文APIを通じて注文を作成・参照・キャンセルしたい
+  ECシステムを正しく動作させるから
+
+  <span class="kw">Background:</span>
+    <span class="kw">Given</span> APIに認証済みのJWTトークンが設定されている
+    <span class="kw">And</span> 顧客「cust_001」がシステムに登録されている
+    <span class="kw">And</span> 以下の商品が在庫にある
+      | 商品ID   | 商品名   | 価格  | 在庫数 |
+      | prod_001 | Tシャツ  | 1000  | 10     |
+
+  <span class="cm">@smoke</span>
+  <span class="kw">Scenario:</span> 注文を正常に作成できる
+    <span class="kw">When</span> 以下のリクエストで「POST /v1/orders」を呼び出す
+      <span class="st">"""
+      {
+        "customer_id": "cust_001",
+        "items": [
+          {"product_id": "prod_001", "quantity": 2}
+        ],
+        "shipping_address": {
+          "postal_code": "150-0001",
+          "prefecture": "東京都",
+          "city": "渋谷区",
+          "street": "神宮前1-1-1"
+        }
+      }
+      """</span>
+    <span class="kw">Then</span> レスポンスステータスは 201 である
+    <span class="kw">And</span> レスポンスに以下のフィールドが含まれている
+      | フィールド   | 期待値      |
+      | status       | confirmed   |
+      | total_amount | 2000        |
+    <span class="kw">And</span> レスポンスに "order_id" フィールドが存在する
+
+  <span class="kw">Scenario:</span> 存在しない顧客での注文作成は404エラー
+    <span class="kw">When</span> 以下のリクエストで「POST /v1/orders」を呼び出す
+      <span class="st">"""
+      {
+        "customer_id": "unknown_customer",
+        "items": [{"product_id": "prod_001", "quantity": 1}]
+      }
+      """</span>
+    <span class="kw">Then</span> レスポンスステータスは 404 である
+    <span class="kw">And</span> レスポンスの "error.code" は "CUSTOMER_NOT_FOUND" である
+
+  <span class="kw">Scenario:</span> 作成した注文を参照できる
+    <span class="kw">Given</span> 注文「order_001」がシステムに存在する
+    <span class="kw">When</span> 「GET /v1/orders/order_001」を呼び出す
+    <span class="kw">Then</span> レスポンスステータスは 200 である
+    <span class="kw">And</span> レスポンスの "id" は "order_001" である`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">12.3 APIテストのステップ定義実装</div>
+              <div className="fp">tests/bdd/steps/api_steps.py</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> pytest
+<span class="kw">import</span> json
+<span class="kw">from</span> pytest_bdd <span class="kw">import</span> given, when, then, parsers
+<span class="kw">import</span> httpx
+<span class="kw">from</span> typing <span class="kw">import</span> Any
+
+
+<span class="cm"># ─── 認証ステップ ───</span>
+
+<span class="kw">@given</span>(<span class="st">"APIに認証済みのJWTトークンが設定されている"</span>, target_fixture=<span class="st">"auth_headers"</span>)
+<span class="kw">def</span> <span class="fn">authenticated_headers</span>(jwt_token_factory):
+    <span class="st">"""認証ヘッダーを生成するフィクスチャ"""</span>
+    token = jwt_token_factory.create(sub=<span class="st">"test_user"</span>, roles=[<span class="st">"customer"</span>])
+    <span class="kw">return</span> {<span class="st">"Authorization"</span>: f<span class="st">"Bearer {token}"</span>}
+
+
+<span class="cm"># ─── リクエスト送信ステップ ───</span>
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">'以下のリクエストで「{method} {path}」を呼び出す'</span>))
+<span class="kw">def</span> <span class="fn">send_api_request</span>(method, path, docstring, context, api_client, auth_headers):
+    <span class="st">"""DocStringのJSONボディを送信する汎用APIリクエストステップ"""</span>
+    allowed_methods = {<span class="st">'get'</span>, <span class="st">'post'</span>, <span class="st">'put'</span>, <span class="st">'delete'</span>, <span class="st">'patch'</span>, <span class="st">'head'</span>, <span class="st">'options'</span>}
+    method_lower = method.lower()
+    <span class="kw">if</span> method_lower <span class="kw">not in</span> allowed_methods:
+        <span class="kw">raise</span> ValueError(f<span class="st">"許可されていないHTTPメソッドです: {method}"</span>)
+
+    request_body = json.loads(docstring)
+    http_method = getattr(api_client, method_lower)
+    response = http_method(
+        path,
+        json=request_body,
+        headers=auth_headers
+    )
+    context.last_response = response
+
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">'「GET {path}」を呼び出す'</span>))
+<span class="kw">def</span> <span class="fn">send_get_request</span>(path, context, api_client, auth_headers):
+    <span class="st">"""GETリクエストの送信"""</span>
+    response = api_client.get(path, headers=auth_headers)
+    context.last_response = response
+
+
+<span class="cm"># ─── レスポンス検証ステップ ───</span>
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"レスポンスステータスは {status_code:d} である"</span>))
+<span class="kw">def</span> <span class="fn">verify_response_status</span>(status_code, context):
+    <span class="st">"""HTTPステータスコードを検証"""</span>
+    actual = context.last_response.status_code
+    body = context.last_response.text
+    <span class="kw">assert</span> actual == status_code, (
+        f<span class="st">"期待: HTTP {status_code}\\n"</span>
+        f<span class="st">"実際: HTTP {actual}\\n"</span>
+        f<span class="st">"レスポンス: {body}"</span>
+    )
+
+
+<span class="kw">@then</span>(<span class="st">"レスポンスに以下のフィールドが含まれている"</span>)
+<span class="kw">def</span> <span class="fn">verify_response_fields</span>(datatable, context):
+    <span class="st">"""データテーブルで指定されたフィールドを検証"""</span>
+    response_json = context.last_response.json()
+    <span class="kw">for</span> row <span class="kw">in</span> datatable:
+        field_path = row[<span class="st">"フィールド"</span>]
+        expected = row[<span class="st">"期待値"</span>]
+        actual = _get_nested_value(response_json, field_path)
+        <span class="kw">if</span> isinstance(actual, (int, float)):
+            <span class="kw">assert</span> actual == type(actual)(expected), (
+                f<span class="st">"フィールド '{field_path}': 期待={expected}, 実際={actual}"</span>
+            )
+        <span class="kw">else</span>:
+            <span class="kw">assert</span> str(actual) == str(expected), (
+                f<span class="st">"フィールド '{field_path}': 期待={expected}, 実際={actual}"</span>
+            )
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">'レスポンスの "{field_path}" は "{expected_value}" である'</span>))
+<span class="kw">def</span> <span class="fn">verify_response_field_value</span>(field_path, expected_value, context):
+    <span class="st">"""単一フィールドの値を検証"""</span>
+    response_json = context.last_response.json()
+    actual = _get_nested_value(response_json, field_path)
+    <span class="kw">assert</span> str(actual) == expected_value, (
+        f<span class="st">"'{field_path}': 期待='{expected_value}', 実際='{actual}'"</span>
+    )
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">'レスポンスに "{field_name}" フィールドが存在する'</span>))
+<span class="kw">def</span> <span class="fn">verify_response_has_field</span>(field_name, context):
+    <span class="st">"""フィールドの存在を検証"""</span>
+    response_json = context.last_response.json()
+    <span class="kw">assert</span> field_name <span class="kw">in</span> response_json, (
+        f<span class="st">"フィールド '{field_name}' がレスポンスに存在しません\\n"</span>
+        f<span class="st">"レスポンス: {response_json}"</span>
+    )
+
+
+<span class="kw">def</span> <span class="fn">_get_nested_value</span>(data: dict, path: str) -> Any:
+    <span class="st">"""ドット区切りのパスでネストした値を取得 例: 'error.code'"""</span>
+    keys = path.split(<span class="st">"."</span>)
+    <span class="kw">for</span> key <span class="kw">in</span> keys:
+        <span class="kw">if</span> isinstance(data, dict):
+            data = data.get(key)
+        <span class="kw">else</span>:
+            <span class="kw">return</span> <span class="kw">None</span>
+    <span class="kw">return</span> data`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S13 */}
+          <section className="sec" id="s13">
+            <div className="sec-hd">
+              <span className="sec-num">13</span>
+              <h2 className="sec-title">BDD による UI テスト</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">13.1 UIテストのBDD戦略</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_UI_ARCH} />
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">13.2 Page Object Model + BDD の実装例</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="cm"># ─── Page Object Model の定義 ───</span>
+
+<span class="kw">from</span> playwright.sync_api <span class="kw">import</span> Page
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+
+<span class="kw">class</span> <span class="fn">CartPage</span>:
+    <span class="st">"""
+    ショッピングカートページのPage Object
+    Playwrightのページ操作を抽象化する
+    """</span>
+    URL = <span class="st">"/cart"</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, page: Page):
+        self._page = page
+
+    <span class="kw">def</span> <span class="fn">navigate</span>(self):
+        self._page.goto(self.URL)
+
+    <span class="kw">def</span> <span class="fn">add_item</span>(self, product_name: str, quantity: int = 1):
+        <span class="st">"""商品をカートに追加"""</span>
+        product = self._page.locator(f<span class="st">"[data-product-name='{product_name}']"</span>)
+        qty_input = product.locator(<span class="st">"input[name='quantity']"</span>)
+        qty_input.fill(str(quantity))
+        product.locator(<span class="st">"button[data-action='add-to-cart']"</span>).click()
+
+    <span class="kw">def</span> <span class="fn">get_total</span>(self) -> str:
+        <span class="st">"""カート合計金額を取得"""</span>
+        return self._page.locator(<span class="st">"[data-testid='cart-total']"</span>).text_content()
+
+    <span class="kw">def</span> <span class="fn">get_item_count</span>(self) -> int:
+        <span class="st">"""カート内の商品点数を取得"""</span>
+        count_text = self._page.locator(<span class="st">"[data-testid='cart-item-count']"</span>).text_content()
+        return int(count_text)
+
+    <span class="kw">def</span> <span class="fn">get_error_message</span>(self) -> str:
+        <span class="st">"""エラーメッセージを取得"""</span>
+        error = self._page.locator(<span class="st">"[data-testid='error-message']"</span>)
+        if error.is_visible():
+            return error.text_content()
+        return <span class="st">""</span>
+
+    <span class="kw">def</span> <span class="fn">is_empty</span>(self) -> bool:
+        <span class="st">"""カートが空かどうか"""</span>
+        return self._page.locator(<span class="st">"[data-testid='empty-cart-message']"</span>).is_visible()
+
+
+<span class="cm"># ─── UIテスト用ステップ定義 ───</span>
+
+<span class="kw">import</span> pytest
+<span class="kw">from</span> pytest_bdd <span class="kw">import</span> given, when, then, parsers
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">cart_page</span>(page):
+    <span class="st">"""カートページのPage Object Fixture"""</span>
+    cart = CartPage(page)
+    cart.navigate()
+    return cart
+
+
+<span class="kw">@given</span>(<span class="st">"カートが空の状態である"</span>, target_fixture=<span class="st">"empty_cart"</span>)
+<span class="kw">def</span> <span class="fn">cart_is_empty_ui</span>(cart_page):
+    <span class="st">"""UIでカートが空であることを確認"""</span>
+    <span class="kw">assert</span> cart_page.is_empty(), <span class="st">"カートは空でなければなりません"</span>
+    return cart_page
+
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">"商品「{product_name}」を{quantity:d}点カートに追加する"</span>))
+<span class="kw">def</span> <span class="fn">add_item_ui</span>(product_name, quantity, cart_page):
+    <span class="st">"""UIで商品をカートに追加"""</span>
+    cart_page.add_item(product_name, quantity)
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"カートには{expected_count:d}点の商品が入っている"</span>))
+<span class="kw">def</span> <span class="fn">verify_item_count_ui</span>(expected_count, cart_page):
+    <span class="st">"""UIでカート内の商品数を検証"""</span>
+    actual = cart_page.get_item_count()
+    <span class="kw">assert</span> actual == expected_count, f<span class="st">"期待: {expected_count}点, 実際: {actual}点"</span>
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"カートの合計金額は{expected_total:,}円 である"</span>))
+<span class="kw">def</span> <span class="fn">verify_total_ui</span>(expected_total, cart_page):
+    <span class="st">"""UIでカートの合計金額を検証"""</span>
+    actual_text = cart_page.get_total()
+    actual = int(actual_text.replace(<span class="st">"¥"</span>, <span class="st">""</span>).replace(<span class="st">","</span>, <span class="st">""</span>))
+    <span class="kw">assert</span> actual == expected_total, f<span class="st">"期待: {expected_total}円, 実際: {actual}円"</span>`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Placeholders for remaining sections */}
-          <section className="sec" id="s10" />
-          <section className="sec" id="s11" />
-          <section className="sec" id="s12" />
-          <section className="sec" id="s13" />
           <section className="sec" id="s14" />
           <section className="sec" id="s15" />
           <section className="sec" id="s16" />
