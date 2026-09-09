@@ -8536,9 +8536,10 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
   }
   .mermaid {
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     align-items: center;
-    width: 100%;
+    min-width: 100%;
+    width: max-content !important;
   }
   .mermaid svg {
     max-width: 100%;
