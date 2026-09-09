@@ -2,14 +2,26 @@ import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import XpSidebar from "./XpSidebar";
 
-const DIAGRAM_HISTORY = `timeline
-    title XPの歴史的背景
-    1990年代初頭 : ウォーターフォール開発の限界が顕在化
-    1996年 : Kent BeckがC3プロジェクト（Chrysler社）でXPを実践
-    1999年 : Extreme Programming Explained 初版出版
-    2001年 : アジャイルマニフェストに参加
-    2004年 : 第2版出版（5つの価値と13のプラクティスへ体系化）
-    2010年代 : TDD・CI/CD・ペアプロが業界標準のプラクティスへ`;
+const DIAGRAM_HISTORY = `flowchart LR
+    E1["📅 1990年代初頭\\n【課題】ウォーターフォールの限界\\n仕様変更コスト急増・失敗の多発"]
+    E2["📅 1996年\\n【誕生】Chrysler C3プロジェクト\\nKent BeckによるXP実践の開始"]
+    E3["📅 1999年\\n【出版】XP Explained 初版\\n『変化を受け入れる』思想の普及"]
+    E4["📅 2001年\\n【宣言】アジャイルマニフェスト\\n17名が集結・コア思想として署名"]
+    E5["📅 2004年\\n【成熟】XP Explained 第2版\\n5つの価値と13のプラクティス体系化"]
+    E6["📅 2010年代〜\\n【定着】業界標準プラクティスへ\\nTDD・CI/CD・ペアプロの一般化"]
+
+    E1 -->|課題意識| E2
+    E2 -->|体系化| E3
+    E3 -->|ムーブメント| E4
+    E4 -->|洗練・再定義| E5
+    E5 -->|デファクト化| E6
+
+    style E1 fill:#1c1917,stroke:#f59e0b,stroke-width:2px,color:#fef3c7
+    style E2 fill:#0c1e33,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
+    style E3 fill:#181033,stroke:#818cf8,stroke-width:2px,color:#e0e7ff
+    style E4 fill:#0a2417,stroke:#34d399,stroke-width:2px,color:#d1fae5
+    style E5 fill:#042f2e,stroke:#2dd4bf,stroke-width:2px,color:#ccfbf1
+    style E6 fill:#241230,stroke:#c084fc,stroke-width:2px,color:#f3e8ff`;
 
 const DIAGRAM_OVERVIEW = `graph TD
     XP["Extreme Programming"] --> V["5つの価値 Values"]

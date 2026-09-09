@@ -8426,9 +8426,10 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
   }
   .content-inner {
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px 24px 80px;
+    max-width: 100%;
+    margin: 0;
+    padding: 32px 48px 80px;
+    box-sizing: border-box;
   }
 
   .section-anchor { scroll-margin-top: 32px; }
