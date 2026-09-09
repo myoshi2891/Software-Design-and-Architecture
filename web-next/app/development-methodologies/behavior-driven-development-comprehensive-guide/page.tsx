@@ -138,6 +138,33 @@ const DIAGRAM_SPRINT = `sequenceDiagram
     QA->>PO: 結果を共有
     PO-->>DEV: 承認 または フィードバック`;
 
+const DIAGRAM_TOOLS = `graph TD
+    GH["📄 Gherkin\\nFeature ファイル記述"]
+    PBDD["🥒 pytest-bdd\\nステップ定義・シナリオ実行"]
+    PT["🧪 pytest\\nテストランナー・フィクスチャ"]
+    HTTPX["🌐 httpx\\nAPI テスト"]
+    PW["🎭 Playwright\\nUI テスト（E2E）"]
+    FB["🏭 factory-boy\\nテストデータ生成"]
+    AL["📊 Allure\\nテストレポート生成"]
+    TC["🐳 TestContainers\\nDB 統合テスト"]
+    GH --> PBDD --> PT
+    PT --> HTTPX & PW & FB & TC & AL
+    style GH fill:#0d2b15,color:#3fb950,stroke:#3fb950
+    style PBDD fill:#0e2140,color:#58a6ff,stroke:#58a6ff
+    style PT fill:#4a1212,color:#f85149,stroke:#f85149
+    style AL fill:#2a1a00,color:#d4a017,stroke:#d4a017`;
+
+const DIAGRAM_CUCUMBER_ARCH = `graph TD
+    FF["📄 Feature ファイル\\n.feature 形式\\nGherkin 記法で記述"]
+    SD["⚙️ Step Definitions\\n各ステップの実装コード\\nアノテーションでマッチング"]
+    SUP["🛠️ Support / Hooks\\nBefore・After・BeforeAll\\n共通処理・フィクスチャ"]
+    APP["💻 Application Code\\nテスト対象のアプリケーション"]
+    RPT["📊 Test Report\\nAllure / Cucumber HTML"]
+    FF -->|"マッチング"| SD
+    SD -->|"呼び出し"| APP
+    SUP -->|"前後処理"| SD
+    SD --> RPT`;
+
 export default function BehaviorDrivenDevelopmentGuidePage() {
   return (
     <div className="behavior-driven-development-comprehensive-guide">
@@ -792,12 +819,809 @@ export default function BehaviorDrivenDevelopmentGuidePage() {
             </div>
           </section>
 
+          {/* S5 */}
+          <section className="sec" id="s5">
+            <div className="sec-hd">
+              <span className="sec-num">05</span>
+              <h2 className="sec-title">ツールチェーンの選定</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">5.1 言語別 BDD フレームワーク比較</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>言語</th>
+                      <th>推奨フレームワーク</th>
+                      <th>特徴</th>
+                      <th>適した場面</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        🐍 <strong>Python</strong>
+                      </td>
+                      <td>
+                        <code>pytest-bdd</code> / Behave
+                      </td>
+                      <td>pytest エコシステムと統合。フィクスチャが強力</td>
+                      <td>データサイエンス・Web API・自動化スクリプト</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        ☕ <strong>Java</strong>
+                      </td>
+                      <td>Cucumber-JVM / Serenity BDD</td>
+                      <td>エンタープライズ向け。Spring との統合が容易</td>
+                      <td>大規模 Web アプリ・マイクロサービス</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        🟨 <strong>JavaScript</strong>
+                      </td>
+                      <td>Cucumber.js / jest-cucumber</td>
+                      <td>Node.js 環境。Playwright/Cypress との統合</td>
+                      <td>フロントエンド・フルスタック JS</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        🔵 <strong>.NET</strong>
+                      </td>
+                      <td>SpecFlow</td>
+                      <td>.NET エコシステムにネイティブ統合</td>
+                      <td>C#/ASP.NET アプリケーション</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        💎 <strong>Ruby</strong>
+                      </td>
+                      <td>Cucumber（オリジナル）</td>
+                      <td>BDD の原点。最も成熟したエコシステム</td>
+                      <td>Ruby on Rails・レガシー移行</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">5.2 Python 推奨ツールスタック</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_TOOLS} />
+              </div>
+              <div className="co co-s">
+                <span className="co-ico">⭐</span>
+                <div className="co-body">
+                  <div className="co-ttl">pytest-bdd を推奨する理由</div>
+                  <p>
+                    ① pytest の強力なフィクスチャシステムとフル統合 ② conftest.py
+                    による共通設定の管理 ③ パラメータ化テストとの組み合わせ ④ CI
+                    ツールとの親和性（GitHub Actions, CircleCI 等）⑤ Allure
+                    レポートとのシームレスな統合
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">5.3 インストールコマンド</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang bl">Bash</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="cm"># コア依存関係</span>
+pip install pytest pytest-bdd
+
+<span class="cm"># API テスト</span>
+pip install httpx requests
+
+<span class="cm"># UI テスト（Playwright）</span>
+pip install playwright pytest-playwright
+playwright install chromium
+
+<span class="cm"># テストデータ生成</span>
+pip install factory-boy
+
+<span class="cm"># レポート生成</span>
+pip install allure-pytest pytest-html
+
+<span class="cm"># DB 統合テスト</span>
+pip install testcontainers sqlalchemy`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S6 */}
+          <section className="sec" id="s6">
+            <div className="sec-hd">
+              <span className="sec-num">06</span>
+              <h2 className="sec-title">Cucumber 完全実装ガイド（Java）</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">6.1 Cucumber のアーキテクチャ</div>
+              <div className="mbox">
+                <MermaidDiagram chart={DIAGRAM_CUCUMBER_ARCH} />
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">6.2 ステップ定義の実装（Java）</div>
+              <div className="fp">src/test/java/steps/ShoppingCartSteps.java</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang jl">Java</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">package</span> steps;
+
+<span class="kw">import</span> io.cucumber.java.ja.*;
+<span class="kw">import</span> io.cucumber.java.*;
+<span class="kw">import static</span> org.assertj.core.api.Assertions.*;
+
+<span class="kw">public class</span> <span class="fn">ShoppingCartSteps</span> {
+
+    <span class="kw">private</span> ShoppingCart cart;
+    <span class="kw">private</span> ProductCatalog catalog;
+    <span class="kw">private</span> Exception lastException;
+
+    <span class="kw">@Before</span>
+    <span class="kw">public void</span> <span class="fn">setUp</span>() {
+        catalog = <span class="kw">new</span> InMemoryProductCatalog();
+        cart = <span class="kw">new</span> ShoppingCart(catalog);
+    }
+
+    <span class="kw">@After</span>
+    <span class="kw">public void</span> <span class="fn">tearDown</span>() { cart = <span class="kw">null</span>; }
+
+    <span class="cm">// ─── Given ステップ ───</span>
+    <span class="kw">@Given</span>(<span class="st">"カートが空の状態である"</span>)
+    <span class="kw">public void</span> <span class="fn">カートが空の状態である</span>() {
+        assertThat(cart.isEmpty()).isTrue();
+    }
+
+    <span class="kw">@Given</span>(<span class="st">"顧客{string}がログインしている"</span>)
+    <span class="kw">public void</span> <span class="fn">顧客がログインしている</span>(String customerName) {
+        AuthContext.login(customerName);
+    }
+
+    <span class="cm">// ─── When ステップ ───</span>
+    <span class="kw">@When</span>(<span class="st">"商品{string}を {int} 点カートに追加する"</span>)
+    <span class="kw">public void</span> <span class="fn">商品をカートに追加する</span>(String productName, <span class="kw">int</span> quantity) {
+        <span class="kw">try</span> {
+            Product product = catalog.findByName(productName);
+            cart.addItem(product.getId(), quantity);
+        } <span class="kw">catch</span> (Exception e) {
+            lastException = e;
+        }
+    }
+
+    <span class="cm">// ─── Then ステップ ───</span>
+    <span class="kw">@Then</span>(<span class="st">"カートには {int} 点の商品が入っている"</span>)
+    <span class="kw">public void</span> <span class="fn">カートには点の商品が入っている</span>(<span class="kw">int</span> expectedCount) {
+        assertThat(cart.getTotalQuantity()).isEqualTo(expectedCount);
+    }
+
+    <span class="kw">@Then</span>(<span class="st">"カートの合計金額は {int}円 である"</span>)
+    <span class="kw">public void</span> <span class="fn">カートの合計金額は円である</span>(<span class="kw">int</span> expectedTotal) {
+        assertThat(cart.getTotal()).isEqualTo(expectedTotal);
+    }
+
+    <span class="kw">@Then</span>(<span class="st">"{string}というエラーが表示される"</span>)
+    <span class="kw">public void</span> <span class="fn">エラーが表示される</span>(String expectedMessage) {
+        assertThat(lastException).isNotNull();
+        assertThat(lastException.getMessage()).contains(expectedMessage);
+    }
+}`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S7 */}
+          <section className="sec" id="s7">
+            <div className="sec-hd">
+              <span className="sec-num">07</span>
+              <h2 className="sec-title">pytest-bdd 完全実装ガイド</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">7.1 推奨プロジェクト構成</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang bl">Project Structure</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `my_project/
+├── features/                   <span class="cm"># Gherkin Feature ファイル</span>
+│   ├── shopping_cart.feature
+│   ├── order.feature
+│   └── payment.feature
+├── tests/
+│   └── bdd/
+│       ├── conftest.py         <span class="cm"># フィクスチャ・フック定義</span>
+│       ├── steps/
+│       │   ├── __init__.py
+│       │   ├── cart_steps.py
+│       │   ├── order_steps.py
+│       │   └── common_steps.py
+│       └── test_scenarios.py   <span class="cm"># シナリオのバインディング</span>
+├── src/
+│   ├── domain/
+│   │   ├── cart.py
+│   │   └── product.py
+│   └── application/
+│       └── cart_service.py
+└── pyproject.toml`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">7.2 conftest.py — フィクスチャ定義</div>
+              <div className="fp">tests/bdd/conftest.py</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> pytest
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> typing <span class="kw">import</span> Optional, Any
+<span class="kw">import</span> httpx
+<span class="kw">from</span> src.domain.cart <span class="kw">import</span> ShoppingCart
+<span class="kw">from</span> src.infrastructure.in_memory_catalog <span class="kw">import</span> InMemoryProductCatalog
+
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="fn">ScenarioContext</span>:
+    <span class="st">"""ステップ間で状態を共有するコンテキストクラス"""</span>
+    last_error:    Optional[Exception] = <span class="kw">None</span>
+    last_response: Optional[httpx.Response] = <span class="kw">None</span>
+    data:          dict = field(default_factory=dict)
+
+    <span class="kw">def</span> <span class="fn">set</span>(self, key: str, value: Any) -> <span class="kw">None</span>:
+        self.data[key] = value
+
+    <span class="kw">def</span> <span class="fn">get</span>(self, key: str, default: Any = <span class="kw">None</span>) -> Any:
+        return self.data.get(key, default)
+
+    <span class="kw">def</span> <span class="fn">reset</span>(self) -> <span class="kw">None</span>:
+        self.last_error = <span class="kw">None</span>
+        self.last_response = <span class="kw">None</span>
+        self.data.clear()
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">product_catalog</span>():
+    <span class="kw">return</span> InMemoryProductCatalog()
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">shopping_cart</span>(product_catalog):
+    <span class="kw">return</span> ShoppingCart(catalog=product_catalog)
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">context</span>() -> ScenarioContext:
+    <span class="st">"""各シナリオ用コンテキスト（function スコープ）"""</span>
+    ctx = ScenarioContext()
+    <span class="kw">yield</span> ctx
+    ctx.reset()  <span class="cm"># テスト後に自動リセット</span>
+
+
+<span class="kw">@pytest.fixture</span>(scope=<span class="st">"session"</span>)
+<span class="kw">def</span> <span class="fn">db_engine</span>():
+    <span class="st">"""DB エンジン（セッション全体で 1 回のみ作成）"""</span>
+    <span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+    <span class="kw">from</span> src.infrastructure.db <span class="kw">import</span> Base
+    engine = create_engine(<span class="st">"sqlite:///:memory:"</span>)
+    Base.metadata.create_all(engine)
+    <span class="kw">yield</span> engine
+    engine.dispose()
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">db_session</span>(db_engine):
+    <span class="st">"""DB セッション（各テストごとにロールバック）"""</span>
+    <span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> sessionmaker
+    Session = sessionmaker(bind=db_engine)
+    session = Session()
+    <span class="kw">yield</span> session
+    session.rollback()  <span class="cm"># テスト後ロールバックでクリーンな状態を保証</span>
+    session.close()
+
+
+<span class="cm"># ─── BDD フック ───</span>
+<span class="kw">def</span> <span class="fn">pytest_bdd_before_scenario</span>(request, feature, scenario):
+    print(f<span class="st">"\\n📋 シナリオ開始: {scenario.name}"</span>)
+
+<span class="kw">def</span> <span class="fn">pytest_bdd_after_scenario</span>(request, feature, scenario):
+    print(f<span class="st">"✅ シナリオ完了: {scenario.name}"</span>)
+
+<span class="kw">def</span> <span class="fn">pytest_bdd_step_error</span>(request, feature, scenario, step, step_func, step_func_args, exception):
+    print(f<span class="st">"❌ ステップ失敗: {step.name} — {exception}"</span>)`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">7.3 cart_steps.py — ステップ定義</div>
+              <div className="fp">tests/bdd/steps/cart_steps.py</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> pytest
+<span class="kw">from</span> pytest_bdd <span class="kw">import</span> given, when, then, parsers
+<span class="kw">from</span> src.domain.cart <span class="kw">import</span> ShoppingCart, InsufficientStockError
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+
+<span class="cm"># ─────────── Given ステップ ───────────</span>
+
+<span class="kw">@given</span>(<span class="st">"カートが空の状態である"</span>)
+<span class="kw">def</span> <span class="fn">cart_is_empty</span>(shopping_cart):
+    <span class="kw">assert</span> shopping_cart.is_empty, <span class="st">"カートは空でなければなりません"</span>
+
+
+<span class="kw">@given</span>(parsers.parse(<span class="st">"カートに商品「{product_name}」が{quantity:d}点入っている"</span>))
+<span class="kw">def</span> <span class="fn">cart_has_items</span>(product_name, quantity, shopping_cart, product_catalog):
+    product = product_catalog.find_by_name(product_name)
+    shopping_cart.add_item(product.id, quantity)
+
+
+<span class="kw">@given</span>(<span class="st">"カートに以下の商品が入っている"</span>)
+<span class="kw">def</span> <span class="fn">cart_has_multiple_items</span>(shopping_cart, product_catalog, datatable):
+    <span class="kw">for</span> row <span class="kw">in</span> datatable:
+        product = product_catalog.find_by_name(row[<span class="st">"商品名"</span>])
+        shopping_cart.add_item(product.id, int(row[<span class="st">"数量"</span>]))
+
+
+<span class="cm"># ─────────── When ステップ ───────────</span>
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">"商品「{product_name}」を{quantity:d}点カートに追加する"</span>))
+<span class="kw">def</span> <span class="fn">add_item_to_cart</span>(product_name, quantity, shopping_cart, product_catalog, context):
+    context.last_error = <span class="kw">None</span>
+    <span class="kw">try</span>:
+        product = product_catalog.find_by_name(product_name)
+        shopping_cart.add_item(product.id, quantity)
+    <span class="kw">except</span> InsufficientStockError <span class="kw">as</span> e:
+        context.last_error = e
+
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">"商品「{product_name}」をカートに追加しようとする"</span>))
+<span class="kw">def</span> <span class="fn">try_add_out_of_stock</span>(product_name, shopping_cart, product_catalog, context):
+    context.last_error = <span class="kw">None</span>
+    <span class="kw">try</span>:
+        product = product_catalog.find_by_name(product_name)
+        shopping_cart.add_item(product.id, 1)
+    <span class="kw">except</span> InsufficientStockError <span class="kw">as</span> e:
+        context.last_error = e
+
+
+<span class="kw">@when</span>(parsers.parse(<span class="st">"カートから「{product_name}」を削除する"</span>))
+<span class="kw">def</span> <span class="fn">remove_item_from_cart</span>(product_name, shopping_cart, product_catalog):
+    product = product_catalog.find_by_name(product_name)
+    shopping_cart.remove_item(product.id)
+
+
+<span class="cm"># ─────────── Then ステップ ───────────</span>
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"カートには{expected_count:d}点の商品が入っている"</span>))
+<span class="kw">def</span> <span class="fn">cart_has_count</span>(expected_count, shopping_cart):
+    <span class="kw">assert</span> shopping_cart.total_quantity == expected_count, (
+        f<span class="st">"期待: {expected_count}点, 実際: {shopping_cart.total_quantity}点"</span>
+    )
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"カートの合計金額は{expected_total:d}円である"</span>))
+<span class="kw">def</span> <span class="fn">cart_total_is</span>(expected_total, shopping_cart):
+    <span class="kw">assert</span> shopping_cart.total == Decimal(str(expected_total)), (
+        f<span class="st">"期待: {expected_total}円, 実際: {shopping_cart.total}円"</span>
+    )
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"「{expected_message}」というエラーが表示される"</span>))
+<span class="kw">def</span> <span class="fn">error_message_displayed</span>(expected_message, context):
+    <span class="kw">assert</span> context.last_error <span class="kw">is not None</span>, <span class="st">"エラーが発生しませんでした"</span>
+    <span class="kw">assert</span> expected_message <span class="kw">in</span> str(context.last_error), (
+        f<span class="st">"期待: '{expected_message}'\\n実際: '{context.last_error}'"</span>
+    )
+
+
+<span class="kw">@then</span>(<span class="st">"カートの中身は変わらない"</span>)
+<span class="kw">def</span> <span class="fn">cart_is_unchanged</span>(shopping_cart, context):
+    expected = context.get(<span class="st">"initial_cart"</span>)
+    <span class="kw">assert</span> shopping_cart.items == expected, <span class="st">"カートの状態が変わっています"</span>`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">7.4 test_scenarios.py — シナリオバインディング</div>
+              <div className="fp">tests/bdd/test_scenarios.py</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> pytest
+<span class="kw">from</span> pytest_bdd <span class="kw">import</span> scenario
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+
+<span class="kw">@scenario</span>(<span class="st">"../../features/shopping_cart.feature"</span>, <span class="st">"商品をカートに追加する"</span>)
+<span class="kw">def</span> <span class="fn">test_add_item_to_cart</span>():
+    <span class="kw">pass</span>
+
+
+<span class="kw">@scenario</span>(<span class="st">"../../features/shopping_cart.feature"</span>, <span class="st">"在庫切れの商品はカートに追加できない"</span>)
+<span class="kw">def</span> <span class="fn">test_cannot_add_out_of_stock</span>():
+    <span class="kw">pass</span>
+
+
+<span class="kw">@scenario</span>(<span class="st">"../../features/shopping_cart.feature"</span>, <span class="st">"カートから商品を削除する"</span>)
+<span class="kw">def</span> <span class="fn">test_remove_item_from_cart</span>():
+    <span class="kw">pass</span>
+
+
+<span class="cm"># ── Scenario Outline は parametrize と組み合わせる ──</span>
+<span class="kw">@pytest.mark.parametrize</span>(<span class="st">"数量,合計金額"</span>, [
+    (<span class="st">"1"</span>, <span class="st">"1000"</span>), (<span class="st">"2"</span>, <span class="st">"2000"</span>), (<span class="st">"5"</span>, <span class="st">"5000"</span>), (<span class="st">"10"</span>, <span class="st">"10000"</span>),
+])
+<span class="kw">def</span> <span class="fn">test_add_different_quantities</span>(数量, 合計金額, shopping_cart, product_catalog):
+    <span class="kw">assert</span> shopping_cart.is_empty
+    product = product_catalog.find_by_name(<span class="st">"Tシャツ"</span>)
+    shopping_cart.add_item(product.id, int(数量))
+    <span class="kw">assert</span> shopping_cart.total == Decimal(合計金額)`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* S8 */}
+          <section className="sec" id="s8">
+            <div className="sec-hd">
+              <span className="sec-num">08</span>
+              <h2 className="sec-title">ステップ定義のベストプラクティス</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">8.1 良いステップ定義の設計原則</div>
+              <div className="comp">
+                <div className="comp-c comp-good">
+                  <div className="comp-lbl">✅ 良いステップ定義</div>
+                  <ul className="bp">
+                    <li>
+                      <span className="ok">✓</span>再利用可能な汎用ステップを書く
+                    </li>
+                    <li>
+                      <span className="ok">✓</span>1ステップ = 1つの明確な操作
+                    </li>
+                    <li>
+                      <span className="ok">✓</span>ビジネス語彙を使った命名
+                    </li>
+                    <li>
+                      <span className="ok">✓</span>parsers.parse でパラメータ対応
+                    </li>
+                    <li>
+                      <span className="ok">✓</span>例外もキャッチして context に保存
+                    </li>
+                    <li>
+                      <span className="ok">✓</span>アサーションは Then ステップのみ
+                    </li>
+                  </ul>
+                </div>
+                <div className="comp-c comp-bad">
+                  <div className="comp-lbl">❌ 避けるべき書き方</div>
+                  <ul className="bp">
+                    <li>
+                      <span className="ng">✗</span>UI 操作の詳細をステップに直接書く
+                    </li>
+                    <li>
+                      <span className="ng">✗</span>1ステップで複数のことを検証
+                    </li>
+                    <li>
+                      <span className="ng">✗</span>技術的詳細（URL・セレクター）を露出
+                    </li>
+                    <li>
+                      <span className="ng">✗</span>ステップ間でグローバル変数を使う
+                    </li>
+                    <li>
+                      <span className="ng">✗</span>Given 内でアサーションを行う
+                    </li>
+                    <li>
+                      <span className="ng">✗</span>重複ステップを複数ファイルに定義
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">8.2 DataTable と DocString の活用</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> json
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+
+<span class="cm"># ─── DataTable：表形式データの処理 ───</span>
+
+<span class="kw">@given</span>(<span class="st">"以下の商品がカタログに登録されている"</span>)
+<span class="kw">def</span> <span class="fn">products_in_catalog</span>(datatable, product_catalog):
+    <span class="kw">for</span> row <span class="kw">in</span> datatable:
+        product = Product(
+            id=row[<span class="st">"商品ID"</span>], name=row[<span class="st">"商品名"</span>],
+            price=Decimal(row[<span class="st">"価格"</span>]), stock=int(row[<span class="st">"在庫数"</span>]),
+        )
+        product_catalog.register(product)
+
+
+<span class="cm"># ─── DocString：複数行テキスト（JSON 等）の処理 ───</span>
+
+<span class="kw">@when</span>(<span class="st">"以下のJSONで注文を送信する（DocString）"</span>)
+<span class="kw">def</span> <span class="fn">send_order_with_json</span>(docstring, context, api_client):
+    <span class="kw">try</span>:
+        body = json.loads(docstring)
+    <span class="kw">except</span> json.JSONDecodeError <span class="kw">as</span> e:
+        <span class="kw">raise</span> AssertionError(f<span class="st">"不正な JSON: {e}"</span>)
+    context.last_response = api_client.post(<span class="st">"/v1/orders"</span>, json=body)
+
+
+<span class="kw">@then</span>(parsers.parse(<span class="st">"レスポンスステータスは {status_code:d} である"</span>))
+<span class="kw">def</span> <span class="fn">response_status_is</span>(status_code, context):
+    actual = context.last_response.status_code
+    <span class="kw">assert</span> actual == status_code, (
+        f<span class="st">"期待: HTTP {status_code}, 実際: HTTP {actual}\\n"</span>
+        f<span class="st">"Body: {context.last_response.text}"</span>
+    )`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">8.3 ステップの分類と配置戦略</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ファイル名</th>
+                      <th>対象</th>
+                      <th>含むステップ例</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <code>common_steps.py</code>
+                      </td>
+                      <td>全 Feature 共通</td>
+                      <td>ログイン/ログアウト・時刻設定・メール確認</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>cart_steps.py</code>
+                      </td>
+                      <td>カートドメイン</td>
+                      <td>商品追加・削除・合計金額確認</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>order_steps.py</code>
+                      </td>
+                      <td>注文ドメイン</td>
+                      <td>注文作成・ステータス確認・キャンセル</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>api_steps.py</code>
+                      </td>
+                      <td>API 共通</td>
+                      <td>HTTP リクエスト送信・ステータス検証</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>ui_steps.py</code>
+                      </td>
+                      <td>UI 共通</td>
+                      <td>ページ遷移・要素表示確認・フォーム入力</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          {/* S9 */}
+          <section className="sec" id="s9">
+            <div className="sec-hd">
+              <span className="sec-num">09</span>
+              <h2 className="sec-title">フィクスチャとコンテキスト管理</h2>
+            </div>
+            <div className="sub">
+              <div className="sub-title">9.1 フィクスチャのスコープ選択指針</div>
+              <div className="tw">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>スコープ</th>
+                      <th>生存期間</th>
+                      <th>推奨用途</th>
+                      <th>BDD での使用</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <code>session</code>
+                      </td>
+                      <td>セッション全体で 1 回</td>
+                      <td>DB エンジン・ブラウザ起動・重い初期化</td>
+                      <td>⚠️ 限定的に使用</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>module</code>
+                      </td>
+                      <td>ファイル単位</td>
+                      <td>モジュール共通の設定オブジェクト</td>
+                      <td>⚠️ 限定的に使用</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>function</code>（デフォルト）
+                      </td>
+                      <td>各テスト関数ごと</td>
+                      <td>ほぼすべてのフィクスチャ</td>
+                      <td>✅ BDD での標準</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>class</code>
+                      </td>
+                      <td>クラス単位</td>
+                      <td>クラス内テストで状態共有が必要な場合</td>
+                      <td>⚠️ 稀に使用</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="co co-s">
+                <span className="co-ico">💡</span>
+                <div className="co-body">
+                  <div className="co-ttl">BDD のベストプラクティス</div>
+                  <p>
+                    BDD シナリオには原則として <code>function</code>{" "}
+                    スコープを使用します。各シナリオが独立して実行できることが最重要であり、前のシナリオの状態が次のシナリオに漏れ出ることを防ぎます。
+                    <code>session</code> スコープは DB 接続など「重い初期化」に限定してください。
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="sub">
+              <div className="sub-title">9.2 DB トランザクション管理パターン</div>
+              <div className="cb">
+                <div className="cb-hd">
+                  <span className="cb-lang pl">Python</span>
+                  <div className="cb-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="cb-body">
+                  <pre
+                    dangerouslySetInnerHTML={{
+                      __html: `<span class="kw">import</span> pytest
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> sessionmaker
+<span class="kw">from</span> src.infrastructure.db <span class="kw">import</span> Base
+
+
+<span class="kw">@pytest.fixture</span>(scope=<span class="st">"session"</span>)
+<span class="kw">def</span> <span class="fn">db_engine</span>():
+    <span class="st">"""セッション全体で 1 回のみ作成（重いため）"""</span>
+    engine = create_engine(<span class="st">"sqlite:///:memory:"</span>, echo=<span class="kw">False</span>)
+    Base.metadata.create_all(engine)
+    <span class="kw">yield</span> engine
+    engine.dispose()
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">db_session</span>(db_engine):
+    <span class="st">"""
+    各テストごとにネストトランザクションを作成し、
+    テスト後に必ずロールバックして DB をクリーンに保つ
+    """</span>
+    connection = db_engine.connect()
+    transaction = connection.begin()
+    Session = sessionmaker(bind=connection)
+    session = Session()
+
+    <span class="kw">yield</span> session
+
+    session.close()
+    transaction.rollback()  <span class="cm"># テスト後に必ずロールバック</span>
+    connection.close()
+
+
+<span class="kw">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">api_client</span>(app, db_session):
+    <span class="st">"""FastAPI テストクライアント。db_session を差し込む。"""</span>
+    <span class="kw">from</span> fastapi.testclient <span class="kw">import</span> TestClient
+    app.dependency_overrides[get_db] = <span class="kw">lambda</span>: db_session
+    <span class="kw">with</span> TestClient(app) <span class="kw">as</span> client:
+        <span class="kw">yield</span> client
+    app.dependency_overrides.clear()`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Placeholders for remaining sections */}
-          <section className="sec" id="s5" />
-          <section className="sec" id="s6" />
-          <section className="sec" id="s7" />
-          <section className="sec" id="s8" />
-          <section className="sec" id="s9" />
           <section className="sec" id="s10" />
           <section className="sec" id="s11" />
           <section className="sec" id="s12" />

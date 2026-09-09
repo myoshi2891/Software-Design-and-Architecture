@@ -105,8 +105,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
       const s8Pres = s8?.querySelectorAll("pre") ?? [];
       const s9Pres = s9?.querySelectorAll("pre") ?? [];
 
-      expect(s6Pres.length + s7Pres.length + s8Pres.length + s9Pres.length).toBeGreaterThanOrEqual(6);
+      expect(s6Pres.length + s7Pres.length + s8Pres.length + s9Pres.length).toBeGreaterThanOrEqual(
+        6
+      );
     });
   });
 });
-
