@@ -81,6 +81,15 @@ Testing Library（契約テスト）を採用しています。
   - [`/design-principles/component-oriented-development-comprehensive-guide`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/page.tsx)
     — コンポーネント指向開発完全ガイドを移植（15 セクション・Mermaid 21 図・table 7・コードブロック 14）。
     固定サイドバー・進捗バー・scroll-spy を [`CodSidebar.tsx`](web-next/app/design-principles/component-oriented-development-comprehensive-guide/CodSidebar.tsx) でクライアント描画
+  - [`/css-design-system-guide/css-color-typography-spacing-systems`](web-next/app/css-design-system-guide/css-color-typography-spacing-systems/page.tsx)
+    — CSSデザインシステム完全ガイドを移植。
+    固定サイドバー・進捗バー・scroll-spy を [`CssColorTypographySpacingSidebar.tsx`](web-next/app/css-design-system-guide/css-color-typography-spacing-systems/CssColorTypographySpacingSidebar.tsx) でクライアント描画
+  - [`/development-methodologies/behavior-driven-development-comprehensive-guide`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx)
+    — BDD 完全ガイドを移植（21 セクション・Mermaid 16 図・table 8・コードブロック 14）。
+    固定サイドバー・進捗バー・scroll-spy を [`BddSidebar.tsx`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/BddSidebar.tsx) でクライアント描画
+  - [`/development-methodologies/extreme-programming-comprehensive-guide`](web-next/app/development-methodologies/extreme-programming-comprehensive-guide/page.tsx)
+    — XP（エクストリームプログラミング）完全ガイドを移植（23 セクション・Mermaid 13 図・table 11・コードブロック 2）。
+    固定サイドバー・進捗バー・scroll-spy を [`XpSidebar.tsx`](web-next/app/development-methodologies/extreme-programming-comprehensive-guide/XpSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
