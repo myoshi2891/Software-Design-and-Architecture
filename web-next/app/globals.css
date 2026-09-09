@@ -8530,11 +8530,21 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     background: #0a0f16;
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 24px 20px;
     overflow-x: auto;
-    margin: 8px auto;
+    margin: 16px 0;
+  }
+  .mermaid {
     display: flex;
     justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
   }
 
   /* pre & コードハイライト */
