@@ -152,4 +152,78 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
       expect(s12?.querySelector("table")).toBeTruthy();
     });
   });
+
+  describe("Category D: プロセス・比較・運用・参考文献 (s17 - s23) および全体整合性", () => {
+    it("Category D のセクション (s17 - s23) が存在する", () => {
+      const { container } = render(<Page />);
+      const s17 = container.querySelector("#s17");
+      const s18 = container.querySelector("#s18");
+      const s19 = container.querySelector("#s19");
+      const s20 = container.querySelector("#s20");
+      const s21 = container.querySelector("#s21");
+      const s22 = container.querySelector("#s22");
+      const s23 = container.querySelector("#s23");
+
+      expect(s17).not.toBeNull();
+      expect(s18).not.toBeNull();
+      expect(s19).not.toBeNull();
+      expect(s20).not.toBeNull();
+      expect(s21).not.toBeNull();
+      expect(s22).not.toBeNull();
+      expect(s23).not.toBeNull();
+
+      expect(s17?.querySelector("h2")?.textContent).toContain("ロールと責務");
+      expect(s18?.querySelector("h2")?.textContent).toContain("イテレーションサイクル");
+      expect(s19?.querySelector("h2")?.textContent).toContain("XPとScrumの比較");
+      expect(s20?.querySelector("h2")?.textContent).toContain("XP導入ロードマップ");
+      expect(s21?.querySelector("h2")?.textContent).toContain("アンチパターン");
+      expect(s22?.querySelector("h2")?.textContent).toContain("ベストプラクティス");
+      expect(s23?.querySelector("h2")?.textContent).toContain("参考文献・ソース一覧");
+    });
+
+    it("全 23 セクション (s1 - s23) が漏れなく存在する", () => {
+      const { container } = render(<Page />);
+      for (let i = 1; i <= 23; i++) {
+        const sec = container.querySelector(`#s${i}`);
+        expect(sec, `Section #s${i} should exist`).not.toBeNull();
+      }
+    });
+
+    it("h2 見出しが 23 個存在する", () => {
+      const { container } = render(<Page />);
+      const h2s = container.querySelectorAll("h2");
+      expect(h2s).toHaveLength(23);
+    });
+
+    it("Mermaid 図が全 13 個描画されている", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids).toHaveLength(13);
+    });
+
+    it("テーブルが合計 11 個存在する", () => {
+      const { container } = render(<Page />);
+      const tables = container.querySelectorAll("table");
+      expect(tables).toHaveLength(11);
+    });
+
+    it("外部リンクが 40 個以上存在し、すべて target=_blank と rel=noopener noreferrer を持つ", () => {
+      const { container } = render(<Page />);
+      const extLinks = Array.from(container.querySelectorAll("a")).filter((a) =>
+        a.getAttribute("href")?.startsWith("http")
+      );
+      expect(extLinks.length).toBeGreaterThanOrEqual(40);
+      for (const link of extLinks) {
+        expect(link.getAttribute("target")).toBe("_blank");
+        expect(link.getAttribute("rel")).toContain("noopener");
+        expect(link.getAttribute("rel")).toContain("noreferrer");
+      }
+    });
+
+    it("末尾に注記ブロックが存在する", () => {
+      const { container } = render(<Page />);
+      const s23 = container.querySelector("#s23");
+      expect(s23?.textContent).toContain("本ドキュメントは2025年時点の情報を基に作成しています");
+    });
+  });
 });
