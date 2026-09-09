@@ -64,6 +64,33 @@ const DIAGRAM_TDD_CYCLE = `flowchart TD
     CHECK -->|No| RED
     CHECK -->|Yes| DONE`;
 
+const DIAGRAM_PAIR_SESSION = `flowchart TD
+    PREP["セッション開始前 5分\\nタスクの目標を2人で確認\\n担当範囲を明確にする"]
+    DRIVE["ドライバー開始\\nコードを書き始める"]
+    NAV["ナビゲーター\\nリアルタイムレビュー\\n問題点をメモ・指摘"]
+    SWAP["20〜30分後 ロール交代\\nドライバー ↔ ナビゲーター"]
+    REST["90分後 休憩\\n集中力を維持する"]
+    REVIEW["セッション終了前 5分\\n成果を確認・コミット\\n次のタスクをメモ"]
+    PREP --> DRIVE
+    DRIVE <-->|対話しながら進める| NAV
+    DRIVE --> SWAP --> DRIVE
+    SWAP --> REST --> DRIVE
+    DRIVE --> REVIEW`;
+
+const DIAGRAM_CI_PIPELINE = `flowchart LR
+    DEV["開発者\\n（ペアプロ）"] -->|git push| GH["GitHub\\nリポジトリ"]
+    GH -->|Webhook| CI["CIサーバー\\n（GitHub Actions）"]
+    CI --> STEP1["1. 依存関係\\nインストール"]
+    STEP1 --> STEP2["2. 静的解析\\n（Ruff / Mypy）"]
+    STEP2 --> STEP3["3. 単体テスト\\n（pytest / Vitest）"]
+    STEP3 --> STEP4["4. 統合テスト\\n（DB・API結合）"]
+    STEP4 --> STEP5["5. カバレッジ確認\\n（90%以上）"]
+    STEP5 --> PASS["✅ ビルド成功\\nマージ可能"]
+    STEP2 -.->|失敗| FAIL["❌ ビルド失敗\\n最優先で修正"]
+    STEP3 -.->|失敗| FAIL
+    STEP4 -.->|失敗| FAIL
+    STEP5 -.->|失敗| FAIL`;
+
 export default function ExtremeProgrammingGuidePage() {
   return (
     <div className="extreme-programming-comprehensive-guide">
@@ -498,6 +525,629 @@ export default function ExtremeProgrammingGuidePage() {
                 </Ext>
               </li>
             </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S5: ペアプログラミング
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s5" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 05</span>
+              </div>
+              <h2>プラクティス② ペアプログラミング</h2>
+              <p>2人で1台のPCでコードを書く</p>
+            </div>
+
+            <div className="grid-2" style={{ marginBottom: 16 }}>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-blue-400)" }}>
+                  ⌨️ ドライバー（Driver）
+                </div>
+                <ul>
+                  <li>実際にコードを入力する</li>
+                  <li>現在のタスクに集中</li>
+                  <li>実装の詳細を考える</li>
+                  <li>定期的にナビゲーターと交代</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-green-400)" }}>
+                  🧭 ナビゲーター（Navigator）
+                </div>
+                <ul>
+                  <li>全体の方向性を考える</li>
+                  <li>コードをリアルタイムでレビュー</li>
+                  <li>問題・改善点を指摘する</li>
+                  <li>次のステップを考える</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="sub-title">セッション設計フロー</p>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_PAIR_SESSION} preserveNaturalScale={true} />
+            </div>
+
+            <p className="sub-title">実践すること / 避けること</p>
+            <div className="grid-2">
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-green-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ✅ 実践すること
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  定期的にロールを交代する
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  声に出して考える（思考の共有）
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  なぜを共有する（意図を説明する）
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  90分ごとに休憩を入れる
+                </div>
+                <div className="callout callout-ok">ペアを定期的にローテーション</div>
+              </div>
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-red-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ❌ 避けること
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  ナビゲーターが別の仕事をする
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  コードを批判する（人を批判しない）
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  マウスやキーボードを奪う
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  同じペアを固定し続ける
+                </div>
+                <div className="callout callout-err">全作業をペアで行う（単純作業は1人）</div>
+              </div>
+            </div>
+
+            <p className="sub-title">リモートペアプロのツール</p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ツール</th>
+                    <th>特徴</th>
+                    <th>推奨シーン</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>VS Code Live Share</td>
+                    <td>リアルタイム共同編集・無料</td>
+                    <td>VS Codeユーザー全般</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>JetBrains Code With Me</td>
+                    <td>高機能な共同デバッグ</td>
+                    <td>JetBrains IDEユーザー</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Tuple</td>
+                    <td>ペアプロ専用・低レイテンシ</td>
+                    <td>品質重視のチーム</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>GitHub Codespaces</td>
+                    <td>ブラウザで完結・環境差異なし</td>
+                    <td>環境を統一したいチーム</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://martinfowler.com/articles/on-pair-programming.html">
+                  Martin Fowler — On Pair Programming
+                </Ext>
+              </li>
+              <li>
+                <Ext href="https://www.agilealliance.org/glossary/pairing/">
+                  Agile Alliance — Pair Programming
+                </Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S6: CI
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s6" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 06</span>
+              </div>
+              <h2>プラクティス③ 継続的インテグレーション（CI）</h2>
+              <p>1日に複数回コードをメインブランチに統合する</p>
+            </div>
+
+            <p className="sub-title">CIパイプラインの設計</p>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_CI_PIPELINE} preserveNaturalScale={true} />
+            </div>
+
+            <p className="sub-title">XP流CI 10のルール</p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>ルール</th>
+                    <th>理由</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>1</td>
+                    <td>単一のメインブランチ（長命ブランチを作らない）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>統合コストを最小化</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>2</td>
+                    <td>ビルドを自動化する（コマンド1つで再現可能）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>手作業によるミスを排除</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>3</td>
+                    <td>テストを自動化する（コマンド1つで全実行）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>継続的な品質保証</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>4</td>
+                    <td>全員が毎日mainブランチに統合する</td>
+                    <td style={{ color: "var(--text-secondary)" }}>統合の問題を小さく保つ</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>5</td>
+                    <td>ビルドは10分以内</td>
+                    <td style={{ color: "var(--text-secondary)" }}>遅いCIは誰も待たない</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-red-400)", fontWeight: 500 }}>6</td>
+                    <td>ビルド失敗は最優先で修正</td>
+                    <td style={{ color: "var(--text-secondary)" }}>壊れたビルドを放置しない</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>7</td>
+                    <td>テスト失敗はコミットしない</td>
+                    <td style={{ color: "var(--text-secondary)" }}>赤いビルドを積み上げない</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>8</td>
+                    <td>結果を全員に可視化</td>
+                    <td style={{ color: "var(--text-secondary)" }}>誰もが状態を知っている</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>9</td>
+                    <td>フィーチャーブランチは最小化（1日以内）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      長命ブランチは統合コストを増やす
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-green-400)", fontWeight: 500 }}>10</td>
+                    <td>Trunk-Based Developmentを目指す</td>
+                    <td style={{ color: "var(--text-secondary)" }}>常にデプロイ可能な状態</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="sub-title">GitHub Actions CI設定例</p>
+            <pre
+              dangerouslySetInnerHTML={{
+                __html: `<span class="cm"># .github/workflows/ci.yml</span>
+<span class="cm"># XP流：プッシュのたびに自動実行されるCIパイプライン</span>
+
+<span class="kw">name</span>: <span class="st">XP Continuous Integration</span>
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [<span class="st">main</span>]
+  <span class="kw">pull_request</span>:
+    <span class="kw">branches</span>: [<span class="st">main</span>]
+
+<span class="kw">jobs</span>:
+  <span class="kw">fast-checks</span>:
+    <span class="kw">name</span>: <span class="st">Lint &amp; Unit Tests</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Set up Python</span>
+        <span class="kw">uses</span>: <span class="st">actions/setup-python@v5</span>
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="st">"3.12"</span>
+          <span class="kw">cache</span>: <span class="st">pip</span>
+      - <span class="kw">name</span>: <span class="st">Install dependencies</span>
+        <span class="kw">run</span>: <span class="st">pip install -r requirements-dev.txt</span>
+      - <span class="kw">name</span>: <span class="st">Lint check (ruff)</span>
+        <span class="kw">run</span>: <span class="st">ruff check .</span>
+      - <span class="kw">name</span>: <span class="st">Type check (mypy)</span>
+        <span class="kw">run</span>: <span class="st">mypy src/</span>
+      - <span class="kw">name</span>: <span class="st">Unit tests with coverage</span>
+        <span class="kw">run</span>: |
+          <span class="st">pytest tests/unit/ \\
+            --cov=src \\
+            --cov-fail-under=90 \\
+            -v --tb=short -n auto</span>
+
+  <span class="kw">slow-checks</span>:
+    <span class="kw">name</span>: <span class="st">Integration &amp; E2E Tests</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">needs</span>: <span class="st">fast-checks</span>
+    <span class="kw">services</span>:
+      <span class="kw">postgres</span>:
+        <span class="kw">image</span>: <span class="st">postgres:16</span>
+        <span class="kw">env</span>:
+          <span class="kw">POSTGRES_DB</span>: <span class="st">test_db</span>
+          <span class="kw">POSTGRES_USER</span>: <span class="st">test</span>
+          <span class="kw">POSTGRES_PASSWORD</span>: <span class="st">test</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="st">actions/checkout@v4</span>
+      - <span class="kw">name</span>: <span class="st">Integration tests</span>
+        <span class="kw">env</span>:
+          <span class="kw">DATABASE_URL</span>: <span class="st">postgresql://test:test@localhost/test_db</span>
+        <span class="kw">run</span>: <span class="st">pytest tests/integration/ -v</span>
+      - <span class="kw">name</span>: <span class="st">Security scan</span>
+        <span class="kw">run</span>: <span class="st">pip-audit</span>
+
+  <span class="kw">notify-failure</span>:
+    <span class="kw">name</span>: <span class="st">Notify on Failure</span>
+    <span class="kw">runs-on</span>: <span class="st">ubuntu-latest</span>
+    <span class="kw">needs</span>: [<span class="st">fast-checks</span>, <span class="st">slow-checks</span>]
+    <span class="kw">if</span>: <span class="st">failure()</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">name</span>: <span class="st">Slack notification</span>
+        <span class="kw">uses</span>: <span class="st">slackapi/slack-github-action@v1</span>
+        <span class="kw">with</span>:
+          <span class="kw">payload</span>: <span class="st">'{"text":"CIビルドが失敗しました！即座に修正してください"}'</span>
+        <span class="kw">env</span>:
+          <span class="kw">SLACK_WEBHOOK_URL</span>: <span class="st">\${{ secrets.SLACK_WEBHOOK_URL }}</span>`,
+              }}
+            />
+
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://martinfowler.com/articles/continuousIntegration.html">
+                  Martin Fowler — Continuous Integration
+                </Ext>
+              </li>
+              <li>
+                <Ext href="https://trunkbaseddevelopment.com/">Trunk Based Development 公式</Ext>
+              </li>
+              <li>
+                <Ext href="https://docs.github.com/ja/actions">
+                  GitHub Actions ドキュメント（日本語）
+                </Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S7: リファクタリング
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s7" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 07</span>
+              </div>
+              <h2>プラクティス④ リファクタリング</h2>
+              <p>動作を変えずに内部のコード構造を改善する</p>
+            </div>
+
+            <div className="callout callout-warn">
+              <strong>ボーイスカウトルール：</strong>
+              「来たときよりキャンプ場をきれいにして帰りなさい」— コードに触れたら少し良くして帰る。
+            </div>
+
+            <p className="sub-title">主要なリファクタリングパターン</p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>カテゴリ</th>
+                    <th>パターン名</th>
+                    <th>目的</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>メソッドの整理</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>メソッドの抽出（Extract Method）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      長いメソッドを意味のある単位に分割
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>メソッドの整理</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>メソッドの移動（Move Method）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>正しいクラスにロジックを移動</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>命名の改善</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>変数名の変更（Rename Variable）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>意図が明確な名前に変える</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>命名の改善</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>
+                      メソッド名の変更（Rename Method）
+                    </td>
+                    <td style={{ color: "var(--text-secondary)" }}>何をするかがわかる名前に</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>クラスの整理</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>クラスの抽出（Extract Class）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>責任が多すぎるクラスを分割</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>条件式の改善</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>
+                      条件式の分解（Decompose Conditional）
+                    </td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      複雑なif-elseを読みやすくする
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>条件式の改善</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>ガード節による早期リターン</td>
+                    <td style={{ color: "var(--text-secondary)" }}>ネストを浅くし意図を明確に</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-purple-400)" }}>重複の排除</td>
+                    <td style={{ color: "var(--c-teal-400)" }}>DRY原則の適用</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      同じロジックを1か所にまとめる
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="sub-title">リファクタリングのタイミング</p>
+            <div className="grid-2">
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-amber-400)" }}>
+                  新機能実装前
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  コードを理解しながら整理する。変更しやすい状態を作ってから機能追加。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-green-400)" }}>
+                  TDDのRefactorフェーズ
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  機能実装直後が最もリスクが低い。テストが安全網になっている。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-red-400)" }}>
+                  バグ修正時
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  原因となった複雑さを解消する。同じバグが再発しないように。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-purple-400)" }}>
+                  コードレビュー後
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  指摘された問題をリファクタリングで解決する。
+                </div>
+              </div>
+            </div>
+
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://martinfowler.com/books/refactoring.html">
+                  Martin Fowler — Refactoring（公式）
+                </Ext>
+              </li>
+              <li>
+                <Ext href="https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html">
+                  ボーイスカウトルール（97 Things Every Programmer Should Know）
+                </Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S8: シンプルな設計
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s8" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 08</span>
+              </div>
+              <h2>プラクティス⑤ シンプルな設計</h2>
+              <p>シンプルな設計の4つのルール（Kent Beck）</p>
+            </div>
+
+            <div className="grid-2" style={{ marginBottom: 16 }}>
+              <div className="vcard vcard-red">
+                <div className="vcard-label vcard-label-red">🥇 ルール1：テストをパスする</div>
+                <div className="vcard-desc">
+                  動くことが最優先。テストが通らない美しい設計は無価値。
+                </div>
+              </div>
+              <div className="vcard vcard-blue">
+                <div className="vcard-label vcard-label-blue">🥈 ルール2：意図が明確である</div>
+                <div className="vcard-desc">
+                  他の開発者が読んですぐ理解できる。自己文書化されたコード。
+                </div>
+              </div>
+              <div className="vcard vcard-green">
+                <div className="vcard-label vcard-label-green">🥉 ルール3：重複がない</div>
+                <div className="vcard-desc">
+                  DRY原則（Don't Repeat Yourself）。同じロジックを2か所以上に書かない。
+                </div>
+              </div>
+              <div className="vcard vcard-amber">
+                <div className="vcard-label vcard-label-amber">🏅 ルール4：要素が最小限</div>
+                <div className="vcard-desc">
+                  クラス・メソッドの数を最小化。不要な複雑さを持ち込まない。
+                </div>
+              </div>
+            </div>
+
+            <p className="sub-title">YAGNI原則（You Aren't Gonna Need It）</p>
+            <div className="grid-2">
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-red-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ❌ YAGNIを無視した設計
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  「将来必要になるかも」で今実装する
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  「汎用性を持たせておこう」と抽象化しすぎる
+                </div>
+                <div className="callout callout-err">
+                  「スケールするかもしれないから」と最適化する
+                </div>
+              </div>
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-green-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ✅ YAGNIを守った設計
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  今必要なものだけ実装する
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  具体的な要件が出てから抽象化する
+                </div>
+                <div className="callout callout-ok">
+                  実際の問題が来てから最適化する（時期尚早な最適化は万悪の元）
+                </div>
+              </div>
+            </div>
+
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://martinfowler.com/bliki/BeckDesignRules.html">
+                  Martin Fowler — Beck Design Rules（4つのルール）
+                </Ext>
+              </li>
+              <li>
+                <Ext href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler — YAGNI</Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S9: 小さなリリース
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s9" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 09</span>
+              </div>
+              <h2>プラクティス⑥ 小さなリリース</h2>
+              <p>1〜2週間ごとに価値ある機能を届ける</p>
+            </div>
+            <div className="grid-2">
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-red-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ❌ 大きなリリース（従来型）
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  6〜12ヶ月かけて大量機能を実装
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  リリース後に大量のバグ発見
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  ユーザーが求めていない機能が大量に
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  問題の原因特定が困難
+                </div>
+                <div className="callout callout-err">フィードバックサイクルが長い</div>
+              </div>
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-green-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ✅ 小さなリリース（XP）
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  1〜2週間ごとに価値ある機能を届ける
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  少ない変更なのでバグも少ない
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  ユーザーの反応をすぐに確認できる
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  問題があっても少ない変更から特定
+                </div>
+                <div className="callout callout-ok">素早いフィードバックで方向修正できる</div>
+              </div>
+            </div>
           </div>
 
           <hr className="divider" />
