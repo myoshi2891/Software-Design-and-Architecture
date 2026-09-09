@@ -70,4 +70,43 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
       expect(spans.length).toBeGreaterThan(0);
     }
   });
+
+  describe("Category B: 開発・コーディングプラクティス (s5 - s9)", () => {
+    it("Category B のセクション (s5, s6, s7, s8, s9) が存在する", () => {
+      const { container } = render(<Page />);
+      const s5 = container.querySelector("#s5");
+      const s6 = container.querySelector("#s6");
+      const s7 = container.querySelector("#s7");
+      const s8 = container.querySelector("#s8");
+      const s9 = container.querySelector("#s9");
+
+      expect(s5).not.toBeNull();
+      expect(s6).not.toBeNull();
+      expect(s7).not.toBeNull();
+      expect(s8).not.toBeNull();
+      expect(s9).not.toBeNull();
+
+      expect(s5?.querySelector("h2")?.textContent).toContain("ペアプログラミング");
+      expect(s6?.querySelector("h2")?.textContent).toContain("継続的インテグレーション");
+      expect(s7?.querySelector("h2")?.textContent).toContain("リファクタリング");
+      expect(s8?.querySelector("h2")?.textContent).toContain("シンプルな設計");
+      expect(s9?.querySelector("h2")?.textContent).toContain("小さなリリース");
+    });
+
+    it("Category B の Mermaid 図 (diag-6, diag-7) が追加され、合計 7 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(7);
+    });
+
+    it("s6 に YAML コードブロックが存在し、構文ハイライト用 span が含まれている", () => {
+      const { container } = render(<Page />);
+      const s6 = container.querySelector("#s6");
+      expect(s6).not.toBeNull();
+      const pres = s6?.querySelectorAll("pre") ?? [];
+      expect(pres.length).toBeGreaterThanOrEqual(1);
+      const spans = pres[0]?.querySelectorAll("span.kw, span.cm, span.st") ?? [];
+      expect(spans.length).toBeGreaterThan(0);
+    });
+  });
 });
