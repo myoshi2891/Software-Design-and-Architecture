@@ -148,4 +148,78 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
       ).toBeGreaterThanOrEqual(4);
     });
   });
+
+  describe("Category D: 品質・運用・事例・参考文献 (s14-s19 + Footer)", () => {
+    it("セクション s14 から s19 までがすべて存在し、正しい見出しを持つ", () => {
+      const { container } = render(<Page />);
+      const s14 = container.querySelector("section#s14");
+      const s15 = container.querySelector("section#s15");
+      const s16 = container.querySelector("section#s16");
+      const s17 = container.querySelector("section#s17");
+      const s18 = container.querySelector("section#s18");
+      const s19 = container.querySelector("section#s19");
+
+      expect(s14?.querySelector("h2")?.textContent).toContain("シナリオ設計のベストプラクティス");
+      expect(s15?.querySelector("h2")?.textContent).toContain("CI/CD パイプラインと BDD");
+      expect(s16?.querySelector("h2")?.textContent).toContain("実践：EC サイト完全事例");
+      expect(s17?.querySelector("h2")?.textContent).toContain("BDD ベストプラクティス総まとめ");
+      expect(s18?.querySelector("h2")?.textContent).toContain("BDD のアンチパターン");
+      expect(s19?.querySelector("h2")?.textContent).toContain("参考文献・ソース一覧");
+    });
+
+    it("Mermaid 図（m-cicd, m-maturity, m-health 等）が描画され、合計 17 個以上存在する", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(17);
+    });
+
+    it("s16 にチェックアウトフロー Gherkin とシナリオカバレッジマップが存在する", () => {
+      const { container } = render(<Page />);
+      const s16 = container.querySelector("section#s16");
+      expect(s16?.textContent).toContain("@checkout @e2e");
+      expect(s16?.textContent).toContain("チェックアウトフロー");
+      expect(s16?.querySelector("table")).toBeTruthy();
+      expect(s16?.textContent).toContain("@catalog");
+    });
+
+    it("s17 に BDD 成熟度モデルと導入ロードマップが存在する", () => {
+      const { container } = render(<Page />);
+      const s17 = container.querySelector("section#s17");
+      expect(s17?.textContent).toContain("Level 0");
+      expect(s17?.textContent).toContain("Level 5");
+      expect(s17?.querySelector("ol.sl")).toBeTruthy();
+      expect(s17?.textContent).toContain("Week 1-2");
+    });
+
+    it("s18 に 6 つの主要アンチパターンカードが存在する", () => {
+      const { container } = render(<Page />);
+      const s18 = container.querySelector("section#s18");
+      expect(s18?.textContent).toContain("実装詳細の露出");
+      expect(s18?.textContent).toContain("God Scenario");
+      expect(s18?.textContent).toContain("シナリオ間の依存");
+      expect(s18?.textContent).toContain("技術者だけが書くシナリオ");
+      expect(s18?.textContent).toContain("過剰なシナリオ数");
+      expect(s18?.textContent).toContain("失敗シナリオの放置");
+    });
+
+    it("s19 に必読書籍テーブルと各種外部リンクカードが存在する", () => {
+      const { container } = render(<Page />);
+      const s19 = container.querySelector("section#s19");
+      expect(s19?.textContent).toContain("The Cucumber Book");
+      expect(s19?.textContent).toContain("BDD in Action");
+      const links = s19?.querySelectorAll("a") ?? [];
+      expect(links.length).toBeGreaterThanOrEqual(15);
+      const urls = Array.from(links).map((a) => a.getAttribute("href"));
+      expect(urls).toContain("https://dannorth.net/introducing-bdd/");
+      expect(urls).toContain("https://cucumber.io/docs/");
+      expect(urls).toContain("https://pytest-bdd.readthedocs.io/");
+    });
+
+    it("フッターが表示され、2026年版の表記が含まれる", () => {
+      const { container } = render(<Page />);
+      const footer = container.querySelector(".footer");
+      expect(footer).toBeTruthy();
+      expect(footer?.textContent).toContain("2026年版 — BDD 完全ガイド");
+    });
+  });
 });
