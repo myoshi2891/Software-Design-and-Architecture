@@ -109,4 +109,47 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
       expect(spans.length).toBeGreaterThan(0);
     });
   });
+
+  describe("Category C: 協調・組織・フィードバックプラクティス (s10 - s16)", () => {
+    it("Category C のセクション (s10 - s16) が存在する", () => {
+      const { container } = render(<Page />);
+      const s10 = container.querySelector("#s10");
+      const s11 = container.querySelector("#s11");
+      const s12 = container.querySelector("#s12");
+      const s13 = container.querySelector("#s13");
+      const s14 = container.querySelector("#s14");
+      const s15 = container.querySelector("#s15");
+      const s16 = container.querySelector("#s16");
+
+      expect(s10).not.toBeNull();
+      expect(s11).not.toBeNull();
+      expect(s12).not.toBeNull();
+      expect(s13).not.toBeNull();
+      expect(s14).not.toBeNull();
+      expect(s15).not.toBeNull();
+      expect(s16).not.toBeNull();
+
+      expect(s10?.querySelector("h2")?.textContent).toContain("計画ゲーム");
+      expect(s11?.querySelector("h2")?.textContent).toContain("コレクティブオーナーシップ");
+      expect(s12?.querySelector("h2")?.textContent).toContain("コーディング規約");
+      expect(s13?.querySelector("h2")?.textContent).toContain("オンサイト顧客");
+      expect(s14?.querySelector("h2")?.textContent).toContain("週40時間労働");
+      expect(s15?.querySelector("h2")?.textContent).toContain("メタファー");
+      expect(s16?.querySelector("h2")?.textContent).toContain("システム全体のテスト");
+    });
+
+    it("Category C の Mermaid 図 (diag-8 〜 diag-11) が追加され、合計 11 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(11);
+    });
+
+    it("s10 と s12 にテーブルが存在する", () => {
+      const { container } = render(<Page />);
+      const s10 = container.querySelector("#s10");
+      const s12 = container.querySelector("#s12");
+      expect(s10?.querySelector("table")).toBeTruthy();
+      expect(s12?.querySelector("table")).toBeTruthy();
+    });
+  });
 });
