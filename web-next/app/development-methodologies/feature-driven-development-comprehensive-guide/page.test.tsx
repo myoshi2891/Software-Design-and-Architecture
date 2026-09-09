@@ -73,4 +73,73 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(href).not.toContain(".html");
     }
   });
+
+  describe("Category B: プロセス3〜5・ロール定義 (s5 - s8)", () => {
+    it("Category B のセクション (s5, s6, s7, s8) が存在する", () => {
+      const { container } = render(<Page />);
+      const s5 = container.querySelector("#s5");
+      const s6 = container.querySelector("#s6");
+      const s7 = container.querySelector("#s7");
+      const s8 = container.querySelector("#s8");
+
+      expect(s5).not.toBeNull();
+      expect(s6).not.toBeNull();
+      expect(s7).not.toBeNull();
+      expect(s8).not.toBeNull();
+
+      expect(s5?.querySelector("h2")?.textContent).toContain("計画策定");
+      expect(s6?.querySelector("h2")?.textContent).toContain("フィーチャーごとの設計");
+      expect(s7?.querySelector("h2")?.textContent).toContain("フィーチャーごとの構築");
+      expect(s8?.querySelector("h2")?.textContent).toContain("ロール（役割）定義");
+    });
+
+    it("s5 に優先順位付けマトリックス SVG (viewBox='0 0 680 420') と計画策定ベストプラクティス表が存在する", () => {
+      const { container } = render(<Page />);
+      const s5 = container.querySelector("#s5");
+      const svg = s5?.querySelector("svg");
+      expect(svg).not.toBeNull();
+      expect(svg?.getAttribute("viewBox")).toBe("0 0 680 420");
+      const table = s5?.querySelector("table");
+      expect(table).not.toBeNull();
+    });
+
+    it("s6 に設計インスペクションのチェックリストが存在する", () => {
+      const { container } = render(<Page />);
+      const s6 = container.querySelector("#s6");
+      const listItems = s6?.querySelectorAll("ul.checklist li") ?? [];
+      expect(listItems.length).toBe(6);
+    });
+
+    it("s7 にコードインスペクション表と Python 実装例コードブロックが存在する", () => {
+      const { container } = render(<Page />);
+      const s7 = container.querySelector("#s7");
+      const table = s7?.querySelector("table");
+      expect(table).not.toBeNull();
+      const pre = s7?.querySelector("pre");
+      expect(pre).not.toBeNull();
+      expect(pre?.textContent).toContain("class Order");
+      const spans = pre?.querySelectorAll("span.kw, span.fn, span.st") ?? [];
+      expect(spans.length).toBeGreaterThan(0);
+    });
+
+    it("s8 にキーロールグリッド (6枚のロールカード) が存在する", () => {
+      const { container } = render(<Page />);
+      const s8 = container.querySelector("#s8");
+      const cards = s8?.querySelectorAll(".role-card") ?? [];
+      expect(cards.length).toBe(6);
+      expect(s8?.textContent).toContain("プロジェクトマネージャー");
+      expect(s8?.textContent).toContain("チーフアーキテクト");
+      expect(s8?.textContent).toContain("開発マネージャー");
+      expect(s8?.textContent).toContain("チーフプログラマー");
+      expect(s8?.textContent).toContain("クラスオーナー");
+      expect(s8?.textContent).toContain("ドメインエキスパート");
+    });
+
+    it("Category B の Mermaid 図が追加され、全体で 11 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(11);
+    });
+  });
 });
+
