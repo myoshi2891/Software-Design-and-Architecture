@@ -91,6 +91,40 @@ const DIAGRAM_CI_PIPELINE = `flowchart LR
     STEP4 -.->|失敗| FAIL
     STEP5 -.->|失敗| FAIL`;
 
+const DIAGRAM_ONSITE_CUSTOMER = `sequenceDiagram
+    participant DEV as 開発チーム
+    participant CUST as 顧客（オンサイト）
+    DEV->>CUST: この仕様、〇〇の場合はどうしますか？
+    CUST-->>DEV: その場合は△△にしてください
+    Note over DEV: 即座に理解・実装開始
+    DEV->>CUST: できました。確認してもらえますか？
+    CUST->>CUST: 動作を確認する
+    CUST-->>DEV: ほぼOKですが、ここを変えてほしい
+    DEV->>CUST: 修正しました
+    CUST-->>DEV: 完璧です！`;
+
+const DIAGRAM_40_HOURS = `graph LR
+    O1["残業・過労"] -->|短期| P1["生産性一時上昇"]
+    O1 -->|中期| P2["疲弊・ミス増加"]
+    O1 -->|長期| P3["燃え尽き症候群"]
+    P3 --> P4["コード品質低下・技術的負債"]
+    S1["週40時間以内"] --> S2["集中力維持・高品質"]
+    S2 --> S3["チームの士気・健康維持"]
+    S3 --> S4["長期的なプロダクト品質"]`;
+
+const DIAGRAM_TEST_PYRAMID = `graph TD
+    ACC["受け入れテスト\\n顧客が定義した完了の基準\\nユーザーストーリーの検証\\n数十件"]
+    INT["統合テスト\\nコンポーネント間の連携\\nDB・外部サービスとの統合\\n数百件"]
+    UNIT["ユニットテスト\\nTDDで書く細かいテスト\\n個々の関数・クラスの動作\\n数千件"]
+    UNIT --> INT --> ACC`;
+
+const DIAGRAM_ACCEPTANCE_FLOW = `flowchart LR
+    S1["顧客がストーリーを書く"] --> S2["顧客と開発者で受け入れ条件を共同定義"]
+    S2 --> S3["開発者が受け入れテストを自動化"]
+    S3 --> S4["実装完了後に受け入れテスト実行"]
+    S4 --> S5["全テスト通過 = 機能完了の証明"]
+    S5 --> S6["顧客が確認・承認"]`;
+
 export default function ExtremeProgrammingGuidePage() {
   return (
     <div className="extreme-programming-comprehensive-guide">
@@ -1147,6 +1181,452 @@ export default function ExtremeProgrammingGuidePage() {
                 </div>
                 <div className="callout callout-ok">素早いフィードバックで方向修正できる</div>
               </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S10: 計画ゲーム
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s10" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 10</span>
+              </div>
+              <h2>プラクティス⑦ 計画ゲーム</h2>
+              <p>ビジネスと開発者が協力して計画を立てる</p>
+            </div>
+            <div className="grid-2" style={{ marginBottom: 16 }}>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-blue-400)" }}>
+                  💼 ビジネス側が決めること
+                </div>
+                <ul>
+                  <li>何を作るか（機能の範囲・内容）</li>
+                  <li>優先順位（どれが最も重要か）</li>
+                  <li>リリースの日程（いつ必要か）</li>
+                  <li>ビジネス価値（なぜ必要か）</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-green-400)" }}>
+                  ⚙️ 開発者が決めること
+                </div>
+                <ul>
+                  <li>どのくらいかかるか（見積もり）</li>
+                  <li>技術的なリスク（何が難しいか）</li>
+                  <li>実装の順序（依存関係の考慮）</li>
+                  <li>開発プロセス（どう作るか）</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="sub-title">ユーザーストーリーとINVEST原則</p>
+            <div className="callout callout-info" style={{ marginBottom: 12 }}>
+              <strong>ユーザーストーリーの形式：</strong>
+              <br />
+              As a（役割として）：〇〇として
+              <br />I want（したいこと）：△△したい
+              <br />
+              So that（理由）：□□できるように
+            </div>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>頭文字</th>
+                    <th>条件</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>I</td>
+                    <td>Independent（独立）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>他のストーリーに依存しない</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>N</td>
+                    <td>Negotiable（交渉可能）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>詳細は話し合いで決まる</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>V</td>
+                    <td>Valuable（価値がある）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>ユーザーに明確な価値を届ける</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>E</td>
+                    <td>Estimable（見積もり可能）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>チームが規模を把握できる</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>S</td>
+                    <td>Small（小さい）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>1イテレーション以内で完成</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)", fontWeight: 500 }}>T</td>
+                    <td>Testable（テスト可能）</td>
+                    <td style={{ color: "var(--text-secondary)" }}>完了条件が明確に書ける</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://xp123.com/invest-in-good-stories-and-smart-tasks/">
+                  INVEST原則（Bill Wake）
+                </Ext>
+              </li>
+              <li>
+                <Ext href="https://www.agilealliance.org/glossary/planning-poker/">
+                  プランニングポーカー解説
+                </Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S11: コレクティブオーナーシップ
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s11" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 11</span>
+              </div>
+              <h2>プラクティス⑧ コレクティブオーナーシップ</h2>
+              <p>チーム全員がすべてのコードに責任を持つ</p>
+            </div>
+            <div className="grid-2">
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-red-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ❌ 個人所有（アンチパターン）
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  「このコードは山田さんしか知らない」
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  山田さんが休むと作業が止まる
+                </div>
+                <div className="callout callout-err" style={{ marginBottom: 6 }}>
+                  バスファクター = 1（1人辞めると崩壊）
+                </div>
+                <div className="callout callout-err">コードが属人的で保守困難</div>
+              </div>
+              <div>
+                <div
+                  style={{
+                    color: "var(--c-green-400)",
+                    fontWeight: 500,
+                    marginBottom: 8,
+                    fontSize: 13,
+                  }}
+                >
+                  ✅ 集合所有（XP）
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  誰でもどのコードにも触れられる
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  バグを見つけたら誰でもすぐ修正
+                </div>
+                <div className="callout callout-ok" style={{ marginBottom: 6 }}>
+                  チームとして全コードに責任を持つ
+                </div>
+                <div className="callout callout-ok">誰でも理解できるコードが自然に生まれる</div>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S12: コーディング規約
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s12" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 12</span>
+              </div>
+              <h2>プラクティス⑨ コーディング規約</h2>
+              <p>全員が同じスタイルでコードを書く</p>
+            </div>
+            <div className="callout callout-warn" style={{ marginBottom: 16 }}>
+              <strong>目標：</strong>
+              コードスタイルについての議論をゼロにする。自動化ツールで一貫性を保つ。
+            </div>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>言語</th>
+                    <th>ツール</th>
+                    <th>役割</th>
+                    <th>特徴</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Python</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>ruff</td>
+                    <td>Lint・フォーマット</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      超高速。flake8+isort+blackの代替
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Python</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>mypy / pyright</td>
+                    <td>型チェック</td>
+                    <td style={{ color: "var(--text-secondary)" }}>型安全性を強制する</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>Python</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>pre-commit</td>
+                    <td>コミット前に自動実行</td>
+                    <td style={{ color: "var(--text-secondary)" }}>
+                      問題のあるコードはコミット不可
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>JS/TS</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>ESLint</td>
+                    <td>Linter</td>
+                    <td style={{ color: "var(--text-secondary)" }}>ルールを柔軟にカスタマイズ</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>JS/TS</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>Prettier</td>
+                    <td>フォーマッター</td>
+                    <td style={{ color: "var(--text-secondary)" }}>議論なしに一貫したスタイル</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: "var(--c-teal-400)" }}>CI</td>
+                    <td style={{ color: "var(--c-purple-400)" }}>CI Lint Check</td>
+                    <td>CIで強制</td>
+                    <td style={{ color: "var(--text-secondary)" }}>PRがLint通らないとマージ不可</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ul className="src-list" style={{ marginTop: 12 }}>
+              <li>
+                <Ext href="https://docs.astral.sh/ruff/">Ruff（Python Linter）公式</Ext>
+              </li>
+              <li>
+                <Ext href="https://eslint.org/docs/">ESLint 公式</Ext>
+              </li>
+              <li>
+                <Ext href="https://prettier.io/docs/en/">Prettier 公式</Ext>
+              </li>
+            </ul>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S13: オンサイト顧客
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s13" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 13</span>
+              </div>
+              <h2>プラクティス⑩ オンサイト顧客</h2>
+              <p>顧客が開発チームと同じ場所にいる</p>
+            </div>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_ONSITE_CUSTOMER} preserveNaturalScale={true} />
+            </div>
+            <p className="sub-title">現代的な代替手段（リモート対応）</p>
+            <div className="grid-2">
+              <div className="vcard vcard-blue">
+                <div className="vcard-label vcard-label-blue">Slack/Teamsでの即時対応</div>
+                <div className="vcard-desc">
+                  担当者を決め30分以内に返答。アサインされた顧客代表者を設置。
+                </div>
+              </div>
+              <div className="vcard vcard-teal">
+                <div className="vcard-label vcard-label-teal">毎日の短いビデオ通話</div>
+                <div className="vcard-desc">
+                  15〜30分のデイリーチェックイン。進捗共有と質問解決。
+                </div>
+              </div>
+              <div className="vcard vcard-purple">
+                <div className="vcard-label vcard-label-purple">プロダクトオーナー制</div>
+                <div className="vcard-desc">
+                  スクラムのPOが顧客の代わり。優先順位の決定権を持つ。
+                </div>
+              </div>
+              <div className="vcard vcard-green">
+                <div className="vcard-label vcard-label-green">デモ環境の共有</div>
+                <div className="vcard-desc">
+                  常に最新のステージング環境。顧客がいつでも確認できる。
+                </div>
+              </div>
+            </div>
+            <div className="callout callout-info" style={{ marginTop: 12 }}>
+              <strong>核心原則：</strong>
+              フィードバックの遅延を最小化すること。24時間以内に返答を得られる体制を作る。
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S14: 週40時間労働
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s14" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 14</span>
+              </div>
+              <h2>プラクティス⑪ 週40時間労働</h2>
+              <p>持続可能なペース（Sustainable Pace）</p>
+            </div>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_40_HOURS} preserveNaturalScale={true} />
+            </div>
+            <div className="callout callout-warn" style={{ marginTop: 12 }}>
+              <strong>残業は警告サイン：</strong>
+              計画が間違っているサインとして扱う。スコープを削るか、計画を見直す。
+            </div>
+            <div className="grid-2" style={{ marginTop: 12 }}>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  計画を見直す
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  過剰なコミットメントをやめる。現実的な見積もりを徹底する。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  スコープを削る
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  Must Haveだけにフォーカス。「将来必要かも」を排除する。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  スキル向上に投資
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  TDD・ペアプロで生産性を上げる。長期的な投資として捉える。
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-teal-400)" }}>
+                  ボトルネックを除去
+                </div>
+                <div style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+                  開発プロセスの無駄を削る。自動化できることを自動化する。
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S15: メタファー
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s15" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 15</span>
+              </div>
+              <h2>プラクティス⑫ メタファー</h2>
+              <p>システム全体を1つの比喩で説明する</p>
+            </div>
+            <p style={{ color: "var(--text-secondary)", marginBottom: 16 }}>
+              システム全体の設計を説明するわかりやすい比喩（アナロジー）を使い、全員が共通のメンタルモデルを持ちます。
+            </p>
+            <div className="grid-2">
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-purple-400)" }}>
+                  ECサイト = 百貨店
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>顧客（Customer）= 来店客</li>
+                  <li>カート（Cart）= 買い物かご</li>
+                  <li>注文（Order）= レジでの精算</li>
+                  <li>在庫（Inventory）= 商品棚</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-purple-400)" }}>
+                  メッセージシステム = 郵便局
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>メッセージ（Message）= 手紙</li>
+                  <li>キュー（Queue）= 郵便ポスト</li>
+                  <li>ワーカー（Worker）= 配達員</li>
+                  <li>デッドレター = 不達郵便</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-purple-400)" }}>
+                  認証システム = 会員証
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>トークン（Token）= 会員証</li>
+                  <li>有効期限（Expiry）= 更新期限</li>
+                  <li>スコープ（Scope）= 利用可能サービス</li>
+                  <li>リフレッシュ = 更新手続き</li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-title" style={{ color: "var(--c-green-400)" }}>
+                  メタファーの効果
+                </div>
+                <ul style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                  <li>チーム全員の共通言語になる</li>
+                  <li>クラス名・メソッド名が自然に決まる</li>
+                  <li>新メンバーへの説明が容易になる</li>
+                  <li>顧客との会話がスムーズになる</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          {/* ══════════════════════════════════════════════════════════════
+               S16: システム全体テスト
+          ════════════════════════════════════════════════════════════════ */}
+          <div id="s16" className="section-anchor">
+            <div className="sec-header">
+              <div className="badges">
+                <span className="badge badge-teal">Section 16</span>
+              </div>
+              <h2>プラクティス⑬ システム全体のテスト（受け入れテスト）</h2>
+              <p>顧客が定義する「完了の基準」を自動化する</p>
+            </div>
+            <p className="sub-title">テストの階層</p>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_TEST_PYRAMID} preserveNaturalScale={true} />
+            </div>
+            <p className="sub-title">受け入れテストのフロー</p>
+            <div className="mermaid-wrap">
+              <MermaidDiagram chart={DIAGRAM_ACCEPTANCE_FLOW} preserveNaturalScale={true} />
+            </div>
+            <div className="callout callout-info" style={{ marginTop: 12 }}>
+              <strong>XPのルール：</strong>
+              コードを書く前にテストを書く（TDD）。受け入れテストは顧客と一緒に定義する。全テストは自動化して毎回実行する。
             </div>
           </div>
 
