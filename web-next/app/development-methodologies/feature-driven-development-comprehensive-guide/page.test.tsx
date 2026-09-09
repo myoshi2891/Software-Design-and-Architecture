@@ -141,4 +141,65 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(mermaids.length).toBeGreaterThanOrEqual(11);
     });
   });
+
+  describe("Category C: 設計実践・進捗管理・比較 (s9 - s11)", () => {
+    it("Category C のセクション (s9, s10, s11) が存在する", () => {
+      const { container } = render(<Page />);
+      const s9 = container.querySelector("#s9");
+      const s10 = container.querySelector("#s10");
+      const s11 = container.querySelector("#s11");
+
+      expect(s9).not.toBeNull();
+      expect(s10).not.toBeNull();
+      expect(s11).not.toBeNull();
+
+      expect(s9?.querySelector("h2")?.textContent).toContain("フィーチャーの記述と分解方法");
+      expect(s10?.querySelector("h2")?.textContent).toContain("進捗管理と報告");
+      expect(s11?.querySelector("h2")?.textContent).toContain("FDDと他手法との比較・組み合わせ");
+    });
+
+    it("s9 にフィーチャー分解ステップリスト (ol.step-list) が存在する", () => {
+      const { container } = render(<Page />);
+      const s9 = container.querySelector("#s9");
+      const steps = s9?.querySelectorAll("ol.step-list li") ?? [];
+      expect(steps.length).toBe(4);
+    });
+
+    it("s10 に 6段階完了ステータスフロー (.status-flow) と進捗管理ベストプラクティス表が存在する", () => {
+      const { container } = render(<Page />);
+      const s10 = container.querySelector("#s10");
+      const flow = s10?.querySelector(".status-flow");
+      expect(flow).not.toBeNull();
+      const steps = s10?.querySelectorAll(".status-step") ?? [];
+      expect(steps.length).toBe(6);
+      expect(s10?.textContent).toContain("ドメインウォークスルー");
+      expect(s10?.textContent).toContain("設計");
+      expect(s10?.textContent).toContain("設計インスペクション");
+      expect(s10?.textContent).toContain("コード実装");
+      expect(s10?.textContent).toContain("コードインスペクション");
+      expect(s10?.textContent).toContain("メイン統合");
+
+      const table = s10?.querySelector("table");
+      expect(table).not.toBeNull();
+    });
+
+    it("s11 に主要手法比較表とアジャイル関連外部リンクが存在する", () => {
+      const { container } = render(<Page />);
+      const s11 = container.querySelector("#s11");
+      const table = s11?.querySelector("table");
+      expect(table).not.toBeNull();
+      expect(s11?.textContent).toContain("Scrum");
+      expect(s11?.textContent).toContain("XP");
+      expect(s11?.textContent).toContain("Kanban");
+
+      const links = s11?.querySelectorAll("a") ?? [];
+      expect(links.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("Category C の Mermaid 図が追加され、全体で 14 個以上描画される", () => {
+      const { container } = render(<Page />);
+      const mermaids = container.querySelectorAll(".mermaid");
+      expect(mermaids.length).toBeGreaterThanOrEqual(14);
+    });
+  });
 });
