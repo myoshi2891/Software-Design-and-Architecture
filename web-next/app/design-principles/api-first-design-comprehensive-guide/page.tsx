@@ -1543,9 +1543,7 @@ export default function Page() {
                 <p>
                   <Ext href="https://www.rfc-editor.org/rfc/rfc6749">OAuth 2.0 RFC 6749</Ext> ／{" "}
                   <Ext href="https://jwt.io/">JWT.io</Ext> ／{" "}
-                  <Ext href="https://owasp.org/www-project-api-security/">
-                    OWASP API Security Top 10
-                  </Ext>
+                  <Ext href="https://github.com/OWASP/API-Security">OWASP API Security Top 10</Ext>
                 </p>
               </div>
             </div>
@@ -2646,9 +2644,7 @@ export default function Page() {
               </div>
               <div className="source-card">
                 <div className="source-cat">認証・セキュリティ</div>
-                <Ext href="https://owasp.org/www-project-api-security/">
-                  OWASP API Security Top 10
-                </Ext>
+                <Ext href="https://github.com/OWASP/API-Security">OWASP API Security Top 10</Ext>
                 <p className="source-desc">APIの10大セキュリティリスクと対策ガイド</p>
               </div>
               <div className="source-card">

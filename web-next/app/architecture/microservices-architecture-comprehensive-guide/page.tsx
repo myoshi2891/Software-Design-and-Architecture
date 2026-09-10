@@ -2961,11 +2961,11 @@ export default function Page() {
 
             <h3>🔐 セキュリティ</h3>
             <div className="rg">
-              <Ext className="ri" href="https://owasp.org/www-project-api-security/">
+              <Ext className="ri" href="https://github.com/OWASP/API-Security">
                 <div className="ri-ic">🛡️</div>
                 <div className="ri-body">
                   <div className="ri-t">OWASP API Security Top 10</div>
-                  <div className="ri-u">owasp.org/www-project-api-security</div>
+                  <div className="ri-u">github.com/OWASP/API-Security</div>
                   <div className="ri-d">マイクロサービスAPIの主要セキュリティリスクと対策</div>
                 </div>
               </Ext>
