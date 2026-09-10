@@ -39,6 +39,14 @@ bun run check-links
 
 このコマンドは `scripts/verify-links.ts` を実行する。
 
+`DEAD` 報告時は、修正前に原因を切り分けること。
+
+- `[Status: 0]`（curl exit 6/28/35）… DNS 消滅・接続不能。真に死んだドメインなので後継 URL へ差し替える。
+- `[Status: 403]`（ルートを含む全 URL）… WAF のボット遮断。`.markdown-link-check.json` の `ignorePatterns` に追加する。
+- `[Status: 404]` … URL 体系の変更。移行先、無ければ canonical な公式リポジトリを参照する。
+
+SPA サイトは存在しない URL でも 200 を返す soft-404 があり、ステータスコードでは検出できない。差し替え先は安定した canonical URL を選ぶこと。詳細は [README.md](./README.md) の「リンクチェック」を参照。
+
 ### 2. 依存関係の脆弱性監査
 
 依存パッケージの既知脆弱性を検査するために、以下のコマンドを実行する。

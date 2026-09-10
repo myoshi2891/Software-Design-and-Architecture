@@ -134,6 +134,29 @@ bun run check-links
 bun ./scripts/verify-links.ts
 ```
 
+#### 偽陽性（DEAD 判定だが実際は生存）の切り分け
+
+CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限りません。修正前に必ず原因を切り分けます。
+
+| 症状 | 原因 | 対応 |
+| --- | --- | --- |
+| `[Status: 0]` + curl exit 6 / 28 / 35 | DNS レコード消滅・接続不能。**真に死んだドメイン** | 公式の後継 URL へ差し替える |
+| `[Status: 403]`（ルートを含む全 URL で発生） | WAF / Cloudflare のボット遮断 | [.markdown-link-check.json](.markdown-link-check.json) の `ignorePatterns` に追加 |
+| `[Status: 404]` | 参照先サイトの URL 体系変更 | 移行後の URL、無い場合は canonical な公式リポジトリを参照 |
+
+判定に用いるコマンド（`verify-links` と同じ条件）:
+
+```bash
+curl -s -L -o /dev/null -w '%{http_code}\n' --max-time 15 \
+  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+  <URL>
+dig +short <ホスト名>   # 空なら DNS レコードが存在しない = 真に死んだドメイン
+```
+
+**soft-404 に注意**: SPA 構成のサイトは存在しない URL でも HTTP 200 を返し本文だけがエラーであることがあり、ステータスコードでは検出できません（例: `owasp.org/projects/<任意のslug>`）。差し替え先には安定した canonical URL を選びます。
+
+`verify-links.ts` 側の偽陽性対策は [scripts/verify-links.test.ts](scripts/verify-links.test.ts) で保護されています（HEAD は `-X HEAD` ではなく `--head`、User-Agent は現行世代のブラウザ）。
+
 ### 依存関係の脆弱性監査
 
 依存パッケージの既知脆弱性を検査するために `audit-dependencies`（[scripts/audit-dependencies.ts](scripts/audit-dependencies.ts)）を使用しています。ルートと `web-next/` の両ワークスペースで `bun audit` を実行し、閾値（既定 `low`）以上の脆弱性があれば失敗します。
