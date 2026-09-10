@@ -41,6 +41,7 @@
 ---
 
 <a id="step0"></a>
+
 ## ステップ0: このガイドの読み方
 
 AIエージェントという言葉は、2023年ごろから急速に広まりましたが、その定義は長らく曖昧なままでした。しかし2025年後半から2026年にかけて、業界のエンジニアの間で実務的に使える共通認識が形成されつつあります。このガイドは、その共通認識をベースに、次の順番で学べるように構成しています。
@@ -56,6 +57,7 @@ AIエージェントという言葉は、2023年ごろから急速に広まり�
 ---
 
 <a id="step1"></a>
+
 ## ステップ1: AIエージェントとは何か
 
 ### 1-1. 定義がようやく定まりつつある
@@ -89,6 +91,7 @@ Willison氏は同じ投稿で、「人間の代わりを務めるシステム」
 ---
 
 <a id="step2"></a>
+
 ## ステップ2: エージェントとワークフローの違い
 
 ### 2-1. Anthropicによるアーキテクチャ上の区別
@@ -149,6 +152,7 @@ OpenAIの「A Practical Guide to Building Agents」も同じ方向性で、シ�
 ---
 
 <a id="step3"></a>
+
 ## ステップ3: エージェントシステムの基本コンポーネント
 
 書籍『Building Applications with AI Agents』の第2章では、エージェントシステムを構成する4つの中核要素が整理されています。
@@ -179,6 +183,7 @@ flowchart TB
 ---
 
 <a id="step4"></a>
+
 ## ステップ4: エージェントの種類（オーケストレーションパターン）
 
 エージェントの「頭脳」部分、つまりどう考えてどう行動するかにもいくつかの代表的なパターンがあります。
@@ -218,6 +223,7 @@ HumanLayer社のDex Horthy氏は、100人以上の開発者への聞き取りを
 ---
 
 <a id="step5"></a>
+
 ## ステップ5: ツール利用とModel Context Protocol（MCP）
 
 ### 5-1. ツールの種類
@@ -243,7 +249,99 @@ flowchart LR
     SERVER2 --> DATA2[(社内システム)]
 ```
 
-MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用され、PythonとTypeScriptのSDKだけで月間およそ9,700万回ダウンロードされる規模に成長しました。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
+MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2026年3月時点で月間およそ9,700万回でしたが、2026年7月28日版の仕様公開時点では Tier 1 SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています（出典17）。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
+
+#### 最小構成のMCPサーバーとエージェントループ（実行可能な例）
+
+上図の「MCPサーバー ― データベースAPI」に相当する最小のサーバーと、それを呼び出すエージェントループを示します。ツール呼び出し・終了条件・エラー処理という、エージェント実装の3要素がすべて含まれています。
+
+```python
+# inventory_server.py ― MCPサーバー側
+# 依存: pip install "mcp[cli]>=1.2" pydantic>=2
+# 起動: python inventory_server.py（stdio でクライアントと接続する）
+from mcp.server.fastmcp import FastMCP
+from pydantic import BaseModel, Field
+
+mcp = FastMCP("inventory")
+
+# 社内システムを模した在庫データ（実運用では DB クエリに置き換える）
+_STOCK: dict[str, int] = {"SKU-001": 12, "SKU-002": 0}
+
+
+class StockResult(BaseModel):
+    """ツールの戻り値スキーマ。型を固定しておくとクライアント側のパースが安定する。"""
+
+    sku: str = Field(description="商品コード")
+    quantity: int = Field(ge=0, description="在庫数")
+
+
+@mcp.tool()
+def get_stock(sku: str) -> StockResult:
+    """指定した商品コードの在庫数を返す。
+
+    未知の SKU は例外を送出する。MCP は例外を「ツール実行エラー」として
+    クライアントへ返すため、エージェントはリトライや代替行動を判断できる。
+    """
+    if sku not in _STOCK:
+        raise ValueError(f"未知の商品コードです: {sku}")
+    return StockResult(sku=sku, quantity=_STOCK[sku])
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+```
+
+```python
+# agent_loop.py ― エージェント（MCPクライアント）側
+# 依存: pip install "mcp[cli]>=1.2"
+# 実行: python agent_loop.py
+import asyncio
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+# 終了条件その1: ツール呼び出しの上限。無限ループとコスト暴走を防ぐ最後の砦。
+MAX_STEPS = 5
+
+
+async def main() -> None:
+    params = StdioServerParameters(command="python", args=["inventory_server.py"])
+    async with stdio_client(params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            # サーバーが公開するツール一覧を取得する（LLM へ渡すツール定義の元になる）
+            tools = await session.list_tools()
+            print("利用可能なツール:", [t.name for t in tools.tools])
+
+            # 実際には次に呼ぶツールを LLM に決めさせる。ここでは決定論的に検証するため固定。
+            plan = [{"sku": "SKU-001"}, {"sku": "SKU-999"}]
+
+            for step, args in enumerate(plan, start=1):
+                if step > MAX_STEPS:
+                    print("上限に達したため打ち切ります")
+                    break
+
+                result = await session.call_tool("get_stock", args)
+
+                # エラー処理: isError のときは内容をエージェントの観測として次ターンへ渡す。
+                # 握りつぶさず、かつ例外で全体を止めないのが実運用でのポイント。
+                if result.isError:
+                    print(f"step{step}: ツールエラー -> {result.content[0].text}")
+                    continue
+
+                print(f"step{step}: 結果 -> {result.content[0].text}")
+
+                # 終了条件その2: 目的を満たしたら即座に抜ける
+                if args["sku"] == "SKU-001":
+                    print("必要な情報が得られたため、次の推論ステップへ進みます")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し → 結果の観測 → 終了判定」の繰り返しです。`MAX_STEPS` のような上限と、`isError` を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。
 
 ### 5-3. ツールを自動生成するエージェント
 
@@ -254,6 +352,7 @@ MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準�
 ---
 
 <a id="step6"></a>
+
 ## ステップ6: 知識とメモリ管理
 
 ### 6-1. 短期記憶と長期記憶
@@ -291,6 +390,7 @@ flowchart LR
 ---
 
 <a id="step7"></a>
+
 ## ステップ7: シングルエージェントからマルチエージェントへ
 
 ### 7-1. いつエージェントを増やすべきか
@@ -333,9 +433,10 @@ flowchart TB
 ---
 
 <a id="step8"></a>
+
 ## ステップ8: エージェント間通信 ― MCPとA2A
 
-マルチエージェント構成が一般的になるにつれ、「エージェントとツールをどうつなぐか」だけでなく「異なるベンダー・フレームワークで作られたエージェント同士をどうつなぐか」という課題が浮上しました。これに応えるのがGoogleが2025年4月に発表したAgent2Agent（A2A）プロトコルです。A2Aは同年6月にLinux Foundationへ寄贈され、2026年にはMCPと同じくAgentic AI Foundationの管轄下に置かれています。
+マルチエージェント構成が一般的になるにつれ、「エージェントとツールをどうつなぐか」だけでなく「異なるベンダー・フレームワークで作られたエージェント同士をどうつなぐか」という課題が浮上しました。これに応えるのがGoogleが2025年4月に発表したAgent2Agent（A2A）プロトコルです。A2Aは同年6月にLinux Foundationへ寄贈され、2026年8月27日にはMCPと同じくAgentic AI Foundation（AAIF）のGrowth Stageプロジェクトとして受け入れられています。
 
 | 項目 | MCP | A2A |
 |---|---|---|
@@ -354,11 +455,12 @@ flowchart LR
     AGENT_B -- MCPでツールとデータに接続 --> TOOLS3[ツール・データソース]
 ```
 
-**出典**: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／Axios「Google's A2A protocol gets a new home」（巻末参考文献[10][11]）
+**出典**: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／A2A Protocol 公式ブログ「A New Chapter for A2A: Joining the Agentic AI Foundation」（巻末参考文献[10][11]）
 
 ---
 
 <a id="step9"></a>
+
 ## ステップ9: 主要フレームワークの選び方
 
 書籍の第1章では、LangGraph、AutoGen、CrewAI、OpenAI Agents SDKという4つの代表的なフレームワークが紹介されています。2026年9月時点では、これにAnthropicのClaude Agent SDKや、GoogleのAgent Development Kit（ADK）を加えた選択肢が実務でよく比較されています。
@@ -387,6 +489,7 @@ flowchart LR
 ---
 
 <a id="step10"></a>
+
 ## ステップ10: 検証と評価
 
 ### 10-1. 評価は開発の柱
@@ -417,6 +520,7 @@ OpenAIのガイドでは、評価と並んでガードレール（安全装置�
 ---
 
 <a id="step11"></a>
+
 ## ステップ11: 本番運用でのモニタリングと改善ループ
 
 ### 11-1. モニタリングスタックの選択肢
@@ -454,6 +558,7 @@ flowchart LR
 ---
 
 <a id="step12"></a>
+
 ## ステップ12: エージェントシステムを守る ― セキュリティ
 
 ### 12-1. Lethal Trifecta（危険な三要素の組み合わせ）
@@ -503,6 +608,7 @@ flowchart TB
 ---
 
 <a id="step13"></a>
+
 ## ステップ13: 人間とエージェントの協働
 
 ### 13-1. 自律性のスライダー
@@ -536,6 +642,7 @@ Simon Willison氏は、人間には「説明責任（accountability）」とい�
 ---
 
 <a id="step14"></a>
+
 ## ステップ14: 学習ロードマップ・まとめ
 
 ### 14-1. 学習の進め方
@@ -582,6 +689,7 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
 ---
 
 <a id="glossary"></a>
+
 ## 用語集
 
 | 用語 | 説明 |
@@ -603,7 +711,8 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
 ---
 
 <a id="references"></a>
-## 参考文献・出典
+
+## 参考文献・ソース一覧
 
 1. Michael Albada, *Building Applications with AI Agents*, O'Reilly Media, 2025年9月.
    https://www.oreilly.com/library/view/building-applications-with/9781098176495/
@@ -625,8 +734,8 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
    https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026
 10. Google Developers Blog, "Google Cloud donates A2A to Linux Foundation", 2025年6月23日.
     https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/
-11. Axios, "Google's A2A protocol gets a new home", 2026年8月.
-    https://www.axios.com/2026/08/17/a2a-agentic-ai-foundation-open-ai-standards
+11. A2A Protocol Blog, "A New Chapter for A2A: Joining the Agentic AI Foundation", 2026年8月27日.
+    https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/
 12. Cloud Security Alliance（Ken Huang氏執筆）, "Agentic AI Threat Modeling Framework: MAESTRO", 2025年2月6日.
     https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro
 13. Andrej Karpathy, "Sequoia Ascent 2026 summary".
@@ -637,3 +746,5 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
     https://www.firecrawl.dev/blog/best-open-source-agent-frameworks
 16. Techsy, "LangGraph vs CrewAI vs OpenAI Agents (Ship Test 2026)".
     https://techsy.io/en/blog/langgraph-vs-crewai-vs-openai-agents-sdk
+17. Model Context Protocol Blog, "The 2026-07-28 Specification", 2026年7月28日.
+    https://blog.modelcontextprotocol.io/posts/2026-07-28/

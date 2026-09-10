@@ -28,6 +28,7 @@
 ---
 
 <a id="part0"></a>
+
 ## 第0部：なぜ「プロトタイプ」と「本番運用」はこんなにも違うのか
 
 ### 0.1 このガイドが扱う問題
@@ -76,10 +77,10 @@ flowchart LR
 
 これらの用語は本ガイド全体で繰り返し登場するため、わからなくなったら[用語集](#glossary)に戻ってください。
 
-
 ---
 
 <a id="part1"></a>
+
 ## 第1部（Ch1）：プロトタイプを構築する
 
 ### 1.1 「成功するAIプロトタイプ」の秘訣
@@ -137,10 +138,10 @@ flowchart TB
 - **誤解3：「評価は最後にまとめてやればいい」** → 評価基準を後回しにすると、途中の意思決定（プロンプト変更、アーキテクチャ選定）が勘に頼ったものになります。第2部で詳しく扱うように、評価はプロトタイプ段階から並走させるべき活動です。
 - **誤解4：「生成AIだから通常のソフトウェア工学のプラクティスは不要」** → 実際にはコードの可読性・単体テスト・CI/CDといった標準的なプラクティス（第4部・第5部）がむしろ重要性を増します。
 
-
 ---
 
 <a id="part2"></a>
+
 ## 第2部（Ch2）：生成AIアプリケーションを評価する
 
 ### 2.1 なぜ評価がこれほど重要なのか
@@ -272,10 +273,10 @@ HITLをスケールさせる（Scaling and operationalizing human evaluation）�
 
 **エージェントの評価**はさらに複雑で、単一のターン評価ではなく「軌跡（Trajectory）」全体を評価する必要があります。具体的には、（1）タスクを最終的に完遂できたかという**タスク成功率**、（2）不要なツール呼び出しや遠回りをしていないかという**効率性**、（3）各ステップでの**ツール選択の正しさ**、（4）途中で誤った判断をしても軌道修正できる**回復力（Resilience）**、という4つの軸で評価するのが2026年時点の標準的なアプローチです。
 
-
 ---
 
 <a id="part3"></a>
+
 ## 第3部（Ch3）：主要アーキテクチャを理解する
 
 ### 3.1 プロンプトテンプレートの組織化とバージョン管理
@@ -445,10 +446,10 @@ flowchart LR
 
 短期メモリ（今の会話のコンテキストウィンドウ内）、エピソード記憶（過去のタスク実行の要約）、長期記憶（ユーザーの恒久的な設定や学習した事実）という3層構造で設計するのが一般的です。メモリに何を残すか・いつ要約するかの設計を誤ると、古い誤情報がメモリに固定化されてしまう「メモリ汚染」のリスクがあるため、書き戻しには何らかの検証ステップを挟むことが推奨されます。
 
-
 ---
 
 <a id="part4"></a>
+
 ## 第4部（Ch4）：プロトタイプから本番コードへ
 
 ### 4.1 なぜ「オペレーション化（Operationalization）」が重要なのか
@@ -491,6 +492,136 @@ flowchart TB
 
 統合テストでは、RAGパイプライン全体（検索→生成→後処理）や外部API（決済、CRMなど）との連携を、実際に近い環境で検証します。負荷テストでは、同時多数のリクエストが来た際のレイテンシ悪化・レート制限への抵触・コスト急増を事前に把握します。
 
+#### 実装例：LLM呼び出しをモック化した単体テスト
+
+「LLM呼び出しをモック化して周辺ロジックを決定的に検証する」を、そのまま動かせる形にしたものが以下です。ポイントは**LLMクライアントを依存性注入（DI）で受け取ること**で、これによりテスト側が実API呼び出しなしで差し替えられます。
+
+```python
+# app/summarize.py
+# 依存: pip install "fastapi[standard]" pydantic anthropic
+# 起動: uvicorn app.summarize:app --reload
+import json
+import os
+from typing import Protocol
+
+from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel, Field, ValidationError
+
+class SummarizeRequest(BaseModel):
+    """入力バリデーション。空文字や長すぎる入力はここで422として弾かれる。"""
+
+    text: str = Field(min_length=1, max_length=5000, description="要約対象の本文")
+
+class SummarizeResponse(BaseModel):
+    """出力スキーマ。LLMの生テキストは必ずこの型を通してから返す。"""
+
+    summary: str = Field(min_length=1)
+    keywords: list[str] = Field(max_length=5)
+
+class LlmClient(Protocol):
+    """LLM呼び出しの最小インターフェース。テストではこれを実装したフェイクを注入する。"""
+
+    def complete(self, prompt: str) -> str: ...
+
+class AnthropicClient:
+    """本番用の実装。"""
+
+    def __init__(self) -> None:
+        from anthropic import Anthropic
+
+        self._client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+    def complete(self, prompt: str) -> str:
+        resp = self._client.messages.create(
+            model="claude-sonnet-5",
+            max_tokens=500,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.content[0].text
+
+def get_llm() -> LlmClient:
+    """DIの入口。テストでは app.dependency_overrides でここを差し替える。"""
+    return AnthropicClient()
+
+app = FastAPI()
+
+PROMPT = """次の本文を要約し、{{"summary": "<要約>", "keywords": ["<語>", ...]}} のJSONのみを返してください。
+
+# 本文
+{text}"""
+
+@app.post("/summarize", response_model=SummarizeResponse)
+def summarize(req: SummarizeRequest, llm: LlmClient = Depends(get_llm)) -> SummarizeResponse:
+    raw = llm.complete(PROMPT.format(text=req.text))
+    try:
+        # 出力パース: LLMは指示に反した形式を返しうるので、必ず検証してから通す
+        return SummarizeResponse.model_validate(json.loads(raw))
+    except (json.JSONDecodeError, ValidationError) as exc:
+        # エラーハンドリング: 握りつぶさず、上流の失敗として502で表明する
+        raise HTTPException(status_code=502, detail="LLM応答の形式が不正です") from exc
+```
+
+```python
+# tests/test_summarize.py
+# 依存: pip install pytest httpx
+# 実行: pytest tests/test_summarize.py
+import pytest
+from fastapi.testclient import TestClient
+
+from app.summarize import app, get_llm
+
+class FakeLlm:
+    """決められた文字列だけを返すフェイク。テストが決定的になる。"""
+
+    def __init__(self, response: str) -> None:
+        self._response = response
+
+    def complete(self, prompt: str) -> str:
+        return self._response
+
+@pytest.fixture
+def client():
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+def override_llm(response: str) -> None:
+    app.dependency_overrides[get_llm] = lambda: FakeLlm(response)
+
+def test_正常なLLM応答を要約レスポンスへ変換する(client: TestClient) -> None:
+    # Arrange
+    override_llm('{"summary": "本文の要点", "keywords": ["設計", "テスト"]}')
+
+    # Act
+    res = client.post("/summarize", json={"text": "生成AIアプリの設計について"})
+
+    # Assert
+    assert res.status_code == 200
+    assert res.json() == {"summary": "本文の要点", "keywords": ["設計", "テスト"]}
+
+def test_空文字の入力はバリデーションで拒否する(client: TestClient) -> None:
+    # Arrange
+    override_llm('{"summary": "呼ばれないはず", "keywords": []}')
+
+    # Act
+    res = client.post("/summarize", json={"text": ""})
+
+    # Assert: LLMに到達する前に422で弾かれる
+    assert res.status_code == 422
+
+def test_LLMがJSON以外を返したら502を返す(client: TestClient) -> None:
+    # Arrange
+    override_llm("すみません、要約できませんでした。")
+
+    # Act
+    res = client.post("/summarize", json={"text": "生成AIアプリの設計について"})
+
+    # Assert
+    assert res.status_code == 502
+    assert res.json()["detail"] == "LLM応答の形式が不正です"
+```
+
+3つのテストはいずれもLLM APIを呼ばないため、ネットワークもAPIキーも不要で、実行時間もミリ秒単位です。「入力バリデーション」「出力パース」「エラーハンドリング」という決定的に検証できる部分をここで固め、確率的な出力品質の検証は評価パイプラインへ分離する、という役割分担がテスト戦略の骨格になります。
+
 ### 4.5 シンプルに保つことの価値、そして「近道」の代償
 
 「動くから」という理由だけで応急処置的な実装（クイックフィックス）を重ねると、後から本質的な設計変更をする際の技術的負債になります。特に生成AIプロジェクトでは「とりあえずプロンプトに条件分岐を足す」という近道が繰り返されがちで、これがプロンプトの肥大化・保守不能化を招く典型的な失敗パターンです。複雑なロジックはプロンプトではなくコード側の分岐や、専用のツール呼び出しに切り出す判断が重要になります。
@@ -499,10 +630,10 @@ flowchart TB
 
 本番アプリケーションでは、ユーザーが生成AI機能の能力と限界を正しく理解できるようにするオンボーディング設計も欠かせません。何ができて何ができないのかを最初に明示し、ハルシネーションのリスクがある領域では出典表示や確信度の提示を行うことが、ユーザーの信頼構築とプロダクトの継続利用に直結します。
 
-
 ---
 
 <a id="part5"></a>
+
 ## 第5部（Ch5）：DevOps・MLOpsからLLMOpsへ
 
 ### 5.1 DevOpsの復習：CI/CDとは何か
@@ -575,10 +706,10 @@ flowchart TB
 
 このパイプラインのポイントは、**プロンプトやRAG設定の変更を、通常のコード変更と同じくPull Requestベースでレビュー・自動テストの対象にする**ことです。これにより、「なんとなくプロンプトを直したら精度が落ちた」という事故を、マージ前に機械的に検知できるようになります。
 
-
 ---
 
 <a id="part6"></a>
+
 ## 第6部（Ch6）：アプリケーションをデプロイする
 
 ### 6.1 ステートレスなアプリケーションとステートフルなアプリケーション
@@ -625,16 +756,28 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    A[リクエスト] --> B{完全一致キャッシュ<br/>にヒットするか}
-    B -->|Yes| C[キャッシュから即時応答]
-    B -->|No| D{セマンティックキャッシュ<br/>類似リクエストがあるか}
-    D -->|Yes| E[類似回答を再利用・調整]
+    A[リクエスト] --> K[キャッシュキーを構成<br/>tenant_id + user_id + 認可スコープ + データ版]
+    K --> B{完全一致キャッシュ<br/>にヒットするか}
+    B -->|Yes| V[再利用前に同じ認可境界を再検証]
+    B -->|No| D{セマンティックキャッシュ<br/>同一スコープ内に類似リクエストがあるか}
+    D -->|Yes| V
     D -->|No| F[LLMへ新規リクエスト]
-    F --> G[結果をキャッシュに保存]
+    V --> C[キャッシュから応答]
+    F --> S{権限依存の生成回答か}
+    S -->|Yes| N[キャッシュしない]
+    S -->|No| G[スコープ付きキーで保存]
 
     classDef highlightFill fill:#1c3a5e,stroke:#7c9eff,color:#eaf0ff
+    classDef guardFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
     class B,D highlightFill
+    class K,V,N guardFill
 ```
+
+**キャッシュは認可境界の内側に置く。** 生成AIのキャッシュで最も危険な失敗は、性能ではなく情報漏洩です。特にセマンティックキャッシュは「文面が似ている」だけで別ユーザーの回答を再利用しうるため、素朴に実装するとテナント間・ユーザー間のデータ漏洩経路になります。最低限、次の3点を設計に組み込んでください。
+
+1. **キーまたは領域を分離する**：キャッシュキー（あるいは名前空間そのもの）に `tenant_id`・`user_id`・認可スコープ（ロールや許可されたデータ範囲）・参照データの版（インデックスのバージョン等）を含める。セマンティック検索も、この分離された領域の内側だけを探索範囲にする。
+2. **安全に分離できないものはキャッシュしない**：閲覧権限によって内容が変わる生成回答は、上記のスコープで確実に分離できると示せない限りキャッシュ対象から外す。キャッシュミスのコストは、他人のデータを返すコストよりはるかに安い。
+3. **再利用時にも認可を再検証する**：キャッシュヒットは認可のバイパスではありません。権限は取り消され得るため、保存時に有効だった認可スコープが応答を返す時点でも有効かを毎回確認する。
 
 分散システムでキャッシュを持つ場合、古典的な**CAP定理**（一貫性・可用性・分断耐性の3つを同時に完全には満たせないという定理）の考え方が再び重要になります。キャッシュが複数リージョンに分散している場合、「常に最新の回答を返す一貫性」と「一部のノードが落ちても応答し続ける可用性」はトレードオフの関係にあり、生成AIのようにやや古いキャッシュでも実用上大きな問題にならないケースでは、可用性を優先する設計が一般的です。
 
@@ -663,10 +806,10 @@ flowchart TB
 
 上流のLLMプロバイダーにはレート制限があり、これを超えると429エラーが返ってきます。アプリケーション側でリクエストレートを制御する「スロットリング」や、下流サービスの障害が上流に連鎖的に波及することを防ぐ「サーキットブレーカー」パターンは、通常の分散システムと同様に生成AIアプリケーションでも必須の防御機構です。ある1つのLLMプロバイダーの障害が、リトライの嵐によってアプリケーション全体を巻き込む「カスケード障害」に発展しないよう、指数バックオフ付きリトライ、リトライ回数の上限設定、タイムアウトの明示的な設定を組み合わせます。
 
-
 ---
 
 <a id="part7"></a>
+
 ## 第7部（Ch7）：倫理とセキュリティ
 
 ### 7.1 Responsible AIの基本
@@ -728,10 +871,10 @@ flowchart TB
 
 生成AIにおけるプライバシーの課題は、（1）訓練データに含まれる個人情報がモデルの出力に漏洩するリスク、（2）RAGで検索対象とするドキュメントに含まれる機密情報が意図しないユーザーに開示されるリスク、（3）ユーザーが入力したプロンプト自体に含まれる個人情報の取り扱い、という3層構造で考える必要があります。改善策としては、PIIの検出・マスキング、RAGにおけるドキュメントレベルのアクセス制御（ユーザーの権限に応じて検索対象を制限する）、ログ保持期間の最小化などが挙げられます。
 
-
 ---
 
 <a id="part8"></a>
+
 ## 第8部（Ch8）：可観測性と信頼性
 
 ### 8.1 サイト信頼性エンジニアリング（SRE）とは何か
@@ -825,10 +968,10 @@ flowchart LR
 | ツール呼び出しの成否と引数 | エージェントがどのツールをどう使ったかを追跡し、デバッグと監査に使う |
 | 品質スコア（オンライン評価結果） | 第2部の評価パイプラインの結果を本番トレースと紐づけ、品質の推移を監視する |
 
-
 ---
 
 <a id="part9"></a>
+
 ## 第9部（Ch9）：アプリケーションを保守する
 
 ### 9.1 デプロイ後の生活：プラットフォームチームという発想
@@ -890,10 +1033,10 @@ flowchart TB
 
 保守フェーズに入ったGenAIプロダクトのロードマップ策定では、「新機能の追加」だけでなく、「モデル世代交代への追従計画」「評価データセットの継続的な拡充」「ガードレールルールの継続的な見直し」といった、生成AI特有の保守項目を計画に組み込む必要があります。これらは往々にして新機能開発と工数を奪い合う関係にあるため、プロダクト戦略レベルで意図的に時間を確保することが、長期的な品質維持の鍵になります。
 
-
 ---
 
 <a id="part10"></a>
+
 ## 第10部（Ch10）：A/Bテストとオンライン実験
 
 ### 10.1 A/Bテストとは何か
@@ -950,10 +1093,10 @@ A/Bテストの成否を左右するのは、統計手法そのものより「�
 - **ネットワーク効果・汚染の見落とし**：マルチエージェントシステムやチャット共有機能があるプロダクトでは、バリアントAのユーザーとバリアントBのユーザーが互いに影響し合い、実験結果が歪む可能性があります。
 - **新奇性効果（Novelty Effect）**：新しいプロンプトやUIが一時的に高評価を得るが、慣れとともに効果が消失する現象。十分な実験期間を確保することで検出できます。
 
-
 ---
 
 <a id="part11"></a>
+
 ## 第11部：2026年9月時点の最新動向
 
 本書の原著は2026年3月刊行ですが、生成AIアーキテクチャの実務は数ヶ月単位で更新され続けています。ここでは2026年9月9日時点でのウェブ検索調査に基づき、本ガイドの各部と関連する最新動向を独自に補足します。
@@ -996,10 +1139,10 @@ flowchart TB
 
 Anthropicの研究では、オーケストレーター・ワーカー型のマルチエージェントシステムが単一エージェントに対して評価ベンチマークで大幅な性能向上を示す一方、トークン消費量が単一エージェント比で約15倍に達することが報告されています。同社の分析によれば「トークン使用量だけで性能の分散の約80%を説明できる」とされており、2026年の実務コミュニティでは「マルチエージェント化は、タスクが本当に独立した並列スレッドに分解できる場合にのみ、コストに見合う」という選別的な採用姿勢が広がっています。第3部で扱ったオーケストレーター・ワーカーパターンを採用する際は、この費用対効果の見極めが設計判断の出発点になります。
 
-
 ---
 
 <a id="roadmap"></a>
+
 ## 学習ロードマップ
 
 初学者がこのガイドをどの順序で深掘りしていくべきかの目安です。
@@ -1025,6 +1168,7 @@ flowchart TB
 ---
 
 <a id="checklist"></a>
+
 ## 実践チェックリスト
 
 - [ ] プロトタイプ着手前に、検証したい仮説と成功・失敗の判定基準を1つに絞って明文化した
@@ -1050,6 +1194,7 @@ flowchart TB
 ---
 
 <a id="glossary"></a>
+
 ## 用語集
 
 | 用語 | 説明 |
@@ -1083,9 +1228,12 @@ flowchart TB
 ---
 
 <a id="references"></a>
-## 参考文献
 
-本ガイドの作成にあたり参照した一次情報源です（2026年9月9日時点）。
+## 参考文献・ソース一覧
+
+本ガイドの作成にあたり参照した資料です（2026年9月9日時点）。原著者・標準化団体・提供元自身による公式発表を**一次情報源**、それらを解説・比較したベンダーブログや第三者記事を**二次情報源**として区別しています。記述の裏付けを取る際は、まず一次情報源にあたってください。
+
+### 一次情報源
 
 **書籍・原著情報**
 - Leonid Kuligin. *Architecting Generative AI Applications*. Packt Publishing / O'Reilly, March 2026. [https://www.oreilly.com/library/view/architecting-generative-ai/9781806678655/](https://www.oreilly.com/library/view/architecting-generative-ai/9781806678655/)
@@ -1096,9 +1244,17 @@ flowchart TB
 - Anthropic. "Donating the Model Context Protocol and establishing the Agentic AI Foundation." Dec 9, 2025. [https://anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation](https://anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation)
 - Linux Foundation. "Linux Foundation Announces the Formation of the Agentic AI Foundation (AAIF)." [https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation)
 - LangChain. "State of AI Agents." [https://www.langchain.com/state-of-agent-engineering](https://www.langchain.com/state-of-agent-engineering)
+- MLflow. "Prompt Registry for LLMs & Agents." [https://mlflow.org/prompt-registry](https://mlflow.org/prompt-registry)
+- Datadog. "State of AI Engineering."（Datadog自社テレメトリに基づく調査レポート） [https://www.datadoghq.com/state-of-ai-engineering/](https://www.datadoghq.com/state-of-ai-engineering/)
+
+**セキュリティ**
+- OWASP GenAI Security Project. "OWASP GenAI LLM Top 10 2026." [https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)
+
+### 二次情報源（解説・比較記事）
+
+**LLMOpsプラットフォーム・ゲートウェイ**
 - Braintrust. "Best LLMOps platforms in 2026 compared." [https://www.braintrust.dev/articles/best-llmops-platforms-2025](https://www.braintrust.dev/articles/best-llmops-platforms-2025)
 - Braintrust. "6 best LLM gateways for developers in 2026." [https://www.braintrust.dev/articles/best-llm-gateways-2026](https://www.braintrust.dev/articles/best-llm-gateways-2026)
-- MLflow. "Prompt Registry for LLMs & Agents." [https://mlflow.org/prompt-registry](https://mlflow.org/prompt-registry)
 
 **評価（Evaluation）**
 - Openlayer. "LLM-as-judge: A complete guide to evaluation best practices in March 2026." [https://www.openlayer.com/blog/llm-as-judge-evaluation-guide](https://www.openlayer.com/blog/llm-as-judge-evaluation-guide)
@@ -1113,7 +1269,6 @@ flowchart TB
 
 **セキュリティ**
 - ReversingLabs. "OWASP Top 10 for LLM Apps 2026: Excessive agency risk on the rise." [https://www.reversinglabs.com/blog/owasp-top-10-for-llm-apps-excessive-agency](https://www.reversinglabs.com/blog/owasp-top-10-for-llm-apps-excessive-agency)
-- OWASP GenAI Security Project. "OWASP GenAI LLM Top 10 2026." [https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/)
 - Aembit. "OWASP Top 10 for LLM Applications (2025)." [https://aembit.io/blog/owasp-top-10-llm-risks-explained/](https://aembit.io/blog/owasp-top-10-llm-risks-explained/)
 
 **観測性（Observability）**
@@ -1128,7 +1283,6 @@ flowchart TB
 
 **その他 LLMOps／エコシステム動向**
 - Braintrust. "Best AI Agent Orchestration Tools 2026 | Context Studios." [https://www.contextstudios.ai/guides/ai-agent-orchestration-tools-2026](https://www.contextstudios.ai/guides/ai-agent-orchestration-tools-2026)
-- Datadog. "State of AI Engineering." [https://www.datadoghq.com/state-of-ai-engineering/](https://www.datadoghq.com/state-of-ai-engineering/)
 
 ---
 

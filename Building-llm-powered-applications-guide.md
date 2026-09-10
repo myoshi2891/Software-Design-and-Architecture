@@ -1,7 +1,8 @@
 # LLMパワードアプリケーション構築ガイド
-### 初学者のためのステップバイステップ実践入門(2026年9月版)
 
-> 本ガイドは、O'Reilly刊行の書籍 *Building LLM Powered Applications*(Valentina Alto 著, Packt Publishing, 2024年5月、出典0)を出発点としつつ、刊行から約2年の間に大きく様変わりしたLLMアプリケーション開発の実践知を、2026年9月9日時点の情報でアップデートした学習ガイドです。原著はLangChainを中心に「LLMの基礎 → プロンプトエンジニアリング → 会話アプリ → 構造化データ → マルチモーダル → ファインチューニング → 責任あるAI」という流れで構成されていますが、その後「エージェント」「Model Context Protocol(MCP)」「コンテキストエンジニアリング」「評価/オブザーバビリティ」といった新しい実践領域が業界標準になりました。本ガイドはこの最新の実践知を、初めてLLMアプリケーションを作るエンジニアにも理解できるよう、ステップバイステップで解説します。
+**初学者のためのステップバイステップ実践入門(2026年9月版)**
+
+> 本ガイドは、Packt Publishing 刊の書籍 *Building LLM Powered Applications*(Valentina Alto 著, 2024年5月刊。O'Reilly Learning でも配信されています、出典0)を出発点としつつ、刊行から約2年の間に大きく様変わりしたLLMアプリケーション開発の実践知を、2026年9月9日時点の情報でアップデートした学習ガイドです。原著はLangChainを中心に「LLMの基礎 → プロンプトエンジニアリング → 会話アプリ → 構造化データ → マルチモーダル → ファインチューニング → 責任あるAI」という流れで構成されていますが、その後「エージェント」「Model Context Protocol(MCP)」「コンテキストエンジニアリング」「評価/オブザーバビリティ」といった新しい実践領域が業界標準になりました。本ガイドはこの最新の実践知を、初めてLLMアプリケーションを作るエンジニアにも理解できるよう、ステップバイステップで解説します。
 
 ---
 
@@ -10,7 +11,105 @@
 - プログラミングの基礎知識はあるが、LLMアプリケーション開発は初めてという方を対象にしています。
 - 各ステップは独立して読めますが、上から順に読むと「基礎知識 → 設計 → 実装 → 運用」という開発の流れに沿って理解が深まります。
 - 図はすべてMermaidのフローチャートで表現し、比較情報はMarkdownの表にまとめています。
-- 本文中の丸括弧付き番号(例: 出典1)は、末尾の「参考文献・出典」セクションに対応しています。モデル名・価格・ベンチマーク順位などは2026年時点でも数週間単位で更新され続けているため、実際に採用する際は必ず一次情報を確認してください。
+- 本文中の丸括弧付き番号(例: 出典1)は、末尾の「参考文献・ソース一覧」セクションに対応しています。モデル名・価格・ベンチマーク順位などは2026年時点でも数週間単位で更新され続けているため、実際に採用する際は必ず一次情報を確認してください。
+
+### まず動かしてみる: 最小のLLMアプリ
+
+図を眺める前に、30行ほどで動く最小のLLMアプリを手元で動かしておくと、以降の説明が具体的に読めるようになります。「LLMを呼ぶ」「出力を型で受け取る」「テストする」という、この後のすべてのStepに共通する骨格です。
+
+```python
+# app/main.py
+# 依存: pip install "fastapi[standard]" pydantic anthropic
+# 起動: ANTHROPIC_API_KEY=<your-key> uvicorn app.main:app --reload
+# 動作確認: curl -X POST localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"RAGとは？"}'
+import os
+
+from anthropic import Anthropic
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+SYSTEM_PROMPT = "あなたは日本語で簡潔に答える技術アシスタントです。3文以内で答えてください。"
+
+class AskRequest(BaseModel):
+    """入力の型。空文字や長すぎる質問はここで自動的に422として弾かれる。"""
+
+    question: str = Field(min_length=1, max_length=1000)
+
+class AskResponse(BaseModel):
+    answer: str
+
+app = FastAPI()
+
+def call_llm(question: str) -> str:
+    """LLM呼び出しを1関数に閉じ込める。テストではこの関数だけを差し替える。"""
+    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    resp = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=300,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": question}],
+    )
+    return resp.content[0].text
+
+@app.post("/ask", response_model=AskResponse)
+def ask(req: AskRequest) -> AskResponse:
+    try:
+        answer = call_llm(req.question)
+    except Exception as exc:
+        # プロバイダ障害・レート制限を握りつぶさず、503として明示的に返す
+        raise HTTPException(status_code=503, detail="LLMの呼び出しに失敗しました") from exc
+
+    if not answer.strip():
+        raise HTTPException(status_code=502, detail="LLMが空の応答を返しました")
+    return AskResponse(answer=answer)
+```
+
+テストではLLMを呼びません。`monkeypatch`で`call_llm`を差し替えることで、APIキーもネットワークも不要な、毎回同じ結果になるテストになります。
+
+```python
+# tests/test_main.py
+# 依存: pip install pytest httpx
+# 実行: pytest tests/test_main.py
+import pytest
+from fastapi.testclient import TestClient
+
+from app import main
+
+client = TestClient(main.app)
+
+def test_質問に対して回答を返す(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange
+    monkeypatch.setattr(main, "call_llm", lambda question: "RAGは検索拡張生成です。")
+
+    # Act
+    res = client.post("/ask", json={"question": "RAGとは？"})
+
+    # Assert
+    assert res.status_code == 200
+    assert res.json() == {"answer": "RAGは検索拡張生成です。"}
+
+def test_空の質問はバリデーションで拒否する() -> None:
+    # Arrange / Act
+    res = client.post("/ask", json={"question": ""})
+
+    # Assert: LLMに到達する前に弾かれる
+    assert res.status_code == 422
+
+def test_LLM呼び出しが失敗したら503を返す(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange
+    def raise_error(question: str) -> str:
+        raise RuntimeError("rate limited")
+
+    monkeypatch.setattr(main, "call_llm", raise_error)
+
+    # Act
+    res = client.post("/ask", json={"question": "RAGとは？"})
+
+    # Assert
+    assert res.status_code == 503
+```
+
+この骨格に、Step 3以降で扱うプロンプト設計・コンテキスト管理・RAG・ガードレールを段階的に足していくのが、本ガイドの進み方です。
 
 ## 目次
 
@@ -29,7 +128,7 @@
 13. [Step 12: 安全性・ガードレール・責任あるAI](#step-12-安全性ガードレール責任あるai)
 14. [Step 13: 本番運用へ](#step-13-本番運用へ)
 15. [まとめ: 学習ロードマップ](#まとめ-学習ロードマップ)
-16. [参考文献・出典](#参考文献出典)
+16. [参考文献・ソース一覧](#参考文献ソース一覧)
 
 ---
 
@@ -54,6 +153,7 @@ flowchart TB
     S12 --> S13["Step13 本番運用の準備をする"]
     S13 --> Goal(["本番稼働"])
 ```
+
 **図1: LLMアプリケーション開発の全体マップ**
 
 重要なのは、この地図は一直線に一度だけ進むものではなく、実際には小さく反復しながら何度も行き来するという点です。Anthropicのエンジニアリングチームも「最もシンプルな解決策から始め、必要な場合にのみ複雑さを増やす」ことを一貫して推奨しています(出典2)。まずはStep1から順に見ていきましょう。
@@ -64,7 +164,7 @@ flowchart TB
 
 ### 基盤モデルとLLM
 
-LLM(大規模言語モデル)は、インターネット規模のテキストデータで事前学習された「基盤モデル(Foundation Model)」の一種です。Transformerと呼ばれるニューラルネットワークのアーキテクチャに基づいており、入力されたトークン列から次のトークンを予測することを繰り返すことで、文章の生成・要約・翻訳・推論など幅広いタスクをこなせるようになります。原著書籍でもこの基本アーキテクチャの理解が第1章の中心テーマになっています(出典1書籍)。
+LLM(大規模言語モデル)は、インターネット規模のテキストデータで事前学習された「基盤モデル(Foundation Model)」の一種です。Transformerと呼ばれるニューラルネットワークのアーキテクチャに基づいており、入力されたトークン列から次のトークンを予測することを繰り返すことで、文章の生成・要約・翻訳・推論など幅広いタスクをこなせるようになります。原著書籍でもこの基本アーキテクチャの理解が第1章の中心テーマになっています(出典0書籍)。
 
 ### モデルが完成するまでの流れ
 
@@ -77,6 +177,7 @@ flowchart LR
     C --> D["デプロイ API/アプリとして提供"]
     D -->|"継続的な改善"| B
 ```
+
 **図2: LLMが製品として提供されるまでの一般的な流れ**
 
 - **事前学習(Pre-training)**: 大量のテキストから統計的な言語パターンを学習する段階です。
@@ -86,7 +187,7 @@ flowchart LR
 
 ### ベースモデル vs カスタマイズ済みモデル
 
-原著書籍が強調しているように、「そのまま使えるベースモデル」と「特定用途向けにカスタマイズしたモデル」は区別して考える必要があります(出典1書籍)。カスタマイズの方法には、後述するプロンプトエンジニアリング・RAG・ファインチューニングなど複数の選択肢があり、どれを選ぶかは Step 9 で詳しく扱います。ここで初学者が押さえておくべき要点は、**「モデルを再学習させること」は選択肢の一つに過ぎず、多くの場合はより手軽な方法で十分**という点です。
+原著書籍が強調しているように、「そのまま使えるベースモデル」と「特定用途向けにカスタマイズしたモデル」は区別して考える必要があります(出典0書籍)。カスタマイズの方法には、後述するプロンプトエンジニアリング・RAG・ファインチューニングなど複数の選択肢があり、どれを選ぶかは Step 9 で詳しく扱います。ここで初学者が押さえておくべき要点は、**「モデルを再学習させること」は選択肢の一つに過ぎず、多くの場合はより手軽な方法で十分**という点です。
 
 ---
 
@@ -121,6 +222,7 @@ flowchart TB
     D --> E
     E --> F["自分のタスクで実際に評価データセットを使って検証する"]
 ```
+
 **図3: LLM選定のディシジョンフロー**
 
 複数の比較記事が共通して強調しているのは、「リーダーボードは毎月のように入れ替わるため、特定のモデルにハードコードするのではなく、モデルを切り替え可能な形でアプリケーションを設計し、タスクの複雑度に応じて異なるモデルへルーティングする戦略が2026年の実践的な標準になりつつある」という点です(出典6)。これはStep 6で紹介する「ルーティング」パターンにもつながります。
@@ -166,6 +268,7 @@ flowchart TB
     Q5 -->|"はい"| R5["拡張思考または思考の連鎖を使う"]
     Q5 -->|"いいえ"| R2
 ```
+
 **図4: プロンプトエンジニアリング技法の選択フロー**(出典7の判断基準をもとに作成)
 
 | 欲しいもの | 使う技法 |
@@ -215,6 +318,7 @@ flowchart TB
     LLM <--> Memory["メモリ 会話履歴や長期記憶"]
     LLM --> Output(["応答またはアクション"])
 ```
+
 **図5: 拡張されたLLM(Augmented LLM)の構成図**(出典2をもとに作成)
 
 現在のモデルは、自ら検索クエリを生成し、適切なツールを選び、何を記憶すべきかを判断する能力を備えています。この「検索・ツール・メモリ」という3つの拡張機能をどう実装するかが、アプリケーション設計の中心テーマになります。
@@ -256,6 +360,7 @@ flowchart LR
     Fix --> L1
     L2 --> Out(["出力"])
 ```
+
 **図6: プロンプトチェイニングのワークフロー**(出典2)
 
 ### ワークフローパターン2: ルーティング
@@ -272,6 +377,7 @@ flowchart TB
     Large --> Out
     Special --> Out
 ```
+
 **図7: ルーティングのワークフロー**(出典2)
 
 ### ワークフローパターン3: 並列化(セクショニングと投票)
@@ -289,6 +395,7 @@ flowchart TB
     P3 --> Agg
     Agg --> Out(["最終出力"])
 ```
+
 **図8: 並列化のワークフロー**(出典2)
 
 ### ワークフローパターン4: オーケストレーター・ワーカー
@@ -306,6 +413,7 @@ flowchart TB
     W3 --> Syn
     Syn --> Out(["最終出力"])
 ```
+
 **図9: オーケストレーター・ワーカーのワークフロー**(出典2)
 
 ### ワークフローパターン5: 評価者・最適化ループ
@@ -320,6 +428,7 @@ flowchart LR
     Eval -->|"いいえ フィードバックを返す"| Gen
     Eval -->|"はい"| Out(["最終出力"])
 ```
+
 **図10: 評価者・最適化ループのワークフロー**(出典2)
 
 ### 自律型エージェント
@@ -337,6 +446,7 @@ flowchart TB
     Human --> Plan
     Check -->|"完了"| Done(["タスク完了"])
 ```
+
 **図11: 自律型エージェントのループ**(出典2)
 
 エージェントは、必要なステップ数を事前に予測できず、固定された経路をハードコードできないような、オープンエンドな問題に向いています。ただしその自律性ゆえにコストが高くなりやすく、エラーが積み重なるリスクもあるため、サンドボックス環境での十分なテストと適切なガードレールが推奨されています(出典2)。
@@ -381,6 +491,7 @@ flowchart TB
     Agentic --> Gen
     Gen --> Out(["回答"])
 ```
+
 **図12: Adaptive RAGのパイプライン選択フロー**(出典16をもとに作成)
 
 ### 実装の基本要素
@@ -398,7 +509,7 @@ RAGパイプラインを構築する際に押さえておくべき基本要素�
 
 ## Step 8: オーケストレーションフレームワークを選ぶ
 
-Step 6で見たように、Anthropicはまず生のAPI呼び出しから始めることを推奨していますが、統合の幅を広げたい場合や、チームでの開発効率を優先したい場合には、フレームワークの利用が現実的な選択肢になります。原著書籍が紹介していたLangChain・Haystack・Semantic Kernelという構図(出典1書籍)は現在も生きていますが、2026年にはLangChainからエージェントオーケストレーション専用の「LangGraph」が独立した主要コンポーネントとして定着し、LlamaIndexはRAGとデータ接続に特化したポジションを固めています(出典18)。
+Step 6で見たように、Anthropicはまず生のAPI呼び出しから始めることを推奨していますが、統合の幅を広げたい場合や、チームでの開発効率を優先したい場合には、フレームワークの利用が現実的な選択肢になります。原著書籍が紹介していたLangChain・Haystack・Semantic Kernelという構図(出典0書籍)は現在も生きていますが、2026年にはLangChainからエージェントオーケストレーション専用の「LangGraph」が独立した主要コンポーネントとして定着し、LlamaIndexはRAGとデータ接続に特化したポジションを固めています(出典18)。
 
 | フレームワーク | 得意領域 | 2026年の位置づけ |
 | --- | --- | --- |
@@ -409,7 +520,7 @@ Step 6で見たように、Anthropicはまず生のAPI呼び出しから始め�
 | Claude Agent SDK / Strands Agents SDK | エージェント基盤の直接構築 | Anthropic/AWSが提供する低レベルSDK。フレームワークの抽象化を薄く保ちたい場合に選ばれる |
 | Rivet / Vellum | ノーコード/ローコードでのワークフロー構築 | GUIでのプロトタイピングや非エンジニアとの協業に向く |
 
-**表4: 主要オーケストレーションフレームワークの比較**(出典1書籍, 出典2, 出典18)
+**表4: 主要オーケストレーションフレームワークの比較**(出典0書籍, 出典2, 出典18)
 
 複数の2026年時点の比較記事に共通する結論は、「LangChain(LangGraph)とLlamaIndexは互いに排他的な選択肢ではなく、多くの本番アプリケーションでは両方を組み合わせている」という点です。具体的には、LlamaIndexで文書の取り込み・チャンキング・検索を担当し、LangGraphでいつ検索するか・いつ他のツールを使うか・いつ直接回答するかを判断するエージェントオーケストレーションを担当する、という役割分担です(出典18)。
 
@@ -449,6 +560,7 @@ flowchart TB
     Q4 -->|"はい"| R4["フロンティアモデルの出力を教師データにして小型モデルへ蒸留する"]
     Q4 -->|"いいえ"| R5["アダプターを本番運用し定期的に再評価する"]
 ```
+
 **図13: ファインチューニング要否の決定木**(出典19, 出典20をもとに作成)
 
 ### LoRA / QLoRAが主流になった理由
@@ -463,7 +575,7 @@ flowchart TB
 
 ## Step 10: マルチモーダル対応アプリケーションへの拡張
 
-原著書籍の第10章が扱っているように、LLMアプリケーションはテキストだけでなく、画像・音声・動画・コードなど複数のモダリティを組み合わせることでより幅広いユースケースに対応できます(出典1書籍)。現在の主要なフロンティアモデルの多くはテキストと画像をネイティブに扱えるようになっており、請求書や図表を含む文書の解析、画面を見ながら操作するコンピュータ操作エージェント、音声インターフェースを持つアプリケーションなどが実用段階に入っています。
+原著書籍の第10章が扱っているように、LLMアプリケーションはテキストだけでなく、画像・音声・動画・コードなど複数のモダリティを組み合わせることでより幅広いユースケースに対応できます(出典0書籍)。現在の主要なフロンティアモデルの多くはテキストと画像をネイティブに扱えるようになっており、請求書や図表を含む文書の解析、画面を見ながら操作するコンピュータ操作エージェント、音声インターフェースを持つアプリケーションなどが実用段階に入っています。
 
 マルチモーダル対応アプリケーションを設計する際の考え方は、これまでのステップで紹介した原則の延長線上にあります。
 
@@ -490,6 +602,7 @@ flowchart TB
     L3 --> Loop["問題のあるケースをデータセットに昇格させる"]
     Loop --> L1
 ```
+
 **図14: 評価とオブザーバビリティの3層構造**(出典23をもとに作成)
 
 1. **ユニット評価**: 検索結果の関連性やツール呼び出しの正しさなど、パイプラインの個々のステップを単体テストのように検証します。
@@ -516,7 +629,7 @@ flowchart TB
 
 ## Step 12: 安全性・ガードレール・責任あるAI
 
-原著書籍の第12章「Responsible AI」は、モデルレベル・メタプロンプトレベル・ユーザーインターフェースレベルという3層でのアーキテクチャを提示していました(出典1書籍)。この考え方の骨格は現在も有効ですが、2026年にはより具体的な脅威モデルと規制の枠組みが整備されています。
+原著書籍の第12章「Responsible AI」は、モデルレベル・メタプロンプトレベル・ユーザーインターフェースレベルという3層でのアーキテクチャを提示していました(出典0書籍)。この考え方の骨格は現在も有効ですが、2026年にはより具体的な脅威モデルと規制の枠組みが整備されています。
 
 ### 主要な脅威: プロンプトインジェクション
 
@@ -543,7 +656,7 @@ NeMo Guardrails(NVIDIA、対話フローの制御に強み)、Guardrails AI(構�
 
 ### 規制動向
 
-EUのAI Act(AI規則)は、高リスクAIシステムに対する義務が2026年8月2日から適用され始めており、正確性・堅牢性・サイバーセキュリティに関する対策が要求されています(出典28)。地域によって規制の内容や適用時期は異なるため、対象ユーザーの所在地に応じた最新の法令確認が必要です。
+EUのAI Act(AI規則)は2026年8月2日から一般適用が始まりました。ただし高リスクAIシステムの義務はDigital Omnibusによる改正で後ろ倒しされ、附属書III記載の単独型高リスクAIは2027年12月2日、EU製品安全法規の対象製品に組み込まれる附属書I該当の高リスクAIは2028年8月2日からの適用となります。いずれも正確性・堅牢性・サイバーセキュリティに関する対策が要求されます(出典30)。地域によって規制の内容や適用時期は異なるため、対象ユーザーの所在地に応じた最新の法令確認が必要です。
 
 ---
 
@@ -591,80 +704,93 @@ flowchart TB
     E --> F["本番運用しコストとレイテンシを最適化する"]
     F --> G["必要な場合のみ軽量ファインチューニングで最適化する"]
 ```
+
 **図15: 初学者のための学習ロードマップ**
 
 本ガイドを通じて一貫して繰り返されたメッセージは、Anthropicのエンジニアリングチームの言葉に集約されています。「LLM分野での成功は、最も洗練されたシステムを作ることではない。自分のニーズに合った"正しい"システムを作ることだ。シンプルなプロンプトから始め、包括的な評価で最適化し、よりシンプルな解決策では不十分な場合にのみ多段階のエージェント的システムを追加する」(出典2)。これは技術トレンドが移り変わっても変わらない、実践知の核心だと言えるでしょう。
 
 ---
 
-## 参考文献・出典
+## 参考文献・ソース一覧
 
-本ガイドの作成にあたり、以下の一次情報・著名な開発者や研究者による情報源を参照しました。書籍情報およびモデル名・価格・ベンチマーク数値は執筆時点(2026年9月9日)のものであり、その後変更されている可能性があります。
+本ガイドの作成にあたり参照した情報源です。本文中の「出典N」は、以下の同じ番号の項目に対応します（番号は文書全体で一意で、カテゴリごとに振り直していません）。書籍情報およびモデル名・価格・ベンチマーク数値は執筆時点(2026年9月9日)のものであり、その後変更されている可能性があります。
 
 ### 元ネタとなった書籍
 
-- (出典0) Valentina Alto, *Building LLM Powered Applications*, Packt Publishing, 2024年5月刊 — https://www.oreilly.com/library/view/building-llm-powered/9781835462317/
-
-### Anthropic公式(出典2, 出典7, 出典8, 出典11)
-
-1. Building effective agents — https://www.anthropic.com/engineering/building-effective-agents
-2. Effective context engineering for AI agents — https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
-3. Best practices for prompt engineering for 2026 — https://claude.com/blog/best-practices-for-prompt-engineering
-4. Engineering at Anthropic(ブログ一覧) — https://www.anthropic.com/engineering
-
-### Model Context Protocol公式(出典11, 出典12, 出典13)
-
-5. Model Context Protocol 公式サイト — https://modelcontextprotocol.io/
-6. One Year of MCP: November 2025 Spec Release — https://blog.modelcontextprotocol.io/posts/2025-11-25-first-mcp-anniversary/
-7. The 2026-07-28 MCP Specification Release Candidate — https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/
-8. MCP Roadmap — https://modelcontextprotocol.io/development/roadmap
-9. Model Context Protocol(MCP)explained: A practical technical overview — https://codilime.com/blog/model-context-protocol-explained/
+- **出典0** Valentina Alto, *Building LLM Powered Applications*, Packt Publishing, 2024年5月刊 — https://www.oreilly.com/library/view/building-llm-powered/9781835462317/
 
 ### 著名な国際的開発者・研究者による情報源
 
-10. Andrej Karpathy, "Software Is Changing (Again)" YC AI Startup School講演(2025年6月)の書き起こし・解説 — https://www.donnamagi.com/articles/karpathy-yc-talk 、および講演の要点整理 — http://ikyle.me/blog/2025/andrej-karpathy-software-is-changing-again
-11. Simon Willison, LLM predictions for 2026(コーディングエージェントのセキュリティに関する見解の紹介記事)— https://www.wandoosystems.com/resources/llm-predictions-2026-willison
-12. Simon Willison, llm-coding-agent リリースノート(2026年7月) — https://simonwillison.net/2026/Jul/2/llm-coding-agent/
-13. Simon Willisonのブログの活動状況まとめ(agentic-engineering, coding-agentsタグ) — https://tomrochette.com/agents/simon-willison/
-14. Chip Huyen, "Building LLM Applications for Production"(2023年、継続的に参照される代表的エッセイ) — https://huyenchip.com/2023/04/11/llm-engineering.html
-15. Chip Huyen, *AI Engineering: Building Applications with Foundation Models*(O'Reilly)書誌情報 — https://www.amazon.com/AI-Engineering-Building-Applications-Foundation/dp/1098166302
+- **出典1** Andrej Karpathy, "Software Is Changing (Again)" YC AI Startup School講演(2025年6月)の書き起こし・解説 — https://www.donnamagi.com/articles/karpathy-yc-talk
+- **出典5** Simon Willison, "LLM predictions for 2026"(コーディングエージェントのセキュリティに関する見解の紹介記事) — https://www.wandoosystems.com/resources/llm-predictions-2026-willison
+- **出典22** Chip Huyen, "Building LLM Applications for Production", 2023年 — https://huyenchip.com/2023/04/11/llm-engineering.html
 
-### RAGに関する情報源(出典14〜17)
+### Anthropic公式
 
-16. RAG Techniques Compared: A Practical Guide to Retrieval Augmented Generation in 2026 — https://blog.starmorph.com/blog/rag-techniques-compared-best-practices-guide
-17. What Is RAG? How Retrieval-Augmented Generation Works in 2026 — https://atlan.com/know/what-is-rag/
-18. RAG Production Guide 2026 — https://lushbinary.com/blog/rag-retrieval-augmented-generation-production-guide/
-19. 20 Advanced RAG Types to Know in 2026 — https://www.turingpost.com/p/ragtypes
+- **出典2** Anthropic, "Building effective agents" — https://www.anthropic.com/engineering/building-effective-agents
+- **出典7** Anthropic, "Best practices for prompt engineering for 2026" — https://claude.com/blog/best-practices-for-prompt-engineering
+- **出典8** Anthropic, "Effective context engineering for AI agents" — https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+- **出典9** Anthropic, "Engineering at Anthropic"(エンジニアリングブログ一覧) — https://www.anthropic.com/engineering
 
-### フレームワーク比較に関する情報源(出典18)
+### モデル選定・市場動向
 
-20. LangChain vs LlamaIndex 2026: Complete Framework Guide — https://itsourcecode.com/ai-framework/langchain-vs-llamaindex-2026-complete-guide/
-21. LlamaIndex vs LangChain(2026年のエージェント観点比較) — https://aiagentrank.io/blog/llamaindex-vs-langchain-agents-2026
+- **出典3** "Best LLMs Right Now: September 2026 Model Rankings & Use Cases" — https://azumo.com/artificial-intelligence/ai-insights/top-10-llms-0625
+- **出典4** "The Best LLMs in 2026: A Plain-English Comparison" — https://mindshub.ai/blog/navigating-the-llm-landscape-a-comparative-analysis-of-leading-large-language-models
+- **出典6** "LangChain vs LlamaIndex"(LLM市場動向・モデルルーティングを含む比較記事) — https://contracollective.com/blog/langchain-vs-llamaindex-llm-orchestration-2026
 
-### ファインチューニングに関する情報源(出典19〜21)
+### コンテキストエンジニアリング
 
-22. Fine-Tuning LLMs in 2026: When RAG Isn't Enough (and When It Still Is) — https://bigdataboutique.com/blog/fine-tuning-llms-when-rag-isnt-enough
-23. RAG vs Fine-Tuning in 2026: A Decision Framework for LLM Teams — https://winder.ai/rag-vs-fine-tuning-2026-decision-framework/
-24. Fine-Tuning vs RAG vs Prompt Engineering [2026 Framework] — https://www.kunalganglani.com/blog/fine-tuning-vs-rag-prompt-engineering
+- **出典10** Kelly Hong, Anton Troynikov, Jeff Huber (Chroma), "Context Rot: How Increasing Input Tokens Impacts LLM Performance", 2025年7月14日 — https://www.trychroma.com/research/context-rot
 
-### 評価・オブザーバビリティに関する情報源(出典22〜26)
+### Model Context Protocol公式
 
-25. Book Review: AI Engineering by Chip Huyen(評価手法の解説を含む) — https://hippocampus-garden.com/book_review_huyen/
-26. Agent Observability 2026: Evals, Traces, Cost Guide — https://www.digitalapplied.com/blog/agent-observability-2026-evals-traces-cost-guide
-27. Top LLM Observability and Evaluation Platforms in 2026 — https://www.marktechpost.com/2026/08/09/top-llm-observability-and-evaluation-platforms-in-2026-langfuse-langsmith-braintrust-arize-and-more-compared/
-28. Top 5 LLM and Agent Observability Tools in 2026(MLflow) — https://mlflow.org/top-5-agent-observability-tools/
+- **出典11** Model Context Protocol 公式サイト — https://modelcontextprotocol.io/
+- **出典12** "One Year of MCP: November 2025 Spec Release" — https://blog.modelcontextprotocol.io/posts/2025-11-25-first-mcp-anniversary/
+- **出典13** "The 2026-07-28 Specification"(確定版) — https://modelcontextprotocol.io/specification/2026-07-28
 
-### 安全性・ガードレール・責任あるAIに関する情報源(出典27〜29)
+### RAGに関する情報源
 
-29. LlamaFirewall: An open source guardrail system for building secure AI agents — https://arxiv.org/pdf/2505.03574
-30. The Complete AI Guardrails Implementation Guide for 2026 — https://www.getmaxim.ai/articles/the-complete-ai-guardrails-implementation-guide-for-2026/
-31. LLM Guardrails: The Complete Guide to AI Safety Guardrails (2026) — https://aisecurityandsafety.org/en/guides/llm-guardrails/
+- **出典14** "What Is RAG? How Retrieval-Augmented Generation Works in 2026" — https://atlan.com/know/what-is-rag/
+- **出典15** "RAG Production Guide 2026" — https://lushbinary.com/blog/rag-retrieval-augmented-generation-production-guide/
+- **出典16** "RAG Techniques Compared: A Practical Guide to Retrieval Augmented Generation in 2026" — https://blog.starmorph.com/blog/rag-techniques-compared-best-practices-guide
+- **出典17** "20 Advanced RAG Types to Know in 2026" — https://www.turingpost.com/p/ragtypes
 
-### モデル選定・市場動向に関する情報源(出典3〜6)
+### フレームワーク比較に関する情報源
 
-32. Best LLMs Right Now: September 2026 Model Rankings & Use Cases — https://azumo.com/artificial-intelligence/ai-insights/top-10-llms-0625
-33. The Best LLMs in 2026: A Plain-English Comparison — https://mindshub.ai/blog/navigating-the-llm-landscape-a-comparative-analysis-of-leading-large-language-models
-34. LangChain vs LlamaIndex, LLM市場動向を含む比較記事 — https://contracollective.com/blog/langchain-vs-llamaindex-llm-orchestration-2026
+- **出典18** "LangChain vs LlamaIndex 2026: Complete Framework Guide" — https://itsourcecode.com/ai-framework/langchain-vs-llamaindex-2026-complete-guide/
+
+### ファインチューニングに関する情報源
+
+- **出典19** "Fine-Tuning LLMs in 2026: When RAG Isn't Enough (and When It Still Is)" — https://bigdataboutique.com/blog/fine-tuning-llms-when-rag-isnt-enough
+- **出典20** "RAG vs Fine-Tuning in 2026: A Decision Framework for LLM Teams" — https://winder.ai/rag-vs-fine-tuning-2026-decision-framework/
+- **出典21** Dettmers, T. et al., "QLoRA: Efficient Finetuning of Quantized LLMs" (arXiv:2305.14314) — https://arxiv.org/abs/2305.14314
+
+### 評価・オブザーバビリティに関する情報源
+
+- **出典23** "Agent Observability 2026: Evals, Traces, Cost Guide" — https://www.digitalapplied.com/blog/agent-observability-2026-evals-traces-cost-guide
+- **出典24** "Top 5 LLM and Agent Observability Tools in 2026"(MLflow) — https://mlflow.org/top-5-agent-observability-tools/
+- **出典25** "Top LLM Observability and Evaluation Platforms in 2026" — https://www.marktechpost.com/2026/08/09/top-llm-observability-and-evaluation-platforms-in-2026-langfuse-langsmith-braintrust-arize-and-more-compared/
+- **出典26** "Book Review: AI Engineering by Chip Huyen"(評価手法の解説を含む) — https://hippocampus-garden.com/book_review_huyen/
+
+### 安全性・ガードレール・責任あるAIに関する情報源
+
+- **出典27** OWASP GenAI Security Project, "OWASP Top 10 for LLM Applications" — https://genai.owasp.org/llm-top-10/
+- **出典28** "The Complete AI Guardrails Implementation Guide for 2026" — https://www.getmaxim.ai/articles/the-complete-ai-guardrails-implementation-guide-for-2026/
+- **出典29** "LlamaFirewall: An open source guardrail system for building secure AI agents" — https://arxiv.org/pdf/2505.03574
+
+### 規制に関する情報源
+
+- **出典30** European Commission, "AI Act"(適用時期を含む公式解説ページ) — https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+
+### 補足資料（本文では直接引用していない参考リンク）
+
+- Simon Willison, llm-coding-agent リリースノート(2026年7月) — https://simonwillison.net/2026/Jul/2/llm-coding-agent/
+- Simon Willisonのブログの活動状況まとめ(agentic-engineering, coding-agentsタグ) — https://tomrochette.com/agents/simon-willison/
+- Chip Huyen, *AI Engineering: Building Applications with Foundation Models*(O'Reilly)書誌情報 — https://www.amazon.com/AI-Engineering-Building-Applications-Foundation/dp/1098166302
+- MCP Roadmap — https://modelcontextprotocol.io/development/roadmap
+- "Model Context Protocol(MCP)explained: A practical technical overview" — https://codilime.com/blog/model-context-protocol-explained/
+- "Fine-Tuning vs RAG vs Prompt Engineering [2026 Framework]" — https://www.kunalganglani.com/blog/fine-tuning-vs-rag-prompt-engineering
+- "LLM Guardrails: The Complete Guide to AI Safety Guardrails (2026)" — https://aisecurityandsafety.org/en/guides/llm-guardrails/
 
 ---
 
