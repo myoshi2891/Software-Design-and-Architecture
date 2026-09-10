@@ -779,7 +779,7 @@ mindmap
 - **MDN Web Docs - CSS Cascade** — https://developer.mozilla.org/ja/docs/Web/CSS/Cascade
 - **MDN Web Docs - CSS Custom Properties** — https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties
 - **SMACSS 公式サイト** — https://smacss.com/
-- **BEM 公式サイト** — https://getbem.com/
+- **BEM 公式サイト** — https://bem.info/en/methodology/
 - **CSS Tricks - A Complete Guide to Flexbox** — https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 - **CSS Tricks - A Complete Guide to Grid** — https://css-tricks.com/snippets/css/complete-guide-grid/
 - **Every Layout (Heydon Pickering & Andy Bell)** — https://every-layout.dev/

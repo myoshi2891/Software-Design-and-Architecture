@@ -1718,7 +1718,7 @@ mindmap
 ```
 
 > 📖 **参考：**  
-> - BEM公式：https://getbem.com/  
+> - BEM公式：https://bem.info/en/methodology/  
 > - Smashing Magazine「BEM For Beginners」：https://www.smashingmagazine.com/2018/06/bem-for-beginners/
 
 ---
@@ -3943,7 +3943,7 @@ mindmap
 
 | 分類 | タイトル | URL |
 |---|---|---|
-| 命名 | BEM 公式 | https://getbem.com/ |
+| 命名 | BEM 公式 | https://bem.info/en/methodology/ |
 | アーキ | ITCSS | https://csswizardry.com/ |
 | アーキ | CUBE CSS | https://cube.fyi/ |
 | レイアウト | Every Layout | https://every-layout.dev/ |
