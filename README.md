@@ -91,7 +91,7 @@ Testing Library（契約テスト）を採用しています。
     — XP（エクストリームプログラミング）完全ガイドを移植（23 セクション・Mermaid 13 図・table 11・コードブロック 2）。
     固定サイドバー・進捗バー・scroll-spy を [`XpSidebar.tsx`](web-next/app/development-methodologies/extreme-programming-comprehensive-guide/XpSidebar.tsx) でクライアント描画
   - [`/development-methodologies/feature-driven-development-comprehensive-guide`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/page.tsx)
-    — FDD（フィーチャー駆動開発）完全ガイドを移植（15 セクション・Mermaid 23 図・table 12・コードブロック 3・SVG 2 図）。
+    — FDD（フィーチャー駆動開発）完全ガイドを移植（15 セクション・Mermaid 21 図・table 12・コードブロック 3・SVG 2 図）。
     固定サイドバー・進捗バー・scroll-spy を [`FddSidebar.tsx`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/FddSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
