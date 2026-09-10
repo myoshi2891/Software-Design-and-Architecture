@@ -21,9 +21,11 @@
 # app/main.py
 # 依存: pip install "fastapi[standard]" "pydantic>=2" "anthropic>=1.4,<2"
 #       SDK のバージョンは固定する。メジャー更新で client の引数や戻り値の型が変わるため。
-# 起動: ANTHROPIC_API_KEY=<your-key> uvicorn app.main:app --reload
+# 起動: ANTHROPIC_API_KEY="your-key-here" uvicorn app.main:app --reload
 # 動作確認: curl -X POST localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"RAGとは？"}'
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from anthropic import Anthropic
 from fastapi import FastAPI, HTTPException
@@ -39,18 +41,29 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer: str
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """クライアントはアプリ全体で1つだけ生成する。
+
+    リクエストごとに生成すると HTTP コネクションプールが毎回捨てられ、
+    TLSハンドシェイクのやり直しでレイテンシとファイルディスクリプタを浪費する。
+    """
+    # SDK 既定値（timeout=600秒 / max_retries=2）はバッチ処理向けで、
+    # HTTP リクエスト/レスポンスのアプリケーションには長すぎる。用途に合わせて明示する。
+    app.state.llm = Anthropic(
+        api_key=os.environ["ANTHROPIC_API_KEY"],
+        timeout=30.0,     # 秒。1リクエストの上限。Webハンドラのタイムアウトより短く設定する
+        max_retries=2,    # 接続エラー・408・409・429・5xx を再試行。指数バックオフと
+                          # Retry-After の待機が加わるため、総待ち時間は timeout×(max_retries+1) を超えうる
+    )
+    yield
+    app.state.llm.close()  # 終了時に HTTP コネクションを解放する
+
+app = FastAPI(lifespan=lifespan)
 
 def call_llm(question: str) -> str:
     """LLM呼び出しを1関数に閉じ込める。テストではこの関数だけを差し替える。"""
-    # SDK 既定値（timeout=600秒 / max_retries=2）はバッチ処理向けで、
-    # HTTP リクエスト/レスポンスのアプリケーションには長すぎる。用途に合わせて明示する。
-    client = Anthropic(
-        api_key=os.environ["ANTHROPIC_API_KEY"],
-        timeout=30.0,     # 秒。1リクエストの上限。Webハンドラのタイムアウトより短く設定する
-        max_retries=2,    # 429・5xx・接続エラーのみ再試行。最悪待ち時間は timeout×(max_retries+1)
-    )
-    resp = client.messages.create(
+    resp = app.state.llm.messages.create(
         model="claude-sonnet-5",
         max_tokens=300,
         system=SYSTEM_PROMPT,
@@ -560,9 +573,9 @@ flowchart TB
     Q1 -->|"はい"| R1["プロンプトエンジニアリングで十分"]
     Q1 -->|"いいえ"| Q2{"問題は知識不足かスタイル不足か"}
     Q2 -->|"知識が古い、または不足している"| R2["RAGを導入する"]
-    Q2 -->|"口調や出力形式が安定しない"| Q3{"RAGを組み合わせても改善しないか"}
-    Q3 -->|"改善する"| R2
-    Q3 -->|"改善しない"| R3["LoRAやQLoRAで軽量ファインチューニングする"]
+    Q2 -->|"口調や出力形式が安定しない"| Q3{"Few-shot例と構造化出力で安定するか"}
+    Q3 -->|"安定する"| R6["Few-shot例と構造化出力でプロンプトを強化する"]
+    Q3 -->|"安定しない"| R3["LoRAやQLoRAで軽量ファインチューニングする"]
     R3 --> Q4{"コストとレイテンシを大きく削減したいか"}
     Q4 -->|"はい"| R4["フロンティアモデルの出力を教師データにして小型モデルへ蒸留する"]
     Q4 -->|"いいえ"| R5["アダプターを本番運用し定期的に再評価する"]

@@ -345,7 +345,8 @@ if __name__ == "__main__":
 
 ```python
 # test_rag.py
-# 依存: pip install pytest
+# 依存: pip install pytest anthropic sentence-transformers numpy
+#       basic_rag の import 時に解決されるため、収集の時点で全て必要になる。
 # 実行: pytest test_rag.py
 from basic_rag import retrieve
 
@@ -1030,7 +1031,8 @@ if __name__ == "__main__":
 
 ```python
 # test_guardrails.py
-# 依存: pip install pytest
+# 依存: pip install pytest anthropic
+#       guardrails が anthropic を import するため、モックしていても必要になる。
 # 実行: pytest test_guardrails.py
 from unittest.mock import patch
 
@@ -1056,8 +1058,11 @@ def test_check_output_rejects_api_keys(text: str) -> None:
 def test_check_output_allows_normal_text() -> None:
     assert check_output("経費精算の締切は毎月5日です。").allowed is True
 
-def test_chat_does_not_return_leaked_key() -> None:
+def test_chat_does_not_return_leaked_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """chat() がユーザーへ返す前に鍵を差し替えることを確認する。"""
+    # Anthropic をモックしても api_key=os.environ[...] は先に評価される。
+    # 環境変数が無い CI で KeyError にならないよう、ダミー値を注入する。
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
     leaked = "sk-ant-api03-AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"
     with patch("guardrails.Anthropic") as mock_client:
         mock_resp = mock_client.return_value.messages.create.return_value
@@ -1246,7 +1251,7 @@ flowchart TB
 3. WorkOS, "Everything your team needs to know about MCP in 2026" — https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026
 4. Belcak, P. et al. (NVIDIA), "Small Language Models are the Future of Agentic AI" (arXiv:2506.02153) — https://arxiv.org/pdf/2506.02153
 5. Louis Bouchard, "Context Engineering in 2026: Why We Stopped Compacting Our Agent's Context" — https://www.louisbouchard.ai/context-engineering-2026/
-6. Anthropic, "Effective context engineering for AI agents"（Loop Engineering関連エンジニアリング記事群の一部として言及） — https://www.anthropic.com/engineering/building-effective-agents
+6. Anthropic, "Effective context engineering for AI agents"（Loop Engineering関連エンジニアリング記事群の一部として言及） — https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 7. Spheron Blog, "NVIDIA NeMo Guardrails on GPU Cloud: Production Runtime Safety Rails (2026 Guide)" — https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/
 8. arXiv, "From Shield to Target: Denial-of-Service Attacks on LLM-Based Agent Guardrails" (arXiv:2606.14517) — https://arxiv.org/abs/2606.14517
 9. ChatForest, "The MCP Ecosystem in 2026: How the Model Context Protocol Became the Universal Standard" — https://chatforest.com/guides/mcp-ecosystem-2026-state-of-the-standard/

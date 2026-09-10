@@ -153,7 +153,7 @@ import os
 import sys
 from dataclasses import dataclass
 
-from anthropic import Anthropic, APIStatusError
+from anthropic import Anthropic, APIConnectionError, APIStatusError, APITimeoutError
 from anthropic.types import Message
 
 MODEL = "claude-opus-5"
@@ -251,6 +251,13 @@ def main() -> int:
         print(run_pipeline(client, sys.argv[1]))
     except APIStatusError as exc:
         print(f"API エラー ({exc.status_code}): {exc.message}", file=sys.stderr)
+        return 1
+    # APITimeoutError は APIConnectionError のサブクラス。先に捕捉しないと到達しない。
+    except APITimeoutError:
+        print(f"タイムアウト（{client.timeout} 秒）。再試行後も応答がありません", file=sys.stderr)
+        return 1
+    except APIConnectionError as exc:
+        print(f"接続に失敗しました: {exc}", file=sys.stderr)
         return 1
     except (RuntimeError, ValueError) as exc:
         print(f"パイプライン中断: {exc}", file=sys.stderr)

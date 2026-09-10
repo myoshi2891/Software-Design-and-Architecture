@@ -141,8 +141,10 @@ flowchart TB
     Q2 -->|独立して並行できる| P3[並列化]
     Q2 -->|経路が動的に変わる| Q3{中央のエージェントが作業を割り振るか}
     Q3 -->|はい| P4[オーケストレーター・ワーカー]
-    Q3 -->|反復的に品質を改善する| P5[評価・最適化ループ]
-    Q2 -->|経路が予測不能で長い| AG2[自律型エージェント]
+    Q3 -->|いいえ| Q4{反復的に品質を改善するか}
+    Q4 -->|はい| P5[評価・最適化ループ]
+    Q4 -->|いいえ| AG2[自律型エージェント]
+    Q2 -->|経路が予測不能で長い| AG2
 ```
 
 OpenAIの「A Practical Guide to Building Agents」も同じ方向性で、システムを分割・複雑化する目安として「条件分岐が多くプロンプトが肥大化してきた」「似たようなツールが多すぎて選択を誤る」といったシグナルを挙げています。まずは最も単純な構成から始め、これらのシグナルが出てから段階的に複雑にしていくのが、両社に共通する推奨アプローチです。
@@ -257,12 +259,12 @@ MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準�
 
 ```python
 # inventory_server.py ― MCPサーバー側
-# 依存: pip install "mcp[cli]>=1.2" "pydantic>=2"
+# 依存: pip install "mcp[cli]>=2,<3" "pydantic>=2"
 # 起動: python inventory_server.py（stdio でクライアントと接続する）
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 from pydantic import BaseModel, Field
 
-mcp = FastMCP("inventory")
+mcp = MCPServer("inventory")
 
 # 社内システムを模した在庫データ（実運用では DB クエリに置き換える）
 _STOCK: dict[str, int] = {"SKU-001": 12, "SKU-002": 0}
@@ -293,7 +295,7 @@ if __name__ == "__main__":
 
 ```python
 # agent_loop.py ― エージェント（MCPクライアント）側
-# 依存: pip install "mcp[cli]>=1.2"
+# 依存: pip install "mcp[cli]>=2,<3"
 # 実行: python agent_loop.py
 import asyncio
 
@@ -324,9 +326,9 @@ async def main() -> None:
 
                 result = await session.call_tool("get_stock", args)
 
-                # エラー処理: isError のときは内容をエージェントの観測として次ターンへ渡す。
+                # エラー処理: is_error のときは内容をエージェントの観測として次ターンへ渡す。
                 # 握りつぶさず、かつ例外で全体を止めないのが実運用でのポイント。
-                if result.isError:
+                if result.is_error:
                     print(f"step{step}: ツールエラー -> {result.content[0].text}")
                     continue
 
@@ -342,7 +344,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し → 結果の観測 → 終了判定」の繰り返しです。`MAX_STEPS` のような上限と、`isError` を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。
+このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し → 結果の観測 → 終了判定」の繰り返しです。`MAX_STEPS` のような上限と、`is_error` を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。
 
 ### 5-3. ツールを自動生成するエージェント
 
