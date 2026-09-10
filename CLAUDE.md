@@ -49,7 +49,7 @@ bun run build      # production build
 - `bun update <pkg>` は未宣言パッケージを**直接依存として追記してしまう**ため、transitive 依存の引き上げには使わない（`overrides` を使う）。
 - 現在の `overrides`（いずれも上流が古いバージョンを固定しているため必要）:
   - ルート: `undici` / `js-yaml` — `markdown-link-check` 配下の transitive
-  - `web-next/`: `postcss`（`next` が exact pin）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.6` 配下）
+  - `web-next/`: `postcss`（`next` が exact pin）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.8` 配下）
 - 変更後は `bun run audit` が exit 0 であること、加えて `web-next/` の `lint` / `typecheck` / `test` / `build` 全通過を必須とする。
 
 ```mermaid
@@ -92,7 +92,7 @@ flowchart TD
 HTML → page.tsx の移行は `.claude/skills/nextjs-page-migration/SKILL.md` の手順に従う。要点:
 
 - スタイルは `app/globals.css` のデザイントークン + ページスコープクラス（Tailwind v4 + Biome）。
-- Mermaid 図は `components/MermaidDiagram.tsx` でクライアント描画（依存: `mermaid@10.9.6`）。
+- Mermaid 図は `components/MermaidDiagram.tsx` でクライアント描画（依存: `mermaid@10.9.8`）。
 - 外部リンクは `components/Ext.tsx` 経由で `rel="noopener noreferrer"` を保証。
 - アイコンは `@tabler/icons-react`。コードハイライトは手書き `span` を維持。
 - テストは Vitest + Testing Library による契約テスト（`*.test.tsx` を実装ファイルと同階層に配置）。
