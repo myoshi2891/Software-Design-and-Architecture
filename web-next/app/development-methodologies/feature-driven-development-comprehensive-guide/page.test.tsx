@@ -3,7 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
-  default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
+  default: ({ chart, preserveNaturalScale }: { chart: string; preserveNaturalScale?: boolean }) => (
+    <div
+      className="mermaid"
+      data-testid="mermaid-diagram"
+      data-chart={chart}
+      data-natural-scale={preserveNaturalScale ? "true" : "false"}
+    />
+  ),
 }));
 
 import Page from "./page";
@@ -267,5 +274,25 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       const wraps = container.querySelectorAll(".mermaid-wrap");
       expect(wraps.length).toBe(23);
     });
+  });
+});
+
+describe("feature-driven-development-comprehensive-guide page (図解サイズの正規化)", () => {
+  it("全 Mermaid 図が preserveNaturalScale で描画される（文字を 1rem = 16px に統一）", () => {
+    const { container } = render(<Page />);
+    const diagrams = container.querySelectorAll<HTMLElement>("[data-testid='mermaid-diagram']");
+    expect(diagrams.length).toBeGreaterThan(0);
+    for (const diagram of diagrams) {
+      expect(diagram.dataset.naturalScale).toBe("true");
+    }
+  });
+
+  it("優先順位付けフレームワークのインライン SVG が自然幅の上限を持つ（無制限拡大の防止）", () => {
+    const { container } = render(<Page />);
+    const svg = Array.from(container.querySelectorAll("svg")).find(
+      (el) => el.querySelector("title")?.textContent === "優先順位付けフレームワーク"
+    );
+    expect(svg).toBeDefined();
+    expect(svg?.style.maxWidth).toBe("960px");
   });
 });

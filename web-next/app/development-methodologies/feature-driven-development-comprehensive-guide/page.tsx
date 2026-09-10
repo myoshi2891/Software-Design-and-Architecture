@@ -51,6 +51,7 @@ export default function Page() {
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart LR
 subgraph before["導入前の課題"]
   direction TB
@@ -91,6 +92,7 @@ style S4 fill:#0d2818,stroke:#22c55e,color:#86efac`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 root["FDD 6つのベストプラクティス"]
 root --> A["ドメインオブジェクト\\nモデリング"]
@@ -969,6 +971,7 @@ style F fill:#1e2535,stroke:#2e3650,color:#9aa3b8`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`graph TD
 DOMAIN["ドメイン（Domain）\\n例: ECサイト全体"]
 DOMAIN --> SA1["Subject Area 1\\n顧客管理"]
@@ -1032,6 +1035,7 @@ style F4 fill:#0d2818,stroke:#22c55e,color:#86efac`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["プロジェクト開始"] --> B["キックオフミーティング\\nドメインエキスパート + 開発チーム"]
 B --> C["ドメインウォークスルー\\nビジネス領域ごとにエキスパートが説明"]
@@ -1055,6 +1059,7 @@ style G fill:#0d1f3c,stroke:#3b82f6,color:#93c5fd`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`classDiagram
 class Customer {
   +CustomerId id
@@ -1300,6 +1305,7 @@ Product "1" <-- "0..*" OrderLine : references`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["ドメインモデルから出発"] --> B["Subject Areaを特定\\nドメインの主要領域を列挙"]
 B --> C["Business Activityを列挙\\n各領域でのビジネス活動"]
@@ -1365,6 +1371,7 @@ style F fill:#1e2535,stroke:#2e3650,color:#e8eaf0`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart LR
 subgraph input["インプット"]
   I1["フィーチャーリスト"]
@@ -1401,7 +1408,7 @@ style output fill:#074440,stroke:#14a8a2`}
               <svg
                 viewBox="0 0 680 420"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ width: "100%", display: "block" }}
+                style={{ width: "100%", maxWidth: "960px", display: "block" }}
               >
                 <title>優先順位付けフレームワーク</title>
                 <defs>
@@ -1531,7 +1538,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 {/* Quadrant labels */}
                 <text
                   x={200}
-                  y={52}
+                  y={150}
                   fill="#86efac"
                   fontSize={13}
                   fontWeight={500}
@@ -1542,7 +1549,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <text
                   x={200}
-                  y={68}
+                  y={166}
                   fill="#22c55e"
                   fontSize={11}
                   fontFamily="Inter,system-ui,sans-serif"
@@ -1552,7 +1559,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <rect
                   x={150}
-                  y={73}
+                  y={171}
                   width={100}
                   height={18}
                   fill="#0d2818"
@@ -1562,7 +1569,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 />
                 <text
                   x={200}
-                  y={85}
+                  y={183}
                   fill="#86efac"
                   fontSize={11}
                   fontWeight={500}
@@ -1574,7 +1581,7 @@ style output fill:#074440,stroke:#14a8a2`}
 
                 <text
                   x={440}
-                  y={52}
+                  y={150}
                   fill="#fde68a"
                   fontSize={13}
                   fontWeight={500}
@@ -1585,7 +1592,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <text
                   x={440}
-                  y={68}
+                  y={166}
                   fill="#f59e0b"
                   fontSize={11}
                   fontFamily="Inter,system-ui,sans-serif"
@@ -1595,7 +1602,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <rect
                   x={378}
-                  y={73}
+                  y={171}
                   width={124}
                   height={18}
                   fill="#2a1e0a"
@@ -1605,7 +1612,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 />
                 <text
                   x={440}
-                  y={85}
+                  y={183}
                   fill="#fde68a"
                   fontSize={11}
                   fontWeight={500}
@@ -1617,7 +1624,7 @@ style output fill:#074440,stroke:#14a8a2`}
 
                 <text
                   x={200}
-                  y={222}
+                  y={320}
                   fill="#9aa3b8"
                   fontSize={13}
                   fontWeight={500}
@@ -1628,7 +1635,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <text
                   x={200}
-                  y={238}
+                  y={336}
                   fill="#5c6480"
                   fontSize={11}
                   fontFamily="Inter,system-ui,sans-serif"
@@ -1639,7 +1646,7 @@ style output fill:#074440,stroke:#14a8a2`}
 
                 <text
                   x={440}
-                  y={222}
+                  y={320}
                   fill="#f28b8b"
                   fontSize={13}
                   fontWeight={500}
@@ -1650,7 +1657,7 @@ style output fill:#074440,stroke:#14a8a2`}
                 </text>
                 <text
                   x={440}
-                  y={238}
+                  y={336}
                   fill="#ef4444"
                   fontSize={11}
                   fontFamily="Inter,system-ui,sans-serif"
@@ -1822,6 +1829,7 @@ style output fill:#074440,stroke:#14a8a2`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["フィーチャーの選択\\n計画から次のフィーチャーを選ぶ"] --> B["フィーチャーチームの編成\\nチーフプログラマーが関係する\\nクラスオーナーを集める"]
 B --> C["ドメインウォークスルー\\nフィーチャーに関連する\\nドメイン領域を再確認"]
@@ -1846,6 +1854,7 @@ style H fill:#1e2535,stroke:#2e3650,color:#e8eaf0`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`sequenceDiagram
 participant CLIENT as クライアント
 participant ORDER_CTRL as OrderController
@@ -1936,6 +1945,7 @@ ORDER_CTRL-->>CLIENT: 201 Created {orderId, paymentUrl}`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["設計インスペクション完了"] --> B["クラスオーナーによる実装\\n各クラスオーナーが担当クラスを実装\\n単体テストも同時に作成"]
 B --> C{"コードインスペクション\\nチームによるコードレビュー\\n品質・一貫性の確認"}
@@ -2157,6 +2167,7 @@ style F fill:#0d2818,stroke:#22c55e,color:#86efac`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 CP["チーフプログラマー\\nの責務"]
 CP --> A["フィーチャー管理\\nフィーチャーの選択と優先順位\\nフィーチャーチームの編成\\n進捗のトラッキング"]
@@ -2176,6 +2187,7 @@ style D fill:#1e2535,stroke:#2e3650,color:#9aa3b8`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`graph TD
 subgraph team["フィーチャーチーム(注文作成フィーチャー)"]
   CHIEF["チーフプログラマー\\n山本さん(技術リーダー)"]
@@ -2238,6 +2250,7 @@ style SATO fill:#074440,stroke:#14a8a2,color:#96f2ee`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["ビジネスビジョン\\n例: 顧客がオンラインで商品を購入できるECサイト"] --> B["Subject Area への分解\\n例: 顧客管理 / 商品管理 / 注文管理 / 決済"]
 B --> C["Business Activity への分解\\n例: 注文管理 → 注文処理 / 注文追跡 / 返品処理"]
@@ -2256,6 +2269,7 @@ style E fill:#1e2535,stroke:#2e3650,color:#5c6480`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 A["フィーチャーの粒度チェック"] --> Q1{"2週間以内に\\n完了できるか？"}
 Q1 --> |"No(大きい)"| TOO_BIG["大きすぎる\\nさらに分解する"]
@@ -2518,6 +2532,7 @@ style OK fill:#0d2818,stroke:#22c55e,color:#86efac`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
 FDD["FDD(コアプロセス)"]
 FDD --> A["FDD + DDD\\nドメインモデルをDDDで設計\\nフィーチャー分解はFDDで実施\\n大規模・複雑ドメインに最適"]
@@ -2588,6 +2603,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`classDiagram
   class Customer {
     +register()
@@ -2643,6 +2659,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`sequenceDiagram
   participant UI as フロントエンド
   participant API as OrderAPI
@@ -2758,6 +2775,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart LR
   subgraph P1["P1: 全体モデル"]
     BP1_1["完璧なモデルより\\n共通理解を優先"]
@@ -2788,6 +2806,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
   L0["Level 0: FDD未適用\\n場当たり的な開発・進捗不透明"] --> L1
   L1["Level 1: 基本的なFDD導入\\nフィーチャーリストの作成・5つのプロセスの実施"] --> L2
@@ -2809,6 +2828,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart LR
   M1["Month 1\\n基礎理解\\nFDDの5プロセス学習\\nサンプルプロジェクトで実践\\nロールの理解"] --> M2["Month 2\\n小規模適用\\n5〜10人の試験的導入\\nフィーチャーリスト作成\\nクラスオーナーシップ試験運用"]
   M2 --> M3["Month 3\\n計測と調整\\n進捗レポートの運用\\nフィーチャー完了率の計測\\nチームへのフィードバック"]
@@ -2950,6 +2970,7 @@ style D fill:#2a1e0a,stroke:#f59e0b,color:#fde68a`}
             <div className="mermaid-wrap">
               <div className="mermaid">
                 <MermaidDiagram
+                  preserveNaturalScale={true}
                   chart={`flowchart TD
   A["FDDプロジェクトの健全性チェック"] --> Q1{"フィーチャーが\\n2週間以内に完了しているか？"}
   Q1 --> |"Yes"| Q2{"ドメインエキスパートが\\nP1に参加しているか？"}
