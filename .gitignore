@@ -57,3 +57,4 @@ bun.lock
 bun-cache/
 /plans/
 /archive/
+.playwright-mcp/
