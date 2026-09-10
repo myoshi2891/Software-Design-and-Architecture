@@ -86,7 +86,7 @@ flowchart TB
 
 Willison氏は同じ投稿で、「人間の代わりを務めるシステム」というビジネス寄りの定義には注意が必要だとも指摘しています。人間には「説明責任（accountability）」という、AIエージェントには持たせられない要素があるためです。OpenAIは自社のガイドで、エージェントを「あなたに代わって独立してタスクをこなすシステム」と説明していますが、これは主に自律性の度合いに着目した定義であり、Willison氏の「ツールをループで実行する」という技術的な定義と補完関係にあります。両方の視点を知っておくと、社内外での認識のズレを防ぎやすくなります。
 
-**出典**: Simon Willison「I think "agent" may finally have a widely enough agreed upon definition to be useful jargon now」／Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（詳細は巻末参考文献[5][2][3]）
+**出典**: Simon Willison「I think "agent" may finally have a widely enough agreed upon definition to be useful jargon now」／Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（詳細は巻末参考文献 5・2・3）
 
 ---
 
@@ -147,7 +147,7 @@ flowchart TB
 
 OpenAIの「A Practical Guide to Building Agents」も同じ方向性で、システムを分割・複雑化する目安として「条件分岐が多くプロンプトが肥大化してきた」「似たようなツールが多すぎて選択を誤る」といったシグナルを挙げています。まずは最も単純な構成から始め、これらのシグナルが出てから段階的に複雑にしていくのが、両社に共通する推奨アプローチです。
 
-**出典**: Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（巻末参考文献[2][3]）
+**出典**: Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（巻末参考文献 2・3）
 
 ---
 
@@ -178,7 +178,7 @@ flowchart TB
 
 さらに設計時には、性能（速度と精度のトレードオフ）、スケーラビリティ、信頼性（一貫した挙動の担保）、コストという4つの軸でトレードオフを検討する必要があるとされています。これらは以降のステップで一つずつ掘り下げていきます。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第2章「Designing Agent Systems」（巻末参考文献[1]）
+**出典**: Michael Albada『Building Applications with AI Agents』第2章「Designing Agent Systems」（巻末参考文献 1）
 
 ---
 
@@ -218,7 +218,7 @@ HumanLayer社のDex Horthy氏は、100人以上の開発者への聞き取りを
 
 このリポジトリはHacker Newsで大きな話題となり、フレームワーク批判ではなく「フレームワークに取り入れてほしい設計原則集」として位置づけられています。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第5章「Orchestration」／Dex Horthy・HumanLayer「12-Factor Agents」（巻末参考文献[1][4]）
+**出典**: Michael Albada『Building Applications with AI Agents』第5章「Orchestration」／Dex Horthy・HumanLayer「12-Factor Agents」（巻末参考文献 1・4）
 
 ---
 
@@ -257,7 +257,7 @@ MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準�
 
 ```python
 # inventory_server.py ― MCPサーバー側
-# 依存: pip install "mcp[cli]>=1.2" pydantic>=2
+# 依存: pip install "mcp[cli]>=1.2" "pydantic>=2"
 # 起動: python inventory_server.py（stdio でクライアントと接続する）
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -335,6 +335,7 @@ async def main() -> None:
                 # 終了条件その2: 目的を満たしたら即座に抜ける
                 if args["sku"] == "SKU-001":
                     print("必要な情報が得られたため、次の推論ステップへ進みます")
+                    break
 
 
 if __name__ == "__main__":
@@ -347,7 +348,7 @@ if __name__ == "__main__":
 
 書籍では、基盤モデル自身が新しいツールをその場で作り出す「Foundation Models as Tool Makers」というテーマも扱われています。必要なコードをリアルタイムに生成し、それをツールとして即座に利用するというアプローチで、あらかじめ用意していないタスクへの適応力を高める手法として注目されています。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第4章「Tool Use」／Anthropic「Introducing the Model Context Protocol」／WorkOS「Everything your team needs to know about MCP in 2026」／Model Context Protocol公式ドキュメント（巻末参考文献[1][7][9][8]）
+**出典**: Michael Albada『Building Applications with AI Agents』第4章「Tool Use」／Anthropic「Introducing the Model Context Protocol」／WorkOS「Everything your team needs to know about MCP in 2026」／Model Context Protocol公式ドキュメント（巻末参考文献 1・7・9・8）
 
 ---
 
@@ -385,7 +386,7 @@ flowchart LR
 
 単純なベクトル検索では、エンティティ同士の複雑な関係性をうまく扱えない場合があります。そこで登場するのがGraphRAGで、ナレッジグラフを構築・活用することで、より構造化された知識に基づく回答を可能にします。ただし、書籍でも指摘されている通り、動的に更新されるナレッジグラフには「情報の陳腐化」や「グラフの品質管理コスト」といったリスクも伴うため、導入前にその効果とコストを見極める必要があります。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第6章「Knowledge and Memory」（巻末参考文献[1]）
+**出典**: Michael Albada『Building Applications with AI Agents』第6章「Knowledge and Memory」（巻末参考文献 1）
 
 ---
 
@@ -428,7 +429,7 @@ flowchart TB
 
 書籍第8章では、エージェント同士の通信手段として、ローカルなプロセス内通信から、メッセージブローカーやイベントバス、Ray・Orleans・Akkaといったアクターフレームワークまで、幅広い選択肢が紹介されています。どの方式を選ぶかは、エージェントを同一プロセス内で動かすか、分散環境で動かすかによって変わってきます。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第2章・第8章／OpenAI「A Practical Guide to Building Agents」（巻末参考文献[1][3]）
+**出典**: Michael Albada『Building Applications with AI Agents』第2章・第8章／OpenAI「A Practical Guide to Building Agents」（巻末参考文献 1・3）
 
 ---
 
@@ -455,7 +456,7 @@ flowchart LR
     AGENT_B -- MCPでツールとデータに接続 --> TOOLS3[ツール・データソース]
 ```
 
-**出典**: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／A2A Protocol 公式ブログ「A New Chapter for A2A: Joining the Agentic AI Foundation」（巻末参考文献[10][11]）
+**出典**: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／A2A Protocol 公式ブログ「A New Chapter for A2A: Joining the Agentic AI Foundation」（巻末参考文献 10・11）
 
 ---
 
@@ -484,7 +485,7 @@ flowchart LR
 
 また、AutoGenはMicrosoftの開発方針転換（より広範なMicrosoft Agent Frameworkへの統合）により、新規機能開発のペースが落ちているという指摘もあるため、新規プロジェクトで採用する場合は最新の開発状況を確認することをおすすめします。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第1章／Firecrawl「The best open source frameworks for building AI agents in 2026」／Techsy「LangGraph vs CrewAI vs OpenAI Agents」（巻末参考文献[1][15][16]）
+**出典**: Michael Albada『Building Applications with AI Agents』第1章／Firecrawl「The best open source frameworks for building AI agents in 2026」／Techsy「LangGraph vs CrewAI vs OpenAI Agents」（巻末参考文献 1・15・16）
 
 ---
 
@@ -515,7 +516,7 @@ flowchart TB
 
 OpenAIのガイドでは、評価と並んでガードレール（安全装置）の重要性が強調されています。関連性チェック、安全性分類、機微情報のフィルタリング、モデレーション、ルールベースの保護、出力バリデーションなど、複数のレイヤーを組み合わせることで、単一のチェックに依存しない防御を構築する考え方です。これはステップ12で扱うセキュリティ対策とも密接に関係します。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第9章「Validation and Measurement」／OpenAI「A Practical Guide to Building Agents」（巻末参考文献[1][3]）
+**出典**: Michael Albada『Building Applications with AI Agents』第9章「Validation and Measurement」／OpenAI「A Practical Guide to Building Agents」（巻末参考文献 1・3）
 
 ---
 
@@ -553,7 +554,7 @@ flowchart LR
 
 ユーザーからのフィードバックも、明示的な評価スコアと同じくらい重要な観測性シグナルとして扱うべきだとされています。また、入力データの分布が時間とともに変化する「ディストリビューションシフト」を検知する仕組みも、長期運用では欠かせません。
 
-**出典**: Michael Albada『Building Applications with AI Agents』第10章「Monitoring in Production」・第11章「Improvement Loops」（巻末参考文献[1]）
+**出典**: Michael Albada『Building Applications with AI Agents』第10章「Monitoring in Production」・第11章「Improvement Loops」（巻末参考文献 1）
 
 ---
 
@@ -601,9 +602,9 @@ flowchart TB
 - **人間による承認**: リスクの高い操作（送金、外部送信、削除など）は人間の承認を経てから実行する（12-Factor Agentsの「ツール呼び出しで人間に連絡する」という原則とも一致）
 - **サンドボックス化**: 実行環境を隔離し、被害範囲を限定する
 - **継続的なレッドチーミング**: 実際に攻撃を試みることで、想定していなかった穴を発見する
-- **監視とロギング**: すべてのツール呼び出しと外部通信を記録し、異常を検知できるようにする
+- **監視とロギング**: 監査に必要な最小限のメタデータ（タイムスタンプ、実行主体、ツール名、成否、レイテンシ、リクエスト ID）のみを記録し、異常を検知できるようにする。プロンプト本文・ツール引数・ツール実行結果・PII・アクセストークン等の秘密情報はマスキングまたは除外する。ペイロードを保存する場合は、対象を障害調査に必要なエラー時のツール引数だけに限定し、値はハッシュ化または上位数十文字への切り詰めを行う。ログの閲覧はセキュリティ担当ロールに限定し（アクセス制御）、保存期間を定めて（例: 監査ログ 1 年、デバッグログ 30 日）期限到達後は自動削除する
 
-**出典**: Michael Albada『Building Applications with AI Agents』第12章「Protecting Agentic Systems」／Simon Willison「The lethal trifecta for AI agents」／Cloud Security Alliance「Agentic AI Threat Modeling Framework: MAESTRO」（巻末参考文献[1][6][12]）
+**出典**: Michael Albada『Building Applications with AI Agents』第12章「Protecting Agentic Systems」／Simon Willison「The lethal trifecta for AI agents」／Cloud Security Alliance「Agentic AI Threat Modeling Framework: MAESTRO」（巻末参考文献 1・6・12）
 
 ---
 
@@ -637,7 +638,7 @@ Simon Willison氏は、人間には「説明責任（accountability）」とい�
 - 失敗したときに、どのようにユーザーへ丁寧に伝え、次の一手を提示するか（グレースフルデグラデーション）
 - 組織内でのエージェントの担当範囲と、人間の担当範囲をどう線引きするか
 
-**出典**: Michael Albada『Building Applications with AI Agents』第3章「User Experience Design for Agentic Systems」・第13章「Human-Agent Collaboration」／Simon Willison「I think "agent" may finally have a widely enough agreed upon definition」（巻末参考文献[1][5]）
+**出典**: Michael Albada『Building Applications with AI Agents』第3章「User Experience Design for Agentic Systems」・第13章「Human-Agent Collaboration」／Simon Willison「I think "agent" may finally have a widely enough agreed upon definition」（巻末参考文献 1・5）
 
 ---
 
@@ -684,7 +685,7 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
 
 といった一つひとつの積み重ねが、実運用に耐えるAIエージェントアプリケーションを作り上げていきます。まずは本ガイドのステップ1〜4で紹介した最小構成のエージェントを自分の手で動かしてみることから始めてみてください。
 
-**出典**: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（巻末参考文献[13][14]）
+**出典**: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（巻末参考文献 13・14）
 
 ---
 

@@ -134,6 +134,134 @@ flowchart LR
 - **向いている場面**：処理の順序が明確で、各段階が独立したスキルを要する場合（例：調査→分析→レポート作成）
 - **弱点**：前段のエラーがそのまま後段に伝播する。並列化の恩恵が得られない
 
+#### 実装例：3段パイプラインを動かす
+
+上図の「下調べ → 分析 → 執筆」をそのままコードにしたものです。`Stage` に「役割（システムプロンプト）」だけを持たせ、前段の出力を次段の入力へ渡していく点がパイプラインの本質で、段の増減はタプルへの追加・削除だけで済みます。
+
+このコードには、上で挙げた**弱点への対策**も入れてあります。`stop_reason` が `end_turn` 以外（特に `max_tokens` による途中打ち切り）のときに例外を投げているのは、**壊れた出力を次段へ渡さない**ためです。パイプラインでは前段のエラーが後段へ伝播するため、段の境界が唯一の検査ポイントになります。
+
+またレスポンス本文を取り出す `extract_text` は `content[0].text` と決め打ちしていません。思考（thinking）が有効なモデルではレスポンスの先頭が `thinking` ブロックになるため、`type` で絞り込む必要があります。
+
+```python
+# pipeline_agents.py ― パイプライン（逐次実行）パターンの最小実装
+# 依存: pip install "anthropic>=1.4,<2"
+# 実行: export ANTHROPIC_API_KEY=...
+#       python pipeline_agents.py "社内向け生成AIガイドラインの整備"
+from __future__ import annotations
+
+import os
+import sys
+from dataclasses import dataclass
+
+from anthropic import Anthropic, APIStatusError
+from anthropic.types import Message
+
+MODEL = "claude-opus-5"
+
+
+@dataclass(frozen=True)
+class Stage:
+    """パイプラインの1段。前段の出力がそのまま次段の入力になる。"""
+
+    name: str
+    system: str
+    max_tokens: int
+
+
+# 図の「下調べ → 分析 → 執筆」に対応する。段を足したいときはこのタプルに追加するだけでよい。
+STAGES: tuple[Stage, ...] = (
+    Stage(
+        name="下調べ",
+        system=(
+            "あなたは調査担当です。与えられたテーマについて、"
+            "検討すべき論点を5個、箇条書きで列挙してください。結論は書かないでください。"
+        ),
+        max_tokens=1024,
+    ),
+    Stage(
+        name="分析",
+        system=(
+            "あなたは分析担当です。渡された論点リストを、"
+            "影響度と実現難易度の2軸で評価し、優先順位を付けてください。"
+        ),
+        max_tokens=1024,
+    ),
+    Stage(
+        name="執筆",
+        system=(
+            "あなたは執筆担当です。渡された分析結果をもとに、"
+            "意思決定者向けの要約を300字程度の日本語でまとめてください。"
+        ),
+        max_tokens=1024,
+    ),
+)
+
+
+def extract_text(message: Message) -> str:
+    """レスポンスから text ブロックだけを連結する。
+
+    content[0] を決め打ちしてはいけない。thinking が有効なモデルでは
+    先頭が thinking ブロックになり、AttributeError で落ちる。
+    """
+    parts = [block.text for block in message.content if block.type == "text"]
+    if not parts:
+        raise ValueError("text ブロックが含まれていません")
+    return "\n".join(parts)
+
+
+def run_stage(client: Anthropic, stage: Stage, payload: str) -> str:
+    """1段ぶんを実行する。異常な stop_reason は握りつぶさず例外にする。"""
+    message = client.messages.create(
+        model=MODEL,
+        max_tokens=stage.max_tokens,
+        system=stage.system,
+        messages=[{"role": "user", "content": payload}],
+    )
+    if message.stop_reason == "max_tokens":
+        # 途中で切れた出力を次段へ渡すと、誤りがパイプライン全体に伝播する
+        raise RuntimeError(f"{stage.name}: max_tokens に達して出力が途中で切れました")
+    if message.stop_reason != "end_turn":
+        raise RuntimeError(f"{stage.name}: 想定外の stop_reason={message.stop_reason}")
+    return extract_text(message)
+
+
+def run_pipeline(client: Anthropic, topic: str) -> str:
+    """前段の出力を次段の入力へ渡していく。これがパイプラインの本体。"""
+    payload = topic
+    for stage in STAGES:
+        payload = run_stage(client, stage, payload)
+        print(f"--- {stage.name} 完了 ---\n{payload}\n", file=sys.stderr)
+    return payload
+
+
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("usage: python pipeline_agents.py <テーマ>", file=sys.stderr)
+        return 2
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("環境変数 ANTHROPIC_API_KEY が未設定です", file=sys.stderr)
+        return 2
+
+    # SDK 既定値（timeout=600秒 / max_retries=2）は用途に合わせて明示的に上書きする
+    client = Anthropic(api_key=api_key, timeout=120.0, max_retries=2)
+
+    try:
+        print(run_pipeline(client, sys.argv[1]))
+    except APIStatusError as exc:
+        print(f"API エラー ({exc.status_code}): {exc.message}", file=sys.stderr)
+        return 1
+    except (RuntimeError, ValueError) as exc:
+        print(f"パイプライン中断: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+```
+
 ### 2.2 並列（コンカレント）パターン
 
 同じ入力に対して複数のエージェントが独立に処理し、結果を集約します。
@@ -686,7 +814,7 @@ flowchart TB
 
 **OpenAI（一次情報）**
 - A practical guide to building agents（PDF）— https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
-- A practical guide to building agents（Web版）— https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/
+- Agents（OpenAI 公式ドキュメント。上記ガイドのWeb版に相当する内容）— https://platform.openai.com/docs/guides/agents
 - OpenAI Agents SDK ドキュメント — https://openai.github.io/openai-agents-python/agents/
 
 **Google / Linux Foundation（一次情報）**
@@ -695,7 +823,7 @@ flowchart TB
 - A year of open collaboration: Celebrating the anniversary of A2A（Google Open Source Blog）— https://opensource.googleblog.com/2026/04/a-year-of-open-collaboration-celebrating-the-anniversary-of-a2a.html
 - A2A Protocol Surpasses 150 Organizations（Linux Foundation プレスリリース）— https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year
 - Linux Foundation Announces the Formation of the Agentic AI Foundation（AAIF）— https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation
-- Google's A2A protocol gets a new home（Axios）— https://www.axios.com/2026/08/17/a2a-agentic-ai-foundation-open-ai-standards
+- A New Chapter for A2A: Joining the Agentic AI Foundation（A2A Protocol 公式ブログ、2026年8月27日）— https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/
 
 **Cognition（Walden Yan、一次情報）**
 - Don't Build Multi-Agents — https://cognition.ai/blog/dont-build-multi-agents

@@ -19,7 +19,8 @@
 
 ```python
 # app/main.py
-# 依存: pip install "fastapi[standard]" pydantic anthropic
+# 依存: pip install "fastapi[standard]" "pydantic>=2" "anthropic>=1.4,<2"
+#       SDK のバージョンは固定する。メジャー更新で client の引数や戻り値の型が変わるため。
 # 起動: ANTHROPIC_API_KEY=<your-key> uvicorn app.main:app --reload
 # 動作確認: curl -X POST localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"RAGとは？"}'
 import os
@@ -42,7 +43,13 @@ app = FastAPI()
 
 def call_llm(question: str) -> str:
     """LLM呼び出しを1関数に閉じ込める。テストではこの関数だけを差し替える。"""
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    # SDK 既定値（timeout=600秒 / max_retries=2）はバッチ処理向けで、
+    # HTTP リクエスト/レスポンスのアプリケーションには長すぎる。用途に合わせて明示する。
+    client = Anthropic(
+        api_key=os.environ["ANTHROPIC_API_KEY"],
+        timeout=30.0,     # 秒。1リクエストの上限。Webハンドラのタイムアウトより短く設定する
+        max_retries=2,    # 429・5xx・接続エラーのみ再試行。最悪待ち時間は timeout×(max_retries+1)
+    )
     resp = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=300,
@@ -645,14 +652,16 @@ OWASP(Open Worldwide Application Security Project)が公開している「LLMア
 
 NeMo Guardrails(NVIDIA、対話フローの制御に強み)、Guardrails AI(構造化出力の検証に強み)、LlamaFirewall(プロンプトインジェクション対策に特化)など、オープンソースのガードレールフレームワークも充実してきています(出典29)。
 
-| OWASP LLM Top 10(抜粋) | 内容 | 主な対策 |
+| OWASP Top 10 for LLM Applications 2026(抜粋) | 内容 | 主な対策 |
 | --- | --- | --- |
-| LLM01 プロンプトインジェクション | 指示を上書き・迂回させる入力 | 入力の信頼境界を明確にし、指示階層を強制する |
-| LLM02 機密情報の漏洩 | PIIや機密データの意図しない出力 | 出力側でのPII検知・レダクション |
-| LLM05 不適切な出力処理 | 出力をそのまま下流システムで実行してしまう | 出力の検証・サニタイズをルールとして定義する |
-| LLM08 ベクトル/埋め込みの弱点 | RAG経由での間接的なプロンプトインジェクション | 検索結果にもガードレールを適用する |
+| LLM01:2026 プロンプトインジェクション | 指示を上書き・迂回させる入力 | 入力の信頼境界を明確にし、指示階層を強制する |
+| LLM02:2026 機密情報の漏洩 | PIIや機密データの意図しない出力 | 出力側でのPII検知・レダクション |
+| LLM05:2026 データとモデルのポイズニング | 学習データ・ファインチューニングデータ・RAGの取り込み元への汚染 | 取り込み元の出所検証とデータ来歴の記録 |
+| LLM08:2026 隠れコンテキストの露出 | システムプロンプトに加え、検索文書・メモリ・ツール応答など、モデルに渡る非公開コンテキストの漏洩 | 非公開コンテキストに機密を置かず、権限判定をアプリ側で行う |
+| LLM09:2026 ベクトル/埋め込みの弱点 | RAG経由での間接的なプロンプトインジェクション | 検索結果にもガードレールを適用する |
+| LLM10:2026 不適切な出力処理 | 出力をそのまま下流システムで実行してしまう | 出力の検証・サニタイズをルールとして定義する |
 
-**表6: OWASP LLMアプリケーション向けTop 10(抜粋)と対策の方向性**(出典27, 出典28)
+**表6: OWASP Top 10 for LLM Applications 2026(抜粋)と対策の方向性**(出典27, 出典28)
 
 ### 規制動向
 
