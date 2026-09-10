@@ -16,11 +16,38 @@ allowed-tools:
 
 (最終更新日: 2026-09-09)
 
+## 全体像: 図ソース → 描画パイプライン → SVG 後処理
+
+修正がどの層の問題かを最初に切り分ける。**構文エラーは図ソース層、サイズ・見切れ・文字色は SVG 後処理層**で直す。層を取り違えた修正（例: 見切れを DSL の書き換えで直そうとする）は再発する。
+
+```mermaid
+flowchart TD
+Src["図ソース: DIAGRAMS オブジェクト - md の mermaid フェンス - chart prop"] --> Norm["正規化: カラム0 - 1行1ステートメント - 全角文字置換"]
+Norm --> Init["mermaid.initialize: theme - themeVariables - fontSize"]
+Init --> Run["mermaid.run で SVG 生成"]
+Run --> Fix["applySvgFixups: ライブ DOM 操作"]
+Fix --> W["width と height 属性を除去し style.width に自然px, maxWidth 100%"]
+Fix --> V["viewBox 高さ拡張: sequence と state は +110, その他は +15"]
+Fix --> O["overflow visible: foreignObject の右端切れ対策"]
+W --> CSS["globals.css の .mbox スコープ: 採寸値と実描画の font-size を一致"]
+V --> CSS
+O --> CSS
+CSS --> Out["表示"]
+Norm -.構文エラーはここへ戻る.-> Src
+Fix -.サイズ・見切れはここで直す.-> Run
+```
+
+| 層 | 典型的な症状 | 直す場所 |
+|---|---|---|
+| 図ソース | Syntax Error・図が出ない | `fix_mermaid.ts` / 全角文字置換 |
+| 描画パイプライン | 全図が未描画・二重描画 | `apply_render_pipeline.ts` / `initialize` |
+| SVG 後処理 | 見切れ・異常拡大・文字色 | `applySvgFixups` / `.mbox` CSS |
+
 ## 前提バージョンと正準実装（推測禁止）
 
 | 項目 | 確定値 |
 |---|---|
-| Mermaid | **`mermaid@10.9.6`**（`web-next/package.json` の dependencies） |
+| Mermaid | **`mermaid@10.9.8`**（`web-next/package.json` の dependencies） |
 | React 共通コンポーネント | `web-next/components/MermaidDiagram.tsx` — **default エクスポート** `export default MermaidDiagram` |
 | `mermaid.initialize` | `useEffect` 内、`import("mermaid")` の `.then()` 内で実行（モジュール最上位ではない） |
 | テスト環境 | Vitest / jsdom。`MermaidDiagram` は**必ずモックする** |
@@ -225,7 +252,7 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 `data-testid` は **`mermaid-diagram`** に統一すること。
 
-## Mermaid 10.9.6 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
+## Mermaid 10.9.8 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
 
 ### 症状と根本原因の対応表
 
@@ -237,7 +264,7 @@ vi.mock("@/components/MermaidDiagram", () => ({
 | 文字色を変えても**全く反映されない** | `.next` キャッシュ汚染 | `.next` 削除 + dev サーバー完全再起動 + ハードリロード |
 | 日本語ラベルの幅不足による軽微な切れ | Web フォント読込前に採寸 | `mermaid.run()` 直前に `await document.fonts.ready` |
 
-### 正準の `mermaid.initialize` 設定（Mermaid 10.9.6）
+### 正準の `mermaid.initialize` 設定（Mermaid 10.9.8）
 
 ```ts
 m.default.initialize({
@@ -339,3 +366,13 @@ bun run dev
 - 接続されていない複数のサブグラフ（ノード数が非対称なためアスペクト比が崩れる）
 
 判断基準：「ノード増減に関わらず、他の図と同じ高さに収まる保証がない場合」
+
+## 参考文献・ソース一覧
+
+- Mermaid バージョン定義（`mermaid@10.9.8`）: [`web-next/package.json`](../../../web-next/package.json)
+- React 共通コンポーネント（`applySvgFixups` の正本）: [`web-next/components/MermaidDiagram.tsx`](../../../web-next/components/MermaidDiagram.tsx)
+- Mermaid v10 公式ドキュメント: <https://mermaid.js.org/intro/>
+- Mermaid 設定リファレンス（`initialize` / `themeVariables`）: <https://mermaid.js.org/config/schema-docs/config.html>
+- Mermaid リリースノート一覧（v10 系の変更点確認用）: <https://github.com/mermaid-js/mermaid/releases>
+- React 公式リファレンス（`React.memo` / `useEffect`）: <https://react.dev/reference/react>
+- Next.js App Router 公式ドキュメント: <https://nextjs.org/docs/app>
