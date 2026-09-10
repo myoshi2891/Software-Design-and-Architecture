@@ -156,25 +156,52 @@ function curlAsync(
  * @param timeoutSec - Maximum request duration in seconds
  * @returns The verification result, including the HTTP status code and an error message when verification fails
  */
-async function verifyUrl(
-  url: string,
-  timeoutSec: number = 10
-): Promise<{ ok: boolean; status: number; error?: string }> {
-  const userAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+/**
+ * リンク検証に用いる User-Agent。
+ *
+ * 一部の WAF（WordPress.com / Automattic 等）は古い UA 文字列をボット判定して 403 を返すため、
+ * 現行世代のブラウザ UA を名乗ることで偽陽性を避ける。
+ */
+const USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
-  const commonArgs = [
+/**
+ * Builds the curl arguments used to verify a single URL.
+ *
+ * HEAD は `-X HEAD` ではなく `--head` を用いる。`-X HEAD` は curl がレスポンスボディを
+ * 待ち続けるため、`Content-Length` を返すサーバーで `--max-time` まで到達し
+ * exit 28（タイムアウト）の偽陽性を生む。
+ *
+ * @param url - The URL to verify
+ * @param timeoutSec - Maximum request duration in seconds
+ * @param method - HTTP method to use for the probe
+ * @returns The curl argument list, with the URL as the final element
+ */
+export function buildCurlArgs(url: string, timeoutSec: number, method: 'HEAD' | 'GET'): string[] {
+  const args = [
     '-s',
     '-L',
     '-o', '/dev/null',
     '-w', '%{http_code}',
     '--max-time', String(timeoutSec),
-    '-A', userAgent,
+    '-A', USER_AGENT,
     '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   ];
 
+  if (method === 'HEAD') {
+    args.push('--head');
+  }
+
+  args.push(url);
+  return args;
+}
+
+async function verifyUrl(
+  url: string,
+  timeoutSec: number = 10
+): Promise<{ ok: boolean; status: number; error?: string }> {
   // まず HEAD リクエストで試みる
-  const headResult = await curlAsync([...commonArgs, '-X', 'HEAD', url], timeoutSec);
+  const headResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'HEAD'), timeoutSec);
 
   if (headResult.error) {
     return { ok: false, status: 0, error: `curl error: ${headResult.error.message}` };
@@ -188,7 +215,7 @@ async function verifyUrl(
   }
 
   // HEAD が失敗の場合は GET で再試行
-  const getResult = await curlAsync([...commonArgs, url], timeoutSec);
+  const getResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'GET'), timeoutSec);
 
   if (getResult.error) {
     return { ok: false, status: 0, error: `curl error: ${getResult.error.message}` };
@@ -339,7 +366,10 @@ async function run(): Promise<void> {
   }
 }
 
-run().catch((err: Error) => {
-  console.error('Link check failed:', err.message);
-  process.exit(1);
-});
+// テストから import した際にリンクチェック全体が走らないようエントリポイントを保護する
+if (import.meta.main) {
+  run().catch((err: Error) => {
+    console.error('Link check failed:', err.message);
+    process.exit(1);
+  });
+}
