@@ -85,7 +85,7 @@ Testing Library（契約テスト）を採用しています。
     — CSSデザインシステム完全ガイドを移植。
     固定サイドバー・進捗バー・scroll-spy を [`CssColorTypographySpacingSidebar.tsx`](web-next/app/css-design-system-guide/css-color-typography-spacing-systems/CssColorTypographySpacingSidebar.tsx) でクライアント描画
   - [`/development-methodologies/behavior-driven-development-comprehensive-guide`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx)
-    — BDD 完全ガイドを移植（21 セクション・Mermaid 16 図・table 8・コードブロック 14）。
+    — BDD 完全ガイドを移植（19 セクション・Mermaid 16 図・table 8・コードブロック 14）。
     固定サイドバー・進捗バー・scroll-spy を [`BddSidebar.tsx`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/BddSidebar.tsx) でクライアント描画
   - [`/development-methodologies/extreme-programming-comprehensive-guide`](web-next/app/development-methodologies/extreme-programming-comprehensive-guide/page.tsx)
     — XP（エクストリームプログラミング）完全ガイドを移植（23 セクション・Mermaid 13 図・table 11・コードブロック 2）。
