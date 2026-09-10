@@ -85,7 +85,9 @@ function applySvgFixups(svgEl: SVGSVGElement, chart: string, preserveNaturalScal
   if (preserveNaturalScale && targetWidth > 0) {
     svgEl.style.minWidth = `${targetWidth}px`;
   }
-  svgEl.style.maxHeight = preserveNaturalScale ? "none" : h > 550 ? "580px" : "none";
+  // 高さ上限は付けない（縦長図に max-height を掛けると横幅と文字まで縮小するため）。
+  // 再処理時に前回値が残らないよう常に "none" で明示リセットする。
+  svgEl.style.maxHeight = "none";
   svgEl.setAttribute("viewBox", `${x} ${y} ${w} ${h + extraHeight}`);
 }
 
