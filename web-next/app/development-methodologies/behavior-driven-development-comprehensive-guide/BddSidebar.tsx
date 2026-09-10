@@ -73,7 +73,10 @@ export default function BddSidebar({ groups = NAV_GROUPS }: Props) {
       <aside id="sb">
         <div className="sb-head">
           <div className="sb-logo">
-            <span className="ico">🥒</span>
+            {/* Cucumber/Gherkin を示す装飾。読み上げ名は隣の "BDD GUIDE" が担うため隠す */}
+            <span className="ico" aria-hidden="true">
+              🥒
+            </span>
             <span className="txt">BDD GUIDE</span>
           </div>
           <div className="sb-sub">Behavior-Driven Development</div>

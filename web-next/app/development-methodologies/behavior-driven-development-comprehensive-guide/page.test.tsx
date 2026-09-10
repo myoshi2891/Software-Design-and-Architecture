@@ -10,6 +10,19 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 import Page from "./page";
 
+/**
+ * Mermaid モックの data-chart から、図ソースに固有の文字列を持つ 1 枚を特定する。
+ * ページ側は id を渡していないため、図の同定はソース断片で行う（断片は全図で一意）。
+ */
+function expectDiagram(container: HTMLElement, snippet: string): void {
+  const matched = Array.from(container.querySelectorAll<HTMLElement>(".mermaid")).filter((el) =>
+    (el.dataset.chart ?? "").includes(snippet)
+  );
+  expect(matched, `図ソースに「${snippet}」を含む Mermaid 図がちょうど 1 枚あること`).toHaveLength(
+    1
+  );
+}
+
 describe("behavior-driven-development-comprehensive-guide page (Category A)", () => {
   it("h1 見出しに BDD 完全ガイドと Behavior-Driven Development が含まれる", () => {
     const { container } = render(<Page />);
@@ -50,8 +63,15 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
   it("Category A の Mermaid 図 (m-problems, m-levels, m-gwt, m-story, m-keywords, m-cycle, m-amigos, m-sprint) が描画される", () => {
     const { container } = render(<Page />);
-    const mermaids = container.querySelectorAll(".mermaid");
-    expect(mermaids.length).toBeGreaterThanOrEqual(8);
+    expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(8);
+    expectDiagram(container, "BDD 導入前の問題"); // m-problems
+    expectDiagram(container, "受け入れテスト駆動開発"); // m-levels
+    expectDiagram(container, "Given-When-Then 構文"); // m-gwt
+    expectDiagram(container, "📖 ユーザーストーリー"); // m-story
+    expectDiagram(container, "Gherkin キーワード体系"); // m-keywords
+    expectDiagram(container, "Three Amigos ミーティング"); // m-cycle
+    expectDiagram(container, "ビジネス要件・優先度"); // m-amigos
+    expectDiagram(container, "participant PO as Product Owner"); // m-sprint
   });
 
   it("内部リンクに .html を含まない", () => {
@@ -91,8 +111,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図 m-tools と m-cucumber-arch が追加され、合計 10 個以上描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
-      expect(mermaids.length).toBeGreaterThanOrEqual(10);
+      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(10);
+      expectDiagram(container, "Feature ファイル記述"); // m-tools
+      expectDiagram(container, "Gherkin 記法で記述"); // m-cucumber-arch
     });
 
     it("s6-s9 に複数のコードブロック（Java, Python, pom.xml等）が存在する", () => {
@@ -129,8 +150,10 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図 m-doubleloop, m-atdd, m-ui-arch が追加され、合計 13 個以上描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
-      expect(mermaids.length).toBeGreaterThanOrEqual(13);
+      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(13);
+      expectDiagram(container, "外側ループ"); // m-doubleloop
+      expectDiagram(container, "要件（ユーザーストーリー）"); // m-atdd
+      expectDiagram(container, "UI 実装詳細は書かない"); // m-ui-arch
     });
 
     it("s10-s13 にコードブロック（Feature, API, Playwright等）が存在する", () => {
@@ -171,8 +194,10 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図（m-cicd, m-maturity, m-health 等）が描画され、合計 17 個以上存在する", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
-      expect(mermaids.length).toBeGreaterThanOrEqual(17);
+      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(17);
+      expectDiagram(container, "ローカル開発"); // m-cicd
+      expectDiagram(container, "受け入れ基準が暗黙知"); // m-maturity
+      expectDiagram(container, "BDD 健全性チェック開始"); // m-health
     });
 
     it("s16 にチェックアウトフロー Gherkin とシナリオカバレッジマップが存在する", () => {

@@ -63,7 +63,10 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
 
   it("s4 の Python コードブロックに構文ハイライト用 span が含まれている", () => {
     const { container } = render(<Page />);
-    const pres = container.querySelectorAll("pre");
+    const s4 = container.querySelector("#s4");
+    expect(s4).not.toBeNull();
+
+    const pres = s4?.querySelectorAll("pre") ?? [];
     expect(pres.length).toBeGreaterThanOrEqual(1);
     for (const pre of pres) {
       const spans = pre.querySelectorAll("span.kw, span.cm, span.st, span.fn");

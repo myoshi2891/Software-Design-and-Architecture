@@ -273,6 +273,20 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       const { container } = render(<Page />);
       const wraps = container.querySelectorAll(".mermaid-wrap");
       expect(wraps.length).toBe(23);
+
+      // 空の wrap（図の描画漏れ）や 1 wrap への図の重複を検出する。
+      // 2 枚は Mermaid ではなく手書きインライン SVG で描いているため、そちらも許容する。
+      let svgOnlyWraps = 0;
+      for (const wrap of wraps) {
+        const diagrams = wrap.querySelectorAll('[data-testid="mermaid-diagram"]');
+        if (diagrams.length === 0) {
+          expect(wrap.querySelectorAll("svg")).toHaveLength(1);
+          svgOnlyWraps += 1;
+          continue;
+        }
+        expect(diagrams).toHaveLength(1);
+      }
+      expect(svgOnlyWraps).toBe(2);
     });
   });
 });
