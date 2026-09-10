@@ -82,6 +82,22 @@ describe("BddSidebar", () => {
     expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s5"]);
   });
 
+  it("section.sec セレクタで対象セクションだけを observe する", () => {
+    // 非対象要素を混ぜ、セレクタが変わると observe 対象がズレることを検出する
+    document.body.insertAdjacentHTML("beforeend", `<section id="not-a-sec"></section>`);
+    render(<BddSidebar groups={GROUPS} />);
+
+    expect(observedElements.map((el) => el.id)).toEqual(["s1", "s2", "s5"]);
+    expect(observedElements.every((el) => el.matches("section.sec"))).toBe(true);
+  });
+
+  it("nav ランドマークに識別用の aria-label を持つ", () => {
+    const { container } = render(<BddSidebar groups={GROUPS} />);
+    expect(container.querySelector("nav.sb-nav")?.getAttribute("aria-label")).toBe(
+      "セクションナビゲーション"
+    );
+  });
+
   it("初期状態では先頭の nav 項目に active が付く", () => {
     const { container } = render(<BddSidebar groups={GROUPS} />);
     const active = container.querySelectorAll("nav.sb-nav a.active");

@@ -201,6 +201,44 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
       expect(mermaids).toHaveLength(13);
     });
 
+    it("Mermaid 図がセクションごとに期待どおりの個数で配置されている", () => {
+      // 総数だけの検証では図の入れ替わり・移動を検出できないため、配置先まで固定する
+      const expected: Record<string, number> = {
+        s1: 2,
+        s2: 0,
+        s3: 2,
+        s4: 1,
+        s5: 1,
+        s6: 1,
+        s7: 0,
+        s8: 0,
+        s9: 0,
+        s10: 0,
+        s11: 0,
+        s12: 0,
+        s13: 1,
+        s14: 1,
+        s15: 0,
+        s16: 2,
+        s17: 0,
+        s18: 1,
+        s19: 0,
+        s20: 0,
+        s21: 1,
+        s22: 0,
+        s23: 0,
+      };
+      const { container } = render(<Page />);
+
+      const actual = Object.fromEntries(
+        Object.keys(expected).map((id) => [
+          id,
+          container.querySelectorAll(`#${id} .mermaid-wrap .mermaid`).length,
+        ])
+      );
+      expect(actual).toEqual(expected);
+    });
+
     it("テーブルが合計 11 個存在する", () => {
       const { container } = render(<Page />);
       const tables = container.querySelectorAll("table");

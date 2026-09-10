@@ -30,6 +30,10 @@ class CapturingIO implements IntersectionObserver {
 function intersect(id: string): void {
   const target = document.getElementById(id);
   if (!target) throw new Error(`section #${id} not found`);
+  // observe 済みでない要素で通知すると、セレクタが壊れてもテストが通ってしまう
+  if (!observedElements.includes(target)) {
+    throw new Error(`section #${id} is not observed`);
+  }
   const entry = {
     isIntersecting: true,
     target,

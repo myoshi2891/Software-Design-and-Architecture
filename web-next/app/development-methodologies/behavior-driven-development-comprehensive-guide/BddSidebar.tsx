@@ -78,7 +78,7 @@ export default function BddSidebar({ groups = NAV_GROUPS }: Props) {
           </div>
           <div className="sb-sub">Behavior-Driven Development</div>
         </div>
-        <nav className="sb-nav">
+        <nav className="sb-nav" aria-label="セクションナビゲーション">
           {groups.map((grp) => (
             <div key={grp.title}>
               <div className="sb-grp">{grp.title}</div>
