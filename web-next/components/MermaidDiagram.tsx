@@ -25,6 +25,27 @@ const THEME_VARIABLES = {
 } as const;
 
 /**
+ * Mermaid ソースから制御行（%%{init:...}%%、--- フロントマター、%% コメント、空行）を
+ * 取り除き、最初の図種宣言行を返す。
+ */
+function detectDiagramType(chart: string): string {
+  const lines = chart.split("\n");
+  let i = 0;
+  // --- で始まる YAML フロントマターをスキップ
+  if (lines[0]?.trim() === "---") {
+    i = 1;
+    while (i < lines.length && lines[i].trim() !== "---") i++;
+    i++;
+  }
+  for (; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === "" || line.startsWith("%%")) continue;
+    return line;
+  }
+  return "";
+}
+
+/**
  * SVG 後処理：viewBox 由来の自然幅を設定し、下部見切れを防ぐ高さ拡張を行う。
  * スキル fix-mermaid §SVG 後処理は「文字列加工」ではなく「ライブ DOM 操作」で行う に準拠。
  */
@@ -42,9 +63,9 @@ function applySvgFixups(svgEl: SVGSVGElement, chart: string, preserveNaturalScal
   const parts = viewBox.split(/\s+/).map(Number);
   if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
 
-  const trimmed = chart.trim();
-  const isSequenceOrState =
-    trimmed.startsWith("sequenceDiagram") || trimmed.startsWith("stateDiagram");
+  // 先頭の %%{init:...}%% ディレクティブ・--- フロントマター・%% コメント・空行を
+  // 読み飛ばしてから図種を判定する（単純な先頭一致では判定が外れる）
+  const isSequenceOrState = /^(sequenceDiagram|stateDiagram)/.test(detectDiagramType(chart));
   const extraHeight = isSequenceOrState ? 110 : 15;
   const [x, y, w, h] = parts as [number, number, number, number];
 
