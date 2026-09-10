@@ -349,6 +349,7 @@ m.default.initialize({
 1. CSS / `MermaidDiagram.tsx` 変更時は `.next` を削除し、dev サーバーを完全再起動する:
 
 ```bash
+cd web-next
 rm -rf .next
 bun run dev
 ```
