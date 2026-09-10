@@ -20,7 +20,7 @@ allowed-tools:
 
 | 項目 | 確定値 |
 |---|---|
-| Mermaid | **`mermaid@^11.16.0`**（`web-next/package.json` の dependencies） |
+| Mermaid | **`mermaid@10.9.6`**（`web-next/package.json` の dependencies） |
 | React 共通コンポーネント | `web-next/components/MermaidDiagram.tsx` — **default エクスポート** `export default MermaidDiagram` |
 | `mermaid.initialize` | `useEffect` 内、`import("mermaid")` の `.then()` 内で実行（モジュール最上位ではない） |
 | テスト環境 | Vitest / jsdom。`MermaidDiagram` は**必ずモックする** |
@@ -38,7 +38,7 @@ allowed-tools:
 2. **描画パイプラインを冪等適用**:
 
    ```bash
-   bun run .claude/skills/fix-mermaid/scripts/apply_render_pipeline.mjs <file.html>
+   bun run .claude/skills/fix-mermaid/scripts/apply_render_pipeline.ts <file.html>
    ```
 
    これが `<div class="mermaid">…</div>` → 連番 id 付き空 div への置換、`startOnLoad:false`+`securityLevel:'loose'` 付与、`applySvgFixups`+render ループ注入、中央寄せ CSS 注入をまとめて行う（再実行しても二重適用しない）。
@@ -46,7 +46,7 @@ allowed-tools:
 3. **正本 Markdown から図を復元する場合**（HTML 側ソースが破壊された等）:
 
    ```bash
-   bun run .claude/skills/fix-mermaid/scripts/restore_diagrams.mjs <file.html> <source.md>
+   bun run .claude/skills/fix-mermaid/scripts/restore_diagrams.ts <file.html> <source.md>
    ```
 
 4. **インデント汚染・行分断のみの修正**（`.html`/`.md`/`.tsx`）は `fix_mermaid.ts`:
@@ -55,7 +55,7 @@ allowed-tools:
    bun run .claude/skills/fix-mermaid/scripts/fix_mermaid.ts <file>
    ```
 
-> **SVG 幅の鉄則**: `apply_render_pipeline.mjs` は SVG 幅に **viewBox 由来の自然 px 幅 + `maxWidth:100%`** を使う。`width:'100%'` も `width:'auto'`（viewBox のみで intrinsic サイズを持たない SVG ではコンテナ全幅へ伸びる）も、小さい flowchart LR 図を異常拡大させるため**使わない**。
+> **SVG 幅の鉄則**: `apply_render_pipeline.ts` は SVG 幅に **viewBox 由来の自然 px 幅 + `maxWidth:100%`** を使う。`width:'100%'` も `width:'auto'`（viewBox のみで intrinsic サイズを持たない SVG ではコンテナ全幅へ伸びる）も、小さい flowchart LR 図を異常拡大させるため**使わない**。
 
 ## 対象
 
