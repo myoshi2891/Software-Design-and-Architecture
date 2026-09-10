@@ -7577,8 +7577,10 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     height: 3px;
     background: linear-gradient(90deg, var(--g), var(--b));
     z-index: 999;
-    width: 0;
-    transition: width 0.1s linear;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.1s linear;
   }
 
   #sb {
@@ -8272,6 +8274,20 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     .cw { padding: 0 20px 60px; }
     .cg2, .cg3, .comp, .rg { grid-template-columns: 1fr; }
   }
+}
+
+/* Common Header adjustments */
+body.has-common-header .behavior-driven-development-comprehensive-guide #sb {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .behavior-driven-development-comprehensive-guide #pb {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .behavior-driven-development-comprehensive-guide .sec {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
 
 /* ==========================================================================
