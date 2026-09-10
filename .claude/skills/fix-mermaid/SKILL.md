@@ -103,7 +103,7 @@ bun run .claude/skills/fix-mermaid/scripts/fix_mermaid.ts path/to/file.tsx
 
 ### IDEフォーマッター（Prettier）による破壊が根本原因
 
-`<div class="mermaid">` に Mermaid ソースを直接書くと、VSCode/Prettier が保存のたびにインデントを付加して構文を壊す。**恒久対策は JS テンプレートリテラルへの移管**。
+`<div class="mermaid">` に Mermaid ソースを直接書くと、VSCode/Prettier が保存のたびにインデントを付加して構文を壊す。**恒久対策は前述の JSON 互換 `DIAGRAMS` オブジェクト（改行は `\n`）への移管**（「まず再利用スクリプトを使う」手順1と同形式）。テンプレートリテラルは実改行がフォーマッタの再インデント対象になるため使わない。
 
 ### ブラウザレンダラーで Syntax Error を起こす文字・構文
 
@@ -225,7 +225,7 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 `data-testid` は **`mermaid-diagram`** に統一すること。
 
-## Mermaid v11 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
+## Mermaid 10.9.6 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
 
 ### 症状と根本原因の対応表
 
@@ -237,7 +237,7 @@ vi.mock("@/components/MermaidDiagram", () => ({
 | 文字色を変えても**全く反映されない** | `.next` キャッシュ汚染 | `.next` 削除 + dev サーバー完全再起動 + ハードリロード |
 | 日本語ラベルの幅不足による軽微な切れ | Web フォント読込前に採寸 | `mermaid.run()` 直前に `await document.fonts.ready` |
 
-### 正準の `mermaid.initialize` 設定（v11）
+### 正準の `mermaid.initialize` 設定（Mermaid 10.9.6）
 
 ```ts
 m.default.initialize({
