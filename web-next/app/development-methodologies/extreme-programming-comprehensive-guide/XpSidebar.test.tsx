@@ -55,6 +55,7 @@ describe("XpSidebar", () => {
         <div class="section-anchor" id="s1"></div>
         <div class="section-anchor" id="s2"></div>
         <div class="section-anchor" id="s5"></div>
+        <div id="s99"></div>
       </main>`
     );
   });
@@ -117,9 +118,11 @@ describe("XpSidebar", () => {
   it("section が交差すると対応する nav 項目だけが active になる", () => {
     const { container } = render(<XpSidebar items={TEST_ITEMS} />);
 
-    // items の全 section が observe 対象になっていること（セレクタ退行の検出）
+    // .section-anchor を持つ section だけが過不足なく observe 対象になっていること。
+    // arrayContaining では「余分に observe している」退行（例: セレクタが [id] へ広がる）を
+    // 検出できないため、#s99（class を持たないダミー）を置いたうえで完全一致を検査する。
     const observedIds = observedElements.map((el) => el.id);
-    expect(observedIds).toEqual(expect.arrayContaining(["s1", "s2", "s5"]));
+    expect(observedIds).toEqual(["s1", "s2", "s5"]);
 
     const activeInitial = container.querySelectorAll("nav.sidebar-nav a.active");
     expect(activeInitial).toHaveLength(1);
