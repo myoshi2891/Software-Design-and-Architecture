@@ -233,6 +233,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?marktechpost\\.com(?:/|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?kunalganglani\\.com(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],

@@ -140,7 +140,9 @@ CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限
 
 | 症状 | 原因 | 対応 |
 | --- | --- | --- |
-| `[Status: 0]` + curl exit 6 / 28 / 35 | DNS レコード消滅・接続不能。**真に死んだドメイン** | 公式の後継 URL へ差し替える |
+| `[Status: 0]` + curl exit 6 | DNS の名前解決失敗。**真に死んだドメイン**の可能性が高い | `dig +short <ホスト名>` が空であることを確認し、公式の後継 URL へ差し替える |
+| `[Status: 0]` + curl exit 28 | タイムアウト。サーバ応答遅延や一時的な不達 | 時間を空けて再実行する。URL は差し替えない |
+| `[Status: 0]` + curl exit 35 | SSL/TLS 接続失敗（証明書・ハンドシェイク）。ドメインは生存していることが多い | 証明書の有効期限と TLS 設定を確認し、サイト側の一時障害なら再実行する。URL は差し替えない |
 | `[Status: 403]`（ルートを含む全 URL で発生） | WAF / Cloudflare のボット遮断 | [.markdown-link-check.json](.markdown-link-check.json) の `ignorePatterns` に追加 |
 | `[Status: 404]` | 参照先サイトの URL 体系変更 | 移行後の URL、無い場合は canonical な公式リポジトリを参照 |
 

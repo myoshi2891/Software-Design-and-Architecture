@@ -41,7 +41,9 @@ bun run check-links
 
 `DEAD` 報告時は、修正前に原因を切り分けること。
 
-- `[Status: 0]`（curl exit 6/28/35）… DNS 消滅・接続不能。真に死んだドメインなので後継 URL へ差し替える。
+- `[Status: 0]`（curl exit 6）… DNS の名前解決失敗。`dig +short <ホスト名>` が空なら真に死んだドメインなので後継 URL へ差し替える。
+- `[Status: 0]`（curl exit 28）… タイムアウト。時間を空けて再実行する。URL は差し替えない。
+- `[Status: 0]`（curl exit 35）… SSL/TLS 接続失敗。証明書・TLS 設定を確認し、一時障害なら再実行する。URL は差し替えない。
 - `[Status: 403]`（ルートを含む全 URL）… WAF のボット遮断。`.markdown-link-check.json` の `ignorePatterns` に追加する。
 - `[Status: 404]` … URL 体系の変更。移行先、無ければ canonical な公式リポジトリを参照する。
 
