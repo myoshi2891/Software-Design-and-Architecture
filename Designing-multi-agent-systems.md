@@ -144,12 +144,12 @@ flowchart LR
 
 ```python
 # pipeline_agents.py ― パイプライン（逐次実行）パターンの最小実装
+# 前提: Python 3.10 以上（anthropic 1.x は Python 3.9 をサポートしない）
 # 依存: pip install "anthropic>=1.4,<2"
 # 実行: export ANTHROPIC_API_KEY=...
 #       python pipeline_agents.py "社内向け生成AIガイドラインの整備"
 from __future__ import annotations
 
-import hashlib
 import os
 import sys
 from dataclasses import dataclass
@@ -233,11 +233,12 @@ def run_pipeline(client: Anthropic, topic: str) -> str:
         payload = run_stage(client, stage, payload)
         # 段の中身（payload）は標準エラーへ出さない。エージェント間で受け渡される
         # 中間出力は入力データの断片を含みうるため、ログ収集基盤や CI のジョブログへ
-        # そのまま流れると機密情報の漏洩経路になる。ここでは追跡に必要な
-        # 監査メタデータ（段名・長さ・内容ハッシュ）だけを残す。
-        digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
+        # そのまま流れると機密情報の漏洩経路になる。内容ハッシュも残さない。
+        # 短い中間出力は候補を推測して再計算すれば照合できてしまい、
+        # 切り詰めたダイジェストであっても内容の指紋として機能するため。
+        # ここでは追跡に必要な監査メタデータ（段名・長さ）だけを残す。
         print(
-            f"--- {stage.name} 完了 (chars={len(payload)} sha256={digest}) ---",
+            f"--- {stage.name} 完了 (chars={len(payload)}) ---",
             file=sys.stderr,
         )
     return payload
@@ -459,11 +460,13 @@ Anthropicは自社の実務記事「Effective context engineering for AI agents�
 
 ### 3.2 Context Rot（コンテキストの劣化）
 
-ベクトルデータベース企業Chromaの研究「Context Rot: How Increasing Input Tokens Impacts LLM Performance」は、GPT-4.1・Claude 4・Gemini 2.5・Qwen3など18の最新モデルを対象に、入力トークン数を増やすと（たとえタスクの難易度を一定に保っても）モデルの性能が一様ではなく劣化していくことを実証しました。この現象は「Context Rot」と呼ばれ、次の3つの要因が複合的に作用すると説明されています。
+ベクトルデータベース企業Chromaの研究「Context Rot: How Increasing Input Tokens Impacts LLM Performance」は、GPT-4.1・Claude 4・Gemini 2.5・Qwen3など18の最新モデルを対象に、入力トークン数を増やすと（たとえタスクの難易度を一定に保っても）モデルの性能が一様ではなく劣化していくことを実証しました。この現象は「Context Rot」と呼ばれています。同研究が実験として直接報告しているのは、次のような**観測された性能劣化**です。
 
-1. **Lost-in-the-middle効果**：モデルはコンテキストの先頭と末尾には注意を払いやすいが、中間部分への注意が弱い
-2. **注意の希釈**：Transformerの注意機構は入力長に対して二次的に働くため、トークン数が増えるほど関連性の低いペアが爆発的に増える
-3. **ディストラクター干渉**：意味的に似ているが無関係な内容が、モデルの判断を実際に誤らせる
+1. **入力トークン数そのものの影響**：探索すべき情報量やタスク難易度を一定に保っても、入力を長くするだけで正答率が下がる
+2. **ディストラクターの影響**：探している内容と意味的に似ているが無関係な文を混ぜると精度が落ち、その度合いは入力が長いほど大きくなる
+3. **文書構造の影響**：論理的に連続した文書よりも、文をシャッフルした非連続な文書のほうが成績が良いという、直感に反する結果が出るモデルがある
+
+これらが**なぜ**起きるのかは、同研究が確定させたものではありません。注意が先頭と末尾に偏る「Lost-in-the-middle効果」（Liuらの別研究による指摘）や、入力長に対して二次的に増える注意計算のなかで関連性の低いトークン対が支配的になる「注意の希釈」といった説明は、現時点では**仮説であり今後の検証課題**として扱うのが妥当です。設計上重要なのは機序の断定ではなく、「長い入力は、難易度が同じでも性能を落としうる」という観測結果のほうです。
 
 「コンテキストウィンドウが大きい＝たくさん詰め込んでよい」という発想はこの研究によって否定されており、マルチエージェント設計で各エージェントのコンテキストを意図的に分離・圧縮することの技術的な裏付けになっています。
 
@@ -637,7 +640,7 @@ flowchart LR
 
 観測基盤側では、OpenTelemetryプロジェクトがLLM呼び出し・エージェントの推論ステップ・ツール呼び出し・MCP通信を標準化された属性で計装するための「GenAI Semantic Conventions」を整備しています。2026年6月にはGenAI関連の規約が専用リポジトリへ切り出され、独立してバージョン管理されるようになりました。2026年8月時点でこの規約はまだ「Development」ステータスであり、確定した標準ではないものの、モデル呼び出し・トークン使用量・エージェント操作（作成／呼び出し／計画／ツール実行）・MCP通信・評価結果（`gen_ai.evaluation.result`）まで一貫した語彙でトレースできる点が実務上の価値です。
 
-名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、MCPセッション（`mcp.session.id`）・リソース（`mcp.resource.uri`）・クライアント／サーバ（`mcp.client.name`、`mcp.server.name`）といったMCP特有の概念を表します。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
+名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、MCPセッション（`mcp.session.id`）・リソース（`mcp.resource.uri`）・メソッド（`mcp.method.name`）といったMCP特有の概念を表します。接続先サーバの識別には、MCP固有の属性ではなく汎用のサーバ属性（`server.address`、`server.port`）を使います。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
 
 ```mermaid
 flowchart LR

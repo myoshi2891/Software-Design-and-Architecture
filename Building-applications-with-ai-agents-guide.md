@@ -299,20 +299,19 @@ if __name__ == "__main__":
 # 実行: python agent_loop.py
 import asyncio
 import sys
-from datetime import timedelta
 from pathlib import Path
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from mcp.shared.exceptions import McpError
+from mcp.shared.exceptions import MCPError
 from mcp.types import CallToolResult
 
 # 終了条件その1: ツール呼び出しの上限。無限ループとコスト暴走を防ぐ最後の砦。
 MAX_STEPS = 5
 
-# 終了条件その3: 1回のツール呼び出しの上限時間。応答が返らないサーバーで
-# ループ全体が無期限にぶら下がるのを防ぐ。
-TOOL_TIMEOUT = timedelta(seconds=10)
+# 終了条件その3: 1回のツール呼び出しの上限時間（秒）。応答が返らないサーバーで
+# ループ全体が無期限にぶら下がるのを防ぐ。call_tool は float 秒を受け取る。
+TOOL_TIMEOUT = 10.0
 
 # サーバースクリプトはこのファイルからの相対位置で解決する。
 # カレントディレクトリに依存すると、別の場所から起動したときに FileNotFoundError になる。
@@ -360,10 +359,10 @@ async def main() -> None:
                     result = await session.call_tool(
                         "get_stock",
                         args,
-                        # 期限切れ時はサーバーへキャンセル通知が送られ McpError になる
+                        # 期限切れ時はサーバーへキャンセル通知が送られ MCPError になる
                         read_timeout_seconds=TOOL_TIMEOUT,
                     )
-                except McpError as exc:
+                except MCPError as exc:
                     # タイムアウトを含む呼び出し失敗も「失敗したツール結果」として観測に残す。
                     # ここで例外を伝播させるとループごと抜けてしまい、MAX_STEPS による
                     # 打ち切り判定も、残りの計画の実行も評価されなくなる。

@@ -21,7 +21,9 @@
 # app/main.py
 # 依存: pip install "fastapi[standard]" "pydantic>=2" "anthropic>=1.4,<2"
 #       SDK のバージョンは固定する。メジャー更新で client の引数や戻り値の型が変わるため。
-# 起動: ANTHROPIC_API_KEY="your-key-here" uvicorn app.main:app --reload
+# 起動: uvicorn app.main:app --reload
+#       ANTHROPIC_API_KEY はコマンドラインに書かず、シークレット管理やCIの環境変数から渡す。
+#       コマンドに直書きするとシェル履歴やプロセス一覧に鍵が残る。
 # 動作確認: curl -X POST localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"RAGとは？"}'
 import os
 from collections.abc import AsyncIterator
@@ -130,13 +132,15 @@ def ask(req: AskRequest) -> AskResponse:
 
 ```python
 # tests/test_main.py
-# 依存: pip install pytest httpx
+# 依存: pip install pytest "anthropic>=1.4,<2" "httpx2>=2"
+#       anthropic 1.x は HTTP 層に httpx のフォークである httpx2 を使う。
+#       SDK 例外へ渡す Request/Response も httpx2 の型でそろえる。
 # 実行: pytest tests/test_main.py
 from collections.abc import Iterator
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-import httpx
+import httpx2
 import pytest
 from anthropic import APIConnectionError, AuthenticationError
 from fastapi.testclient import TestClient
@@ -183,7 +187,7 @@ def test_プロバイダ障害なら503を返す(client: TestClient, monkeypatch
     # Arrange: 503へ変換されるのは型付きSDK例外だけ
     def raise_error(question: str) -> str:
         raise APIConnectionError(
-            request=httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+            request=httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
         )
 
     monkeypatch.setattr(main, "call_llm", raise_error)
@@ -214,8 +218,8 @@ def test_認証エラーは503へ丸めない(client: TestClient, monkeypatch: p
     def raise_error(question: str) -> str:
         raise AuthenticationError(
             "invalid api key",
-            response=httpx.Response(
-                401, request=httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+            response=httpx2.Response(
+                401, request=httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
             ),
             body=None,
         )
