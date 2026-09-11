@@ -340,7 +340,10 @@ async def main() -> None:
     # 仮想環境の外を指したり存在しなかったりし、依存パッケージの解決先がずれる。
     params = StdioServerParameters(command=sys.executable, args=[str(SERVER_SCRIPT)])
     async with stdio_client(params) as (read, write):
-        async with ClientSession(read, write) as session:
+        # ClientSession 自体にも読み取り上限を設ける。ここを省くと initialize() や
+        # list_tools() が応答の無いサーバーで無期限に待ち続け、call_tool の
+        # タイムアウトに到達する前にハングする。
+        async with ClientSession(read, write, read_timeout_seconds=TOOL_TIMEOUT) as session:
             await session.initialize()
 
             # サーバーが公開するツール一覧を取得する（LLM へ渡すツール定義の元になる）

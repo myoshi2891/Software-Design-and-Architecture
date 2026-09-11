@@ -642,6 +642,8 @@ flowchart LR
 
 名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、MCPセッション（`mcp.session.id`）・リソース（`mcp.resource.uri`）・メソッド（`mcp.method.name`）といったMCP特有の概念を表します。接続先サーバの識別には、MCP固有の属性ではなく汎用のサーバ属性（`server.address`、`server.port`）を使います。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
 
+ただし`gen_ai.tool.call.arguments`と`gen_ai.tool.call.result`は、ツールへ渡した引数と実行結果の中身そのものであり、認証情報・個人情報・社外秘データを含み得ます。このため規約上これらは**既定では記録されないOpt-In属性**と位置づけられており、計装側で明示的に有効化した場合にのみ出力されます（OpenTelemetryのSDK/計装ライブラリでは`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`相当の設定で制御します）。有効化する場合は、機微な値のマスキング（トークンやメールアドレスの伏字化）、トレースバックエンド側でのアクセス制御、保持期間の短縮といった保護策を併せて適用してください。これらを用意できないうちは無効のままにしておくのが安全です。
+
 ```mermaid
 flowchart LR
     Agent[マルチエージェントの実行] --> Span["OTelスパン生成（gen_ai.* / mcp.* 属性）"]
