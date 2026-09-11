@@ -6,8 +6,51 @@ interface IgnorePattern {
   pattern: string;
 }
 
+/** 再試行の既定値。設定ファイルに記述が無い場合に用いる。 */
+const DEFAULT_RETRY_COUNT = 2;
+const DEFAULT_RETRY_DELAY_SEC = 10;
+
+interface RetryConfig {
+  /** 429 (Too Many Requests) を一時的エラーとして再試行するか */
+  retryOn429: boolean;
+  /** 最大再試行回数（初回プローブは含まない） */
+  retryCount: number;
+  /** 再試行の基準待機秒数 */
+  retryDelaySec: number;
+}
+
+/**
+ * "10s" のような期間表記、または数値を秒数へ変換する。
+ *
+ * @param value - 設定ファイル由来の未検証値
+ * @param fallbackSec - 解釈できなかった場合に返す既定秒数
+ * @returns 正の秒数
+ */
+export function parseDurationSeconds(value: unknown, fallbackSec: number): number {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) && value > 0 ? value : fallbackSec;
+  }
+  if (typeof value !== 'string') return fallbackSec;
+
+  const match = value.trim().match(/^(\d+(?:\.\d+)?)\s*(ms|s|m)?$/);
+  if (!match) return fallbackSec;
+
+  const amount = Number(match[1]);
+  if (!Number.isFinite(amount) || amount <= 0) return fallbackSec;
+
+  const unit = match[2] ?? 's';
+  if (unit === 'ms') return amount / 1000;
+  if (unit === 'm') return amount * 60;
+  return amount;
+}
+
 const configPath = path.resolve(import.meta.dirname || '', '../.markdown-link-check.json');
 let ignoreRegexes: RegExp[] = [];
+let retryConfig: RetryConfig = {
+  retryOn429: true,
+  retryCount: DEFAULT_RETRY_COUNT,
+  retryDelaySec: DEFAULT_RETRY_DELAY_SEC,
+};
 
 if (fs.existsSync(configPath)) {
   try {
@@ -15,9 +58,42 @@ if (fs.existsSync(configPath)) {
     if (config.ignorePatterns && Array.isArray(config.ignorePatterns)) {
       ignoreRegexes = config.ignorePatterns.map((item: IgnorePattern) => new RegExp(item.pattern));
     }
+    retryConfig = {
+      retryOn429: config.retryOn429 !== false,
+      retryCount: Math.max(
+        0,
+        Math.trunc(parseDurationSeconds(config.retryCount, DEFAULT_RETRY_COUNT))
+      ),
+      retryDelaySec: parseDurationSeconds(config.fallbackRetryDelay, DEFAULT_RETRY_DELAY_SEC),
+    };
   } catch (e) {
     console.error('Failed to parse config file:', e);
   }
+}
+
+/**
+ * ステータスコードが一時的エラーで、再試行する価値があるかを判定する。
+ *
+ * CI ランナーの IP から並列アクセスすると Read the Docs 等が 429 を返すため、
+ * 恒久的なリンク切れ (404 等) と区別して扱う必要がある。
+ *
+ * @param status - HTTP ステータスコード
+ * @param retryOn429 - 429 を再試行対象とするか
+ * @returns 再試行すべきなら true
+ */
+export function isRetryableStatus(status: number, retryOn429: boolean): boolean {
+  return retryOn429 && status === 429;
+}
+
+/**
+ * 再試行前の待機秒数を求める。試行回数に応じて線形に伸ばす。
+ *
+ * @param attempt - 1 始まりの再試行番号
+ * @param baseSec - 基準待機秒数
+ * @returns 待機秒数
+ */
+export function retryDelaySeconds(attempt: number, baseSec: number): number {
+  return baseSec * attempt;
 }
 
 /**
@@ -196,9 +272,9 @@ export function buildCurlArgs(url: string, timeoutSec: number, method: 'HEAD' | 
   return args;
 }
 
-async function verifyUrl(
+async function probeUrl(
   url: string,
-  timeoutSec: number = 10
+  timeoutSec: number
 ): Promise<{ ok: boolean; status: number; error?: string }> {
   // まず HEAD リクエストで試みる
   const headResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'HEAD'), timeoutSec);
@@ -229,6 +305,41 @@ async function verifyUrl(
 
   const ok = getStatus >= 200 && getStatus < 400;
   return { ok, status: getStatus };
+}
+
+/**
+ * 指定秒数だけ待機する。
+ */
+function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+/**
+ * URL の到達性を検証する。一時的なレート制限 (429) は設定に従って再試行する。
+ *
+ * @param url - 検証対象の URL
+ * @param timeoutSec - 1 回のリクエストの最大所要秒数
+ * @returns 検証結果。失敗時は HTTP ステータスとエラーメッセージを含む
+ */
+async function verifyUrl(
+  url: string,
+  timeoutSec: number = 10
+): Promise<{ ok: boolean; status: number; error?: string }> {
+  let result = await probeUrl(url, timeoutSec);
+
+  for (let attempt = 1; attempt <= retryConfig.retryCount; attempt++) {
+    if (result.ok) return result;
+    if (!isRetryableStatus(result.status, retryConfig.retryOn429)) return result;
+
+    const delaySec = retryDelaySeconds(attempt, retryConfig.retryDelaySec);
+    console.log(
+      `  RETRY (${attempt}/${retryConfig.retryCount}): ${url} [Status: ${result.status}] waiting ${delaySec}s ...`
+    );
+    await sleep(delaySec);
+    result = await probeUrl(url, timeoutSec);
+  }
+
+  return result;
 }
 
 /**
