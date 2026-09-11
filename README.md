@@ -53,6 +53,12 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 22 本を
+一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
+収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
+グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
+ページ集合の一致は契約テストで保証しています。
+
 - 移行済みページ:
   - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
     — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
@@ -107,7 +113,7 @@ Testing Library（契約テスト）を採用しています。
 ```bash
 cd web-next
 bun install
-bun run dev        # http://localhost:3000/general/comprehensive-guide
+bun run dev        # http://localhost:3000/ （全ガイドの索引画面）
 bun run test       # 契約テスト + コンポーネントテスト
 bun run lint       # Biome
 bun run typecheck  # tsc --noEmit

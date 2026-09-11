@@ -96,6 +96,10 @@ flowchart TD
 ### 4. Web アプリ (`web-next/`) の開発
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
+- ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
+  カテゴリ別に全 22 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
+  `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`

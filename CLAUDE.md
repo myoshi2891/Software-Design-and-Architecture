@@ -31,7 +31,7 @@ bun run fix-markdown     # markdownlint エラー自動修正 (scripts/fix-markd
 
 ```bash
 cd web-next
-bun run dev        # http://localhost:3000/general/comprehensive-guide
+bun run dev        # http://localhost:3000/ （全ガイドの索引画面）
 bun run test       # Vitest（契約テスト + コンポーネントテスト）
 bun run test:watch # 単一テストは Vitest のフィルタで: bun run test -- <pattern>
 bun run lint       # Biome（lint）/ lint:fix で自動修正
