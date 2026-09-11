@@ -1,8 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const appDir = join(process.cwd(), "app");
+// このテストファイル自身が app/ 直下にあるため、そこを基準に解決する。
+// process.cwd() 基準だと、呼び出し元の作業ディレクトリ次第でパスがずれる。
+const appDir = dirname(fileURLToPath(import.meta.url));
 
 describe("favicon assets", () => {
   it("provides a scalable SVG icon via the App Router file convention", () => {
