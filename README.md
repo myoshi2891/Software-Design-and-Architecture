@@ -91,7 +91,7 @@ Testing Library（契約テスト）を採用しています。
     — CSSデザインシステム完全ガイドを移植。
     固定サイドバー・進捗バー・scroll-spy を [`CssColorTypographySpacingSidebar.tsx`](web-next/app/css-design-system-guide/css-color-typography-spacing-systems/CssColorTypographySpacingSidebar.tsx) でクライアント描画
   - [`/development-methodologies/behavior-driven-development-comprehensive-guide`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx)
-    — BDD 完全ガイドを移植（19 セクション・Mermaid 16 図・table 8・コードブロック 14）。
+    — BDD 完全ガイドを移植（19 セクション・Mermaid 22 図・table 8・コードブロック 14）。
     固定サイドバー・進捗バー・scroll-spy を [`BddSidebar.tsx`](web-next/app/development-methodologies/behavior-driven-development-comprehensive-guide/BddSidebar.tsx) でクライアント描画
   - [`/development-methodologies/extreme-programming-comprehensive-guide`](web-next/app/development-methodologies/extreme-programming-comprehensive-guide/page.tsx)
     — XP（エクストリームプログラミング）完全ガイドを移植（23 セクション・Mermaid 13 図・table 11・コードブロック 2）。
@@ -146,7 +146,7 @@ CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限
 
 | 症状 | 原因 | 対応 |
 | --- | --- | --- |
-| `[Status: 0]` + curl exit 6 | DNS の名前解決失敗。**真に死んだドメイン**の可能性が高い | `dig +short <ホスト名>` が空であることを確認し、公式の後継 URL へ差し替える |
+| `[Status: 0]` + curl exit 6 | DNS の名前解決失敗。ドメイン廃止のほか、一時的な DNS 障害やリゾルバ側の問題でも発生する | `dig <ホスト名> A` / `dig <ホスト名> AAAA` で応答ステータス（`NOERROR` / `NXDOMAIN` / `SERVFAIL`）と A/AAAA レコードの有無を確認する。別リゾルバでも `NXDOMAIN` が再現し、恒久的な廃止が確認できた場合にのみ公式の後継 URL へ差し替える |
 | `[Status: 0]` + curl exit 28 | タイムアウト。サーバ応答遅延や一時的な不達 | 時間を空けて再実行する。URL は差し替えない |
 | `[Status: 0]` + curl exit 35 | SSL/TLS 接続失敗（証明書・ハンドシェイク）。ドメインは生存していることが多い | 証明書の有効期限と TLS 設定を確認し、サイト側の一時障害なら再実行する。URL は差し替えない |
 | `[Status: 403]`（ルートを含む全 URL で発生） | WAF / Cloudflare のボット遮断 | [.markdown-link-check.json](.markdown-link-check.json) の `ignorePatterns` に追加 |
@@ -159,8 +159,14 @@ curl -s -L -o /dev/null -w '%{http_code}\n' --max-time 15 \
   -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
   <URL>
-dig +short <ホスト名>   # 空なら DNS レコードが存在しない = 真に死んだドメイン
+echo "curl exit: $?"    # %{http_code} の直後に終了コードを出す（0 / 6 / 28 / 35 の切り分けに必須）
+
+dig <ホスト名> A            # status: と ANSWER SECTION を確認する
+dig <ホスト名> AAAA         # A が無くても AAAA だけ存在する場合がある
+dig @1.1.1.1 <ホスト名> A   # 別リゾルバでも再現するか確認する
 ```
+
+`dig +short` の出力が空であることは、それだけではドメイン消滅の証拠になりません。`NXDOMAIN`（存在しない）・`SERVFAIL`（リゾルバ側の一時障害）・「A は無いが AAAA はある」は、いずれも `+short` では同じ空出力になります。応答ステータスと A/AAAA レコードを確認し、恒久的な廃止が裏づけられるまで URL を差し替えないでください。
 
 **soft-404 に注意**: SPA 構成のサイトは存在しない URL でも HTTP 200 を返し本文だけがエラーであることがあり、ステータスコードでは検出できません（例: `owasp.org/projects/<任意のslug>`）。差し替え先には安定した canonical URL を選びます。
 
