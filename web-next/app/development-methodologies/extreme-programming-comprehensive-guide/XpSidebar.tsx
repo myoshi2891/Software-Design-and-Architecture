@@ -54,7 +54,7 @@ export default function XpSidebar({ items = NAV_ITEMS }: Props) {
           <div className="sidebar-logo">XP完全ガイド</div>
           <div className="sidebar-sub">Extreme Programming</div>
         </div>
-        <nav className="sidebar-nav" id="nav">
+        <nav className="sidebar-nav" id="nav" aria-label="セクションナビゲーション">
           {items.map((item) => (
             <a
               key={item.id}

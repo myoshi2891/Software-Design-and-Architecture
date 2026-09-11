@@ -8720,6 +8720,7 @@ body.has-common-header .extreme-programming-comprehensive-guide .section-anchor 
     z-index: 1000;
     transform: scaleX(0);
     transform-origin: 0 50%;
+    transition: transform 0.1s linear;
   }
 
   a {
