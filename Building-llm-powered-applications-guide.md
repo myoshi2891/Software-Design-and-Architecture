@@ -30,13 +30,20 @@ from contextlib import asynccontextmanager
 from anthropic import (
     Anthropic,
     APIConnectionError,
-    InternalServerError,
-    RateLimitError,
+    APIStatusError,
 )
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 SYSTEM_PROMPT = "あなたは日本語で簡潔に答える技術アシスタントです。3文以内で答えてください。"
+
+# 時間をおけば回復しうるステータス。SDK が自動再試行する条件と同じ基準にそろえる
+# （408 タイムアウト / 409 競合 / 429 レート制限 / 5xx。過負荷を表す 529 は 5xx 側で拾う）。
+RETRYABLE_STATUS_CODES = frozenset({408, 409, 429})
+
+
+class IncompleteResponseError(RuntimeError):
+    """応答が最後まで生成されなかったことを表す。部分回答を成功として返さないために使う。"""
 
 class AskRequest(BaseModel):
     """入力の型。空文字や長すぎる質問はここで自動的に422として弾かれる。"""
@@ -77,6 +84,14 @@ def call_llm(question: str) -> str:
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": question}],
     )
+    # stop_reason を先に検査する。max_tokens で打ち切られた応答も HTTP 200 で返り、
+    # content には途中までの文章が入っているため、素通しすると「途中で切れた回答」を
+    # 正常応答として利用者へ返してしまう。end_turn 以外は本文を返さない。
+    if resp.stop_reason != "end_turn":
+        raise IncompleteResponseError(
+            f"応答が完了していません (stop_reason={resp.stop_reason})"
+        )
+
     # 拡張思考を有効にしたモデルでは thinking ブロックが先頭に来ることがある。
     # content[0] を text と決め打ちせず、type で絞り込む。
     for block in resp.content:
@@ -88,11 +103,23 @@ def call_llm(question: str) -> str:
 def ask(req: AskRequest) -> AskResponse:
     try:
         answer = call_llm(req.question)
-    except (RateLimitError, InternalServerError, APIConnectionError) as exc:
-        # 503に変換するのは「時間をおけば回復しうるプロバイダ側の障害」だけに限る。
-        # 認証エラー(401)やモデル未検出(404)、応答解析の失敗は設定・実装の不具合であり、
-        # 503に丸めると無意味なリトライを誘発する。捕捉せず500として顕在化させる。
+    except APIConnectionError as exc:
+        # 接続失敗。サブクラスの APITimeoutError もここで捕捉される。
         raise HTTPException(status_code=503, detail="LLMの呼び出しに失敗しました") from exc
+    except APIStatusError as exc:
+        # 503に変換するのは「時間をおけば回復しうるプロバイダ側の障害」だけに限る。
+        # 認証エラー(401)やモデル未検出(404)は設定・実装の不具合であり、503に丸めると
+        # 無意味なリトライを誘発する。捕捉せず500として顕在化させる。
+        if exc.status_code in RETRYABLE_STATUS_CODES or exc.status_code >= 500:
+            raise HTTPException(
+                status_code=503, detail="LLMの呼び出しに失敗しました"
+            ) from exc
+        raise
+    except IncompleteResponseError as exc:
+        # 部分回答を200で返さない。上流の応答が不完全なので502とする。
+        raise HTTPException(
+            status_code=502, detail="LLMの応答が完了しませんでした"
+        ) from exc
 
     if not answer.strip():
         raise HTTPException(status_code=502, detail="LLMが空の応答を返しました")
@@ -106,11 +133,12 @@ def ask(req: AskRequest) -> AskResponse:
 # 依存: pip install pytest httpx
 # 実行: pytest tests/test_main.py
 from collections.abc import Iterator
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import httpx
 import pytest
-from anthropic import APIConnectionError
+from anthropic import APIConnectionError, AuthenticationError
 from fastapi.testclient import TestClient
 
 from app import main
@@ -165,6 +193,38 @@ def test_プロバイダ障害なら503を返す(client: TestClient, monkeypatch
 
     # Assert
     assert res.status_code == 503
+
+def test_max_tokensで打ち切られた応答は200で返さない(client: TestClient) -> None:
+    """部分回答を成功として返していないかを守る回帰テスト。"""
+    # Arrange: HTTP 200 だが stop_reason が max_tokens の応答
+    client.app.state.llm.messages.create.return_value = SimpleNamespace(
+        stop_reason="max_tokens",
+        content=[SimpleNamespace(type="text", text="RAGは検索拡")],
+    )
+
+    # Act
+    res = client.post("/ask", json={"question": "RAGとは？"})
+
+    # Assert: 途中までの本文が利用者へ漏れない
+    assert res.status_code == 502
+    assert "RAGは検索拡" not in res.text
+
+def test_認証エラーは503へ丸めない(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange: 401 は設定の不具合。再試行しても回復しない
+    def raise_error(question: str) -> str:
+        raise AuthenticationError(
+            "invalid api key",
+            response=httpx.Response(
+                401, request=httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+            ),
+            body=None,
+        )
+
+    monkeypatch.setattr(main, "call_llm", raise_error)
+
+    # Act / Assert: 捕捉されず500として顕在化する
+    with pytest.raises(AuthenticationError):
+        client.post("/ask", json={"question": "RAGとは？"})
 ```
 
 この骨格に、Step 3以降で扱うプロンプト設計・コンテキスト管理・RAG・ガードレールを段階的に足していくのが、本ガイドの進み方です。

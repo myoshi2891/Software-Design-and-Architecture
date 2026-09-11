@@ -298,13 +298,25 @@ if __name__ == "__main__":
 # 依存: pip install "mcp[cli]>=2,<3"
 # 実行: python agent_loop.py
 import asyncio
+import sys
+from datetime import timedelta
+from pathlib import Path
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from mcp.shared.exceptions import McpError
 from mcp.types import CallToolResult
 
 # 終了条件その1: ツール呼び出しの上限。無限ループとコスト暴走を防ぐ最後の砦。
 MAX_STEPS = 5
+
+# 終了条件その3: 1回のツール呼び出しの上限時間。応答が返らないサーバーで
+# ループ全体が無期限にぶら下がるのを防ぐ。
+TOOL_TIMEOUT = timedelta(seconds=10)
+
+# サーバースクリプトはこのファイルからの相対位置で解決する。
+# カレントディレクトリに依存すると、別の場所から起動したときに FileNotFoundError になる。
+SERVER_SCRIPT = Path(__file__).resolve().parent / "inventory_server.py"
 
 
 def summarize(result: CallToolResult) -> str:
@@ -325,7 +337,9 @@ def summarize(result: CallToolResult) -> str:
 
 
 async def main() -> None:
-    params = StdioServerParameters(command="python", args=["inventory_server.py"])
+    # command は "python" ではなく実行中のインタプリタを指定する。PATH 上の "python" は
+    # 仮想環境の外を指したり存在しなかったりし、依存パッケージの解決先がずれる。
+    params = StdioServerParameters(command=sys.executable, args=[str(SERVER_SCRIPT)])
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
@@ -342,7 +356,19 @@ async def main() -> None:
                     print("上限に達したため打ち切ります")
                     break
 
-                result = await session.call_tool("get_stock", args)
+                try:
+                    result = await session.call_tool(
+                        "get_stock",
+                        args,
+                        # 期限切れ時はサーバーへキャンセル通知が送られ McpError になる
+                        read_timeout_seconds=TOOL_TIMEOUT,
+                    )
+                except McpError as exc:
+                    # タイムアウトを含む呼び出し失敗も「失敗したツール結果」として観測に残す。
+                    # ここで例外を伝播させるとループごと抜けてしまい、MAX_STEPS による
+                    # 打ち切り判定も、残りの計画の実行も評価されなくなる。
+                    print(f"step{step}: ツール呼び出し失敗 -> {exc}")
+                    continue
 
                 # エラー処理: is_error のときは内容をエージェントの観測として次ターンへ渡す。
                 # 握りつぶさず、かつ例外で全体を止めないのが実運用でのポイント。
