@@ -149,6 +149,7 @@ CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限
 | `[Status: 0]` + curl exit 6 | DNS の名前解決失敗。ドメイン廃止のほか、一時的な DNS 障害やリゾルバ側の問題でも発生する | `dig <ホスト名> A` / `dig <ホスト名> AAAA` で応答ステータス（`NOERROR` / `NXDOMAIN` / `SERVFAIL`）と A/AAAA レコードの有無を確認する。別リゾルバでも `NXDOMAIN` が再現し、恒久的な廃止が確認できた場合にのみ公式の後継 URL へ差し替える |
 | `[Status: 0]` + curl exit 28 | タイムアウト。サーバ応答遅延や一時的な不達 | 時間を空けて再実行する。URL は差し替えない |
 | `[Status: 0]` + curl exit 35 | SSL/TLS 接続失敗（証明書・ハンドシェイク）。ドメインは生存していることが多い | 証明書の有効期限と TLS 設定を確認し、サイト側の一時障害なら再実行する。URL は差し替えない |
+| `[Status: 429]` | レート制限。CI ランナーの IP から並列アクセスした際に Read the Docs 等で発生する。リンク自体は生存している | `verify-links.ts` が [.markdown-link-check.json](.markdown-link-check.json) の `retryOn429` / `retryCount` / `fallbackRetryDelay` に従って自動再試行する（既定: 10s → 20s の線形バックオフで最大 2 回）。再試行後も 429 が続く場合のみ `ignorePatterns` への追加を検討する。URL は差し替えない |
 | `[Status: 403]`（ルートを含む全 URL で発生） | WAF / Cloudflare のボット遮断 | [.markdown-link-check.json](.markdown-link-check.json) の `ignorePatterns` に追加 |
 | `[Status: 404]` | 参照先サイトの URL 体系変更 | 移行後の URL、無い場合は canonical な公式リポジトリを参照 |
 
@@ -170,7 +171,7 @@ dig @1.1.1.1 <ホスト名> A   # 別リゾルバでも再現するか確認す�
 
 **soft-404 に注意**: SPA 構成のサイトは存在しない URL でも HTTP 200 を返し本文だけがエラーであることがあり、ステータスコードでは検出できません（例: `owasp.org/projects/<任意のslug>`）。差し替え先には安定した canonical URL を選びます。
 
-`verify-links.ts` 側の偽陽性対策は [scripts/verify-links.test.ts](scripts/verify-links.test.ts) で保護されています（HEAD は `-X HEAD` ではなく `--head`、User-Agent は現行世代のブラウザ）。
+`verify-links.ts` 側の偽陽性対策は [scripts/verify-links.test.ts](scripts/verify-links.test.ts) で保護されています（HEAD は `-X HEAD` ではなく `--head`、User-Agent は現行世代のブラウザ、429 は恒久的エラーと区別して再試行）。
 
 ### 依存関係の脆弱性監査
 

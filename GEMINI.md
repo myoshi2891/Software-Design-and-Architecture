@@ -44,6 +44,7 @@ bun run check-links
 - `[Status: 0]`（curl exit 6）… DNS の名前解決失敗。`dig <ホスト名> A` / `dig <ホスト名> AAAA` で応答ステータス（`NOERROR` / `NXDOMAIN` / `SERVFAIL`）と A/AAAA レコードの有無を確認する。`dig +short` が空なだけでは判断しない（`NXDOMAIN`・`SERVFAIL`・AAAA のみ存在、のいずれも空出力になる）。別リゾルバでも `NXDOMAIN` が再現し、恒久的な廃止が確認できた場合にのみ後継 URL へ差し替える。
 - `[Status: 0]`（curl exit 28）… タイムアウト。時間を空けて再実行する。URL は差し替えない。
 - `[Status: 0]`（curl exit 35）… SSL/TLS 接続失敗。証明書・TLS 設定を確認し、一時障害なら再実行する。URL は差し替えない。
+- `[Status: 429]` … レート制限。リンクは生存している。`.markdown-link-check.json` の `retryOn429` / `retryCount` / `fallbackRetryDelay` に従って自動再試行される（既定: 10s → 20s、最大 2 回）。URL は差し替えない。
 - `[Status: 403]`（ルートを含む全 URL）… WAF のボット遮断。`.markdown-link-check.json` の `ignorePatterns` に追加する。
 - `[Status: 404]` … URL 体系の変更。移行先、無ければ canonical な公式リポジトリを参照する。
 

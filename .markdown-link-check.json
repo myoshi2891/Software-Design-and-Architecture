@@ -242,7 +242,7 @@
   "httpHeaders": [],
   "timeout": "10s",
   "retryOn429": true,
-  "retryCount": 1,
+  "retryCount": 2,
   "fallbackRetryDelay": "10s",
   "aliveStatusCodes": [200, 206]
 }
