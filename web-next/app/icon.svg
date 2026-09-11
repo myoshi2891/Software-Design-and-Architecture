@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="設計手法ガイド">
+  <title>設計手法ガイド</title>
+  <rect width="32" height="32" rx="7" fill="#0f1117"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" fill="none" stroke="#3a4468"/>
+  <!-- 積層アーキテクチャを表す 3 層。上位ほど狭く、色はデザイントークンの purple/teal/blue -->
+  <rect x="11" y="6.5" width="10" height="5" rx="1.6" fill="#c4b0f5"/>
+  <rect x="8"  y="13.5" width="16" height="5" rx="1.6" fill="#7dd8d8"/>
+  <rect x="5"  y="20.5" width="22" height="5" rx="1.6" fill="#7ab3f0"/>
+</svg>
