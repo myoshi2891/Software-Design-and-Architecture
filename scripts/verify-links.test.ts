@@ -3,6 +3,7 @@ import {
   buildCurlArgs,
   isRetryableStatus,
   parseDurationSeconds,
+  parseRetryCount,
   retryDelaySeconds,
 } from './verify-links';
 
@@ -30,7 +31,7 @@ describe('buildCurlArgs', () => {
     const userAgent = args[args.indexOf('-A') + 1];
 
     const chromeMajor = Number(userAgent.match(/Chrome\/(\d+)/)?.[1] ?? 0);
-    expect(chromeMajor).toBeGreaterThanOrEqual(131);
+    expect(chromeMajor).toBeGreaterThanOrEqual(153);
   });
 
   test('タイムアウト秒数が --max-time に反映される', () => {
@@ -53,6 +54,35 @@ describe('parseDurationSeconds', () => {
     expect(parseDurationSeconds(undefined, 5)).toBe(5);
     expect(parseDurationSeconds('abc', 5)).toBe(5);
     expect(parseDurationSeconds(-1, 5)).toBe(5);
+  });
+});
+
+describe('parseRetryCount', () => {
+  // retryCount は「回数」であり期間ではない。期間パーサを流用すると
+  // "1m" が 60 回、"500ms" が 0 回として解釈され、設定と挙動が乖離する。
+  test('非負整数はそのまま回数として扱う', () => {
+    expect(parseRetryCount(3, 2)).toBe(3);
+    expect(parseRetryCount('3', 2)).toBe(3);
+  });
+
+  test('0 は「再試行しない」という有効な指定として尊重する', () => {
+    expect(parseRetryCount(0, 2)).toBe(0);
+    expect(parseRetryCount('0', 2)).toBe(0);
+  });
+
+  test('期間表記は回数として解釈せずフォールバックを返す', () => {
+    expect(parseRetryCount('1m', 2)).toBe(2);
+    expect(parseRetryCount('500ms', 2)).toBe(2);
+    expect(parseRetryCount('10s', 2)).toBe(2);
+  });
+
+  test('負数・小数・非有限値・非対応型はフォールバックを返す', () => {
+    expect(parseRetryCount(-1, 2)).toBe(2);
+    expect(parseRetryCount(1.5, 2)).toBe(2);
+    expect(parseRetryCount(Number.POSITIVE_INFINITY, 2)).toBe(2);
+    expect(parseRetryCount(undefined, 2)).toBe(2);
+    expect(parseRetryCount('abc', 2)).toBe(2);
+    expect(parseRetryCount(null, 2)).toBe(2);
   });
 });
 

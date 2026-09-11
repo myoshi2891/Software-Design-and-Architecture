@@ -44,6 +44,30 @@ export function parseDurationSeconds(value: unknown, fallbackSec: number): numbe
   return amount;
 }
 
+/**
+ * 再試行「回数」を解釈する。期間表記 ("10s" / "1m" など) は回数ではないため受け付けない。
+ *
+ * 期間パーサを流用すると "1m" が 60 回、"500ms" が 0 回に化け、設定値と実挙動が
+ * 乖離する。回数は有限の非負整数のみを有効とし、0 は「再試行しない」という
+ * 意図的な指定として尊重する。
+ *
+ * @param value - 設定ファイル由来の未検証値
+ * @param fallback - 解釈できなかった場合に返す既定回数
+ * @returns 有限の非負整数
+ */
+export function parseRetryCount(value: unknown, fallback: number): number {
+  if (typeof value === 'number') {
+    return Number.isInteger(value) && value >= 0 ? value : fallback;
+  }
+  if (typeof value !== 'string') return fallback;
+
+  // 単位付き・小数・符号付きを除外し、純粋な十進整数だけを受け付ける
+  if (!/^\d+$/.test(value.trim())) return fallback;
+
+  const parsed = Number(value.trim());
+  return Number.isInteger(parsed) ? parsed : fallback;
+}
+
 const configPath = path.resolve(import.meta.dirname || '', '../.markdown-link-check.json');
 let ignoreRegexes: RegExp[] = [];
 let retryConfig: RetryConfig = {
@@ -60,10 +84,7 @@ if (fs.existsSync(configPath)) {
     }
     retryConfig = {
       retryOn429: config.retryOn429 !== false,
-      retryCount: Math.max(
-        0,
-        Math.trunc(parseDurationSeconds(config.retryCount, DEFAULT_RETRY_COUNT))
-      ),
+      retryCount: parseRetryCount(config.retryCount, DEFAULT_RETRY_COUNT),
       retryDelaySec: parseDurationSeconds(config.fallbackRetryDelay, DEFAULT_RETRY_DELAY_SEC),
     };
   } catch (e) {
@@ -239,7 +260,7 @@ function curlAsync(
  * 現行世代のブラウザ UA を名乗ることで偽陽性を避ける。
  */
 const USER_AGENT =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36';
 
 /**
  * Builds the curl arguments used to verify a single URL.
