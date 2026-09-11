@@ -38,7 +38,7 @@ export default function FddSidebar({ items = NAV_ITEMS }: Props) {
   return (
     <>
       <div id="pb" ref={progressRef} style={{ transformOrigin: "0 50%" }} />
-      <nav className="sidebar">
+      <nav className="sidebar" aria-label="セクションナビゲーション">
         <div className="sidebar-title">FDD 完全ガイド</div>
         {items.map((item) => (
           <a

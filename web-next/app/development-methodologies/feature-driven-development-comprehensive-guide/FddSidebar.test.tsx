@@ -78,8 +78,10 @@ describe("FddSidebar", () => {
     expect(NAV_ITEMS[14]?.id).toBe("s15");
   });
 
-  it("nav リンクをソース順で描画する", () => {
+  it("nav リンクをソース順で描画し、ナビゲーションに aria-label を持つ", () => {
     const { container } = render(<FddSidebar items={TEST_ITEMS} />);
+    const nav = container.querySelector("nav.sidebar");
+    expect(nav?.getAttribute("aria-label")).toBe("セクションナビゲーション");
     const links = container.querySelectorAll("nav.sidebar a.nav-item");
     expect(links).toHaveLength(3);
     expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s3"]);
