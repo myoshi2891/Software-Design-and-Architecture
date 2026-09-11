@@ -834,7 +834,7 @@ flowchart TB
 
 **Cognition（Walden Yan、一次情報）**
 - Don't Build Multi-Agents — https://cognition.ai/blog/dont-build-multi-agents
-- Multi-Agents: What's Actually Working（2026年4月フォローアップ記事の紹介）— https://note.com/masa_wunder/n/n495e03a4cf7d?hl=en
+- Multi-Agents: What's Actually Working（2026年4月22日、上記記事のフォローアップ）— https://cognition.com/blog/multi-agents-working
 
 **LangChain / LangGraph（一次情報）**
 - LangGraph: Multi-Agent Workflows（LangChain公式ブログ）— https://www.langchain.com/blog/langgraph-multi-agent-workflows

@@ -27,7 +27,12 @@ import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from anthropic import Anthropic
+from anthropic import (
+    Anthropic,
+    APIConnectionError,
+    InternalServerError,
+    RateLimitError,
+)
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
@@ -69,14 +74,21 @@ def call_llm(question: str) -> str:
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": question}],
     )
-    return resp.content[0].text
+    # 拡張思考が有効なモデルでは thinking ブロックが先頭に来ることがある。
+    # content[0] を text と決め打ちせず、type で絞り込む。
+    for block in resp.content:
+        if block.type == "text":
+            return block.text
+    raise ValueError("応答に text ブロックが含まれていません")
 
 @app.post("/ask", response_model=AskResponse)
 def ask(req: AskRequest) -> AskResponse:
     try:
         answer = call_llm(req.question)
-    except Exception as exc:
-        # プロバイダ障害・レート制限を握りつぶさず、503として明示的に返す
+    except (RateLimitError, InternalServerError, APIConnectionError) as exc:
+        # 503に変換するのは「時間をおけば回復しうるプロバイダ側の障害」だけに限る。
+        # 認証エラー(401)やモデル未検出(404)、応答解析の失敗は設定・実装の不具合であり、
+        # 503に丸めると無意味なリトライを誘発する。捕捉せず500として顕在化させる。
         raise HTTPException(status_code=503, detail="LLMの呼び出しに失敗しました") from exc
 
     if not answer.strip():
@@ -90,14 +102,35 @@ def ask(req: AskRequest) -> AskResponse:
 # tests/test_main.py
 # 依存: pip install pytest httpx
 # 実行: pytest tests/test_main.py
+from collections.abc import Iterator
+from unittest.mock import MagicMock
+
+import httpx
 import pytest
+from anthropic import APIConnectionError
 from fastapi.testclient import TestClient
 
 from app import main
 
-client = TestClient(main.app)
+@pytest.fixture
+def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
+    """lifespanを実行しつつ、実SDKクライアントの生成だけを差し替える。
 
-def test_質問に対して回答を返す(monkeypatch: pytest.MonkeyPatch) -> None:
+    TestClientを`with`で使わないとlifespanが起動せず、app.state.llm が未設定のまま
+    本番との差異を見逃す。生成と後始末の両方をここで検証する。
+    """
+    llm = MagicMock()
+    anthropic_factory = MagicMock(return_value=llm)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr(main, "Anthropic", anthropic_factory)
+
+    with TestClient(main.app) as test_client:
+        anthropic_factory.assert_called_once()  # 起動時に1つだけ生成される
+        yield test_client
+
+    llm.close.assert_called_once()  # 終了時にHTTPコネクションが解放される
+
+def test_質問に対して回答を返す(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     # Arrange
     monkeypatch.setattr(main, "call_llm", lambda question: "RAGは検索拡張生成です。")
 
@@ -108,17 +141,19 @@ def test_質問に対して回答を返す(monkeypatch: pytest.MonkeyPatch) -> N
     assert res.status_code == 200
     assert res.json() == {"answer": "RAGは検索拡張生成です。"}
 
-def test_空の質問はバリデーションで拒否する() -> None:
+def test_空の質問はバリデーションで拒否する(client: TestClient) -> None:
     # Arrange / Act
     res = client.post("/ask", json={"question": ""})
 
     # Assert: LLMに到達する前に弾かれる
     assert res.status_code == 422
 
-def test_LLM呼び出しが失敗したら503を返す(monkeypatch: pytest.MonkeyPatch) -> None:
-    # Arrange
+def test_プロバイダ障害なら503を返す(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange: 503へ変換されるのは型付きSDK例外だけ
     def raise_error(question: str) -> str:
-        raise RuntimeError("rate limited")
+        raise APIConnectionError(
+            request=httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        )
 
     monkeypatch.setattr(main, "call_llm", raise_error)
 

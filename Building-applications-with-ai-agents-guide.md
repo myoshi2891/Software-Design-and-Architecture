@@ -317,7 +317,7 @@ async def main() -> None:
             print("利用可能なツール:", [t.name for t in tools.tools])
 
             # 実際には次に呼ぶツールを LLM に決めさせる。ここでは決定論的に検証するため固定。
-            plan = [{"sku": "SKU-001"}, {"sku": "SKU-999"}]
+            plan = [{"sku": "SKU-999"}, {"sku": "SKU-001"}]
 
             for step, args in enumerate(plan, start=1):
                 if step > MAX_STEPS:
@@ -336,7 +336,7 @@ async def main() -> None:
 
                 # 終了条件その2: 目的を満たしたら即座に抜ける
                 if args["sku"] == "SKU-001":
-                    print("必要な情報が得られたため、次の推論ステップへ進みます")
+                    print("必要な情報が得られたため、ループを終了して次の推論ステップへ進みます")
                     break
 
 

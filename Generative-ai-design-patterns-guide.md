@@ -748,7 +748,8 @@ def run(question: str) -> str:
         if resp.stop_reason == "end_turn":
             return "".join(b.text for b in resp.content if b.type == "text")
         if resp.stop_reason == "max_tokens":
-            # 途中で切れた出力を完成品として扱わない。max_tokens を上げて再試行する。
+            # 途中で切れた出力を完成品として扱わない。自動リトライはせず、
+            # 明示的なエラーとして呼び出し元に通知する。
             raise RuntimeError("max_tokens に達して応答が途中で切れました")
         if resp.stop_reason != "tool_use":
             # refusal / pause_turn などを「完了」と誤認しないよう明示的に落とす
@@ -1129,15 +1130,15 @@ flowchart TB
 
 ### 11.1 Model Context Protocol(MCP)の標準化と業界ガバナンス移行
 
-パターン21(Tool Calling)を支えるインフラとして、Anthropicが2024年11月に公開した**Model Context Protocol(MCP)**は、2025年3月にOpenAIが、同年にGoogle DeepMindが採用を表明し、急速に業界標準化が進みました。2025年12月9日、AnthropicはMCPをLinux Foundation傘下の新設団体「Agentic AI Foundation(AAIF)」に寄贈し、OpenAI・Blockと共同創設者となり、AWS・Google・Microsoft・Cloudflare・Bloombergがプラチナメンバーとして参画しました。2026年3月時点でPython/TypeScript SDKの月間ダウンロード数は約9,700万件に達し、単一ベンダーに依存しないガバナンス体制が本番導入の障壁を下げたと分析されています。<sup>[3][9]</sup>
+パターン21(Tool Calling)を支えるインフラとして、Anthropicが2024年11月に公開した**Model Context Protocol(MCP)**は、2025年3月にOpenAIが、同年にGoogle DeepMindが採用を表明し、急速に業界標準化が進みました。2025年12月9日、AnthropicはMCPをLinux Foundation傘下の新設団体「Agentic AI Foundation(AAIF)」に寄贈し、OpenAI・Blockと共同創設者となり、AWS・Google・Microsoft・Cloudflare・Bloombergがプラチナメンバーとして参画しました。2026年3月時点でPython/TypeScript SDKの月間ダウンロード数は約9,700万件に達し、単一ベンダーに依存しないガバナンス体制が本番導入の障壁を下げたと分析されています。<sup>\[3]\[9]</sup>
 
 ### 11.2 コンテキストエンジニアリングとプロンプトキャッシュ経済学の転換
 
-2026年には、Andrej Karpathyが提唱したとされる「コンテキストエンジニアリング」という語が「プロンプトエンジニアリング」に代わる標準用語として定着しました。特筆すべきは、プロンプトキャッシュの普及によって従来の通説が反転した点です。「コンテキストは要約して圧縮すべき」という2025年までの定石に対し、2026年の実測データは、キャッシュ課金の恩恵がある場合、**要約せず全履歴を保持する方がコスト・速度・記憶の正確性いずれの面でも有利**になり得ることを示しました。要約はキャッシュされた接頭辞を破棄し、再計算コストを発生させるためです。Anthropicの公式エンジニアリング記事群(Effective context engineering for AI agents等)も、コンテキストを「有限の資源」として扱い、各ターンに与えるトークンを最小の高シグナル集合に絞る設計を一貫して推奨しています。<sup>[5][6]</sup>
+2026年には、Andrej Karpathyが提唱したとされる「コンテキストエンジニアリング」という語が「プロンプトエンジニアリング」に代わる標準用語として定着しました。特筆すべきは、プロンプトキャッシュの普及によって従来の通説が反転した点です。「コンテキストは要約して圧縮すべき」という2025年までの定石に対し、2026年の実測データは、キャッシュ課金の恩恵がある場合、**要約せず全履歴を保持する方がコスト・速度・記憶の正確性いずれの面でも有利**になり得ることを示しました。要約はキャッシュされた接頭辞を破棄し、再計算コストを発生させるためです。Anthropicの公式エンジニアリング記事群(Effective context engineering for AI agents等)も、コンテキストを「有限の資源」として扱い、各ターンに与えるトークンを最小の高シグナル集合に絞る設計を一貫して推奨しています。<sup>\[5]\[6]</sup>
 
 ### 11.3 小規模言語モデル(SLM)によるハイブリッド構成の定着
 
-パターン24(Small Language Model)の裏付けとなったNVIDIA発の position paper「Small Language Models are the Future of Agentic AI」(2025年6月)の主張は、2026年にはNemotron(NVIDIA)、Phi-4(Microsoft)、Gemma(Google)、Qwen3(Alibaba)といった実運用可能なオンデバイスSLM群の充実によって裏付けられつつあります。エージェントループの8〜9割のステップをローカルの小規模モデルで処理し、真に難しい判断のみをフロンティアモデルにエスカレーションする「SLM優先ルーティング」が、コスト最適化の標準パターンとして紹介されています。<sup>[4][10]</sup>
+パターン24(Small Language Model)の裏付けとなったNVIDIA発の position paper「Small Language Models are the Future of Agentic AI」(2025年6月)の主張は、2026年にはNemotron(NVIDIA)、Phi-4(Microsoft)、Gemma(Google)、Qwen3(Alibaba)といった実運用可能なオンデバイスSLM群の充実によって裏付けられつつあります。エージェントループの8〜9割のステップをローカルの小規模モデルで処理し、真に難しい判断のみをフロンティアモデルにエスカレーションする「SLM優先ルーティング」が、コスト最適化の標準パターンとして紹介されています。<sup>\[4]\[10]</sup>
 
 ### 11.4 LLM-as-Judge(パターン17)の成熟とバイアス対策の体系化
 
@@ -1145,7 +1146,7 @@ EU AI Actは高リスクAIシステムに対し、リスク管理システムの
 
 ### 11.5 ガードレール(パターン32)のインフラ化
 
-NVIDIA NeMo GuardrailsやLlama Guardのようなガードレールフレームワークは、2026年には「アプリケーションとLLMの間に挟むミドルウェア層」としてインフラ化が進みました。軽量な分類器モデル(Llama Prompt Guard 2 86Mなど)を第一段の高速フィルタとして、より詳細なLlama Guard 3 8B等を第二段の判定に使う多段構成により、p99レイテンシを80ミリ秒未満に抑える実装パターンも報告されています。一方で、ガードレール自身を長時間の推論ループへ追い込みDoS攻撃を仕掛ける新たな攻撃手法も学術研究として報告されており、ガードレールも「攻撃対象になり得るコンポーネント」として設計する視点が求められています。<sup>[7][8]</sup>
+NVIDIA NeMo GuardrailsやLlama Guardのようなガードレールフレームワークは、2026年には「アプリケーションとLLMの間に挟むミドルウェア層」としてインフラ化が進みました。軽量な分類器モデル(Llama Prompt Guard 2 86Mなど)を第一段の高速フィルタとして、より詳細なLlama Guard 3 8B等を第二段の判定に使う多段構成により、p99レイテンシを80ミリ秒未満に抑える実装パターンも報告されています。一方で、ガードレール自身を長時間の推論ループへ追い込みDoS攻撃を仕掛ける新たな攻撃手法も学術研究として報告されており、ガードレールも「攻撃対象になり得るコンポーネント」として設計する視点が求められています。<sup>\[7]\[8]</sup>
 
 ### 11.6 業界標準を形作るその他の代表的リソース
 
