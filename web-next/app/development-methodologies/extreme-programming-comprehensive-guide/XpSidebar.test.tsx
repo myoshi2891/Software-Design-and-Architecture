@@ -82,6 +82,17 @@ describe("XpSidebar", () => {
     expect(NAV_ITEMS[22]?.id).toBe("s23");
   });
 
+  // NAV_ITEMS の中身だけを検査しても、既定値が props に配線されている保証にはならない。
+  // items 省略時に既定値が実際に描画されることをコンポーネント越しに固定する。
+  it("items 省略時は既定の NAV_ITEMS を描画する", () => {
+    const { container } = render(<XpSidebar />);
+    const links = container.querySelectorAll("nav.sidebar-nav a");
+
+    expect(links).toHaveLength(23);
+    expect(links[0]?.getAttribute("href")).toBe("#s1");
+    expect(links[22]?.getAttribute("href")).toBe("#s23");
+  });
+
   it("nav リンクをソース順で描画する", () => {
     const { container } = render(<XpSidebar items={TEST_ITEMS} />);
     const links = container.querySelectorAll("nav.sidebar-nav a");
