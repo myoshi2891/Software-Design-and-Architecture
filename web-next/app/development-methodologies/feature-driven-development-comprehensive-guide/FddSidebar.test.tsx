@@ -55,6 +55,7 @@ describe("FddSidebar", () => {
         <section id="s1"></section>
         <section id="s2"></section>
         <section id="s3"></section>
+        <section></section>
       </main>`
     );
   });
@@ -92,6 +93,14 @@ describe("FddSidebar", () => {
     const active = container.querySelectorAll("nav.sidebar a.nav-item.active");
     expect(active).toHaveLength(1);
     expect(active[0]?.getAttribute("href")).toBe("#s1");
+  });
+
+  it("id を持たない section は observe 対象に含まれない", () => {
+    render(<FddSidebar items={TEST_ITEMS} />);
+
+    const observedIds = observedElements.map((el) => el.id);
+    expect(observedIds).toEqual(["s1", "s2", "s3"]);
+    expect(observedElements).toHaveLength(3);
   });
 
   it("section が交差すると対応する nav 項目だけが active になる", () => {

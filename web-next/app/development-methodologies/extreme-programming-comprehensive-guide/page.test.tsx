@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
-  default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
+  default: ({ chart }: { chart: string }) => (
+    <div className="mermaid" data-testid="mermaid-diagram" data-chart={chart} />
+  ),
 }));
 
 import Page from "./page";
@@ -48,7 +50,7 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
 
   it("Category A の Mermaid 図 (diag-1 〜 diag-5) が描画される", () => {
     const { container } = render(<Page />);
-    const mermaids = container.querySelectorAll(".mermaid");
+    const mermaids = container.querySelectorAll('[data-testid="mermaid-diagram"]');
     expect(mermaids.length).toBeGreaterThanOrEqual(5);
   });
 
@@ -98,7 +100,7 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
 
     it("Category B の Mermaid 図 (diag-6, diag-7) が追加され、合計 7 個以上描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
+      const mermaids = container.querySelectorAll('[data-testid="mermaid-diagram"]');
       expect(mermaids.length).toBeGreaterThanOrEqual(7);
     });
 
@@ -143,7 +145,7 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
 
     it("Category C の Mermaid 図 (diag-8 〜 diag-11) が追加され、合計 11 個以上描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
+      const mermaids = container.querySelectorAll('[data-testid="mermaid-diagram"]');
       expect(mermaids.length).toBeGreaterThanOrEqual(11);
     });
 
@@ -200,7 +202,7 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
 
     it("Mermaid 図が全 13 個描画されている", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
+      const mermaids = container.querySelectorAll('[data-testid="mermaid-diagram"]');
       expect(mermaids).toHaveLength(13);
     });
 
@@ -236,7 +238,7 @@ describe("extreme-programming-comprehensive-guide page (Category A)", () => {
       const actual = Object.fromEntries(
         Object.keys(expected).map((id) => [
           id,
-          container.querySelectorAll(`#${id} .mermaid-wrap .mermaid`).length,
+          container.querySelectorAll(`#${id} .mermaid-wrap [data-testid="mermaid-diagram"]`).length,
         ])
       );
       expect(actual).toEqual(expected);
