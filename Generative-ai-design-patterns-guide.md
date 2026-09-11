@@ -317,8 +317,8 @@ def extract_text(message) -> str:
         raise ValueError("text ブロックが含まれていません")
     return "\n".join(parts)
 
-def answer(question: str) -> str:
-    context = "\n".join(f"- {d}" for d in retrieve(question))
+def answer(question: str, top_k: int = 2) -> str:
+    context = "\n".join(f"- {d}" for d in retrieve(question, top_k))
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     # 「文脈だけを根拠にする」と明示することがハルシネーション抑制の要になる
     resp = client.messages.create(
@@ -335,6 +335,19 @@ def answer(question: str) -> str:
             }
         ],
     )
+    # stop_reason を見ずに content を読むと、途中で切れた応答を完成品として返してしまう。
+    # 正常終了（end_turn）のときだけテキストを採用する。
+    if resp.stop_reason == "model_context_window_exceeded":
+        # 入力が文脈長を超えた。渡す文書を減らして再試行する。
+        if top_k > 1:
+            return answer(question, top_k=top_k - 1)
+        raise RuntimeError("文脈長を超過しました。チャンク分割の粒度を見直してください")
+    if resp.stop_reason == "max_tokens":
+        # 出力上限による打ち切り。max_tokens を引き上げるか出力を短くさせる。
+        raise RuntimeError("max_tokens に達して応答が途中で切れました")
+    if resp.stop_reason != "end_turn":
+        # refusal / pause_turn などを「完了」と誤認しないよう明示的に落とす
+        raise RuntimeError(f"想定外の stop_reason: {resp.stop_reason}")
     return extract_text(resp)
 
 if __name__ == "__main__":
@@ -359,6 +372,74 @@ def test_retrieve_ranks_expense_deadline_first() -> None:
 
     # Assert: 締切を述べた文書が1位に来ること（多言語モデルでないとここが落ちる）
     assert hits[0] == "経費精算の締切は毎月5日である。"
+```
+
+生成段では `stop_reason` の分岐ごとに挙動を固定します。API を呼ばずに検証できるよう、`messages.create` の戻り値をスタブに差し替えます。
+
+```python
+# test_rag_stop_reason.py
+# 実行: pytest test_rag_stop_reason.py
+from unittest.mock import patch
+
+import pytest
+
+from basic_rag import answer
+
+def _resp(stop_reason: str, text: str = "毎月5日までです。"):
+    """messages.create の戻り値を模したスタブ。"""
+    block = type("Block", (), {"type": "text", "text": text})()
+    return type("Resp", (), {"stop_reason": stop_reason, "content": [block]})()
+
+def test_answer_returns_text_on_end_turn(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Arrange
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    with patch("basic_rag.Anthropic") as mock_client:
+        mock_client.return_value.messages.create.return_value = _resp("end_turn")
+
+        # Act / Assert
+        assert answer("経費精算はいつまで？") == "毎月5日までです。"
+
+def test_answer_retries_with_fewer_docs_on_context_overflow(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """文脈長超過は入力（文書数）を減らして再試行する。"""
+    # Arrange
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    with patch("basic_rag.Anthropic") as mock_client:
+        create = mock_client.return_value.messages.create
+        create.side_effect = [_resp("model_context_window_exceeded"), _resp("end_turn")]
+
+        # Act
+        result = answer("経費精算はいつまで？", top_k=2)
+
+        # Assert
+        assert result == "毎月5日までです。"
+        assert create.call_count == 2
+
+def test_answer_raises_when_context_overflow_cannot_shrink(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """これ以上減らせない場合は明示的なエラーにする。"""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    with patch("basic_rag.Anthropic") as mock_client:
+        mock_client.return_value.messages.create.return_value = _resp(
+            "model_context_window_exceeded"
+        )
+
+        with pytest.raises(RuntimeError, match="文脈長"):
+            answer("経費精算はいつまで？", top_k=1)
+
+@pytest.mark.parametrize("stop_reason", ["max_tokens", "refusal", "pause_turn"])
+def test_answer_raises_on_non_terminal_stop_reason(
+    stop_reason: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """打ち切り・拒否・中断を「完了」として返さない。"""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    with patch("basic_rag.Anthropic") as mock_client:
+        mock_client.return_value.messages.create.return_value = _resp(stop_reason)
+
+        with pytest.raises(RuntimeError):
+            answer("経費精算はいつまで？")
 ```
 
 ### パターン7: Semantic Indexing(セマンティックインデキシング)
@@ -714,7 +795,7 @@ TOOLS = [
         "description": "指定した都市の現在の天気を返す。天気を聞かれたときだけ使う。",
         "input_schema": {
             "type": "object",
-            "properties": {"city": {"type": "string", "description": "都市名（例: Tokyo）"}},
+            "properties": {"city": {"type": "string", "description": "都市名（例: Tokyo、東京）"}},
             "required": ["city"],
         },
     }
@@ -729,12 +810,18 @@ class WeatherArgs(BaseModel):
 
     city: str
 
+# モデルは日本語の質問に対して日本語の都市名をそのまま渡すことがある。
+# 呼び出し側で正規化し、表記ゆれで失敗させない。
+CITY_ALIASES = {"東京": "Tokyo"}
+
 def get_weather(city: str) -> str:
     """実際には気象APIを呼ぶ。ここではスタブ。"""
     table = {"Tokyo": "晴れ、22度"}
-    if city not in table:
+    name = CITY_ALIASES.get(city, city)
+    if name not in table:
+        # 未対応の都市は従来どおり KeyError。run() 側で観測としてモデルへ返す。
         raise KeyError(f"未対応の都市です: {city}")
-    return table[city]
+    return table[name]
 
 def run(question: str) -> str:
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
@@ -784,6 +871,29 @@ def run(question: str) -> str:
 
 if __name__ == "__main__":
     print(run("東京の現在の天気は？"))
+```
+
+ツールの引数はモデルが自然言語から組み立てるため、表記ゆれの正規化はツール側の責務です。日本語入力と未対応都市の双方をテストで固定します。
+
+```python
+# test_tool_use.py
+# 依存: pip install pytest anthropic pydantic
+# 実行: pytest test_tool_use.py
+import pytest
+
+from tool_use import get_weather
+
+def test_get_weather_accepts_japanese_city_name() -> None:
+    # Arrange / Act
+    result = get_weather("東京")
+
+    # Assert: 英語表記と同じ結果になる
+    assert result == get_weather("Tokyo")
+
+def test_get_weather_rejects_unsupported_city() -> None:
+    # Arrange / Act / Assert: 未対応の都市は KeyError のまま
+    with pytest.raises(KeyError):
+        get_weather("Osaka")
 ```
 
 ### パターン22: Code Execution(コード実行)
@@ -982,8 +1092,10 @@ from anthropic import Anthropic
 # ただしこれは補助的な層であり、認可・ツール権限・機密データのアクセス制御を代替しない。
 INJECTION_PATTERNS = [r"(?i)ignore .*(previous|above) instructions", r"(?i)これまでの指示を無視"]
 # sk-... 形式に加え、Anthropic の sk-ant-api03-... 形式（ハイフンを含む）も検出する。
-# 末尾はハイフン等を含みうるため \b ではなく否定先読みで区切る。
-SECRET_PATTERN = re.compile(r"\bsk-[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])")
+# 前後とも \b は使わない。Python の \w は日本語も語構成文字として扱うため、
+# 「鍵はsk-...」のように日本語が直前に来ると \b が成立せず取りこぼす。
+# ASCII ベースの否定後読み／否定先読みで区切る。
+SECRET_PATTERN = re.compile(r"(?<![A-Za-z0-9_-])sk-[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])")
 
 @dataclass(frozen=True)
 class GuardResult:
@@ -1014,6 +1126,15 @@ def chat(user_text: str) -> str:
         max_tokens=300,
         messages=[{"role": "user", "content": user_text}],
     )
+    # content を読む前に stop_reason を確認する。途中で切れた応答や拒否応答を
+    # 正常な出力として扱うと、ガードレールの判定対象そのものが壊れる。
+    if resp.stop_reason == "max_tokens":
+        raise RuntimeError("max_tokens に達して応答が途中で切れました")
+    if resp.stop_reason == "model_context_window_exceeded":
+        raise RuntimeError("入力が文脈長の上限を超えました。入力を短くしてください")
+    if resp.stop_reason != "end_turn":
+        # refusal / pause_turn などを「完了」と誤認しないよう明示的に落とす
+        raise RuntimeError(f"想定外の stop_reason: {resp.stop_reason}")
     # content[0] を決め打ちしない。thinking ブロックが先頭に来る場合がある。
     answer = "".join(b.text for b in resp.content if b.type == "text")
 
@@ -1028,7 +1149,7 @@ if __name__ == "__main__":
     print(chat("こんにちは"))
 ```
 
-出力ガードレールは「漏れたら終わり」の層なので、検出できるべき鍵の形式をテストで固定します。とくに `sk-ant-api03-...` のようにハイフンを含む形式は、素朴な `\bsk-[A-Za-z0-9]+\b` では取りこぼします。
+出力ガードレールは「漏れたら終わり」の層なので、検出できるべき鍵の形式をテストで固定します。とくに `sk-ant-api03-...` のようにハイフンを含む形式は、素朴な `\bsk-[A-Za-z0-9]+\b` では取りこぼします。加えて、日本語の直後に鍵が続く（`鍵はsk-...`）ケースも要注意です。Python の `\w` は日本語を含むため語境界 `\b` が成立せず、先頭を `\b` で区切ったパターンは検出に失敗します。
 
 ```python
 # test_guardrails.py
@@ -1056,6 +1177,15 @@ def test_check_output_rejects_api_keys(text: str) -> None:
     assert result.allowed is False
     assert result.reason == "APIキーらしき文字列を検出"
 
+def test_check_output_rejects_key_adjacent_to_japanese() -> None:
+    """日本語が直前に接した鍵も検出する（\\b では取りこぼすケース）。"""
+    # Arrange / Act
+    result = check_output("鍵はsk-ant-api03-AbCdEfGhIjKlMnOpQrStUvWxYz0123456789です")
+
+    # Assert
+    assert result.allowed is False
+    assert result.reason == "APIキーらしき文字列を検出"
+
 def test_check_output_allows_normal_text() -> None:
     assert check_output("経費精算の締切は毎月5日です。").allowed is True
 
@@ -1067,12 +1197,32 @@ def test_chat_does_not_return_leaked_key(monkeypatch: pytest.MonkeyPatch) -> Non
     leaked = "sk-ant-api03-AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"
     with patch("guardrails.Anthropic") as mock_client:
         mock_resp = mock_client.return_value.messages.create.return_value
+        mock_resp.stop_reason = "end_turn"
         mock_resp.content = [type("Block", (), {"type": "text", "text": leaked})()]
 
         answer = chat("こんにちは")
 
     assert leaked not in answer
     assert "応答を差し替えました" in answer
+
+@pytest.mark.parametrize(
+    "stop_reason",
+    ["max_tokens", "model_context_window_exceeded", "refusal", "pause_turn"],
+)
+def test_chat_rejects_non_terminal_stop_reason(
+    stop_reason: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """end_turn 以外を正常応答として返さない。"""
+    # Arrange
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    with patch("guardrails.Anthropic") as mock_client:
+        mock_resp = mock_client.return_value.messages.create.return_value
+        mock_resp.stop_reason = stop_reason
+        mock_resp.content = [type("Block", (), {"type": "text", "text": "途中まで"})()]
+
+        # Act / Assert
+        with pytest.raises(RuntimeError):
+            chat("こんにちは")
 ```
 
 ---
@@ -1142,7 +1292,7 @@ flowchart TB
 
 ### 11.4 LLM-as-Judge(パターン17)の成熟とバイアス対策の体系化
 
-EU AI Actは高リスクAIシステムに対し、リスク管理システムの構築(第9条)と、正確性・堅牢性・サイバーセキュリティの確保およびその実証(第15条)を求めています。ただし規制が特定の評価手法を指定しているわけではなく、LLM-as-Judgeは適合性を示す唯一の手段でもありません。2026年時点では、こうした「実証可能な評価」の証拠を継続的に収集するための任意の補助手段として、LLM-as-Judgeが広く採用されています。位置バイアス・長さバイアス・自己贔屓バイアスへの対策として、(1)ペアワイズ比較で提示順序を入れ替える、(2)生成モデルとは異なるモデルファミリーを評価者に使う、(3)少数の人手ラベルに対して評価者をキャリブレーションする、という3点が2026年のベストプラクティスとして複数の評価プラットフォームで共通して推奨されています。フロンティア級モデルを「監査用の高精度だが高コストな評価者」、より軽量なモデルを「本番の継続的スコアリング用」として使い分けるハイブリッド運用も一般化しています。<sup>[2]</sup>
+EU AI Actは高リスクAIシステムに対し、リスク管理システムの構築(第9条)と、正確性・堅牢性・サイバーセキュリティの確保およびその実証(第15条)を求めています。<sup>\[16]</sup>ただし規制が特定の評価手法を指定しているわけではなく、LLM-as-Judgeは適合性を示す唯一の手段でもありません。2026年時点では、こうした「実証可能な評価」の証拠を継続的に収集するための任意の補助手段として、LLM-as-Judgeが広く採用されています。位置バイアス・長さバイアス・自己贔屓バイアスへの対策として、(1)ペアワイズ比較で提示順序を入れ替える、(2)生成モデルとは異なるモデルファミリーを評価者に使う、(3)少数の人手ラベルに対して評価者をキャリブレーションする、という3点が2026年のベストプラクティスとして複数の評価プラットフォームで共通して推奨されています。フロンティア級モデルを「監査用の高精度だが高コストな評価者」、より軽量なモデルを「本番の継続的スコアリング用」として使い分けるハイブリッド運用も一般化しています。<sup>[2]</sup>
 
 ### 11.5 ガードレール(パターン32)のインフラ化
 
@@ -1262,6 +1412,7 @@ flowchart TB
 13. Eugene Yan, "Patterns for Building LLM-based Systems & Products" — https://eugeneyan.com/writing/llm-patterns/
 14. O'Reilly Media, "Generative AI Design Patterns" 書誌情報(Valliappa Lakshmanan, Hannes Hapke著、2025年10月刊、全10章・508ページ) — https://www.oreilly.com/library/view/generative-ai-design/9798341622654/
 15. Amazon.com, "Generative AI Design Patterns" 著者略歴(Valliappa Lakshmanan：元Google Cloud Director for Data Analytics and AI Solutions、Obin AI共同創業者。Hannes Hapke：Digits社Senior Machine Learning Engineer) — https://www.amazon.com/Generative-Design-Patterns-Challenges-Applications/dp/B0FN37DV9N
+16. European Union, "Regulation (EU) 2024/1689 (Artificial Intelligence Act)" 公式条文(第9条: リスク管理システム、第15条: 正確性・堅牢性・サイバーセキュリティ) — https://eur-lex.europa.eu/eli/reg/2024/1689/oj
 
 ---
 

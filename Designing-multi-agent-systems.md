@@ -526,7 +526,7 @@ MCPとA2Aはしばしば対立するものと誤解されますが、実際に�
 
 ### 4.3 ACPとAGENTS.md
 
-- **ACP（Agent Communication Protocol）**：IBM Researchが開発した、FIPA-ACLの系譜を引く交渉指向のプロトコルで、propose/accept/reject/counterのような型付きの発話行為（performative）によるマルチターン対話を形式化しています。2026年にはACPの一部機能がA2Aへ統合される動きも報告されています。
+- **ACP（Agent Communication Protocol）**：IBM Researchが開発した、FIPA-ACLの系譜を引く交渉指向のプロトコルで、propose/accept/reject/counterのような型付きの発話行為（performative）によるマルチターン対話を形式化していました。**ACPはA2Aへ統合済み**であり、独立したプロトコルとして選定する対象ではありません。旧ACP資料や既存実装を参照する場合は、交渉的対話の概念モデル（提案・受諾・拒否・カウンタ）は設計の参考として活かしつつ、実装面はA2A（Agent Cardによる能力公開、タスク委任、進捗状態の通知）へ読み替えます。
 - **AGENTS.md**：OpenAIが2025年8月に公開した、コーディングエージェント向けにリポジトリ固有の指示（ビルド手順やコーディング規約）を伝えるためのシンプルなMarkdown規約です。6万件を超えるオープンソースプロジェクトや、Cursor・Devin・GitHub Copilot・VS Codeなど主要なコーディングエージェントに採用されています。
 
 ### 4.4 Agentic AI Foundation（AAIF）とプロトコルの地形図
@@ -541,14 +541,14 @@ flowchart TB
     AAIF --> AGENTS["AGENTS.md（コーディング規約）"]
     AAIF --> Goose["goose（Block製フレームワーク）"]
     MCP -.->|補完関係| A2Aitem
-    ACP["ACP（IBM発・交渉プロトコル）"] -.->|一部機能を統合| A2Aitem
+    ACP["ACP（IBM発・旧交渉プロトコル）"] -.->|A2Aへ統合済み| A2Aitem
 ```
 
 | プロトコル | 開発元 | 主目的 | 現在の管轄 |
 |---|---|---|---|
 | MCP | Anthropic | エージェントとツール・データの接続 | AAIF（Linux Foundation） |
 | A2A | Google | エージェント間の発見・対話・タスク委任 | AAIF（Linux Foundation） |
-| ACP | IBM Research | 型付き発話行為による交渉的対話 | 一部A2Aへ統合 |
+| ACP | IBM Research | 型付き発話行為による交渉的対話（旧仕様） | A2Aへ統合済み（単独のプロトコルとしては提供されない） |
 | AGENTS.md | OpenAI | コーディングエージェントへのリポジトリ規約伝達 | AAIF（Linux Foundation） |
 
 ---
@@ -585,15 +585,24 @@ OpenAIの実務ガイドは、ツールの説明・スキーマを明確にす�
 
 ### 6.2 最小権限の原則
 
-マルチエージェントシステムでは、すべてのエージェントに同じ権限を与えるのではなく、タスクの性質に応じて権限を絞り込むことが重要です。読み取り専用のエージェントは承認なしに実行できる一方、外部への書き込みや金銭・機密情報に関わる操作を行うエージェントには、人間の承認ゲートを挟むのが定石です。
+マルチエージェントシステムでは、すべてのエージェントに同じ権限を与えるのではなく、タスクの性質に応じて権限を絞り込むことが重要です。外部への書き込みや金銭・機密情報に関わる操作を行うエージェントに、人間の承認ゲートを挟むのは定石です。
+
+一方で、**「読み取り専用だから承認不要」と一律に扱ってはなりません**。読み取り専用のエージェントであっても、(1) 機密データへアクセスする、(2) 非信頼な入力（Webページ、受信メール、外部エージェントの応答など）を処理する、(3) 外部へ通信できる――のいずれかに該当する場合、後述のLethal Trifectaが成立し、プロンプトインジェクションによる情報漏洩の経路になります。この場合は次の統制を前提条件とします。
+
+- **送信先の制限**：外部送信は許可した宛先（ドメイン・エンドポイント）のみに限定し、任意のURLへの送信を禁じる。
+- **機密データの除外**：送信ペイロードから資格情報・個人情報などの機密データを除外する（フィルタと監査ログをセットで用意する）。
+- **人間の承認**：上記の統制が十分に効かない場合、または機密データがシステム外へ出る可能性が残る場合は、承認なしの実行を認めない。
 
 ```mermaid
 flowchart LR
     Task[タスクの種類] --> Read[読み取り専用エージェント]
     Task --> Write[書き込み権限エージェント]
-    Read --> Approve1{承認不要}
     Write --> Approve2{人間の承認が必要}
-    Approve1 --> Exec1[即時実行]
+    Read --> Trifecta{"機密データ・非信頼入力・<br/>外部送信のいずれかに該当?"}
+    Trifecta -->|該当しない| Exec1[即時実行]
+    Trifecta -->|該当する| Guard{"送信先制限と機密データ除外で<br/>統制しきれる?"}
+    Guard -->|統制できる| Exec1
+    Guard -->|統制できない| Approve2
     Approve2 -->|承認| Exec2[実行]
     Approve2 -->|却下| Stop[停止]
 ```
@@ -612,11 +621,13 @@ flowchart LR
 
 ### 7.2 OpenTelemetry GenAI Semantic Conventions
 
-観測基盤側では、OpenTelemetryプロジェクトがLLM呼び出し・エージェントの推論ステップ・ツール呼び出し・MCP通信を標準化された`gen_ai.*`属性で計装するための「GenAI Semantic Conventions」を整備しています。2026年6月にはGenAI関連の規約が専用リポジトリへ切り出され、独立してバージョン管理されるようになりました。2026年8月時点でこの規約はまだ「Development」ステータスであり、確定した標準ではないものの、モデル呼び出し・トークン使用量・エージェント操作（作成／呼び出し／計画／ツール実行）・MCP通信・評価結果（`gen_ai.evaluation.result`）まで一貫した語彙でトレースできる点が実務上の価値です。
+観測基盤側では、OpenTelemetryプロジェクトがLLM呼び出し・エージェントの推論ステップ・ツール呼び出し・MCP通信を標準化された属性で計装するための「GenAI Semantic Conventions」を整備しています。2026年6月にはGenAI関連の規約が専用リポジトリへ切り出され、独立してバージョン管理されるようになりました。2026年8月時点でこの規約はまだ「Development」ステータスであり、確定した標準ではないものの、モデル呼び出し・トークン使用量・エージェント操作（作成／呼び出し／計画／ツール実行）・MCP通信・評価結果（`gen_ai.evaluation.result`）まで一貫した語彙でトレースできる点が実務上の価値です。
+
+名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、MCPセッション（`mcp.session.id`）・リソース（`mcp.resource.uri`）・クライアント／サーバ（`mcp.client.name`、`mcp.server.name`）といったMCP特有の概念を表します。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
 
 ```mermaid
 flowchart LR
-    Agent[マルチエージェントの実行] --> Span["OTelスパン生成（gen_ai.*属性）"]
+    Agent[マルチエージェントの実行] --> Span["OTelスパン生成（gen_ai.* / mcp.* 属性）"]
     Span --> Trace[分散トレース]
     Trace --> Eval["評価器（gen_ai.evaluation.result）"]
     Eval --> Dash[ダッシュボードで監視]
@@ -768,7 +779,7 @@ flowchart TB
 
 ## 第11部　2026年9月時点の最新動向
 
-- **プロトコル層の再編**：AnthropicはMCPを、GoogleはA2Aを、それぞれLinux Foundation傘下のAgentic AI Foundation（AAIF）へ移管し、両プロトコルは「ツール接続層（MCP）」と「エージェント間対話層（A2A）」として補完関係にあることが業界的に定着しました。IBM発のACPも一部機能がA2Aへ統合される動きが報告されています。
+- **プロトコル層の再編**：AnthropicはMCPを、GoogleはA2Aを、それぞれLinux Foundation傘下のAgentic AI Foundation（AAIF）へ移管し、両プロトコルは「ツール接続層（MCP）」と「エージェント間対話層（A2A）」として補完関係にあることが業界的に定着しました。IBM発のACPはA2Aへ統合済みであり、旧ACPベースの資料はA2Aへの移行情報として読み替える必要があります。
 - **フレームワークの整理**：Microsoft Agent Framework 1.0が2026年4月3日にGAし、AutoGenとSemantic Kernelが統合されました。単体のAutoGenは事実上メンテナンスモードとなり、2026年時点で実務上検討すべきフレームワークはLangGraph・CrewAI・OpenAI Agents SDK・Google ADK・Microsoft Agent Framework・Claude Agent SDKの6つに整理されています。
 - **セキュリティの重心が「エージェントの自律性」へ移動**：OWASP Top 10 for LLM Applications 2026で「過剰な自律性」が3位に上昇し、Agentic Applications向けのTop 10（ASI01〜ASI10）が新設されました。Simon Willison氏のLethal Trifectaは、OWASPの分類と対応づけられる形で業界共通の脅威モデルとして定着しています。
 - **観測基盤の標準化が進行中**：OpenTelemetryのGenAI Semantic Conventionsは2026年6月に専用リポジトリへ切り出され独立してバージョン管理されるようになりましたが、2026年8月時点でも「Development」ステータスであり、まだ確定した仕様ではありません。

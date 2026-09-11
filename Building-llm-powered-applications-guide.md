@@ -71,10 +71,13 @@ def call_llm(question: str) -> str:
     resp = app.state.llm.messages.create(
         model="claude-sonnet-5",
         max_tokens=300,
+        # claude-sonnet-5 は thinking を省略すると adaptive thinking で動作する。
+        # 短答用途では思考トークンが無駄になるため、明示的に無効化する。
+        thinking={"type": "disabled"},
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": question}],
     )
-    # 拡張思考が有効なモデルでは thinking ブロックが先頭に来ることがある。
+    # 拡張思考を有効にしたモデルでは thinking ブロックが先頭に来ることがある。
     # content[0] を text と決め打ちせず、type で絞り込む。
     for block in resp.content:
         if block.type == "text":
