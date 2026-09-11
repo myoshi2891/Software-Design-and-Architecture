@@ -15,9 +15,9 @@ import Page from "./page";
  * ページ側は id を渡していないため、図の同定はソース断片で行う（断片は全図で一意）。
  */
 function expectDiagram(container: HTMLElement, snippet: string): void {
-  const matched = Array.from(container.querySelectorAll<HTMLElement>(".mermaid")).filter((el) =>
-    (el.dataset.chart ?? "").includes(snippet)
-  );
+  const matched = Array.from(
+    container.querySelectorAll<HTMLElement>('[data-testid="mermaid-diagram"]')
+  ).filter((el) => (el.dataset.chart ?? "").includes(snippet));
   expect(matched, `図ソースに「${snippet}」を含む Mermaid 図がちょうど 1 枚あること`).toHaveLength(
     1
   );
@@ -63,7 +63,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
   it("Category A の Mermaid 図 (m-problems, m-levels, m-gwt, m-story, m-keywords, m-cycle, m-amigos, m-sprint) が描画される", () => {
     const { container } = render(<Page />);
-    expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(8);
+    expect(
+      container.querySelectorAll('[data-testid="mermaid-diagram"]').length
+    ).toBeGreaterThanOrEqual(8);
     expectDiagram(container, "BDD 導入前の問題"); // m-problems
     expectDiagram(container, "受け入れテスト駆動開発"); // m-levels
     expectDiagram(container, "Given-When-Then 構文"); // m-gwt
@@ -111,7 +113,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図 m-tools と m-cucumber-arch が追加され、合計 10 個以上描画される", () => {
       const { container } = render(<Page />);
-      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(10);
+      expect(
+        container.querySelectorAll('[data-testid="mermaid-diagram"]').length
+      ).toBeGreaterThanOrEqual(10);
       expectDiagram(container, "Feature ファイル記述"); // m-tools
       expectDiagram(container, "Gherkin 記法で記述"); // m-cucumber-arch
     });
@@ -150,7 +154,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図 m-doubleloop, m-atdd, m-ui-arch が追加され、合計 13 個以上描画される", () => {
       const { container } = render(<Page />);
-      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(13);
+      expect(
+        container.querySelectorAll('[data-testid="mermaid-diagram"]').length
+      ).toBeGreaterThanOrEqual(13);
       expectDiagram(container, "外側ループ"); // m-doubleloop
       expectDiagram(container, "要件（ユーザーストーリー）"); // m-atdd
       expectDiagram(container, "UI 実装詳細は書かない"); // m-ui-arch
@@ -194,7 +200,9 @@ describe("behavior-driven-development-comprehensive-guide page (Category A)", ()
 
     it("Mermaid 図（m-cicd, m-maturity, m-health 等）が描画され、合計 17 個以上存在する", () => {
       const { container } = render(<Page />);
-      expect(container.querySelectorAll(".mermaid").length).toBeGreaterThanOrEqual(17);
+      expect(
+        container.querySelectorAll('[data-testid="mermaid-diagram"]').length
+      ).toBeGreaterThanOrEqual(17);
       expectDiagram(container, "ローカル開発"); // m-cicd
       expectDiagram(container, "受け入れ基準が暗黙知"); // m-maturity
       expectDiagram(container, "BDD 健全性チェック開始"); // m-health

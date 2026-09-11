@@ -89,6 +89,13 @@ describe("XpSidebar", () => {
     expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(["#s1", "#s2", "#s5"]);
   });
 
+  it("nav ランドマークに識別用の aria-label を持つ", () => {
+    const { container } = render(<XpSidebar items={TEST_ITEMS} />);
+    expect(container.querySelector("nav.sidebar-nav")?.getAttribute("aria-label")).toBe(
+      "セクションナビゲーション"
+    );
+  });
+
   it("初期状態では先頭の nav 項目に active が付く", () => {
     const { container } = render(<XpSidebar items={TEST_ITEMS} />);
     const active = container.querySelectorAll("nav.sidebar-nav a.active");
@@ -98,6 +105,10 @@ describe("XpSidebar", () => {
 
   it("section が交差すると対応する nav 項目だけが active になる", () => {
     const { container } = render(<XpSidebar items={TEST_ITEMS} />);
+
+    // items の全 section が observe 対象になっていること（セレクタ退行の検出）
+    const observedIds = observedElements.map((el) => el.id);
+    expect(observedIds).toEqual(expect.arrayContaining(["s1", "s2", "s5"]));
 
     const activeInitial = container.querySelectorAll("nav.sidebar-nav a.active");
     expect(activeInitial).toHaveLength(1);

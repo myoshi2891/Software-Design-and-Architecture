@@ -15,6 +15,23 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 import Page from "./page";
 
+/**
+ * 指定セクション配下の Mermaid 図のみを数える。
+ * ページ全体を数えると他カテゴリの増減で値が変わり、
+ * 当該カテゴリの退行を検出できないため、必ずセクション単位で集計する。
+ * セレクタは data-testid を使う。page.tsx は各図を独自の
+ * <div className="mermaid"> で包むため、.mermaid では二重にカウントされる。
+ */
+function countMermaidsIn(container: HTMLElement, sectionIds: readonly string[]): number {
+  return sectionIds.reduce(
+    (total, id) =>
+      total +
+      (container.querySelector(`#${id}`)?.querySelectorAll('[data-testid="mermaid-diagram"]')
+        .length ?? 0),
+    0
+  );
+}
+
 describe("feature-driven-development-comprehensive-guide page (Category A)", () => {
   it("h1 見出しに FDD（Feature-Driven Development）完全ガイドが含まれる", () => {
     const { container } = render(<Page />);
@@ -49,10 +66,9 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
     expect(s4?.querySelector("h2")?.textContent).toContain("フィーチャーリストの構築");
   });
 
-  it("Category A の Mermaid 図が 6 個描画される", () => {
+  it("Category A (s1 - s4) の Mermaid 図が 6 個描画される", () => {
     const { container } = render(<Page />);
-    const mermaids = container.querySelectorAll(".mermaid");
-    expect(mermaids.length).toBeGreaterThanOrEqual(6);
+    expect(countMermaidsIn(container, ["s1", "s2", "s3", "s4"])).toBe(6);
   });
 
   it("s2 に 6ヶ月プロジェクトのタイムライン SVG が描画される", () => {
@@ -142,10 +158,9 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(s8?.textContent).toContain("ドメインエキスパート");
     });
 
-    it("Category B の Mermaid 図が追加され、全体で 11 個以上描画される", () => {
+    it("Category B (s5 - s8) の Mermaid 図が 6 個描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
-      expect(mermaids.length).toBeGreaterThanOrEqual(11);
+      expect(countMermaidsIn(container, ["s5", "s6", "s7", "s8"])).toBe(6);
     });
   });
 
@@ -203,10 +218,9 @@ describe("feature-driven-development-comprehensive-guide page (Category A)", () 
       expect(links.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("Category C の Mermaid 図が追加され、全体で 14 個以上描画される", () => {
+    it("Category C (s9 - s11) の Mermaid 図が 3 個描画される", () => {
       const { container } = render(<Page />);
-      const mermaids = container.querySelectorAll(".mermaid");
-      expect(mermaids.length).toBeGreaterThanOrEqual(14);
+      expect(countMermaidsIn(container, ["s9", "s10", "s11"])).toBe(3);
     });
   });
 
