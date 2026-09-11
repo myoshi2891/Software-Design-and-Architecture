@@ -279,7 +279,7 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-段ごとの中間出力そのものをログへ出すと、パイプラインが扱った入力データが標準エラー経由でログ基盤へ蓄積されます。既定では段名・文字数・内容ハッシュといった監査メタデータのみを記録し、本文をそのまま出力するデバッグは明示的なデバッグフラグ（環境変数や `--debug` オプション）でのみ有効化してください。その際も、機密項目のマスキング・出力先へのアクセス制御・保持期間の上限をセットで用意することが前提です。
+段ごとの中間出力そのものをログへ出すと、パイプラインが扱った入力データが標準エラー経由でログ基盤へ蓄積されます。既定では段名・文字数といった監査メタデータのみを記録し、本文をそのまま出力するデバッグは明示的なデバッグフラグ（環境変数や `--debug` オプション）でのみ有効化してください。その際も、機密項目のマスキング・出力先へのアクセス制御・保持期間の上限をセットで用意することが前提です。
 
 ### 2.2 並列（コンカレント）パターン
 
@@ -540,7 +540,7 @@ MCPとA2Aはしばしば対立するものと誤解されますが、実際に�
 
 ### 4.3 ACPとAGENTS.md
 
-- **ACP（Agent Communication Protocol）**：IBM Researchが開発した、FIPA-ACLの系譜を引く交渉指向のプロトコルで、propose/accept/reject/counterのような型付きの発話行為（performative）によるマルチターン対話を形式化していました。**ACPはA2Aへ統合済み**であり、独立したプロトコルとして選定する対象ではありません。旧ACP資料や既存実装を参照する場合は、交渉的対話の概念モデル（提案・受諾・拒否・カウンタ）は設計の参考として活かしつつ、実装面はA2A（Agent Cardによる能力公開、タスク委任、進捗状態の通知）へ読み替えます。
+- **ACP（Agent Communication Protocol）**：IBM Researchが開発した、FIPA-ACLの系譜を引く交渉指向のプロトコルで、propose/accept/reject/counterのような型付きの発話行為（performative）によるマルチターン対話を形式化していました。**ACPは2025年8月にLinux FoundationのLF AI & Data配下でA2Aへ統合済み**（`i-am-bee/acp` リポジトリは2025年8月27日にアーカイブされ read-only 化）であり、独立したプロトコルとして選定する対象ではありません。旧ACP資料や既存実装を参照する場合は、交渉的対話の概念モデル（提案・受諾・拒否・カウンタ）は設計の参考として活かしつつ、実装面はA2A（Agent Cardによる能力公開、タスク委任、進捗状態の通知）へ読み替えます。
 - **AGENTS.md**：OpenAIが2025年8月に公開した、コーディングエージェント向けにリポジトリ固有の指示（ビルド手順やコーディング規約）を伝えるためのシンプルなMarkdown規約です。Linux Foundationのプレスリリース（2025年12月9日時点）によれば、6万件を超えるオープンソースプロジェクトおよびエージェントフレームワーク（Amp・Codex・Cursor・Devin・Factory・Gemini CLI・GitHub Copilot・Jules・VS Codeなど）に採用されています（母集団は「AGENTS.mdを採用した公開プロジェクト・フレームワーク」。出典は末尾参考文献のAAIF設立プレスリリース）。
 
 ### 4.4 Agentic AI Foundation（AAIF）とプロトコルの地形図
@@ -640,7 +640,7 @@ flowchart LR
 
 観測基盤側では、OpenTelemetryプロジェクトがLLM呼び出し・エージェントの推論ステップ・ツール呼び出し・MCP通信を標準化された属性で計装するための「GenAI Semantic Conventions」を整備しています。2026年6月にはGenAI関連の規約が専用リポジトリへ切り出され、独立してバージョン管理されるようになりました。2026年8月時点でこの規約はまだ「Development」ステータスであり、確定した標準ではないものの、モデル呼び出し・トークン使用量・エージェント操作（作成／呼び出し／計画／ツール実行）・MCP通信・評価結果（`gen_ai.evaluation.result`）まで一貫した語彙でトレースできる点が実務上の価値です。
 
-名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、MCPセッション（`mcp.session.id`）・リソース（`mcp.resource.uri`）・メソッド（`mcp.method.name`）といったMCP特有の概念を表します。接続先サーバの識別には、MCP固有の属性ではなく汎用のサーバ属性（`server.address`、`server.port`）を使います。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
+名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、リソース（`mcp.resource.uri`）・メソッド（`mcp.method.name`）・セッション（`mcp.session.id`）といったMCP特有の概念を表します。ただし`mcp.session.id`が指す**プロトコルレベルのセッションは、MCP仕様のリビジョン`2026-07-28`で`Mcp-Session-Id`ヘッダーごとStreamable HTTPから削除されました**（同リビジョンのサーバは`Mcp-Session-Id`を受け取っても無視し、セッションIDを発行も反響もしません）。したがってこの属性が意味を持つのは`2025-11-25`以前のリビジョン、またはそれらと相互運用するための後方互換経路に限られます。現行リビジョンを前提とする計装では、セッションIDに依存せず、アプリケーションが明示的に持つ状態ハンドル（会話IDやタスクIDなど）と、リクエスト単位の相関（トレースID／スパンID、JSON-RPCの`id`）で紐付けてください。接続先サーバの識別には、MCP固有の属性ではなく汎用のサーバ属性（`server.address`、`server.port`）を使います。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
 
 ただし`gen_ai.tool.call.arguments`と`gen_ai.tool.call.result`は、ツールへ渡した引数と実行結果の中身そのものであり、認証情報・個人情報・社外秘データを含み得ます。このため規約上これらは**既定では記録されないOpt-In属性**と位置づけられており、計装側で明示的に有効化した場合にのみ出力されます（OpenTelemetryのSDK/計装ライブラリでは`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`相当の設定で制御します）。有効化する場合は、機微な値のマスキング（トークンやメールアドレスの伏字化）、トレースバックエンド側でのアクセス制御、保持期間の短縮といった保護策を併せて適用してください。これらを用意できないうちは無効のままにしておくのが安全です。
 
@@ -707,7 +707,7 @@ OWASP GenAI Security Projectは2025年12月、自律的に計画・記憶・ツ�
 
 ### 8.3 過剰な自律性への対策：Rule of Two
 
-Lethal Trifectaへの実践的な対策として、2025年10月に提案された「Rule of Two」という設計指針があります。これは、1回のセッションで次の3つの性質のうち**同時に満たしてよいのは最大2つまで**とする考え方です。
+Lethal Trifectaへの実践的な対策として、Metaが2025年10月31日に公開した「Agents Rule of Two」という設計指針があります。これは、1回のセッションで次の3つの性質のうち**同時に満たしてよいのは最大2つまで**とする考え方です。
 
 1. 信頼できない入力を処理する
 2. プライベートデータにアクセスする
@@ -736,7 +736,7 @@ flowchart TB
 
 ## 第9部　実装フレームワークの選択（2026年版）
 
-2026年時点で、マルチエージェントシステムの実装に使われる主要フレームワークは大きく整理が進みました。Microsoftは研究指向のAutoGenとエンタープライズ指向のSemantic Kernelを統合し、「Microsoft Agent Framework」として2026年4月3日にGA（一般提供）を迎えています。単体のAutoGenは事実上メンテナンスモードに移行しました。
+2026年時点で、マルチエージェントシステムの実装に使われる主要フレームワークは大きく整理が進みました。Microsoftは研究指向のAutoGenとエンタープライズ指向のSemantic Kernelを統合し、「Microsoft Agent Framework」として2026年4月3日にGA（一般提供）を迎えています。公式ドキュメントはAgent Frameworkを両者の「直接の後継（direct successor）」かつ「次世代」と位置づけており、AutoGenの単純なエージェント抽象とSemantic Kernelのエンタープライズ機能（セッションベースの状態管理・型安全・ミドルウェア・テレメトリ）を引き継いだ上で、グラフベースのワークフローを追加した設計です。AutoGen単体のリポジトリは新機能の追加を終えてコミュニティ管理へ移り、新規開発は公式の移行ガイドでAgent Frameworkへ誘導されています。
 
 ### 9.1 フレームワーク比較表
 
@@ -799,7 +799,7 @@ flowchart TB
 ## 第11部　2026年9月時点の最新動向
 
 - **プロトコル層の再編**：AnthropicはMCPを、GoogleはA2Aを、それぞれLinux Foundation傘下のAgentic AI Foundation（AAIF）へ移管し、両プロトコルは「ツール接続層（MCP）」と「エージェント間対話層（A2A）」として補完関係にあることが業界的に定着しました。IBM発のACPはA2Aへ統合済みであり、旧ACPベースの資料はA2Aへの移行情報として読み替える必要があります。
-- **フレームワークの整理**：Microsoft Agent Framework 1.0が2026年4月3日にGAし、AutoGenとSemantic Kernelが統合されました。単体のAutoGenは事実上メンテナンスモードとなり、2026年時点で実務上検討すべきフレームワークはLangGraph・CrewAI・OpenAI Agents SDK・Google ADK・Microsoft Agent Framework・Claude Agent SDKの6つに整理されています。
+- **フレームワークの整理**：Microsoft Agent Framework 1.0が2026年4月3日にGAし、AutoGenとSemantic Kernelが統合されました。AutoGenの資産はAgent Frameworkへ引き継がれ（公式には「直接の後継」）、AutoGen単体のリポジトリは新機能追加を終えてコミュニティ管理へ移行しています。2026年時点で実務上検討すべきフレームワークはLangGraph・CrewAI・OpenAI Agents SDK・Google ADK・Microsoft Agent Framework・Claude Agent SDKの6つに整理されています。
 - **セキュリティの重心が「エージェントの自律性」へ移動**：OWASP Top 10 for LLM Applications 2026で「過剰な自律性」が3位に上昇し、Agentic Applications向けのTop 10（ASI01〜ASI10）が新設されました。Simon Willison氏のLethal Trifectaは、OWASPの分類と対応づけられる形で業界共通の脅威モデルとして定着しています。
 - **観測基盤の標準化が進行中**：OpenTelemetryのGenAI Semantic Conventionsは2026年6月に専用リポジトリへ切り出され独立してバージョン管理されるようになりましたが、2026年8月時点でも「Development」ステータスであり、まだ確定した仕様ではありません。
 - **単一 vs マルチエージェントの論争は「使い分け」へ収束**：2025年6月に同時期に公開されたAnthropicとCognitionの対照的な記事をきっかけに始まった論争は、2026年4月のCognitionのフォローアップ記事により、「読み取り中心の探索タスクでは並列マルチエージェントが有効、書き込み・実行を伴うタスクではSingle-Writer原則を守る」という実務的な使い分けへ収束しつつあります。
@@ -848,6 +848,8 @@ flowchart TB
 - Effective context engineering for AI agents — https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 - Donating the Model Context Protocol and establishing the Agentic AI Foundation — https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
 - MCP joins the Agentic AI Foundation（Model Context Protocol公式ブログ）— https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/
+- MCP仕様 リビジョン`2026-07-28` Streamable HTTP（プロトコルレベルのセッションと`Mcp-Session-Id`の削除、後方互換の扱い）— https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http
+- MCP仕様 Versioning（現行リビジョンは`2026-07-28`）— https://modelcontextprotocol.io/specification/versioning
 
 **OpenAI（一次情報）**
 - A practical guide to building agents（PDF）— https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
@@ -861,6 +863,13 @@ flowchart TB
 - A2A Protocol Surpasses 150 Organizations（Linux Foundation プレスリリース）— https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year
 - Linux Foundation Announces the Formation of the Agentic AI Foundation（AAIF）— https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation
 - A New Chapter for A2A: Joining the Agentic AI Foundation（A2A Protocol 公式ブログ、2026年8月27日）— https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/
+- ACP Joins Forces with A2A Under the Linux Foundation's LF AI & Data（LF AI & Data、2025年8月29日。ACPのA2A統合の出典）— https://lfaidata.foundation/communityblog/2025/08/29/acp-joins-forces-with-a2a-under-the-linux-foundations-lf-ai-data/
+- i-am-bee/acp（ACP公式リポジトリ。2025年8月27日にアーカイブされ、READMEにA2Aへの移行ガイドを掲載）— https://github.com/i-am-bee/acp
+
+**Microsoft（一次情報）**
+- Microsoft Agent Framework Overview（AutoGenとSemantic Kernelの「直接の後継」という公式の位置づけ）— https://learn.microsoft.com/en-us/agent-framework/overview/
+- Migration Guide from AutoGen（AutoGenからAgent Frameworkへの公式移行ガイド）— https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-autogen/
+- microsoft/autogen（AutoGen公式リポジトリ。現状の位置づけと新規利用者への案内）— https://github.com/microsoft/autogen
 
 **Cognition（Walden Yan、一次情報）**
 - Don't Build Multi-Agents — https://cognition.ai/blog/dont-build-multi-agents
@@ -875,6 +884,7 @@ flowchart TB
 
 **セキュリティ（一次情報）**
 - The lethal trifecta for AI agents（Simon Willison氏本人のブログ、2025年6月16日）— https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/
+- Agents Rule of Two: A Practical Approach to AI Agent Security（Meta AI公式ブログ、2025年10月31日）— https://ai.meta.com/blog/practical-ai-agent-security/
 - OWASP Top 10 for Agentic Applications for 2026 — https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
 - OWASP GenAI LLM Top 10 2026 — https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/
 

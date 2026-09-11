@@ -898,7 +898,7 @@ flowchart TB
 
 ### 安全性・ガードレール・責任あるAIに関する情報源
 
-- **出典27** OWASP GenAI Security Project, "OWASP Top 10 for LLM Applications" — https://genai.owasp.org/llm-top-10/
+- **出典27** OWASP GenAI Security Project, "OWASP Top 10 for LLM Applications 2026" — https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/
 - **出典28** "The Complete AI Guardrails Implementation Guide for 2026" — https://www.getmaxim.ai/articles/the-complete-ai-guardrails-implementation-guide-for-2026/
 - **出典29** "LlamaFirewall: An open source guardrail system for building secure AI agents" — https://arxiv.org/pdf/2505.03574
 
