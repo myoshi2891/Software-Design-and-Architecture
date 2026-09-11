@@ -151,6 +151,7 @@ CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限
 ```bash
 curl -s -L -o /dev/null -w '%{http_code}\n' --max-time 15 \
   -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
   <URL>
 dig +short <ホスト名>   # 空なら DNS レコードが存在しない = 真に死んだドメイン
 ```
