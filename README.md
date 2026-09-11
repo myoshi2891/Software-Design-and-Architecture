@@ -157,14 +157,14 @@ CI が `DEAD` と報告しても、リンクが実際に死んでいるとは限
 
 ```bash
 curl -s -L -o /dev/null -w '%{http_code}\n' --max-time 15 \
-  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
-  <URL>
+  '<URL>'
 echo "curl exit: $?"    # %{http_code} の直後に終了コードを出す（0 / 6 / 28 / 35 の切り分けに必須）
 
-dig <ホスト名> A            # status: と ANSWER SECTION を確認する
-dig <ホスト名> AAAA         # A が無くても AAAA だけ存在する場合がある
-dig @1.1.1.1 <ホスト名> A   # 別リゾルバでも再現するか確認する
+dig '<ホスト名>' A            # status: と ANSWER SECTION を確認する
+dig '<ホスト名>' AAAA         # A が無くても AAAA だけ存在する場合がある
+dig @1.1.1.1 '<ホスト名>' A   # 別リゾルバでも再現するか確認する
 ```
 
 `dig +short` の出力が空であることは、それだけではドメイン消滅の証拠になりません。`NXDOMAIN`（存在しない）・`SERVFAIL`（リゾルバ側の一時障害）・「A は無いが AAAA はある」は、いずれも `+short` では同じ空出力になります。応答ステータスと A/AAAA レコードを確認し、恒久的な廃止が裏づけられるまで URL を差し替えないでください。
