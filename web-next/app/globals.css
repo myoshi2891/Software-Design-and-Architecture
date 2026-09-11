@@ -73,6 +73,165 @@ body {
   padding: 0;
 }
 
+/*
+ * ── ガイド索引（ルート "/"）──
+ * 全 22 本のガイドをカテゴリ別に一覧するボード。装飾は持たせず、
+ * 構造を示すのは罫線とカテゴリ色帯だけにする。カテゴリ色 (--cat) は
+ * 「彩り」ではなく所属を示す識別子で、未移行（準備中）の行には与えない。
+ * 固定ヘッダー分のオフセットは body.has-common-header の margin-top が担う。
+ */
+.guide-index {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 400;
+
+  .page-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 24px 96px;
+  }
+
+  .index-header {
+    border-bottom: 1px solid var(--color-border-primary);
+    padding-bottom: 24px;
+    margin-bottom: 36px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  .index-lede {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+    /* 日本語は全角 1 文字 = 1em。ch（欧文 "0" の字幅）で指定すると狭くなりすぎる */
+    max-width: 40em;
+    margin-bottom: 14px;
+  }
+
+  /* 本数は実データなので等幅で組む */
+  .index-count {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.02em;
+  }
+
+  .index-count .num { color: var(--color-text-secondary); }
+
+  .category { margin-bottom: 44px; }
+  .category:last-of-type { margin-bottom: 0; }
+
+  .category[data-category="architecture"] { --cat: var(--c-blue-200); }
+  .category[data-category="design-principles"] { --cat: var(--c-purple-200); }
+  .category[data-category="development-methodologies"] { --cat: var(--c-green-200); }
+  .category[data-category="product-and-enterprise"] { --cat: var(--c-amber-200); }
+  .category[data-category="css-design-system-guide"] { --cat: var(--c-teal-200); }
+
+  .category-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    border-left: 3px solid var(--cat);
+    border-bottom: 1px solid var(--color-border-primary);
+    padding: 0 2px 10px 12px;
+  }
+
+  .category-head svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--cat);
+  }
+
+  .category-count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+
+  .guide-list { list-style: none; }
+
+  .guide-row {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 2px 20px;
+    padding: 11px 12px 11px 15px;
+    border-bottom: 1px solid var(--color-border-primary);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.guide-row { transition: background-color 0.12s ease; }
+  a.guide-row:hover { background: var(--color-background-secondary); }
+  a.guide-row:hover .guide-name { color: var(--cat); }
+
+  a.guide-row:focus-visible {
+    outline: 2px solid var(--cat);
+    outline-offset: -2px;
+    background: var(--color-background-secondary);
+  }
+
+  .guide-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+
+  .guide-summary {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  /* 準備中はカテゴリ色を持たない。色の有無だけで公開状態が読める */
+  .is-planned .guide-name {
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+
+  .is-planned .guide-summary { color: var(--color-text-tertiary); }
+
+  .status-note {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 4px;
+    padding: 1px 7px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px) {
+    .guide-row { grid-template-columns: minmax(0, 1fr) auto; }
+    .guide-summary { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 560px) {
+    .page-wrap { padding: 28px 16px 72px; }
+    h1 { font-size: 20px; }
+    .index-lede { font-size: 14px; }
+    .category { margin-bottom: 36px; }
+  }
+}
+
 .comprehensive-guide {
   * { box-sizing: border-box; margin: 0; padding: 0; }
 

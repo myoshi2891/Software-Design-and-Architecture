@@ -7,13 +7,17 @@ import { type NavLink, navLinks } from "@/components/site/nav-links";
 import { guideCatalog } from "@/lib/guide-catalog";
 
 function navHrefs(links: readonly NavLink[]): string[] {
-  return links.flatMap((link) => ("children" in link ? link.children.map((c) => c.href) : [link.href]));
+  return links.flatMap((link) =>
+    "children" in link ? link.children.map((c) => c.href) : [link.href]
+  );
 }
 
 describe("guideCatalog / navLinks consistency", () => {
   it("covers exactly the same set of hrefs", () => {
     const fromNav = [...new Set(navHrefs(navLinks))].sort();
-    const fromCatalog = [...new Set(guideCatalog.flatMap((c) => c.entries.map((e) => e.href)))].sort();
+    const fromCatalog = [
+      ...new Set(guideCatalog.flatMap((c) => c.entries.map((e) => e.href))),
+    ].sort();
     expect(fromCatalog).toEqual(fromNav);
   });
 

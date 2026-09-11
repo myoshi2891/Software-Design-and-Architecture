@@ -43,7 +43,7 @@ describe("HomePage (guide index)", () => {
       .flatMap((c) => c.entries)
       .filter((e) => e.status === "published");
     const hrefs = [...container.querySelectorAll<HTMLAnchorElement>("a[href^='/']")].map((a) =>
-      a.getAttribute("href"),
+      a.getAttribute("href")
     );
     expect(hrefs.length).toBe(published.length);
     for (const entry of published) {
