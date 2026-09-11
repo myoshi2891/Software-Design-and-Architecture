@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generative
+AI Design Patterns
+徹底解説：初学者のための生成AI設計パターン実践ガイド</title>
+<style>
+:root{
+  --bg:#07111e;
+  --bg-elevated:#0c1a2c;
+  --card:#0f1e33;
+  --card-border:#1c3350;
+  --text:#e7edf7;
+  --text-dim:#93a4c3;
+  --text-faint:#5f7290;
+  --accent:#7c9eff;
+  --accent-soft:#274069;
+  --success:#34d399;
+  --success-soft:#12321f;
+  --danger:#e2657a;
+  --danger-soft:#3a1420;
+  --warn:#e8a33d;
+  --warn-soft:#3a2a1a;
+  --radius:12px;
+  --sidebar-w:300px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Meiryo, Arial, sans-serif;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.85;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+.layout{display:block;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:fixed;
+  top:0;left:0;
+  width:var(--sidebar-w);
+  height:100vh;
+  overflow-y:auto;
+  background:var(--bg-elevated);
+  border-right:1px solid var(--card-border);
+  padding:24px 0 40px;
+  z-index:50;
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px;}
+
+.sidebar-brand{
+  padding:0 20px 18px;
+  font-weight:700;
+  font-size:14px;
+  color:var(--accent);
+  border-bottom:1px solid var(--card-border);
+  margin-bottom:12px;
+  letter-spacing:.02em;
+}
+
+.sidebar nav ul{list-style:none;margin:0;padding:0;}
+.sidebar nav > ul > li{margin:0;}
+.sidebar nav a{
+  display:block;
+  padding:8px 20px;
+  font-size:13.5px;
+  color:var(--text-dim);
+  border-left:2px solid transparent;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.sidebar nav a:hover{background:var(--card);color:var(--text);text-decoration:none;}
+.sidebar nav > ul > li > a{font-weight:600;color:var(--text);}
+.sidebar nav ul ul{margin:0;}
+.sidebar nav ul ul a{
+  padding:6px 20px 6px 34px;
+  font-size:12.5px;
+  color:var(--text-faint);
+}
+.sidebar nav a.active{
+  color:var(--accent);
+  border-left-color:var(--accent);
+  background:var(--accent-soft);
+}
+.sidebar nav ul ul a.active{color:var(--accent);}
+
+.sidebar-toggle{
+  display:none;
+  position:fixed;
+  top:14px;left:14px;
+  z-index:60;
+  width:42px;height:42px;
+  border-radius:10px;
+  background:var(--card);
+  border:1px solid var(--card-border);
+  color:var(--text);
+  font-size:18px;
+  cursor:pointer;
+  align-items:center;justify-content:center;
+}
+
+/* ---------- Main ---------- */
+.main{
+  margin-left:var(--sidebar-w);
+  padding:0 56px 100px;
+}
+
+.hero{
+  padding:64px 0 40px;
+  border-bottom:1px solid var(--card-border);
+  margin-bottom:40px;
+}
+.hero h1{
+  font-size:2.3rem;
+  line-height:1.4;
+  margin:0 0 20px;
+  background:linear-gradient(90deg,#ffffff,var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero .lede{
+  color:var(--text-dim);
+  font-size:1.02rem;
+  line-height:1.9;
+  max-width:920px;
+  border-left:3px solid var(--accent);
+  padding-left:18px;
+  margin:0 0 24px;
+}
+.pill-row{display:flex;flex-wrap:wrap;gap:10px;}
+.pill{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  color:var(--accent);
+  font-size:13px;
+  font-weight:600;
+  padding:7px 14px;
+  border-radius:999px;
+}
+
+.main h2{
+  font-size:1.55rem;
+  margin:56px 0 20px;
+  padding-top:8px;
+  color:#fff;
+  border-top:1px solid var(--card-border);
+  scroll-margin-top:24px;
+}
+.main h2:first-of-type{border-top:none;}
+.main h3{
+  font-size:1.18rem;
+  margin:36px 0 14px;
+  color:var(--accent);
+  scroll-margin-top:24px;
+}
+.main h4{
+  font-size:1rem;
+  margin:24px 0 10px;
+  color:var(--text);
+}
+.main p{margin:0 0 16px;color:var(--text);}
+.main ul, .main ol{margin:0 0 16px;padding-left:1.4em;color:var(--text);}
+.main li{margin:0 0 8px;}
+.main strong{color:#fff;}
+.main hr{display:none;}
+
+.main > blockquote{display:none;} /* consumed into hero lede */
+
+footer.disclaimer{
+  margin-top:60px;
+  padding-top:24px;
+  border-top:1px solid var(--card-border);
+  color:var(--text-faint);
+  font-size:13px;
+  font-style:italic;
+}
+
+/* ---------- Tables ---------- */
+.table-scroll{
+  overflow-x:auto;
+  margin:0 0 24px;
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:480px;}
+table caption{caption-side:top;padding:10px 14px;color:var(--text-dim);text-align:left;font-size:13px;}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--card-border);vertical-align:top;}
+tr.header{background:var(--accent-soft);}
+tr.header th{color:#fff;font-weight:700;}
+tr.odd{background:rgba(255,255,255,.015);}
+tr.even{background:transparent;}
+tr:last-child td{border-bottom:none;}
+
+/* ---------- Mermaid ---------- */
+pre.mermaid{
+  width:100%;
+  display:flex;
+  justify-content:safe center;
+  overflow-x:auto;
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin:0 0 28px;
+}
+pre.mermaid svg{flex-shrink:0;}
+pre.mermaid p{color:inherit;margin:0;}
+
+/* ---------- Checklist ---------- */
+.checklist-card{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:8px 8px;
+  margin:0 0 24px;
+}
+.checklist-progress{
+  padding:12px 16px;
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--accent);
+  border-bottom:1px solid var(--card-border);
+}
+ul.task-list{list-style:none;margin:0;padding:4px 0;}
+ul.task-list li{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px 16px;
+  margin:0;
+  border-radius:8px;
+  transition:background .15s;
+}
+ul.task-list li:hover{background:rgba(255,255,255,.03);}
+ul.task-list li label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;width:100%;color:var(--text);font-size:14.5px;line-height:1.7;}
+ul.task-list input[type="checkbox"]{
+  appearance:none;-webkit-appearance:none;
+  width:19px;height:19px;flex:0 0 19px;
+  margin-top:2px;
+  border:2px solid var(--card-border);
+  border-radius:5px;
+  background:var(--bg);
+  cursor:pointer;
+  position:relative;
+}
+ul.task-list input[type="checkbox"]:checked{
+  background:var(--success);
+  border-color:var(--success);
+}
+ul.task-list input[type="checkbox"]:checked::after{
+  content:"";
+  position:absolute;left:5px;top:1px;
+  width:5px;height:10px;
+  border:solid #07111e;
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+ul.task-list li:has(input:checked) label{color:var(--text-faint);text-decoration:line-through;}
+
+/* ---------- References ---------- */
+.ref-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:12px;
+  margin:0 0 24px;
+}
+.ref-card{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  overflow-wrap:break-word;
+  word-break:break-word;
+  min-width:0;
+}
+.ref-badge{
+  flex:0 0 auto;
+  width:26px;height:26px;
+  border-radius:50%;
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-size:12px;
+  font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.ref-body{font-size:13.5px;color:var(--text-dim);line-height:1.7;min-width:0;}
+.ref-body a{word-break:break-all;}
+
+/* ---------- Glossary ---------- */
+#glossary table{font-size:14px;}
+
+@media (max-width:980px){
+  .ref-grid{grid-template-columns:1fr;}
+}
+
+@media (max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.5);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-toggle{display:flex;}
+  .sidebar-brand{padding-top:64px;}
+  .main{margin-left:0;padding:0 20px 80px;}
+  .hero{padding:80px 0 32px;}
+  .hero h1{font-size:1.6rem;}
+}
+
+</style>
+</head>
+<body>
+<button class="sidebar-toggle" aria-label="メニューを開く">&#9776;</button>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">Generative AI Design Patterns</div>
+  <nav><ul><li><a href="#はじめにこのガイドについて">はじめに：このガイドについて</a><li><a href="#part0">第0部:
+本書を読む前に — 生成AIエンジニアリングの基礎知識</a><ul><li><a href="#01-なぜ設計パターンという考え方が必要なのか">0.1
+なぜ「設計パターン」という考え方が必要なのか</a></li><li><a href="#02-基盤モデルの上に築くという発想">0.2
+基盤モデルの上に築くという発想</a></li><li><a href="#03-エージェンティックaiとは何か">0.3
+エージェンティックAIとは何か</a></li><li><a href="#04-本ガイドの構成と使い方">0.4 本ガイドの構成と使い方</a></li></ul></li><li><a href="#part1">第1部:
+イントロダクション — GenAI設計パターンの全体像</a><ul><li><a href="#11-プロンプトとコンテキスト">1.1 プロンプトとコンテキスト</a></li><li><a href="#12-きめ細かい制御デコーディングパラメータ">1.2
+きめ細かい制御：デコーディングパラメータ</a></li><li><a href="#13-インコンテキスト学習zero-shot-と-few-shot">1.3
+インコンテキスト学習：Zero-Shot と Few-Shot</a></li><li><a href="#14-ポストトレーニングとファインチューニング">1.4
+ポストトレーニングとファインチューニング</a></li></ul></li><li><a href="#part2">第2部:
+コンテンツスタイルの制御</a><ul><li><a href="#パターン1-logits-maskingロジットマスキング">パターン1: Logits
+Masking(ロジットマスキング)</a></li><li><a href="#パターン2-grammar文法制約デコーディング">パターン2:
+Grammar(文法制約デコーディング)</a></li><li><a href="#パターン3-style-transferスタイル変換">パターン3: Style
+Transfer(スタイル変換)</a></li><li><a href="#パターン4-reverse-neutralization逆中立化">パターン4: Reverse
+Neutralization(逆中立化)</a></li><li><a href="#パターン5-content-optimizationコンテンツ最適化">パターン5:
+Content Optimization(コンテンツ最適化)</a></li></ul></li><li><a href="#part3">第3部: 知識の追加①基礎編</a><ul><li><a href="#パターン6-basic-rag基本的な検索拡張生成">パターン6: Basic
+RAG(基本的な検索拡張生成)</a></li><li><a href="#パターン7-semantic-indexingセマンティックインデキシング">パターン7:
+Semantic Indexing(セマンティックインデキシング)</a></li><li><a href="#パターン8-indexing-at-scale大規模インデキシング">パターン8:
+Indexing at Scale(大規模インデキシング)</a></li></ul></li><li><a href="#part4">第4部: 知識の追加②応用編</a><ul><li><a href="#パターン9-index-aware-retrievalインデックス認識型検索">パターン9:
+Index-Aware Retrieval(インデックス認識型検索)</a></li><li><a href="#パターン10-node-postprocessingノード後処理">パターン10: Node
+Postprocessing(ノード後処理)</a></li><li><a href="#パターン11-trustworthy-generation信頼できる生成">パターン11:
+Trustworthy Generation(信頼できる生成)</a></li><li><a href="#パターン12-deep-searchディープサーチ">パターン12: Deep
+Search(ディープサーチ)</a></li></ul></li><li><a href="#part5">第5部: モデル能力の拡張</a><ul><li><a href="#51-llm推論の限界既知の能力と未知の能力">5.1
+LLM推論の限界：既知の能力と未知の能力</a></li><li><a href="#パターン13-chain-of-thought思考の連鎖cot">パターン13: Chain of
+Thought(思考の連鎖、CoT)</a></li><li><a href="#パターン14-tree-of-thoughts思考の木tot">パターン14: Tree of
+Thoughts(思考の木、ToT)</a></li><li><a href="#パターン15-adapter-tuningアダプタチューニング">パターン15:
+Adapter Tuning(アダプタチューニング)</a></li><li><a href="#パターン16-evol-instruct進化的指示データ生成">パターン16:
+Evol-Instruct(進化的指示データ生成)</a></li></ul></li><li><a href="#part6">第6部: 信頼性の向上</a><ul><li><a href="#パターン17-llm-as-judgellmを評価者として使う">パターン17:
+LLM-as-Judge(LLMを評価者として使う)</a></li><li><a href="#パターン18-reflection内省自己反省">パターン18:
+Reflection(内省・自己反省)</a></li><li><a href="#パターン19-dependency-injection依存性注入">パターン19:
+Dependency Injection(依存性注入)</a></li><li><a href="#パターン20-prompt-optimizationプロンプト最適化">パターン20:
+Prompt Optimization(プロンプト最適化)</a></li></ul></li><li><a href="#part7">第7部:
+エージェントに行動させる</a><ul><li><a href="#パターン21-tool-callingツール呼び出しfunction-calling">パターン21:
+Tool Calling(ツール呼び出し、Function Calling)</a></li><li><a href="#パターン22-code-executionコード実行">パターン22: Code
+Execution(コード実行)</a></li><li><a href="#パターン23-multiagent-collaborationマルチエージェント協調">パターン23:
+Multiagent Collaboration(マルチエージェント協調)</a></li></ul></li><li><a href="#part8">第8部: 制約への対処</a><ul><li><a href="#パターン24-small-language-model小規模言語モデルslm">パターン24:
+Small Language Model(小規模言語モデル、SLM)</a></li><li><a href="#パターン25-prompt-cachingプロンプトキャッシュ">パターン25:
+Prompt Caching(プロンプトキャッシュ)</a></li><li><a href="#パターン26-inference-optimization推論最適化">パターン26:
+Inference Optimization(推論最適化)</a></li><li><a href="#パターン27-degradation-testing劣化テスト">パターン27:
+Degradation Testing(劣化テスト)</a></li><li><a href="#パターン28-long-term-memory長期記憶">パターン28: Long-Term
+Memory(長期記憶)</a></li></ul></li><li><a href="#part9">第9部: セーフガードの設定</a><ul><li><a href="#パターン29-template-generationテンプレート生成">パターン29:
+Template Generation(テンプレート生成)</a></li><li><a href="#パターン30-assembled-reformat組み立て型再フォーマット">パターン30:
+Assembled Reformat(組み立て型再フォーマット)</a></li><li><a href="#パターン31-self-check自己検証">パターン31:
+Self-Check(自己検証)</a></li><li><a href="#パターン32-guardrailsガードレール">パターン32:
+Guardrails(ガードレール)</a></li></ul></li><li><a href="#part10">第10部:
+コンポーザブルなエージェントワークフロー</a><ul><li><a href="#101-システムアーキテクチャの考え方">10.1
+システムアーキテクチャの考え方</a></li><li><a href="#102-デプロイメントの観点">10.2 デプロイメントの観点</a></li></ul></li><li><a href="#part11">第11部:
+2026年9月時点の最新動向</a><ul><li><a href="#111-model-context-protocolmcpの標準化と業界ガバナンス移行">11.1
+Model Context Protocol(MCP)の標準化と業界ガバナンス移行</a></li><li><a href="#112-コンテキストエンジニアリングとプロンプトキャッシュ経済学の転換">11.2
+コンテキストエンジニアリングとプロンプトキャッシュ経済学の転換</a></li><li><a href="#113-小規模言語モデルslmによるハイブリッド構成の定着">11.3
+小規模言語モデル(SLM)によるハイブリッド構成の定着</a></li><li><a href="#114-llm-as-judgeパターン17の成熟とバイアス対策の体系化">11.4
+LLM-as-Judge(パターン17)の成熟とバイアス対策の体系化</a></li><li><a href="#115-ガードレールパターン32のインフラ化">11.5
+ガードレール(パターン32)のインフラ化</a></li><li><a href="#116-業界標準を形作るその他の代表的リソース">11.6
+業界標準を形作るその他の代表的リソース</a></li></ul></li><li><a href="#roadmap">学習ロードマップ</a><li><a href="#checklist">導入前チェックリスト</a><li><a href="#glossary">用語集</a><li><a href="#references">参考文献</a></li></ul></nav>
+</aside>
+<main class="main">
+  <section class="hero">
+    <h1>Generative
+AI Design Patterns
+徹底解説：初学者のための生成AI設計パターン実践ガイド</h1>
+    <p class="lede">本ガイドは、O'Reilly刊『Generative AI Design Patterns』(Valliappa
+Lakshmanan, Hannes Hapke
+著、2025年10月刊)の目次構成を土台に、生成AI・エージェント開発で頻出する32個の設計パターンを、初学者にもわかりやすいようステップバイステップで再構成した独自の学習資料です。原文の複製・転載は一切行わず、独自の説明・図解・具体例で再構成しています。2026年9月9日時点の最新動向についてはWeb検索で調査し、Anthropic・OpenAI・Google・NVIDIAなど著名な国際的組織・開発者の一次情報を優先して反映しました。</p>
+    <div class="pill-row">
+      <span class="pill">全12部構成</span>
+      <span class="pill">設計パターン 32個</span>
+      <span class="pill">図解 23点</span>
+      <span class="pill">参考文献 15件</span>
+      <span class="pill">2026年9月時点</span>
+    </div>
+  </section>
+
+
+
+<h2 id="はじめにこのガイドについて">はじめに：このガイドについて</h2>
+<p>生成AI(Generative
+AI)を使ったアプリケーションやエージェントを「動くデモ」から「壊れない本番システム」に育てるには、モデル単体の性能だけでは足りません。ハルシネーション(もっともらしい誤情報の生成)、応答の非決定性、知識のカットオフ(学習データの鮮度切れ)といった、LLM(大規模言語モデル)に共通する限界に対処するための、<strong>再利用可能な設計の型＝設計パターン</strong>が必要です。</p>
+<p>ソフトウェア工学の世界に「GoF(Gang of
+Four)デザインパターン」があるように、生成AIエンジニアリングの世界にもこうしたパターン集が生まれつつあります。本ガイドが土台とする書籍は、その代表例として32個のパターンを10章に整理しました。本ガイドではこれを初学者向けに再構成し、各パターンについて「どんな問題を解決するか」「どう実装するか」「どんなトレードオフがあるか」を、Mermaid図とMarkdown表を使ってステップバイステップで解説します。</p>
+<p><strong>対象読者</strong>：Python等でLLM
+APIを呼び出した経験はあるが、RAGやエージェント、ガードレールといった応用パターンを体系的に学びたい方。</p>
+<p><strong>前提知識</strong>：基本的なプログラミング経験、LLM(ChatGPT、Claude、Geminiなど)を使ったことがある程度で読み進められます。</p>
+
+
+
+
+
+<h2 id="part0">第0部:
+本書を読む前に — 生成AIエンジニアリングの基礎知識</h2>
+<h3 id="01-なぜ設計パターンという考え方が必要なのか">0.1
+なぜ「設計パターン」という考え方が必要なのか</h3>
+<p>生成AIアプリケーション開発は「プロンプトを書けば終わり」ではありません。実際に本番運用しようとすると、次のような壁にぶつかります。</p>
+<ul>
+<li><strong>ハルシネーション</strong>：モデルが自信満々に誤った情報を生成する</li>
+<li><strong>非決定性</strong>：同じ入力でも毎回微妙に異なる出力が返る</li>
+<li><strong>知識のカットオフ</strong>：モデルの学習データには鮮度の限界がある</li>
+<li><strong>コストとレイテンシ</strong>：大規模モデルの推論は高価で遅い</li>
+<li><strong>安全性</strong>：有害な出力や、意図しない自律的行動をどう防ぐか</li>
+</ul>
+<p>これらは個別の問題に見えて、実は多くのプロジェクトで<strong>繰り返し発生する共通課題</strong>です。設計パターンは、こうした共通課題に対する「実証済みの解決の型」を言語化し、チーム間で再利用できるようにする考え方です。</p>
+<h3 id="02-基盤モデルの上に築くという発想">0.2
+基盤モデルの上に築くという発想</h3>
+<p>現代の生成AIアプリケーションのほとんどは、GPT・Claude・Gemini・Llamaのような**基盤モデル(Foundation
+Model)**をゼロから作るのではなく、その上にアプリケーション固有のロジックを積み重ねて構築します。</p>
+<pre class="mermaid">flowchart TB
+    A[基盤モデル&lt;br/&gt;大規模事前学習済みLLM] --&gt; B[プロンプト+コンテキスト設計]
+    B --&gt; C[設計パターンの適用]
+    C --&gt; D1[コンテンツスタイル制御]
+    C --&gt; D2[知識の追加 RAG]
+    C --&gt; D3[能力の拡張 推論強化]
+    C --&gt; D4[信頼性の向上]
+    C --&gt; D5[エージェントの行動]
+    C --&gt; D6[制約への対処]
+    C --&gt; D7[セーフガード]
+    D1 --&gt; E[本番稼働するGenAIアプリケーション/エージェント]
+    D2 --&gt; E
+    D3 --&gt; E
+    D4 --&gt; E
+    D5 --&gt; E
+    D6 --&gt; E
+    D7 --&gt; E
+
+    classDef baseFill fill:#1a2f4f,stroke:#5b8def,color:#eaf1ff
+    classDef patternFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
+    classDef resultFill fill:#173a2e,stroke:#34d399,color:#e6fff5
+    class A,B baseFill
+    class C,D1,D2,D3,D4,D5,D6,D7 patternFill
+    class E resultFill</pre>
+<p>モデルを利用する経路は大きく分けて2つあります。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr class="header header">
+<th>経路</th>
+<th>特徴</th>
+<th>向いているケース</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd odd">
+<td>モデルプロバイダの公式API(OpenAI API、Anthropic API、Gemini
+APIなど)</td>
+<td>プロバイダ最新機能にすぐアクセス可能、モデル固有の最適化を享受できる</td>
+<td>特定モデルの最新機能(拡張思考、プロンプトキャッシュ等)を使いたい場合</td>
+</tr>
+<tr class="even even">
+<td>LLM非依存フレームワーク(LangChain、LlamaIndexなど)</td>
+<td>モデルを差し替えやすい、ベンダーロックインを避けられる</td>
+<td>複数モデルを比較・併用したい、将来の切り替えに備えたい場合</td>
+</tr>
+<tr class="odd odd">
+<td>ローカル実行(Ollama、vLLM等でのセルフホスト)</td>
+<td>データを外部に出さない、推論コストを固定化できる</td>
+<td>機密データを扱う、レイテンシやコストを厳密に制御したい場合</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="03-エージェンティックaiとは何か">0.3
+エージェンティックAIとは何か</h3>
+<p>「エージェント」という言葉は文脈によって定義が揺れますが、本ガイドではAnthropicのエンジニアリングブログ「Building
+Effective Agents」が示す整理に沿って、次のように区別します。</p>
+<ul>
+<li><strong>ワークフロー(Workflows)</strong>：あらかじめ定義されたコードパスに沿って、LLMとツールがオーケストレーションされるシステム</li>
+<li><strong>エージェント(Agents)</strong>：LLMが自らのプロセスとツール利用を動的に決定し、タスクの達成方法をコントロールするシステム</li>
+</ul>
+<p>エージェントの自律性(Autonomy)が高まるほど、柔軟性は増しますが、コスト・レイテンシ・予測不可能な失敗のリスクも増大します。したがって「まずはシンプルなワークフローで十分か」を検討し、複雑さは本当に必要な場合にのみ追加する、という姿勢が重要です。<sup>[1]</sup></p>
+<h3 id="04-本ガイドの構成と使い方">0.4 本ガイドの構成と使い方</h3>
+<p>本ガイドは、原著の10章構成に対応する第1部〜第10部と、独自に追加した第11部(2026年最新動向)、学習ロードマップ、チェックリスト、用語集、参考文献から成ります。各パターンは次の型で統一して解説します。</p>
+<ol type="1">
+<li><strong>問題(Problem)</strong>：このパターンが解決しようとする課題</li>
+<li><strong>解決策(Solution)</strong>：パターンの中身と仕組み</li>
+<li><strong>具体例</strong>：実務でのイメージ</li>
+<li><strong>検討事項(Considerations)</strong>：トレードオフ・注意点</li>
+</ol>
+
+
+<h2 id="part1">第1部:
+イントロダクション — GenAI設計パターンの全体像</h2>
+<p>原著第1章に対応します。本パターン集全体の土台となる、基盤モデルの仕組みと基本概念を扱います。</p>
+<h3 id="11-プロンプトとコンテキスト">1.1 プロンプトとコンテキスト</h3>
+<p>LLMへの入力は大きく2つの要素から成ります。</p>
+<ul>
+<li><strong>プロンプト</strong>：モデルに実行してほしいタスクの指示そのもの</li>
+<li><strong>コンテキスト</strong>：タスク遂行に必要な周辺情報(過去の会話履歴、検索結果、ツール実行結果など)</li>
+</ul>
+<p>コンテキストウィンドウは有限のリソースであるため、「何を含め、何を削るか」を設計する営みは2026年時点で<strong>コンテキストエンジニアリング</strong>と呼ばれ、プロンプトエンジニアリングを包含するより広い概念として定着しています(詳細は第11部で解説)。</p>
+<h3 id="12-きめ細かい制御デコーディングパラメータ">1.2
+きめ細かい制御：デコーディングパラメータ</h3>
+<p>LLMは各ステップで語彙全体に対する確率分布(ロジット)を計算し、そこから次のトークンをサンプリングします。この過程を制御するパラメータを理解することは、以降の多くのパターンの土台になります。</p>
+<pre class="mermaid">flowchart LR
+    A[入力コンテキスト] --&gt; B[モデルが語彙全体の&lt;br/&gt;ロジット/確率分布を計算]
+    B --&gt; C{サンプリング戦略}
+    C --&gt; D1[温度 Temperature&lt;br/&gt;分布の鋭さを調整]
+    C --&gt; D2[Top-Kサンプリング&lt;br/&gt;上位K個に絞る]
+    C --&gt; D3[Nucleusサンプリング&lt;br/&gt;累積確率p以内に絞る]
+    C --&gt; D4[Beam Search&lt;br/&gt;複数候補系列を並行探索]
+    D1 --&gt; E[次のトークンを選択]
+    D2 --&gt; E
+    D3 --&gt; E
+    D4 --&gt; E
+    E --&gt; F{系列は完了？}
+    F --&gt;|いいえ| B
+    F --&gt;|はい| G[生成結果を出力]
+
+    classDef ctrlFill fill:#3a2a1a,stroke:#e8a33d,color:#fff3e0
+    class D1,D2,D3,D4 ctrlFill</pre>
+<div class="table-scroll"><table>
+<thead>
+<tr class="header header">
+<th>パラメータ</th>
+<th>役割</th>
+<th>低い値の効果</th>
+<th>高い値の効果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd odd">
+<td>温度(Temperature)</td>
+<td>確率分布の鋭さを調整</td>
+<td>決定論的・保守的な出力</td>
+<td>多様・創造的だが不安定な出力</td>
+</tr>
+<tr class="even even">
+<td>Top-K</td>
+<td>上位K個の候補トークンのみ残す</td>
+<td>選択肢が狭く安定</td>
+<td>選択肢が広く多様</td>
+</tr>
+<tr class="odd odd">
+<td>Nucleus(Top-p)</td>
+<td>累積確率がpに達するまでの候補を残す</td>
+<td>分布が尖っているときは狭く絞る</td>
+<td>分布が平坦なときは広く許容</td>
+</tr>
+<tr class="even even">
+<td>Beam Search</td>
+<td>複数の候補系列を並行して保持・探索</td>
+<td>ビーム幅小＝計算量少・局所解に陥りやすい</td>
+<td>ビーム幅大＝計算量大・より良い系列を発見しやすい</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="13-インコンテキスト学習zero-shot-と-few-shot">1.3
+インコンテキスト学習：Zero-Shot と Few-Shot</h3>
+<p>モデルの重みを更新せずに、プロンプト内の例示だけで挙動を誘導する手法です。</p>
+<ul>
+<li><strong>Zero-Shot
+Learning</strong>：例を一切示さず、タスクの指示のみで実行させる</li>
+<li><strong>Few-Shot
+Learning</strong>：入力と期待する出力のペアを数個プロンプトに含め、パターンを真似させる</li>
+</ul>
+<p>Few-Shotは追加学習コストなしに精度を上げられる一方、コンテキストウィンドウを消費するため、後述の**プロンプトキャッシュ(パターン25)**と組み合わせて運用コストを抑えるのが実務上のセオリーです。</p>
+<h3 id="14-ポストトレーニングとファインチューニング">1.4
+ポストトレーニングとファインチューニング</h3>
+<p>事前学習(Pre-training)を終えたベースモデルに対し、指示追従性や安全性、特定タスクへの適応を目的として追加学習を行う工程がポストトレーニングです。</p>
+<pre class="mermaid">flowchart TB
+    A[事前学習済みベースモデル] --&gt; B[教師ありファインチューニング&lt;br/&gt;SFT]
+    B --&gt; C[報酬モデリング/選好データ収集]
+    C --&gt; D[強化学習ベースの調整&lt;br/&gt;RLHF / DPO等]
+    D --&gt; E{適用対象は？}
+    E --&gt;|フロンティアモデル| F1[プロバイダAPI経由の&lt;br/&gt;ファインチューニング機能を利用]
+    E --&gt;|オープンウェイトモデル| F2[LoRA等のアダプタ手法で&lt;br/&gt;自前で追加学習]
+    F1 --&gt; G[指示追従性・安全性が&lt;br/&gt;向上したモデル]
+    F2 --&gt; G
+
+    classDef stepFill fill:#1f2937,stroke:#60a5fa,color:#e0f2fe
+    class B,C,D stepFill</pre>
+<p>フロンティアモデル(GPT・Claude・Geminiなど各社最新モデル)のファインチューニングはプロバイダのAPIを通じて行うのが一般的である一方、Llama・Qwen・Gemmaなどのオープンウェイトモデルは、LoRA(Low-Rank
+Adaptation)のようなアダプタ手法で自前の計算資源上で調整できます。アダプタ手法の詳細は**パターン15(Adapter
+Tuning)**で扱います。</p>
+
+
+<h2 id="part2">第2部:
+コンテンツスタイルの制御</h2>
+<p>原著第2章に対応。生成される文章の「スタイル・トーン・フォーマット」を狙い通りに制御するための5パターンです。</p>
+<pre class="mermaid">flowchart LR
+    A[生成前の制御] --&gt; P1[パターン1&lt;br/&gt;Logits Masking]
+    A --&gt; P2[パターン2&lt;br/&gt;Grammar]
+    B[生成後の制御] --&gt; P3[パターン3&lt;br/&gt;Style Transfer]
+    B --&gt; P4[パターン4&lt;br/&gt;Reverse Neutralization]
+    B --&gt; P5[パターン5&lt;br/&gt;Content Optimization]
+
+    classDef beforeFill fill:#1a2f4f,stroke:#5b8def,color:#eaf1ff
+    classDef afterFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
+    class P1,P2 beforeFill
+    class P3,P4,P5 afterFill</pre>
+<h3 id="パターン1-logits-maskingロジットマスキング">パターン1: Logits
+Masking(ロジットマスキング)</h3>
+<ul>
+<li><strong>問題</strong>：出力に特定の単語だけを使わせたい、あるいは特定の単語を絶対に使わせたくない場合、プロンプトの指示だけでは確実性が担保できない。</li>
+<li><strong>解決策</strong>：生成の各ステップで、許可されていないトークンのロジットを強制的にマイナス無限大(あるいは極端に低い値)に設定し、サンプリング対象から機械的に除外する。プロンプト任せの「お願い」ではなく、デコーディング層での「強制」である点が特徴。</li>
+<li><strong>具体例</strong>：カスタマーサポートボットで競合他社名や禁止用語を絶対に出力させない、あるいは決められた選択肢(はい/いいえ/わからない)以外を出力させない場合に利用する。</li>
+<li><strong>検討事項</strong>：モデルプロバイダのAPIがロジットバイアス機能を公開している必要がある。マスクが強すぎると不自然な文章になりやすく、マスク対象の設計には言語モデルのトークナイザ挙動(サブワード分割)への理解が求められる。</li>
+</ul>
+<h3 id="パターン2-grammar文法制約デコーディング">パターン2:
+Grammar(文法制約デコーディング)</h3>
+<ul>
+<li><strong>問題</strong>：JSON・SQL・独自DSLなど、厳密な構文に従う出力を100%の確率で得たいが、プロンプトでの指示だけでは構文エラーが混入する。</li>
+<li><strong>解決策</strong>：正規表現やコンテキストフリー文法(CFG)を使って、各生成ステップで文法的に許される次トークンの集合を計算し、それ以外をマスクする。「文法制約付きデコーディング(Constrained
+Decoding)」とも呼ばれる。</li>
+<li><strong>具体例</strong>：関数呼び出し(Tool
+Calling、パターン21)のための厳密なJSON
+Schema準拠出力、SQLクエリ生成など。</li>
+<li><strong>検討事項</strong>：文法が複雑になるほど各ステップの計算コストが増える。文法制約と自然な文章表現の両立が難しい場合がある。</li>
+</ul>
+<h3 id="パターン3-style-transferスタイル変換">パターン3: Style
+Transfer(スタイル変換)</h3>
+<ul>
+<li><strong>問題</strong>：同じ内容を、対象読者やブランドボイスに応じて異なるトーン(フォーマル/カジュアル、専門的/平易)で表現したい。</li>
+<li><strong>解決策</strong>：既存のテキストをLLMに入力し、目的のスタイルの特徴を指示・例示することで、意味内容を保ったまま文体だけを変換させる。</li>
+<li><strong>具体例</strong>：技術文書を非エンジニア向けの平易な文章に変換する、あるいは複数言語・複数ブランドトーンでマーケティングコピーを展開する。</li>
+<li><strong>検討事項</strong>：意味内容の忠実性(Faithfulness)を検証する仕組みが必要。スタイル変換の過程で事実が変質・誇張されるリスクがある。</li>
+</ul>
+<h3 id="パターン4-reverse-neutralization逆中立化">パターン4: Reverse
+Neutralization(逆中立化)</h3>
+<ul>
+<li><strong>問題</strong>：法律文書やフォーマルな文章のように、特定の「型」に沿った文章を生成したいが、LLMの既定の出力はやや口語的・冗長になりがちである。</li>
+<li><strong>解決策</strong>：あえて「中立化」とは逆方向に、目的の型(例：法律文書特有の構文パターン、個人の文体的癖)を強く反映させるようモデルを誘導する。原著では法律文書生成と個人文体の再現という2つの例が挙げられている。</li>
+<li><strong>具体例</strong>：契約書の定型条項生成、著者の過去の文章コーパスから文体を学習して同じ調子で新しい文章を書く。</li>
+<li><strong>検討事項</strong>：個人の文体を模倣する用途では、なりすましや著作権上の懸念に配慮する必要がある。</li>
+</ul>
+<h3 id="パターン5-content-optimizationコンテンツ最適化">パターン5:
+Content Optimization(コンテンツ最適化)</h3>
+<ul>
+<li><strong>問題</strong>：単に「それっぽい」文章を生成するだけでなく、SEOスコア、読みやすさスコア、特定KPIなど、定量的な目的関数に対して出力を最適化したい。</li>
+<li><strong>解決策</strong>：生成→スコアリング→改善指示、のループを回し、目的関数のスコアが閾値に達するまで反復生成する。パターン18(Reflection)やパターン20(Prompt
+Optimization)と設計思想を共有する。</li>
+<li><strong>具体例</strong>：広告コピーのクリック率予測モデルのスコアを最大化するようにコピーを反復生成する。</li>
+<li><strong>検討事項</strong>：最適化対象の指標(プロキシ指標)が本当のビジネス目標とズレていないか、指標のゲーミング(過学習)が起きていないかを監視する必要がある。</li>
+</ul>
+<p><strong>第2部まとめ</strong>：コンテンツスタイル制御パターンは、「デコーディング時に強制する(パターン1・2)」か「生成後に変換・最適化する(パターン3〜5)」かで大きく2系統に分かれます。厳密性が必要ならデコーディング層、柔軟性が必要なら生成後変換、という使い分けが基本方針です。</p>
+
+
+<h2 id="part3">第3部: 知識の追加①基礎編</h2>
+<p>原著第3章「Adding Knowledge:
+Bass」に対応します。原著は音楽のリズムセクション(Bass=低音の基礎パート)になぞらえてこの章を名付けており、RAG(Retrieval-Augmented
+Generation)の"基礎"となる3パターンを扱います。</p>
+<h3 id="パターン6-basic-rag基本的な検索拡張生成">パターン6: Basic
+RAG(基本的な検索拡張生成)</h3>
+<ul>
+<li><strong>問題</strong>：LLMは学習データの知識カットオフ以降の情報や、企業固有の非公開情報を知らない。ファインチューニングは高コストかつ更新の都度再学習が必要で機動性に欠ける。</li>
+<li><strong>解決策</strong>：ユーザーの質問に関連する文書をあらかじめ用意した知識ベースから検索し、その検索結果をプロンプトのコンテキストとして注入した上で回答を生成させる。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    U[ユーザーの質問] --&gt; Q[クエリを埋め込みベクトルに変換]
+    Q --&gt; V[(ベクトルデータベース)]
+    V --&gt; R[関連度の高い文書チャンクを取得]
+    R --&gt; C[質問+取得した文書を&lt;br/&gt;コンテキストとしてまとめる]
+    C --&gt; L[LLMが根拠付きで回答を生成]
+    L --&gt; A[ユーザーへの回答]
+
+    classDef storeFill fill:#173a2e,stroke:#34d399,color:#e6fff5
+    class V storeFill</pre>
+<ul>
+<li><strong>具体例</strong>：社内ドキュメント検索チャットボット、カスタマーサポートFAQボット。</li>
+<li><strong>検討事項</strong>：検索精度が回答品質の上限を決める(Garbage
+In, Garbage
+Out)。チャンク分割の粒度、埋め込みモデルの選定が重要な設計判断になる。</li>
+</ul>
+<h3 id="パターン7-semantic-indexingセマンティックインデキシング">パターン7:
+Semantic Indexing(セマンティックインデキシング)</h3>
+<ul>
+<li><strong>問題</strong>：単純なキーワード一致検索では、言い換えや同義語表現を含む質問に対応できない。</li>
+<li><strong>解決策</strong>：文書を意味的な埋め込みベクトルに変換し、コサイン類似度などのベクトル距離に基づいて検索するインデックスを構築する。文書の分割(チャンキング)戦略、埋め込みモデルの選定、メタデータの付与がこのパターンの核心となる。</li>
+<li><strong>具体例</strong>：見出し構造を保持したままチャンク分割し、各チャンクに文書タイトルやセクション名をメタデータとして付与することで検索精度を高める。</li>
+<li><strong>検討事項</strong>：チャンクサイズが小さすぎると文脈が失われ、大きすぎるとノイズが増える。埋め込みモデルの次元数・言語対応も精度とコストに直結する。</li>
+</ul>
+<h3 id="パターン8-indexing-at-scale大規模インデキシング">パターン8:
+Indexing at Scale(大規模インデキシング)</h3>
+<ul>
+<li><strong>問題</strong>：文書数が数百万件規模になると、単一マシンでのインデックス構築・検索が現実的な時間で完了しなくなる。</li>
+<li><strong>解決策</strong>：インデックスの構築・更新処理を分散化し、シャーディング(分割)や近似最近傍探索(ANN：Approximate
+Nearest Neighbor)アルゴリズムを用いて検索速度をスケールさせる。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    D[大量の文書コーパス] --&gt; S1[シャード1の埋め込み生成]
+    D --&gt; S2[シャード2の埋め込み生成]
+    D --&gt; S3[シャードNの埋め込み生成]
+    S1 --&gt; IDX[(分散ANNインデックス)]
+    S2 --&gt; IDX
+    S3 --&gt; IDX
+    Q[検索クエリ] --&gt; IDX
+    IDX --&gt; M[各シャードから上位候補を集約]
+    M --&gt; RES[統合された検索結果]
+
+    classDef shardFill fill:#1a2f4f,stroke:#5b8def,color:#eaf1ff
+    class S1,S2,S3 shardFill</pre>
+<ul>
+<li><strong>具体例</strong>：数千万件規模の製品カタログや特許文書に対する検索基盤の構築。</li>
+<li><strong>検討事項</strong>：近似最近傍探索は完全一致検索(Exact
+Nearest
+Neighbor)より高速だが再現率が下がるトレードオフがある。インデックスの再構築コストと更新頻度のバランス設計が必要。</li>
+</ul>
+
+
+<h2 id="part4">第4部: 知識の追加②応用編</h2>
+<p>原著第4章「Adding Knowledge:
+Syncopation」に対応します。基礎(Bass)の上に、シンコペーション(変則的なリズム＝より高度な技巧)のように応用的な検索精度向上手法を積み重ねる章です。</p>
+<h3 id="パターン9-index-aware-retrievalインデックス認識型検索">パターン9:
+Index-Aware Retrieval(インデックス認識型検索)</h3>
+<ul>
+<li><strong>問題</strong>：単一の検索方式(ベクトル検索のみ、あるいはキーワード検索のみ)では、質問の種類によって精度にムラが出る。</li>
+<li><strong>解決策</strong>：質問の性質に応じて、ベクトル検索とキーワード検索(BM25等)を組み合わせるハイブリッド検索や、複数インデックスを使い分けるルーティングを行う。</li>
+<li><strong>具体例</strong>：固有名詞や型番を含む質問はキーワード検索を重視し、概念的な質問はベクトル検索を重視するハイブリッド戦略。</li>
+<li><strong>検討事項</strong>：複数の検索結果をどう統合・再ランキングするか(Reciprocal
+Rank Fusionなど)の設計が必要。</li>
+</ul>
+<h3 id="パターン10-node-postprocessingノード後処理">パターン10: Node
+Postprocessing(ノード後処理)</h3>
+<ul>
+<li><strong>問題</strong>：検索で取得した文書チャンク(ノード)には、関連度が低いものやノイズが含まれ、そのままLLMに渡すと回答品質を下げる。</li>
+<li><strong>解決策</strong>：取得したチャンクに対して、リランキングモデルによる並べ替え、重複除去、要約による圧縮などの後処理を行ってからLLMに渡す。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    R[検索で取得した候補チャンク群] --&gt; D[重複除去]
+    D --&gt; RR[リランキングモデルで&lt;br/&gt;関連度順に並べ替え]
+    RR --&gt; F[上位N件に絞り込み]
+    F --&gt; C[必要に応じて要約・圧縮]
+    C --&gt; OUT[LLMへ渡す最終コンテキスト]</pre>
+<ul>
+<li><strong>具体例</strong>：Cross-Encoder型のリランカーで、初期検索の上位50件を最終5件に絞り込む。</li>
+<li><strong>検討事項</strong>：リランキングは追加の推論コストとレイテンシを発生させるため、精度向上分と天秤にかける必要がある。</li>
+</ul>
+<h3 id="パターン11-trustworthy-generation信頼できる生成">パターン11:
+Trustworthy Generation(信頼できる生成)</h3>
+<ul>
+<li><strong>問題</strong>：RAGを使っても、LLMが取得した文書と矛盾する内容を生成してしまう(グラウンディング不足)ことがある。</li>
+<li><strong>解決策</strong>：生成された回答の各主張がどの検索結果に基づくかを明示させる(引用付き生成)、あるいは生成後に検索結果との整合性を検証するステップを追加する。</li>
+<li><strong>具体例</strong>：回答の文末に出典番号を付与し、ユーザーが元文書を確認できるようにするチャットボット。</li>
+<li><strong>検討事項</strong>：引用の付与を指示するだけでは不正確な引用(ハルシネーションされた引用)が発生し得るため、引用の検証ロジックを別途設けることが望ましい。</li>
+</ul>
+<h3 id="パターン12-deep-searchディープサーチ">パターン12: Deep
+Search(ディープサーチ)</h3>
+<ul>
+<li><strong>問題</strong>：単発の検索では、複数の情報源を横断して初めて答えられる複雑な質問(マルチホップ質問)に対応できない。</li>
+<li><strong>解決策</strong>：検索→中間的な推論→追加検索、のループを反復し、必要な情報が揃うまで検索を深掘りする。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    Q[複雑な質問] --&gt; P[質問をサブクエリに分解]
+    P --&gt; S[サブクエリで検索実行]
+    S --&gt; E{十分な情報が&lt;br/&gt;揃ったか？}
+    E --&gt;|いいえ| P2[中間結果を踏まえ&lt;br/&gt;次のサブクエリを生成]
+    P2 --&gt; S
+    E --&gt;|はい| SYN[収集した情報を統合]
+    SYN --&gt; ANS[最終回答を生成]
+
+    classDef loopFill fill:#3a2a1a,stroke:#e8a33d,color:#fff3e0
+    class P,S,E,P2 loopFill</pre>
+<ul>
+<li><strong>具体例</strong>：「A社とB社の直近3年の売上成長率を比較し、その差の要因を説明して」のような、複数文書の横断分析を要する質問への対応。</li>
+<li><strong>検討事項</strong>：検索ループの反復回数に上限(ストッピング条件)を設けないと、コストとレイテンシが際限なく増大するリスクがある。</li>
+</ul>
+<p><strong>第3部・第4部まとめ</strong>：RAGは「Basic
+RAG(パターン6)」を土台に、「セマンティックインデキシング(7)」「大規模化(8)」で検索基盤を整え、その上で「ハイブリッド検索(9)」「後処理(10)」「信頼性検証(11)」「反復的深掘り(12)」を積み上げる、階層的な設計になっています。</p>
+
+
+<h2 id="part5">第5部: モデル能力の拡張</h2>
+<p>原著第5章に対応します。LLMの推論能力の限界を理解した上で、それを拡張するための4パターンを扱います。</p>
+<h3 id="51-llm推論の限界既知の能力と未知の能力">5.1
+LLM推論の限界：既知の能力と未知の能力</h3>
+<p>LLMは統計的パターン認識に基づいて次トークンを予測する仕組みであるため、次のような限界があります。</p>
+<ul>
+<li><strong>既知の能力(Known
+Capabilities)</strong>：文脈内の情報を要約・言い換え・翻訳する能力、パターンマッチングに基づく類推</li>
+<li><strong>未知の能力・限界(Unknown
+Capabilities)</strong>：厳密な数値計算、長い論理的推論チェーンの一貫性維持、学習データにない真に新規な問題の解決</li>
+</ul>
+<p>これらの限界を前提に、以下のパターンは「モデルに単発で答えさせる」のではなく、「推論プロセスそのものを構造化する」ことで能力を引き出そうとします。</p>
+<h3 id="パターン13-chain-of-thought思考の連鎖cot">パターン13: Chain of
+Thought(思考の連鎖、CoT)</h3>
+<ul>
+<li><strong>問題</strong>：複雑な多段階の推論を要する問題に対し、モデルにいきなり最終回答だけを出力させると精度が落ちる。</li>
+<li><strong>解決策</strong>：「ステップバイステップで考えてください」という指示や、中間推論ステップの例示によって、モデルに最終回答へ至る過程を明示的に出力させてから結論を出させる。</li>
+<li><strong>具体例</strong>：算数の文章題、多段階の論理パズル、コード内のバグの原因究明。</li>
+<li><strong>検討事項</strong>：中間推論の出力はトークン数増加＝コスト増加を招く。また、出力された「思考過程」が実際の内部計算過程を正確に反映しているとは限らない点に注意が必要。</li>
+</ul>
+<h3 id="パターン14-tree-of-thoughts思考の木tot">パターン14: Tree of
+Thoughts(思考の木、ToT)</h3>
+<ul>
+<li><strong>問題</strong>：CoTは単一の推論経路しか探索しないため、途中で誤った方向に進むとそのまま誤答に至ってしまう。</li>
+<li><strong>解決策</strong>：複数の推論経路を木構造で並行して探索し、各分岐点で自己評価を行いながら、有望な経路を選択・バックトラックする。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    subgraph CoT["Chain of Thought：単一経路"]
+        C1[問題] --&gt; C2[思考1] --&gt; C3[思考2] --&gt; C4[回答]
+    end
+    subgraph ToT["Tree of Thoughts：複数経路を探索"]
+        T1[問題] --&gt; T2A[思考A]
+        T1 --&gt; T2B[思考B]
+        T2A --&gt; T3A[思考A-1]
+        T2A --&gt; T3B[思考A-2]
+        T2B --&gt; T3C[思考B-1]
+        T3A --&gt; EVAL[各分岐を自己評価し&lt;br/&gt;有望な経路を選択]
+        T3B --&gt; EVAL
+        T3C --&gt; EVAL
+        EVAL --&gt; TFINAL[最終回答]
+    end</pre>
+<ul>
+<li><strong>具体例</strong>：クロスワードパズルや戦略的な計画立案など、複数の選択肢を比較検討しながら進める必要があるタスク。</li>
+<li><strong>検討事項</strong>：探索する経路数に比例して推論コストが増加するため、探索幅と深さの制御(枝刈り)が重要。</li>
+</ul>
+<h3 id="パターン15-adapter-tuningアダプタチューニング">パターン15:
+Adapter Tuning(アダプタチューニング)</h3>
+<ul>
+<li><strong>問題</strong>：フルファインチューニング(モデルの全パラメータを更新)は計算資源・ストレージコストが非常に高く、複数タスクごとにモデル全体を複製するのは非現実的。</li>
+<li><strong>解決策</strong>：モデル本体の重みは固定したまま、少数の追加パラメータ(アダプタ)のみを学習する。代表的手法がLoRA(Low-Rank
+Adaptation)で、低ランク行列の積によって重み更新分を近似する。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    IN[入力] --&gt; BASE[事前学習済みの&lt;br/&gt;凍結された重み W]
+    IN --&gt; LORA[低ランクアダプタ&lt;br/&gt;A×B の少数パラメータ]
+    BASE --&gt; SUM[出力を合算]
+    LORA --&gt; SUM
+    SUM --&gt; OUT[タスク特化された出力]
+
+    classDef frozenFill fill:#1f2937,stroke:#94a3b8,color:#e2e8f0
+    classDef trainFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
+    class BASE frozenFill
+    class LORA trainFill</pre>
+<ul>
+<li><strong>具体例</strong>：同一の基盤モデルに対し、顧客ごと・タスクごとに軽量なLoRAアダプタを差し替えて提供するマルチテナントSaaS。</li>
+<li><strong>検討事項</strong>：アダプタのランク(次元数)が小さすぎると表現力不足、大きすぎるとフルファインチューニングに近いコストになる。複数アダプタの管理・バージョニングの運用設計も必要。</li>
+</ul>
+<h3 id="パターン16-evol-instruct進化的指示データ生成">パターン16:
+Evol-Instruct(進化的指示データ生成)</h3>
+<ul>
+<li><strong>問題</strong>：高品質な指示チューニング用データセットを人手で大量作成するのはコストが高く、多様性にも限界がある。</li>
+<li><strong>解決策</strong>：既存の指示データをLLM自身に使わせて、より複雑・多様なバリエーションへと「進化」させることで、合成的に学習データを拡張する。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    SEED[初期の指示データセット] --&gt; EVOL{進化の方向}
+    EVOL --&gt; DEEP[深化：制約追加・&lt;br/&gt;推論ステップの複雑化]
+    EVOL --&gt; BREADTH[拡張：話題やドメインを&lt;br/&gt;横展開して多様化]
+    DEEP --&gt; FILTER[品質フィルタリング&lt;br/&gt;低品質データを除去]
+    BREADTH --&gt; FILTER
+    FILTER --&gt; DATASET[拡張された&lt;br/&gt;指示チューニングデータセット]
+    DATASET --&gt; EVOL</pre>
+<ul>
+<li><strong>具体例</strong>：単純な質問応答データを起点に、複数条件を課した複雑な質問や、専門ドメイン向けの応用問題へと自動的にバリエーションを増やす。</li>
+<li><strong>検討事項</strong>：進化を重ねるほどデータの品質が劣化(ドリフト)するリスクがあるため、フィルタリングと人手レビューを組み合わせる必要がある。</li>
+</ul>
+
+
+<h2 id="part6">第6部: 信頼性の向上</h2>
+<p>原著第6章に対応します。生成結果の品質を検証・改善し続ける仕組みを扱う4パターンです。</p>
+<h3 id="パターン17-llm-as-judgellmを評価者として使う">パターン17:
+LLM-as-Judge(LLMを評価者として使う)</h3>
+<ul>
+<li><strong>問題</strong>：生成AIの出力品質を人手で継続的に評価するのはコストが高く、スケールしない。BLEUやROUGEのような字句一致ベースの指標は、意味的な品質を十分に捉えられない。</li>
+<li><strong>解決策</strong>：別のLLM(あるいは同じLLM)に、定義した評価基準(ルーブリック)に沿って出力を採点させる。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    IN[評価対象の入力+出力] --&gt; J[評価用LLM&lt;br/&gt;ルーブリックに基づき採点]
+    J --&gt; SCORE[スコア/ラベル+&lt;br/&gt;採点理由]
+    SCORE --&gt; AGG[集計・ダッシュボード化]
+    AGG --&gt; GATE{品質基準を&lt;br/&gt;満たすか？}
+    GATE --&gt;|いいえ| ALERT[アラート/リリースブロック]
+    GATE --&gt;|はい| PASS[本番デプロイ承認]</pre>
+<ul>
+<li><strong>具体例</strong>：CI/CDパイプラインに組み込み、プロンプトやモデルを変更するたびに自動評価を実行し、リグレッションを検知する。</li>
+<li><strong>検討事項</strong>：評価用LLMには位置バイアス(先に提示した回答を優遇する)、長さバイアス(長い回答を優遇する)、自己贔屓バイアス(同系統モデルの出力を優遇する)が知られている。回答の提示順序をランダム化する、生成モデルと異なるモデルファミリーを評価者に使う、人間の評価とのキャリブレーションを定期的に行う、といった対策が2026年時点のベストプラクティスとされる。<sup>[2]</sup></li>
+</ul>
+<h3 id="パターン18-reflection内省自己反省">パターン18:
+Reflection(内省・自己反省)</h3>
+<ul>
+<li><strong>問題</strong>：モデルは一度生成した出力をそのまま確定してしまい、明らかな誤りがあっても自ら気づいて修正する機会がない。</li>
+<li><strong>解決策</strong>：生成後に「この回答に誤りや改善点はないか」を自己評価させ、必要であれば再生成・修正させるループを設ける。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    GEN[初回の生成] --&gt; CRIT[自己批評ステップ&lt;br/&gt;誤りや改善点を検討]
+    CRIT --&gt; DECIDE{改善の余地が&lt;br/&gt;あるか？}
+    DECIDE --&gt;|はい| REVISE[修正版を生成]
+    REVISE --&gt; CRIT
+    DECIDE --&gt;|いいえ| FINAL[最終出力として確定]</pre>
+<ul>
+<li><strong>具体例</strong>：コード生成において、生成したコードを実行しエラーが出た場合にエラーメッセージを踏まえて再生成する。</li>
+<li><strong>検討事項</strong>：反省ループを無制限に回すとコストが線形に増加するため、最大反復回数や品質収束の判定基準を設ける必要がある。</li>
+</ul>
+<h3 id="パターン19-dependency-injection依存性注入">パターン19:
+Dependency Injection(依存性注入)</h3>
+<ul>
+<li><strong>問題</strong>：プロンプトやビジネスロジックの中に、外部サービス(データベース、API、現在時刻など)への依存がハードコードされていると、テストが困難になり、環境ごとの切り替えもしにくい。</li>
+<li><strong>解決策</strong>：ソフトウェア工学における依存性注入の考え方をLLMアプリケーションに応用し、外部依存(ツール、データソース、モデル自体)をインターフェース越しに注入可能な設計にする。</li>
+<li><strong>具体例</strong>：テスト環境ではモック化した検索インデックスを注入し、本番環境では実際のベクトルデータベースを注入する。</li>
+<li><strong>検討事項</strong>：LLMアプリケーション特有の非決定性があるため、従来のソフトウェアテストと同じ感覚で「決定的な期待値」を設定できない場合が多く、評価(パターン17)と組み合わせたテスト設計が必要。</li>
+</ul>
+<h3 id="パターン20-prompt-optimizationプロンプト最適化">パターン20:
+Prompt Optimization(プロンプト最適化)</h3>
+<ul>
+<li><strong>問題</strong>：手作業でのプロンプトの試行錯誤(プロンプトエンジニアリング)は属人的で、モデルを差し替えるたびにゼロからやり直しになりがちである。</li>
+<li><strong>解決策</strong>：評価データセットと評価指標を定義した上で、プロンプトのバリエーションを自動生成・評価し、最も性能の高いプロンプトを探索するプロセスを構築する。DSPyのような、プロンプトを「最適化可能なパラメータ」として扱うフレームワークがこの考え方を体現している。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    DS[評価用データセット] --&gt; CAND[候補プロンプトを生成]
+    CAND --&gt; RUN[各候補をモデルで実行]
+    RUN --&gt; EVAL[LLM-as-Judge等で採点]
+    EVAL --&gt; BEST{最良の候補を更新}
+    BEST --&gt; CAND
+    BEST --&gt; OUT[最適化されたプロンプト]</pre>
+<ul>
+<li><strong>具体例</strong>：モデルをGPT系からClaude系に切り替えた際、同じ評価データセットを使ってプロンプトを自動的に再最適化する。</li>
+<li><strong>検討事項</strong>：最適化には評価の実行コストがかかるため、探索空間の設計(候補の生成方法)と評価コストのバランスが重要。</li>
+</ul>
+
+
+<h2 id="part7">第7部:
+エージェントに行動させる</h2>
+<p>原著第7章に対応します。LLMに外部世界への「行動」を持たせる3パターンです。</p>
+<h3 id="パターン21-tool-callingツール呼び出しfunction-calling">パターン21:
+Tool Calling(ツール呼び出し、Function Calling)</h3>
+<ul>
+<li><strong>問題</strong>：LLM単体では、最新情報の取得、計算、外部システムの操作(メール送信、DB更新など)ができない。</li>
+<li><strong>解決策</strong>：利用可能な関数(ツール)のスキーマ(名前・説明・引数)をモデルに提示し、モデルが必要と判断した場合にツール名と引数をJSON等の構造化形式で出力する。呼び出し側のアプリケーションがそれを実行し、結果をモデルに返して会話を継続する。</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant User as ユーザー
+    participant LLM as LLM
+    participant Tool as 外部ツール/API
+    User-&gt;&gt;LLM: 質問「東京の現在の天気は？」
+    LLM-&gt;&gt;LLM: ツールが必要と判断
+    LLM-&gt;&gt;Tool: get_weather(city=Tokyo) を呼び出し
+    Tool--&gt;&gt;LLM: 天気データを返却
+    LLM-&gt;&gt;LLM: 結果をコンテキストに統合
+    LLM--&gt;&gt;User: 天気を踏まえた自然文で回答</pre>
+<ul>
+<li><strong>具体例</strong>：カレンダー登録、在庫確認API呼び出し、社内システムへの問い合わせ。2026年時点では、こうしたツールを標準化された形で公開・接続するための**Model
+Context
+Protocol(MCP)**がAnthropic・OpenAI・Google等の主要プロバイダに広く採用され、業界標準として定着している(詳細は第11部)。<sup>[3]</sup></li>
+<li><strong>検討事項</strong>：ツールの説明文(docstring)の質がツール選択精度に直結する。誤ったツール呼び出しや引数生成を防ぐため、パターン2(Grammar)による構造化出力の強制と組み合わせるのが一般的。</li>
+</ul>
+<h3 id="パターン22-code-executionコード実行">パターン22: Code
+Execution(コード実行)</h3>
+<ul>
+<li><strong>問題</strong>：数値計算、データ処理、複雑なアルゴリズムの実行は、LLMが直接「頭の中で」行うと精度が低い。</li>
+<li><strong>解決策</strong>：LLMにコード(主にPython)を生成させ、サンドボックス化された実行環境で実際に実行し、その結果を回答に反映させる。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    Q[計算やデータ処理を&lt;br/&gt;要する質問] --&gt; GEN[LLMがコードを生成]
+    GEN --&gt; SANDBOX[サンドボックス環境で&lt;br/&gt;コードを実行]
+    SANDBOX --&gt; RESULT{実行結果}
+    RESULT --&gt;|成功| USE[結果を回答に統合]
+    RESULT --&gt;|エラー| FIX[エラー内容を踏まえて&lt;br/&gt;コードを修正・再実行]
+    FIX --&gt; SANDBOX
+
+    classDef sandboxFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
+    class SANDBOX sandboxFill</pre>
+<ul>
+<li><strong>具体例</strong>：CSVデータの集計・グラフ作成、複雑な数式の正確な計算。</li>
+<li><strong>検討事項</strong>：サンドボックスの隔離(ネットワークアクセス制限、実行時間制限、リソース制限)がセキュリティ上不可欠。生成コードが悪意ある挙動をしないよう、実行前の静的検査や許可リスト方式の採用が推奨される。</li>
+</ul>
+<h3 id="パターン23-multiagent-collaborationマルチエージェント協調">パターン23:
+Multiagent Collaboration(マルチエージェント協調)</h3>
+<ul>
+<li><strong>問題</strong>：単一のエージェントに全てのロール(計画・調査・実行・検証)を担わせると、コンテキストが肥大化し、専門性も分散して精度が落ちる。</li>
+<li><strong>解決策</strong>：役割ごとに専門化した複数のエージェントを用意し、協調させて1つのタスクを完遂させる。代表的なアーキテクチャに、中央のオーケストレーターが動的にタスクを分解・委譲する「Orchestrator-Workers」パターンがある。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    ORCH[オーケストレーターエージェント&lt;br/&gt;タスクを分解・委譲・統合] --&gt; W1[専門エージェントA&lt;br/&gt;例：コード調査]
+    ORCH --&gt; W2[専門エージェントB&lt;br/&gt;例：テスト実行]
+    ORCH --&gt; W3[専門エージェントC&lt;br/&gt;例：文書作成]
+    W1 --&gt; ORCH
+    W2 --&gt; ORCH
+    W3 --&gt; ORCH
+    ORCH --&gt; FINAL[統合された最終成果物]
+
+    classDef orchFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
+    class ORCH orchFill</pre>
+<ul>
+<li><strong>具体例</strong>：Anthropicのコーディングエージェントは、事前に固定化されたサブタスクを持たず、オーケストレーターが複数ファイルにまたがるGitHub
+issueを動的に分解して処理する方式を採用している。<sup>[1]</sup></li>
+<li><strong>検討事項</strong>：エージェント間の通信コスト(トークン消費)が増大しやすい。役割分担が曖昧だとエージェント同士が同じ作業を繰り返す非効率が発生する。まずは単一エージェントで十分か検討し、必要な場合にのみマルチエージェント化するのが2025〜2026年の実務的コンセンサスである。</li>
+</ul>
+
+
+<h2 id="part8">第8部: 制約への対処</h2>
+<p>原著第8章に対応します。コスト・レイテンシ・可用性といった実運用上の制約に対処する5パターンです。</p>
+<h3 id="パターン24-small-language-model小規模言語モデルslm">パターン24:
+Small Language Model(小規模言語モデル、SLM)</h3>
+<ul>
+<li><strong>問題</strong>：あらゆるタスクにフロンティア級の大規模モデルを使うと、推論コストとレイテンシが実用に耐えない場合がある。</li>
+<li><strong>解決策</strong>：ツール呼び出しの引数整形や定型的な分類など、タスクを狭く限定できる箇所には、より小規模で高速・安価なモデル(概ね1B〜30Bパラメータ帯)を割り当てる。NVIDIAの研究チームは、エージェントシステムの多くのノードにおいてSLMが「十分に強力で、本質的により適しており、必然的により経済的である」と主張し、2026年にはNemotron・Phi・Gemma・Qwenなど実運用可能なSLM群が出揃っている。<sup>[4]</sup></li>
+</ul>
+<pre class="mermaid">flowchart TB
+    REQ[エージェントのタスクステップ] --&gt; ROUTE{タスクの複雑度は？}
+    ROUTE --&gt;|定型的・narrow| SLM[小規模言語モデル&lt;br/&gt;低コスト・低レイテンシ]
+    ROUTE --&gt;|複雑・曖昧性が高い| LLM[大規模フロンティアモデル&lt;br/&gt;高精度・高コスト]
+    SLM --&gt; RESULT[結果]
+    LLM --&gt; RESULT
+
+    classDef slmFill fill:#173a2e,stroke:#34d399,color:#e6fff5
+    classDef llmFill fill:#3a2a1a,stroke:#e8a33d,color:#fff3e0
+    class SLM slmFill
+    class LLM llmFill</pre>
+<ul>
+<li><strong>具体例</strong>：エージェントのループ内で、ツール引数の整形やルーティング判定にはSLMを、最終的なユーザー向け回答の生成には大規模モデルを使うハイブリッド構成。</li>
+<li><strong>検討事項</strong>：SLM単体の汎用推論能力は依然として大規模モデルに劣るため、フォールバック(SLMで対応できない場合に大規模モデルへエスカレーション)の設計が必要。</li>
+</ul>
+<h3 id="パターン25-prompt-cachingプロンプトキャッシュ">パターン25:
+Prompt Caching(プロンプトキャッシュ)</h3>
+<ul>
+<li><strong>問題</strong>：長いシステムプロンプトや共通のコンテキスト(few-shot例、ドキュメント全文など)を毎回のリクエストで再送・再計算すると、コストとレイテンシが無駄に発生する。</li>
+<li><strong>解決策</strong>：プロバイダ側でプロンプトの共通接頭辞(プレフィックス)部分の計算結果(KVキャッシュ)を保持し、同じプレフィックスを含むリクエストが来た際に再計算をスキップして再利用する。</li>
+</ul>
+<pre class="mermaid">flowchart LR
+    REQ1[リクエスト1&lt;br/&gt;システムプロンプト+質問A] --&gt; CALC[プレフィックス部分を計算し&lt;br/&gt;KVキャッシュとして保存]
+    CALC --&gt; RESP1[応答1]
+    REQ2[リクエスト2&lt;br/&gt;同じシステムプロンプト+質問B] --&gt; HIT{キャッシュヒット？}
+    HIT --&gt;|はい| REUSE[保存済みキャッシュを再利用&lt;br/&gt;該当部分は低コスト課金]
+    HIT --&gt;|いいえ| CALC
+    REUSE --&gt; RESP2[応答2]</pre>
+<ul>
+<li><strong>具体例</strong>：長大なコーディングエージェントのシステムプロンプトや、社内文書全文をコンテキストに含める用途で特に効果が大きい。2026年の実測では、キャッシュヒット時のトークン単価がGeminiで約90%減、DeepSeekでは通常の約50分の1(1Mトークンあたり0.14ドル→0.0028ドル)まで下がる事例が報告されている。<sup>[5]</sup></li>
+<li><strong>検討事項</strong>：静的な内容(システムプロンプト、規約類)と動的な内容(現在の状態、最新の検索結果)をプロンプト内で分離し、静的な部分を先頭に固定配置することでキャッシュヒット率が最大化される。会話履歴を要約(圧縮)するとキャッシュされたプレフィックスが破棄され、かえって再計算コストが増えるケースがあるため、要約は明確な制約(コンテキスト長の上限に近づいた場合など)がある時のみ行うべきとされる。<sup>[6]</sup></li>
+</ul>
+<h3 id="パターン26-inference-optimization推論最適化">パターン26:
+Inference Optimization(推論最適化)</h3>
+<ul>
+<li><strong>問題</strong>：モデルサイズが大きいほど、単一リクエストあたりの推論に時間とGPUメモリを要し、スループットが頭打ちになる。</li>
+<li><strong>解決策</strong>：量子化(重みを低ビット精度に圧縮)、バッチング(複数リクエストをまとめて処理)、投機的デコーディング(小さいモデルで下書きし大きいモデルが検証する)などの技術を組み合わせて、精度を大きく損なわずに推論速度とスループットを向上させる。</li>
+<li><strong>具体例</strong>：本番APIサーバーでの動的バッチング、エッジデバイス上でのINT8/INT4量子化モデルの利用。</li>
+<li><strong>検討事項</strong>：量子化のビット数を下げすぎると精度劣化が顕著になるため、タスクごとに許容できる精度低下の範囲を評価する必要がある。</li>
+</ul>
+<h3 id="パターン27-degradation-testing劣化テスト">パターン27:
+Degradation Testing(劣化テスト)</h3>
+<ul>
+<li><strong>問題</strong>：外部APIの障害、レートリミット到達、コンテキスト長超過など、本番環境では理想的でない状況が必ず発生するが、それらを想定したテストが後回しにされがちである。</li>
+<li><strong>解決策</strong>：意図的に障害・遅延・不完全な入力を注入したテストシナリオを用意し、システムが「どう優雅に劣化するか(Graceful
+Degradation)」を検証する。カオスエンジニアリングの考え方を生成AIシステムに応用したものといえる。</li>
+<li><strong>具体例</strong>：検索インデックスが一時的に利用不可能な状態を模擬し、システムがエラーで完全停止するのではなく、キャッシュされた回答やフォールバックメッセージを返せるかを確認する。</li>
+<li><strong>検討事項</strong>：テストシナリオの網羅性を担保するのが難しく、実運用で発生したインシデントを継続的にテストケースへフィードバックする仕組みが有効。</li>
+</ul>
+<h3 id="パターン28-long-term-memory長期記憶">パターン28: Long-Term
+Memory(長期記憶)</h3>
+<ul>
+<li><strong>問題</strong>：LLMのコンテキストウィンドウは有限であり、セッションをまたいだユーザーとのやり取りの履歴や学習内容を保持できない。</li>
+<li><strong>解決策</strong>：会話の要点や重要な事実を外部のストレージ(ベクトルデータベースや構造化ストア)に永続化し、必要なタイミングで検索・注入する仕組みを設ける。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    CONV[会話/セッション] --&gt; EXTRACT[重要な事実・選好を抽出]
+    EXTRACT --&gt; STORE[(長期記憶ストア)]
+    NEWCONV[新しいセッション開始] --&gt; RETRIEVE[関連する記憶を検索]
+    STORE --&gt; RETRIEVE
+    RETRIEVE --&gt; INJECT[コンテキストに注入]
+    INJECT --&gt; RESPONSE[パーソナライズされた応答]
+
+    classDef storeFill fill:#173a2e,stroke:#34d399,color:#e6fff5
+    class STORE storeFill</pre>
+<ul>
+<li><strong>具体例</strong>：ユーザーの過去の質問傾向や選好を記憶し、次回以降の会話で踏まえた回答を行うパーソナルアシスタント。</li>
+<li><strong>検討事項</strong>：何を記憶し、何を記憶しないかのポリシー設計が重要(個人情報・機微情報の扱いには特に注意)。記憶の陳腐化(古い情報が現状と矛盾する)への対処も必要。</li>
+</ul>
+
+
+<h2 id="part9">第9部: セーフガードの設定</h2>
+<p>原著第9章に対応します。生成AIシステムの出力を安全・妥当な範囲に収めるための4パターンです。</p>
+<h3 id="パターン29-template-generationテンプレート生成">パターン29:
+Template Generation(テンプレート生成)</h3>
+<ul>
+<li><strong>問題</strong>：自由形式の生成では、出力フォーマットが安定せず、下流システムでのパースエラーや表示崩れを招きやすい。</li>
+<li><strong>解決策</strong>：あらかじめ定義したテンプレート(構造化フォーマット)の「空欄」をLLMに埋めさせる方式にすることで、フォーマットの逸脱を構造的に防ぐ。パターン2(Grammar)よりも粗い粒度でフォーマットを固定する手法と位置づけられる。</li>
+<li><strong>具体例</strong>：定型のメール文面、レポートのセクション構成が決まっている業務文書の自動生成。</li>
+<li><strong>検討事項</strong>：テンプレートが硬直的すぎると、テンプレートに当てはまらない例外的なケースへの対応力が落ちる。</li>
+</ul>
+<h3 id="パターン30-assembled-reformat組み立て型再フォーマット">パターン30:
+Assembled Reformat(組み立て型再フォーマット)</h3>
+<ul>
+<li><strong>問題</strong>：LLMに一度に「内容の生成」と「厳密なフォーマット遵守」の両方を求めると、どちらかの品質が犠牲になりやすい。</li>
+<li><strong>解決策</strong>：まず内容の生成に集中させ、その後、生成された内容を決定的なコード(プログラム)でパースし、必要な最終フォーマットへ機械的に組み立て直す。LLMの創造性発揮と、システムが要求する厳密性の両立を狙う。</li>
+<li><strong>具体例</strong>：LLMには自由形式で回答内容を考えさせ、その後に正規表現やパーサーで抽出・再構成してJSON
+APIレスポンスを組み立てる。</li>
+<li><strong>検討事項</strong>：LLMの自由形式出力から必要な情報を確実に抽出できるだけの、ある程度予測可能な出力構造をプロンプト設計時に確保しておく必要がある。</li>
+</ul>
+<h3 id="パターン31-self-check自己検証">パターン31:
+Self-Check(自己検証)</h3>
+<ul>
+<li><strong>問題</strong>：生成された回答に事実誤認や論理的矛盾が含まれていても、それを検出する仕組みがなければそのままユーザーに届いてしまう。</li>
+<li><strong>解決策</strong>：生成後に別ステップ(あるいは別モデル)で、出力の整合性・妥当性を機械的にチェックし、基準を満たさない場合は再生成や人間へのエスカレーションを行う。パターン18(Reflection)が「改善」に主眼を置くのに対し、Self-Checkは「合否判定」に主眼を置く点で区別される。</li>
+<li><strong>具体例</strong>：生成された数値計算結果を、別途コード実行(パターン22)で検算する。医療・金融ドメインでの出力に対する追加の妥当性チェック層。</li>
+<li><strong>検討事項</strong>：チェック自体にもLLMを使う場合、チェック用モデルの誤判定(見逃し・過検知)のリスクが残るため、多層防御の一部として位置づけるべきである。</li>
+</ul>
+<h3 id="パターン32-guardrailsガードレール">パターン32:
+Guardrails(ガードレール)</h3>
+<ul>
+<li><strong>問題</strong>：プロンプトインジェクション、有害コンテンツの生成、意図しないトピックへの逸脱など、モデル単体の安全対策だけでは防ぎきれないリスクが本番運用では顕在化する。</li>
+<li><strong>解決策</strong>：アプリケーションとLLMの間に、入力・出力の両方をチェックする独立したミドルウェア層(ガードレール)を設ける。入力ガードレールは有害なプロンプトやインジェクション攻撃を事前にブロックし、出力ガードレールは生成結果が安全ポリシーやトピック制約に違反していないかを検査する。</li>
+</ul>
+<pre class="mermaid">flowchart TB
+    U[ユーザー入力] --&gt; IG[入力ガードレール&lt;br/&gt;有害性/インジェクション検知]
+    IG --&gt; OK1{問題なし？}
+    OK1 --&gt;|いいえ| BLOCK1[ブロック/拒否応答]
+    OK1 --&gt;|はい| LLM[LLM本体が応答を生成]
+    LLM --&gt; OG[出力ガードレール&lt;br/&gt;安全性/トピック逸脱の検査]
+    OG --&gt; OK2{問題なし？}
+    OK2 --&gt;|いいえ| BLOCK2[出力を差し替え/再生成]
+    OK2 --&gt;|はい| PASS[ユーザーへ応答を返す]
+
+    classDef guardFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
+    class IG,OG guardFill</pre>
+<ul>
+<li><strong>具体例</strong>：NVIDIA NeMo
+Guardrailsのような、ルールベースの制御フローとLLM分類器(Llama
+Guardなど)を組み合わせた実装。カスタマーサポート領域ではデータ漏洩・詐欺防止、医療領域ではHIPAA等の規制準拠のための出力制約に活用される。<sup>[7]</sup></li>
+<li><strong>検討事項</strong>：ガードレール自体がレイテンシを追加するため、軽量な分類器モデルの併用や、入力段階での高速フィルタと出力段階でのより詳細な検査を組み合わせる設計が一般的。ガードレール自身への攻撃(ガードレールを長時間の推論ループに追い込むDoS攻撃など)も新たな研究テーマとして報告されている。<sup>[8]</sup></li>
+</ul>
+
+
+<h2 id="part10">第10部:
+コンポーザブルなエージェントワークフロー</h2>
+<p>原著第10章に対応します。ここまでの32パターンは個別の道具箱でしたが、実際のアプリケーションはこれらを<strong>組み合わせて</strong>構築されます。原著では、実際に動くアプリケーションを題材に、パターンをどう組み合わせるかを解説しています。</p>
+<pre class="mermaid">flowchart TB
+    U[ユーザーからのリクエスト] --&gt; GUARD_IN[パターン32&lt;br/&gt;入力ガードレール]
+    GUARD_IN --&gt; ROUTE[パターン24&lt;br/&gt;SLMによる軽量ルーティング]
+    ROUTE --&gt; ORCH[パターン23&lt;br/&gt;オーケストレーターエージェント]
+    ORCH --&gt; RAG[パターン6-12&lt;br/&gt;知識検索サブシステム]
+    ORCH --&gt; TOOL[パターン21-22&lt;br/&gt;ツール呼び出し/コード実行]
+    RAG --&gt; REASON[パターン13-14&lt;br/&gt;CoT/ToTによる推論]
+    TOOL --&gt; REASON
+    REASON --&gt; SELFCHECK[パターン18/31&lt;br/&gt;自己反省・自己検証]
+    SELFCHECK --&gt; GUARD_OUT[パターン32&lt;br/&gt;出力ガードレール]
+    GUARD_OUT --&gt; CACHE[パターン25&lt;br/&gt;プロンプトキャッシュで&lt;br/&gt;次回リクエストを高速化]
+    CACHE --&gt; RESP[ユーザーへの最終応答]
+
+    classDef guardFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
+    classDef coreFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
+    class GUARD_IN,GUARD_OUT guardFill
+    class ORCH coreFill</pre>
+<h3 id="101-システムアーキテクチャの考え方">10.1
+システムアーキテクチャの考え方</h3>
+<p>原著が例示するアプリケーションは、単一のパターンではなく、上図のように複数パターンを層状に組み合わせています。設計上のポイントは以下の通りです。</p>
+<ol type="1">
+<li><strong>入り口と出口を必ずガードレールで固める</strong>(パターン32)：システムの複雑さに関わらず、安全性の最終防衛線は一貫して設ける。</li>
+<li><strong>コストがかかる処理ほど手前でフィルタする</strong>：軽量なSLM(パターン24)によるルーティングを先に行い、本当に高度な推論が必要な場合だけ大規模モデルやマルチエージェント構成(パターン23)に処理を回す。</li>
+<li><strong>推論と検証を分離する</strong>：生成(推論・CoT/ToT)と検証(Self-Check、Reflection)を別ステップとして明示的に設計することで、失敗モードを局所化しデバッグしやすくする。</li>
+<li><strong>キャッシュ可能な部分を意識してプロンプト設計を行う</strong>(パターン25)：システムプロンプトや共通コンテキストを先頭に固定配置し、繰り返し呼び出しのコストを最小化する。</li>
+</ol>
+<h3 id="102-デプロイメントの観点">10.2 デプロイメントの観点</h3>
+<p>本番デプロイにあたっては、次のような運用上の論点が生じます。</p>
+<ul>
+<li><strong>段階的ロールアウト</strong>：まず限定的なユーザー層・タスク範囲で稼働させ、評価(パターン17)の結果を見ながら適用範囲を広げる。</li>
+<li><strong>可観測性(Observability)</strong>：各パターン(検索、ツール呼び出し、ガードレール判定など)の実行ログ・トレースを収集し、失敗の原因を追跡できるようにする。</li>
+<li><strong>コストモニタリング</strong>：プロンプトキャッシュのヒット率、SLM/LLMの振り分け比率など、コストに直結する指標を継続的に監視する。</li>
+</ul>
+
+
+<h2 id="part11">第11部:
+2026年9月時点の最新動向</h2>
+<p>本書の初版刊行(2025年10月)以降、生成AI設計パターンを取り巻くエコシステムは急速に発展しました。Web検索で調査した2026年9月9日時点の主要な動向を、一次情報源とともにまとめます。</p>
+<h3 id="111-model-context-protocolmcpの標準化と業界ガバナンス移行">11.1
+Model Context Protocol(MCP)の標準化と業界ガバナンス移行</h3>
+<p>パターン21(Tool
+Calling)を支えるインフラとして、Anthropicが2024年11月に公開した**Model
+Context Protocol(MCP)**は、2025年3月にOpenAIが、同年にGoogle
+DeepMindが採用を表明し、急速に業界標準化が進みました。2025年12月9日、AnthropicはMCPをLinux
+Foundation傘下の新設団体「Agentic AI
+Foundation(AAIF)」に寄贈し、OpenAI・Blockと共同創設者となり、AWS・Google・Microsoft・Cloudflare・Bloombergがプラチナメンバーとして参画しました。2026年3月時点でPython/TypeScript
+SDKの月間ダウンロード数は約9,700万件に達し、単一ベンダーに依存しないガバナンス体制が本番導入の障壁を下げたと分析されています。<sup>[3][9]</sup></p>
+<h3 id="112-コンテキストエンジニアリングとプロンプトキャッシュ経済学の転換">11.2
+コンテキストエンジニアリングとプロンプトキャッシュ経済学の転換</h3>
+<p>2026年には、Andrej
+Karpathyが提唱したとされる「コンテキストエンジニアリング」という語が「プロンプトエンジニアリング」に代わる標準用語として定着しました。特筆すべきは、プロンプトキャッシュの普及によって従来の通説が反転した点です。「コンテキストは要約して圧縮すべき」という2025年までの定石に対し、2026年の実測データは、キャッシュ課金の恩恵がある場合、<strong>要約せず全履歴を保持する方がコスト・速度・記憶の正確性いずれの面でも有利</strong>になり得ることを示しました。要約はキャッシュされた接頭辞を破棄し、再計算コストを発生させるためです。Anthropicの公式エンジニアリング記事群(Effective
+context engineering for AI
+agents等)も、コンテキストを「有限の資源」として扱い、各ターンに与えるトークンを最小の高シグナル集合に絞る設計を一貫して推奨しています。<sup>[5][6]</sup></p>
+<h3 id="113-小規模言語モデルslmによるハイブリッド構成の定着">11.3
+小規模言語モデル(SLM)によるハイブリッド構成の定着</h3>
+<p>パターン24(Small Language Model)の裏付けとなったNVIDIA発の position
+paper「Small Language Models are the Future of Agentic
+AI」(2025年6月)の主張は、2026年にはNemotron(NVIDIA)、Phi-4(Microsoft)、Gemma(Google)、Qwen3(Alibaba)といった実運用可能なオンデバイスSLM群の充実によって裏付けられつつあります。エージェントループの8〜9割のステップをローカルの小規模モデルで処理し、真に難しい判断のみをフロンティアモデルにエスカレーションする「SLM優先ルーティング」が、コスト最適化の標準パターンとして紹介されています。<sup>[4][10]</sup></p>
+<h3 id="114-llm-as-judgeパターン17の成熟とバイアス対策の体系化">11.4
+LLM-as-Judge(パターン17)の成熟とバイアス対策の体系化</h3>
+<p>LLM-as-Judgeは2026年時点で、EU AI
+Actをはじめとする規制対応の文脈でも「実証可能な評価」の手段として要求されるようになりました。位置バイアス・長さバイアス・自己贔屓バイアスへの対策として、(1)ペアワイズ比較で提示順序を入れ替える、(2)生成モデルとは異なるモデルファミリーを評価者に使う、(3)少数の人手ラベルに対して評価者をキャリブレーションする、という3点が2026年のベストプラクティスとして複数の評価プラットフォームで共通して推奨されています。フロンティア級モデルを「監査用の高精度だが高コストな評価者」、より軽量なモデルを「本番の継続的スコアリング用」として使い分けるハイブリッド運用も一般化しています。<sup>[2]</sup></p>
+<h3 id="115-ガードレールパターン32のインフラ化">11.5
+ガードレール(パターン32)のインフラ化</h3>
+<p>NVIDIA NeMo GuardrailsやLlama
+Guardのようなガードレールフレームワークは、2026年には「アプリケーションとLLMの間に挟むミドルウェア層」としてインフラ化が進みました。軽量な分類器モデル(Llama
+Prompt Guard 2 86Mなど)を第一段の高速フィルタとして、より詳細なLlama
+Guard 3
+8B等を第二段の判定に使う多段構成により、p99レイテンシを80ミリ秒未満に抑える実装パターンも報告されています。一方で、ガードレール自身を長時間の推論ループへ追い込みDoS攻撃を仕掛ける新たな攻撃手法も学術研究として報告されており、ガードレールも「攻撃対象になり得るコンポーネント」として設計する視点が求められています。<sup>[7][8]</sup></p>
+<h3 id="116-業界標準を形作るその他の代表的リソース">11.6
+業界標準を形作るその他の代表的リソース</h3>
+<p>本書と並んで、2026年時点で国際的に広く参照されているGenAI設計パターン関連の情報源として、以下が挙げられます。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr class="header header">
+<th>リソース</th>
+<th>発信者</th>
+<th>概要</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd odd">
+<td>Building Effective Agents</td>
+<td>Anthropic エンジニアリングブログ</td>
+<td>ワークフローとエージェントを区別し、「まずシンプルに」を原則とする設計思想を提示。オーケストレーター・ワーカーやEvaluator-Optimizerループなど、本ガイドのパターン23と重なる内容を扱う。<sup>[1]</sup></td>
+</tr>
+<tr class="even even">
+<td>A practical guide to building agents</td>
+<td>OpenAI</td>
+<td>モデル選定・ツール設計・ガードレール・マルチエージェントオーケストレーション(マネージャー型/分散型)を扱う実務者向けガイド。<sup>[11]</sup></td>
+</tr>
+<tr class="odd odd">
+<td>Agentic Design Patterns: A Hands-On Guide to Building Intelligent
+Systems</td>
+<td>Antonio Gulli(Google, CTO室シニアディレクター)</td>
+<td>21個のエージェント特化パターン(プロンプトチェイニング、ルーティング、並列化、内省、計画、ツール利用、マルチエージェント協調、MCP等)を、LangGraph・CrewAI・Google
+ADKの実装例とともに解説する無償公開の大部の書籍。<sup>[12]</sup></td>
+</tr>
+<tr class="even even">
+<td>Patterns for Building LLM-based Systems &amp; Products</td>
+<td>Eugene Yan(現Anthropic Member of Technical Staff)</td>
+<td>Evals・RAG・ファインチューニング・キャッシュ・ガードレール・防御的UX・フィードバック収集という7パターンを提示した先駆的なブログ記事。本ガイドの多くのパターンの源流の一つ。<sup>[13]</sup></td>
+</tr>
+</tbody>
+</table></div>
+<p>これらのリソースに共通する思想は、「まず最もシンプルな構成から始め、評価に基づいて複雑さを正当化された場合にのみ追加する」という点です。本ガイドで紹介した32パターンも、全てを常に使うのではなく、直面している具体的な問題に応じて必要なものを選び取ることが重要です。</p>
+
+
+<h2 id="roadmap">学習ロードマップ</h2>
+<pre class="mermaid">flowchart TB
+    S1[ステップ1&lt;br/&gt;基礎固め&lt;br/&gt;第0部・第1部] --&gt; S2[ステップ2&lt;br/&gt;出力制御とRAGの基礎&lt;br/&gt;第2部〜第4部]
+    S2 --&gt; S3[ステップ3&lt;br/&gt;推論強化と信頼性&lt;br/&gt;第5部・第6部]
+    S3 --&gt; S4[ステップ4&lt;br/&gt;エージェント化&lt;br/&gt;第7部]
+    S4 --&gt; S5[ステップ5&lt;br/&gt;本番運用の実践&lt;br/&gt;第8部・第9部]
+    S5 --&gt; S6[ステップ6&lt;br/&gt;統合設計&lt;br/&gt;第10部]
+    S6 --&gt; S7[ステップ7&lt;br/&gt;最新動向のキャッチアップ&lt;br/&gt;第11部]
+
+    classDef stepFill fill:#1a2f4f,stroke:#5b8def,color:#eaf1ff
+    class S1,S2,S3,S4,S5,S6,S7 stepFill</pre>
+<div class="table-scroll"><table>
+<thead>
+<tr class="header header">
+<th>フェーズ</th>
+<th>目安期間</th>
+<th>学ぶこと</th>
+<th>到達目標</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd odd">
+<td>フェーズ1：基礎</td>
+<td>1週間</td>
+<td>基盤モデル、デコーディングパラメータ、プロンプトとコンテキストの違い</td>
+<td>温度・Top-K・Nucleusの挙動の違いを説明できる</td>
+</tr>
+<tr class="even even">
+<td>フェーズ2：出力制御とRAG</td>
+<td>2週間</td>
+<td>パターン1〜12(コンテンツスタイル制御、知識の追加)</td>
+<td>簡単なRAGパイプラインを自分で構築できる</td>
+</tr>
+<tr class="odd odd">
+<td>フェーズ3：推論と信頼性</td>
+<td>2週間</td>
+<td>パターン13〜20(CoT/ToT、LLM-as-Judge、Reflection等)</td>
+<td>評価パイプラインを設計し、プロンプト改善を反復できる</td>
+</tr>
+<tr class="even even">
+<td>フェーズ4：エージェント化</td>
+<td>2週間</td>
+<td>パターン21〜23(ツール呼び出し、コード実行、マルチエージェント)</td>
+<td>MCP等を用いたツール呼び出しエージェントを構築できる</td>
+</tr>
+<tr class="odd odd">
+<td>フェーズ5：本番運用</td>
+<td>2週間</td>
+<td>パターン24〜32(制約対処、セーフガード)</td>
+<td>コスト・レイテンシ・安全性のトレードオフを踏まえた設計判断ができる</td>
+</tr>
+<tr class="even even">
+<td>フェーズ6：統合と最新化</td>
+<td>継続的</td>
+<td>第10部・第11部</td>
+<td>複数パターンを組み合わせたシステム設計と、最新動向のキャッチアップを継続できる</td>
+</tr>
+</tbody>
+</table></div>
+
+
+<h2 id="checklist">導入前チェックリスト</h2>
+<p>本番環境へのデプロイ前に、以下の観点を確認することを推奨します。</p>
+<div class="checklist-card"><div class="checklist-progress">0 / 14 完了</div><ul class="task-list">
+<li><label><input type="checkbox"/>コンテンツスタイル制御：出力フォーマットの逸脱を防ぐ仕組み(Grammar/Template
+Generation/Assembled Reformat)を導入したか</label></li>
+<li><label><input type="checkbox"/>RAGの検索精度：チャンク分割戦略と埋め込みモデルの選定根拠を評価データで検証したか</label></li>
+<li><label><input type="checkbox"/>RAGの信頼性：生成結果と検索結果の整合性を検証する仕組み(Trustworthy
+Generation)があるか</label></li>
+<li><label><input type="checkbox"/>推論の妥当性：複雑なタスクにCoT/ToTを適用し、中間推論を検証可能にしたか</label></li>
+<li><label><input type="checkbox"/>評価基盤：LLM-as-Judgeのバイアス対策(提示順序ランダム化、モデルファミリーの分離、人手キャリブレーション)を行ったか</label></li>
+<li><label><input type="checkbox"/>ツール呼び出しの安全性：ツールの引数生成に文法制約を適用し、危険な操作には人間の承認ステップを挟んでいるか</label></li>
+<li><label><input type="checkbox"/>コード実行の隔離：サンドボックス環境のネットワーク・リソース制限を設定したか</label></li>
+<li><label><input type="checkbox"/>マルチエージェント構成の必要性：単一エージェントで十分でないかを再検討したか</label></li>
+<li><label><input type="checkbox"/>コスト最適化：SLMへのルーティングとプロンプトキャッシュのヒット率を計測しているか</label></li>
+<li><label><input type="checkbox"/>障害耐性：Degradation
+Testingにより主要な外部依存の障害シナリオを検証したか</label></li>
+<li><label><input type="checkbox"/>長期記憶のガバナンス：何を記憶し何を記憶しないかのポリシーと、機微情報の取り扱い方針が明文化されているか</label></li>
+<li><label><input type="checkbox"/>ガードレール：入力・出力の両方に独立したガードレール層を設け、ガードレール自体への攻撃も考慮したか</label></li>
+<li><label><input type="checkbox"/>可観測性：各パターンの実行ログ・トレースを収集し、失敗を追跡できる体制があるか</label></li>
+<li><label><input type="checkbox"/>段階的ロールアウト：限定範囲での稼働→評価→適用範囲拡大、というプロセスを計画したか</label></li>
+</ul></div>
+
+
+<h2 id="glossary">用語集</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr class="header header">
+<th>用語</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd odd">
+<td>基盤モデル(Foundation Model)</td>
+<td>大規模なデータで事前学習された汎用的なモデル。GPT、Claude、Geminiなど。</td>
+</tr>
+<tr class="even even">
+<td>ハルシネーション</td>
+<td>モデルが事実に基づかない、もっともらしい情報を生成する現象。</td>
+</tr>
+<tr class="odd odd">
+<td>プロンプトエンジニアリング</td>
+<td>モデルへの指示文(プロンプト)を工夫して望む出力を引き出す技術。</td>
+</tr>
+<tr class="even even">
+<td>コンテキストエンジニアリング</td>
+<td>プロンプトエンジニアリングを包含し、モデルに与えるコンテキスト全体(履歴、検索結果、ツール結果など)を設計する、より広い概念。</td>
+</tr>
+<tr class="odd odd">
+<td>RAG(Retrieval-Augmented Generation)</td>
+<td>外部知識源から関連情報を検索し、生成のコンテキストとして利用する手法。</td>
+</tr>
+<tr class="even even">
+<td>エンベディング(埋め込み)</td>
+<td>テキストなどを意味的な特徴を捉えた数値ベクトルに変換したもの。</td>
+</tr>
+<tr class="odd odd">
+<td>ロジット(Logits)</td>
+<td>モデルが各トークンに割り当てる、正規化前のスコア(確率分布の元になる値)。</td>
+</tr>
+<tr class="even even">
+<td>LoRA(Low-Rank Adaptation)</td>
+<td>モデル本体の重みを固定したまま、低ランク行列による少数の追加パラメータのみを学習する効率的なファインチューニング手法。</td>
+</tr>
+<tr class="odd odd">
+<td>ハイブリッド検索</td>
+<td>ベクトル検索とキーワード検索(BM25等)を組み合わせる検索手法。</td>
+</tr>
+<tr class="even even">
+<td>リランキング(Reranking)</td>
+<td>初期検索結果を、より精密なモデルで関連度順に並べ替える処理。</td>
+</tr>
+<tr class="odd odd">
+<td>LLM-as-Judge</td>
+<td>LLMを使って別のLLMの出力を評価する手法。</td>
+</tr>
+<tr class="even even">
+<td>ツール呼び出し(Tool Calling / Function Calling)</td>
+<td>LLMが外部の関数・APIを呼び出すために、構造化された形式で呼び出し内容を出力する仕組み。</td>
+</tr>
+<tr class="odd odd">
+<td>Model Context Protocol(MCP)</td>
+<td>LLMと外部ツール・データソースを接続するための標準化されたオープンプロトコル。Anthropicが提唱し、業界標準化が進んでいる。</td>
+</tr>
+<tr class="even even">
+<td>オーケストレーター・ワーカーパターン</td>
+<td>中央のエージェント(オーケストレーター)がタスクを分解し、複数の専門エージェント(ワーカー)に委譲する協調アーキテクチャ。</td>
+</tr>
+<tr class="odd odd">
+<td>プロンプトキャッシュ</td>
+<td>プロンプトの共通接頭辞部分の計算結果を再利用し、コストとレイテンシを削減する仕組み。</td>
+</tr>
+<tr class="even even">
+<td>量子化(Quantization)</td>
+<td>モデルの重みを低ビット精度で表現し、メモリ使用量と計算コストを削減する技術。</td>
+</tr>
+<tr class="odd odd">
+<td>ガードレール(Guardrails)</td>
+<td>LLMアプリケーションの入力・出力を監視・制御し、安全性ポリシーを強制するミドルウェア層。</td>
+</tr>
+<tr class="even even">
+<td>小規模言語モデル(SLM)</td>
+<td>概ね1B〜30Bパラメータ帯の、特定タスクに特化した効率重視の言語モデル。</td>
+</tr>
+</tbody>
+</table></div>
+
+
+<h2 id="references">参考文献</h2>
+<p>本ガイドの作成にあたり、O'Reilly公式の書誌情報に加え、Anthropic・OpenAI・Google・NVIDIA等、著名な国際的組織・開発者による一次情報を優先的に参照しました。</p>
+<div class="ref-grid"><div class="ref-card"><div class="ref-badge">1</div><div class="ref-body">Anthropic, "Building Effective Agents" — <a href="https://www.anthropic.com/engineering/building-effective-agents">https://www.anthropic.com/engineering/building-effective-agents</a></div></div><div class="ref-card"><div class="ref-badge">2</div><div class="ref-body">Confident AI / FutureAGI / Openlayer 各社, "LLM-as-a-Judge Best
+Practices 2026"（評価バイアス対策の業界共通見解） — <a href="https://www.confident-ai.com/blog/why-llm-as-a-judge-is-the-best-llm-evaluation-method">https://www.confident-ai.com/blog/why-llm-as-a-judge-is-the-best-llm-evaluation-method</a>
+、 <a href="https://futureagi.com/blog/llm-as-a-judge/">https://futureagi.com/blog/llm-as-a-judge/</a></div></div><div class="ref-card"><div class="ref-badge">3</div><div class="ref-body">WorkOS, "Everything your team needs to know about MCP in 2026" — <a href="https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026">https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026</a></div></div><div class="ref-card"><div class="ref-badge">4</div><div class="ref-body">Belcak, P. et al. (NVIDIA), "Small Language Models are the Future of
+Agentic AI" (arXiv:2506.02153) — <a href="https://arxiv.org/pdf/2506.02153">https://arxiv.org/pdf/2506.02153</a></div></div><div class="ref-card"><div class="ref-badge">5</div><div class="ref-body">Louis Bouchard, "Context Engineering in 2026: Why We Stopped
+Compacting Our Agent's Context" — <a href="https://www.louisbouchard.ai/context-engineering-2026/">https://www.louisbouchard.ai/context-engineering-2026/</a></div></div><div class="ref-card"><div class="ref-badge">6</div><div class="ref-body">Anthropic, "Effective context engineering for AI agents"（Loop
+Engineering関連エンジニアリング記事群の一部として言及） — <a href="https://www.anthropic.com/engineering/building-effective-agents">https://www.anthropic.com/engineering/building-effective-agents</a></div></div><div class="ref-card"><div class="ref-badge">7</div><div class="ref-body">Spheron Blog, "NVIDIA NeMo Guardrails on GPU Cloud: Production
+Runtime Safety Rails (2026 Guide)" — <a href="https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/">https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/</a></div></div><div class="ref-card"><div class="ref-badge">8</div><div class="ref-body">arXiv, "NeMo Guardrails: A Toolkit for Controllable and Safe LLM
+Applications" 関連研究（ガードレールへのDoS攻撃に関する学術報告） — <a href="https://www.researchgate.net/publication/376401604_NeMo_Guardrails_A_Toolkit_for_Controllable_and_Safe_LLM_Applications_with_Programmable_Rails">https://www.researchgate.net/publication/376401604_NeMo_Guardrails_A_Toolkit_for_Controllable_and_Safe_LLM_Applications_with_Programmable_Rails</a></div></div><div class="ref-card"><div class="ref-badge">9</div><div class="ref-body">ChatForest, "The MCP Ecosystem in 2026: How the Model Context
+Protocol Became the Universal Standard" — <a href="https://chatforest.com/guides/mcp-ecosystem-2026-state-of-the-standard/">https://chatforest.com/guides/mcp-ecosystem-2026-state-of-the-standard/</a></div></div><div class="ref-card"><div class="ref-badge">10</div><div class="ref-body">DigitalApplied, "Small Language Models for On-Device Agents in 2026"
+— <a href="https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide">https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide</a></div></div><div class="ref-card"><div class="ref-badge">11</div><div class="ref-body">OpenAI, "A practical guide to building agents" — <a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/</a></div></div><div class="ref-card"><div class="ref-badge">12</div><div class="ref-body">Antonio Gulli (Google), "Agentic Design Patterns: A Hands-On Guide
+to Building Intelligent Systems" (Springer Nature, 2025) — <a href="https://link.springer.com/book/10.1007/978-3-032-01402-3">https://link.springer.com/book/10.1007/978-3-032-01402-3</a></div></div><div class="ref-card"><div class="ref-badge">13</div><div class="ref-body">Eugene Yan, "Patterns for Building LLM-based Systems &amp; Products"
+— <a href="https://eugeneyan.com/writing/llm-patterns/">https://eugeneyan.com/writing/llm-patterns/</a></div></div><div class="ref-card"><div class="ref-badge">14</div><div class="ref-body">O'Reilly Media, "Generative AI Design Patterns" 書誌情報(Valliappa
+Lakshmanan, Hannes Hapke著、2025年10月刊、全10章・508ページ) — <a href="https://www.oreilly.com/library/view/generative-ai-design/9798341622654/">https://www.oreilly.com/library/view/generative-ai-design/9798341622654/</a></div></div><div class="ref-card"><div class="ref-badge">15</div><div class="ref-body">Amazon.com, "Generative AI Design Patterns" 著者略歴(Valliappa
+Lakshmanan：元Google Cloud Director for Data Analytics and AI
+Solutions、Obin AI共同創業者。Hannes Hapke：Digits社Senior Machine
+Learning Engineer) — <a href="https://www.amazon.com/Generative-Design-Patterns-Challenges-Applications/dp/B0FN37DV9N">https://www.amazon.com/Generative-Design-Patterns-Challenges-Applications/dp/B0FN37DV9N</a></div></div></div>
+
+<p><em>本ガイドは学習・教育目的の独自コンテンツであり、原著『Generative
+AI Design
+Patterns』の文章や図表を複製・転載したものではありません。原著の詳細な実装例やコードサンプルについては、書籍本体(O'Reilly
+Media刊)をご参照ください。</em></p>
+
+  <footer class="disclaimer">本ガイドは学習・教育目的の独自コンテンツであり、原著『Generative AI Design Patterns』の文章や図表を複製・転載したものではありません。原著の詳細な実装例やコードサンプルについては、書籍本体(O'Reilly Media刊)をご参照ください。</footer>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script>
+// ---------- Mermaid rendering (isolated, guarded) ----------
+(function initMermaid(){
+  try{
+    if (typeof mermaid === "undefined") {
+      console.warn("mermaid library not loaded");
+      return;
+    }
+    var FONT_STACK = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Meiryo, Arial, sans-serif';
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      securityLevel: "loose",
+      fontFamily: FONT_STACK,
+      themeVariables: {
+        fontSize: "16px",
+        background: "#0f1e33",
+        primaryColor: "#16283f",
+        primaryTextColor: "#e7edf7",
+        primaryBorderColor: "#2a4568",
+        lineColor: "#5f7290",
+        secondaryColor: "#1c3350",
+        tertiaryColor: "#0f1e33",
+        clusterBkg: "#0c1a2c",
+        clusterBorder: "#2a4568",
+        edgeLabelBackground: "#0f1e33"
+      },
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true,
+        subGraphTitleMargin: { top: 12, bottom: 18 },
+        nodeSpacing: 60,
+        rankSpacing: 65
+      },
+      sequence: { useMaxWidth: false }
+    });
+    mermaid.run({ querySelector: "pre.mermaid" }).catch(function(e){
+      console.error("mermaid render error", e);
+    });
+  }catch(e){
+    console.error("mermaid init failed", e);
+  }
+})();
+
+// ---------- Sidebar mobile toggle ----------
+(function initSidebarToggle(){
+  var toggle = document.querySelector(".sidebar-toggle");
+  var sidebar = document.querySelector(".sidebar");
+  if (!toggle || !sidebar) return;
+  toggle.addEventListener("click", function(){
+    sidebar.classList.toggle("open");
+  });
+  sidebar.querySelectorAll("a").forEach(function(a){
+    a.addEventListener("click", function(){
+      sidebar.classList.remove("open");
+    });
+  });
+})();
+
+// ---------- Scroll-spy ----------
+(function initScrollSpy(){
+  var navLinks = document.querySelectorAll(".sidebar nav a[href^='#']");
+  if (!navLinks.length) return;
+  var map = new Map();
+  navLinks.forEach(function(a){
+    var id = a.getAttribute("href").slice(1);
+    var target = document.getElementById(id);
+    if (target) map.set(target, a);
+  });
+  var targets = Array.from(map.keys());
+  if (!targets.length) return;
+
+  var currentActive = null;
+  function setActive(link){
+    if (currentActive === link) return;
+    navLinks.forEach(function(a){ a.classList.remove("active"); });
+    if (link) link.classList.add("active");
+    currentActive = link;
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    var visible = entries.filter(function(e){ return e.isIntersecting; });
+    if (visible.length === 0) return;
+    visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+    var top = visible[0].target;
+    setActive(map.get(top));
+  }, { root: null, rootMargin: "-15% 0px -75% 0px", threshold: 0 });
+
+  targets.forEach(function(t){ observer.observe(t); });
+})();
+
+// ---------- Checklist progress ----------
+(function initChecklist(){
+  var card = document.querySelector(".checklist-card");
+  if (!card) return;
+  var boxes = card.querySelectorAll('input[type="checkbox"]');
+  var counter = card.querySelector(".checklist-progress");
+  if (!counter) return;
+  function update(){
+    var checked = card.querySelectorAll('input[type="checkbox"]:checked').length;
+    counter.textContent = checked + " / " + boxes.length + " 完了";
+  }
+  boxes.forEach(function(box){
+    box.disabled = false;
+    box.addEventListener("change", update);
+  });
+  update();
+})();
+
+</script>
+</body>
+</html>
