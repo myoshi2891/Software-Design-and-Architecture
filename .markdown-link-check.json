@@ -236,6 +236,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?kunalganglani\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https://ai\\.meta\\.com/blog/"
     }
   ],
   "replacementPatterns": [],
