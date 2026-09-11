@@ -301,9 +301,27 @@ import asyncio
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from mcp.types import CallToolResult
 
 # 終了条件その1: ツール呼び出しの上限。無限ループとコスト暴走を防ぐ最後の砦。
 MAX_STEPS = 5
+
+
+def summarize(result: CallToolResult) -> str:
+    """ツール実行結果を安全に文字列化する。
+
+    成功時はツール戻り値スキーマに沿った structured_content を優先し、
+    無い場合のみ TextContent のテキストへフォールバックする。
+    content が空配列でも、先頭要素がテキスト以外（画像など）でも
+    IndexError / AttributeError を起こさない。
+    """
+    if not result.is_error and result.structured_content is not None:
+        return str(result.structured_content)
+    for block in result.content:
+        text = getattr(block, "text", None)
+        if text is not None:
+            return text
+    return "（テキストとして表示できる内容がありません）"
 
 
 async def main() -> None:
@@ -329,10 +347,10 @@ async def main() -> None:
                 # エラー処理: is_error のときは内容をエージェントの観測として次ターンへ渡す。
                 # 握りつぶさず、かつ例外で全体を止めないのが実運用でのポイント。
                 if result.is_error:
-                    print(f"step{step}: ツールエラー -> {result.content[0].text}")
+                    print(f"step{step}: ツールエラー -> {summarize(result)}")
                     continue
 
-                print(f"step{step}: 結果 -> {result.content[0].text}")
+                print(f"step{step}: 結果 -> {summarize(result)}")
 
                 # 終了条件その2: 目的を満たしたら即座に抜ける
                 if args["sku"] == "SKU-001":
@@ -685,7 +703,7 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
 - Lethal TrifectaやMAESTROのような枠組みでセキュリティリスクを体系的に洗い出すこと
 - 人間の説明責任を前提に、自律性のレベルを段階的に調整すること
 
-といった一つひとつの積み重ねが、実運用に耐えるAIエージェントアプリケーションを作り上げていきます。まずは本ガイドのステップ1〜4で紹介した最小構成のエージェントを自分の手で動かしてみることから始めてみてください。
+といった一つひとつの積み重ねが、実運用に耐えるAIエージェントアプリケーションを作り上げていきます。まずは本ガイドのステップ1〜5で紹介した最小構成のエージェントを自分の手で動かしてみることから始めてみてください。
 
 **出典**: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（巻末参考文献 13・14）
 

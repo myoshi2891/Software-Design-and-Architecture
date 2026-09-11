@@ -527,7 +527,7 @@ MCPとA2Aはしばしば対立するものと誤解されますが、実際に�
 ### 4.3 ACPとAGENTS.md
 
 - **ACP（Agent Communication Protocol）**：IBM Researchが開発した、FIPA-ACLの系譜を引く交渉指向のプロトコルで、propose/accept/reject/counterのような型付きの発話行為（performative）によるマルチターン対話を形式化していました。**ACPはA2Aへ統合済み**であり、独立したプロトコルとして選定する対象ではありません。旧ACP資料や既存実装を参照する場合は、交渉的対話の概念モデル（提案・受諾・拒否・カウンタ）は設計の参考として活かしつつ、実装面はA2A（Agent Cardによる能力公開、タスク委任、進捗状態の通知）へ読み替えます。
-- **AGENTS.md**：OpenAIが2025年8月に公開した、コーディングエージェント向けにリポジトリ固有の指示（ビルド手順やコーディング規約）を伝えるためのシンプルなMarkdown規約です。6万件を超えるオープンソースプロジェクトや、Cursor・Devin・GitHub Copilot・VS Codeなど主要なコーディングエージェントに採用されています。
+- **AGENTS.md**：OpenAIが2025年8月に公開した、コーディングエージェント向けにリポジトリ固有の指示（ビルド手順やコーディング規約）を伝えるためのシンプルなMarkdown規約です。Linux Foundationのプレスリリース（2025年12月9日時点）によれば、6万件を超えるオープンソースプロジェクトおよびエージェントフレームワーク（Amp・Codex・Cursor・Devin・Factory・Gemini CLI・GitHub Copilot・Jules・VS Codeなど）に採用されています（母集団は「AGENTS.mdを採用した公開プロジェクト・フレームワーク」。出典は末尾参考文献のAAIF設立プレスリリース）。
 
 ### 4.4 Agentic AI Foundation（AAIF）とプロトコルの地形図
 
@@ -784,7 +784,7 @@ flowchart TB
 - **セキュリティの重心が「エージェントの自律性」へ移動**：OWASP Top 10 for LLM Applications 2026で「過剰な自律性」が3位に上昇し、Agentic Applications向けのTop 10（ASI01〜ASI10）が新設されました。Simon Willison氏のLethal Trifectaは、OWASPの分類と対応づけられる形で業界共通の脅威モデルとして定着しています。
 - **観測基盤の標準化が進行中**：OpenTelemetryのGenAI Semantic Conventionsは2026年6月に専用リポジトリへ切り出され独立してバージョン管理されるようになりましたが、2026年8月時点でも「Development」ステータスであり、まだ確定した仕様ではありません。
 - **単一 vs マルチエージェントの論争は「使い分け」へ収束**：2025年6月に同時期に公開されたAnthropicとCognitionの対照的な記事をきっかけに始まった論争は、2026年4月のCognitionのフォローアップ記事により、「読み取り中心の探索タスクでは並列マルチエージェントが有効、書き込み・実行を伴うタスクではSingle-Writer原則を守る」という実務的な使い分けへ収束しつつあります。
-- **エンタープライズでの導入加速**：Gartnerの調査では、マルチエージェントシステムに関する問い合わせが2024年第1四半期から2025年第2四半期にかけて1,445%増加したと報告されており、2026年末までにエンタープライズアプリケーションの40%がAIエージェントを組み込むと予測されています。一方でCiscoの2026年セキュリティレポートでは、エージェント型AIの導入を計画する組織が83%に上る一方、実際に「安全に運用する準備ができている」と回答した組織はわずか29%にとどまっており、設計・セキュリティ面での成熟が導入速度に追いついていない実態が浮き彫りになっています。
+- **エンタープライズでの導入加速**：Gartnerは、マルチエージェントシステムに関するクライアントからの問い合わせが2024年第1四半期から2025年第2四半期にかけて1,445%増加したと報告しています（母集団はGartnerに寄せられたクライアント問い合わせ件数）。また2025年8月26日のプレスリリースでは、2026年までにエンタープライズアプリケーションの40%がタスク特化型AIエージェントを組み込む（2025年時点では5%未満）と予測しています。いずれも出典URLは末尾の参考文献「調査・市場データ」を参照してください。一方で、導入意欲の高さに比べてガードレール・権限管理・実行ログといった運用統制の整備は遅れているとの指摘が繰り返されており、設計・セキュリティ面での成熟が導入速度に追いついていない実態があります。
 
 ---
 
@@ -864,6 +864,10 @@ flowchart TB
 
 **研究（一次情報）**
 - Context Rot: How Increasing Input Tokens Impacts LLM Performance（Chroma Research）— https://www.trychroma.com/research/context-rot
+
+**調査・市場データ（一次情報）**
+- Multiagent Systems in Enterprise AI: Efficiency, Innovation and Vendor Advantage（Gartner。問い合わせ件数1,445%増［2024年Q1→2025年Q2］の出典）— https://www.gartner.com/en/articles/multiagent-systems
+- Gartner Predicts 40% of Enterprise Apps Will Feature Task-Specific AI Agents by 2026, Up from Less Than 5% in 2025（2025年8月26日発表）— https://www.gartner.com/en/newsroom/press-releases/2025-08-26-gartner-predicts-40-percent-of-enterprise-apps-will-feature-task-specific-ai-agents-by-2026-up-from-less-than-5-percent-in-2025
 
 **参考にした対象書籍（本ガイドの主題とは異なるAEC分野の書籍）**
 - Designing with Multi-Agent Systems（Evangelos Pantazis著、De Gruyter／O'Reilly）— https://www.oreilly.com/library/view/designing-with-multi-agent/9783110797473/

@@ -881,7 +881,7 @@ if __name__ == "__main__":
 # 実行: pytest test_tool_use.py
 import pytest
 
-from tool_use import get_weather
+from tool_calling import get_weather
 
 def test_get_weather_accepts_japanese_city_name() -> None:
     # Arrange / Act
@@ -1009,18 +1009,25 @@ flowchart LR
 ```mermaid
 flowchart TB
     CONV[会話/セッション] --> EXTRACT[重要な事実・選好を抽出]
-    EXTRACT --> STORE[(長期記憶ストア)]
-    NEWCONV[新しいセッション開始] --> RETRIEVE[関連する記憶を検索]
+    EXTRACT --> AUTHW{書き込み権限の検証<br/>user_id/tenant_idを付与}
+    AUTHW --> STORE[(長期記憶ストア<br/>user_id/tenant_idで分割)]
+    NEWCONV[新しいセッション開始<br/>認証済みuser_id/tenant_id] --> AUTHR{読み取り権限の検証<br/>自分のスコープのみ許可}
+    AUTHR --> RETRIEVE[関連する記憶を検索<br/>スコープ条件を必ず付与]
     STORE --> RETRIEVE
     RETRIEVE --> INJECT[コンテキストに注入]
     INJECT --> RESPONSE[パーソナライズされた応答]
+    STORE --> TTL[保持期間の満了で自動削除<br/>削除要求時はスコープ内を完全消去]
 
     classDef storeFill fill:#173a2e,stroke:#34d399,color:#e6fff5
     class STORE storeFill
 ```
 
 - **具体例**：ユーザーの過去の質問傾向や選好を記憶し、次回以降の会話で踏まえた回答を行うパーソナルアシスタント。
-- **検討事項**：何を記憶し、何を記憶しないかのポリシー設計が重要(個人情報・機微情報の扱いには特に注意)。記憶の陳腐化(古い情報が現状と矛盾する)への対処も必要。
+- **検討事項**：何を記憶し、何を記憶しないかのポリシー設計が重要(個人情報・機微情報の扱いには特に注意)。記憶の陳腐化(古い情報が現状と矛盾する)への対処も必要。実装時は次のチェックリストを満たすこと。
+  - **スコープ分離**：すべての記憶に `user_id`(マルチテナントなら `tenant_id` も)を必須属性として付与し、検索クエリにスコープ条件を常に含める。スコープ条件はLLMの生成結果ではなく、認証済みセッションから取得した値をアプリケーション側で強制する。
+  - **認可チェック**：保存・検索・削除のいずれの操作でも、要求元が当該スコープの所有者であることを検証する。他テナントの記憶が1件でも混入すれば情報漏洩になる。
+  - **保持期間**：記憶の種類ごとに保持期間(TTL)を定め、満了したものは自動削除する。無期限保持をデフォルトにしない。
+  - **削除手順**：ユーザーからの削除要求に対し、当該スコープの記憶を一次ストア・ベクトルインデックス・バックアップから消去する手順を用意し、完了を監査ログに残す。
 
 ---
 
@@ -1236,7 +1243,8 @@ def test_chat_rejects_non_terminal_stop_reason(
 ```mermaid
 flowchart TB
     U[ユーザーからのリクエスト] --> GUARD_IN[パターン32<br/>入力ガードレール]
-    GUARD_IN --> ROUTE[パターン24<br/>SLMによる軽量ルーティング]
+    GUARD_IN --> CACHE[パターン25<br/>プロンプトキャッシュで<br/>入力プレフィックスを再利用]
+    CACHE --> ROUTE[パターン24<br/>SLMによる軽量ルーティング]
     ROUTE --> ORCH[パターン23<br/>オーケストレーターエージェント]
     ORCH --> RAG[パターン6-12<br/>知識検索サブシステム]
     ORCH --> TOOL[パターン21-22<br/>ツール呼び出し/コード実行]
@@ -1244,8 +1252,7 @@ flowchart TB
     TOOL --> REASON
     REASON --> SELFCHECK[パターン18/31<br/>自己反省・自己検証]
     SELFCHECK --> GUARD_OUT[パターン32<br/>出力ガードレール]
-    GUARD_OUT --> CACHE[パターン25<br/>プロンプトキャッシュで<br/>次回リクエストを高速化]
-    CACHE --> RESP[ユーザーへの最終応答]
+    GUARD_OUT --> RESP[ユーザーへの最終応答]
 
     classDef guardFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
     classDef coreFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff

@@ -1060,17 +1060,27 @@ Memory(長期記憶)</h3>
 </ul>
 <pre class="mermaid">flowchart TB
     CONV[会話/セッション] --&gt; EXTRACT[重要な事実・選好を抽出]
-    EXTRACT --&gt; STORE[(長期記憶ストア)]
-    NEWCONV[新しいセッション開始] --&gt; RETRIEVE[関連する記憶を検索]
+    EXTRACT --&gt; AUTHW{書き込み権限の検証&lt;br/&gt;user_id/tenant_idを付与}
+    AUTHW --&gt; STORE[(長期記憶ストア&lt;br/&gt;user_id/tenant_idで分割)]
+    NEWCONV[新しいセッション開始&lt;br/&gt;認証済みuser_id/tenant_id] --&gt; AUTHR{読み取り権限の検証&lt;br/&gt;自分のスコープのみ許可}
+    AUTHR --&gt; RETRIEVE[関連する記憶を検索&lt;br/&gt;スコープ条件を必ず付与]
     STORE --&gt; RETRIEVE
     RETRIEVE --&gt; INJECT[コンテキストに注入]
     INJECT --&gt; RESPONSE[パーソナライズされた応答]
+    STORE --&gt; TTL[保持期間の満了で自動削除&lt;br/&gt;削除要求時はスコープ内を完全消去]
 
     classDef storeFill fill:#173a2e,stroke:#34d399,color:#e6fff5
     class STORE storeFill</pre>
 <ul>
 <li><strong>具体例</strong>：ユーザーの過去の質問傾向や選好を記憶し、次回以降の会話で踏まえた回答を行うパーソナルアシスタント。</li>
-<li><strong>検討事項</strong>：何を記憶し、何を記憶しないかのポリシー設計が重要(個人情報・機微情報の扱いには特に注意)。記憶の陳腐化(古い情報が現状と矛盾する)への対処も必要。</li>
+<li><strong>検討事項</strong>：何を記憶し、何を記憶しないかのポリシー設計が重要(個人情報・機微情報の扱いには特に注意)。記憶の陳腐化(古い情報が現状と矛盾する)への対処も必要。実装時は次のチェックリストを満たすこと。
+<ul>
+<li><strong>スコープ分離</strong>：すべての記憶に <code>user_id</code>(マルチテナントなら <code>tenant_id</code> も)を必須属性として付与し、検索クエリにスコープ条件を常に含める。スコープ条件はLLMの生成結果ではなく、認証済みセッションから取得した値をアプリケーション側で強制する。</li>
+<li><strong>認可チェック</strong>：保存・検索・削除のいずれの操作でも、要求元が当該スコープの所有者であることを検証する。他テナントの記憶が1件でも混入すれば情報漏洩になる。</li>
+<li><strong>保持期間</strong>：記憶の種類ごとに保持期間(TTL)を定め、満了したものは自動削除する。無期限保持をデフォルトにしない。</li>
+<li><strong>削除手順</strong>：ユーザーからの削除要求に対し、当該スコープの記憶を一次ストア・ベクトルインデックス・バックアップから消去する手順を用意し、完了を監査ログに残す。</li>
+</ul>
+</li>
 </ul>
 
 
@@ -1132,7 +1142,8 @@ Guardなど)を組み合わせた実装。カスタマーサポート領域で�
 <p>原著第10章に対応します。ここまでの32パターンは個別の道具箱でしたが、実際のアプリケーションはこれらを<strong>組み合わせて</strong>構築されます。原著では、実際に動くアプリケーションを題材に、パターンをどう組み合わせるかを解説しています。</p>
 <pre class="mermaid">flowchart TB
     U[ユーザーからのリクエスト] --&gt; GUARD_IN[パターン32&lt;br/&gt;入力ガードレール]
-    GUARD_IN --&gt; ROUTE[パターン24&lt;br/&gt;SLMによる軽量ルーティング]
+    GUARD_IN --&gt; CACHE[パターン25&lt;br/&gt;プロンプトキャッシュで&lt;br/&gt;入力プレフィックスを再利用]
+    CACHE --&gt; ROUTE[パターン24&lt;br/&gt;SLMによる軽量ルーティング]
     ROUTE --&gt; ORCH[パターン23&lt;br/&gt;オーケストレーターエージェント]
     ORCH --&gt; RAG[パターン6-12&lt;br/&gt;知識検索サブシステム]
     ORCH --&gt; TOOL[パターン21-22&lt;br/&gt;ツール呼び出し/コード実行]
@@ -1140,8 +1151,7 @@ Guardなど)を組み合わせた実装。カスタマーサポート領域で�
     TOOL --&gt; REASON
     REASON --&gt; SELFCHECK[パターン18/31&lt;br/&gt;自己反省・自己検証]
     SELFCHECK --&gt; GUARD_OUT[パターン32&lt;br/&gt;出力ガードレール]
-    GUARD_OUT --&gt; CACHE[パターン25&lt;br/&gt;プロンプトキャッシュで&lt;br/&gt;次回リクエストを高速化]
-    CACHE --&gt; RESP[ユーザーへの最終応答]
+    GUARD_OUT --&gt; RESP[ユーザーへの最終応答]
 
     classDef guardFill fill:#3a1420,stroke:#c05a6e,color:#f5d8de
     classDef coreFill fill:#2d1f4a,stroke:#a78bfa,color:#f3ecff
@@ -1414,11 +1424,11 @@ Practices 2026"（評価バイアス対策の業界共通見解） — <a href="
 、 <a href="https://futureagi.com/blog/llm-as-a-judge/">https://futureagi.com/blog/llm-as-a-judge/</a></div></div><div class="ref-card"><div class="ref-badge">3</div><div class="ref-body">WorkOS, "Everything your team needs to know about MCP in 2026" — <a href="https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026">https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026</a></div></div><div class="ref-card"><div class="ref-badge">4</div><div class="ref-body">Belcak, P. et al. (NVIDIA), "Small Language Models are the Future of
 Agentic AI" (arXiv:2506.02153) — <a href="https://arxiv.org/pdf/2506.02153">https://arxiv.org/pdf/2506.02153</a></div></div><div class="ref-card"><div class="ref-badge">5</div><div class="ref-body">Louis Bouchard, "Context Engineering in 2026: Why We Stopped
 Compacting Our Agent's Context" — <a href="https://www.louisbouchard.ai/context-engineering-2026/">https://www.louisbouchard.ai/context-engineering-2026/</a></div></div><div class="ref-card"><div class="ref-badge">6</div><div class="ref-body">Anthropic, "Effective context engineering for AI agents"（Loop
-Engineering関連エンジニアリング記事群の一部として言及） — <a href="https://www.anthropic.com/engineering/building-effective-agents">https://www.anthropic.com/engineering/building-effective-agents</a></div></div><div class="ref-card"><div class="ref-badge">7</div><div class="ref-body">Spheron Blog, "NVIDIA NeMo Guardrails on GPU Cloud: Production
-Runtime Safety Rails (2026 Guide)" — <a href="https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/">https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/</a></div></div><div class="ref-card"><div class="ref-badge">8</div><div class="ref-body">arXiv, "NeMo Guardrails: A Toolkit for Controllable and Safe LLM
-Applications" 関連研究（ガードレールへのDoS攻撃に関する学術報告） — <a href="https://www.researchgate.net/publication/376401604_NeMo_Guardrails_A_Toolkit_for_Controllable_and_Safe_LLM_Applications_with_Programmable_Rails">https://www.researchgate.net/publication/376401604_NeMo_Guardrails_A_Toolkit_for_Controllable_and_Safe_LLM_Applications_with_Programmable_Rails</a></div></div><div class="ref-card"><div class="ref-badge">9</div><div class="ref-body">ChatForest, "The MCP Ecosystem in 2026: How the Model Context
+Engineering関連エンジニアリング記事群の一部として言及） — <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></div></div><div class="ref-card"><div class="ref-badge">7</div><div class="ref-body">Spheron Blog, "NVIDIA NeMo Guardrails on GPU Cloud: Production
+Runtime Safety Rails (2026 Guide)" — <a href="https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/">https://www.spheron.network/blog/nemo-guardrails-production-deployment-llm-gpu-cloud/</a></div></div><div class="ref-card"><div class="ref-badge">8</div><div class="ref-body">arXiv, "From Shield to Target: Denial-of-Service Attacks on LLM-Based
+Agent Guardrails" (arXiv:2606.14517) — <a href="https://arxiv.org/abs/2606.14517">https://arxiv.org/abs/2606.14517</a></div></div><div class="ref-card"><div class="ref-badge">9</div><div class="ref-body">ChatForest, "The MCP Ecosystem in 2026: How the Model Context
 Protocol Became the Universal Standard" — <a href="https://chatforest.com/guides/mcp-ecosystem-2026-state-of-the-standard/">https://chatforest.com/guides/mcp-ecosystem-2026-state-of-the-standard/</a></div></div><div class="ref-card"><div class="ref-badge">10</div><div class="ref-body">DigitalApplied, "Small Language Models for On-Device Agents in 2026"
-— <a href="https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide">https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide</a></div></div><div class="ref-card"><div class="ref-badge">11</div><div class="ref-body">OpenAI, "A practical guide to building agents" — <a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/</a></div></div><div class="ref-card"><div class="ref-badge">12</div><div class="ref-body">Antonio Gulli (Google), "Agentic Design Patterns: A Hands-On Guide
+— <a href="https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide">https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide</a></div></div><div class="ref-card"><div class="ref-badge">11</div><div class="ref-body">OpenAI, "A practical guide to building agents" — <a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf">https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf</a></div></div><div class="ref-card"><div class="ref-badge">12</div><div class="ref-body">Antonio Gulli (Google), "Agentic Design Patterns: A Hands-On Guide
 to Building Intelligent Systems" (Springer Nature, 2025) — <a href="https://link.springer.com/book/10.1007/978-3-032-01402-3">https://link.springer.com/book/10.1007/978-3-032-01402-3</a></div></div><div class="ref-card"><div class="ref-badge">13</div><div class="ref-body">Eugene Yan, "Patterns for Building LLM-based Systems &amp; Products"
 — <a href="https://eugeneyan.com/writing/llm-patterns/">https://eugeneyan.com/writing/llm-patterns/</a></div></div><div class="ref-card"><div class="ref-badge">14</div><div class="ref-body">O'Reilly Media, "Generative AI Design Patterns" 書誌情報(Valliappa
 Lakshmanan, Hannes Hapke著、2025年10月刊、全10章・508ページ) — <a href="https://www.oreilly.com/library/view/generative-ai-design/9798341622654/">https://www.oreilly.com/library/view/generative-ai-design/9798341622654/</a></div></div><div class="ref-card"><div class="ref-badge">15</div><div class="ref-body">Amazon.com, "Generative AI Design Patterns" 著者略歴(Valliappa
