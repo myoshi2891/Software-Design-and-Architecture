@@ -355,7 +355,15 @@ bun run dev
 ```
 
 2. ブラウザは**ハードリロード（⌘+Shift+R）**。
-3. `bun run typecheck` と `bun run test` が全通過することを確認する。
+3. `web-next/` で以下の 4 コマンドが**全通過**することを確認する（CLAUDE.md の必須要件）:
+
+```bash
+cd web-next
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+```
 
 ---
 
