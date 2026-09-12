@@ -232,10 +232,10 @@
       "pattern": "^https?://postcss\\.org(?:/|$)"
     },
     {
-      "pattern": "^https?://(www\\.)?marktechpost\\.com(?:/|$)"
+      "pattern": "^https://www\\.marktechpost\\.com/2026/08/09/top-llm-observability-and-evaluation-platforms-in-2026-langfuse-langsmith-braintrust-arize-and-more-compared/$"
     },
     {
-      "pattern": "^https?://(www\\.)?kunalganglani\\.com(?::\\d+)?(?:[/?#]|$)"
+      "pattern": "^https://www\\.kunalganglani\\.com/blog/fine-tuning-vs-rag-prompt-engineering$"
     },
     {
       "pattern": "^https://ai\\.meta\\.com/blog/"
