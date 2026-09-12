@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Value Architect Certification 学習ガイド</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-serif-4/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-serif-4/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-serif-4/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --color-paper:#F6F7F9;
+  --color-paper-raised:#FFFFFF;
+  --color-ink:#161B26;
+  --color-ink-soft:#4A5164;
+  --color-indigo:#2E3F72;
+  --color-gold:#B8802A;
+  --color-forest:#1B6E6A;
+  --color-plum:#8C3A5C;
+  --color-border:rgba(22,27,38,0.12);
+  --font-serif:"Source Serif 4",Georgia,serif;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;
+  --radius-md:8px;
+  --radius-lg:12px;
+  --radius-xl:16px;
+  --sidebar-width:288px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--color-paper);color:var(--color-ink);font-family:var(--font-sans);font-size:16px;line-height:1.7;}
+.layout{display:block;}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;overflow-y:auto;background:var(--color-paper-raised);border-right:1px solid var(--color-border);padding:32px 20px 40px;}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--color-border);}
+.brand svg{width:44px;height:44px;flex-shrink:0;}
+.brand-title{font-family:var(--font-serif);font-size:16px;font-weight:700;line-height:1.35;color:var(--color-indigo);}
+.brand-sub{font-size:16px;color:var(--color-ink-soft);margin-top:2px;}
+.nav-group{margin-bottom:22px;}
+.nav-group-label{font-size:16px;font-weight:700;letter-spacing:0.02em;color:var(--color-ink-soft);margin-bottom:8px;text-transform:uppercase;}
+.sidebar nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-md);font-size:16px;color:var(--color-ink-soft);text-decoration:none;margin-bottom:2px;line-height:1.3;}
+.sidebar nav a i{font-size:17px;flex-shrink:0;}
+.sidebar nav a:hover{background:rgba(46,63,114,0.06);color:var(--color-indigo);}
+.sidebar nav a.active{background:rgba(46,63,114,0.10);color:var(--color-indigo);font-weight:700;}
+.main{margin-left:var(--sidebar-width);padding:56px 64px 96px;}
+.main h1{font-family:var(--font-serif);font-size:34px;font-weight:700;color:var(--color-ink);margin:0 0 10px;line-height:1.3;}
+.hero-sub{color:var(--color-ink-soft);font-size:16px;margin-bottom:12px;}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:16px;padding:6px 12px;border-radius:999px;background:rgba(46,63,114,0.08);color:var(--color-indigo);font-weight:600;}
+.section{margin-bottom:8px;scroll-margin-top:24px;}
+.main h2{font-family:var(--font-serif);font-size:27px;font-weight:700;color:var(--color-indigo);margin:56px 0 18px;padding-bottom:14px;border-bottom:2px solid var(--color-border);scroll-margin-top:24px;}
+.main h3{font-family:var(--font-serif);font-size:20px;font-weight:700;color:var(--color-ink);margin:34px 0 12px;}
+.main h4{font-family:var(--font-serif);font-size:17px;font-weight:700;color:var(--color-indigo);margin:26px 0 10px;}
+.main p{margin:0 0 16px;}
+.main ul,.main ol{margin:0 0 16px 22px;padding:0;}
+.main li{margin-bottom:7px;}
+table{width:100%;border-collapse:collapse;margin:20px 0 28px;background:var(--color-paper-raised);border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--color-border);}
+th,td{padding:12px 16px;text-align:left;font-size:16px;border-bottom:1px solid var(--color-border);vertical-align:top;}
+th{background:rgba(46,63,114,0.07);color:var(--color-indigo);font-weight:700;}
+tr:last-child td{border-bottom:none;}
+.callout{border-radius:var(--radius-lg);padding:18px 22px;margin:22px 0;border:1px solid var(--color-border);background:var(--color-paper-raised);border-left-width:5px;}
+.callout-label{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:10px;font-size:16px;}
+.callout.practice{border-left-color:var(--color-gold);}
+.callout.practice .callout-label{color:var(--color-gold);}
+.callout.source{border-left-color:var(--color-forest);}
+.callout.source .callout-label{color:var(--color-forest);}
+.callout.note{border-left-color:var(--color-plum);}
+.callout.note .callout-label{color:var(--color-plum);}
+.callout ul{margin:0 0 0 20px;}
+.callout p:last-child,.callout ul:last-child{margin-bottom:0;}
+.callout a{color:inherit;text-decoration:underline;}
+.diagram-wrap{margin:26px 0;padding:26px;background:var(--color-paper-raised);border:1px solid var(--color-border);border-radius:var(--radius-lg);}
+.diagram-wrap .mermaid-target{display:flex;justify-content:center;}
+.diagram-caption{text-align:center;font-size:16px;color:var(--color-ink-soft);margin-top:14px;}
+.footer{margin-top:72px;padding-top:28px;border-top:1px solid var(--color-border);font-size:16px;color:var(--color-ink-soft);}
+.checklist{list-style:none;margin:0 0 16px 0;padding:0;counter-reset:checkitem;}
+.checklist li{counter-increment:checkitem;position:relative;margin-bottom:10px;border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-paper-raised);transition:background 0.15s ease,border-color 0.15s ease;}
+.checklist li::before{content:counter(checkitem,decimal-leading-zero);position:absolute;top:14px;left:18px;font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--color-indigo);opacity:0.35;}
+.checklist label{display:flex;gap:14px;align-items:flex-start;padding:16px 20px 16px 52px;cursor:pointer;font-size:16px;line-height:1.6;}
+.checklist input[type=checkbox]{appearance:none;-webkit-appearance:none;margin-top:2px;width:20px;height:20px;flex-shrink:0;border:2px solid var(--color-indigo);border-radius:6px;background:var(--color-paper-raised);cursor:pointer;position:relative;transition:background 0.15s ease,border-color 0.15s ease;}
+.checklist input[type=checkbox]:checked{background:var(--color-indigo);border-color:var(--color-indigo);}
+.checklist input[type=checkbox]:checked::after{content:"";position:absolute;left:5px;top:1px;width:6px;height:11px;border:solid var(--color-paper-raised);border-width:0 2px 2px 0;transform:rotate(45deg);}
+.checklist li:has(input:checked){background:rgba(46,63,114,0.05);border-color:var(--color-indigo);}
+.checklist li:has(input:checked) label{color:var(--color-ink-soft);text-decoration:line-through;text-decoration-color:var(--color-border);}
+.checklist li:hover{border-color:var(--color-indigo);}
+.ref-list{margin:0 0 28px;}
+.ref-item{display:flex;gap:16px;align-items:flex-start;padding:14px 18px;margin-bottom:8px;background:var(--color-paper-raised);border:1px solid var(--color-border);border-radius:var(--radius-md);transition:border-color 0.15s ease;}
+.ref-item:hover{border-color:var(--color-indigo);}
+.ref-num{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:rgba(46,63,114,0.08);color:var(--color-indigo);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);}
+.ref-body{min-width:0;}
+.ref-body a{color:var(--color-indigo);font-weight:600;font-size:16px;text-decoration:none;word-break:break-word;}
+.ref-body a:hover{text-decoration:underline;}
+.ref-body a::after{content:"\2197";display:inline-block;margin-left:5px;font-size:14px;opacity:0.6;}
+.ref-desc{margin:4px 0 0;font-size:16px;color:var(--color-ink-soft);}
+.disclaimer{font-size:16px;color:var(--color-ink-soft);background:var(--color-paper-raised);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:32px;}
+code{background:rgba(22,27,38,0.06);padding:2px 6px;border-radius:4px;font-size:16px;}
+@media (max-width:900px){
+  .sidebar{position:static;width:100%;height:auto;}
+  .main{margin-left:0;padding:32px 20px 64px;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="brand">
+    <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="22" r="20" fill="#EEF1F8" stroke="#2E3F72" stroke-width="1.5"/>
+      <circle cx="22" cy="22" r="15" fill="none" stroke="#B8802A" stroke-width="1"/>
+      <path d="M22 10 L27 24 L22 21 L17 24 Z" fill="#2E3F72"/>
+      <circle cx="22" cy="30" r="2.4" fill="#B8802A"/>
+    </svg>
+    <div>
+      <div class="brand-title">AI-Native Value Architect</div>
+      <div class="brand-sub">認定資格 学習ガイド</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-group">
+      <div class="nav-group-label">はじめに</div>
+      <a href="#prereq"><i class="ti ti-book-2"></i>前提知識のおさらい</a>
+      <a href="#overview"><i class="ti ti-certificate"></i>認定資格の全体像</a>
+      <a href="#role"><i class="ti ti-user-star"></i>役割とは何か</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">試験ドメイン</div>
+      <a href="#domain1"><i class="ti ti-number-1"></i>Change Agentの育成</a>
+      <a href="#domain2"><i class="ti ti-number-2"></i>戦略・整合・ガバナンス</a>
+      <a href="#domain3"><i class="ti ti-number-3"></i>ソリューション設計と提供</a>
+      <a href="#domain4"><i class="ti ti-number-4"></i>価値実現と組織変革</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">まとめ</div>
+      <a href="#map"><i class="ti ti-topology-star-3"></i>全体統合マップ</a>
+      <a href="#glossary"><i class="ti ti-abc"></i>用語集</a>
+      <a href="#checklist"><i class="ti ti-checklist"></i>学習チェックリスト</a>
+      <a href="#references"><i class="ti ti-link"></i>参考文献・ソース一覧</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="main">
+
+<h1>AI-Native Value Architect Certification 学習ガイド</h1>
+<p class="hero-sub">Scaled Agile, Inc. が提供する認定資格を、初学者向けにステップバイステップで解説する非公式の学習資料です。</p>
+<div class="hero-badges">
+  <span class="badge"><i class="ti ti-clock"></i>試験120分・60問</span>
+  <span class="badge"><i class="ti ti-target-arrow"></i>合格ライン80%</span>
+  <span class="badge"><i class="ti ti-sitemap"></i>4試験ドメイン</span>
+</div>
+
+<div class="disclaimer">
+<strong>免責事項:</strong> 本ガイドはScaled Agile, Inc. の公式教材ではない、非公式の学習補助資料です。主要な主張には可能な範囲で一次情報源（公式ページ・公式サポート記事・認定トレーニングパートナーの公開ページ）を付記していますが、すべての項目に一次情報源が付いているわけではありません。試験の詳細・料金体系・出題比率は変更される可能性があるため、受験前に必ず<a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">公式サイト</a>および<a href="https://www.scaledagile.com/certification/candidate-agreement/" target="_blank" rel="noopener">Candidate Agreement</a>の最新の記載を確認してください。図解はすべてMermaid、比較・整理はすべてMarkdown表記のHTML表で統一し、ASCIIアートは使用していません。
+</div>
+
+<div class="section" id="prereq">
+<h2>0. 前提知識のおさらい</h2>
+<p>このガイドは、SAFe（Scaled Agile Framework）やAgile Release Train（ART）の基礎用語をある程度知っている方を主な対象にしていますが、初学者でも迷わないよう最低限の前提知識を先に整理しておきます。</p>
+<table>
+<tr><th>用語</th><th>一言で言うと</th></tr>
+<tr><td>SAFe</td><td>大規模組織で複数チームのAgile開発を同期させるためのフレームワーク</td></tr>
+<tr><td>ART（Agile Release Train）</td><td>共通のミッションに向けて動く、複数のAgileチームの集合体（50〜125名規模が目安）</td></tr>
+<tr><td>RTE（Release Train Engineer）</td><td>ARTのプロセスを回すサーバントリーダー（ScrumMasterのART版）</td></tr>
+<tr><td>SPC（SAFe Practice Consultant）</td><td>組織へのSAFe導入を支援する社内外のコンサルタント／トレーナー</td></tr>
+<tr><td>Business Owner</td><td>ARTが生み出す価値に責任を持つ経営層側のステークホルダー</td></tr>
+</table>
+<p>これらの用語に馴染みがない場合は、本ガイドと合わせてSAFeの基礎資料を参照することをおすすめします。</p>
+</div>
+
+<div class="section" id="overview">
+<h2>1. 認定資格の全体像</h2>
+
+<h3>1.1 資格概要</h3>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td>認定名</td><td>Certified AI-Native Value Architect</td></tr>
+<tr><td>提供元</td><td>Scaled Agile, Inc.（SAFeの開発元）</td></tr>
+<tr><td>前提条件</td><td>なし（None required）</td></tr>
+<tr><td>研修時間</td><td>2日間・16時間（対面 or リモート、リモートはプライベート／エンタープライズ研修のみ）</td></tr>
+<tr><td>認定取得方法</td><td>2日間コース受講 → 試験合格</td></tr>
+<tr><td>認定の更新</td><td>1年ごとに更新（renewed yearly）</td></tr>
+<tr><td>前身コース</td><td>AI-Native Change Agent（本コースが置き換え、ポートフォリオ内の同じ位置を占める）</td></tr>
+</table>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification（Scaled Agile公式）</a>、<a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>前提条件は「なし」だが、実際にはScrumMaster/Team Coach、SPC、RTE、System Architect、Product Manager/Owner としてARTで実務経験がある人が対象として想定されている。未経験でいきなり受験するより、まずARTでの実務（ファシリテーション・ステークホルダー調整）を一定期間経験してから臨む方が、事例ベースの設問に対応しやすい。</li>
+<li>「新しい役職（job title）」ではなく「既存の役割に追加する能力」という位置づけを理解した上で学習すると、試験問題の文脈（誰が・どの立場で・何をするか）を読み違えにくい。</li>
+</ul>
+</div>
+
+<h3>1.2 試験概要</h3>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td>試験時間</td><td>120分</td></tr>
+<tr><td>問題数</td><td>60問</td></tr>
+<tr><td>合格ライン</td><td>80%</td></tr>
+<tr><td>出題形式</td><td>多肢選択・単一選択（multiple choice, single select）</td></tr>
+<tr><td>受験形式</td><td>Web受験、クローズドブック、外部支援不可</td></tr>
+<tr><td>受験機会</td><td>コース修了後、Learning Plan経由でアクセス可能</td></tr>
+<tr><td>初回受験料</td><td>コース修了後60日以内であれば研修費用に含まれる</td></tr>
+<tr><td>再受験料</td><td>$50</td></tr>
+<tr><td>再受験ポリシー</td><td>1回目不合格後は即再受験可、2回目不合格後は10日待機、3回目不合格後は30日待機、以降は毎回30日待機</td></tr>
+</table>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://ai-native-support.scaledagile.com/en/articles/16504256-exam-details-ai-native-value-architect-exam-ai-native-value-architect" target="_blank" rel="noopener">Exam Details: AI-Native Value Architect Exam（Scaled Agile公式サポート）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>未回答の設問は不正解として扱われる仕様のため、時間切れが近づいたら分からない問題も必ず何かを選択して埋める。</li>
+<li>練習問題（Practice Test）は本番と同じ出題数・難易度・時間配分・ドメイン構成で提供され、無制限に受験できる。ただし合格しても本試験の合格を保証しないため、「形式に慣れる」ためのツールと割り切って活用する。</li>
+</ul>
+</div>
+
+<h3>1.3 試験ドメインと出題比率</h3>
+<table>
+<tr><th>ドメイン</th><th>出題比率</th><th>主要トピック</th></tr>
+<tr><td><strong>Developing the AI-Native Change Agent</strong></td><td>28–32%</td><td>個人のAIロードマップとスキル構築 / 組織への影響力とリーダーシップ / ギャップの診断とコラボレーションの促進</td></tr>
+<tr><td><strong>Strategy, Alignment, and Governance</strong></td><td>33–37%</td><td>ステークホルダーの整合性とコンフリクトマネジメント / 適応型計画とリスクマネジメント / 投資ケースとガバナンス</td></tr>
+<tr><td><strong>Solution Design and Delivery</strong></td><td>15–16%</td><td>反復的デリバリーとクイックウィン / レディネスとモメンタム / Designフェーズのファシリテーション</td></tr>
+<tr><td><strong>Value Realization and Organizational Change</strong></td><td>17–19%</td><td>インパクトのためのストーリーテリング / 価値の測定 / 結果のコミュニケーション</td></tr>
+</table>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-pie"></div>
+  <div class="diagram-caption">図1: 試験ドメイン別 出題比率</div>
+</div>
+<div class="callout note">
+<div class="callout-label"><i class="ti ti-info-circle"></i>補足</div>
+<p>公式ページが公表しているのは各ドメインの出題比率の「範囲」（例: 28–32%）です。上の円グラフは各範囲の中央値（30% / 35% / 15.5% / 18%）を用いて視覚化したものであり、合計は概算で100%に近い値になりますが、公式な単一の数値ではありません。学習配分の目安としてご利用ください。</p>
+</div>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://ai-native-support.scaledagile.com/en/articles/16504256-exam-details-ai-native-value-architect-exam-ai-native-value-architect" target="_blank" rel="noopener">Exam Details: AI-Native Value Architect Exam（Scaled Agile公式サポート）</a></p>
+</div>
+
+<div class="callout note">
+<div class="callout-label"><i class="ti ti-info-circle"></i>補足（名称の混乱を避ける）</div>
+<p>ドメイン名「Developing the AI-Native Change Agent」には、旧コース名「AI-Native Change Agent」がそのまま残っています。認定資格自体の名称は「AI-Native Value Architect」に変わりましたが、試験ドメインの命名は更新されていないため、学習者は「Change Agent」と「Value Architect」が別の資格だと誤解しないよう注意してください。Cprimeの公開コース説明ページでは、本コースが旧「AI-Native Change Agent」コースを置き換え、ポートフォリオ上の同じ位置を占めると明記されています。両者は同一の役割を指しています。</p>
+</div>
+
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>出題比率が最も高いのは「Strategy, Alignment, and Governance」（33–37%）。学習時間の配分もこの比率に合わせ、Value Maximizer Playbookとリスクのビジネス言語への翻訳（第4章）に最も多くの時間を割く。</li>
+<li>逆に「Solution Design and Delivery」は15–16%と比率が低いが、実務上は最も手を動かす領域（Sense/Discover/Design/Deliverの実行）である。出題比率と実務での重要度は必ずしも一致しない点を意識する。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="role">
+<h2>2. AI Value Architectとは何か</h2>
+
+<h3>2.1 なぜ今この役割が必要なのか:「POCグレイブヤード」問題</h3>
+<p>多くの組織がAI導入で直面しているのは、技術そのものの失敗ではなく「試作（Proof of Concept）から本番運用への道筋を誰も設計していない」という組織的な失敗です。データが準備できていない、運用が計画されていない、リスクの範囲が定まっていない、定着化が仕組み化されていない、価値が測定されていない——これらが重なった結果、有望なデモが本番運用に至らないまま放置される状態を指して「POCグレイブヤード（POC Graveyard）」と呼びます。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://framework.scaledagile.com/ain-safe-ai-value-architect" target="_blank" rel="noopener">AI Value Architect（Scaled Agile Framework公式）</a></p>
+</div>
+<p>この問題を裏付ける外部データとして、MIT Media LabのProject NANDAが2025年に発表した調査「The GenAI Divide: State of AI in Business 2025」があります。300件の公開AI導入事例の分析、150名超の経営層へのインタビュー、350名規模の従業員調査に基づき、企業の生成AIパイロットの約95%が測定可能な財務的リターンを生んでいないと報告されています。成功した組織（全体の約5%）は、単一の課題に集中し、外部パートナーと連携し、バックオフィス業務の自動化に注力する傾向があったとされています。</p>
+<div class="callout note">
+<div class="callout-label"><i class="ti ti-info-circle"></i>補足</div>
+<p>この「95%」という数値は、MIT NANDAの原論文そのものではなく、同調査を報じた専門メディアの記事を通じて確認したものです。原論文本体（PDF）を直接参照したものではないため、正確な調査方法・定義の詳細を確認したい場合は、記事内で言及されているMIT NANDAの一次レポートに当たることをおすすめします。</p>
+</div>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://virtualizationreview.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide.aspx" target="_blank" rel="noopener">MIT Report Finds Most AI Business Investments Fail, Reveals 'GenAI Divide'</a>（Virtualization Review, MIT NANDA調査の報道）</p>
+</div>
+<p>また、Gartnerの調査では、CEOの多くがAIを次のビジネス時代を切り開く技術と認識する一方、自社の経営幹部チームのAIに対する習熟度（AI savviness）には懐疑的であるという「認識のギャップ」も指摘されています。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.gartner.com/en/newsroom/press-releases/2025-05-06-gartner-survey-reveals-that-ceos-believe-their-executive-teams-lack-ai-savviness" target="_blank" rel="noopener">Gartner Survey Reveals That CEOs Believe Their Executive Teams Lack AI Savviness（Gartner公式プレスリリース）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>これらの統計は「AIツールが悪い」のではなく「導入プロセスの設計が不十分」であることを示している。AI Value Architectとして提案するときは、常にツール選定の議論ではなく「本番化までの道筋（運用・リスク・定着・測定）」の議論にステークホルダーを引き戻すことを意識する。</li>
+</ul>
+</div>
+
+<h3>2.2 役割の定義</h3>
+<p>AI Value Architectは、ART（Agile Release Train）上に置かれた専任の役割として、Scaled Agileが公式に定義したものです。次の3つの性質をあわせ持つ、境界線上の存在として説明されています。</p>
+<ul>
+<li><strong>business-literate（ビジネスに精通している）</strong>——ただしBusiness Ownerそのものではない</li>
+<li><strong>AI-fluent（AIに堪能である）</strong>——ただしAI開発者そのものではない</li>
+<li><strong>facilitative（ファシリテーション能力がある）</strong>——ただし単なるファシリテーターではない</li>
+</ul>
+<p>技術チームと経営層の間の分断を終わらせ、施策を「POCグレイブヤード」からスケールされた持続的な価値へと導く存在と位置づけられています。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification（Scaled Agile公式）</a>、<a href="https://framework.scaledagile.com/ain-safe-ai-value-architect" target="_blank" rel="noopener">AI Value Architect（Scaled Agile Framework公式）</a></p>
+</div>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-art"></div>
+  <div class="diagram-caption">図2: ART上でのAI Value Architectの位置づけ</div>
+</div>
+
+<p>このAI Value Architectという役割は、SAFeの新しい運用モデルである<strong>AI-Native SAFe</strong>の中で正式に定義された役割の一つです。AI-Native SAFeは、チーム編成・役割定義・ワークフロー・人とAIの引き継ぎ方を再設計し、AI時代のガバナンスをSAFeに組み込んだバージョンとして発表されました。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.prnewswire.com/news-releases/scaled-agile-releases-ai-native-safe-a-new-version-of-the-worlds-most-trusted-framework-to-provide-governance-for-the-ai-era-302807369.html" target="_blank" rel="noopener">Scaled Agile Releases AI-Native SAFe（PR Newswire）</a></p>
+</div>
+
+<h3>2.3 対象者（候補となる既存の役割）</h3>
+<table>
+<tr><th>既存の役割</th><th>AI Value Architectとして活きる強み</th></tr>
+<tr><td>Scrum Master / Team Coach</td><td>チームのファシリテーション経験、障害物除去の習慣</td></tr>
+<tr><td>SAFe Practice Consultant (SPC)</td><td>組織変革・SAFe導入の視点、複数チーム横断の調整力</td></tr>
+<tr><td>Release Train Engineer (RTE)</td><td>ART全体のシステム思考、複数ステークホルダーの同期経験</td></tr>
+<tr><td>System Architect</td><td>技術的実現可能性の判断力、アーキテクチャ全体を俯瞰する視点</td></tr>
+<tr><td>Product Manager / Product Owner</td><td>ビジネス価値の定義力、優先順位付けの経験</td></tr>
+</table>
+<p>新しい採用ポジションではなく、「今の役割に新しい能力を足す」形で組織内から育成することが想定されています。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification（Scaled Agile公式）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>自分がどの既存ロールから移行するかによって、伸ばすべきスキルの優先順位は異なる。例えばSystem Architect出身者はAI Fluencyの土台があるため、第3章のファシリテーション・組織影響力のスキルを重点的に鍛えると良い。逆にScrumMaster出身者はファシリテーションの土台があるため、第4章のRAG/Fine-Tuning経済性のような技術トレードオフの理解を重点的に補う。</li>
+</ul>
+</div>
+
+<h3>2.4 5つの責任領域</h3>
+<p>Scaled Agileは、AI Value Architectの役割を構成する責任範囲として、次の5つの領域を公式に定義しています。</p>
+<table>
+<tr><th>#</th><th>責任領域</th><th>内容</th></tr>
+<tr><td>1</td><td><strong>Coaching AI Adoption</strong>（AI導入のコーチング）</td><td>AIの責任ある活用をコーチングの規律として捉え、自分自身とチーム双方のAI Fluencyを高める</td></tr>
+<tr><td>2</td><td><strong>Unlocking Value from Existing Tools</strong>（既存ツールからの価値解放）</td><td>組織がすでに保有・契約しているツールに眠るAI機能を掘り起こし、ワークフロー改善に活かす</td></tr>
+<tr><td>3</td><td><strong>Bridging Business and Technology</strong>（ビジネスと技術の橋渡し）</td><td>リスク・法務・データ・倫理といった新しい論点を、技術課題ではなくビジネス機会として扱い、部門横断の連携を進める</td></tr>
+<tr><td>4</td><td><strong>Facilitating AI Solution Development</strong>（AIソリューション開発のファシリテーション）</td><td>データ品質の変化・モデルドリフト・評価ギャップなど、AI特有の新しい失敗モードに対して適切な議論の場を作る</td></tr>
+<tr><td>5</td><td><strong>Optimizing Outcomes</strong>（アウトカムの最適化）</td><td>ワークフローや製品へのAI組み込みが、最終的にビジネスと顧客にとってより良い結果を生んでいるかを継続的に見る</td></tr>
+</table>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://framework.scaledagile.com/blog/ai-native-safe-session-3-ai-native-teams-roles-and-arts" target="_blank" rel="noopener">AI-Native SAFe Session 3: AI-Native Teams, Roles, and ARTs（Scaled Agile公式ブログ）</a>、<a href="https://www.gladwellacademy.com/knowledge/blogs/what-is-an-ai-value-architect" target="_blank" rel="noopener">What is an AI Value Architect? Role &amp; Skills（Gladwell Academy, 第三者要約）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス（領域別）</div>
+<ul>
+<li><strong>領域1（コーチング）:</strong> 「使い方」だけでなく「いつ価値が出るか」「出力をどう評価するか」「どこに人間の判断が必要か」までセットでチームに伝える。ツールのトレーニングと混同しない。</li>
+<li><strong>領域2（既存資産の活用）:</strong> 新規ツール導入の稟議を書く前に、既存の契約（Microsoft 365 Copilot、Google Workspaceなど）に含まれるAI機能の利用率を必ず棚卸しする（詳細は第4章のValue Maximizer Playbookを参照）。</li>
+<li><strong>領域3（橋渡し）:</strong> 法務・データ・倫理の担当者を「後から巻き込む承認者」ではなく「最初から同席するチームメンバー」として扱う。</li>
+<li><strong>領域4（ファシリテーション）:</strong> モデルドリフトやデータ品質の劣化は、小規模なテストでは発見しにくい。本番相当のデータ量・期間でのモニタリング計画を、設計フェーズの段階で合意しておく。</li>
+<li><strong>領域5（最適化）:</strong> 「導入した」ことと「アウトカムが改善した」ことは別物。第6章の価値測定のフレームを使って、定期的にアウトカム指標を振り返る場を設ける。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="domain1">
+<h2>3. ドメイン1: Developing the AI-Native Change Agent（28–32%）</h2>
+
+<div class="callout note">
+<div class="callout-label"><i class="ti ti-info-circle"></i>補足（出典の性質について）</div>
+<p>本章および第4〜6章で扱う「5つの失敗モード」「Feasibility Filters」「Value Maximizer Playbook」「AI-Native Solution Lifecycle」「コアアーティファクト（Solution Charter / Value Blueprint）」「AI-Powered Story Amplifier」といった名称・枠組みの多くは、Scaled Agileの認定トレーニングパートナーであるCprimeが公開しているコースアウトラインに基づいています。Scaled Agile自身の公式ページ（scaledagile.com、framework.scaledagile.com）にも同様の記載（特に「80%の隠れた価値」「Audit, Activate, Optimize, Centralize framework」「Sense, Discover, Design, Deliverフェーズ」）が確認できるため、コースの核となる枠組みであることは裏付けられていますが、各項目の細部の定義まではScaled Agileの公開フレームワーク用語集で独立に定義されているわけではありません。試験本番での用語の厳密な定義は、公式コース教材を優先してください。</p>
+</div>
+
+<h3>3.1 5つの失敗モード（Five Failure Modes）</h3>
+<p>AIパイロットが本番運用に届かず「POCグレイブヤード」に沈む原因は、偶然ではなく典型的な5つの失敗モードに整理できます。</p>
+<table>
+<tr><th>失敗モード</th><th>症状</th><th>Value Architectの対応</th></tr>
+<tr><td><strong>Unready Data</strong>（データ未整備）</td><td>学習・検索対象のデータが散在・非構造化・品質不十分</td><td>データオーナーを早期に特定し、データ品質基準を合意する</td></tr>
+<tr><td><strong>Unplanned Operations</strong>（運用未計画）</td><td>本番稼働後の監視・再学習・障害対応の設計がない</td><td>MLOps/運用体制をDesignフェーズの成果物に含める</td></tr>
+<tr><td><strong>Unbounded Risk</strong>（リスク無制限）</td><td>セキュリティ・コンプライアンス・倫理面の許容範囲が未定義</td><td>Feasibility Filtersでリスクの境界を事前に明文化する</td></tr>
+<tr><td><strong>Unengineered Adoption</strong>（定着未設計）</td><td>ツールは配布されたが、業務フローへの組み込みや変更管理がない</td><td>チェンジマネジメント計画をSolution Charterに組み込む</td></tr>
+<tr><td><strong>Unmeasured Value</strong>（価値未測定）</td><td>成功の定義・測定指標がないため、投資判断ができない</td><td>着手前にベースライン指標とターゲットを合意する</td></tr>
+</table>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-failure"></div>
+  <div class="diagram-caption">図3: 5つの失敗モードとPOCグレイブヤード</div>
+</div>
+
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>5つの失敗モードは「診断チェックリスト」として使う。新しいAI施策の提案を受けたら、まずこの5項目に照らして弱点を洗い出す習慣をつける。</li>
+<li>5つのうち複数が同時に該当する施策（例: データも運用計画もない状態でリスクも未定義）は、着手前に必ずステークホルダーへの是正提案を行う。</li>
+</ul>
+</div>
+
+<h3>3.2 Feasibility Filters</h3>
+<p>Feasibility Filtersは、コードを1行も書く前に、施策の実現可能性を検証する一連の問いです。5つの失敗モードそれぞれに対応する形で設計されています。</p>
+<table>
+<tr><th>Feasibility Filter</th><th>問い</th><th>対応する失敗モード</th></tr>
+<tr><td>データ準備度フィルタ</td><td>必要なデータは十分な品質・アクセス性で存在するか</td><td>Unready Data</td></tr>
+<tr><td>運用準備度フィルタ</td><td>本番運用後の監視・保守を誰がどう行うか定義されているか</td><td>Unplanned Operations</td></tr>
+<tr><td>リスク境界フィルタ</td><td>セキュリティ・コンプライアンス・倫理上の許容範囲は明文化されているか</td><td>Unbounded Risk</td></tr>
+<tr><td>定着可能性フィルタ</td><td>利用者の業務フローに組み込むための変更管理計画があるか</td><td>Unengineered Adoption</td></tr>
+<tr><td>価値測定フィルタ</td><td>成功の定義と測定指標が着手前に合意されているか</td><td>Unmeasured Value</td></tr>
+</table>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>Feasibility Filtersは一度きりのゲートではなく、Sense/Discover/Design/Deliver各フェーズ（第5章）の節目で繰り返し当てるチェックポイントとして運用する。</li>
+<li>全ての項目で満点を求めず、「どのリスクを受容し、どのリスクは着手前に解消すべきか」を明示的に合意することが目的である。</li>
+</ul>
+</div>
+
+<h3>3.3 個人のAIロードマップとスキル構築</h3>
+<p>AI Value Architect自身のAI Fluencyを継続的に高めるための、個人のスキルロードマップの考え方です。</p>
+<table>
+<tr><th>スキル領域</th><th>具体例</th></tr>
+<tr><td>プロンプト／AIリテラシー</td><td>主要なAIツールの得意・不得意の把握、出力の検証方法</td></tr>
+<tr><td>データリテラシー</td><td>データ品質・バイアス・プライバシーの基本的な評価眼</td></tr>
+<tr><td>リスク／ガバナンスリテラシー</td><td>社内ポリシーや外部規制（第4章参照）の基本理解</td></tr>
+<tr><td>ファシリテーションスキル</td><td>対立する意見を持つステークホルダーの合意形成技術</td></tr>
+<tr><td>ストーリーテリングスキル</td><td>技術的な成果を経営層向けの言葉に翻訳する技術（第6章参照）</td></tr>
+</table>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>5つのスキル領域を毎四半期ごとに自己評価し、最も弱い1領域に学習時間を集中させる。全方位を同時に伸ばそうとすると停滞しやすい。</li>
+</ul>
+</div>
+
+<h3>3.4 組織への影響力とリーダーシップ</h3>
+<p>AI Value Architectには直接的な人事権限がないことが多いため、公式な権威ではなく「信頼」と「実績」による非公式な影響力（informal authority）を築くことが求められます。</p>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>大きな変革を提案する前に、小さく・低リスクな「クイックウィン」（第5章参照）を先に見せて信頼を積み上げる。</li>
+<li>経営層・現場双方の言葉で同じ内容を語れるよう、説明のバリエーションを複数用意しておく。</li>
+</ul>
+</div>
+
+<h3>3.5 ギャップの診断とコラボレーションの促進</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>ギャップ診断は「技術ギャップ」だけでなく「スキルギャップ」「プロセスギャップ」「文化ギャップ」の3種類に分けて観察する。</li>
+<li>コラボレーションを促す場では、AI Value Architect自身が答えを出すのではなく、適切な問いを投げてチーム自身に気づかせるファシリテーションを優先する。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="domain2">
+<h2>4. ドメイン2: Strategy, Alignment, and Governance（33–37%）</h2>
+<p>出題比率が最も高いドメインです。学習時間の配分もここに最も厚く割り当ててください。</p>
+
+<h3>4.1 Value Maximizer Playbook: Audit → Activate → Optimize → Centralize</h3>
+<p>多くの組織は、新しいAIツールを次々と導入する前に、「すでに保有しているAI機能の多くが未活用のまま眠っている」という前提に立つ必要があります。Scaled Agile自身の公式ページとCprimeのコース説明はいずれも、組織が既に保有するAIツールの<strong>「80%の隠れた価値（潜在能力）」</strong>を掘り起こすことをこのフレームワークの狙いとして明記しています。Value Maximizer Playbookは、その隠れた価値を段階的に掘り起こすための4段階フレームワークです。</p>
+<table>
+<tr><th>フェーズ</th><th>目的</th><th>主な活動</th></tr>
+<tr><td><strong>Audit（監査）</strong></td><td>組織が既に保有するAIツール・機能の棚卸し</td><td>契約中のSaaSに含まれるAI機能の一覧化、利用率の可視化</td></tr>
+<tr><td><strong>Activate（活性化）</strong></td><td>眠っている機能を実際に有効化する</td><td>管理者設定の見直し、パイロットユーザーへのオンボーディング</td></tr>
+<tr><td><strong>Optimize（最適化）</strong></td><td>実際の業務ワークフローに組み込む</td><td>既存プロセスの再設計、成果指標のモニタリング</td></tr>
+<tr><td><strong>Centralize（標準化）</strong></td><td>成功パターンをART全体・組織全体に展開する</td><td>ベストプラクティスの文書化、ガバナンスへの組み込み</td></tr>
+</table>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-playbook"></div>
+  <div class="diagram-caption">図4: Value Maximizer Playbookの4段階サイクル</div>
+</div>
+
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification（Scaled Agile公式、「80%の隠れた価値」の記載元）</a>、<a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス（フェーズ別）</div>
+<ul>
+<li><strong>Audit:</strong> 新規ツール予算を要求する前に、必ずこのフェーズを実施する。多くの場合、追加費用ゼロで解決できる課題がここで見つかる。</li>
+<li><strong>Activate:</strong> 機能を有効化しただけで満足せず、実際に使われているかを利用ログで確認する。</li>
+<li><strong>Optimize:</strong> 「AIを使うこと」ではなく「業務のアウトカムが改善すること」をゴールに設定する。</li>
+<li><strong>Centralize:</strong> 1チームでの成功事例を全社展開する際は、そのチーム固有の前提条件（データ、権限、文化）を明示した上で横展開する。</li>
+</ul>
+</div>
+
+<h3>4.2 リスクを戦略に変換する: RAG vs. Fine-Tuning の経済性</h3>
+<p>AI Value Architectには、技術的なトレードオフを経営層にも伝わる「ビジネス言語」に翻訳するAI Fluencyが求められます。試験でも頻出する典型例が、<strong>RAG（Retrieval-Augmented Generation）と Fine-Tuning のコスト構造の違い</strong>です。</p>
+<table>
+<tr><th>観点</th><th>RAG</th><th>Fine-Tuning</th></tr>
+<tr><td>初期コスト</td><td>低い（モデル訓練が不要）</td><td>高い（データ準備・訓練計算資源が必要）</td></tr>
+<tr><td>コスト構造</td><td>クエリごとの従量課金（コンテキスト投入コストが累積）</td><td>訓練時に前払い、以降は単価が比較的安定</td></tr>
+<tr><td>知識更新の速さ</td><td>データを差し替えるだけで即時反映</td><td>再訓練が必要なため更新に時間がかかる</td></tr>
+<tr><td>出典の明示</td><td>検索元を引用できる</td><td>内部化された知識のため出典を示しにくい</td></tr>
+<tr><td>向いている場面</td><td>知識が頻繁に変化する／大量多様な文書がある／迅速な立ち上げが必要</td><td>クエリ量が非常に多い／出力形式やトーンの厳密な統一が必要</td></tr>
+<tr><td>大量トラフィック時のコスト傾向</td><td>コンテキスト投入コストが積み上がり高額化しうる</td><td>一件あたりの限界費用が安定し、量が増えるほど有利になりやすい</td></tr>
+</table>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-ragft"></div>
+  <div class="diagram-caption">図5: RAG vs Fine-Tuning 意思決定フロー</div>
+</div>
+
+<div class="callout note">
+<div class="callout-label"><i class="ti ti-info-circle"></i>補足</div>
+<p>この比較表は、RAGとFine-Tuningを扱う複数の実務者向け解説記事（下記ソース）が概ね共通して示している一般的な傾向を整理したものであり、単一の公式ベンチマークや学術的な定量比較に基づくものではありません。実際のコスト優位性は、利用するモデル・クエリ量・データ量・インフラ構成によって変動します。自社での意思決定には、必ず自社のユースケースでの試算・検証を行ってください。</p>
+</div>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.actian.com/blog/databases/should-you-use-rag-or-fine-tune-your-llm/" target="_blank" rel="noopener">Should You Use RAG or Fine-Tune Your LLM?（Actian）</a>、<a href="https://winder.ai/rag-vs-fine-tuning-2026-decision-framework/" target="_blank" rel="noopener">RAG vs Fine-Tuning in 2026: A Decision Framework for LLM Teams（Winder.ai）</a>、<a href="https://4xxi.com/articles/rag-vs-fine-tuning/" target="_blank" rel="noopener">RAG vs. Fine-Tuning for Enterprise: A Practitioner's Decision Framework（4xxi）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>経営層への説明では「RAGは月額課金型、Fine-Tuningは先行投資型」という家計・投資の例えに置き換えると理解が早い。</li>
+<li>「どちらが優れているか」ではなく「クエリ量・知識の変化頻度・出典明示の必要性」という3変数で意思決定する、という枠組み自体を共有する。</li>
+<li>多くの実務者は「まずRAGをデフォルトにし、コスト・品質上の明確な理由があるときだけFine-Tuningやハイブリッドを検討する」という進め方を推奨している。最初からFine-Tuningに飛びつくのはアンチパターン。</li>
+</ul>
+</div>
+
+<h3>4.3 ステークホルダーの整合性とコンフリクトマネジメント</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>ビジネスオーナー・エンジニアリング・エンドユーザーの三者は、しばしば「成功」の定義そのものが異なる。合意形成の場では、まず各者にとっての成功の定義を言語化させてから議論を始める。</li>
+<li>対立が生じたときは、立場（position）ではなく背後にある利害（interest）に焦点を当てて仲介する。</li>
+</ul>
+</div>
+
+<h3>4.4 適応型計画とリスクマネジメント</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>AI施策特有のリスク（モデルドリフト、ハルシネーション、データ漏洩など）は従来のソフトウェア開発のリスクと性質が異なるため、既存のリスク登録簿の項目をそのまま流用せず、AI特有のリスクカテゴリを追加する。</li>
+<li>計画は一度で確定させず、Sense/Discover/Design/Deliverの各節目（第5章）で見直す前提で設計する。</li>
+</ul>
+</div>
+
+<h3>4.5 投資ケースとガバナンス</h3>
+<p>AI施策のガバナンスを検討する際は、社内独自の基準だけでなく、外部の公的フレームワークを参照するのがベストプラクティスです。代表的なものが米国NISTの<strong>AI Risk Management Framework (AI RMF)</strong>で、Govern・Map・Measure・Manageの4機能でAIリスクを管理する考え方を提供しています。</p>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noopener">AI Risk Management Framework（NIST公式）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>投資ケース（Investment Case）には、必ず「本番化までの総コスト（TCO）」を含める。PoC段階のコストだけで承認を取ると、後工程で予算超過が発覚しやすい。</li>
+<li>ガバナンス要件は「後から付け足す」のではなく、Solution Charter（第5章）の初期段階からリスク・コンプライアンス要件として組み込む。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="domain3">
+<h2>5. ドメイン3: Solution Design and Delivery（15–16%）</h2>
+
+<h3>5.1 AI-Native Solution Lifecycle 全体像</h3>
+<p>AI施策を「最初のシグナル」から「本番化の意思決定」まで導くための4フェーズのライフサイクルです。</p>
+<table>
+<tr><th>フェーズ</th><th>目的</th><th>主な活動</th><th>主な成果物</th></tr>
+<tr><td><strong>Sense（察知）</strong></td><td>機会や課題の兆候を捉える</td><td>現場の困りごとのヒアリング、既存データ・ツールの棚卸し</td><td>課題仮説</td></tr>
+<tr><td><strong>Discover（探索）</strong></td><td>機会を掘り下げ、実現可能性を検証する</td><td>Feasibility Filtersの適用、ステークホルダーインタビュー</td><td>検証済みの機会仮説</td></tr>
+<tr><td><strong>Design（設計）</strong></td><td>ソリューションの形を具体化する</td><td>プロトタイピング、RAG/Fine-Tuning等の技術方式選定</td><td>AI-Native Value Blueprint</td></tr>
+<tr><td><strong>Deliver（提供）</strong></td><td>本番運用に向けて実装・展開する</td><td>段階的ロールアウト、運用体制の確立、価値測定の開始</td><td>本番稼働・測定結果</td></tr>
+</table>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-lifecycle"></div>
+  <div class="diagram-caption">図6: AI-Native Solution Lifecycle</div>
+</div>
+
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー）</a>、<a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification（Scaled Agile公式、フェーズ名の記載元）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>4フェーズは一方通行の「ウォーターフォール」ではなく、Deliverで得た学びをSenseに還流させる循環として運用する。</li>
+<li>各フェーズの終わりに、第3章のFeasibility Filtersを再度当てて「次のフェーズに進んでよいか」を明示的に判断する。</li>
+</ul>
+</div>
+
+<h3>5.2 反復的デリバリーとクイックウィン</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>大きな一発勝負のローンチではなく、小さく価値を証明できる単位に分割して段階的にリリースする。</li>
+<li>最初のクイックウィンは「効果が大きいが実現が容易な」領域（低リスク・高頻度の定型業務など）から選ぶと、組織内の信頼を早期に獲得しやすい。</li>
+</ul>
+</div>
+
+<h3>5.3 レディネスとモメンタム</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>技術的な準備（データ・インフラ）だけでなく、利用者側の心理的な準備（変化への抵抗感、スキル不足への不安）も「レディネス」の一部として評価する。</li>
+<li>初期の勢い（モメンタム）を維持するため、進捗や小さな成功を定期的に可視化して共有する。</li>
+</ul>
+</div>
+
+<h3>5.4 Designフェーズのファシリテーション</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>Designフェーズのワークショップには、必ずビジネス側・技術側・エンドユーザー側の代表を同席させ、その場で認識合わせを行う。持ち帰っての非同期確認は誤解を長期化させやすい。</li>
+</ul>
+</div>
+
+<h3>5.5 コアアーティファクトの構築</h3>
+<p>Designフェーズを通じて、以下の3つの成果物を作成します。</p>
+<table>
+<tr><th>アーティファクト</th><th>目的</th><th>主な内容</th></tr>
+<tr><td><strong>AI-Native Solution Charter</strong></td><td>施策の目的・範囲・制約を関係者間で明文化する</td><td>目的、対象範囲、ステークホルダー、リスク境界、成功指標の初期案</td></tr>
+<tr><td><strong>AI-Native Value Blueprint</strong></td><td>部門横断の合意形成された最終設計図</td><td>選定した技術方式（RAG/Fine-Tuning等）、運用体制、段階的ロールアウト計画</td></tr>
+<tr><td><strong>実装計画（Implementation Plan）</strong></td><td>実行を加速するための具体的な計画</td><td>タイムライン、責任分担、依存関係、リスク対応計画</td></tr>
+</table>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー、「Value Blueprint」の名称が明記された記載元）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>Solution CharterとValue Blueprintは別文書として扱う。Charterは「何を・なぜやるか」の初期合意、Blueprintは「どうやるか」の最終設計として役割を分ける。</li>
+<li>どちらの文書も、経営層・技術者・エンドユーザーの全員が読んで理解できる言葉で書く。専門用語だけで構成しない。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="domain4">
+<h2>6. ドメイン4: Value Realization and Organizational Change（17–19%）</h2>
+
+<h3>6.1 AI-Powered Story Amplifier: インパクトのためのストーリーテリング</h3>
+<p>技術的な成功指標（精度、処理時間短縮など）をそのまま経営層に報告しても、資金調達や全社展開の後押しにはなりにくいことがあります。AI-Powered Story Amplifierは、技術指標をC-suite向けの説得力あるナラティブに変換する手法です。</p>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>構成の型（ベストプラクティス）</div>
+<ul>
+<li><strong>課題（Before）:</strong> 何が問題だったのかを、数字ではなく「痛み」として描写する</li>
+<li><strong>介入（What we did）:</strong> どのAIソリューションをどう適用したかを簡潔に説明する</li>
+<li><strong>結果（Impact）:</strong> ビジネス指標（コスト削減額、対応時間短縮、顧客満足度など）で示す</li>
+<li><strong>次への提案（Ask）:</strong> この成功を踏まえて何を承認・投資してほしいかを明確に伝える</li>
+</ul>
+</div>
+<div class="callout source">
+<div class="callout-label"><i class="ti ti-external-link"></i>ソース</div>
+<p><a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime, 認定トレーニングパートナー）</a></p>
+</div>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>技術的な成功指標（モデルの精度など）は、必ずビジネス指標（時間・コスト・収益・リスク低減）に変換してから報告する。技術指標だけの報告は、非技術系の経営層には伝わりにくい。</li>
+<li>定量的な数字だけでなく、実際の利用者の声（定性的なエピソード）を1つ添えると説得力が増す。</li>
+</ul>
+</div>
+
+<h3>6.2 価値の測定</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>測定指標は「効率性（時間・コスト削減）」「品質（エラー率・満足度）」「リスク低減（コンプライアンス違反件数など）」「収益（売上・解約率）」「定着度（利用率・継続利用率）」の5カテゴリでバランスよく設計する。効率性だけに偏ると、品質やリスクの悪化を見逃す。</li>
+<li>着手前（第3章のUnmeasured Value対策）にベースラインを取得しておかないと、事後の効果測定ができなくなる点に注意する。</li>
+</ul>
+</div>
+
+<h3>6.3 結果のコミュニケーション</h3>
+<div class="callout practice">
+<div class="callout-label"><i class="ti ti-bulb"></i>ベストプラクティス</div>
+<ul>
+<li>同じ結果でも、聞き手（経営層／現場マネージャー／エンドユーザー）に応じて伝え方を変える。経営層にはROIとリスク低減、現場マネージャーには業務プロセスへの影響、エンドユーザーには日々の作業がどう楽になるかを中心に伝える。</li>
+<li>成功事例だけでなく、うまくいかなかった点とその学びも合わせて共有することで、次の投資判断への信頼性が高まる。</li>
+</ul>
+</div>
+</div>
+
+<div class="section" id="map">
+<h2>7. 全体統合マップ</h2>
+<p>これまでの内容を1つの図に統合すると、AI Value Architectの役割は次のような構造で捉えられます。</p>
+
+<div class="diagram-wrap">
+  <div class="mermaid-target" id="diagram-integration"></div>
+  <div class="diagram-caption">図7: AI Value Architectの全体統合マップ</div>
+</div>
+
+<ul>
+<li><strong>5つの責任領域</strong>（第2章）は、AI Value Architectが日常的に果たす役割</li>
+<li><strong>Value Maximizer Playbook</strong>（第4章）は、既存資産から価値を引き出す横断的な手法</li>
+<li><strong>AI-Native Solution Lifecycle</strong>（第5章）は、個別施策を前に進める縦の時間軸</li>
+<li><strong>コアアーティファクト</strong>（第5章）は、関係者の合意を形にする成果物</li>
+<li><strong>Storytelling</strong>（第6章）は、成果を組織的な次の投資へとつなげる仕組み</li>
+</ul>
+</div>
+
+<div class="section" id="glossary">
+<h2>8. 用語集</h2>
+<table>
+<tr><th>用語</th><th>説明</th></tr>
+<tr><td><strong>ART (Agile Release Train)</strong></td><td>共通のミッションに向けて協調する複数のAgileチームの集合体</td></tr>
+<tr><td><strong>AI-Native SAFe</strong></td><td>AI時代のガバナンスと役割定義を組み込んだ、SAFeの新しい運用モデル</td></tr>
+<tr><td><strong>POC Graveyard</strong></td><td>試作（PoC）止まりで本番運用に至らないAI施策が滞留する状態の比喩表現</td></tr>
+<tr><td><strong>GenAI Divide</strong></td><td>AIを実験導入する組織と、実際に業務変革・財務的リターンを得る組織との間の格差（MIT NANDA 2025）</td></tr>
+<tr><td><strong>Feasibility Filters</strong></td><td>AI施策の実現可能性をコーディング開始前に検証する一連の問い</td></tr>
+<tr><td><strong>RAG (Retrieval-Augmented Generation)</strong></td><td>外部データを検索してプロンプトに追加することで、LLMの回答を補強する技術</td></tr>
+<tr><td><strong>Fine-Tuning</strong></td><td>追加データでモデル自体のパラメータを再学習させ、知識や振る舞いを内部化する技術</td></tr>
+<tr><td><strong>AI-Native Solution Charter</strong></td><td>AI施策の目的・範囲・制約を関係者間で最初に明文化する文書</td></tr>
+<tr><td><strong>AI-Native Value Blueprint</strong></td><td>技術方式・運用体制・展開計画を含む、部門横断合意済みの最終設計図</td></tr>
+<tr><td><strong>RTE (Release Train Engineer)</strong></td><td>ARTのプロセス全体を回すサーバントリーダー</td></tr>
+<tr><td><strong>SPC (SAFe Practice Consultant)</strong></td><td>組織へのSAFe導入・変革を支援するコンサルタント／トレーナー</td></tr>
+</table>
+</div>
+
+<div class="section" id="checklist">
+<h2>9. 学習・試験対策チェックリスト</h2>
+<ul class="checklist">
+<li><label><input type="checkbox">4つの試験ドメインと出題比率（第1.3節）を暗記し、学習時間を比率に合わせて配分した</label></li>
+<li><label><input type="checkbox">5つの失敗モードとFeasibility Filtersの対応関係（第3章）を、図を見ずに説明できる</label></li>
+<li><label><input type="checkbox">Value Maximizer Playbookの4段階（Audit/Activate/Optimize/Centralize）を、それぞれの目的とともに順番通りに説明できる（第4.1節）</label></li>
+<li><label><input type="checkbox">RAGとFine-Tuningのコスト構造の違いを、経営層向けの言葉で説明できる（第4.2節）</label></li>
+<li><label><input type="checkbox">AI-Native Solution Lifecycleの4フェーズ（Sense/Discover/Design/Deliver）と、各フェーズの成果物を対応づけて説明できる（第5.1節）</label></li>
+<li><label><input type="checkbox">Solution CharterとValue Blueprintの役割の違いを説明できる（第5.5節）</label></li>
+<li><label><input type="checkbox">AI-Powered Story Amplifierの4段階構成（課題／介入／結果／提案）を使って、自分の職場の事例を1つストーリー化してみる（第6.1節）</label></li>
+<li><label><input type="checkbox">5つの責任領域（第2.4節）それぞれについて、自分の現在の役割でどう実践できるか具体例を1つずつ挙げられる</label></li>
+<li><label><input type="checkbox">公式の練習問題（Practice Test）を、時間を計って本番同様の条件で少なくとも1回受験した</label></li>
+</ul>
+</div>
+
+<div class="section" id="references">
+<h2>10. 参考文献・ソース一覧</h2>
+
+<h3>公式情報源（Scaled Agile, Inc.）</h3>
+<div class="ref-list">
+<div class="ref-item"><span class="ref-num">1</span><div class="ref-body"><a href="https://scaledagile.com/certification/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect Certification</a><p class="ref-desc">認定資格の概要ページ</p></div></div>
+<div class="ref-item"><span class="ref-num">2</span><div class="ref-body"><a href="https://framework.scaledagile.com/ain-safe-ai-value-architect" target="_blank" rel="noopener">AI Value Architect（役割定義）</a><p class="ref-desc">役割の公式定義</p></div></div>
+<div class="ref-item"><span class="ref-num">3</span><div class="ref-body"><a href="https://framework.scaledagile.com/blog/ai-native-safe-session-3-ai-native-teams-roles-and-arts" target="_blank" rel="noopener">AI-Native SAFe Session 3: AI-Native Teams, Roles, and ARTs</a><p class="ref-desc">5つの責任領域の解説</p></div></div>
+<div class="ref-item"><span class="ref-num">4</span><div class="ref-body"><a href="https://ai-native-support.scaledagile.com/en/articles/16504256-exam-details-ai-native-value-architect-exam-ai-native-value-architect" target="_blank" rel="noopener">Exam Details: AI-Native Value Architect Exam</a><p class="ref-desc">公式試験詳細・ドメイン構成</p></div></div>
+<div class="ref-item"><span class="ref-num">5</span><div class="ref-body"><a href="https://www.prnewswire.com/news-releases/scaled-agile-releases-ai-native-safe-a-new-version-of-the-worlds-most-trusted-framework-to-provide-governance-for-the-ai-era-302807369.html" target="_blank" rel="noopener">Scaled Agile Releases AI-Native SAFe（プレスリリース）</a><p class="ref-desc">AI-Native SAFe全体像</p></div></div>
+</div>
+
+<h3>認定トレーニングパートナー（コース内容の裏付け）</h3>
+<div class="ref-list">
+<div class="ref-item"><span class="ref-num">6</span><div class="ref-body"><a href="https://www.cprime.com/learning/courses/ai-native-value-architect/" target="_blank" rel="noopener">AI-Native Value Architect（Cprime）</a><p class="ref-desc">詳細なコースアウトライン</p></div></div>
+<div class="ref-item"><span class="ref-num">7</span><div class="ref-body"><a href="https://academy.capgemini.com/course/ai-native-value-architect-en" target="_blank" rel="noopener">AI-Native Value Architect（Capgemini Academy）</a><p class="ref-desc">試験形式のクロスチェック</p></div></div>
+<div class="ref-item"><span class="ref-num">8</span><div class="ref-body"><a href="https://prettyagile.com.au/course/ai-native-value-architect" target="_blank" rel="noopener">AI-Native Value Architect（Pretty Agile）</a><p class="ref-desc">試験形式のクロスチェック</p></div></div>
+<div class="ref-item"><span class="ref-num">9</span><div class="ref-body"><a href="https://www.gladwellacademy.com/knowledge/blogs/what-is-an-ai-value-architect" target="_blank" rel="noopener">What is an AI Value Architect? Role &amp; Skills（Gladwell Academy）</a><p class="ref-desc">5つの責任領域の第三者要約</p></div></div>
+</div>
+
+<h3>業界調査・データソース</h3>
+<div class="ref-list">
+<div class="ref-item"><span class="ref-num">10</span><div class="ref-body"><a href="https://virtualizationreview.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide.aspx" target="_blank" rel="noopener">MIT Report Finds Most AI Business Investments Fail, Reveals 'GenAI Divide'</a><p class="ref-desc">MIT NANDA「GenAI Divide」95%統計の報道</p></div></div>
+<div class="ref-item"><span class="ref-num">11</span><div class="ref-body"><a href="https://www.gartner.com/en/newsroom/press-releases/2025-05-06-gartner-survey-reveals-that-ceos-believe-their-executive-teams-lack-ai-savviness" target="_blank" rel="noopener">Gartner Survey Reveals That CEOs Believe Their Executive Teams Lack AI Savviness</a><p class="ref-desc">経営層のAI習熟度に関するGartner調査</p></div></div>
+</div>
+
+<h3>技術解説記事（RAG vs Fine-Tuning、ガバナンス）</h3>
+<div class="ref-list">
+<div class="ref-item"><span class="ref-num">12</span><div class="ref-body"><a href="https://www.actian.com/blog/databases/should-you-use-rag-or-fine-tune-your-llm/" target="_blank" rel="noopener">Should You Use RAG or Fine-Tune Your LLM?（Actian）</a><p class="ref-desc">コスト構造の詳細分析</p></div></div>
+<div class="ref-item"><span class="ref-num">13</span><div class="ref-body"><a href="https://winder.ai/rag-vs-fine-tuning-2026-decision-framework/" target="_blank" rel="noopener">RAG vs Fine-Tuning in 2026: A Decision Framework for LLM Teams（Winder.ai）</a><p class="ref-desc">2026年時点の意思決定フレームワーク</p></div></div>
+<div class="ref-item"><span class="ref-num">14</span><div class="ref-body"><a href="https://4xxi.com/articles/rag-vs-fine-tuning/" target="_blank" rel="noopener">RAG vs. Fine-Tuning for Enterprise: A Practitioner's Decision Framework</a><p class="ref-desc">実務者による判断マトリクス</p></div></div>
+<div class="ref-item"><span class="ref-num">15</span><div class="ref-body"><a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noopener">AI Risk Management Framework（NIST）</a><p class="ref-desc">AIガバナンスの公的フレームワーク</p></div></div>
+</div>
+</div>
+
+<div class="footer">
+本ガイドは学習目的で作成された非公式資料であり、Scaled Agile, Inc. の公式教材・著作物を複製したものではありません。試験内容・出題比率・料金体系は変更される可能性があるため、受験前に必ず公式サイトで最新情報をご確認ください。
+</div>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.12.0/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad:false,
+  securityLevel:'loose',
+  theme:'neutral',
+  themeVariables:{
+    background:'#F6F7F9',
+    primaryColor:'#EEF1F8',
+    primaryTextColor:'#161B26',
+    primaryBorderColor:'#2E3F72',
+    lineColor:'#161B26',
+    secondaryColor:'#FAF1DF',
+    secondaryBorderColor:'#B8802A',
+    tertiaryColor:'#EAF4EC',
+    tertiaryBorderColor:'#2F6B3D',
+    fontFamily:'"Source Serif 4",Georgia,serif',
+    fontSize:'16px',
+    pie1:'#C9D3EA',
+    pie2:'#F1DDAE',
+    pie3:'#BFE0DB',
+    pie4:'#E8C7D6',
+    pieStrokeColor:'#F6F7F9',
+    pieOuterStrokeColor:'#F6F7F9',
+    pieOuterStrokeWidth:'3px',
+    pieOpacity:1,
+    pieSectionTextColor:'#161B26',
+    pieSectionTextSize:'16px',
+    pieLegendTextColor:'#161B26',
+    pieLegendTextSize:'16px',
+    pieTitleTextColor:'#161B26'
+  }
+});
+
+const DIAGRAMS = {
+"diagram-art": `flowchart TD
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+AVA["AI Value Architect"]:::hub
+ART["Agile Release Train (ART)"]:::box
+TEAMS["複数のAgileチーム"]:::box
+RTE["Release Train Engineer"]:::box
+BIZ["Business Owner / エグゼクティブ"]:::box
+ENG["エンジニアリング / AI開発者"]:::box
+AVA -->|"コーチング・整合"| ART
+ART --> TEAMS
+ART --> RTE
+AVA -->|"ビジネス言語で橋渡し"| BIZ
+AVA -->|"AI Fluencyで橋渡し"| ENG
+BIZ -->|"期待値・投資判断"| AVA
+ENG -->|"実現可能性・トレードオフ"| AVA`,
+"diagram-failure": `flowchart LR
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+D1["Unready Data(データ未整備)"]:::box
+D2["Unplanned Operations(運用未計画)"]:::box
+D3["Unbounded Risk(リスク無制限)"]:::box
+D4["Unengineered Adoption(定着未設計)"]:::box
+D5["Unmeasured Value(価値未測定)"]:::box
+GY["POC Graveyard"]:::hub
+FF["Feasibility Filtersで着手前に検知"]:::box
+SCALE["スケールされた本番価値"]:::done
+D1 --> GY
+D2 --> GY
+D3 --> GY
+D4 --> GY
+D5 --> GY
+GY --> FF
+FF --> SCALE`,
+"diagram-playbook": `flowchart LR
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+A["Audit: 既存AI資産の棚卸し"]:::box
+B["Activate: 機能の有効化"]:::box
+C["Optimize: ワークフローへの組み込み"]:::hub
+D["Centralize: 組織全体への標準化"]:::done
+A --> B
+B --> C
+C --> D
+D -->|"継続的フィードバック"| A`,
+"diagram-ragft": `flowchart TD
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+Q1{"ナレッジは頻繁に更新されるか"}:::hub
+Q2{"クエリ量は非常に多いか"}:::hub
+Q3{"出力形式・トーンの厳密な統一が必要か"}:::hub
+RAG["RAGを選択"]:::box
+FT["Fine-Tuningを選択"]:::box
+HYB["ハイブリッド(RAG + Fine-Tuning)"]:::done
+RAGFINAL["RAGのみで運用"]:::done
+Q1 -->|"はい"| RAG
+Q1 -->|"いいえ"| Q2
+Q2 -->|"多い"| FT
+Q2 -->|"多くない"| RAG
+RAG --> Q3
+Q3 -->|"はい"| HYB
+Q3 -->|"いいえ"| RAGFINAL`,
+"diagram-lifecycle": `flowchart LR
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+S["Sense: シグナルの察知"]:::box
+DI["Discover: 機会の探索"]:::box
+DE["Design: ソリューション設計"]:::hub
+DL["Deliver: 本番化・展開"]:::done
+S --> DI
+DI --> DE
+DE --> DL
+DL -->|"学びを次のサイクルへ還元"| S`,
+"diagram-integration": `flowchart TD
+classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
+classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
+classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
+ROLE["AI Value Architect"]:::hub
+RESP["5つの責任領域"]:::box
+LIFECYCLE["AI-Native Solution Lifecycle"]:::box
+PLAYBOOK["Value Maximizer Playbook"]:::box
+ARTIFACTS["コアアーティファクト"]:::box
+STORY["AI-Powered Storytelling"]:::box
+OUTCOME["スケールされた組織的価値"]:::done
+ROLE --> RESP
+ROLE --> LIFECYCLE
+ROLE --> PLAYBOOK
+RESP --> LIFECYCLE
+PLAYBOOK --> LIFECYCLE
+LIFECYCLE --> ARTIFACTS
+ARTIFACTS --> STORY
+STORY --> OUTCOME
+OUTCOME -->|"学びを還元"| RESP`,
+"diagram-pie": `pie showData
+title 試験ドメイン別 出題比率(中央値)
+"Developing the AI-Native Change Agent" : 30
+"Strategy, Alignment, and Governance" : 35
+"Solution Design and Delivery" : 15.5
+"Value Realization and Organizational Change" : 18`
+};
+
+async function renderAllDiagrams(){
+  await document.fonts.ready;
+  for(const [id, src] of Object.entries(DIAGRAMS)){
+    const target = document.getElementById(id);
+    if(!target) continue;
+    try{
+      const { svg } = await mermaid.render(id + "-svg", src);
+      target.innerHTML = svg;
+      const svgEl = target.querySelector("svg");
+      if(svgEl){
+        svgEl.removeAttribute("width");
+        svgEl.removeAttribute("height");
+        const vb = svgEl.getAttribute("viewBox");
+        if(vb){
+          const parts = vb.split(/\s+/).map(Number);
+          if(parts.length === 4){
+            parts[3] = parts[3] + 15;
+            svgEl.setAttribute("viewBox", parts.join(" "));
+            svgEl.style.width = parts[2] + "px";
+          }
+        }
+        svgEl.style.maxWidth = "100%";
+        svgEl.style.height = "auto";
+        svgEl.style.overflow = "visible";
+      }
+    }catch(err){
+      target.innerHTML = "<p style='color:#8C3A5C;font-size:16px;'>図の描画に失敗しました: " + err.message + "</p>";
+      console.error("Mermaid render error for", id, err);
+    }
+  }
+}
+renderAllDiagrams();
+
+const navLinks = Array.from(document.querySelectorAll(".sidebar nav a"));
+const sections = navLinks
+  .map(a => document.querySelector(a.getAttribute("href")))
+  .filter(Boolean);
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const id = "#" + entry.target.id;
+    const link = navLinks.find(a => a.getAttribute("href") === id);
+    if(!link) return;
+    if(entry.isIntersecting){
+      navLinks.forEach(a => a.classList.remove("active"));
+      link.classList.add("active");
+    }
+  });
+}, { rootMargin: "-20% 0px -70% 0px" });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
