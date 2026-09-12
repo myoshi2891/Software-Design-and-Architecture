@@ -1582,7 +1582,7 @@ export default function Page() {
               <div className="src-ref-ttl">📖 参考ソース</div>
               <ul className="src-list">
                 <li>
-                  <Ext href="https://getbem.com/">BEM公式サイト</Ext>
+                  <Ext href="https://bem.info/en/methodology/">BEM公式サイト</Ext>
                 </li>
                 <li>
                   <Ext href="https://www.smashingmagazine.com/2018/06/bem-for-beginners/">

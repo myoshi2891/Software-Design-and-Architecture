@@ -46,7 +46,7 @@ export function SiteHeader({ pathname: pathnameProp }: { pathname?: string } = {
   return (
     <SiteHeaderClient>
       <nav id="common-header" aria-label="Main Navigation" className="ch-nav">
-        <Link className="ch-brand" href="/general/comprehensive-guide">
+        <Link className="ch-brand" href="/">
           設計手法ガイド
         </Link>
         <button

@@ -6,8 +6,110 @@ interface IgnorePattern {
   pattern: string;
 }
 
+/** 再試行の既定値。設定ファイルに記述が無い場合に用いる。 */
+const DEFAULT_RETRY_COUNT = 2;
+const DEFAULT_RETRY_DELAY_SEC = 10;
+
+/**
+ * 再試行設定の上限。設定ファイルは人手で編集されるため、桁を誤った巨大値が
+ * そのまま採用されるとリンクチェックが事実上停止する（1e21 回の再試行、
+ * 数万秒の待機）。上限を超えた値は「設定ミス」とみなし既定値へ倒す。
+ */
+export const MAX_RETRY_COUNT = 10;
+export const MAX_RETRY_DELAY_SEC = 300;
+
+interface RetryConfig {
+  /** 429 (Too Many Requests) を一時的エラーとして再試行するか */
+  retryOn429: boolean;
+  /** 最大再試行回数（初回プローブは含まない） */
+  retryCount: number;
+  /** 再試行の基準待機秒数 */
+  retryDelaySec: number;
+}
+
+/**
+ * "10s" のような期間表記、または数値を秒数へ変換する。
+ *
+ * @param value - 設定ファイル由来の未検証値
+ * @param fallbackSec - 解釈できなかった場合に返す既定秒数
+ * @returns 正の秒数
+ */
+export function parseDurationSeconds(value: unknown, fallbackSec: number): number {
+  if (typeof value === 'number') {
+    return isUsableDelaySec(value) ? value : fallbackSec;
+  }
+  if (typeof value !== 'string') return fallbackSec;
+
+  const match = value.trim().match(/^(\d+(?:\.\d+)?)\s*(ms|s|m)?$/);
+  if (!match) return fallbackSec;
+
+  const amount = Number(match[1]);
+  if (!Number.isFinite(amount) || amount <= 0) return fallbackSec;
+
+  const unit = match[2] ?? 's';
+  const seconds = unit === 'ms' ? amount / 1000 : unit === 'm' ? amount * 60 : amount;
+  return isUsableDelaySec(seconds) ? seconds : fallbackSec;
+}
+
+/**
+ * 待機秒数として採用できる値かを判定する。
+ *
+ * 小数秒 ("500ms" 等) を許すため整数は要求しないが、上限 (MAX_RETRY_DELAY_SEC)
+ * で頭を押さえる。上限は安全整数の範囲に十分収まるため、この判定を通った値は
+ * Number.isSafeInteger 相当の安全性も同時に満たす。
+ *
+ * @param seconds - 判定対象の秒数
+ * @returns 採用可能なら true
+ */
+function isUsableDelaySec(seconds: number): boolean {
+  return Number.isFinite(seconds) && seconds > 0 && seconds <= MAX_RETRY_DELAY_SEC;
+}
+
+/**
+ * 再試行「回数」を解釈する。期間表記 ("10s" / "1m" など) は回数ではないため受け付けない。
+ *
+ * 期間パーサを流用すると "1m" が 60 回、"500ms" が 0 回に化け、設定値と実挙動が
+ * 乖離する。回数は有限の非負整数のみを有効とし、0 は「再試行しない」という
+ * 意図的な指定として尊重する。
+ *
+ * @param value - 設定ファイル由来の未検証値
+ * @param fallback - 解釈できなかった場合に返す既定回数
+ * @returns 有限の非負整数
+ */
+export function parseRetryCount(value: unknown, fallback: number): number {
+  if (typeof value === 'number') {
+    return isUsableRetryCount(value) ? value : fallback;
+  }
+  if (typeof value !== 'string') return fallback;
+
+  // 単位付き・小数・符号付きを除外し、純粋な十進整数だけを受け付ける
+  if (!/^\d+$/.test(value.trim())) return fallback;
+
+  const parsed = Number(value.trim());
+  return isUsableRetryCount(parsed) ? parsed : fallback;
+}
+
+/**
+ * 再試行回数として採用できる値かを判定する。
+ *
+ * Number.isInteger は 1e21 のような桁外れの値も整数と判定するため、
+ * Number.isSafeInteger で精度が保証される範囲に限定したうえで、
+ * 実運用で意味のある上限 (MAX_RETRY_COUNT) を課す。
+ *
+ * @param count - 判定対象の回数
+ * @returns 採用可能なら true
+ */
+function isUsableRetryCount(count: number): boolean {
+  return Number.isSafeInteger(count) && count >= 0 && count <= MAX_RETRY_COUNT;
+}
+
 const configPath = path.resolve(import.meta.dirname || '', '../.markdown-link-check.json');
 let ignoreRegexes: RegExp[] = [];
+let retryConfig: RetryConfig = {
+  retryOn429: true,
+  retryCount: DEFAULT_RETRY_COUNT,
+  retryDelaySec: DEFAULT_RETRY_DELAY_SEC,
+};
 
 if (fs.existsSync(configPath)) {
   try {
@@ -15,9 +117,39 @@ if (fs.existsSync(configPath)) {
     if (config.ignorePatterns && Array.isArray(config.ignorePatterns)) {
       ignoreRegexes = config.ignorePatterns.map((item: IgnorePattern) => new RegExp(item.pattern));
     }
+    retryConfig = {
+      retryOn429: config.retryOn429 !== false,
+      retryCount: parseRetryCount(config.retryCount, DEFAULT_RETRY_COUNT),
+      retryDelaySec: parseDurationSeconds(config.fallbackRetryDelay, DEFAULT_RETRY_DELAY_SEC),
+    };
   } catch (e) {
     console.error('Failed to parse config file:', e);
   }
+}
+
+/**
+ * ステータスコードが一時的エラーで、再試行する価値があるかを判定する。
+ *
+ * CI ランナーの IP から並列アクセスすると Read the Docs 等が 429 を返すため、
+ * 恒久的なリンク切れ (404 等) と区別して扱う必要がある。
+ *
+ * @param status - HTTP ステータスコード
+ * @param retryOn429 - 429 を再試行対象とするか
+ * @returns 再試行すべきなら true
+ */
+export function isRetryableStatus(status: number, retryOn429: boolean): boolean {
+  return retryOn429 && status === 429;
+}
+
+/**
+ * 再試行前の待機秒数を求める。試行回数に応じて線形に伸ばす。
+ *
+ * @param attempt - 1 始まりの再試行番号
+ * @param baseSec - 基準待機秒数
+ * @returns 待機秒数
+ */
+export function retryDelaySeconds(attempt: number, baseSec: number): number {
+  return baseSec * attempt;
 }
 
 /**
@@ -156,25 +288,52 @@ function curlAsync(
  * @param timeoutSec - Maximum request duration in seconds
  * @returns The verification result, including the HTTP status code and an error message when verification fails
  */
-async function verifyUrl(
-  url: string,
-  timeoutSec: number = 10
-): Promise<{ ok: boolean; status: number; error?: string }> {
-  const userAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+/**
+ * リンク検証に用いる User-Agent。
+ *
+ * 一部の WAF（WordPress.com / Automattic 等）は古い UA 文字列をボット判定して 403 を返すため、
+ * 現行世代のブラウザ UA を名乗ることで偽陽性を避ける。
+ */
+const USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36';
 
-  const commonArgs = [
+/**
+ * Builds the curl arguments used to verify a single URL.
+ *
+ * HEAD は `-X HEAD` ではなく `--head` を用いる。`-X HEAD` は curl がレスポンスボディを
+ * 待ち続けるため、`Content-Length` を返すサーバーで `--max-time` まで到達し
+ * exit 28（タイムアウト）の偽陽性を生む。
+ *
+ * @param url - The URL to verify
+ * @param timeoutSec - Maximum request duration in seconds
+ * @param method - HTTP method to use for the probe
+ * @returns The curl argument list, with the URL as the final element
+ */
+export function buildCurlArgs(url: string, timeoutSec: number, method: 'HEAD' | 'GET'): string[] {
+  const args = [
     '-s',
     '-L',
     '-o', '/dev/null',
     '-w', '%{http_code}',
     '--max-time', String(timeoutSec),
-    '-A', userAgent,
+    '-A', USER_AGENT,
     '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   ];
 
+  if (method === 'HEAD') {
+    args.push('--head');
+  }
+
+  args.push(url);
+  return args;
+}
+
+async function probeUrl(
+  url: string,
+  timeoutSec: number
+): Promise<{ ok: boolean; status: number; error?: string }> {
   // まず HEAD リクエストで試みる
-  const headResult = await curlAsync([...commonArgs, '-X', 'HEAD', url], timeoutSec);
+  const headResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'HEAD'), timeoutSec);
 
   if (headResult.error) {
     return { ok: false, status: 0, error: `curl error: ${headResult.error.message}` };
@@ -188,7 +347,7 @@ async function verifyUrl(
   }
 
   // HEAD が失敗の場合は GET で再試行
-  const getResult = await curlAsync([...commonArgs, url], timeoutSec);
+  const getResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'GET'), timeoutSec);
 
   if (getResult.error) {
     return { ok: false, status: 0, error: `curl error: ${getResult.error.message}` };
@@ -202,6 +361,41 @@ async function verifyUrl(
 
   const ok = getStatus >= 200 && getStatus < 400;
   return { ok, status: getStatus };
+}
+
+/**
+ * 指定秒数だけ待機する。
+ */
+function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+/**
+ * URL の到達性を検証する。一時的なレート制限 (429) は設定に従って再試行する。
+ *
+ * @param url - 検証対象の URL
+ * @param timeoutSec - 1 回のリクエストの最大所要秒数
+ * @returns 検証結果。失敗時は HTTP ステータスとエラーメッセージを含む
+ */
+async function verifyUrl(
+  url: string,
+  timeoutSec: number = 10
+): Promise<{ ok: boolean; status: number; error?: string }> {
+  let result = await probeUrl(url, timeoutSec);
+
+  for (let attempt = 1; attempt <= retryConfig.retryCount; attempt++) {
+    if (result.ok) return result;
+    if (!isRetryableStatus(result.status, retryConfig.retryOn429)) return result;
+
+    const delaySec = retryDelaySeconds(attempt, retryConfig.retryDelaySec);
+    console.log(
+      `  RETRY (${attempt}/${retryConfig.retryCount}): ${url} [Status: ${result.status}] waiting ${delaySec}s ...`
+    );
+    await sleep(delaySec);
+    result = await probeUrl(url, timeoutSec);
+  }
+
+  return result;
 }
 
 /**
@@ -339,7 +533,10 @@ async function run(): Promise<void> {
   }
 }
 
-run().catch((err: Error) => {
-  console.error('Link check failed:', err.message);
-  process.exit(1);
-});
+// テストから import した際にリンクチェック全体が走らないようエントリポイントを保護する
+if (import.meta.main) {
+  run().catch((err: Error) => {
+    console.error('Link check failed:', err.message);
+    process.exit(1);
+  });
+}

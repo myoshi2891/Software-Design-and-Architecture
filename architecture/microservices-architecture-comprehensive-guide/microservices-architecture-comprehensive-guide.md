@@ -2298,7 +2298,7 @@ flowchart TD
 
 | リソース | URL |
 |---------|-----|
-| **OWASP Microservices Security** | https://owasp.org/www-project-api-security/ |
+| **OWASP API Security Top 10** | https://api-security.owasp.org/ |
 | **Zero Trust Architecture（NIST）** | https://www.nist.gov/publications/zero-trust-architecture |
 | **HashiCorp Vault（シークレット管理）** | https://www.vaultproject.io/ |
 

@@ -1361,7 +1361,7 @@ graph TD
 
 | リソース | URL |
 |---------|-----|
-| **OWASP Top 10（Webセキュリティ）** | https://owasp.org/www-project-top-ten/ |
+| **OWASP Top 10（Webセキュリティ）** | https://owasp.org/Top10/ |
 | **Clerk（認証サービス）** | https://clerk.com/docs |
 | **Stripe（決済SDK公式）** | https://stripe.com/docs |
 

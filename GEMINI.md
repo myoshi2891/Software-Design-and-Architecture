@@ -39,6 +39,17 @@ bun run check-links
 
 このコマンドは `scripts/verify-links.ts` を実行する。
 
+`DEAD` 報告時は、修正前に原因を切り分けること。
+
+- `[Status: 0]`（curl exit 6）… DNS の名前解決失敗。`HOST='example.com'; dig "$HOST" A` / `dig "$HOST" AAAA` で応答ステータス（`NOERROR` / `NXDOMAIN` / `SERVFAIL`）と A/AAAA レコードの有無を確認する。`dig +short` が空なだけでは判断しない（`NXDOMAIN`・`SERVFAIL`・AAAA のみ存在、のいずれも空出力になる）。別リゾルバでも `NXDOMAIN` が再現し、恒久的な廃止が確認できた場合にのみ後継 URL へ差し替える。
+- `[Status: 0]`（curl exit 28）… タイムアウト。時間を空けて再実行する。URL は差し替えない。
+- `[Status: 0]`（curl exit 35）… SSL/TLS 接続失敗。証明書・TLS 設定を確認し、一時障害なら再実行する。URL は差し替えない。
+- `[Status: 429]` … レート制限。リンクは生存している。`.markdown-link-check.json` の `retryOn429` / `retryCount` / `fallbackRetryDelay` に従って自動再試行される（既定: 10s → 20s、最大 2 回）。URL は差し替えない。
+- `[Status: 403]`（ルートを含む全 URL）… WAF のボット遮断。`.markdown-link-check.json` の `ignorePatterns` に追加する。
+- `[Status: 404]` … URL 体系の変更。移行先、無ければ canonical な公式リポジトリを参照する。
+
+SPA サイトは存在しない URL でも 200 を返す soft-404 があり、ステータスコードでは検出できない。差し替え先は安定した canonical URL を選ぶこと。詳細は [README.md](./README.md) の「リンクチェック」を参照。
+
 ### 2. 依存関係の脆弱性監査
 
 依存パッケージの既知脆弱性を検査するために、以下のコマンドを実行する。
@@ -86,6 +97,10 @@ flowchart TD
 ### 4. Web アプリ (`web-next/`) の開発
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
+- ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
+  カテゴリ別に全 22 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
+  `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
@@ -115,9 +130,19 @@ flowchart TD
   - `app/css-design-system-guide/css-color-typography-spacing-systems/page.tsx`
     （URL `/css-design-system-guide/css-color-typography-spacing-systems`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`CssColorTypographySpacingSidebar.tsx`）に分離。
+  - `app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx`
+    （URL `/development-methodologies/behavior-driven-development-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`BddSidebar.tsx`）に分離。
+  - `app/development-methodologies/extreme-programming-comprehensive-guide/page.tsx`
+    （URL `/development-methodologies/extreme-programming-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`XpSidebar.tsx`）に分離。
+  - `app/development-methodologies/feature-driven-development-comprehensive-guide/page.tsx`
+    （URL `/development-methodologies/feature-driven-development-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`FddSidebar.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
-  `components/site/nav-links.ts`（zod 不使用の判別共用体型、未移行ページへのリンクも意図的に含む。
-  現状 404 は許容）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
+  索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
+  「準備中」の非リンク表示とする）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
   スタイルは `globals.css` の `ch-*` クラス。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は

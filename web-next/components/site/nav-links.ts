@@ -6,7 +6,12 @@
  * href は "/" 始まりの絶対パス（App Router の /<category>/<slug>）。
  *
  * 注意: 未移行ページへのリンクも意図的に含む（現状アクセスすると 404）。
- * ページ移植が進むたびにリンクが有効化される。
+ * ページ移植が進むたびにリンクが有効化される。索引画面 ("/") では未移行ページを
+ * 「準備中」として非リンク表示する（lib/guide-catalog.ts の status を参照）。
+ *
+ * 最上位はすべてドロップダウン。ルート "/" がガイド索引画面になったため、
+ * かつての `Home` leaf（総合リファレンスへの直リンク）は廃止し、
+ * 総合リファレンスは「アーキテクチャ」の先頭に置く。
  */
 
 /** 末端リンク（単一ページ）。 */
@@ -24,10 +29,10 @@ export type NavDropdown = {
 export type NavLink = NavLeaf | NavDropdown;
 
 export const navLinks: readonly NavLink[] = [
-  { name: "Home", href: "/general/comprehensive-guide" },
   {
     name: "アーキテクチャ",
     children: [
+      { name: "総合リファレンス", href: "/general/comprehensive-guide" },
       {
         name: "クリーンアーキテクチャ",
         href: "/architecture/clean-architecture-comprehensive-guide",

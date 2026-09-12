@@ -1854,7 +1854,7 @@ flowchart TD
 | **OAuth 2.0 RFC 6749（公式仕様）** | https://www.rfc-editor.org/rfc/rfc6749 |
 | **JWT 公式サイト** | https://jwt.io/ |
 | **OpenID Connect 公式** | https://openid.net/connect/ |
-| **OWASP API Security Top 10** | https://owasp.org/www-project-api-security/ |
+| **OWASP API Security Top 10** | https://github.com/OWASP/API-Security |
 
 #### GraphQL・gRPC
 

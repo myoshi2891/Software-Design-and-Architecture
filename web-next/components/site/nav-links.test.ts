@@ -3,10 +3,11 @@
 
 /**
  * 固定する契約:
- * - navLinks は 6 要素（Home leaf / dropdown 5）。
+ * - navLinks は 5 要素（すべて dropdown。最上位の leaf は持たない）。
  * - dropdown 要素は children を持ち、leaf 要素は href を持つ。
  * - すべての href / children.href は "/" 始まりの絶対パス。
- * - 移行済みページ（event-driven / general comprehensive-guide）を含む。
+ * - 総合リファレンスは「アーキテクチャ」ドロップダウンの先頭に属する
+ *   （ルート "/" が索引画面になったため、Home leaf は廃止）。
  */
 
 import { describe, expect, it } from "vitest";
@@ -29,13 +30,14 @@ function collectHrefs(links: readonly NavLink[]): string[] {
 }
 
 describe("nav-links structure", () => {
-  it("defines 6 top-level entries", () => {
-    expect(navLinks.length).toBe(6);
+  it("defines 5 top-level entries", () => {
+    expect(navLinks.length).toBe(5);
   });
 
-  it("contains exactly 5 dropdown groups", () => {
+  it("contains only dropdown groups at the top level", () => {
     const dropdowns = navLinks.filter(isDropdown);
     expect(dropdowns.length).toBe(5);
+    expect(dropdowns.length).toBe(navLinks.length);
   });
 
   it("every dropdown has at least one child", () => {
@@ -55,5 +57,12 @@ describe("nav-links structure", () => {
     const hrefs = collectHrefs(navLinks);
     expect(hrefs).toContain("/architecture/event-driven-architecture-comprehensive-guide");
     expect(hrefs).toContain("/general/comprehensive-guide");
+  });
+
+  it("lists the comprehensive reference first under アーキテクチャ", () => {
+    const architecture = navLinks.filter(isDropdown).find((d) => d.name === "アーキテクチャ");
+    expect(architecture).toBeDefined();
+    expect(architecture?.children.length).toBe(7);
+    expect(architecture?.children[0]?.href).toBe("/general/comprehensive-guide");
   });
 });

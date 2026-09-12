@@ -1,12 +1,10 @@
 ---
 name: fix-mermaid
 description: >
-  Use this skill to fix Mermaid diagram syntax errors inside HTML, Markdown, and TSX files.
-  Trigger when the user mentions: "mermaid error", "Syntax error in text",
-  "mermaid not rendering", "diagram is broken", "all diagrams crashed",
-  or references a Mermaid version error (e.g. "mermaid version 10.9.5").
-  Fixes formatter-induced indentation pollution and statement concatenation
-  that break Mermaid v10 parsing.
+  Fix Mermaid syntax, rendering, clipping, readability, and sizing problems in HTML,
+  Markdown, React, and TSX. Use when diagrams fail to render, Mermaid reports a syntax
+  or version error, labels are clipped or unreadable, diagrams are too large or small,
+  different diagram types need individual sizing, or SVG/card layout is unbalanced.
 allowed-tools:
   - Read
   - Edit
@@ -14,14 +12,56 @@ allowed-tools:
   - Bash
 ---
 
-# Mermaid v10 構文修正スキル
+# Mermaid 構文・描画修正スキル
+
+(最終更新日: 2026-09-09)
+
+## 全体像: 図ソース → 描画パイプライン → SVG 後処理
+
+修正がどの層の問題かを最初に切り分ける。**構文エラーは図ソース層、サイズ・見切れ・文字色は SVG 後処理層**で直す。層を取り違えた修正（例: 見切れを DSL の書き換えで直そうとする）は再発する。
+
+```mermaid
+flowchart TD
+Src["図ソース: DIAGRAMS オブジェクト - md の mermaid フェンス - chart prop"] --> Norm["正規化: カラム0 - 1行1ステートメント - 全角文字置換"]
+Norm --> Init["mermaid.initialize: theme - themeVariables - fontSize"]
+Init --> Run["mermaid.run で SVG 生成"]
+Run --> Fix["applySvgFixups: ライブ DOM 操作"]
+Fix --> W["width と height 属性を除去し style.width に自然px, maxWidth 100%"]
+Fix --> V["viewBox 高さ拡張: sequence と state は +110, その他は +15"]
+Fix --> O["overflow visible: foreignObject の右端切れ対策"]
+W --> CSS["globals.css の .mbox スコープ: 採寸値と実描画の font-size を一致"]
+V --> CSS
+O --> CSS
+CSS --> Out["表示"]
+Norm -.構文エラーはここへ戻る.-> Src
+Fix -.サイズ・見切れはここで直す.-> Run
+```
+
+| 層 | 典型的な症状 | 直す場所 |
+|---|---|---|
+| 図ソース | Syntax Error・図が出ない | `fix_mermaid.ts` / 全角文字置換 |
+| 描画パイプライン | 全図が未描画・二重描画 | `apply_render_pipeline.ts` / `initialize` |
+| SVG 後処理 | 見切れ・異常拡大・文字色 | `applySvgFixups` / `.mbox` CSS |
+
+## 前提バージョンと正準実装（推測禁止）
+
+| 項目 | 確定値 |
+|---|---|
+| Mermaid | **`mermaid@10.9.8`**（`web-next/package.json` の dependencies） |
+| React 共通コンポーネント | `web-next/components/MermaidDiagram.tsx` — **default エクスポート** `export default MermaidDiagram` |
+| `mermaid.initialize` | `useEffect` 内、`import("mermaid")` の `.then()` 内で実行（モジュール最上位ではない） |
+| テスト環境 | Vitest / jsdom。`MermaidDiagram` は**必ずモックする** |
+
+> 以降の「Mermaid v10 の必須ルール」は **v11 でも有効な基本構文ルール**である（カラム0・1行1ステートメント等）。
+> v10 固有の記述であることを理由に読み飛ばさないこと。
 
 ## 🚀 まず再利用スクリプトを使う（トークン節約・最優先）
 
 静的 HTML の Mermaid 描画崩れを直すときは、**ボイラープレート（render ループ・SVG 後処理・中央寄せ CSS）を手書きで再生成しないこと**。以下の再利用スクリプトで機械的処理を一括適用できる。
 
-1. **図ソースを JS テンプレートリテラルで定義**（LLM の判断が必要なのはここだけ）:
-   各図を 1 ステートメント 1 行・カラム 0・改行は `<br/>` で `const DIAGRAMS = { 'diag-1': 'flowchart TD ...' }` として HTML の `<script>` 内に書く。
+1. **図ソースを JSON 互換の正準オブジェクトで定義**（LLM の判断が必要なのはここだけ）:
+   各図を 1 ステートメント 1 行・カラム 0・改行は `\n` または `<br/>` とし、`const DIAGRAMS = { "diag-1": "flowchart TD\nA --> B" };` の形式で HTML の `<script>` 内に書く。
+
 2. **描画パイプラインを冪等適用**:
 
    ```bash
@@ -42,7 +82,7 @@ allowed-tools:
    bun run .claude/skills/fix-mermaid/scripts/fix_mermaid.ts <file>
    ```
 
-> **SVG 幅 of 鉄則**: `apply_render_pipeline.ts` は SVG 幅に **viewBox 由来の自然 px 幅 + `maxWidth:100%`** を使う。`width:'100%'` も `width:'auto'`（viewBox のみで intrinsic サイズを持たない SVG ではコンテナ全幅へ伸びる）も、小さい flowchart LR 図を異常拡大させるため**使わない**。
+> **SVG 幅の鉄則**: `apply_render_pipeline.ts` は SVG 幅に **viewBox 由来の自然 px 幅 + `maxWidth:100%`** を使う。`width:'100%'` も `width:'auto'`（viewBox のみで intrinsic サイズを持たない SVG ではコンテナ全幅へ伸びる）も、小さい flowchart LR 図を異常拡大させるため**使わない**。
 
 ## 対象
 
@@ -56,7 +96,7 @@ allowed-tools:
 2. 各ステートメントは**改行で分離**（1行に複数連結しない）
 3. ノードラベル `A["text"]` の内容は**1行に収める**
 4. `mindmap` のみ例外 — 内部インデントは階層構造を表すため保持する
-5. `block-beta` は**使用禁止** — v10.9.5 で全体クラッシュの原因になる。`graph TD` で代替する
+5. `block-beta` は**使用禁止** — v10.9.5 でページ全体のクラッシュを起こした実績があり、現行 v11 でも安全性を検証していない。`graph TD` で代替する
 
 ## よくある原因
 
@@ -68,42 +108,15 @@ HTMLやコードのフォーマッタ（Prettier等）による破壊パター�
 
 ## 修正手順
 
-1. `Grep` で修正対象ファイルを検索し、Mermaid ブロックを把握する
-2. `Read` で各ブロックを確認し、上記ルール違反を特定する
-3. `Edit` または自動修正スクリプトで各ブロックの内容を修正する
-
-自動修正を行う場合は TypeScript 版スクリプト `fix_mermaid.ts` を `bun` で実行します:
+1. **全文検索**で修正対象ファイルを絞り込み、Mermaid ブロックを把握する
+2. **ファイル読取**で各ブロックを確認し、上記ルール違反を特定する
+3. **差分編集**または自動修正スクリプトで各ブロックの内容を修正する
 
 ```bash
 bun run .claude/skills/fix-mermaid/scripts/fix_mermaid.ts path/to/file.tsx
 ```
 
-## 変換例
-
-**Before（壊れた状態）:**
-
-```html
-<div class="mermaid">
-  graph LR A["ノードA"] B["ノードB"] A --> B
-  style A fill:#fff
-</div>
-```
-
-**After（修正後）:**
-
-```html
-<div class="mermaid">
-graph LR
-A["ノードA"]
-B["ノードB"]
-A --> B
-style A fill:#fff
-</div>
-```
-
 ## ダイアグラム別の注意点
-
-詳細は `references/mermaid-v10-guide.md` を参照。要点のみ:
 
 | 種別 | 注意点 |
 | ------ | -------- |
@@ -115,37 +128,9 @@ style A fill:#fff
 
 ## 実地検証済み：ブラウザレンダラー固有の問題（2026年3月）
 
-静的パーサー `@mermaid-js/parser` ではエラーにならないが、ブラウザの Mermaid v10.9.5 レンダラーで `Syntax error in text` が発生するパターン。
-
 ### IDEフォーマッター（Prettier）による破壊が根本原因
 
-`<div class="mermaid">` に Mermaid ソースを直接書くと、VSCode/Prettier が保存のたびにインデントを付加して構文を壊す。**恒久対策は JS テンプレートリテラルへの移管**。
-
-```html
-<!-- ❌ Prettierが保存時にインデントを付加して破壊する -->
-<div class="mermaid">
-graph LR
-A --> B
-</div>
-
-<!-- ✅ JSテンプレートリテラル方式（IDEが一切触れない） -->
-<div id="diag-0"></div>
-<script>
-const DIAGRAMS = {
-  'diag-0': `graph LR
-A --> B`,
-};
-mermaid.initialize({ startOnLoad: false });
-(async () => {
-  for (const [id, src] of Object.entries(DIAGRAMS)) {
-    const { svg } = await mermaid.render('svg-' + id, src);
-    document.getElementById(id).innerHTML = svg;
-  }
-})();
-</script>
-```
-
-この方式では `-->` を `--&gt;` にエスケープする必要もなくなる。
+`<div class="mermaid">` に Mermaid ソースを直接書くと、VSCode/Prettier が保存のたびにインデントを付加して構文を壊す。**恒久対策は前述の JSON 互換 `DIAGRAMS` オブジェクト（改行は `\n`）への移管**（「まず再利用スクリプトを使う」手順1と同形式）。テンプレートリテラルは実改行がフォーマッタの再インデント対象になるため使わない。
 
 ### ブラウザレンダラーで Syntax Error を起こす文字・構文
 
@@ -154,89 +139,65 @@ mermaid.initialize({ startOnLoad: false });
 | `subgraph` ラベル | 丸括弧 `()` を含む | 削除または別表現に置換 |
 | `subgraph` ラベル | 絵文字（`🌐` `🖥️` 等） | 削除 |
 | `participant ... as` | 絵文字（`👤` `⚡` 等） | 削除 |
-| エッジラベル `\|...\|` | 先頭スラッシュ `\|/command\|` | スラッシュを除去 |
 | ノードラベル `["..."]` | 全角波ダッシュ `〜` | `から` 等の日本語に置換 |
 | ノードラベル `["..."]` | スラッシュ `path/to` | `-` またはスペースに置換 |
-| 菱形ノード `{}` | クォートなし日本語 `{新しいファイル}` | `{"新しいファイル"}` とクォートする |
-| `quadrantChart` の座標 / テキスト | ダブルクォーテーションなしの文字列 | `""` で囲む (例: `"CEO/CTO": [0.8, 0.9]`) |
+| 菱形ノード `{}` | クォートなし日本語 | クォートを追加する |
 | 全ての図解 (全般) | 全角丸括弧 `（）` | 半角丸括弧 `( )` に置換する |
 | 全ての図解 (全般) | 全角ダッシュ `―` | 半角ハイフン `-` に置換する |
 | 全ての図解 (全般) | 全角コロン `：` | 半角コロン `:` に置換する |
 
+#### 全角文字の一括置換手順
+
+**`fix_mermaid.ts` はこの置換を行わない。** 同スクリプトが直すのはインデント汚染と行分断だけ。
+
+1. **検出**: `grep -rn '[（）〜―：]' <対象ファイル>`
+2. **置換**: ヒットした箇所を、**Mermaid ブロック内のものに限って**1件ずつ編集する。本文・表・見出しの全角文字は変更してはならない。
+3. **再検証**: 手順1のコマンドを再実行し、残ったヒットがすべて Mermaid ブロック外であることを確認する。
+
 ### SVG サイズ制御
 
-Mermaid v10 は SVG 要素に絶対ピクセル値の `width`/`height` 属性を付与する。`mermaid.render()` 後に必ず除去する。
+Mermaid v10/v11 は SVG 要素に絶対ピクセル値の `width`/`height` 属性を付与する。`mermaid.run()` 後に必ず除去する。
 
 ```js
 svgEl.removeAttribute('width');
 svgEl.removeAttribute('height');
-svgEl.style.width    = `${w}px`;   // 自然 px 幅（width:${w}px + maxWidth:100% の新ルールに準拠）
+svgEl.style.width    = `${w}px`;   // 自然 px 幅
 svgEl.style.maxWidth = '100%';
 svgEl.style.height   = 'auto';
 ```
 
-CSS にもフォールバックを追加する：
-
-```css
-.mermaid-wrap svg {
-  max-width: 100% !important;
-  height: auto !important;
-}
-```
-
 ### シーケンス図・状態遷移図等の下部見切れ（クリッピング）対策（2026年6月追記）
 
-Mermaid v10 のシーケンス図（`sequenceDiagram`）や状態遷移図（`stateDiagram`）のレンダラーには、描画される最下部要素（ライフライン下端、下部アクターボックス、ループブロック、警告メモ等）の境界座標を正しく計算できず、生成される SVG の `viewBox` 属性の高さ（height）が不足するバグがあります。
-
-親要素（`.diagram-wrap` 等）に `overflow-x: auto` などが指定されている場合、CSSの仕様により縦方向もクリッピング（`hidden` 同等）されるため、はみ出た下部要素が切り落とされて見えなくなります。
-
-**【対策】**
-`mermaid.render()` 後に、JS で動的に `viewBox` の高さを拡張し、十分なスペースを確保した上で再適用します。
+Mermaid v10/v11 のシーケンス図（`sequenceDiagram`）や状態遷移図（`stateDiagram`）には SVG の `viewBox` 高さが不足するバグがある。描画後に高さを拡張する:
 
 ```javascript
-// viewBox の高さを拡張して、下部見切れを解消
-const viewBoxStr = svgEl.getAttribute('viewBox');
-if (viewBoxStr) {
-    const parts = viewBoxStr.split(' ').map(Number);
-    if (parts.length === 4) {
-        const isSequenceOrState = src.trim().startsWith('sequenceDiagram') || src.trim().startsWith('stateDiagram');
-        // mirrorActors: true（上下両方のアクターボックス表示）の場合は縦幅が大きく伸びるため
-        // 余裕を持って高さを増やす（シーケンス図等は +110px、その他は +15px 程度）
-        const extraHeight = isSequenceOrState ? 110 : 15;
-        svgEl.setAttribute('viewBox', `${parts[0]} ${parts[1]} ${parts[2]} ${parts[3] + extraHeight}`);
-    }
-}
+const extraHeight = isSequenceOrState ? 110 : 15;
+svgEl.setAttribute('viewBox', `${x} ${y} ${w} ${h + extraHeight}`);
 ```
 
 ### `quadrantChart` の文字被り対策（2026年6月追記）
 
-`quadrantChart` でプロットされる各要素のテキストラベルが重なって表示される場合は、`mermaid.initialize` の設定にて内部描画解像度を大きく指定します。
-
 ```javascript
 mermaid.initialize({
-    quadrantChart: {
-        chartWidth: 800,  // デフォルトの500から拡大して表示エリアを広げる
-        chartHeight: 600, // デフォルトの400から拡大
-        pointRadius: 8,
-        pointLabelFontSize: 14
-    }
+    quadrantChart: { chartWidth: 800, chartHeight: 600, pointRadius: 8, pointLabelFontSize: 14 }
 });
 ```
 
-このうえで、HTML のラッパー（`.mermaid-wrap` 等）のインラインスタイル（例: `style="max-width: 750px; margin: 0 auto;"`）で表示幅を制限することで、描画文字同士の被りを完全に回避しつつ、画面に収まる綺麗さでレスポンシブ表示できます。
+図ごとの `maxWidth` インラインスタイルは指定しない。必要な表示調整は Mermaid DSL の `chartWidth`、`chartHeight`、`nodeSpacing`、`rankSpacing` などで行う。
 
 ### HTML での Mermaid 図解の中央寄せ Flexbox スタイル（2026年6月追記）
-
-静的 HTML で Mermaid を表示する際、図解が左寄せになるのを防ぎ中央寄せにするための CSS 実装例です。
 
 ```css
 .mermaid-wrap {
     display: flex;
-    justify-content: center;
+    justify-content: safe center; /* 親幅を超える場合は flex-start（左詰め）として扱い左見切れを防ぐ */
+    overflow-x: auto;
+    width: 100%;
+    margin: 1.5rem auto 2rem;
 }
 .mermaid {
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     width: 100%;
 }
 .mermaid svg {
@@ -247,166 +208,154 @@ mermaid.initialize({
 }
 ```
 
-### React/Next.js (CSS Modules) 移植時の表示と中央寄せ（2026年5月追記）
+### React/Next.js (globals.css) 移植時の表示（2026年5月追記）
 
-React (Next.js App Router) 移行に際して共通の `MermaidDiagram` コンポーネントを使用する場合、CSS Modules との競合やテスト環境（Vitest）での描画エラーに注意する必要があります。
+このリポジトリは CSS Modules を使わず `globals.css` のページスコープクラスでスタイルを管理する。
 
-#### 1. CSS Modules 環境下での中央寄せとサイズ制限
+#### ⚠️ サイズ調整は図ごとに行い、文字の実効サイズを変えない
 
-共通の `MermaidDiagram` コンポーネントは出力時にグローバルクラス `"mermaid"` を付与します。しかし、CSS Modules（`*.module.css`）で指定した `.mermaid` はクラス名がハッシュ化されるため、スタイルが当たらなくなり左寄せになってしまいます。
+**禁止事項**:
 
-**【対策】**
+- 異なる図種へ同じ `minWidth` / `maxHeight` を一括適用しない
+- `%%{init: {"themeVariables": {"fontSize": "Xpx"}}}%%` で図ごとにフォントサイズを変えない — 採寸値と CSS の実描画値が乖離し、ノード枠からはみ出す
+- `width:'100%'` を SVG に直接適用しない（小さい図が全幅へ異常拡大する）
+- 縦長図へ `max-height` を付けない（横幅と文字まで縮小する）
+- 1ページの問題を直すために共通コンポーネントの既定動作を変更しない
 
-1. **TSX 側**: `MermaidDiagram` をラッパー div で囲み、ハッシュ化されるクラス名 (`styles.mermaid`) と、個別幅制限用のグローバル ID (`id="diag-X"`) を付与します。
+**個別対応の正準手順**:
+
+1. 共通コンポーネントの `preserveNaturalScale` prop を `true` にして viewBox 由来の自然幅で表示する。
+2. `.mbox` はコンテンツ領域の全幅を使い、ページ側でインライン `maxWidth` を指定しない。
 
 ```tsx
-<div id="diag-0" className={styles.mermaid}>
-  <MermaidDiagram chart={DIAGRAM_0} />
+// page.tsx での正準使用例
+<div className="mbox">
+  <MermaidDiagram chart={DIAGRAM_LEVELS} preserveNaturalScale={true} />
 </div>
 ```
 
-1. **CSS 側**: ハッシュ化クラスから下位のグローバルな `svg` をターゲットするため、`:global` セレクタを使用します。
+#### ⚠️ スクロール時の図解縮小バグの防止（React.memo メモ化）
 
-```css
-.mermaid {
-  display: flex;
-  justify-content: center;
-}
-.mermaid :global(svg) {
-  display: block;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-}
-```
+`IntersectionObserver` による親コンポーネントの再レンダリングで `style.width` がリセットされ、図が豆粒に縮小する不具合が発生する。**`MermaidDiagram` を必ず `React.memo` でラップする**（`web-next/components/MermaidDiagram.tsx` では実装済み）。
 
-   個別 ID セレクタ（`#diag-0 svg` 等）は CSS Modules でも変換されないため、グローバル ID セレクタ経由で最大幅（`max-width`）を制御できます。
+#### テスト環境（Vitest）での MermaidDiagram のモック化
 
-#### 2. テスト環境（Vitest）での MermaidDiagram のモック化
-
-`MermaidDiagram` はクライアントサイドで動的に `mermaid` ライブラリを読み込んで動作するため、テスト環境での DOM レンダリング時にエラーを起こす原因となります。
-テストファイル（`page.test.tsx`）では、必ず `vi.mock` を使ってダミー要素にモック化してください。
+**このリポジトリでの正準モック（`default` エクスポートをモックする）:**
 
 ```typescript
 vi.mock("@/components/MermaidDiagram", () => ({
   default: function DummyMermaidDiagram({ chart }: { chart: string }) {
-    return <pre data-testid="mermaid">{chart}</pre>;
+    return <pre data-testid="mermaid-diagram">{chart}</pre>;
   },
 }));
 ```
 
-## 【移行後/将来用】Mermaid v11 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
+`data-testid` は **`mermaid-diagram`** に統一すること。
 
-将来的な Next.js (App Router) 移行後は、`mermaid@^11.15.0` を使用し、図は共通コンポーネント `components/MermaidDiagram.tsx`（`'use client'`）で描画します。`mermaid.render()` が返す SVG 文字列を `dangerouslySetInnerHTML` で注入し、ページ固有スタイルは `components/MermaidDiagram.module.css` に置きます。
-
-レンダリングの正準ロジック（`mermaid.initialize` 設定・`applySvgFixups`・render ループ・中央寄せ CSS）は再利用スクリプト [`scripts/apply_render_pipeline.ts`](scripts/apply_render_pipeline.ts) に集約されている。新たに不具合を直す際は **手書きで再現せず、このスクリプトを正として適用**すること（冒頭「🚀 まず再利用スクリプトを使う」を参照）。
+## Mermaid 10.9.8 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
 
 ### 症状と根本原因の対応表
 
 | 症状 | 根本原因 | 対策 |
 | ------ | --------- | ------ |
-| 文字が低コントラストで読みづらい（特にエッジラベル・subgraph 見出し・シーケンス図 Note） | `theme:'base'`（非 darkMode）が `edgeLabelBackground=lighten(...)`・`noteBkgColor="#fff5ad"` 等の**明色背景**を算出。そこへ CSS で明色文字を当てると明×明で読めない | `theme:'dark'` + **ソリッド濃色の `themeVariables`** を明示（下記） |
-| ノード内の文字が下端で切れる | 採寸と実描画の数 px 差で SVG `viewBox` 下端が見切れる | 描画後に `viewBox` の高さを拡張（flowchart `+15` / sequence・state `+110`）+ `overflow:visible` |
-| ノード文字が**右端**で切れる（emoji を含む図のみ。emoji 無しの図は無傷＝切り分けの目印） | `<foreignObject>` は SVG 仕様上 **`overflow:hidden` がデフォルト**。emoji はラベル採寸時に「豆腐(tofu)」幅で測られ実描画で広がるため `foreignObject 幅 < 実テキスト幅` となりクリップ | CSS で `.mermaidTarget foreignObject { overflow: visible }`（ノード矩形は十分広く、はみ出した文字も枠内に収まる） |
-| 文字色を変えても**全く反映されない** | `mermaid.initialize()` はモジュール最上位で**一度だけ**実行されるため HMR では再実行されず古いテーマのまま。加えて `*.module.css` 変更後の `.next` キャッシュ汚染 | `.next` 削除 + dev サーバー完全再起動 + ブラウザのハードリロード（後述） |
-| 日本語ラベルの幅不足による軽微な切れ | Web フォント（Noto Sans JP）読込前に採寸 | `mermaid.render()` 直前に `await document.fonts.ready`（jsdom 等は型ガードで skip） |
+| 文字が低コントラストで読みづらい | `theme:'base'` が明色背景を算出 | `theme:'dark'` + ソリッド濃色の `themeVariables` を明示 |
+| ノード内の文字が下端で切れる | SVG `viewBox` 下端が見切れる | 描画後に `viewBox` の高さを拡張 + `overflow:visible` |
+| ノード文字が**右端**で切れる（emoji を含む図のみ） | `<foreignObject>` は `overflow:hidden` がデフォルト | CSS で `foreignObject { overflow: visible }` |
+| 文字色を変えても**全く反映されない** | `.next` キャッシュ汚染 | `.next` 削除 + dev サーバー完全再起動 + ハードリロード |
+| 日本語ラベルの幅不足による軽微な切れ | Web フォント読込前に採寸 | `mermaid.run()` 直前に `await document.fonts.ready` |
 
-### 正準の `mermaid.initialize` 設定（v11、`apply_render_pipeline.mjs` が踏襲）
+### 正準の `mermaid.initialize` 設定（Mermaid 10.9.8）
 
 ```ts
-mermaid.initialize({
-    startOnLoad: false,
-    theme: 'dark',          // 'base' は明色背景を算出して低コントラストになる。'dark' を使う
-    securityLevel: 'loose', // 'strict' は htmlLabels の採寸挙動を変え見切れの原因になる。
-                            // DIAGRAMS は静的・作者管理の定数のみ（外部入力なし）なので 'loose' で安全
-    themeVariables: {
-        primaryColor: '#1a73e8', primaryTextColor: '#e8f0fe', primaryBorderColor: '#1a73e8',
-        lineColor: '#5f7fb8', secondaryColor: '#0f9d58', tertiaryColor: '#0d1a2e',
-        background: '#060b14', mainBkg: '#0f2040', nodeBorder: '#1a73e8',
-        clusterBkg: '#0d1a2e', titleColor: '#e8f0fe', edgeLabelBackground: '#0d1a2e',
-        fontFamily: "'Noto Sans JP', sans-serif", fontSize: '13px',
-    },
-    flowchart: { curve: 'basis', padding: 20 },
-    sequence: { actorMargin: 60, mirrorActors: true },
+m.default.initialize({
+  startOnLoad: false,
+  theme: "dark",
+  themeVariables: {
+    background: "#161b27",
+    primaryColor: "#2d1f4e",
+    primaryTextColor: "#e8eaf0",
+    primaryBorderColor: "#4a2a8a",
+    lineColor: "#4a5680",
+    secondaryColor: "#0f2e2e",
+    tertiaryColor: "#1e2535",
+    edgeLabelBackground: "#161b27",
+    fontSize: "16px",  // SVG 採寸に使う明示値。採寸値と CSS 実描画値を一致させる（1rem のような相対値は禁止）
+  },
+  htmlLabels: true,
+  flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
+  sequence: { useMaxWidth: false },
+  gantt: { fontSize: 16 },
+  pie: { textPosition: 0.75 },
 });
 ```
 
-> `mainBkg` を**透明や半透明にしない**こと。ノード背景がソリッド濃色だからこそ白文字が読め、CSS の `!important` 強制上書きが不要になる。
-
 ### ⚠️ SVG 後処理は「文字列加工」ではなく「ライブ DOM 操作」で行う
 
-`mermaid.render()` の戻り値（SVG 文字列）を **`DOMParser('image/svg+xml')` + `XMLSerializer` で往復させてはならない**。`foreignObject` 内の htmlLabels（XHTML 名前空間の HTML）が壊れ、ラベルが `width=0`・テキスト空になって表示が潰れる。
+`mermaid.run()` 後、実 DOM の `querySelector('svg')` を直接操作する。`DOMParser('image/svg+xml')` + `XMLSerializer` で往復させると `foreignObject` 内の htmlLabels が壊れる。
 
-**`innerHTML` 注入後の実 DOM 要素を直接操作**する（`apply_render_pipeline.mjs` も同方式）。React では `ref` + `svgStr` 依存の `useEffect` で、注入済み `<svg>` に対して後処理を適用する。
+`applySvgFixups` の実装は `web-next/components/MermaidDiagram.tsx` を正本とする。主要ロジック:
 
-```ts
-const applySvgFixups = (svgEl: SVGSVGElement, chart: string): void => {
-    svgEl.removeAttribute('width');
-    svgEl.removeAttribute('height');
-    svgEl.style.height = 'auto';
-    svgEl.style.overflow = 'visible';   // viewBox から数px はみ出す描画の途切れ防止
-    svgEl.style.marginBottom = '10px';
+- SVG の `width`/`height` 属性を除去し、`style.width = "${w}px"`、`maxWidth = "100%"` をセット
+- `preserveNaturalScale=true` のとき `minWidth` を `${w}px` に固定
+- `viewBox` の高さを `+extraHeight` 拡張（sequence/state: +110、その他: +15）
+- `style.overflow = "visible"` で viewBox はみ出し描画の途切れを防止
+- 再処理時に前回の `minWidth` を事前クリア
 
-    const viewBox = svgEl.getAttribute('viewBox');
-    if (!viewBox) return;
-    const parts = viewBox.split(/\s+/).map(Number);
-    if (parts.length !== 4 || !parts.every((n) => Number.isFinite(n))) return;
-    const trimmed = chart.trim();
-    const isSequenceOrState =
-        trimmed.startsWith('sequenceDiagram') || trimmed.startsWith('stateDiagram');
-    const extraHeight = isSequenceOrState ? 110 : 15;
-    const [x, y, w, h] = parts as [number, number, number, number];
-    // ⚠️ SVG 幅の鉄則: viewBox 由来の自然 px 幅 + maxWidth:100% を使う。
-    //    width:'100%' は viewBox のみで intrinsic サイズを持たない SVG をコンテナ全幅へ
-    //    伸ばし、小さい flowchart LR 図を異常拡大させるため使わない。
-    //    width:${w}px + maxWidth:100% なら「親より広い図のみ縮小、小さい図は自然サイズ」となる。
-    svgEl.style.width = `${w}px`;
-    svgEl.style.maxWidth = '100%';
-    svgEl.setAttribute('viewBox', `${x} ${y} ${w} ${h + extraHeight}`);
-};
+### Mermaid の採寸値と CSS 文字サイズを一致させる
+
+```css
+/* globals.css の .mbox スコープ内に記述 */
+.mbox svg foreignObject {
+  overflow: visible;
+}
+.mbox svg foreignObject > div,
+.mbox svg .nodeLabel,
+.mbox svg .edgeLabel,
+.mbox svg text,
+.mbox svg tspan {
+  overflow: visible;
+  font-size: 16px !important;
+}
 ```
 
 ### 文字色は「ノードラベル限定」で当てる（明背景×明文字の再発防止）
 
-過去、全 SVG テキストへ `color/fill:#e6e9ee !important` を当てた結果、**エッジラベル・subgraph 見出し・シーケンス図 Note（明色背景）まで明色文字になり読めなくなる**「もぐら叩き」を繰り返した。`theme:'dark'` で背景色は適正化されるため、CSS で色を当てるのは**ノードラベル（`.node .nodeLabel`）に限定**する。エッジラベル / Note はテーマ任せ（暗背景＋明文字）にする。
-
-ノード文字色の方針（ユーザー選択：**暗ノード＝白 / 黄ノード＝黒** が最も読みやすい）:
+> **明色ノードの判定は `classDef` 名を第一手段とする。** 図側で `classDef yellowFill fill:#fbbc04,...` を定義し、CSS は `.yellowFill .nodeLabel` を対象にする。
 
 ```css
 /* foreignObject のクリップ解除（emoji 採寸ズレによる右端切れ対策） */
-.mermaidTarget :global(foreignObject) { overflow: visible; }
-.mermaidTarget :global(foreignObject > div),
-.mermaidTarget :global(.nodeLabel),
-.mermaidTarget :global(.edgeLabel) { overflow: visible; }
-/* ⚠️ white-space: nowrap は付けない。mermaid は長いラベルを foreignObject 幅で折返す前提で
-   box を採寸するため、nowrap を強制すると長い行が右端で切れる（emoji 対策は overflow: visible のみで足りる） */
+.mbox svg foreignObject { overflow: visible; }
+.mbox svg foreignObject > div,
+.mbox svg .nodeLabel,
+.mbox svg .edgeLabel { overflow: visible; }
 
-/* 既定でノードラベルを白に（<br/> 2 行目が暗く残る問題も解消するため子孫 * まで） */
-.mermaidTarget :global(.node .nodeLabel),
-.mermaidTarget :global(.node .nodeLabel *) { color: #ffffff !important; }
+/* 既定でノードラベルを白に */
+.mbox svg .node .nodeLabel,
+.mbox svg .node .nodeLabel * { color: #ffffff !important; }
 
-/* 黄色ノード(#fbbc04)のみラベルを黒に戻す（白×黄の同化回避） */
-.mermaidTarget :global(.node[style*="fbbc04" i] .nodeLabel),
-.mermaidTarget :global(.node[style*="fbbc04" i] .nodeLabel *),
-.mermaidTarget :global(.node:has([style*="fbbc04" i]) .nodeLabel),
-.mermaidTarget :global(.node:has([style*="fbbc04" i]) .nodeLabel *),
-.mermaidTarget :global(.node:has([fill="#fbbc04" i]) .nodeLabel),
-.mermaidTarget :global(.node:has([fill="#fbbc04" i]) .nodeLabel *) { color: #000000 !important; }
+/* 第一手段: classDef 名で明色ノードを判定する */
+.mbox svg .yellowFill .nodeLabel,
+.mbox svg .yellowFill .nodeLabel * { color: #000000 !important; }
+
+/* 互換フォールバック（カラーコード直接指定の既存図のみ） */
+.mbox svg .node[style*="fbbc04" i] .nodeLabel,
+.mbox svg .node[style*="fbbc04" i] .nodeLabel * { color: #000000 !important; }
 ```
 
-> `.edgeLabel *` に `fill:#fff` を当てない。エッジラベルの背景 `rect` が白く塗り潰される。色を当てるのは**ラベルテキストのみ・`color` のみ**に留める。
+> `.edgeLabel *` に `fill:#fff` を当てない。エッジラベルの背景 `rect` が白く塗り潰される。
 
-### 確認手順（重要・順序厳守）
+### 完了確認（順序厳守）
 
-1. `*.module.css` 変更時は `.claude/rules/css-cache-reset.md` に従う。`mermaid.initialize` がモジュール最上位＝ HMR で再実行されないため、**dev サーバーを完全再起動**する。
+1. CSS / `MermaidDiagram.tsx` 変更時は `.next` を削除し、dev サーバーを完全再起動する:
 
 ```bash
-kill $(lsof -ti:3000) 2>/dev/null; rm -rf .next; bun run dev
+cd web-next
+rm -rf .next
+bun run dev
 ```
 
-2. ブラウザは**ハードリロード（⌘+Shift+R）**。通常リロードでは古い SVG/CSS が残る。
-3. 目視確認はユーザー側で実施する（このリポジトリでは Playwright/ブラウザ自動操作は使わない方針）。
+2. ブラウザは**ハードリロード（⌘+Shift+R）**。
+3. `bun run typecheck` と `bun run test` が全通過することを確認する。
 
 ---
 
@@ -418,3 +367,13 @@ kill $(lsof -ti:3000) 2>/dev/null; rm -rf .next; bun run dev
 - 接続されていない複数のサブグラフ（ノード数が非対称なためアスペクト比が崩れる）
 
 判断基準：「ノード増減に関わらず、他の図と同じ高さに収まる保証がない場合」
+
+## 参考文献・ソース一覧
+
+- Mermaid バージョン定義（`mermaid@10.9.8`）: [`web-next/package.json`](../../../web-next/package.json)
+- React 共通コンポーネント（`applySvgFixups` の正本）: [`web-next/components/MermaidDiagram.tsx`](../../../web-next/components/MermaidDiagram.tsx)
+- Mermaid v10 公式ドキュメント: <https://mermaid.js.org/intro/>
+- Mermaid 設定リファレンス（`initialize` / `themeVariables`）: <https://mermaid.js.org/config/schema-docs/config.html>
+- Mermaid リリースノート一覧（v10 系の変更点確認用）: <https://github.com/mermaid-js/mermaid/releases>
+- React 公式リファレンス（`React.memo` / `useEffect`）: <https://react.dev/reference/react>
+- Next.js App Router 公式ドキュメント: <https://nextjs.org/docs/app>

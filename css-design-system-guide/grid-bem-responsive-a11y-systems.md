@@ -1743,7 +1743,7 @@ graph TD
 
 ---
 
-## 参考リソース
+## 参考文献・ソース一覧
 
 ### グリッド・レイアウトシステム
 
@@ -1757,8 +1757,8 @@ graph TD
 
 ### コンポーネント設計・BEM
 
-- **BEM 公式ドキュメント** — https://getbem.com/introduction/
-- **BEM Methodology（公式）** — https://getbem.com/
+- **BEM 公式ドキュメント** — https://bem.info/en/methodology/quick-start/
+- **BEM Methodology（公式）** — https://bem.info/en/methodology/
 - **Inverted Triangle CSS（Harry Roberts）** — https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528
 - **CSS Modules 公式** — https://github.com/css-modules/css-modules
 

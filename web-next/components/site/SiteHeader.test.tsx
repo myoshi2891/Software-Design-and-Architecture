@@ -5,7 +5,7 @@
 /**
  * 固定する契約:
  * - ルート `<nav id="common-header" aria-label="Main Navigation" class="ch-nav">`。
- * - `<a class="ch-brand" href="/general/comprehensive-guide">設計手法ガイド</a>`。
+ * - `<a class="ch-brand" href="/">設計手法ガイド</a>`（ルートがガイド索引画面）。
  * - `<ul class="ch-links">` 配下に navLinks 由来の `<li>`。
  * - dropdown 5 個（アーキテクチャ/設計原則/開発手法/プロダクト/CSS）。
  * - pathname=移行済みルートで該当 `<a>` に ch-active + aria-current="page"、
@@ -34,10 +34,10 @@ describe("SiteHeader root structure", () => {
     expect(nav?.className).toContain("ch-nav");
   });
 
-  it("renders .ch-brand anchor pointing to the general comprehensive guide", () => {
+  it("renders .ch-brand anchor pointing to the guide index at the root", () => {
     const { container } = render(<SiteHeader pathname="/" />);
     const brand = container.querySelector("a.ch-brand");
-    expect(brand?.getAttribute("href")).toBe("/general/comprehensive-guide");
+    expect(brand?.getAttribute("href")).toBe("/");
     expect(brand?.textContent).toBe("設計手法ガイド");
   });
 
