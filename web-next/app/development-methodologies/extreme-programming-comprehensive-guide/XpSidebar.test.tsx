@@ -55,6 +55,7 @@ describe("XpSidebar", () => {
         <div class="section-anchor" id="s1"></div>
         <div class="section-anchor" id="s2"></div>
         <div class="section-anchor" id="s5"></div>
+        <div class="section-anchor" id="s7"></div>
         <div id="s99"></div>
       </main>`
     );
@@ -133,5 +134,27 @@ describe("XpSidebar", () => {
     const activeAfter = container.querySelectorAll("nav.sidebar-nav a.active");
     expect(activeAfter).toHaveLength(1);
     expect(activeAfter[0]?.getAttribute("href")).toBe("#s5");
+  });
+
+  // items に無い .section-anchor（#s7）まで observe すると、それが交差した時点で
+  // activeId が nav に存在しない id になり、ハイライトが全消灯する。
+  it("items に無い section-anchor は observe せず、交差しても active が消えない", () => {
+    const { container } = render(<XpSidebar items={TEST_ITEMS} />);
+
+    const observedIds = observedElements.map((el) => el.id);
+    expect(observedIds).not.toContain("s7");
+    expect(observedIds).toEqual(["s1", "s2", "s5"]);
+
+    // items 内の section を交差させた後も、items 外の id に対応する
+    // active / aria-current が生まれないこと。
+    intersect("s5");
+
+    expect(container.querySelector('nav.sidebar-nav a[href="#s7"]')).toBeNull();
+    const active = container.querySelectorAll("nav.sidebar-nav a.active");
+    expect(active).toHaveLength(1);
+    expect(active[0]?.getAttribute("href")).toBe("#s5");
+    const current = container.querySelectorAll("nav.sidebar-nav a[aria-current]");
+    expect(current).toHaveLength(1);
+    expect(current[0]?.getAttribute("href")).toBe("#s5");
   });
 });

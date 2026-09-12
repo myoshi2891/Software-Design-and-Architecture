@@ -44,7 +44,15 @@ type Props = {
  */
 export default function XpSidebar({ items = NAV_ITEMS }: Props) {
   const progressRef = useScrollProgress();
-  const activeId = useScrollSpy(".section-anchor", items[0]?.id ?? "s1");
+  // items に無い id のアンカーまで observe すると、それが交差した瞬間に activeId が
+  // nav に存在しない id となりハイライトが全消灯する。items の id だけに絞る。
+  // 属性セレクタを使うのは、CSS 識別子としてのエスケープを不要にするため。
+  // items が空のときは従来どおり .section-anchor 全体を対象にする（空セレクタは不正）。
+  const sectionSelector =
+    items.length > 0
+      ? items.map((item) => `.section-anchor[id="${item.id}"]`).join(", ")
+      : ".section-anchor";
+  const activeId = useScrollSpy(sectionSelector, items[0]?.id ?? "s1");
 
   return (
     <>
