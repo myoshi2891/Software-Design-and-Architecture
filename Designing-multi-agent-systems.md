@@ -140,6 +140,8 @@ flowchart LR
 
 このコードには、上で挙げた**弱点への対策**も入れてあります。`stop_reason` が `end_turn` 以外（特に `max_tokens` による途中打ち切り）のときに例外を投げているのは、**壊れた出力を次段へ渡さない**ためです。パイプラインでは前段のエラーが後段へ伝播するため、段の境界が唯一の検査ポイントになります。
 
+なお `max_tokens` は思考（thinking）と最終応答の合計に掛かる上限です。`claude-opus-5` は `thinking` を省略すると適応的思考（adaptive thinking）が既定で有効になるため、1024 程度では思考の途中で打ち切られ、上記の `RuntimeError` 経路に落ちやすくなります。ここでは非ストリーミング呼び出しの既定値として 16000 を与えています。
+
 またレスポンス本文を取り出す `extract_text` は `content[0].text` と決め打ちしていません。思考（thinking）が有効なモデルではレスポンスの先頭が `thinking` ブロックになるため、`type` で絞り込む必要があります。
 
 ```python
@@ -177,7 +179,7 @@ STAGES: tuple[Stage, ...] = (
             "あなたは調査担当です。与えられたテーマについて、"
             "検討すべき論点を5個、箇条書きで列挙してください。結論は書かないでください。"
         ),
-        max_tokens=1024,
+        max_tokens=16000,
     ),
     Stage(
         name="分析",
@@ -185,7 +187,7 @@ STAGES: tuple[Stage, ...] = (
             "あなたは分析担当です。渡された論点リストを、"
             "影響度と実現難易度の2軸で評価し、優先順位を付けてください。"
         ),
-        max_tokens=1024,
+        max_tokens=16000,
     ),
     Stage(
         name="執筆",
@@ -193,7 +195,7 @@ STAGES: tuple[Stage, ...] = (
             "あなたは執筆担当です。渡された分析結果をもとに、"
             "意思決定者向けの要約を300字程度の日本語でまとめてください。"
         ),
-        max_tokens=1024,
+        max_tokens=16000,
     ),
 )
 
@@ -642,7 +644,7 @@ flowchart LR
 
 名前空間は用途で分かれている点に注意が必要です。**MCP固有の属性は`mcp.*`名前空間**に置かれ、リソース（`mcp.resource.uri`）・メソッド（`mcp.method.name`）・セッション（`mcp.session.id`）といったMCP特有の概念を表します。ただし`mcp.session.id`が指す**プロトコルレベルのセッションは、MCP仕様のリビジョン`2026-07-28`で`Mcp-Session-Id`ヘッダーごとStreamable HTTPから削除されました**（同リビジョンのサーバは`Mcp-Session-Id`を受け取っても無視し、セッションIDを発行も反響もしません）。したがってこの属性が意味を持つのは`2025-11-25`以前のリビジョン、またはそれらと相互運用するための後方互換経路に限られます。現行リビジョンを前提とする計装では、セッションIDに依存せず、アプリケーションが明示的に持つ状態ハンドル（会話IDやタスクIDなど）と、リクエスト単位の相関（トレースID／スパンID、JSON-RPCの`id`）で紐付けてください。接続先サーバの識別には、MCP固有の属性ではなく汎用のサーバ属性（`server.address`、`server.port`）を使います。一方、**ツールの引数や実行結果のようにMCPに限定されない共通概念は`gen_ai.*`のまま**（`gen_ai.tool.name`、`gen_ai.tool.call.arguments`、`gen_ai.tool.call.result`など）です。MCP経由のツール呼び出しを計装する際は、1つのスパンに両名前空間の属性が同居することになります。
 
-ただし`gen_ai.tool.call.arguments`と`gen_ai.tool.call.result`は、ツールへ渡した引数と実行結果の中身そのものであり、認証情報・個人情報・社外秘データを含み得ます。このため規約上これらは**既定では記録されないOpt-In属性**と位置づけられており、計装側で明示的に有効化した場合にのみ出力されます（OpenTelemetryのSDK/計装ライブラリでは`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`相当の設定で制御します）。有効化する場合は、機微な値のマスキング（トークンやメールアドレスの伏字化）、トレースバックエンド側でのアクセス制御、保持期間の短縮といった保護策を併せて適用してください。これらを用意できないうちは無効のままにしておくのが安全です。
+ただし`gen_ai.tool.call.arguments`と`gen_ai.tool.call.result`は、ツールへ渡した引数と実行結果の中身そのものであり、認証情報・個人情報・社外秘データを含み得ます。このため規約上これらは**既定では記録されないOpt-In属性**と位置づけられており、計装側が提供する明示的なOpt-In設定で有効化した場合にのみ出力されます。これはOpenTelemetry SDK全体に共通する単一の設定ではなく、言語ごとの計装実装が用意する点に注意してください。例えばOpenTelemetry Pythonでは`opentelemetry-util-genai`と対応する計装が環境変数`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`を提供しており、既定値の`NO_CONTENT`（内容を記録しない）に対して`SPAN_ONLY` / `EVENT_ONLY` / `SPAN_AND_EVENT`を明示的に指定したときだけ内容が出力されます。有効化する場合は、機微な値のマスキング（トークンやメールアドレスの伏字化）、トレースバックエンド側でのアクセス制御、保持期間の短縮といった保護策を併せて適用してください。これらを用意できないうちは無効のままにしておくのが安全です。
 
 ```mermaid
 flowchart LR
@@ -890,6 +892,7 @@ flowchart TB
 
 **観測基盤（一次情報）**
 - Inside the LLM Call: GenAI Observability with OpenTelemetry（OpenTelemetry公式ブログ）— https://opentelemetry.io/blog/2026/genai-observability/
+- OpenTelemetry Python Contrib: GenAI Util（`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT` の値と既定値の出典）— https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation-genai/util.html
 
 **研究（一次情報）**
 - Context Rot: How Increasing Input Tokens Impacts LLM Performance（Chroma Research）— https://www.trychroma.com/research/context-rot

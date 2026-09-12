@@ -251,7 +251,7 @@ flowchart LR
     SERVER2 --> DATA2[(社内システム)]
 ```
 
-MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2026年3月時点で月間およそ9,700万回でしたが、2026年7月28日版の仕様公開時点では Tier 1 SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています（出典17）。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
+MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2025年12月9日時点で月間およそ9,700万回（出典18）でしたが、2026年7月28日版の仕様公開時点では Tier 1 SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています（出典17）。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
 
 #### 最小構成のMCPサーバーとエージェントループ（実行可能な例）
 
@@ -797,3 +797,5 @@ AIエージェント開発は、単に「賢いモデルを呼び出す」だけ
     https://techsy.io/en/blog/langgraph-vs-crewai-vs-openai-agents-sdk
 17. Model Context Protocol Blog, "The 2026-07-28 Specification", 2026年7月28日.
     https://blog.modelcontextprotocol.io/posts/2026-07-28/
+18. Model Context Protocol Blog, "MCP joins the Agentic AI Foundation", 2025年12月9日（月間約9,700万ダウンロードの出典）.
+    https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/
