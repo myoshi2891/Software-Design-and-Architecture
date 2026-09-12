@@ -533,11 +533,12 @@ def call_llm(question: str) -&gt; str:
         )
 
     # 拡張思考を有効にしたモデルでは thinking ブロックが先頭に来ることがある。
-    # content[0] を text と決め打ちせず、type で絞り込む。
-    for block in resp.content:
-        if block.type == "text":
-            return block.text
-    raise ValueError("応答に text ブロックが含まれていません")
+    # content[0] を text と決め打ちせず、type で絞り込む。text ブロックは複数に
+    # 分割されて返ることがあるため、最初の1つで return せず全て連結する。
+    parts = [block.text for block in resp.content if block.type == "text"]
+    if not parts:
+        raise ValueError("応答に text ブロックが含まれていません")
+    return "\n".join(parts)
 
 @app.post("/ask", response_model=AskResponse)
 def ask(req: AskRequest) -&gt; AskResponse:
