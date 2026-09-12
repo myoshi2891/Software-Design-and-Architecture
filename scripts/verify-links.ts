@@ -10,6 +10,14 @@ interface IgnorePattern {
 const DEFAULT_RETRY_COUNT = 2;
 const DEFAULT_RETRY_DELAY_SEC = 10;
 
+/**
+ * 再試行設定の上限。設定ファイルは人手で編集されるため、桁を誤った巨大値が
+ * そのまま採用されるとリンクチェックが事実上停止する（1e21 回の再試行、
+ * 数万秒の待機）。上限を超えた値は「設定ミス」とみなし既定値へ倒す。
+ */
+export const MAX_RETRY_COUNT = 10;
+export const MAX_RETRY_DELAY_SEC = 300;
+
 interface RetryConfig {
   /** 429 (Too Many Requests) を一時的エラーとして再試行するか */
   retryOn429: boolean;
@@ -28,7 +36,7 @@ interface RetryConfig {
  */
 export function parseDurationSeconds(value: unknown, fallbackSec: number): number {
   if (typeof value === 'number') {
-    return Number.isFinite(value) && value > 0 ? value : fallbackSec;
+    return isUsableDelaySec(value) ? value : fallbackSec;
   }
   if (typeof value !== 'string') return fallbackSec;
 
@@ -39,9 +47,22 @@ export function parseDurationSeconds(value: unknown, fallbackSec: number): numbe
   if (!Number.isFinite(amount) || amount <= 0) return fallbackSec;
 
   const unit = match[2] ?? 's';
-  if (unit === 'ms') return amount / 1000;
-  if (unit === 'm') return amount * 60;
-  return amount;
+  const seconds = unit === 'ms' ? amount / 1000 : unit === 'm' ? amount * 60 : amount;
+  return isUsableDelaySec(seconds) ? seconds : fallbackSec;
+}
+
+/**
+ * 待機秒数として採用できる値かを判定する。
+ *
+ * 小数秒 ("500ms" 等) を許すため整数は要求しないが、上限 (MAX_RETRY_DELAY_SEC)
+ * で頭を押さえる。上限は安全整数の範囲に十分収まるため、この判定を通った値は
+ * Number.isSafeInteger 相当の安全性も同時に満たす。
+ *
+ * @param seconds - 判定対象の秒数
+ * @returns 採用可能なら true
+ */
+function isUsableDelaySec(seconds: number): boolean {
+  return Number.isFinite(seconds) && seconds > 0 && seconds <= MAX_RETRY_DELAY_SEC;
 }
 
 /**
@@ -57,7 +78,7 @@ export function parseDurationSeconds(value: unknown, fallbackSec: number): numbe
  */
 export function parseRetryCount(value: unknown, fallback: number): number {
   if (typeof value === 'number') {
-    return Number.isInteger(value) && value >= 0 ? value : fallback;
+    return isUsableRetryCount(value) ? value : fallback;
   }
   if (typeof value !== 'string') return fallback;
 
@@ -65,7 +86,21 @@ export function parseRetryCount(value: unknown, fallback: number): number {
   if (!/^\d+$/.test(value.trim())) return fallback;
 
   const parsed = Number(value.trim());
-  return Number.isInteger(parsed) ? parsed : fallback;
+  return isUsableRetryCount(parsed) ? parsed : fallback;
+}
+
+/**
+ * 再試行回数として採用できる値かを判定する。
+ *
+ * Number.isInteger は 1e21 のような桁外れの値も整数と判定するため、
+ * Number.isSafeInteger で精度が保証される範囲に限定したうえで、
+ * 実運用で意味のある上限 (MAX_RETRY_COUNT) を課す。
+ *
+ * @param count - 判定対象の回数
+ * @returns 採用可能なら true
+ */
+function isUsableRetryCount(count: number): boolean {
+  return Number.isSafeInteger(count) && count >= 0 && count <= MAX_RETRY_COUNT;
 }
 
 const configPath = path.resolve(import.meta.dirname || '', '../.markdown-link-check.json');

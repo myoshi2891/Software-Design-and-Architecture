@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import {
   buildCurlArgs,
   isRetryableStatus,
+  MAX_RETRY_COUNT,
+  MAX_RETRY_DELAY_SEC,
   parseDurationSeconds,
   parseRetryCount,
   retryDelaySeconds,
@@ -55,6 +57,16 @@ describe('parseDurationSeconds', () => {
     expect(parseDurationSeconds('abc', 5)).toBe(5);
     expect(parseDurationSeconds(-1, 5)).toBe(5);
   });
+
+  // 設定ファイルの巨大値がそのまま待機秒数になると、リンクチェックが
+  // 事実上停止する。安全整数でない値・上限超過値はフォールバックへ倒す。
+  test('安全整数の範囲外・上限超過の待機秒数はフォールバックを返す', () => {
+    expect(parseDurationSeconds(MAX_RETRY_DELAY_SEC, 5)).toBe(MAX_RETRY_DELAY_SEC);
+    expect(parseDurationSeconds(MAX_RETRY_DELAY_SEC + 1, 5)).toBe(5);
+    expect(parseDurationSeconds('1m', 5)).toBe(60);
+    expect(parseDurationSeconds(1e21, 5)).toBe(5);
+    expect(parseDurationSeconds('99999s', 5)).toBe(5);
+  });
 });
 
 describe('parseRetryCount', () => {
@@ -83,6 +95,16 @@ describe('parseRetryCount', () => {
     expect(parseRetryCount(undefined, 2)).toBe(2);
     expect(parseRetryCount('abc', 2)).toBe(2);
     expect(parseRetryCount(null, 2)).toBe(2);
+  });
+
+  // Number.isInteger は 1e21 を整数と判定するため、それだけでは
+  // 「実質無限ループする再試行回数」を通してしまう。安全整数 + 上限で弾く。
+  test('安全整数の範囲外・上限超過の回数はフォールバックを返す', () => {
+    expect(parseRetryCount(MAX_RETRY_COUNT, 2)).toBe(MAX_RETRY_COUNT);
+    expect(parseRetryCount(MAX_RETRY_COUNT + 1, 2)).toBe(2);
+    expect(parseRetryCount(String(MAX_RETRY_COUNT + 1), 2)).toBe(2);
+    expect(parseRetryCount(1e21, 2)).toBe(2);
+    expect(parseRetryCount(Number.MAX_SAFE_INTEGER + 2, 2)).toBe(2);
   });
 });
 
