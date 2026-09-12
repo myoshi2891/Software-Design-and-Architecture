@@ -28,12 +28,15 @@ const THEME_VARIABLES = {
  * Mermaid ソースから制御行（%%{init:...}%%、--- フロントマター、%% コメント、空行）を
  * 取り除き、最初の図種宣言行を返す。
  */
-function detectDiagramType(chart: string): string {
+export function detectDiagramType(chart: string): string {
   const lines = chart.split("\n");
   let i = 0;
+  // 先頭の空行・%% コメントを先に読み飛ばす。lines[0] 固定で判定すると、空行が
+  // 1 行入っただけでフロントマター判定が外れ "---" を図種として返してしまう。
+  while (i < lines.length && (lines[i].trim() === "" || lines[i].trim().startsWith("%%"))) i++;
   // --- で始まる YAML フロントマターをスキップ
-  if (lines[0]?.trim() === "---") {
-    i = 1;
+  if (lines[i]?.trim() === "---") {
+    i++;
     while (i < lines.length && lines[i].trim() !== "---") i++;
     i++;
   }
@@ -130,6 +133,16 @@ const MermaidDiagram = memo(function MermaidDiagram({
         ref.current.textContent = chart;
         ref.current.removeAttribute("data-processed");
         try {
+          // Web フォント読込前に採寸すると日本語ラベルの幅が不足して末尾が切れる
+          // （スキル fix-mermaid §可読性・文字切れ対策）。jsdom など FontFaceSet 非対応の
+          // 環境では undefined になるため optional chaining で待機を省略する。
+          try {
+            await document.fonts?.ready;
+          } catch (fontErr: unknown) {
+            // フォント状態を取得できなくても描画自体は継続する（握りつぶさず記録のみ）
+            console.warn("[MermaidDiagram] document.fonts.ready failed:", fontErr);
+          }
+          if (!active || !ref.current) return;
           await m.default.run({ nodes: [ref.current] });
           // SVG 後処理：run() が innerHTML を SVG に置き換えた直後に実施
           if (active && ref.current) {
