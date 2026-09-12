@@ -202,7 +202,7 @@ def test_プロバイダ障害なら503を返す(client: TestClient, monkeypatch
 def test_max_tokensで打ち切られた応答は200で返さない(client: TestClient) -> None:
     """部分回答を成功として返していないかを守る回帰テスト。"""
     # Arrange: HTTP 200 だが stop_reason が max_tokens の応答
-    client.app.state.llm.messages.create.return_value = SimpleNamespace(
+    main.app.state.llm.messages.create.return_value = SimpleNamespace(
         stop_reason="max_tokens",
         content=[SimpleNamespace(type="text", text="RAGは検索拡")],
     )
