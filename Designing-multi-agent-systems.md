@@ -738,7 +738,7 @@ flowchart TB
 
 ## 第9部　実装フレームワークの選択（2026年版）
 
-2026年時点で、マルチエージェントシステムの実装に使われる主要フレームワークは大きく整理が進みました。Microsoftは研究指向のAutoGenとエンタープライズ指向のSemantic Kernelを統合し、「Microsoft Agent Framework」として2026年4月3日にGA（一般提供）を迎えています。公式ドキュメントはAgent Frameworkを両者の「直接の後継（direct successor）」かつ「次世代」と位置づけており、AutoGenの単純なエージェント抽象とSemantic Kernelのエンタープライズ機能（セッションベースの状態管理・型安全・ミドルウェア・テレメトリ）を引き継いだ上で、グラフベースのワークフローを追加した設計です。AutoGen単体のリポジトリは新機能の追加を終えてコミュニティ管理へ移り、新規開発は公式の移行ガイドでAgent Frameworkへ誘導されています。
+2026年時点で、マルチエージェントシステムの実装に使われる主要フレームワークは大きく整理が進みました。Microsoftは研究指向のAutoGenとエンタープライズ指向のSemantic Kernelを統合し、「Microsoft Agent Framework」として2026年4月2日にGA（一般提供）を迎えています。公式ドキュメントはAgent Frameworkを両者の「直接の後継（direct successor）」かつ「次世代」と位置づけており、AutoGenの単純なエージェント抽象とSemantic Kernelのエンタープライズ機能（セッションベースの状態管理・型安全・ミドルウェア・テレメトリ）を引き継いだ上で、グラフベースのワークフローを追加した設計です。AutoGen単体のリポジトリは新機能の追加を終えてコミュニティ管理へ移り、新規開発は公式の移行ガイドでAgent Frameworkへ誘導されています。
 
 ### 9.1 フレームワーク比較表
 
@@ -801,7 +801,7 @@ flowchart TB
 ## 第11部　2026年9月時点の最新動向
 
 - **プロトコル層の再編**：AnthropicはMCPを、GoogleはA2Aを、それぞれLinux Foundation傘下のAgentic AI Foundation（AAIF）へ移管し、両プロトコルは「ツール接続層（MCP）」と「エージェント間対話層（A2A）」として補完関係にあることが業界的に定着しました。IBM発のACPはA2Aへ統合済みであり、旧ACPベースの資料はA2Aへの移行情報として読み替える必要があります。
-- **フレームワークの整理**：Microsoft Agent Framework 1.0が2026年4月3日にGAし、AutoGenとSemantic Kernelが統合されました。AutoGenの資産はAgent Frameworkへ引き継がれ（公式には「直接の後継」）、AutoGen単体のリポジトリは新機能追加を終えてコミュニティ管理へ移行しています。2026年時点で実務上検討すべきフレームワークはLangGraph・CrewAI・OpenAI Agents SDK・Google ADK・Microsoft Agent Framework・Claude Agent SDKの6つに整理されています。
+- **フレームワークの整理**：Microsoft Agent Framework 1.0が2026年4月2日にGAし、AutoGenとSemantic Kernelが統合されました。AutoGenの資産はAgent Frameworkへ引き継がれ（公式には「直接の後継」）、AutoGen単体のリポジトリは新機能追加を終えてコミュニティ管理へ移行しています。2026年時点で実務上検討すべきフレームワークはLangGraph・CrewAI・OpenAI Agents SDK・Google ADK・Microsoft Agent Framework・Claude Agent SDKの6つに整理されています。
 - **セキュリティの重心が「エージェントの自律性」へ移動**：OWASP Top 10 for LLM Applications 2026で「過剰な自律性」が3位に上昇し、Agentic Applications向けのTop 10（ASI01〜ASI10）が新設されました。Simon Willison氏のLethal Trifectaは、OWASPの分類と対応づけられる形で業界共通の脅威モデルとして定着しています。
 - **観測基盤の標準化が進行中**：OpenTelemetryのGenAI Semantic Conventionsは2026年6月に専用リポジトリへ切り出され独立してバージョン管理されるようになりましたが、2026年8月時点でも「Development」ステータスであり、まだ確定した仕様ではありません。
 - **単一 vs マルチエージェントの論争は「使い分け」へ収束**：2025年6月に同時期に公開されたAnthropicとCognitionの対照的な記事をきっかけに始まった論争は、2026年4月のCognitionのフォローアップ記事により、「読み取り中心の探索タスクでは並列マルチエージェントが有効、書き込み・実行を伴うタスクではSingle-Writer原則を守る」という実務的な使い分けへ収束しつつあります。
