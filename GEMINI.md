@@ -140,8 +140,9 @@ flowchart TD
     （URL `/development-methodologies/feature-driven-development-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`FddSidebar.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
-  `components/site/nav-links.ts`（zod 不使用の判別共用体型、未移行ページへのリンクも意図的に含む。
-  現状 404 は許容）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
+  索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
+  「準備中」の非リンク表示とする）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
   スタイルは `globals.css` の `ch-*` クラス。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は
