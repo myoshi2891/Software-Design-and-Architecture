@@ -19,7 +19,7 @@
 
 ```python
 # app/main.py
-# 依存: pip install "fastapi[standard]" "pydantic>=2" "anthropic>=1.4,<2"
+# 依存: pip install "fastapi[standard]" "pydantic>=2" "anthropic==1.4.0"
 #       SDK のバージョンは固定する。メジャー更新で client の引数や戻り値の型が変わるため。
 # 起動: uvicorn app.main:app --reload
 #       ANTHROPIC_API_KEY はコマンドラインに書かず、シークレット管理やCIの環境変数から渡す。
@@ -133,7 +133,7 @@ def ask(req: AskRequest) -> AskResponse:
 
 ```python
 # tests/test_main.py
-# 依存: pip install pytest "anthropic>=1.4,<2" "httpx2>=2"
+# 依存: pip install pytest "anthropic==1.4.0" "httpx2>=2"
 #       anthropic 1.x は HTTP 層に httpx のフォークである httpx2 を使う。
 #       SDK 例外へ渡す Request/Response も httpx2 の型でそろえる。
 # 実行: pytest tests/test_main.py
