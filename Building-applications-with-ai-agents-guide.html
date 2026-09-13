@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIエージェントによるアプリケーション構築 ― 初学者のためのステップバイステップガイド</title>
+<meta name="description" content="Building Applications with AI Agents（O'Reilly）を土台に、Anthropic・OpenAI・Google・Simon Willison氏らの一次情報を参照しながら、AIエージェント開発を初学者向けに解説するステップバイステップガイド。">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css"
+      integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/styles/github.min.css"
+      integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
+
+<style>
+/* ==========================================================================
+   Building Applications with AI Agents — beginner guide
+   Design system: paper / ink / indigo / gold / forest / plum
+   ========================================================================== */
+
+:root{
+  --paper:#faf6ec;
+  --paper-card:#fffefa;
+  --paper-card-2:#f1ead6;
+  --ink:#2b2620;
+  --ink-soft:#6b6255;
+  --line:#e6ddc7;
+  --indigo:#4b47a3;
+  --indigo-dark:#312d6e;
+  --indigo-soft:rgba(75,71,163,.08);
+  --gold:#b8842c;
+  --gold-soft:#f7ecd2;
+  --forest:#2f6b4f;
+  --forest-soft:#dcefe4;
+  --plum:#7c3d68;
+  --plum-soft:#f2e2ec;
+  --sidebar-w:308px;
+  --radius:14px;
+  --shadow:0 2px 16px rgba(43,38,32,.07);
+  --font-display:'Source Serif 4','Noto Serif JP',serif;
+  --font-body:'Noto Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.95;
+  -webkit-text-size-adjust:100%;
+}
+img,svg{max-width:100%;}
+a{color:var(--indigo); text-decoration-thickness:1px; text-underline-offset:2px;}
+a:hover{color:var(--indigo-dark);}
+
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  color:var(--ink);
+  line-height:1.45;
+  font-weight:700;
+  margin:0 0 .6em;
+}
+h2{font-size:1.7rem;}
+h3{font-size:1.28rem; color:var(--indigo-dark);}
+h4{font-size:1.08rem; color:var(--plum);}
+p{margin:0 0 1.1em;}
+ul,ol{margin:0 0 1.1em; padding-left:1.4em;}
+li{margin:0 0 .5em;}
+strong{color:var(--indigo-dark);}
+blockquote{
+  margin:1.4em 0;
+  padding:1em 1.3em;
+  background:var(--gold-soft);
+  border-left:5px solid var(--gold);
+  border-radius:6px;
+  font-family:var(--font-display);
+  font-style:italic;
+  color:#4a3a12;
+}
+
+/* ---- full-width main content policy (no narrow max-width) ---- */
+.layout{display:block;}
+.prose,.section,.hero,.footer,.main{max-width:none;}
+.prose,.prose p,.prose li{overflow-wrap:break-word;}
+
+/* ---- skip link ---- */
+.skip-link{
+  position:absolute; left:-999px; top:0; z-index:200;
+  background:var(--indigo); color:#fff; padding:.7em 1.2em; border-radius:0 0 8px 0;
+}
+.skip-link:focus{left:0;}
+
+/* ---- sidebar ---- */
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w);
+  overflow-y:auto; background:var(--paper-card);
+  border-right:1px solid var(--line);
+  padding:26px 18px 60px;
+  z-index:60;
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-display); font-weight:700; font-size:1.05rem;
+  color:var(--indigo-dark); margin-bottom:4px; padding:0 6px;
+}
+.brand i{font-size:1.4rem; color:var(--indigo);}
+.brand-sub{
+  font-size:1rem; color:var(--ink-soft); padding:0 6px 18px;
+  border-bottom:1px solid var(--line); margin-bottom:16px;
+}
+.nav-group-label{
+  font-size:1rem; letter-spacing:.06em; color:var(--ink-soft);
+  text-transform:uppercase; margin:18px 6px 8px; font-weight:700;
+}
+.nav-list{list-style:none; margin:0; padding:0;}
+.nav-a{
+  display:flex; align-items:center; gap:10px;
+  padding:.5em .6em; border-radius:9px; color:var(--ink);
+  text-decoration:none; font-size:1rem; line-height:1.4;
+}
+.nav-a i{font-size:1.05rem; color:var(--indigo); width:1.2em; text-align:center; flex-shrink:0;}
+.nav-a:hover{background:var(--indigo-soft); color:var(--indigo-dark);}
+.nav-a.active{background:var(--indigo); color:#fff;}
+.nav-a.active i{color:#fff;}
+.n-num{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.6em; height:1.6em; border-radius:999px; background:var(--paper-card-2);
+  color:var(--indigo-dark); font-size:1rem; font-weight:700; flex-shrink:0;
+}
+.nav-a.active .n-num{background:rgba(255,255,255,.28); color:#fff;}
+
+.mobile-bar{display:none;}
+.mobile-bar button{font-size:1rem;}
+.mobile-bar .brand{font-size:1rem;}
+
+/* ---- main ---- */
+.main{margin-left:var(--sidebar-w); max-width:none; padding:0 0 80px;}
+
+.hero{
+  padding:56px 56px 40px;
+  background:
+    radial-gradient(1100px 420px at 85% -10%, var(--indigo-soft), transparent 60%),
+    var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.hero-kicker{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:1rem; font-weight:700; letter-spacing:.03em;
+  color:var(--indigo-dark); background:var(--indigo-soft);
+  padding:.35em 1em; border-radius:999px; margin-bottom:18px;
+}
+.hero h1{font-size:2.5rem; max-width:18ch;}
+.hero-lead{font-size:1.12rem; color:var(--ink-soft); max-width:none;}
+.hero-meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;}
+.chip{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--paper-card); border:1px solid var(--line);
+  padding:.5em 1em; border-radius:999px; font-size:1rem; color:var(--ink-soft);
+  box-shadow:var(--shadow);
+}
+.chip i{color:var(--indigo);}
+
+.notice{
+  margin:26px 56px 0;
+  background:var(--gold-soft); border:1px solid #e6cd93;
+  border-radius:var(--radius); padding:16px 20px;
+  display:flex; gap:12px; align-items:flex-start;
+  font-size:1rem; color:#4a3a12;
+}
+.notice i{font-size:1.3rem; color:var(--gold); flex-shrink:0; margin-top:.1em;}
+
+.section{
+  padding:44px 56px; border-bottom:1px solid var(--line);
+  scroll-margin-top:24px;
+}
+.section:last-of-type{border-bottom:none;}
+.section-kicker{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:1rem; font-weight:700; color:var(--plum);
+  text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px;
+}
+.section-kicker i{font-size:1.1rem;}
+.section h2{display:flex; align-items:center; gap:12px;}
+.section h2 i{color:var(--indigo); font-size:1.5rem;}
+
+/* ---- source callout ---- */
+.source-note{
+  margin:26px 0 4px; padding:14px 18px;
+  background:var(--forest-soft); border:1px solid #bfe0cd;
+  border-radius:10px; font-size:1rem; color:#123722;
+  display:flex; gap:10px; align-items:flex-start;
+}
+.source-note i{color:var(--forest); font-size:1.15rem; flex-shrink:0; margin-top:.15em;}
+.source-note b{color:#123722;}
+
+/* ---- kv table (book info etc.) : zebra-stripe free ---- */
+.kv-table{width:100%; border-collapse:collapse; margin:20px 0 8px; font-size:1rem; min-width:0;}
+.kv-table th,.kv-table td{
+  text-align:left; padding:.7em 1em; border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere;
+}
+.kv-table th{
+  background:transparent; color:var(--indigo-dark); font-weight:700;
+  width:9em; border-right:1px solid var(--line);
+}
+.kv-table tbody tr:nth-child(even){background:transparent;}
+.kv-table tr:hover{background:var(--indigo-soft);}
+
+/* ---- general data tables ---- */
+.table-wrap{overflow-x:auto; margin:20px 0;}
+table{width:100%; border-collapse:collapse; font-size:1rem; min-width:480px;}
+thead th{
+  background:var(--indigo-dark); color:#fff; text-align:left;
+  padding:.75em 1em; font-weight:700;
+}
+tbody td{padding:.7em 1em; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
+tbody tr:nth-child(even){background:rgba(75,71,163,.045);}
+tbody tr:hover{background:var(--indigo-soft);}
+
+/* ---- mermaid ---- */
+.mermaid-wrap{
+  width:100%; overflow-x:auto; margin:30px 0 18px;
+  padding:22px 18px; background:var(--paper-card);
+  border:1px solid var(--line); border-radius:var(--radius);
+  display:flex; justify-content:safe center;
+}
+.mermaid{line-height:1;}
+.mermaid-wrap svg{flex-shrink:0; overflow:visible; display:block;}
+.mermaid-loading{
+  font-size:1rem; color:var(--ink-soft); padding:30px; text-align:center; width:100%;
+}
+.diagram-caption{
+  text-align:center; font-size:1rem; color:var(--ink-soft);
+  margin:-8px 0 26px; font-style:italic;
+}
+.mermaidTooltip{font-size:1rem!important;}
+
+/* ---- code blocks ---- */
+.code-block{
+  margin:22px 0; border-radius:var(--radius); overflow:hidden;
+  border:1px solid var(--line); box-shadow:var(--shadow);
+}
+.code-block-head{
+  display:flex; align-items:center; gap:8px;
+  background:var(--indigo-dark); color:#fff;
+  padding:.55em 1.1em; font-size:1rem; font-family:'SFMono-Regular',Consolas,monospace;
+}
+.code-block-head i{color:#c9c4ef;}
+.code-block pre{
+  margin:0; overflow-x:auto; background:#f6f8fa; padding:18px 20px;
+}
+.code-block pre code.hljs{
+  padding:0; font-size:1rem; line-height:1.7; background:transparent;
+  font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+}
+
+/* ---- glossary / definition table ---- */
+.glossary-table td:first-child{
+  font-weight:700; color:var(--plum); white-space:nowrap; width:13em;
+}
+
+/* ---- reference cards ---- */
+.ref-list{list-style:none; margin:0; padding:0; display:grid; gap:12px;}
+.ref-card{
+  display:flex; gap:14px; align-items:flex-start;
+  background:var(--paper-card); border:1px solid var(--line);
+  border-radius:12px; padding:14px 18px; box-shadow:var(--shadow);
+}
+.ref-num{
+  flex-shrink:0; width:2em; height:2em; border-radius:999px;
+  background:var(--indigo-soft); color:var(--indigo-dark);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:1rem;
+}
+.ref-body{min-width:0;}
+.ref-title{font-weight:700; color:var(--ink); font-size:1.02rem;}
+.ref-meta{color:var(--ink-soft); font-size:1rem; margin:.15em 0;}
+.ref-url{
+  font-size:1rem; word-break:break-all; color:var(--indigo);
+}
+
+/* ---- checklist ---- */
+.checklist{list-style:none; margin:22px 0; padding:0; display:grid; gap:10px;}
+.checklist li{
+  display:flex; align-items:flex-start; gap:12px;
+  background:var(--paper-card); border:1px solid var(--line);
+  border-radius:10px; padding:12px 16px; margin:0;
+}
+.checklist li.done{background:var(--forest-soft); border-color:#bfe0cd;}
+.checklist label{display:flex; align-items:flex-start; gap:12px; cursor:pointer; width:100%;}
+.checklist input[type="checkbox"]{
+  appearance:none; -webkit-appearance:none;
+  width:1.35em; height:1.35em; border:2px solid var(--indigo); border-radius:6px;
+  flex-shrink:0; margin-top:.15em; position:relative; cursor:pointer;
+  font-size:1rem;
+}
+.checklist input[type="checkbox"]:checked{background:var(--forest); border-color:var(--forest);}
+.checklist input[type="checkbox"]:checked::after{
+  content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:1em; font-weight:700;
+}
+.checklist-text{font-size:1.02rem;}
+.checklist-counter{
+  display:inline-flex; align-items:center; gap:8px; margin:6px 0 4px;
+  font-size:1.02rem; color:var(--indigo-dark); font-weight:700;
+}
+.checklist-counter i{color:var(--forest);}
+
+/* ---- roadmap phase table reuse ---- */
+.phase-badge{
+  display:inline-block; padding:.15em .7em; border-radius:999px;
+  font-size:1rem; font-weight:700;
+}
+.phase-basic{background:var(--gold-soft); color:#7a5a10;}
+.phase-mid{background:var(--indigo-soft); color:var(--indigo-dark);}
+.phase-adv{background:var(--forest-soft); color:#134028;}
+
+/* ---- footer ---- */
+.footer{
+  padding:40px 56px 60px; color:var(--ink-soft); font-size:1rem;
+  border-top:1px solid var(--line);
+}
+.footer a{color:var(--indigo);}
+
+/* ---- responsive ---- */
+@media (max-width:980px){
+  .sidebar{
+    transform:translateX(-100%); transition:transform .25s ease;
+    box-shadow:0 0 30px rgba(0,0,0,.2);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .hero,.section,.notice,.footer{padding-left:24px; padding-right:24px;}
+  .notice{margin-left:24px; margin-right:24px;}
+  .hero h1{font-size:1.9rem; max-width:none;}
+  .mobile-bar{
+    display:flex; align-items:center; gap:12px;
+    position:sticky; top:0; z-index:55;
+    background:var(--paper-card); border-bottom:1px solid var(--line);
+    padding:12px 18px;
+  }
+  .mobile-bar button{
+    display:flex; align-items:center; gap:8px;
+    background:var(--indigo); color:#fff; border:none; border-radius:9px;
+    padding:.6em 1em; font-size:1rem; font-weight:700; cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .mobile-bar .brand{margin:0; padding:0; border:none; font-size:1rem;}
+  .scrim{
+    display:none; position:fixed; inset:0; background:rgba(20,16,8,.4); z-index:59;
+  }
+  .scrim.show{display:block;}
+}
+@media (min-width:981px){
+  .mobile-bar{display:none!important;}
+}
+
+/* ---- no sub-1rem text anywhere: safety net overrides ---- */
+input[type="checkbox"]{font-size:1rem;}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<div class="mobile-bar">
+  <button id="menuToggle" aria-expanded="false" aria-controls="sidebar">
+    <i class="ti ti-menu-2"></i> メニュー
+  </button>
+  <div class="brand"><i class="ti ti-robot"></i> AIエージェント構築ガイド</div>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="ガイドの目次">
+    <div class="brand"><i class="ti ti-robot"></i> AIエージェント構築ガイド</div>
+    <div class="brand-sub">Building Applications with AI Agents 初学者ガイド</div>
+
+    <div class="nav-group-label">はじめに</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#about" data-target="about"><i class="ti ti-info-circle"></i> このガイドについて</a></li>
+      <li><a class="nav-a" href="#step0" data-target="step0"><span class="n-num">0</span> ガイドの読み方</a></li>
+    </ul>
+
+    <div class="nav-group-label">概念編</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#step1" data-target="step1"><span class="n-num">1</span> エージェントとは何か</a></li>
+      <li><a class="nav-a" href="#step2" data-target="step2"><span class="n-num">2</span> ワークフローとの違い</a></li>
+      <li><a class="nav-a" href="#step3" data-target="step3"><span class="n-num">3</span> 基本コンポーネント</a></li>
+    </ul>
+
+    <div class="nav-group-label">設計編</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#step4" data-target="step4"><span class="n-num">4</span> エージェントの種類</a></li>
+      <li><a class="nav-a" href="#step5" data-target="step5"><span class="n-num">5</span> ツール利用とMCP</a></li>
+      <li><a class="nav-a" href="#step6" data-target="step6"><span class="n-num">6</span> 知識とメモリ管理</a></li>
+      <li><a class="nav-a" href="#step7" data-target="step7"><span class="n-num">7</span> マルチエージェント化</a></li>
+      <li><a class="nav-a" href="#step8" data-target="step8"><span class="n-num">8</span> MCPとA2A</a></li>
+    </ul>
+
+    <div class="nav-group-label">実装編</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#step9" data-target="step9"><span class="n-num">9</span> フレームワーク選定</a></li>
+    </ul>
+
+    <div class="nav-group-label">運用編</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#step10" data-target="step10"><span class="n-num">10</span> 検証と評価</a></li>
+      <li><a class="nav-a" href="#step11" data-target="step11"><span class="n-num">11</span> モニタリングと改善</a></li>
+      <li><a class="nav-a" href="#step12" data-target="step12"><span class="n-num">12</span> セキュリティ</a></li>
+      <li><a class="nav-a" href="#step13" data-target="step13"><span class="n-num">13</span> 人間との協働</a></li>
+    </ul>
+
+    <div class="nav-group-label">まとめ</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#step14" data-target="step14"><span class="n-num">14</span> 学習ロードマップ</a></li>
+    </ul>
+
+    <div class="nav-group-label">付録</div>
+    <ul class="nav-list">
+      <li><a class="nav-a" href="#glossary" data-target="glossary"><i class="ti ti-book"></i> 用語集</a></li>
+      <li><a class="nav-a" href="#references" data-target="references"><i class="ti ti-link"></i> 参考文献・出典</a></li>
+    </ul>
+  </nav>
+
+  <main class="main" id="main">
+    <header class="hero">
+      <div class="hero-kicker"><i class="ti ti-sparkles"></i> AI Engineering Guide ・ 2026年9月版</div>
+      <h1>AIエージェントによるアプリケーション構築</h1>
+      <p class="hero-lead">初学者のためのステップバイステップガイド。O'Reilly『Building Applications with AI Agents』の章構成を土台に、Anthropic・OpenAI・Google・Simon Willison氏・Dex Horthy氏・Andrej Karpathy氏らの一次情報を2026年9月9日時点までウェブ検索で確認しながら再構成しました。</p>
+      <div class="hero-meta">
+        <span class="chip"><i class="ti ti-list-check"></i> 全15ステップ</span>
+        <span class="chip"><i class="ti ti-chart-line"></i> Mermaid図 14点</span>
+        <span class="chip"><i class="ti ti-brand-python"></i> 実行可能なコード例 2本</span>
+        <span class="chip"><i class="ti ti-link"></i> 出典URL 18件</span>
+      </div>
+    </header>
+
+    <div class="notice">
+      <i class="ti ti-alert-triangle"></i>
+      <div>AIエージェント分野は変化が非常に速い領域です。フレームワークの評価やダウンロード数などの統計は執筆時点（2026年9月）のスナップショットであり、今後変わる可能性があります。</div>
+    </div>
+
+    <section class="section" id="about">
+      <div class="section-kicker"><i class="ti ti-info-circle"></i> Introduction</div>
+      <h2><i class="ti ti-info-circle"></i> このガイドについて</h2>
+      <div class="prose">
+        <p>このガイドは、2025年9月に刊行されたMichael Albada著『Building Applications with AI Agents』（O'Reilly Media）の章構成をベースに、2026年9月9日時点までの最新動向をウェブ検索で確認しながら、AIエージェント開発を初めて学ぶ人向けに再構成した解説資料です。Anthropic・OpenAI・Google・著名な独立系開発者（Simon Willison氏、Dex Horthy氏、Andrej Karpathy氏など）による一次情報を優先的に参照し、各セクションの末尾および巻末の参考文献に出典URLを明記しています。</p>
+
+        <h3><i class="ti ti-book-2"></i> 参照書籍の情報</h3>
+        <div class="table-wrap">
+        <table class="kv-table">
+          <tbody>
+            <tr><th>書名</th><td>Building Applications with AI Agents</td></tr>
+            <tr><th>著者</th><td>Michael Albada</td></tr>
+            <tr><th>出版社</th><td>O'Reilly Media, Inc.</td></tr>
+            <tr><th>刊行時期</th><td>2025年9月</td></tr>
+            <tr><th>対象レベル</th><td>Beginner to intermediate</td></tr>
+            <tr><th>ページ数</th><td>354ページ</td></tr>
+            <tr><th>URL</th><td><a href="https://www.oreilly.com/library/view/building-applications-with/9781098176495/" target="_blank" rel="noopener">oreilly.com/library/view/building-applications-with/9781098176495</a></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step0">
+      <div class="section-kicker"><i class="ti ti-map-2"></i> Step 0</div>
+      <h2><i class="ti ti-map-2"></i> このガイドの読み方</h2>
+      <div class="prose">
+        <p>AIエージェントという言葉は、2023年ごろから急速に広まりましたが、その定義は長らく曖昧なままでした。しかし2025年後半から2026年にかけて、業界のエンジニアの間で実務的に使える共通認識が形成されつつあります。このガイドは、その共通認識をベースに、次の順番で学べるように構成しています。</p>
+        <ol>
+          <li><strong>概念編（ステップ1〜3）</strong>: エージェントとは何か、ワークフローとの違い、基本構成要素</li>
+          <li><strong>設計編（ステップ4〜8）</strong>: オーケストレーションパターン、ツール連携、メモリ、マルチエージェント化、エージェント間通信</li>
+          <li><strong>実装編（ステップ9）</strong>: フレームワークの選び方</li>
+          <li><strong>運用編（ステップ10〜13）</strong>: 評価、モニタリング、セキュリティ、人間との協働</li>
+          <li><strong>まとめ（ステップ14）</strong>: 学習ロードマップ</li>
+        </ol>
+        <p>各ステップは独立して読めるように書いていますが、初めての方はステップ1から順番に読むことをおすすめします。図解はすべてMermaidのフローチャートで表現し、比較情報はMarkdownの表にまとめています。</p>
+      </div>
+    </section>
+
+    <section class="section" id="step1">
+      <div class="section-kicker"><i class="ti ti-bulb"></i> Step 1</div>
+      <h2><i class="ti ti-bulb"></i> AIエージェントとは何か</h2>
+      <div class="prose">
+        <h3>1-1. 定義がようやく定まりつつある</h3>
+        <p>「エージェント」という言葉は、ベンダーやブログによって指す範囲がバラバラで、長年「生産的な会話を妨げる曖昧な用語」として批判されてきました。しかし、著名な独立系開発者であるSimon Willison氏は2025年9月の投稿で、業界がようやく実務的に使える定義に収束してきたと述べ、次のように定義しました。</p>
+        <blockquote>「LLMエージェントとは、目標を達成するためにツールをループの中で実行するシステムである」（Simon Willison氏、2025年9月）</blockquote>
+        <p>この定義のポイントは2つです。</p>
+        <ul>
+          <li><strong>ツールをループで実行する</strong>: LLMがツール（関数呼び出し）を使い、その結果を再びLLMに読み込ませて次の行動を考えるというサイクルを繰り返します。</li>
+          <li><strong>目標を達成するため</strong>: 無限ループではなく、明確な終了条件（ゴールへの到達、または失敗の判断）を持ちます。</li>
+        </ul>
+        <p>Anthropicも同様に、エージェント的なシステムの中核は「検索・ツール・メモリといった拡張機能を備えたLLM」であるとしています。この最小単位は次の図のように表せます。</p>
+
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-0"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図1: 拡張LLM ― エージェントの最小構成単位</p>
+
+        <h3>1-2. ビジネス用語としての「エージェント」との違い</h3>
+        <p>Willison氏は同じ投稿で、「人間の代わりを務めるシステム」というビジネス寄りの定義には注意が必要だとも指摘しています。人間には「説明責任（accountability）」という、AIエージェントには持たせられない要素があるためです。OpenAIは自社のガイドで、エージェントを「あなたに代わって独立してタスクをこなすシステム」と説明していますが、これは主に自律性の度合いに着目した定義であり、Willison氏の「ツールをループで実行する」という技術的な定義と補完関係にあります。両方の視点を知っておくと、社内外での認識のズレを防ぎやすくなります。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Simon Willison「I think "agent" may finally have a widely enough agreed upon definition to be useful jargon now」／Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref5">参考文献5</a>・<a href="#ref2">2</a>・<a href="#ref3">3</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step2">
+      <div class="section-kicker"><i class="ti ti-git-branch"></i> Step 2</div>
+      <h2><i class="ti ti-git-branch"></i> エージェントとワークフローの違い</h2>
+      <div class="prose">
+        <h3>2-1. Anthropicによるアーキテクチャ上の区別</h3>
+        <p>Anthropicはエンジニアリングブログ「Building Effective Agents」で、AI活用システムを大きく2つに分けています。</p>
+        <ul>
+          <li><strong>ワークフロー</strong>: LLMとツールが、あらかじめ決められたコードの経路に沿ってオーケストレーションされるシステム</li>
+          <li><strong>エージェント</strong>: LLM自身が自分の処理の進め方やツールの使い方を動的に決定し、制御を握るシステム</li>
+        </ul>
+
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-1"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図2: ワークフロー（事前定義された経路）とエージェント（LLMが動的に制御）の違い</p>
+
+        <p>重要なのは、「エージェントの方が優れている」わけではないという点です。Anthropicは、タスクが予測可能で手順が決まっているならワークフローの方が信頼性・コストの面で有利であり、複雑さは必要な場合にのみ追加すべきだと強調しています。</p>
+
+        <h3>2-2. 5つのワークフローパターンと選び方</h3>
+        <p>Anthropicのブログでは、代表的な5つのワークフローパターンが紹介されています。</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>パターン</th><th>概要</th></tr></thead>
+          <tbody>
+            <tr><td>プロンプトチェイニング</td><td>タスクを順番に処理する複数ステップに分解し、各ステップの出力を次の入力にする</td></tr>
+            <tr><td>ルーティング</td><td>入力の種類に応じて、異なる専用プロンプト・モデルに振り分ける</td></tr>
+            <tr><td>並列化</td><td>独立したサブタスクを同時に実行し、結果を統合する</td></tr>
+            <tr><td>オーケストレーター・ワーカー</td><td>中央のLLMがタスクを動的に分解し、複数のワーカーLLMに割り振る</td></tr>
+            <tr><td>評価・最適化ループ</td><td>生成結果を別のLLMが評価し、基準を満たすまで反復改善する</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>どのパターンを選ぶべきかを整理すると、以下のような判断の流れになります。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-2"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図3: ワークフローパターンの選び方（判断フロー）</p>
+
+        <p>OpenAIの「A Practical Guide to Building Agents」も同じ方向性で、システムを分割・複雑化する目安として「条件分岐が多くプロンプトが肥大化してきた」「似たようなツールが多すぎて選択を誤る」といったシグナルを挙げています。まずは最も単純な構成から始め、これらのシグナルが出てから段階的に複雑にしていくのが、両社に共通する推奨アプローチです。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref2">参考文献2</a>・<a href="#ref3">3</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step3">
+      <div class="section-kicker"><i class="ti ti-puzzle"></i> Step 3</div>
+      <h2><i class="ti ti-puzzle"></i> エージェントシステムの基本コンポーネント</h2>
+      <div class="prose">
+        <p>書籍『Building Applications with AI Agents』の第2章では、エージェントシステムを構成する4つの中核要素が整理されています。</p>
+
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-3"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図4: エージェントシステムの基本コンポーネント</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>要素</th><th>役割</th><th>設計上の主な論点</th></tr></thead>
+          <tbody>
+            <tr><td>モデル選定</td><td>タスクの性質に応じてどの基盤モデルを使うか決める</td><td>精度、レイテンシ、コストのバランス</td></tr>
+            <tr><td>ツール</td><td>エージェントが外部の機能・データにアクセスする手段</td><td>ツールの粒度、再利用性、文書化のしやすさ</td></tr>
+            <tr><td>メモリ</td><td>過去のやり取りや知識を保持・検索する仕組み</td><td>短期記憶（コンテキストウィンドウ）と長期記憶の使い分け</td></tr>
+            <tr><td>オーケストレーション</td><td>複数のステップ・ツール・エージェントをどう連携させるか</td><td>単一エージェントか複数エージェントか</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>さらに設計時には、性能（速度と精度のトレードオフ）、スケーラビリティ、信頼性（一貫した挙動の担保）、コストという4つの軸でトレードオフを検討する必要があるとされています。これらは以降のステップで一つずつ掘り下げていきます。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第2章「Designing Agent Systems」（<a href="#ref1">参考文献1</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step4">
+      <div class="section-kicker"><i class="ti ti-category-2"></i> Step 4</div>
+      <h2><i class="ti ti-category-2"></i> エージェントの種類（オーケストレーションパターン）</h2>
+      <div class="prose">
+        <p>エージェントの「頭脳」部分、つまりどう考えてどう行動するかにもいくつかの代表的なパターンがあります。</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>タイプ</th><th>概要</th><th>適した用途</th></tr></thead>
+          <tbody>
+            <tr><td>Reflex Agent</td><td>ルールや直接的なマッピングに従って即座に反応する。複雑な推論を行わない</td><td>単純な分類・振り分けタスク</td></tr>
+            <tr><td>ReAct Agent</td><td>「思考」と「行動」を交互に繰り返すループ構造を持つ</td><td>動的なツール利用を伴う汎用タスク</td></tr>
+            <tr><td>Planner-Executor Agent</td><td>計画を立てる役割と実行する役割を分離する</td><td>長期にわたる複雑なタスクの構造化</td></tr>
+            <tr><td>Query-Decomposition Agent</td><td>複雑な問いを複数のサブクエスチョンに分解し、個別に解決してから統合する</td><td>複合的な調査・分析タスク</td></tr>
+            <tr><td>Reflection Agent</td><td>自分自身の出力を振り返り、改善を重ねる</td><td>品質が重視されるコンテンツ生成</td></tr>
+            <tr><td>Deep Research Agent</td><td>大量の情報源を長時間かけて収集・統合する</td><td>調査レポートの作成</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>このうち最も基本的で広く使われているのがReActパターンです。「Reasoning（推論）」と「Acting（行動）」を組み合わせた名前の通り、次のようなループで動作します。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-4"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図5: ReActループ ― 思考・行動・観察の反復</p>
+
+        <h3>信頼性を高めるための12の原則</h3>
+        <p>HumanLayer社のDex Horthy氏は、100人以上の開発者への聞き取りをもとに「12-Factor Agents」というGitHubリポジトリをまとめ、Heroku社の有名な「12-factor app」にならって、信頼性の高いLLMアプリケーションを作るための工学的な原則を提示しました。特に本ステップに関連が深いのは次の2つです。</p>
+        <ul>
+          <li><strong>制御フローを自分で持つ（Own your control flow）</strong>: フレームワークに丸投げせず、分岐やループのロジックを自分のコードで管理する</li>
+          <li><strong>小さく焦点を絞ったエージェントにする（Small, Focused Agents）</strong>: 1つのエージェントに詰め込みすぎず、責務を分割する</li>
+        </ul>
+        <p>このリポジトリはHacker Newsで大きな話題となり、フレームワーク批判ではなく「フレームワークに取り入れてほしい設計原則集」として位置づけられています。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第5章「Orchestration」／Dex Horthy・HumanLayer「12-Factor Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref4">4</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step5">
+      <div class="section-kicker"><i class="ti ti-plug"></i> Step 5</div>
+      <h2><i class="ti ti-plug"></i> ツール利用とModel Context Protocol（MCP）</h2>
+      <div class="prose">
+        <h3>5-1. ツールの種類</h3>
+        <p>エージェントが使うツールは、大きく分けるとローカルツール、API経由のツール、プラグイン形式のツール、そして状態を保持するステートフルなツールに分類できます。OpenAIのガイドでは、ツールをデータ取得用・アクション実行用・オーケストレーション用の3種類に整理しており、いずれの分類でも「ツールは文書化され、テストされ、再利用可能であるべき」という原則は共通しています。</p>
+
+        <h3>5-2. Model Context Protocol（MCP）とは</h3>
+        <p>以前は、AIモデルと外部ツール・データソースを接続するたびに、その組み合わせ専用の連携コードを書く必要がありました。これは「M個のモデル×N個のツール」の分だけ統合が必要になる、いわゆるM×N問題と呼ばれる状態です。Anthropicは2024年11月、この問題を解決するオープン標準としてModel Context Protocol（MCP）を発表しました。MCPは「AIアプリケーション向けのUSB-Cポートのようなもの」と例えられており、モデル側の実装を1つに標準化するだけで、あらゆるツール・データソースに接続できるようになります。</p>
+
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-5"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図6: MCPのアーキテクチャ ― ホスト・クライアント・サーバー構成</p>
+
+        <p>MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2025年12月9日時点で月間およそ9,700万回でしたが、2026年7月28日版の仕様公開時点ではTier 1 SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。</p>
+
+        <h4><i class="ti ti-server-2"></i> 最小構成のMCPサーバーとエージェントループ（実行可能な例）</h4>
+        <p>上図の「MCPサーバー ファイルシステム／データベースAPI」に相当する最小のサーバーと、それを呼び出すエージェントループを示します。ツール呼び出し・終了条件・エラー処理という、エージェント実装の3要素がすべて含まれています。</p>
+
+        <div class="code-block">
+          <div class="code-block-head"><i class="ti ti-brand-python"></i> inventory_server.py ― MCPサーバー側　依存: pip install "mcp[cli]&gt;=2,&lt;3" "pydantic&gt;=2"　起動: python inventory_server.py（stdio）</div>
+          <pre><code class="language-python"></code></pre>
+          <script type="text/plain">
+from mcp.server import MCPServer
+from pydantic import BaseModel, Field
+
+mcp = MCPServer("inventory")
+
+# 社内システムを模した在庫データ（実運用では DB クエリに置き換える）
+_STOCK: dict[str, int] = {"SKU-001": 12, "SKU-002": 0}
+
+
+class StockResult(BaseModel):
+    """ツールの戻り値スキーマ。型を固定しておくとクライアント側のパースが安定する。"""
+
+    sku: str = Field(description="商品コード")
+    quantity: int = Field(ge=0, description="在庫数")
+
+
+@mcp.tool()
+def get_stock(sku: str) -> StockResult:
+    """指定した商品コードの在庫数を返す。
+
+    未知の SKU は例外を送出する。MCP は例外を「ツール実行エラー」として
+    クライアントへ返すため、エージェントはリトライや代替行動を判断できる。
+    """
+    if sku not in _STOCK:
+        raise ValueError(f"未知の商品コードです: {sku}")
+    return StockResult(sku=sku, quantity=_STOCK[sku])
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+          </script>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-head"><i class="ti ti-brand-python"></i> agent_loop.py ― エージェント（MCPクライアント）側　依存: pip install "mcp[cli]&gt;=2,&lt;3"　実行: python agent_loop.py</div>
+          <pre><code class="language-python"></code></pre>
+          <script type="text/plain">
+import asyncio
+import sys
+from pathlib import Path
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+from mcp.shared.exceptions import MCPError
+from mcp.types import CallToolResult
+
+# 終了条件その1: ツール呼び出しの上限。無限ループとコスト暴走を防ぐ最後の砦。
+MAX_STEPS = 5
+
+# 終了条件その3: 1回のツール呼び出しの上限時間（秒）。応答が返らないサーバーで
+# ループ全体が無期限にぶら下がるのを防ぐ。call_tool は float 秒を受け取る。
+TOOL_TIMEOUT = 10.0
+
+# サーバースクリプトはこのファイルからの相対位置で解決する。
+# カレントディレクトリに依存すると、別の場所から起動したときに FileNotFoundError になる。
+SERVER_SCRIPT = Path(__file__).resolve().parent / "inventory_server.py"
+
+
+def summarize(result: CallToolResult) -> str:
+    """ツール実行結果を安全に文字列化する。
+
+    成功時はツール戻り値スキーマに沿った structured_content を優先し、
+    無い場合のみ TextContent のテキストへフォールバックする。
+    content が空配列でも、先頭要素がテキスト以外（画像など）でも
+    IndexError / AttributeError を起こさない。
+    """
+    if not result.is_error and result.structured_content is not None:
+        return str(result.structured_content)
+    for block in result.content:
+        text = getattr(block, "text", None)
+        if text is not None:
+            return text
+    return "（テキストとして表示できる内容がありません）"
+
+
+async def main() -> None:
+    # command は "python" ではなく実行中のインタプリタを指定する。PATH 上の "python" は
+    # 仮想環境の外を指したり存在しなかったりし、依存パッケージの解決先がずれる。
+    params = StdioServerParameters(command=sys.executable, args=[str(SERVER_SCRIPT)])
+    async with stdio_client(params) as (read, write):
+        # ClientSession 自体にも読み取り上限を設ける。ここを省くと initialize() や
+        # list_tools() が応答の無いサーバーで無期限に待ち続け、call_tool の
+        # タイムアウトに到達する前にハングする。
+        async with ClientSession(read, write, read_timeout_seconds=TOOL_TIMEOUT) as session:
+            await session.initialize()
+
+            # サーバーが公開するツール一覧を取得する（LLM へ渡すツール定義の元になる）
+            tools = await session.list_tools()
+            print("利用可能なツール:", [t.name for t in tools.tools])
+
+            # 実際には次に呼ぶツールを LLM に決めさせる。ここでは決定論的に検証するため固定。
+            plan = [{"sku": "SKU-999"}, {"sku": "SKU-001"}]
+
+            for step, args in enumerate(plan, start=1):
+                if step > MAX_STEPS:
+                    print("上限に達したため打ち切ります")
+                    break
+
+                try:
+                    result = await session.call_tool(
+                        "get_stock",
+                        args,
+                        # 期限切れ時はサーバーへキャンセル通知が送られ MCPError になる
+                        read_timeout_seconds=TOOL_TIMEOUT,
+                    )
+                except MCPError as exc:
+                    # タイムアウトを含む呼び出し失敗も「失敗したツール結果」として観測に残す。
+                    # ここで例外を伝播させるとループごと抜けてしまい、MAX_STEPS による
+                    # 打ち切り判定も、残りの計画の実行も評価されなくなる。
+                    print(f"step{step}: ツール呼び出し失敗 -> {exc}")
+                    continue
+
+                # エラー処理: is_error のときは内容をエージェントの観測として次ターンへ渡す。
+                # 握りつぶさず、かつ例外で全体を止めないのが実運用でのポイント。
+                if result.is_error:
+                    print(f"step{step}: ツールエラー -> {summarize(result)}")
+                    continue
+
+                print(f"step{step}: 結果 -> {summarize(result)}")
+
+                # 終了条件その2: 目的を満たしたら即座に抜ける
+                if args["sku"] == "SKU-001":
+                    print("必要な情報が得られたため、ループを終了して次の推論ステップへ進みます")
+                    break
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+          </script>
+        </div>
+
+        <p>このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し → 結果の観測 → 終了判定」の繰り返しです。<code>MAX_STEPS</code> のような上限と、<code>is_error</code> を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。</p>
+
+        <h3>5-3. ツールを自動生成するエージェント</h3>
+        <p>書籍では、基盤モデル自身が新しいツールをその場で作り出す「Foundation Models as Tool Makers」というテーマも扱われています。必要なコードをリアルタイムに生成し、それをツールとして即座に利用するというアプローチで、あらかじめ用意していないタスクへの適応力を高める手法として注目されています。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第4章「Tool Use」／Anthropic「Introducing the Model Context Protocol」／WorkOS「Everything your team needs to know about MCP in 2026」／Model Context Protocol公式ドキュメント（<a href="#ref1">参考文献1</a>・<a href="#ref7">7</a>・<a href="#ref9">9</a>・<a href="#ref8">8</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step6">
+      <div class="section-kicker"><i class="ti ti-database"></i> Step 6</div>
+      <h2><i class="ti ti-database"></i> 知識とメモリ管理</h2>
+      <div class="prose">
+        <h3>6-1. 短期記憶と長期記憶</h3>
+        <p>エージェントのメモリは、人間の記憶と同じように短期と長期に分けて考えると理解しやすくなります。</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>種類</th><th>実体</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td>短期記憶</td><td>コンテキストウィンドウ</td><td>直近の会話・作業内容を保持するが、上限を超えると古い情報が失われる</td></tr>
+            <tr><td>長期記憶（検索型）</td><td>ベクトルストア</td><td>意味的な類似度で過去の情報を検索できる</td></tr>
+            <tr><td>長期記憶（構造型）</td><td>ナレッジグラフ</td><td>エンティティ同士の関係性を明示的に保持できる</td></tr>
+            <tr><td>長期記憶（要約型）</td><td>ノートテイキング</td><td>エージェント自身が重要事項を要約してメモに残す</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>6-2. RAG（検索拡張生成）の基本フロー</h3>
+        <p>長期記憶を実現する代表的な仕組みがRAG（Retrieval-Augmented Generation）です。ユーザーの質問に関連する情報をベクトルストアなどから検索し、それをプロンプトに追加してからLLMに回答させます。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-6"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図7: RAG（検索拡張生成）の基本フロー</p>
+
+        <h3>6-3. GraphRAGと動的なナレッジグラフ</h3>
+        <p>単純なベクトル検索では、エンティティ同士の複雑な関係性をうまく扱えない場合があります。そこで登場するのがGraphRAGで、ナレッジグラフを構築・活用することで、より構造化された知識に基づく回答を可能にします。ただし、書籍でも指摘されている通り、動的に更新されるナレッジグラフには「情報の陳腐化」や「グラフの品質管理コスト」といったリスクも伴うため、導入前にその効果とコストを見極める必要があります。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第6章「Knowledge and Memory」（<a href="#ref1">参考文献1</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step7">
+      <div class="section-kicker"><i class="ti ti-users"></i> Step 7</div>
+      <h2><i class="ti ti-users"></i> シングルエージェントからマルチエージェントへ</h2>
+      <div class="prose">
+        <h3>7-1. いつエージェントを増やすべきか</h3>
+        <p>エージェントを増やすかどうかは、最初から決めるものではなく、単一エージェントで詰まったときに検討するのが基本です。OpenAIのガイドは、次のようなシグナルが出たときに分割を検討すべきだとしています。</p>
+        <ul>
+          <li>プロンプト内の条件分岐（if-thenの連鎖）が多すぎてテンプレートの保守が難しくなってきた</li>
+          <li>似たような機能を持つツールが多く、エージェントが正しいツールを選べなくなってきた（15個程度の明確に異なるツールを問題なく扱えるチームもあれば、10個未満でも似通ったツールで混乱するチームもある）</li>
+        </ul>
+
+        <h3>7-2. マルチエージェントの調整方式</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>方式</th><th>概要</th></tr></thead>
+          <tbody>
+            <tr><td>民主的協調</td><td>エージェント同士が対等な立場で議論・合意形成する</td></tr>
+            <tr><td>マネージャー協調</td><td>管理役のエージェントがタスクを割り振り、結果を集約する</td></tr>
+            <tr><td>階層的協調</td><td>複数階層に分かれた指揮系統でタスクを分担する</td></tr>
+            <tr><td>アクター・クリティック</td><td>実行役（アクター）と評価役（クリティック）を分けて改善を繰り返す</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>実務で最も広く使われているのがマネージャー協調の一種である「オーケストレーター・ワーカー」パターンです。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-7"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図8: オーケストレーター・ワーカーパターン</p>
+
+        <h3>7-3. エージェント間のコミュニケーション手段</h3>
+        <p>書籍第8章では、エージェント同士の通信手段として、ローカルなプロセス内通信から、メッセージブローカーやイベントバス、Ray・Orleans・Akkaといったアクターフレームワークまで、幅広い選択肢が紹介されています。どの方式を選ぶかは、エージェントを同一プロセス内で動かすか、分散環境で動かすかによって変わってきます。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第2章・第8章／OpenAI「A Practical Guide to Building Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step8">
+      <div class="section-kicker"><i class="ti ti-antenna"></i> Step 8</div>
+      <h2><i class="ti ti-antenna"></i> エージェント間通信 ― MCPとA2A</h2>
+      <div class="prose">
+        <p>マルチエージェント構成が一般的になるにつれ、「エージェントとツールをどうつなぐか」だけでなく「異なるベンダー・フレームワークで作られたエージェント同士をどうつなぐか」という課題が浮上しました。これに応えるのがGoogleが2025年4月に発表したAgent2Agent（A2A）プロトコルです。A2Aは同年6月にLinux Foundationへ寄贈され、2026年8月27日にはMCPと同じくAgentic AI Foundation（AAIF）のGrowth Stageプロジェクトとして受け入れられています。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>MCP</th><th>A2A</th></tr></thead>
+          <tbody>
+            <tr><td>目的</td><td>エージェントとツール・データソースの接続</td><td>エージェント同士の発見・委譲・通信</td></tr>
+            <tr><td>策定元</td><td>Anthropic（2024年11月）</td><td>Google（2025年4月）</td></tr>
+            <tr><td>現在の管理団体</td><td>Agentic AI Foundation（Linux Foundation）</td><td>Agentic AI Foundation（Linux Foundation）</td></tr>
+            <tr><td>主な仕組み</td><td>ホスト・クライアント・サーバー構成、JSON-RPC 2.0</td><td>Agent Cardによる能力の公開、タスクのライフサイクル管理、HTTP＋SSE＋JSON-RPC 2.0</td></tr>
+            <tr><td>たとえ</td><td>AIアプリ向けのUSB-Cポート</td><td>組織間の業務委託のような役割分担の仕組み</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>両者は競合するものではなく、補完関係にあります。1つのエージェントがA2Aで別の専門エージェントにタスクを委譲し、そのエージェントがMCPで実際のツールやデータにアクセスする、という組み合わせが一般的です。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-8"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図9: MCPとA2Aの役割分担</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／A2A Protocol公式ブログ「A New Chapter for A2A: Joining the Agentic AI Foundation」（<a href="#ref10">参考文献10</a>・<a href="#ref11">11</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step9">
+      <div class="section-kicker"><i class="ti ti-stack-2"></i> Step 9</div>
+      <h2><i class="ti ti-stack-2"></i> 主要フレームワークの選び方</h2>
+      <div class="prose">
+        <p>書籍の第1章では、LangGraph、AutoGen、CrewAI、OpenAI Agents SDKという4つの代表的なフレームワークが紹介されています。2026年9月時点では、これにAnthropicのClaude Agent SDKや、GoogleのAgent Development Kit（ADK）を加えた選択肢が実務でよく比較されています。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>フレームワーク</th><th>開発元</th><th>オーケストレーションモデル</th><th>学習コスト</th><th>本番運用実績</th><th>得意なこと</th></tr></thead>
+          <tbody>
+            <tr><td>LangGraph</td><td>LangChain</td><td>有向グラフ＋条件分岐エッジ</td><td>中（グラフの概念を理解する必要）</td><td>高い（チェックポイント、タイムトラベルデバッグ、観測性が充実）</td><td>複雑な状態管理とヒューマン・イン・ザ・ループが必要な本番システム</td></tr>
+            <tr><td>CrewAI</td><td>CrewAI</td><td>役割ベースのチーム編成</td><td>低い</td><td>中（成長中だが機能は発展途上）</td><td>少ないコード量でのマルチエージェントの試作</td></tr>
+            <tr><td>AutoGen／AG2</td><td>Microsoft／コミュニティ</td><td>対話ベースの多者間会話</td><td>中</td><td>中（Microsoftはより広範なMicrosoft Agent Frameworkに軸足を移行中）</td><td>エージェント同士が議論しながらコードを書く・実行するタスク</td></tr>
+            <tr><td>OpenAI Agents SDK</td><td>OpenAI</td><td>明示的なハンドオフを伴う薄い抽象化</td><td>低い</td><td>高い（組み込みのトレーシングとガードレール）</td><td>シンプルな構成で素早く動かしたい単一〜少数エージェント</td></tr>
+            <tr><td>Claude Agent SDK</td><td>Anthropic</td><td>ツール利用パターン、MCPネイティブ対応</td><td>中</td><td>高い（安全性重視、拡張思考、ネイティブストリーミング）</td><td>コーディングエージェントなど高い信頼性が求められる用途</td></tr>
+            <tr><td>Google ADK</td><td>Google</td><td>Vertex AIエコシステムとの統合</td><td>中</td><td>発展途上（最も新しいフレームワーク）</td><td>Google Cloud環境内でのエージェント構築</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>選び方の目安</h3>
+        <p>現場のエンジニアの声を集めた比較記事では、次のような使い分けがよく紹介されています。</p>
+        <ul>
+          <li>まずCrewAIのような軽量なフレームワークでロジックの妥当性を素早く検証する</li>
+          <li>本番運用に進む段階で、チェックポイントやエラーリカバリーが充実したLangGraphに移行する</li>
+          <li>OpenAI Agents SDKやClaude Agent SDKのようなベンダーSDKは、特定モデルへの依存を許容できるならシンプルさのメリットが大きい</li>
+        </ul>
+        <p>また、AutoGenはMicrosoftの開発方針転換（より広範なMicrosoft Agent Frameworkへの統合）により、新規機能開発のペースが落ちているという指摘もあるため、新規プロジェクトで採用する場合は最新の開発状況を確認することをおすすめします。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第1章／Firecrawl「The best open source frameworks for building AI agents in 2026」／Techsy「LangGraph vs CrewAI vs OpenAI Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref15">15</a>・<a href="#ref16">16</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step10">
+      <div class="section-kicker"><i class="ti ti-clipboard-check"></i> Step 10</div>
+      <h2><i class="ti ti-clipboard-check"></i> 検証と評価</h2>
+      <div class="prose">
+        <h3>10-1. 評価は開発の柱</h3>
+        <p>書籍第9章は、「測定こそがエージェント開発の要（キーストーン）である」という考え方から始まります。評価を開発の最後に付け足すのではなく、開発ライフサイクルの最初から組み込むことが推奨されています。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-9"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図10: 評価のライフサイクル</p>
+
+        <h3>10-2. コンポーネント評価と全体評価</h3>
+        <p>評価は大きく2段階に分けられます。</p>
+        <ul>
+          <li><strong>コンポーネント評価</strong>: ツール選択が正しいか、計画立案が妥当か、メモリの検索精度は十分か、学習（Reflectionやファインチューニング）が効果を上げているかを個別に検証する</li>
+          <li><strong>全体評価（ホリスティック評価）</strong>: エンドツーエンドのシナリオでの性能、一貫性、応答間の整合性、幻覚（ハルシネーション）の発生率、想定外の入力への対応力を検証する</li>
+        </ul>
+
+        <h3>10-3. ガードレールという考え方</h3>
+        <p>OpenAIのガイドでは、評価と並んでガードレール（安全装置）の重要性が強調されています。関連性チェック、安全性分類、機微情報のフィルタリング、モデレーション、ルールベースの保護、出力バリデーションなど、複数のレイヤーを組み合わせることで、単一のチェックに依存しない防御を構築する考え方です。これはステップ12で扱うセキュリティ対策とも密接に関係します。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第9章「Validation and Measurement」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step11">
+      <div class="section-kicker"><i class="ti ti-activity"></i> Step 11</div>
+      <h2><i class="ti ti-activity"></i> 本番運用でのモニタリングと改善ループ</h2>
+      <div class="prose">
+        <h3>11-1. モニタリングスタックの選択肢</h3>
+        <p>書籍第10章では、代表的な観測性（オブザーバビリティ）スタックが紹介されています。</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>ツール</th><th>特徴</th></tr></thead>
+          <tbody>
+            <tr><td>Grafana＋OpenTelemetry＋Loki＋Tempo</td><td>OSSの汎用可観測性スタック。メトリクス・ログ・トレースを統合的に扱える</td></tr>
+            <tr><td>ELKスタック（Elasticsearch、Logstash／Fluentd、Kibana）</td><td>ログの収集・検索に強みがあり、既存の運用実績があるチーム向け</td></tr>
+            <tr><td>Arize Phoenix</td><td>LLM／エージェントに特化したOSSの観測性ツール</td></tr>
+            <tr><td>SigNoz</td><td>OpenTelemetryネイティブの統合可観測性プラットフォーム</td></tr>
+            <tr><td>Langfuse</td><td>LLMアプリケーションに特化したトレース・評価・プロンプト管理プラットフォーム</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p>どのスタックを選ぶかは、チームの既存の運用基盤や、LLM特有のトレース（思考過程・ツール呼び出しの履歴）をどれだけ細かく可視化したいかによって変わります。</p>
+
+        <h3>11-2. モニタリングから改善へのループ</h3>
+        <p>書籍第10章と第11章の内容をつなげると、本番運用は次のような循環的なプロセスとして捉えられます。シャドーモード（本番トラフィックを使いつつ実際のアクションは実行しない検証）やカナリアデプロイ、A/Bテスト、バンディットアルゴリズムを用いた実験などが、この改善ループを支える具体的な手法として紹介されています。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-10"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図11: モニタリングから改善へのループ</p>
+
+        <p>ユーザーからのフィードバックも、明示的な評価スコアと同じくらい重要な観測性シグナルとして扱うべきだとされています。また、入力データの分布が時間とともに変化する「ディストリビューションシフト」を検知する仕組みも、長期運用では欠かせません。</p>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第10章「Monitoring in Production」・第11章「Improvement Loops」（<a href="#ref1">参考文献1</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step12">
+      <div class="section-kicker"><i class="ti ti-shield-lock"></i> Step 12</div>
+      <h2><i class="ti ti-shield-lock"></i> エージェントシステムを守る ― セキュリティ</h2>
+      <div class="prose">
+        <h3>12-1. Lethal Trifecta（危険な三要素の組み合わせ）</h3>
+        <p>セキュリティ研究者としても知られるSimon Willison氏は2025年6月、エージェントに関わる重大なリスクパターンを「Lethal Trifecta（致死的な三要素）」と名付けました。次の3つの能力が1つのエージェントに同時に揃うと、攻撃者に悪用される危険性が急激に高まるという考え方です。</p>
+        <ul>
+          <li><strong>プライベートデータへのアクセス</strong>: メール、社内文書、顧客情報などを読み取れる</li>
+          <li><strong>信頼できないコンテンツの処理</strong>: 外部のWebページやメール本文など、攻撃者が操作できるかもしれない情報を読み込む</li>
+          <li><strong>外部への通信手段</strong>: 読み取った情報を外部に送信できる（メール送信、API呼び出しなど）</li>
+        </ul>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-11"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図12: Lethal Trifecta ― 危険な三要素の組み合わせ</p>
+
+        <p>この3つが揃うと、たとえば「Webページに埋め込まれた悪意ある指示文をエージェントが読み込み、それに従って機密情報を外部に送信してしまう」といった間接的なプロンプトインジェクション攻撃が成立してしまいます。Willison氏は、この組み合わせそのものを避けることが唯一の確実な防御策だと述べています。</p>
+
+        <h3>12-2. MAESTROフレームワークによる脅威モデリング</h3>
+        <p>書籍第12章でも触れられているように、エージェント特有のリスクには、従来のSTRIDEのようなソフトウェアセキュリティの脅威モデリング手法だけでは対応しきれない部分があります。そこでCloud Security Alliance（CSA）は2025年2月、エージェント型AI専用の脅威モデリングフレームワーク「MAESTRO（Multi-Agent Environment, Security, Threat, Risk, and Outcome）」を発表しました。MAESTROは、システムを7つのレイヤーに分解して段階的に脅威を洗い出す手法で、代表的なレイヤーの切り口は次の通りです。</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>レイヤー（概要）</th><th>主な観点</th></tr></thead>
+          <tbody>
+            <tr><td>基盤モデル</td><td>モデル自体の脆弱性、抽出・操作への耐性</td></tr>
+            <tr><td>データ運用</td><td>学習・検索に使うデータの完全性と出所</td></tr>
+            <tr><td>エージェントフレームワーク</td><td>推論ループとツール呼び出しの実装の安全性</td></tr>
+            <tr><td>デプロイ・インフラ</td><td>実行環境の権限管理と分離</td></tr>
+            <tr><td>評価・観測性</td><td>異常な挙動をどう検知するか</td></tr>
+            <tr><td>セキュリティ・コンプライアンス</td><td>認可、監査ログ、規制対応</td></tr>
+            <tr><td>エージェントエコシステム</td><td>複数エージェント間の信頼関係、なりすまし対策</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>12-3. 実践的な防御策</h3>
+        <p>書籍とここまでの出典を踏まえると、実務では次のような対策の組み合わせが有効です。</p>
+        <ul>
+          <li><strong>最小権限の原則</strong>: エージェントに与えるツールの権限を必要最小限にとどめる</li>
+          <li><strong>人間による承認</strong>: リスクの高い操作（送金、外部送信、削除など）は人間の承認を経てから実行する（12-Factor Agentsの「ツール呼び出しで人間に連絡する」という原則とも一致）</li>
+          <li><strong>サンドボックス化</strong>: 実行環境を隔離し、被害範囲を限定する</li>
+          <li><strong>継続的なレッドチーミング</strong>: 実際に攻撃を試みることで、想定していなかった穴を発見する</li>
+          <li><strong>監視とロギング</strong>: 監査に必要な最小限のメタデータ（タイムスタンプ、実行主体、ツール名、成否、レイテンシ、リクエストID）のみを記録し、異常を検知できるようにする。プロンプト本文・ツール引数・ツール実行結果・PII・アクセストークン等の秘密情報はマスキングまたは除外する。ペイロードを保存する場合は、対象を障害調査に必要なエラー時のツール引数だけに限定し、値はハッシュ化または上位数十文字への切り詰めを行う。ログの閲覧はセキュリティ担当ロールに限定し（アクセス制御）、保存期間を定めて（例: 監査ログ1年、デバッグログ30日）期限到達後は自動削除する</li>
+        </ul>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第12章「Protecting Agentic Systems」／Simon Willison「The lethal trifecta for AI agents」／Cloud Security Alliance「Agentic AI Threat Modeling Framework: MAESTRO」（<a href="#ref1">参考文献1</a>・<a href="#ref6">6</a>・<a href="#ref12">12</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step13">
+      <div class="section-kicker"><i class="ti ti-hand-click"></i> Step 13</div>
+      <h2><i class="ti ti-hand-click"></i> 人間とエージェントの協働</h2>
+      <div class="prose">
+        <h3>13-1. 自律性のスライダー</h3>
+        <p>書籍第3章・第13章では、エージェントにどこまで自律性を持たせるかを、オン・オフの二択ではなく「スライダー」として捉える考え方が紹介されています。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-12"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図13: 自律性のスライダー</p>
+        <p>タスクのリスクの高さ、エージェントの実績、可逆性（やり直しが利くかどうか）に応じて、どのポジションから始めるかを決め、信頼が積み上がるにつれて右側（自律性が高い方向）に移していくというアプローチが実務的です。</p>
+
+        <h3>13-2. 説明責任は人間に残る</h3>
+        <p>Simon Willison氏は、人間には「説明責任（accountability）」という、AIエージェントに肩代わりさせられない要素があると指摘しています。エージェントが下した判断であっても、それを許可し、監督し、結果に責任を持つのは最終的に人間であるという前提は、エスカレーション設計（エージェントがどのタイミングで人間に判断を委ねるか）やガバナンス設計の基本になります。</p>
+
+        <h3>13-3. エスカレーション設計のポイント</h3>
+        <p>書籍では、信頼の構築を「ライフサイクル」として捉え、次のような観点を継続的に見直すことが推奨されています。</p>
+        <ul>
+          <li>エージェントがどのような場面で自信度の低さを表明し、人間に確認を求めるべきか</li>
+          <li>失敗したときに、どのようにユーザーへ丁寧に伝え、次の一手を提示するか（グレースフルデグラデーション）</li>
+          <li>組織内でのエージェントの担当範囲と、人間の担当範囲をどう線引きするか</li>
+        </ul>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Michael Albada『Building Applications with AI Agents』第3章「User Experience Design for Agentic Systems」・第13章「Human-Agent Collaboration」／Simon Willison「I think "agent" may finally have a widely enough agreed upon definition」（<a href="#ref1">参考文献1</a>・<a href="#ref5">5</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="step14">
+      <div class="section-kicker"><i class="ti ti-road"></i> Step 14</div>
+      <h2><i class="ti ti-road"></i> 学習ロードマップ・まとめ</h2>
+      <div class="prose">
+        <h3>14-1. 学習の進め方</h3>
+        <p>これまでのステップを踏まえ、初学者が無理なくAIエージェント開発を習得していくための道筋は、おおよそ次のようになります。</p>
+        <div class="mermaid-wrap"><div class="mermaid" data-diagram="diag-13"><p class="mermaid-loading">図を描画しています…</p></div></div>
+        <p class="diagram-caption">図14: 学習ロードマップ</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>フェーズ</th><th>学ぶこと</th><th>このガイドの該当ステップ</th></tr></thead>
+          <tbody>
+            <tr><td><span class="phase-badge phase-basic">基礎</span></td><td>LLM APIの呼び出し方、プロンプト設計の基本</td><td>ステップ1〜2</td></tr>
+            <tr><td><span class="phase-badge phase-basic">初級</span></td><td>ツール呼び出しを1つ持つ、ReActベースの単純なエージェント</td><td>ステップ3〜4</td></tr>
+            <tr><td><span class="phase-badge phase-mid">中級</span></td><td>MCPによるツール連携、RAGによるメモリ拡張</td><td>ステップ5〜6</td></tr>
+            <tr><td><span class="phase-badge phase-mid">中級</span></td><td>フレームワークを使ったマルチエージェント構成</td><td>ステップ7〜9</td></tr>
+            <tr><td><span class="phase-badge phase-adv">上級</span></td><td>評価セットの整備、観測性の導入</td><td>ステップ10〜11</td></tr>
+            <tr><td><span class="phase-badge phase-adv">上級</span></td><td>セキュリティ対策と、人間とのすり合わせを含めた本番運用</td><td>ステップ12〜13</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>14-2. 「エージェンティック・エンジニアリング」という新しい職能</h3>
+        <p>元OpenAI共同創業者のAndrej Karpathy氏は、2026年4月のSequoia Capital主催イベント「AI Ascent 2026」で、自身が2025年に提唱した「バイブコーディング（vibe coding、AIの出力を深く検証せずに受け入れる開発スタイル）」の先にある、より規律だったスタイルとして「エージェンティック・エンジニアリング（agentic engineering）」という概念を提示しました。Karpathy氏はこれを、仕様設計、差分レビュー、評価ループの構築、権限管理など、複数の自律的なエージェントを協調させながらプロフェッショナルな品質を維持する実践知だと説明しています。バイブコーディングが「誰でも試作できる」という参入障壁の低さ（床）を引き下げる一方、エージェンティック・エンジニアリングは「専門家が到達できる品質の天井」を引き上げるものだと位置づけられており、本ガイドで扱ってきた評価・監視・セキュリティ・人間との協働といったテーマは、まさにこの「天井」を支える実務スキルに当たります。</p>
+
+        <h3>14-3. まとめチェックリスト</h3>
+        <p>AIエージェント開発は、単に「賢いモデルを呼び出す」だけでは完結しません。次の6つの積み重ねが、実運用に耐えるAIエージェントアプリケーションを作り上げていきます。まずはステップ1〜5で紹介した最小構成のエージェントを自分の手で動かしてみることから始めてみてください。</p>
+
+        <ul class="checklist" id="checklist">
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">ワークフローとエージェントを適切に使い分け、必要な分だけ複雑さを足す</span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">ツール・メモリ・オーケストレーションという基本コンポーネントを丁寧に設計する</span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">MCPやA2Aのような標準プロトコルを活用し、相互運用性を確保する</span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">評価と監視を開発の初期段階から組み込み、改善のループを回し続ける</span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">Lethal TrifectaやMAESTROのような枠組みでセキュリティリスクを体系的に洗い出す</span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox">
+              <span class="checklist-text">人間の説明責任を前提に、自律性のレベルを段階的に調整する</span>
+            </label>
+          </li>
+        </ul>
+        <div class="checklist-counter" id="checklistCounter"><i class="ti ti-flag-3"></i> 0 / 6 完了</div>
+
+        <div class="source-note">
+          <i class="ti ti-link"></i>
+          <div><b>出典</b>: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（<a href="#ref13">参考文献13</a>・<a href="#ref14">14</a>）</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="glossary">
+      <div class="section-kicker"><i class="ti ti-book"></i> Glossary</div>
+      <h2><i class="ti ti-book"></i> 用語集</h2>
+      <div class="prose">
+        <div class="table-wrap">
+        <table class="glossary-table">
+          <tbody>
+            <tr><td>エージェント（Agent）</td><td>目標を達成するためにツールをループの中で実行するLLMシステム</td></tr>
+            <tr><td>ワークフロー（Workflow）</td><td>LLMとツールが事前に定義された経路に沿って動くシステム</td></tr>
+            <tr><td>MCP（Model Context Protocol）</td><td>AIモデルと外部ツール・データソースを標準化された方法で接続するオープンプロトコル</td></tr>
+            <tr><td>A2A（Agent2Agent）</td><td>異なるベンダー・フレームワークのエージェント同士が発見・通信・タスク委譲を行うためのオープンプロトコル</td></tr>
+            <tr><td>RAG（Retrieval-Augmented Generation）</td><td>外部の知識を検索してプロンプトに追加し、それをもとにLLMが回答を生成する手法</td></tr>
+            <tr><td>ReAct</td><td>「思考（Reasoning）」と「行動（Acting）」を交互に繰り返すエージェントのループ構造</td></tr>
+            <tr><td>オーケストレーター・ワーカー</td><td>中央のエージェントがタスクを分解し、複数のワーカーエージェントに割り振るパターン</td></tr>
+            <tr><td>Lethal Trifecta</td><td>プライベートデータへのアクセス、信頼できないコンテンツの処理、外部通信手段の3つが揃う危険な状態</td></tr>
+            <tr><td>MAESTRO</td><td>エージェント型AI専用の7層構造の脅威モデリングフレームワーク</td></tr>
+            <tr><td>ガードレール（Guardrail）</td><td>エージェントの入出力を検証し、安全性を確保するための仕組みの総称</td></tr>
+            <tr><td>ヒューマン・イン・ザ・ループ</td><td>人間がプロセスの中でレビューや承認などの役割を担う設計方針</td></tr>
+            <tr><td>ベクトルストア</td><td>テキストなどを埋め込みベクトルに変換して保存し、意味的な類似検索を可能にするデータベース</td></tr>
+            <tr><td>ナレッジグラフ</td><td>エンティティ同士の関係性を明示的に表現したデータ構造</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="references">
+      <div class="section-kicker"><i class="ti ti-link"></i> References</div>
+      <h2><i class="ti ti-link"></i> 参考文献・出典</h2>
+      <div class="prose">
+        <ul class="ref-list">
+          <li class="ref-card" id="ref1"><span class="ref-num">1</span><div class="ref-body"><div class="ref-title">Michael Albada, <em>Building Applications with AI Agents</em></div><div class="ref-meta">O'Reilly Media, 2025年9月</div><a class="ref-url" href="https://www.oreilly.com/library/view/building-applications-with/9781098176495/" target="_blank" rel="noopener">https://www.oreilly.com/library/view/building-applications-with/9781098176495/</a></div></li>
+          <li class="ref-card" id="ref2"><span class="ref-num">2</span><div class="ref-body"><div class="ref-title">Anthropic「Building Effective Agents」</div><a class="ref-url" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/building-effective-agents</a></div></li>
+          <li class="ref-card" id="ref3"><span class="ref-num">3</span><div class="ref-body"><div class="ref-title">OpenAI「A Practical Guide to Building Agents」(PDF)</div><a class="ref-url" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener">https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf</a></div></li>
+          <li class="ref-card" id="ref4"><span class="ref-num">4</span><div class="ref-body"><div class="ref-title">Dex Horthy／HumanLayer「12-Factor Agents」</div><a class="ref-url" href="https://github.com/humanlayer/12-factor-agents" target="_blank" rel="noopener">https://github.com/humanlayer/12-factor-agents</a></div></li>
+          <li class="ref-card" id="ref5"><span class="ref-num">5</span><div class="ref-body"><div class="ref-title">Simon Willison「I think 'agent' may finally have a widely enough agreed upon definition to be useful jargon now」</div><div class="ref-meta">2025年9月18日</div><a class="ref-url" href="https://simonwillison.net/2025/Sep/18/agents/" target="_blank" rel="noopener">https://simonwillison.net/2025/Sep/18/agents/</a></div></li>
+          <li class="ref-card" id="ref6"><span class="ref-num">6</span><div class="ref-body"><div class="ref-title">Simon Willison「The lethal trifecta for AI agents: private data, untrusted content, and external communication」</div><div class="ref-meta">2025年6月16日</div><a class="ref-url" href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/" target="_blank" rel="noopener">https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/</a></div></li>
+          <li class="ref-card" id="ref7"><span class="ref-num">7</span><div class="ref-body"><div class="ref-title">Anthropic「Introducing the Model Context Protocol」</div><div class="ref-meta">2024年11月</div><a class="ref-url" href="https://www.anthropic.com/news/model-context-protocol" target="_blank" rel="noopener">https://www.anthropic.com/news/model-context-protocol</a></div></li>
+          <li class="ref-card" id="ref8"><span class="ref-num">8</span><div class="ref-body"><div class="ref-title">Model Context Protocol 公式ドキュメント</div><a class="ref-url" href="https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro" target="_blank" rel="noopener">https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro</a></div></li>
+          <li class="ref-card" id="ref9"><span class="ref-num">9</span><div class="ref-body"><div class="ref-title">WorkOS「Everything your team needs to know about MCP in 2026」</div><a class="ref-url" href="https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026" target="_blank" rel="noopener">https://workos.com/blog/everything-your-team-needs-to-know-about-mcp-in-2026</a></div></li>
+          <li class="ref-card" id="ref10"><span class="ref-num">10</span><div class="ref-body"><div class="ref-title">Google Developers Blog「Google Cloud donates A2A to Linux Foundation」</div><div class="ref-meta">2025年6月23日</div><a class="ref-url" href="https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/" target="_blank" rel="noopener">https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/</a></div></li>
+          <li class="ref-card" id="ref11"><span class="ref-num">11</span><div class="ref-body"><div class="ref-title">A2A Protocol Blog「A New Chapter for A2A: Joining the Agentic AI Foundation」</div><div class="ref-meta">2026年8月27日</div><a class="ref-url" href="https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/" target="_blank" rel="noopener">https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/</a></div></li>
+          <li class="ref-card" id="ref12"><span class="ref-num">12</span><div class="ref-body"><div class="ref-title">Cloud Security Alliance（Ken Huang氏執筆）「Agentic AI Threat Modeling Framework: MAESTRO」</div><div class="ref-meta">2025年2月6日</div><a class="ref-url" href="https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro" target="_blank" rel="noopener">https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro</a></div></li>
+          <li class="ref-card" id="ref13"><span class="ref-num">13</span><div class="ref-body"><div class="ref-title">Andrej Karpathy「Sequoia Ascent 2026 summary」</div><a class="ref-url" href="https://karpathy.bearblog.dev/sequoia-ascent-2026/" target="_blank" rel="noopener">https://karpathy.bearblog.dev/sequoia-ascent-2026/</a></div></li>
+          <li class="ref-card" id="ref14"><span class="ref-num">14</span><div class="ref-body"><div class="ref-title">Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」(YouTube)</div><div class="ref-meta">2026年4月</div><a class="ref-url" href="https://www.youtube.com/watch?v=96jN2OCOfLs" target="_blank" rel="noopener">https://www.youtube.com/watch?v=96jN2OCOfLs</a></div></li>
+          <li class="ref-card" id="ref15"><span class="ref-num">15</span><div class="ref-body"><div class="ref-title">Firecrawl「The best open source frameworks for building AI agents in 2026」</div><a class="ref-url" href="https://www.firecrawl.dev/blog/best-open-source-agent-frameworks" target="_blank" rel="noopener">https://www.firecrawl.dev/blog/best-open-source-agent-frameworks</a></div></li>
+          <li class="ref-card" id="ref16"><span class="ref-num">16</span><div class="ref-body"><div class="ref-title">Techsy「LangGraph vs CrewAI vs OpenAI Agents (Ship Test 2026)」</div><a class="ref-url" href="https://techsy.io/en/blog/langgraph-vs-crewai-vs-openai-agents-sdk" target="_blank" rel="noopener">https://techsy.io/en/blog/langgraph-vs-crewai-vs-openai-agents-sdk</a></div></li>
+          <li class="ref-card" id="ref17"><span class="ref-num">17</span><div class="ref-body"><div class="ref-title">Model Context Protocol Blog「The 2026-07-28 Specification」</div><div class="ref-meta">2026年7月28日</div><a class="ref-url" href="https://blog.modelcontextprotocol.io/posts/2026-07-28/" target="_blank" rel="noopener">https://blog.modelcontextprotocol.io/posts/2026-07-28/</a></div></li>
+          <li class="ref-card" id="ref18"><span class="ref-num">18</span><div class="ref-body"><div class="ref-title">Model Context Protocol Blog「MCP joins the Agentic AI Foundation」（月間約9,700万ダウンロードの出典）</div><div class="ref-meta">2025年12月9日</div><a class="ref-url" href="https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/" target="_blank" rel="noopener">https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/</a></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>本ガイドはMarkdown版と内容・図表・出典を揃えたHTML版です。AIエージェント分野は変化が速いため、フレームワークや統計情報は各出典URLで最新状況をご確認ください。</p>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"
+        integrity="sha384-o+g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/highlight.min.js"
+        integrity="sha384-wjfDDhOPPdjtva8vWBhWeVprSpmxisEu5aYT3q1JyACqXpdKpo3PWZTMVq24MBix" crossorigin="anonymous"></script>
+<script>
+const DIAGRAMS = {
+  'diag-0': `
+flowchart TB
+    U[ユーザーの要求] --> LLM[基盤モデル]
+    LLM <--> RET[検索・Retrieval]
+    LLM <--> TOOL[ツール呼び出し]
+    LLM <--> MEM[メモリ]
+    LLM --> OUT[応答・アクション]
+    classDef hub fill:#c9c4ef,stroke:#4b47a3,stroke-width:1.5px,color:#221f52;
+    class LLM hub
+`,
+  'diag-1': `
+flowchart TB
+    WFT[ワークフロー 事前定義された経路] --> W1[入力] --> W2[ステップ1] --> W3[ステップ2] --> W4[出力]
+    AGT[エージェント LLMが動的に制御] --> A1[目標] --> A2[LLMが次の行動を決定]
+    A2 --> A3[ツール実行]
+    A3 --> A2
+    A2 --> A4[完了と判断したら終了]
+    classDef hub fill:#c9c4ef,stroke:#4b47a3,stroke-width:1.5px,color:#221f52;
+    classDef done fill:#bfe4d2,stroke:#2f6b4f,stroke-width:1.5px,color:#123722;
+    class WFT,AGT hub
+    class W4,A4 done
+`,
+  'diag-2': `
+flowchart TB
+    Q1{タスクは単純な1回の呼び出しで済むか} -->|はい| S1[単一LLM呼び出し]
+    Q1 -->|いいえ| Q2{手順を事前に固定できるか}
+    Q2 -->|順番に処理する| P1[プロンプトチェイニング]
+    Q2 -->|種類ごとに分岐する| P2[ルーティング]
+    Q2 -->|独立して並行できる| P3[並列化]
+    Q2 -->|経路が動的に変わる| Q3{中央のエージェントが作業を割り振るか}
+    Q3 -->|はい| P4[オーケストレーター・ワーカー]
+    Q3 -->|いいえ| Q4{反復的に品質を改善するか}
+    Q4 -->|はい| P5[評価・最適化ループ]
+    Q4 -->|いいえ| AG2[自律型エージェント]
+    Q2 -->|経路が予測不能で長い| AG2
+`,
+  'diag-3': `
+flowchart TB
+    CORE((エージェント)) --> MODEL[モデル選定]
+    CORE --> TOOLS[ツール]
+    CORE --> MEMORY[メモリ]
+    CORE --> ORCH[オーケストレーション]
+    MODEL -.精度と速度のトレードオフ.-> CORE
+    TOOLS -.モジュール性.-> CORE
+    MEMORY -.短期と長期.-> CORE
+    ORCH -.制御フロー.-> CORE
+    classDef hub fill:#c9c4ef,stroke:#4b47a3,stroke-width:1.5px,color:#221f52;
+    class CORE hub
+`,
+  'diag-4': `
+flowchart LR
+    START[目標を受け取る] --> THINK[思考 次の行動を推論]
+    THINK --> DONE{目標達成か}
+    DONE -->|いいえ| ACT[行動 ツール呼び出し]
+    ACT --> OBS[観察 結果を取得]
+    OBS --> THINK
+    DONE -->|はい| ENDN[最終応答を返す]
+    classDef done fill:#bfe4d2,stroke:#2f6b4f,stroke-width:1.5px,color:#123722;
+    class ENDN done
+`,
+  'diag-5': `
+flowchart LR
+    HOSTT[ホストアプリケーション] --> APP[Claude ChatGPTなど]
+    APP --> CLIENT1[MCPクライアント1]
+    APP --> CLIENT2[MCPクライアント2]
+    CLIENT1 <--> SERVER1[MCPサーバー ファイルシステム]
+    CLIENT2 <--> SERVER2[MCPサーバー データベースAPI]
+    SERVER1 --> DATA1[ローカルファイル]
+    SERVER2 --> DATA2[社内システム]
+`,
+  'diag-6': `
+flowchart LR
+    Q[ユーザーの質問] --> EMB[埋め込みに変換]
+    EMB --> SEARCH[ベクトル検索]
+    VDB[ベクトルストア] --> SEARCH
+    SEARCH --> TOPK[関連文書を取得]
+    TOPK --> PROMPT[プロンプトに追加]
+    PROMPT --> LLM2[基盤モデルが回答生成]
+    LLM2 --> ANS[回答]
+`,
+  'diag-7': `
+flowchart TB
+    ORCH2[オーケストレーターエージェント] --> W1B[ワーカー1 調査担当]
+    ORCH2 --> W2B[ワーカー2 分析担当]
+    ORCH2 --> W3B[ワーカー3 執筆担当]
+    W1B --> ORCH2
+    W2B --> ORCH2
+    W3B --> ORCH2
+    ORCH2 --> FINAL[統合された最終出力]
+`,
+  'diag-8': `
+flowchart LR
+    AGENT_A[エージェントA] -- MCPでツールとデータに接続 --> TOOLS2[ツールとデータソース]
+    AGENT_A -- A2Aで他エージェントに処理を委譲 --> AGENT_B[エージェントB]
+    AGENT_B -- MCPでツールとデータに接続 --> TOOLS3[ツールとデータソース]
+`,
+  'diag-9': `
+flowchart TB
+    DEV[開発中に評価セットを作成] --> COMP[コンポーネント評価 ツール・計画・メモリ・学習]
+    COMP --> HOL[全体評価 一貫性・整合性・幻覚]
+    HOL --> REAL[実環境でのテスト]
+    REAL --> DEPLOY[本番デプロイの準備]
+    classDef done fill:#bfe4d2,stroke:#2f6b4f,stroke-width:1.5px,color:#123722;
+    class DEPLOY done
+`,
+  'diag-10': `
+flowchart LR
+    PROD[本番運用] --> MON[モニタリング トレースとメトリクス収集]
+    MON --> DETECT[問題の自動検出]
+    DETECT --> HUMAN[人間によるレビュー]
+    HUMAN --> IMPROVE[プロンプト・ツールの改善]
+    IMPROVE --> EXP[ABテスト・シャドー実験]
+    EXP --> PROD
+`,
+  'diag-11': `
+flowchart TB
+    A3N[プライベートデータへのアクセス] --> D[危険な組み合わせ]
+    B3N[信頼できないコンテンツの処理] --> D
+    C3N[外部への通信手段] --> D
+    D --> RISK[データ漏えいのリスク]
+`,
+  'diag-12': `
+flowchart LR
+    L1[人間がすべて実行] --> L2[エージェントが提案し人間が承認]
+    L2 --> L3[エージェントが実行し人間は事後確認]
+    L3 --> L4[エージェントが自律的に実行]
+    L4 --> L5[エージェントが完全に自律的に運用]
+`,
+  'diag-13': `
+flowchart TB
+    P1[基礎 LLM APIとプロンプト設計を学ぶ] --> P2[初級 単一ツールを持つ単純なエージェントを作る]
+    P2 --> P3[中級 RAGとメモリを組み込む]
+    P3 --> P4[中級 フレームワークでマルチエージェント化する]
+    P4 --> P5[上級 評価・監視・セキュリティを整備する]
+    P5 --> P6[上級 本番運用と改善ループを回す]
+    classDef hub fill:#c9c4ef,stroke:#4b47a3,stroke-width:1.5px,color:#221f52;
+    classDef done fill:#bfe4d2,stroke:#2f6b4f,stroke-width:1.5px,color:#123722;
+    class P1 hub
+    class P6 done
+`
+};
+
+/* ==========================================================================
+   Building Applications with AI Agents — guide behavior
+   ========================================================================== */
+
+function dedent(str) {
+  const lines = str.replace(/^\n/, '').replace(/\s+$/, '').split('\n');
+  let minIndent = Infinity;
+  for (const line of lines) {
+    if (line.trim() === '') continue;
+    const m = line.match(/^(\s*)/);
+    minIndent = Math.min(minIndent, m[1].length);
+  }
+  if (!isFinite(minIndent)) minIndent = 0;
+  return lines.map(l => l.slice(minIndent)).join('\n');
+}
+
+/* ---- Mermaid ---- */
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  securityLevel: 'loose',
+  fontFamily: "'Noto Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif",
+  themeVariables: {
+    fontSize: '16px',
+    primaryColor: '#fffefa',
+    primaryBorderColor: '#4b47a3',
+    primaryTextColor: '#2b2620',
+    lineColor: '#7a7460',
+    secondaryColor: '#f1ead6',
+    tertiaryColor: '#fffefa',
+    edgeLabelBackground: '#faf6ec',
+    clusterBkg: '#fffefa',
+    clusterBorder: '#e6ddc7'
+  },
+  flowchart: {
+    htmlLabels: true,
+    curve: 'basis',
+    padding: 14
+  }
+});
+
+async function renderAllDiagrams() {
+  const nodes = document.querySelectorAll('.mermaid[data-diagram]');
+  for (const el of nodes) {
+    const key = el.getAttribute('data-diagram');
+    const src = dedent(DIAGRAMS[key] || '');
+    if (!src.trim()) continue;
+    try {
+      const { svg } = await mermaid.render(key + '-svg', src);
+      el.innerHTML = svg;
+      postProcessSvg(el);
+    } catch (err) {
+      el.innerHTML = '<p class="mermaid-loading">図の描画に失敗しました。</p>';
+      console.error('mermaid render error', key, err);
+    }
+  }
+}
+
+function postProcessSvg(container) {
+  const svg = container.querySelector('svg');
+  if (!svg) return;
+  const viewBox = svg.getAttribute('viewBox');
+  svg.removeAttribute('width');
+  svg.removeAttribute('height');
+  if (viewBox) {
+    const parts = viewBox.split(/\s+/).map(Number);
+    if (parts.length === 4) {
+      const vbW = parts[2];
+      let vbH = parts[3];
+      vbH += 15; /* flowchart safety buffer */
+      svg.setAttribute('viewBox', `${parts[0]} ${parts[1]} ${vbW} ${vbH}`);
+      svg.style.width = vbW + 'px';
+    }
+  }
+  svg.style.maxWidth = 'none';
+  svg.style.height = 'auto';
+  svg.style.flexShrink = '0';
+  svg.style.overflow = 'visible';
+  svg.style.display = 'block';
+}
+
+/* ---- code blocks (script-tag injection + dedent + hljs) ---- */
+function renderCodeBlocks() {
+  document.querySelectorAll('.code-block').forEach(block => {
+    const source = block.querySelector('script[type="text/plain"]');
+    const target = block.querySelector('code');
+    if (!source || !target) return;
+    target.textContent = dedent(source.textContent);
+    if (window.hljs) {
+      hljs.highlightElement(target);
+    }
+  });
+}
+
+/* ---- sidebar: mobile toggle ---- */
+function initMobileNav() {
+  const btn = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const scrim = document.getElementById('scrim');
+  if (!btn || !sidebar || !scrim) return;
+  const open = () => { sidebar.classList.add('open'); scrim.classList.add('show'); btn.setAttribute('aria-expanded', 'true'); };
+  const close = () => { sidebar.classList.remove('open'); scrim.classList.remove('show'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+  scrim.addEventListener('click', close);
+  sidebar.querySelectorAll('a.nav-a').forEach(a => a.addEventListener('click', close));
+}
+
+/* ---- sidebar: active section highlight ---- */
+function initActiveNav() {
+  const links = Array.from(document.querySelectorAll('.nav-a[data-target]'));
+  const sections = links
+    .map(l => document.getElementById(l.getAttribute('data-target')))
+    .filter(Boolean);
+  if (!sections.length) return;
+  const byId = {};
+  links.forEach(l => { byId[l.getAttribute('data-target')] = l; });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const link = byId[entry.target.id];
+      if (!link) return;
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+/* ---- checklist ---- */
+function initChecklist() {
+  const list = document.getElementById('checklist');
+  if (!list) return;
+  const counter = document.getElementById('checklistCounter');
+  const boxes = Array.from(list.querySelectorAll('input[type="checkbox"]'));
+  const update = () => {
+    const done = boxes.filter(b => b.checked).length;
+    boxes.forEach(b => {
+      const li = b.closest('li');
+      if (li) li.classList.toggle('done', b.checked);
+    });
+    if (counter) counter.textContent = `${done} / ${boxes.length} 完了`;
+  };
+  boxes.forEach(b => b.addEventListener('change', update));
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAllDiagrams();
+  renderCodeBlocks();
+  initMobileNav();
+  initActiveNav();
+  initChecklist();
+});
+
+</script>
+</body>
+</html>
