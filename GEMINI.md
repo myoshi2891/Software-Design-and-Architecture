@@ -147,6 +147,10 @@ flowchart TD
     （URL `/recommended-books/architecting-generative-ai-applications-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`ArchitectingGenAiSidebar.tsx`）に分離、
     実践チェックリストをクライアントコンポーネント（`ArchitectingGenAiChecklist.tsx`）に分離。
+  - `app/recommended-books/designing-multi-agent-systems-guide/page.tsx`
+    （URL `/recommended-books/designing-multi-agent-systems-guide`）。固定サイドバー +
+    scroll-spy をクライアントコンポーネント（`MultiAgentSidebar.tsx`）に分離、
+    設計チェックリストをクライアントコンポーネント（`MultiAgentChecklist.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
   `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
   索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
