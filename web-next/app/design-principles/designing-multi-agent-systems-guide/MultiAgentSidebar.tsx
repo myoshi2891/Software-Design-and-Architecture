@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const MOBILE_BREAKPOINT_PX = 900;
 
 export type NavSubItem = {
   readonly id: string;
@@ -20,12 +22,28 @@ type MultiAgentSidebarProps = {
 
 export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [activeId, setActiveId] = useState<string>(() => {
     return items[0]?.id ?? "top";
   });
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
-  const closeMenu = () => setIsOpen(false);
+  const closeMenu = () => {
+    setIsOpen(false);
+    toggleButtonRef.current?.focus();
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const checkIsMobile = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT_PX);
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -33,7 +51,10 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        toggleButtonRef.current?.focus();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -82,6 +103,7 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
   return (
     <>
       <button
+        ref={toggleButtonRef}
         type="button"
         className="sidebar-toggle"
         id="sidebarToggle"
@@ -101,7 +123,12 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
         aria-hidden="true"
       />
 
-      <nav className={`sidebar ${isOpen ? "open" : ""}`} id="sidebar">
+      <nav
+        className={`sidebar ${isOpen ? "open" : ""}`}
+        id="sidebar"
+        inert={isMobile && !isOpen}
+        aria-hidden={isMobile && !isOpen ? "true" : undefined}
+      >
         <div className="sidebar-brand">
           <div className="sidebar-brand-label">Guide</div>
           <div className="sidebar-brand-title">マルチエージェントシステムの設計</div>
