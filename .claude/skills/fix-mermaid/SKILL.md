@@ -54,7 +54,7 @@ Fix -.サイズ・見切れはここで直す.-> Run
 | `mermaid` の読込 | **モジュールスコープで共有する 1 本の `Promise`**（`loadMermaid()`）。インスタンスごとに `import("mermaid")` しない |
 | `mermaid.initialize` | `loadMermaid()` 解決後に**初回 1 回のみ**実行（`mermaidInitialized` フラグ） |
 | 描画 API | **`mermaid.render(一意ID, chart, containerEl)`**。`mermaid.run()` は使わない（§描画 ID 衝突） |
-| テスト環境 | Vitest / jsdom。`MermaidDiagram` は**必ずモックする** |
+| テスト環境 | Vitest / jsdom。ページ／ガイドの契約テストでは `MermaidDiagram` をモックする。`MermaidDiagram` 自身のテスト（§描画 ID 衝突の回帰テスト）では実コンポーネントを読み込み、`mermaid` のみをモックする |
 
 > 以降の「Mermaid v10 の必須ルール」は **v11 でも有効な基本構文ルール**である（カラム0・1行1ステートメント等）。
 > v10 固有の記述であることを理由に読み飛ばさないこと。
