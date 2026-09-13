@@ -138,6 +138,7 @@ export default function BuildingLlmPoweredSidebar({ groups }: BuildingLlmPowered
                   className={`nav-a ${isActive ? "active" : ""}`}
                   href={`#${item.id}`}
                   onClick={closeMenu}
+                  aria-current={isActive ? "location" : undefined}
                 >
                   {renderIcon(item)}
                   <span>{item.label}</span>
