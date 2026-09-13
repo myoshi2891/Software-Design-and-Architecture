@@ -26,6 +26,19 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
   const closeMenu = () => setIsOpen(false);
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
       return;
     }

@@ -85,7 +85,9 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
         type="button"
         className="sidebar-toggle"
         id="sidebarToggle"
-        aria-label="メニューを開く"
+        aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
+        aria-expanded={isOpen}
+        aria-controls="sidebar"
         onClick={toggleMenu}
       >
         &#9776;
