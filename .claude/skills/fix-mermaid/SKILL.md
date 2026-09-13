@@ -4,7 +4,8 @@ description: >
   Fix Mermaid syntax, rendering, clipping, readability, and sizing problems in HTML,
   Markdown, React, and TSX. Use when diagrams fail to render, Mermaid reports a syntax
   or version error, labels are clipped or unreadable, diagrams are too large or small,
-  different diagram types need individual sizing, or SVG/card layout is unbalanced.
+  different diagram types need individual sizing, diagrams render into the wrong container (one box shows two diagrams merged while another is empty),
+  or SVG/card layout is unbalanced.
 allowed-tools:
   - Read
   - Edit
@@ -14,7 +15,7 @@ allowed-tools:
 
 # Mermaid 構文・描画修正スキル
 
-(最終更新日: 2026-09-09)
+(最終更新日: 2026-09-13)
 
 ## 全体像: 図ソース → 描画パイプライン → SVG 後処理
 
@@ -24,7 +25,7 @@ allowed-tools:
 flowchart TD
 Src["図ソース: DIAGRAMS オブジェクト - md の mermaid フェンス - chart prop"] --> Norm["正規化: カラム0 - 1行1ステートメント - 全角文字置換"]
 Norm --> Init["mermaid.initialize: theme - themeVariables - fontSize"]
-Init --> Run["mermaid.run で SVG 生成"]
+Init --> Run["一意IDで mermaid.render し SVG を注入"]
 Run --> Fix["applySvgFixups: ライブ DOM 操作"]
 Fix --> W["width と height 属性を除去し style.width に自然px, maxWidth 100%"]
 Fix --> V["viewBox 高さ拡張: sequence と state は +110, その他は +15"]
@@ -41,6 +42,7 @@ Fix -.サイズ・見切れはここで直す.-> Run
 |---|---|---|
 | 図ソース | Syntax Error・図が出ない | `fix_mermaid.ts` / 全角文字置換 |
 | 描画パイプライン | 全図が未描画・二重描画 | `apply_render_pipeline.ts` / `initialize` |
+| 描画 ID | **1 枠に複数図が混在・別枠が空** | 描画 ID の一意化 + 描画の直列化（下記 §描画 ID 衝突） |
 | SVG 後処理 | 見切れ・異常拡大・文字色 | `applySvgFixups` / `.mbox` CSS |
 
 ## 前提バージョンと正準実装（推測禁止）
@@ -49,7 +51,9 @@ Fix -.サイズ・見切れはここで直す.-> Run
 |---|---|
 | Mermaid | **`mermaid@10.9.8`**（`web-next/package.json` の dependencies） |
 | React 共通コンポーネント | `web-next/components/MermaidDiagram.tsx` — **default エクスポート** `export default MermaidDiagram` |
-| `mermaid.initialize` | `useEffect` 内、`import("mermaid")` の `.then()` 内で実行（モジュール最上位ではない） |
+| `mermaid` の読込 | **モジュールスコープで共有する 1 本の `Promise`**（`loadMermaid()`）。インスタンスごとに `import("mermaid")` しない |
+| `mermaid.initialize` | `loadMermaid()` 解決後に**初回 1 回のみ**実行（`mermaidInitialized` フラグ） |
+| 描画 API | **`mermaid.render(一意ID, chart, containerEl)`**。`mermaid.run()` は使わない（§描画 ID 衝突） |
 | テスト環境 | Vitest / jsdom。`MermaidDiagram` は**必ずモックする** |
 
 > 以降の「Mermaid v10 の必須ルール」は **v11 でも有効な基本構文ルール**である（カラム0・1行1ステートメント等）。
@@ -156,7 +160,7 @@ bun run .claude/skills/fix-mermaid/scripts/fix_mermaid.ts path/to/file.tsx
 
 ### SVG サイズ制御
 
-Mermaid v10/v11 は SVG 要素に絶対ピクセル値の `width`/`height` 属性を付与する。`mermaid.run()` 後に必ず除去する。
+Mermaid v10/v11 は SVG 要素に絶対ピクセル値の `width`/`height` 属性を付与する。`mermaid.render()` の SVG を注入した後に必ず除去する。
 
 ```js
 svgEl.removeAttribute('width');
@@ -252,6 +256,77 @@ vi.mock("@/components/MermaidDiagram", () => ({
 
 `data-testid` は **`mermaid-diagram`** に統一すること。
 
+## ⚠️ 描画 ID 衝突による「図の混在・空枠」（2026年9月実地: web-next）
+
+### 症状
+
+1 ページに複数の Mermaid 図がある場合に、
+
+- **ある図の枠に別の図のノードが混ざって描画される**（例: 判断フロー図の中に別セクションの構成図のノードが出現）
+- **本来その図があるべき枠が空のまま**（キャプションだけが残る）
+
+構文は正しく、Console に構文エラーも出ない。リロードのたびに**再現したりしなかったり**する（タイミング依存）。
+
+### 根本原因（node_modules の実装を確認済み）
+
+1. `mermaid.run()` は描画 ID を **`mermaid-${Date.now()}` でしか採番しない**
+   （`InitIDGenerator`: `deterministicIds` が false のとき `next = () => Date.now()`）。
+   **ミリ秒精度**しかないため、同一 tick でマウントされた複数の図は同じ ID になる。
+2. flowchart 等の renderer は描画先 SVG を **`document.querySelector('[id="<ID>"]')` と文書全体から**選ぶ。
+   ID が衝突すると、後発の図が**文書順で最初に見つかった先行図の SVG**へ描き込まれる。
+3. 結果として「先行図＝混在」「後発図＝空」になる。
+
+> `deterministicIds: true` は解決にならない。`run()` は呼び出しごとに採番器を作り直すため、
+> 各インスタンスが揃って `mermaid-0` になり衝突がむしろ確実化する。
+
+### 対策（3 点セット。1 つでも欠けると再発する）
+
+1. **`run()` をやめて `render()` を直接呼び、ID を呼び出し側で一意に採番する。**
+   第 3 引数にコンテナ要素を渡すと採寸がページ内（`.mbox` スコープ）で行われ、
+   `document.body` 直下に退避された場合のフォントサイズ差による文字切れも避けられる。
+
+   ```ts
+   let diagramSeq = 0;
+   const uid = `mermaid-svg-${Date.now()}-${++diagramSeq}`;
+   const { svg, bindFunctions } = await mermaid.render(uid, chart, containerEl);
+   containerEl.innerHTML = svg;
+   bindFunctions?.(containerEl);
+   ```
+
+2. **描画を直列化する。** mermaid はグローバル設定と DOM 一時領域を共有するため、並行描画は避ける。
+
+   ```ts
+   let renderQueue: Promise<unknown> = Promise.resolve();
+   function enqueueRender<T>(task: () => Promise<T>): Promise<T> {
+     const result = renderQueue.then(task, task); // 失敗しても後続を止めない
+     renderQueue = result.catch(() => undefined);
+     return result;
+   }
+   ```
+
+3. **`import("mermaid")` と `initialize()` を 1 回に集約する。**
+   インスタンスごとの動的 import はモジュール解決を競合させ、`initialize` の多重実行は
+   描画中にグローバル設定を書き換える。
+
+   ```ts
+   let mermaidModulePromise: Promise<typeof import("mermaid")> | null = null;
+   const loadMermaid = () => (mermaidModulePromise ??= import("mermaid"));
+   let mermaidInitialized = false; // initialize は初回のみ
+   ```
+
+### 回帰テスト（必須）
+
+`components/MermaidDiagram.concurrency.test.tsx` を正本とする。**`mermaid` をモックし、
+2 インスタンスを同時マウントして次の 3 点を検証する**：
+
+- `render` が呼ばれた ID がすべて**一意**であること
+- `run()` が**呼ばれない**こと
+- 各コンテナが**自分の chart だけ**を保持すること（他方の chart を含まないこと）
+
+> **テストの落とし穴**: `vi.mock("mermaid")` は、インスタンスごとに `import("mermaid")` する実装だと
+> **同時 import の片方が実モジュールに解決されてしまい**、テストが不安定になる。
+> 上記 対策 3（共有 Promise）を実装していることがテスト成立の前提でもある。
+
 ## Mermaid 10.9.8 + React 共通コンポーネントの可読性・文字切れ・文字色対策（2026年6月追記）
 
 ### 症状と根本原因の対応表
@@ -262,7 +337,7 @@ vi.mock("@/components/MermaidDiagram", () => ({
 | ノード内の文字が下端で切れる | SVG `viewBox` 下端が見切れる | 描画後に `viewBox` の高さを拡張 + `overflow:visible` |
 | ノード文字が**右端**で切れる（emoji を含む図のみ） | `<foreignObject>` は `overflow:hidden` がデフォルト | CSS で `foreignObject { overflow: visible }` |
 | 文字色を変えても**全く反映されない** | `.next` キャッシュ汚染 | `.next` 削除 + dev サーバー完全再起動 + ハードリロード |
-| 日本語ラベルの幅不足による軽微な切れ | Web フォント読込前に採寸 | `mermaid.run()` 直前に `await document.fonts.ready` |
+| 日本語ラベルの幅不足による軽微な切れ | Web フォント読込前に採寸 | `mermaid.render()` 直前に `await document.fonts.ready` |
 
 ### 正準の `mermaid.initialize` 設定（Mermaid 10.9.8）
 
@@ -291,7 +366,7 @@ m.default.initialize({
 
 ### ⚠️ SVG 後処理は「文字列加工」ではなく「ライブ DOM 操作」で行う
 
-`mermaid.run()` 後、実 DOM の `querySelector('svg')` を直接操作する。`DOMParser('image/svg+xml')` + `XMLSerializer` で往復させると `foreignObject` 内の htmlLabels が壊れる。
+`mermaid.render()` が返した SVG 文字列を `innerHTML` で注入した後、実 DOM の `querySelector('svg')` を直接操作する。`DOMParser('image/svg+xml')` + `XMLSerializer` で往復させると `foreignObject` 内の htmlLabels が壊れる。
 
 `applySvgFixups` の実装は `web-next/components/MermaidDiagram.tsx` を正本とする。主要ロジック:
 
@@ -354,7 +429,7 @@ rm -rf .next
 bun run dev
 ```
 
-2. ブラウザは**ハードリロード（⌘+Shift+R）**。
+2. ブラウザは**ハードリロード（⌘+Shift+R）**。複数図のあるページでは**数回リロードして**、図の混在・空枠が出ないことを確認する（ID 衝突はタイミング依存で毎回は出ない）。
 3. `web-next/` で以下の 4 コマンドが**全通過**することを確認する（CLAUDE.md の必須要件）:
 
 ```bash
@@ -380,6 +455,7 @@ bun run build
 
 - Mermaid バージョン定義（`mermaid@10.9.8`）: [`web-next/package.json`](../../../web-next/package.json)
 - React 共通コンポーネント（`applySvgFixups` の正本）: [`web-next/components/MermaidDiagram.tsx`](../../../web-next/components/MermaidDiagram.tsx)
+- 描画 ID 衝突の回帰テスト: [`web-next/components/MermaidDiagram.concurrency.test.tsx`](../../../web-next/components/MermaidDiagram.concurrency.test.tsx)
 - Mermaid v10 公式ドキュメント: <https://mermaid.js.org/intro/>
 - Mermaid 設定リファレンス（`initialize` / `themeVariables`）: <https://mermaid.js.org/config/schema-docs/config.html>
 - Mermaid リリースノート一覧（v10 系の変更点確認用）: <https://github.com/mermaid-js/mermaid/releases>
