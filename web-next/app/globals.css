@@ -9812,11 +9812,56 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
     width: 100%; display: flex; justify-content: safe center;
     overflow-x: auto;
   }
+  .diagram-wrap .mermaid {
+    display: flex;
+    justify-content: safe center;
+    width: 100%;
+  }
+  .diagram-wrap .mermaid svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    flex-shrink: 0;
+  }
   .diagram-caption {
     font-size: 0.95rem; color: var(--ink-soft); text-align: center;
     margin-top: 0.7rem; font-weight: 700;
   }
   .diagram-caption .src { color: var(--ink-faint); font-weight: 400; }
+
+  /* Mermaid SVG 内部のスタイリング（原本紙面調デザイン完全再現 & 1rem基準） */
+  .diagram-wrap .mermaid svg foreignObject {
+    overflow: visible;
+  }
+  .diagram-wrap .mermaid svg foreignObject > div,
+  .diagram-wrap .mermaid svg .nodeLabel,
+  .diagram-wrap .mermaid svg text,
+  .diagram-wrap .mermaid svg tspan {
+    overflow: visible;
+    font-size: 1rem !important;
+    font-family: var(--font-body);
+  }
+  .diagram-wrap .mermaid svg .edgeLabel {
+    overflow: visible;
+    font-size: 0.9rem !important;
+    color: var(--ink) !important;
+  }
+  .diagram-wrap .mermaid svg .edgeLabel rect,
+  .diagram-wrap .mermaid svg .edgeLabel .labelBkg {
+    fill: #f7ecd2 !important;
+    opacity: 0.95;
+    rx: 4px;
+    ry: 4px;
+  }
+  .diagram-wrap .mermaid svg .edgePath .path {
+    stroke: #8a8171 !important;
+    stroke-width: 1.5px;
+  }
+  .diagram-wrap .mermaid svg .marker {
+    fill: #8a8171 !important;
+    stroke: #8a8171 !important;
+  }
 
   /* ===== Code blocks ===== */
   .code-block {

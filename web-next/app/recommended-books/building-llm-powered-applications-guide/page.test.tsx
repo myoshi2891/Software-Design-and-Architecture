@@ -3,7 +3,13 @@ import { describe, expect, it, vi } from "vitest";
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
-  default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
+  default: ({ chart, preserveNaturalScale }: { chart: string; preserveNaturalScale?: boolean }) => (
+    <div
+      className="mermaid"
+      data-chart={chart}
+      data-preserve-natural-scale={preserveNaturalScale ? "true" : "false"}
+    />
+  ),
 }));
 
 import Page from "./page";
@@ -87,6 +93,18 @@ describe("building-llm-powered-applications-guide page contract", () => {
     expect(cssContent).toMatch(/--font-display:\s*var\(--font-shippori-mincho\)/);
   });
 
+  it("globals.css に Mermaid 図解の中央寄せと 1rem 文字基準のスタイルが定義されている", () => {
+    const fs = require("node:fs");
+    const path = require("node:path");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
+    const cssContent = fs.readFileSync(cssPath, "utf-8");
+
+    expect(cssContent).toContain(".diagram-wrap .mermaid");
+    expect(cssContent).toContain("justify-content: safe center");
+    expect(cssContent).toContain("font-size: 1rem !important");
+    expect(cssContent).toContain(".edgeLabel");
+  });
+
   it("コードブロックの行数が原本 HTML と 100% 一致する（二重改行なし）", () => {
     const { container } = render(<Page />);
     const pres = container.querySelectorAll("pre");
@@ -99,7 +117,7 @@ describe("building-llm-powered-applications-guide page contract", () => {
     expect(testLines.length).toBe(98);
   });
 
-  it("すべての Mermaid 図に原本と同じライト紙面調テーマ設定ディレクティブが付与されている", () => {
+  it("すべての Mermaid 図に原本と同じライト紙面調テーマ設定（エッジラベル背景含む）が付与されている", () => {
     const { container } = render(<Page />);
     const diagrams = container.querySelectorAll(".mermaid");
     expect(diagrams).toHaveLength(15);
@@ -108,6 +126,16 @@ describe("building-llm-powered-applications-guide page contract", () => {
       expect(chart).toContain("%%{init:");
       expect(chart).toContain('"theme": "base"');
       expect(chart).toContain('"primaryColor": "#ece9fa"');
+      expect(chart).toContain('"edgeLabelBackground": "#f7ecd2"');
+    }
+  });
+
+  it("すべての Mermaid 図が 1rem 基準の自然幅（preserveNaturalScale）で指定されている", () => {
+    const { container } = render(<Page />);
+    const diagrams = container.querySelectorAll(".mermaid");
+    expect(diagrams).toHaveLength(15);
+    for (const d of diagrams) {
+      expect(d.getAttribute("data-preserve-natural-scale")).toBe("true");
     }
   });
 });

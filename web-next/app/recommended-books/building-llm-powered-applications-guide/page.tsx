@@ -110,7 +110,7 @@ const CHECKLIST_ITEMS: readonly ChecklistItem[] = [
   },
 ];
 
-const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ece9fa", "primaryTextColor": "#241f1a", "primaryBorderColor": "#453a8c", "lineColor": "#8a8171", "secondaryColor": "#f7ecd2", "tertiaryColor": "#f2ecdd", "fontFamily": "Noto Sans JP, sans-serif", "fontSize": "16px"}, "flowchart": {"curve": "basis", "htmlLabels": true}}}%%`;
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ece9fa", "primaryTextColor": "#241f1a", "primaryBorderColor": "#453a8c", "lineColor": "#8a8171", "secondaryColor": "#f7ecd2", "tertiaryColor": "#f2ecdd", "edgeLabelBackground": "#f7ecd2", "fontFamily": "Noto Sans JP, sans-serif", "fontSize": "16px"}, "flowchart": {"curve": "basis", "htmlLabels": true}}}%%`;
 
 const DIAGRAM_D1 = `${MERMAID_INIT}\nflowchart TB
 Start(["LLMアプリを作りたい"]) --> S1["Step1 基礎を理解する"]
@@ -634,7 +634,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D1} />
+                <MermaidDiagram chart={DIAGRAM_D1} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">図1: LLMアプリケーション開発の全体マップ</div>
             </div>
@@ -661,7 +661,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D2} />
+                <MermaidDiagram chart={DIAGRAM_D2} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図2: LLMが製品として提供されるまでの一般的な流れ
@@ -759,7 +759,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D3} />
+                <MermaidDiagram chart={DIAGRAM_D3} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">図3: LLM選定のディシジョンフロー</div>
             </div>
@@ -835,7 +835,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D4} />
+                <MermaidDiagram chart={DIAGRAM_D4} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図4: プロンプトエンジニアリング技法の選択フロー
@@ -932,7 +932,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D5} />
+                <MermaidDiagram chart={DIAGRAM_D5} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図5: 拡張されたLLM（Augmented LLM）の構成図
@@ -1012,7 +1012,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D6} />
+                <MermaidDiagram chart={DIAGRAM_D6} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図6: プロンプトチェイニングのワークフロー<span className="src">（出典2）</span>
@@ -1025,7 +1025,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D7} />
+                <MermaidDiagram chart={DIAGRAM_D7} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図7: ルーティングのワークフロー<span className="src">（出典2）</span>
@@ -1038,7 +1038,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D8} />
+                <MermaidDiagram chart={DIAGRAM_D8} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図8: 並列化のワークフロー<span className="src">（出典2）</span>
@@ -1051,7 +1051,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D9} />
+                <MermaidDiagram chart={DIAGRAM_D9} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図9: オーケストレーター・ワーカーのワークフロー
@@ -1065,7 +1065,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D10} />
+                <MermaidDiagram chart={DIAGRAM_D10} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図10: 評価者・最適化ループのワークフロー<span className="src">（出典2）</span>
@@ -1078,7 +1078,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D11} />
+                <MermaidDiagram chart={DIAGRAM_D11} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図11: 自律型エージェントのループ<span className="src">（出典2）</span>
@@ -1157,7 +1157,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D12} />
+                <MermaidDiagram chart={DIAGRAM_D12} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図12: Adaptive RAGのパイプライン選択フロー
@@ -1306,7 +1306,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D13} />
+                <MermaidDiagram chart={DIAGRAM_D13} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図13: ファインチューニング要否の決定木
@@ -1374,7 +1374,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D14} />
+                <MermaidDiagram chart={DIAGRAM_D14} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">
                 図14: 評価とオブザーバビリティの3層構造
@@ -1596,7 +1596,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
 
             <div className="diagram-card">
               <div className="diagram-wrap">
-                <MermaidDiagram chart={DIAGRAM_D15} />
+                <MermaidDiagram chart={DIAGRAM_D15} preserveNaturalScale={true} />
               </div>
               <div className="diagram-caption">図15: 初学者のための学習ロードマップ</div>
             </div>
