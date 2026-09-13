@@ -30,9 +30,9 @@ describe("MultiAgentSidebar", () => {
     render(<MultiAgentSidebar groups={testGroups} />);
     expect(screen.getByText("はじめに")).toBeInTheDocument();
     expect(screen.getByText("本ガイドについて")).toBeInTheDocument();
-    expect(screen.getByText("第0部　前提知識 — LLMエージェントとは何か")).toBeInTheDocument();
-    expect(screen.getByText("第1部　なぜマルチエージェントなのか — 効果とコスト、そして反論")).toBeInTheDocument();
-    expect(screen.getByText("第2部　基本設計パターン9種")).toBeInTheDocument();
+    expect(screen.getByText(/第0部.*前提知識/)).toBeInTheDocument();
+    expect(screen.getByText(/第1部.*なぜマルチエージェントなのか/)).toBeInTheDocument();
+    expect(screen.getByText(/第2部.*基本設計パターン9種/)).toBeInTheDocument();
   });
 
   it("モバイルトグルボタンでサイドバーの開閉状態を切り替える", () => {

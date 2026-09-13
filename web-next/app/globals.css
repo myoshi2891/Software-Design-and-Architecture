@@ -10498,4 +10498,568 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
   scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
 
+/* ==========================================================================
+   designing-multi-agent-systems-guide スコープ
+   ========================================================================== */
+.designing-multi-agent-systems-guide {
+  --bg: #ffffff;
+  --bg-alt: #f6f8fb;
+  --surface: #ffffff;
+  --border: #e4e9f1;
+  --border-strong: #d3dbe8;
+  --text: #1a2233;
+  --text-dim: #5b6472;
+  --text-faint: #8993a4;
+  --accent: #2f6fed;
+  --accent-dark: #1d4fbe;
+  --accent-soft: #eaf1ff;
+  --accent-soft-2: #dde9ff;
+  --danger-bg: #fdecee;
+  --danger-border: #d64550;
+  --danger-text: #8a1220;
+  --code-bg: #f6f8fa;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(15, 23, 42, 0.06);
+  --sidebar-w: 340px;
+  --radius: 10px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", "Yu Gothic UI", "Meiryo", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .layout {
+    display: block;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* --- サイドバー --- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 28px 0 40px;
+    z-index: 50;
+  }
+  .sidebar-brand {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .sidebar-brand-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .sidebar-brand-title {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 8px;
+  }
+  .nav-group-item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-sub-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-item {
+    margin: 1px 0;
+    min-width: 0;
+    list-style: none;
+  }
+  .nav-h2 > .nav-link {
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 8px 10px;
+  }
+  .nav-h3 > .nav-link {
+    font-size: 13.5px;
+    padding: 6px 8px 6px 20px;
+    color: var(--text-dim);
+  }
+  .nav-link {
+    display: block;
+    min-width: 0;
+    color: var(--text);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    line-height: 1.5;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .nav-link:hover {
+    background: var(--accent-soft);
+    text-decoration: none;
+  }
+  .nav-link.active {
+    background: var(--accent-soft-2);
+    color: var(--accent-dark);
+    border-left-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* --- メイン --- */
+  .main {
+    margin-left: var(--sidebar-w);
+    padding: 56px 64px 96px;
+  }
+
+  .hero {
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--accent-dark);
+    background: var(--accent-soft);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 34px;
+    line-height: 1.45;
+    margin: 0 0 16px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 860px;
+  }
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: 999px;
+  }
+  .hero-pill strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .main h2 {
+    font-size: 25px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 56px 0 18px;
+    padding-top: 8px;
+    scroll-margin-top: 24px;
+  }
+  .main h2:first-of-type {
+    margin-top: 0;
+  }
+  .main h3 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 34px 0 14px;
+    scroll-margin-top: 24px;
+  }
+  .main h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin: 26px 0 10px;
+    scroll-margin-top: 24px;
+  }
+  .main p,
+  .main ul,
+  .main ol {
+    color: var(--text);
+  }
+  .main p {
+    margin: 0 0 16px;
+  }
+  .main ul,
+  .main ol {
+    margin: 0 0 16px;
+    padding-left: 1.4em;
+  }
+  .main li {
+    margin: 5px 0;
+  }
+  .main hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 44px 0;
+  }
+  .main strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .main code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.1em 0.4em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* --- テーブル --- */
+  .table-scroll {
+    overflow-x: auto;
+    margin: 0 0 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 480px;
+    font-size: 14.5px;
+  }
+  thead tr {
+    background: var(--bg-alt);
+  }
+  th {
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  tr.odd td {
+    background: var(--surface);
+  }
+  tr.even td {
+    background: var(--bg-alt);
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* --- Mermaid --- */
+  .mermaid {
+    width: 100%;
+    display: flex;
+    justify-content: safe center;
+    overflow-x: auto;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 16px;
+    margin: 0 0 26px;
+    box-shadow: var(--shadow);
+  }
+  .mermaid svg {
+    flex-shrink: 0;
+  }
+  .mermaid p {
+    color: inherit;
+    margin: 0;
+  }
+
+  /* --- コードブロック --- */
+  pre.code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 0 0 22px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    box-shadow: var(--shadow);
+    font-family: var(--font-mono);
+  }
+
+  /* 構文ハイライト */
+  .kw {
+    color: #d73a49;
+    font-weight: 600;
+  }
+  .st {
+    color: #032f62;
+  }
+  .fn {
+    color: #6f42c1;
+  }
+  .cm {
+    color: #6a737d;
+    font-style: italic;
+  }
+  .nu {
+    color: #005cc5;
+  }
+
+  /* --- 参考文献カード --- */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+  }
+  .ref-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+  }
+  .ref-card-title {
+    margin: 0 0 12px;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--accent-dark);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  .ref-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ref-item {
+    min-width: 0;
+  }
+  .ref-item-title {
+    display: block;
+    font-size: 13.5px;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 3px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .ref-item-url {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+  }
+  .ref-item-url:hover {
+    color: var(--accent-dark);
+  }
+
+  /* --- チェックリスト --- */
+  .checklist-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin: 0 0 26px;
+  }
+  .checklist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-header-title {
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .checklist-counter {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    background: var(--accent-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  ul.checklist {
+    list-style: none;
+    margin: 0;
+    padding: 6px 8px;
+  }
+  ul.checklist li {
+    margin: 0;
+    list-style: none;
+  }
+  ul.checklist label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+  }
+  ul.checklist label:hover {
+    background: var(--bg-alt);
+  }
+  ul.checklist input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin-top: 2px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 5px;
+    background: var(--surface);
+    position: relative;
+    cursor: pointer;
+  }
+  ul.checklist input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  ul.checklist input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  ul.checklist li:has(input:checked) label {
+    color: var(--text-faint);
+    text-decoration: line-through;
+  }
+
+  /* --- モバイル対応 --- */
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 100;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 18px;
+    color: var(--text);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .sidebar-backdrop {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      width: min(84vw, 320px);
+      box-shadow: 4px 0 24px rgba(15, 23, 42, 0.18);
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    .main {
+      margin-left: 0;
+      padding: 84px 20px 72px;
+    }
+    .sidebar-toggle {
+      display: flex;
+    }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      z-index: 40;
+    }
+    .sidebar-backdrop.open {
+      display: block;
+    }
+    .hero h1 {
+      font-size: 26px;
+    }
+    .ref-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+body.has-common-header .designing-multi-agent-systems-guide .sidebar {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .designing-multi-agent-systems-guide .sidebar-toggle {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 14px);
+}
+
+body.has-common-header .designing-multi-agent-systems-guide h2,
+body.has-common-header .designing-multi-agent-systems-guide h3,
+body.has-common-header .designing-multi-agent-systems-guide h4 {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
+
+
 

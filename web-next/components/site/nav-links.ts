@@ -141,6 +141,10 @@ export const navLinks: readonly NavLink[] = [
         name: "生成AIアプリ構築ガイド",
         href: "/recommended-books/architecting-generative-ai-applications-guide",
       },
+      {
+        name: "マルチエージェントシステムの設計",
+        href: "/recommended-books/designing-multi-agent-systems-guide",
+      },
     ],
   },
 ];

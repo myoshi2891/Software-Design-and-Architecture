@@ -210,6 +210,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
         status: "published",
       },
+      {
+        name: "マルチエージェントシステムの設計",
+        href: "/recommended-books/designing-multi-agent-systems-guide",
+        summary:
+          "主要各社の一次情報に基づき、LLMマルチエージェントシステムの設計パターンと実装を学ぶ",
+        status: "published",
+      },
     ],
   },
 ];
