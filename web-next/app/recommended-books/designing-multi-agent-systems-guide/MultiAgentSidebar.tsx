@@ -92,10 +92,7 @@ export default function MultiAgentSidebar({ groups }: MultiAgentSidebarProps) {
                   const isActive = activeId === item.id;
                   const isH2 = !item.id.includes(".") && !item.id.match(/^\d+\.\d+/);
                   return (
-                    <li
-                      key={item.id}
-                      className={`nav-item ${isH2 ? "nav-h2" : "nav-h3"}`}
-                    >
+                    <li key={item.id} className={`nav-item ${isH2 ? "nav-h2" : "nav-h3"}`}>
                       <a
                         href={`#${item.id}`}
                         className={`nav-link ${isActive ? "active" : ""}`}
