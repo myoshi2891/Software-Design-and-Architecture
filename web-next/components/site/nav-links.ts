@@ -130,4 +130,13 @@ export const navLinks: readonly NavLink[] = [
       },
     ],
   },
+  {
+    name: "推薦書籍",
+    children: [
+      {
+        name: "LLMアプリ構築ガイド",
+        href: "/recommended-books/building-llm-powered-applications-guide",
+      },
+    ],
+  },
 ];

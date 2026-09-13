@@ -1,8 +1,6 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import BuildingLlmPoweredSidebar, {
-  type NavGroup,
-} from "./BuildingLlmPoweredSidebar";
+import BuildingLlmPoweredSidebar, { type NavGroup } from "./BuildingLlmPoweredSidebar";
 
 const TEST_GROUPS: NavGroup[] = [
   {
@@ -124,12 +122,16 @@ describe("BuildingLlmPoweredSidebar", () => {
     expect(toggleBtn).not.toBeNull();
     expect(sidebar?.classList.contains("open")).toBe(false);
 
-    fireEvent.click(toggleBtn!);
-    expect(sidebar?.classList.contains("open")).toBe(true);
-    expect(overlay?.classList.contains("open")).toBe(true);
+    if (!toggleBtn || !overlay) {
+      throw new Error("toggleBtn or overlay not found");
+    }
 
-    fireEvent.click(overlay!);
+    fireEvent.click(toggleBtn);
+    expect(sidebar?.classList.contains("open")).toBe(true);
+    expect(overlay.classList.contains("open")).toBe(true);
+
+    fireEvent.click(overlay);
     expect(sidebar?.classList.contains("open")).toBe(false);
-    expect(overlay?.classList.contains("open")).toBe(false);
+    expect(overlay.classList.contains("open")).toBe(false);
   });
 });

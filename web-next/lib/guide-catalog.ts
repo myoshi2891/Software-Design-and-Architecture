@@ -193,4 +193,16 @@ export const guideCatalog: readonly GuideCategory[] = [
       },
     ],
   },
+  {
+    id: "recommended-books",
+    name: "推薦書籍",
+    entries: [
+      {
+        name: "LLMアプリ構築ガイド",
+        href: "/recommended-books/building-llm-powered-applications-guide",
+        summary: "Valentina Alto著『Building LLM Powered Applications』を起点に最新実践知を学ぶ",
+        status: "published",
+      },
+    ],
+  },
 ];
