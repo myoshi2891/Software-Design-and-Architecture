@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DisclaimerBanner } from "@/components/site/DisclaimerBanner";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { jetbrainsMono, notoSansJp } from "@/lib/fonts";
+import { jetbrainsMono, notoSansJp, shipporiMincho, sourceSerif4 } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,7 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${notoSansJp.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="ja"
+      className={`${notoSansJp.variable} ${jetbrainsMono.variable} ${shipporiMincho.variable} ${sourceSerif4.variable}`}
+    >
       <body className="has-common-header">
         <SiteHeader />
         <DisclaimerBanner />

@@ -9588,9 +9588,9 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
   --radius: 14px;
   --radius-sm: 8px;
   --sidebar-w: 288px;
-  --font-display: var(--font-sans);
-  --font-body: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-display: var(--font-shippori-mincho), var(--font-source-serif-4), 'Shippori Mincho', 'Source Serif 4', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --font-body: var(--font-noto-sans-jp), 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   background: var(--paper);
   color: var(--ink);
@@ -9832,7 +9832,7 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
   .code-block pre {
     margin: 0; overflow-x: auto; background: #fff;
     padding: 1.1rem 1.2rem;
-    font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.7;
+    font-family: var(--font-mono); font-size: 1rem; line-height: 1.7;
     color: var(--ink);
   }
 

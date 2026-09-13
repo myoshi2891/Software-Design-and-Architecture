@@ -84,5 +84,30 @@ describe("building-llm-powered-applications-guide page contract", () => {
 
     expect(cssContent).toContain(".building-llm-powered-applications-guide");
     expect(cssContent).toContain('.category[data-category="recommended-books"]');
+    expect(cssContent).toMatch(/--font-display:\s*var\(--font-shippori-mincho\)/);
+  });
+
+  it("コードブロックの行数が原本 HTML と 100% 一致する（二重改行なし）", () => {
+    const { container } = render(<Page />);
+    const pres = container.querySelectorAll("pre");
+    expect(pres).toHaveLength(2);
+
+    // pre 内の改行数を検証（原本: app/main.py は 109 行、tests/test_main.py は 98 行）
+    const mainLines = (pres[0]?.innerHTML ?? "").trim().split("\n");
+    const testLines = (pres[1]?.innerHTML ?? "").trim().split("\n");
+    expect(mainLines.length).toBe(109);
+    expect(testLines.length).toBe(98);
+  });
+
+  it("すべての Mermaid 図に原本と同じライト紙面調テーマ設定ディレクティブが付与されている", () => {
+    const { container } = render(<Page />);
+    const diagrams = container.querySelectorAll(".mermaid");
+    expect(diagrams).toHaveLength(15);
+    for (const d of diagrams) {
+      const chart = d.getAttribute("data-chart") ?? "";
+      expect(chart).toContain("%%{init:");
+      expect(chart).toContain('"theme": "base"');
+      expect(chart).toContain('"primaryColor": "#ece9fa"');
+    }
   });
 });

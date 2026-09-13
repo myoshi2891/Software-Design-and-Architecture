@@ -110,7 +110,9 @@ const CHECKLIST_ITEMS: readonly ChecklistItem[] = [
   },
 ];
 
-const DIAGRAM_D1 = `flowchart TB
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ece9fa", "primaryTextColor": "#241f1a", "primaryBorderColor": "#453a8c", "lineColor": "#8a8171", "secondaryColor": "#f7ecd2", "tertiaryColor": "#f2ecdd", "fontFamily": "Noto Sans JP, sans-serif", "fontSize": "16px"}, "flowchart": {"curve": "basis", "htmlLabels": true}}}%%`;
+
+const DIAGRAM_D1 = `${MERMAID_INIT}\nflowchart TB
 Start(["LLMアプリを作りたい"]) --> S1["Step1 基礎を理解する"]
 S1 --> S2["Step2 LLMを選ぶ"]
 S2 --> S3["Step3 プロンプトを設計する"]
@@ -129,12 +131,12 @@ classDef hub fill:#c9c4ef,color:#221f52,stroke:#453a8c;
 classDef done fill:#bfe4d2,color:#123722,stroke:#2f6b4f;
 class Start hub
 class Goal done`;
-const DIAGRAM_D2 = `flowchart LR
+const DIAGRAM_D2 = `${MERMAID_INIT}\nflowchart LR
 A["事前学習 膨大なテキストで次トークン予測を学習"] --> B["事後学習 指示追従や対話形式にチューニング"]
 B --> C["評価 ベンチマークと人間評価で品質を確認"]
 C --> D["デプロイ APIやアプリとして提供"]
 D -->|"継続的な改善"| B`;
-const DIAGRAM_D3 = `flowchart TB
+const DIAGRAM_D3 = `${MERMAID_INIT}\nflowchart TB
 Q1{"最も重視する要件は"}
 Q1 -->|"最高精度のコーディングや複雑な推論"| A["フロンティア級モデルを検討する"]
 Q1 -->|"高頻度リクエストでコストを抑えたい"| B["軽量高速モデルを検討する"]
@@ -147,7 +149,7 @@ D --> E
 E --> F["自分のタスクで実際に評価データセットを使って検証する"]
 classDef hub fill:#c9c4ef,color:#221f52,stroke:#453a8c;
 class Q1 hub`;
-const DIAGRAM_D4 = `flowchart TB
+const DIAGRAM_D4 = `${MERMAID_INIT}\nflowchart TB
 Q1{"指示は明確か"}
 Q1 -->|"いいえ"| R1["まず指示を明確にする"]
 Q1 -->|"はい"| Q2{"タスクはシンプルか"}
@@ -159,7 +161,7 @@ Q4 -->|"はい"| R4["プロンプトチェイニングで分割する"]
 Q4 -->|"いいえ"| Q5{"推論過程の透明性が必要か"}
 Q5 -->|"はい"| R5["拡張思考または思考の連鎖を使う"]
 Q5 -->|"いいえ"| R2`;
-const DIAGRAM_D5 = `flowchart TB
+const DIAGRAM_D5 = `${MERMAID_INIT}\nflowchart TB
 User(["ユーザーの入力"]) --> LLM["拡張されたLLM"]
 LLM <--> Retrieval["検索 外部知識やドキュメント"]
 LLM <--> Tools["ツール呼び出し 関数やAPI"]
@@ -167,14 +169,14 @@ LLM <--> Memory["メモリ 会話履歴や長期記憶"]
 LLM --> Output(["応答またはアクション"])
 classDef hub fill:#c9c4ef,color:#221f52,stroke:#453a8c;
 class LLM hub`;
-const DIAGRAM_D6 = `flowchart LR
+const DIAGRAM_D6 = `${MERMAID_INIT}\nflowchart LR
 In(["入力"]) --> L1["LLM呼び出し1"]
 L1 --> G1{"ゲート 品質チェック"}
 G1 -->|"合格"| L2["LLM呼び出し2"]
 G1 -->|"不合格"| Fix["修正して再実行"]
 Fix --> L1
 L2 --> Out(["出力"])`;
-const DIAGRAM_D7 = `flowchart TB
+const DIAGRAM_D7 = `${MERMAID_INIT}\nflowchart TB
 In(["入力クエリ"]) --> Router{"クエリを分類する"}
 Router -->|"簡単な質問"| Small["軽量高速モデル"]
 Router -->|"難しい質問"| Large["高性能モデル"]
@@ -182,7 +184,7 @@ Router -->|"専門領域の質問"| Special["専用プロンプトまたは専�
 Small --> Out(["応答"])
 Large --> Out
 Special --> Out`;
-const DIAGRAM_D8 = `flowchart TB
+const DIAGRAM_D8 = `${MERMAID_INIT}\nflowchart TB
 In(["タスク"]) --> Split["分割する セクショニングまたは投票"]
 Split --> P1["LLM呼び出しA"]
 Split --> P2["LLM呼び出しB"]
@@ -191,7 +193,7 @@ P1 --> Agg["結果を集約する"]
 P2 --> Agg
 P3 --> Agg
 Agg --> Out(["最終出力"])`;
-const DIAGRAM_D9 = `flowchart TB
+const DIAGRAM_D9 = `${MERMAID_INIT}\nflowchart TB
 In(["複雑なタスク"]) --> Orch["オーケストレーターLLM"]
 Orch --> W1["ワーカー1 動的に割当"]
 Orch --> W2["ワーカー2 動的に割当"]
@@ -202,13 +204,13 @@ W3 --> Syn
 Syn --> Out(["最終出力"])
 classDef hub fill:#c9c4ef,color:#221f52,stroke:#453a8c;
 class Orch hub`;
-const DIAGRAM_D10 = `flowchart LR
+const DIAGRAM_D10 = `${MERMAID_INIT}\nflowchart LR
 In(["タスク"]) --> Gen["生成LLM"]
 Gen --> Draft["ドラフト出力"]
 Draft --> Eval{"評価LLM 基準を満たすか"}
 Eval -->|"いいえ フィードバックを返す"| Gen
 Eval -->|"はい"| Out(["最終出力"])`;
-const DIAGRAM_D11 = `flowchart TB
+const DIAGRAM_D11 = `${MERMAID_INIT}\nflowchart TB
 Task(["人間からのタスクまたは対話"]) --> Plan["エージェントが計画する"]
 Plan --> Act["ツールを使って行動する"]
 Act --> Env["環境から結果を取得する"]
@@ -219,7 +221,7 @@ Human --> Plan
 Check -->|"完了"| Done2(["タスク完了"])
 classDef done fill:#bfe4d2,color:#123722,stroke:#2f6b4f;
 class Done2 done`;
-const DIAGRAM_D12 = `flowchart TB
+const DIAGRAM_D12 = `${MERMAID_INIT}\nflowchart TB
 Q(["ユーザーの質問"]) --> C{"質問の複雑さを分類する"}
 C -->|"単一文書で答えられる"| Naive["素朴なRAG ベクトル検索とリランク"]
 C -->|"複数文書の統合が必要"| Adv["高度なRAG ハイブリッド検索とクエリ変換"]
@@ -232,7 +234,7 @@ Agentic --> Gen
 Gen --> Out(["回答"])
 classDef hub fill:#c9c4ef,color:#221f52,stroke:#453a8c;
 class C hub`;
-const DIAGRAM_D13 = `flowchart TB
+const DIAGRAM_D13 = `${MERMAID_INIT}\nflowchart TB
 Q1{"プロンプトだけで目標の品質に達したか"}
 Q1 -->|"はい"| R1["プロンプトエンジニアリングで十分"]
 Q1 -->|"いいえ"| Q2{"問題は知識不足かスタイル不足か"}
@@ -243,12 +245,12 @@ Q3 -->|"安定しない"| R3["LoRAやQLoRAで軽量ファインチューニン�
 R3 --> Q4{"コストとレイテンシを大きく削減したいか"}
 Q4 -->|"はい"| R4["フロンティアモデルの出力を教師データにして小型モデルへ蒸留する"]
 Q4 -->|"いいえ"| R5["アダプターを本番運用し定期的に再評価する"]`;
-const DIAGRAM_D14 = `flowchart TB
+const DIAGRAM_D14 = `${MERMAID_INIT}\nflowchart TB
 L1["層1 ユニット評価 個々のステップを単体テストする"] --> L2["層2 LLM as a Judge 回帰スイートで出力品質を採点する"]
 L2 --> L3["層3 本番トレース監視 実際のトラフィックをサンプリングしドリフトを検知する"]
 L3 --> Loop["問題のあるケースをデータセットに昇格させる"]
 Loop --> L1`;
-const DIAGRAM_D15 = `flowchart TB
+const DIAGRAM_D15 = `${MERMAID_INIT}\nflowchart TB
 A["基礎知識とプロンプト設計を身につける"] --> B["小さなワークフローを1つ作ってみる"]
 B --> C["RAGまたはツール呼び出しを追加する"]
 C --> D["評価セットを用意し継続的に測定する"]
@@ -261,412 +263,213 @@ class A hub
 class G done`;
 
 const CODE_MAIN = `<span class="cm"># app/main.py</span>
-
 <span class="cm"># 依存: pip install &quot;fastapi[standard]&quot; &quot;pydantic&gt;=2&quot; &quot;anthropic==1.4.0&quot;</span>
-
 <span class="cm">#       SDK のバージョンは固定する。メジャー更新で client の引数や戻り値の型が変わるため。</span>
-
 <span class="cm"># 起動: uvicorn app.main:app --reload</span>
-
 <span class="cm">#       ANTHROPIC_API_KEY はコマンドラインに書かず、シークレット管理やCIの環境変数から渡す。</span>
-
 <span class="cm">#       コマンドに直書きするとシェル履歴やプロセス一覧に鍵が残る。</span>
-
 <span class="cm"># 動作確認: curl -X POST localhost:8000/ask -H &#x27;Content-Type: application/json&#x27; -d &#x27;{&quot;question&quot;:&quot;RAGとは？&quot;}&#x27;</span>
-
 <span class="kw">import</span> os
-
 <span class="kw">from</span> collections.abc <span class="kw">import</span> AsyncIterator
-
 <span class="kw">from</span> contextlib <span class="kw">import</span> asynccontextmanager
 
-
-
 <span class="kw">from</span> anthropic <span class="kw">import</span> (
-
     Anthropic,
-
     APIConnectionError,
-
     APIStatusError,
-
 )
-
 <span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, HTTPException
-
 <span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field
-
-
 
 SYSTEM_PROMPT = <span class="st">&quot;あなたは日本語で簡潔に答える技術アシスタントです。3文以内で答えてください。&quot;</span>
 
-
-
 <span class="cm"># 時間をおけば回復しうるステータス。SDK が自動再試行する条件と同じ基準にそろえる</span>
-
 <span class="cm"># （408 タイムアウト / 409 競合 / 429 レート制限 / 5xx。過負荷を表す 529 は 5xx 側で拾う）。</span>
-
 RETRYABLE_STATUS_CODES = frozenset({<span class="nu">408</span>, <span class="nu">409</span>, <span class="nu">429</span>})
 
 
-
-
-
 <span class="kw">class</span> <span class="fn">IncompleteResponseError</span>(RuntimeError):
-
     <span class="st">&quot;&quot;&quot;応答が最後まで生成されなかったことを表す。部分回答を成功として返さないために使う。&quot;&quot;&quot;</span>
 
-
-
 <span class="kw">class</span> <span class="fn">AskRequest</span>(BaseModel):
-
     <span class="st">&quot;&quot;&quot;入力の型。空文字や長すぎる質問はここで自動的に422として弾かれる。&quot;&quot;&quot;</span>
-
-
 
     question: str = Field(min_length=<span class="nu">1</span>, max_length=<span class="nu">1000</span>)
 
-
-
 <span class="kw">class</span> <span class="fn">AskResponse</span>(BaseModel):
-
     answer: str
 
-
-
 @asynccontextmanager
-
 <span class="kw">async</span> <span class="kw">def</span> <span class="fn">lifespan</span>(app: FastAPI) -&gt; AsyncIterator[<span class="kw">None</span>]:
-
-    <span class="st">&quot;&quot;&quot;クライアントはアプリ全体で1つだけ生成する。
-
-    リクエストごとに生成すると HTTP コネクションプールが毎回捨てられ、
-    TLSハンドシェイクのやり直しでレイテンシとファイルディスクリプタを浪費する。
-    &quot;&quot;&quot;</span>
-
+    <span class="st">&quot;&quot;&quot;クライアントはアプリ全体で1つだけ生成する。</span>
+<span class="st"></span>
+<span class="st">    リクエストごとに生成すると HTTP コネクションプールが毎回捨てられ、</span>
+<span class="st">    TLSハンドシェイクのやり直しでレイテンシとファイルディスクリプタを浪費する。</span>
+<span class="st">    &quot;&quot;&quot;</span>
     <span class="cm"># SDK 既定値（timeout=600秒 / max_retries=2）はバッチ処理向けで、</span>
-
     <span class="cm"># HTTP リクエスト/レスポンスのアプリケーションには長すぎる。用途に合わせて明示する。</span>
-
     app.state.llm = Anthropic(
-
         api_key=os.environ[<span class="st">&quot;ANTHROPIC_API_KEY&quot;</span>],
-
         timeout=<span class="nu">30.0</span>,     <span class="cm"># 秒。1リクエストの上限。Webハンドラのタイムアウトより短く設定する</span>
-
         max_retries=<span class="nu">2</span>,    <span class="cm"># 接続エラー・408・409・429・5xx を再試行。指数バックオフと</span>
-
                           <span class="cm"># Retry-After の待機が加わるため、総待ち時間は timeout×(max_retries+1) を超えうる</span>
-
     )
-
     <span class="kw">yield</span>
-
     app.state.llm.close()  <span class="cm"># 終了時に HTTP コネクションを解放する</span>
-
-
 
 app = FastAPI(lifespan=lifespan)
 
-
-
 <span class="kw">def</span> <span class="fn">call_llm</span>(question: str) -&gt; str:
-
     <span class="st">&quot;&quot;&quot;LLM呼び出しを1関数に閉じ込める。テストではこの関数だけを差し替える。&quot;&quot;&quot;</span>
-
     resp = app.state.llm.messages.create(
-
         model=<span class="st">&quot;claude-sonnet-5&quot;</span>,
-
         max_tokens=<span class="nu">300</span>,
-
         <span class="cm"># claude-sonnet-5 は thinking を省略すると adaptive thinking で動作する。</span>
-
         <span class="cm"># 短答用途では思考トークンが無駄になるため、明示的に無効化する。</span>
-
         thinking={<span class="st">&quot;type&quot;</span>: <span class="st">&quot;disabled&quot;</span>},
-
         system=SYSTEM_PROMPT,
-
         messages=[{<span class="st">&quot;role&quot;</span>: <span class="st">&quot;user&quot;</span>, <span class="st">&quot;content&quot;</span>: question}],
-
     )
-
     <span class="cm"># stop_reason を先に検査する。max_tokens で打ち切られた応答も HTTP 200 で返り、</span>
-
     <span class="cm"># content には途中までの文章が入っているため、素通しすると「途中で切れた回答」を</span>
-
     <span class="cm"># 正常応答として利用者へ返してしまう。end_turn 以外は本文を返さない。</span>
-
     <span class="kw">if</span> resp.stop_reason != <span class="st">&quot;end_turn&quot;</span>:
-
         <span class="kw">raise</span> IncompleteResponseError(
-
             f&quot;応答が完了していません (stop_reason={resp.stop_reason})&quot;
-
         )
 
-
-
     <span class="cm"># 拡張思考を有効にしたモデルでは thinking ブロックが先頭に来ることがある。</span>
-
     <span class="cm"># content[0] を text と決め打ちせず、type で絞り込む。text ブロックは複数に</span>
-
     <span class="cm"># 分割されて返ることがあるため、最初の1つで return せず全て連結する。</span>
-
     parts = [block.text <span class="kw">for</span> block <span class="kw">in</span> resp.content <span class="kw">if</span> block.type == <span class="st">&quot;text&quot;</span>]
-
     <span class="kw">if</span> <span class="kw">not</span> parts:
-
         <span class="kw">raise</span> ValueError(<span class="st">&quot;応答に text ブロックが含まれていません&quot;</span>)
-
     <span class="kw">return</span> <span class="st">&quot;\\n&quot;</span>.join(parts)
 
-
-
 @app.post(<span class="st">&quot;/ask&quot;</span>, response_model=AskResponse)
-
 <span class="kw">def</span> <span class="fn">ask</span>(req: AskRequest) -&gt; AskResponse:
-
     <span class="kw">try</span>:
-
         answer = call_llm(req.question)
-
     <span class="kw">except</span> APIConnectionError <span class="kw">as</span> exc:
-
         <span class="cm"># 接続失敗。サブクラスの APITimeoutError もここで捕捉される。</span>
-
         <span class="kw">raise</span> HTTPException(status_code=<span class="nu">503</span>, detail=<span class="st">&quot;LLMの呼び出しに失敗しました&quot;</span>) <span class="kw">from</span> exc
-
     <span class="kw">except</span> APIStatusError <span class="kw">as</span> exc:
-
         <span class="cm"># 503に変換するのは「時間をおけば回復しうるプロバイダ側の障害」だけに限る。</span>
-
         <span class="cm"># 認証エラー(401)やモデル未検出(404)は設定・実装の不具合であり、503に丸めると</span>
-
         <span class="cm"># 無意味なリトライを誘発する。捕捉せず500として顕在化させる。</span>
-
         <span class="kw">if</span> exc.status_code <span class="kw">in</span> RETRYABLE_STATUS_CODES <span class="kw">or</span> exc.status_code &gt;= <span class="nu">500</span>:
-
             <span class="kw">raise</span> HTTPException(
-
                 status_code=<span class="nu">503</span>, detail=<span class="st">&quot;LLMの呼び出しに失敗しました&quot;</span>
-
             ) <span class="kw">from</span> exc
-
         <span class="kw">raise</span>
-
     <span class="kw">except</span> IncompleteResponseError <span class="kw">as</span> exc:
-
         <span class="cm"># 部分回答を200で返さない。上流の応答が不完全なので502とする。</span>
-
         <span class="kw">raise</span> HTTPException(
-
             status_code=<span class="nu">502</span>, detail=<span class="st">&quot;LLMの応答が完了しませんでした&quot;</span>
-
         ) <span class="kw">from</span> exc
 
-
-
     <span class="kw">if</span> <span class="kw">not</span> answer.strip():
-
         <span class="kw">raise</span> HTTPException(status_code=<span class="nu">502</span>, detail=<span class="st">&quot;LLMが空の応答を返しました&quot;</span>)
-
-    <span class="kw">return</span> AskResponse(answer=answer)
-`;
+    <span class="kw">return</span> AskResponse(answer=answer)`;
 
 const CODE_TEST = `<span class="cm"># tests/test_main.py</span>
-
 <span class="cm"># 依存: pip install pytest &quot;anthropic==1.4.0&quot; &quot;httpx2&gt;=2&quot;</span>
-
 <span class="cm">#       anthropic 1.x は HTTP 層に httpx のフォークである httpx2 を使う。</span>
-
 <span class="cm">#       SDK 例外へ渡す Request/Response も httpx2 の型でそろえる。</span>
-
 <span class="cm"># 実行: pytest tests/test_main.py</span>
-
 <span class="kw">from</span> collections.abc <span class="kw">import</span> Iterator
-
 <span class="kw">from</span> types <span class="kw">import</span> SimpleNamespace
-
 <span class="kw">from</span> unittest.mock <span class="kw">import</span> MagicMock
 
-
-
 <span class="kw">import</span> httpx2
-
 <span class="kw">import</span> pytest
-
 <span class="kw">from</span> anthropic <span class="kw">import</span> APIConnectionError, AuthenticationError
-
 <span class="kw">from</span> fastapi.testclient <span class="kw">import</span> TestClient
-
-
 
 <span class="kw">from</span> app <span class="kw">import</span> main
 
-
-
 @pytest.fixture
-
 <span class="kw">def</span> <span class="fn">client</span>(monkeypatch: pytest.MonkeyPatch) -&gt; Iterator[TestClient]:
-
-    <span class="st">&quot;&quot;&quot;lifespanを実行しつつ、実SDKクライアントの生成だけを差し替える。
-
-    TestClientを\`with\`で使わないとlifespanが起動せず、app.state.llm が未設定のまま
-    本番との差異を見逃す。生成と後始末の両方をここで検証する。
-    &quot;&quot;&quot;</span>
-
+    <span class="st">&quot;&quot;&quot;lifespanを実行しつつ、実SDKクライアントの生成だけを差し替える。</span>
+<span class="st"></span>
+<span class="st">    TestClientを\`with\`で使わないとlifespanが起動せず、app.state.llm が未設定のまま</span>
+<span class="st">    本番との差異を見逃す。生成と後始末の両方をここで検証する。</span>
+<span class="st">    &quot;&quot;&quot;</span>
     llm = MagicMock()
-
     anthropic_factory = MagicMock(return_value=llm)
-
     monkeypatch.setenv(<span class="st">&quot;ANTHROPIC_API_KEY&quot;</span>, <span class="st">&quot;test-key&quot;</span>)
-
     monkeypatch.setattr(main, <span class="st">&quot;Anthropic&quot;</span>, anthropic_factory)
 
-
-
     <span class="kw">with</span> TestClient(main.app) <span class="kw">as</span> test_client:
-
         anthropic_factory.assert_called_once()  <span class="cm"># 起動時に1つだけ生成される</span>
-
         <span class="kw">yield</span> test_client
-
-
 
     llm.close.assert_called_once()  <span class="cm"># 終了時にHTTPコネクションが解放される</span>
 
-
-
 <span class="kw">def</span> <span class="fn">test_質問に対して回答を返す</span>(client: TestClient, monkeypatch: pytest.MonkeyPatch) -&gt; <span class="kw">None</span>:
-
     <span class="cm"># Arrange</span>
-
     monkeypatch.setattr(main, <span class="st">&quot;call_llm&quot;</span>, <span class="kw">lambda</span> question: <span class="st">&quot;RAGは検索拡張生成です。&quot;</span>)
 
-
-
     <span class="cm"># Act</span>
-
     res = client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;RAGとは？&quot;</span>})
 
-
-
     <span class="cm"># Assert</span>
-
     <span class="kw">assert</span> res.status_code == <span class="nu">200</span>
-
     <span class="kw">assert</span> res.json() == {<span class="st">&quot;answer&quot;</span>: <span class="st">&quot;RAGは検索拡張生成です。&quot;</span>}
 
-
-
 <span class="kw">def</span> <span class="fn">test_空の質問はバリデーションで拒否する</span>(client: TestClient) -&gt; <span class="kw">None</span>:
-
     <span class="cm"># Arrange / Act</span>
-
     res = client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;&quot;</span>})
 
-
-
     <span class="cm"># Assert: LLMに到達する前に弾かれる</span>
-
     <span class="kw">assert</span> res.status_code == <span class="nu">422</span>
 
-
-
 <span class="kw">def</span> <span class="fn">test_プロバイダ障害なら503を返す</span>(client: TestClient, monkeypatch: pytest.MonkeyPatch) -&gt; <span class="kw">None</span>:
-
     <span class="cm"># Arrange: 503へ変換されるのは型付きSDK例外だけ</span>
-
     <span class="kw">def</span> <span class="fn">raise_error</span>(question: str) -&gt; str:
-
         <span class="kw">raise</span> APIConnectionError(
-
             request=httpx2.Request(<span class="st">&quot;POST&quot;</span>, <span class="st">&quot;https://api.anthropic.com/v1/messages&quot;</span>)
-
         )
-
-
 
     monkeypatch.setattr(main, <span class="st">&quot;call_llm&quot;</span>, raise_error)
 
-
-
     <span class="cm"># Act</span>
-
     res = client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;RAGとは？&quot;</span>})
-
-
 
     <span class="cm"># Assert</span>
-
     <span class="kw">assert</span> res.status_code == <span class="nu">503</span>
 
-
-
 <span class="kw">def</span> <span class="fn">test_max_tokensで打ち切られた応答は200で返さない</span>(client: TestClient) -&gt; <span class="kw">None</span>:
-
     <span class="st">&quot;&quot;&quot;部分回答を成功として返していないかを守る回帰テスト。&quot;&quot;&quot;</span>
-
     <span class="cm"># Arrange: HTTP 200 だが stop_reason が max_tokens の応答</span>
-
     client.app.state.llm.messages.create.return_value = SimpleNamespace(
-
         stop_reason=<span class="st">&quot;max_tokens&quot;</span>,
-
         content=[SimpleNamespace(type=<span class="st">&quot;text&quot;</span>, text=<span class="st">&quot;RAGは検索拡&quot;</span>)],
-
     )
 
-
-
     <span class="cm"># Act</span>
-
     res = client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;RAGとは？&quot;</span>})
 
-
-
     <span class="cm"># Assert: 途中までの本文が利用者へ漏れない</span>
-
     <span class="kw">assert</span> res.status_code == <span class="nu">502</span>
-
     <span class="kw">assert</span> <span class="st">&quot;RAGは検索拡&quot;</span> <span class="kw">not</span> <span class="kw">in</span> res.text
 
-
-
 <span class="kw">def</span> <span class="fn">test_認証エラーは503へ丸めない</span>(client: TestClient, monkeypatch: pytest.MonkeyPatch) -&gt; <span class="kw">None</span>:
-
     <span class="cm"># Arrange: 401 は設定の不具合。再試行しても回復しない</span>
-
     <span class="kw">def</span> <span class="fn">raise_error</span>(question: str) -&gt; str:
-
         <span class="kw">raise</span> AuthenticationError(
-
             <span class="st">&quot;invalid api key&quot;</span>,
-
             response=httpx2.Response(
-
                 <span class="nu">401</span>, request=httpx2.Request(<span class="st">&quot;POST&quot;</span>, <span class="st">&quot;https://api.anthropic.com/v1/messages&quot;</span>)
-
             ),
-
             body=<span class="kw">None</span>,
-
         )
-
-
 
     monkeypatch.setattr(main, <span class="st">&quot;call_llm&quot;</span>, raise_error)
 
-
-
     <span class="cm"># Act / Assert: 捕捉されず500として顕在化する</span>
-
     <span class="kw">with</span> pytest.raises(AuthenticationError):
-
-        client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;RAGとは？&quot;</span>})
-`;
+        client.post(<span class="st">&quot;/ask&quot;</span>, json={<span class="st">&quot;question&quot;</span>: <span class="st">&quot;RAGとは？&quot;</span>})`;
 
 export default function BuildingLlmPoweredApplicationsGuidePage() {
   return (
