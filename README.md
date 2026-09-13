@@ -99,6 +99,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/development-methodologies/feature-driven-development-comprehensive-guide`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/page.tsx)
     — FDD（フィーチャー駆動開発）完全ガイドを移植（15 セクション・Mermaid 21 図・table 12・コードブロック 3・SVG 2 図）。
     固定サイドバー・進捗バー・scroll-spy を [`FddSidebar.tsx`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/FddSidebar.tsx) でクライアント描画
+  - [`/recommended-books/building-llm-powered-applications-guide`](web-next/app/recommended-books/building-llm-powered-applications-guide/page.tsx)
+    — LLMパワードアプリケーション構築ガイドを移植（18 セクション・Mermaid 15 図・table 7・コードブロック 2・チェックリスト 7 項目）。
+    固定サイドバー・scroll-spy を [`BuildingLlmPoweredSidebar.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/BuildingLlmPoweredSidebar.tsx)、本番チェックリストを [`LaunchChecklist.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/LaunchChecklist.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
