@@ -80,18 +80,26 @@ export default function BuildingLlmPoweredSidebar({ groups }: BuildingLlmPowered
     <>
       <div className="mobile-bar">
         <span className="mobile-bar-title">LLMアプリ構築ガイド</span>
-        <button type="button" id="mobileToggle" aria-label="メニューを開く" onClick={toggleMenu}>
+        <button
+          type="button"
+          id="mobileToggle"
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
+          aria-expanded={isOpen}
+          onClick={toggleMenu}
+        >
           <IconMenu2 size={20} className="ti" />
         </button>
       </div>
 
-      <button
-        type="button"
-        className={`sidebar-overlay ${isOpen ? "open" : ""}`}
-        id="sidebarOverlay"
-        onClick={closeMenu}
-        aria-label="メニューを閉じる"
-      />
+      {isOpen && (
+        <button
+          type="button"
+          className="sidebar-overlay open"
+          id="sidebarOverlay"
+          onClick={closeMenu}
+          aria-label="メニューを閉じる"
+        />
+      )}
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`} id="sidebar">
         <div className="sidebar-brand">

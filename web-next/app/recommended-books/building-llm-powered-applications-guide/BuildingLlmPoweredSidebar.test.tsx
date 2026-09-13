@@ -117,21 +117,37 @@ describe("BuildingLlmPoweredSidebar", () => {
     const { container } = render(<BuildingLlmPoweredSidebar groups={TEST_GROUPS} />);
     const toggleBtn = container.querySelector("#mobileToggle");
     const sidebar = container.querySelector("#sidebar");
-    const overlay = container.querySelector("#sidebarOverlay");
 
     expect(toggleBtn).not.toBeNull();
     expect(sidebar?.classList.contains("open")).toBe(false);
+    expect(container.querySelector("#sidebarOverlay")).toBeNull();
 
-    if (!toggleBtn || !overlay) {
-      throw new Error("toggleBtn or overlay not found");
+    if (!toggleBtn) {
+      throw new Error("toggleBtn not found");
     }
 
     fireEvent.click(toggleBtn);
     expect(sidebar?.classList.contains("open")).toBe(true);
-    expect(overlay.classList.contains("open")).toBe(true);
+    const overlay = container.querySelector("#sidebarOverlay");
+    expect(overlay).not.toBeNull();
 
-    fireEvent.click(overlay);
+    fireEvent.click(overlay as Element);
     expect(sidebar?.classList.contains("open")).toBe(false);
-    expect(overlay.classList.contains("open")).toBe(false);
+    expect(container.querySelector("#sidebarOverlay")).toBeNull();
+  });
+
+  it("モバイルトグルボタンが開閉状態を aria-expanded と aria-label に反映する", () => {
+    const { container } = render(<BuildingLlmPoweredSidebar groups={TEST_GROUPS} />);
+    const toggleBtn = container.querySelector("#mobileToggle");
+    if (!toggleBtn) {
+      throw new Error("toggleBtn not found");
+    }
+
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
+    expect(toggleBtn.getAttribute("aria-label")).toBe("メニューを開く");
+
+    fireEvent.click(toggleBtn);
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("true");
+    expect(toggleBtn.getAttribute("aria-label")).toBe("メニューを閉じる");
   });
 });

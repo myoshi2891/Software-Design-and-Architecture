@@ -66,4 +66,16 @@ describe("MultiAgentSidebar", () => {
     fireEvent.click(firstLink);
     expect(sidebar.classList.contains("open")).toBe(false);
   });
+
+  it("Escapeキーでサイドバーを閉じる", () => {
+    render(<MultiAgentSidebar items={testItems} />);
+    const toggleButton = screen.getByRole("button", { name: /メニュー/i });
+    const sidebar = screen.getByRole("navigation");
+
+    fireEvent.click(toggleButton);
+    expect(sidebar.classList.contains("open")).toBe(true);
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(sidebar.classList.contains("open")).toBe(false);
+  });
 });

@@ -84,6 +84,7 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
                   className={`nav-link ${isH2 ? "nav-h2" : "nav-h3"} ${isActive ? "active" : ""}`}
                   data-target={item.id}
                   onClick={closeMenu}
+                  aria-current={isActive ? "location" : undefined}
                 >
                   {item.label}
                 </a>

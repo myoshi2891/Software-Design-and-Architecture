@@ -28,6 +28,19 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
   const closeMenu = () => setIsOpen(false);
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
       return;
     }
@@ -82,9 +95,6 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
         className={`sidebar-backdrop ${isOpen ? "open" : ""}`}
         id="sidebarBackdrop"
         onClick={closeMenu}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") closeMenu();
-        }}
         tabIndex={-1}
         aria-hidden="true"
       />
@@ -105,6 +115,7 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
                   className={`nav-link ${isH2Active ? "active" : ""}`}
                   data-target={item.id}
                   onClick={closeMenu}
+                  aria-current={isH2Active ? "location" : undefined}
                 >
                   {item.label}
                 </a>
@@ -120,6 +131,7 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
                             className={`nav-link ${isSubActive ? "active" : ""}`}
                             data-target={sub.id}
                             onClick={closeMenu}
+                            aria-current={isSubActive ? "location" : undefined}
                           >
                             {sub.label}
                           </a>
