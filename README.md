@@ -27,6 +27,7 @@
 - Component-Oriented Development
 - Domain-Driven Design (DDD)
 - Object-Oriented Programming (OOP)
+- Designing Multi-Agent Systems
 
 ### 3. 開発手法 (`development-methodologies/`)
 
@@ -47,13 +48,19 @@
 - 総合ガイド (`general/comprehensive-guide/`)
 - CSS デザインシステムガイド (`css-design-system-guide/`)
 
+### 6. 推薦書籍 (`recommended-books/`)
+
+技術書を起点に、最新実践知を体系化したガイドです。
+- Building LLM Powered Applications
+- Architecting Generative AI Applications
+
 ## Web アプリ (`web-next/`)
 
 静的 HTML ガイドを Next.js (App Router) ページとして再実装する Web アプリです。
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 22 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 25 本を
 一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
