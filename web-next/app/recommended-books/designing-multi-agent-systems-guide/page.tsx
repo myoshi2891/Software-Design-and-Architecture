@@ -681,7 +681,7 @@ export default function Page() {
             <p>
               マルチエージェントシステムを理解する前に、まず「エージェントが1つだけの場合」の動作を押さえておきましょう。Anthropicは、マルチエージェントシステムを「複数のエージェント（＝ツールをループの中で自律的に使うLLM）が協調して動くシステム」と定義しています。単一のエージェントは、次のような「認識→計画→実行→観察」のループを、終了条件（最終出力ツールの呼び出し、規定ターン数への到達、エラーなど）に達するまで繰り返します。
             </p>
-            <MermaidDiagram chart={MERMAID_1} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_1} />
             <p>
               OpenAIが公開した「A practical guide to building
               agents」でも、この「ループ（run）」こそが単一エージェント・マルチエージェントの両方に共通する中核概念だと説明されています。ツールを段階的に増やしていくだけで単一エージェントは多くのタスクをこなせるため、
@@ -746,7 +746,7 @@ export default function Page() {
               <strong>通常のチャットに比べて約15倍のトークンを消費</strong>
               します。したがって「成果の価値がコストを上回るタスク」に絞って採用すべきだというのがAnthropicの結論です。
             </p>
-            <MermaidDiagram chart={MERMAID_2} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_2} />
             <h3 id="12-いつマルチエージェントを使うべきか">
               1.2 いつマルチエージェントを使うべきか
             </h3>
@@ -794,7 +794,7 @@ export default function Page() {
               （=助言・レビュー・調査に徹する）ときに、マルチエージェントは最もうまく機能する」というものです。並列に「書き込み」を行うエージェント群（parallel-writer
               swarm）は依然として避けるべきだが、単一の実行者を複数のアドバイザーエージェントが支える構成は有効、という折衷案です。
             </p>
-            <MermaidDiagram chart={MERMAID_3} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_3} />
             <p>
               興味深いことに、Cognition自身も同じ記事の中で「Anthropicが翌日に類似の課題認識に基づくマルチエージェント研究システムの記事を発表しており、両者は読み取り専用エージェントという適用領域の第一歩について似た結論に達していた」と振り返っています。つまり対立は見た目ほど大きくなく、**「読み取り中心・探索中心のタスクでは並列マルチエージェントが有効、書き込み・実行が絡むタスクではシングルライターを守る」**という設計指針に収束しつつあります。
             </p>
@@ -807,7 +807,7 @@ export default function Page() {
             <p>
               最も単純な形。各エージェントが順番にタスクを処理し、前段の出力が次段の入力になります。
             </p>
-            <MermaidDiagram chart={MERMAID_4} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_4} />
             <ul>
               <li>
                 <strong>向いている場面</strong>
@@ -843,7 +843,7 @@ export default function Page() {
             </p>
             <h3 id="22-並列コンカレントパターン">2.2 並列（コンカレント）パターン</h3>
             <p>同じ入力に対して複数のエージェントが独立に処理し、結果を集約します。</p>
-            <MermaidDiagram chart={MERMAID_5} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_5} />
             <ul>
               <li>
                 <strong>向いている場面</strong>
@@ -860,7 +860,7 @@ export default function Page() {
             <p>
               中央のオーケストレーター（リードエージェント）が計画を立て、複数のワーカー（サブエージェント）に独立したタスクを委任し、結果を統合します。Anthropicの研究システムがこの代表例です。
             </p>
-            <MermaidDiagram chart={MERMAID_6} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_6} />
             <ul>
               <li>
                 <strong>設計上の要点</strong>
@@ -877,12 +877,12 @@ export default function Page() {
             <p>
               OpenAIの実務ガイドが紹介するもう1つの集中管理型パターン。オーケストレーター・ワーカーと似ていますが、専門エージェントを「ツール」として呼び出す形式で実装される点が特徴です。会話の主導権は常に中央のマネージャーが保持し続けます。
             </p>
-            <MermaidDiagram chart={MERMAID_7} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_7} />
             <h3 id="25-ハンドオフ分散型パターン">2.5 ハンドオフ（分散型）パターン</h3>
             <p>
               エージェント間で会話の主導権そのものを受け渡す「分散型」パターン。カスタマーサポートのトリアージのように、最初に応対したエージェントが適切な専門エージェントへ会話を完全に引き継ぐ場合に向いています。
             </p>
-            <MermaidDiagram chart={MERMAID_8} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_8} />
             <p>
               OpenAIのAgents
               SDKドキュメントは、マネージャー型を「エッジがツール呼び出しを表す」構成、ハンドオフ型を「エッジがエージェント間の主導権移譲を表す」構成として、両者をグラフとしてモデル化できると説明しています。
@@ -894,7 +894,7 @@ export default function Page() {
               LangGraphの <code>langgraph-supervisor</code>{" "}
               ライブラリが提唱する構成で、スーパーバイザーが別のスーパーバイザー（チームリーダー）を管理し、そのチームリーダーがさらに個別のワーカーを管理する多層構造です。
             </p>
-            <MermaidDiagram chart={MERMAID_9} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_9} />
             <ul>
               <li>
                 <strong>向いている場面</strong>
@@ -910,19 +910,19 @@ export default function Page() {
             <p>
               中央のオーケストレーターを置かず、エージェント同士が対等な立場で直接対話し、状態を共有する構成です。柔軟性は高い一方、全体の挙動を追跡・検証するのが難しくなります。
             </p>
-            <MermaidDiagram chart={MERMAID_10} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_10} />
             <h3 id="28-討論投票debate--votingパターン">
               2.8 討論・投票（Debate / Voting）パターン
             </h3>
             <p>
               複数のエージェントに独立して案を出させ、審判役のエージェント（または多数決）が最終判断を下す構成です。単一の視点によるバイアスを緩和したい場合に有効です。
             </p>
-            <MermaidDiagram chart={MERMAID_11} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_11} />
             <h3 id="29-ブラックボードパターン">2.9 ブラックボードパターン</h3>
             <p>
               古典的なAIアーキテクチャの1つ。複数の「知識源エージェント」が共有の掲示板（ブラックボード）に情報を書き込み、制御エージェントがそれを見て次にどの知識源を動かすかを決定します。
             </p>
-            <MermaidDiagram chart={MERMAID_12} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_12} />
             <h3 id="210-パターン選択の判断基準">2.10 パターン選択の判断基準</h3>
             <div className="table-scroll">
               <table>
@@ -1042,7 +1042,7 @@ export default function Page() {
               <strong>分離境界</strong>
               の設計です。リサーチのようなタスクでは「ほぼ何も知らなくてよい」という割り切りが機能する一方、Cognitionが主張するように、コーディングのような一貫性が問われるタスクでは、行動履歴全体を共有したほうがうまくいきます。
             </p>
-            <MermaidDiagram chart={MERMAID_13} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_13} />
             <h3 id="34-圧縮compactionとノートテイキング">
               3.4 圧縮（Compaction）とノートテイキング
             </h3>
@@ -1091,7 +1091,7 @@ export default function Page() {
               Foundation傘下の新設団体「Agentic AI
               Foundation（AAIF）」へ寄贈し、ベンダー中立なガバナンスのもとで運営される体制に移行しました。
             </p>
-            <MermaidDiagram chart={MERMAID_14} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_14} />
             <h3 id="42-a2aagent2agent-protocol">4.2 A2A（Agent2Agent Protocol）</h3>
             <p>
               Googleが2025年4月に発表した、異なるベンダー・フレームワークで作られたエージェント同士が発見し合い、対話し、タスクを委任し合うためのオープンプロトコルです。同年6月にはLinux
@@ -1099,7 +1099,7 @@ export default function Page() {
               Foundationの広い傘下からAAIF（Agentic AI
               Foundation）へと管轄を移し、MCPと並ぶ「エージェント間対話の標準層」として位置づけられています。
             </p>
-            <MermaidDiagram chart={MERMAID_15} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_15} />
             <p>
               MCPとA2Aはしばしば対立するものと誤解されますが、実際には<strong>補完関係</strong>
               にあります。MCPは「エージェントがツールやデータにどう接続するか」を、A2Aは「エージェント同士がどう対話し役割分担するか」を扱う、レイヤーの異なる標準です。
@@ -1128,7 +1128,7 @@ export default function Page() {
               2025年12月9日、Linux Foundationは「Agentic AI
               Foundation（AAIF）」の設立を発表しました。Anthropic・Block・OpenAIが共同で設立し、Google・Microsoft・AWS・Cloudflare・Bloombergが支援するディレクテッドファンドです。設立時点でMCP（Anthropic）、goose（Block製のエージェントフレームワーク）、AGENTS.md（OpenAI）の3プロジェクトが創設プロジェクトとして寄贈されました。
             </p>
-            <MermaidDiagram chart={MERMAID_16} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_16} />
             <div className="table-scroll">
               <table>
                 <thead>
@@ -1172,7 +1172,7 @@ export default function Page() {
             <p>
               マルチエージェントシステムでは、「誰が」「何を」「どのくらいの期間」記憶するかの設計がシステムの信頼性を大きく左右します。
             </p>
-            <MermaidDiagram chart={MERMAID_17} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_17} />
             <div className="table-scroll">
               <table>
                 <thead>
@@ -1240,7 +1240,7 @@ export default function Page() {
                 ：上記の統制が十分に効かない場合、または機密データがシステム外へ出る可能性が残る場合は、承認なしの実行を認めない。
               </li>
             </ul>
-            <MermaidDiagram chart={MERMAID_18} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_18} />
             <h3 id="63-サンドボックス化">6.3 サンドボックス化</h3>
             <p>
               ツール実行の副作用を隔離するため、コード実行やファイル操作は専用のサンドボックス環境で行い、本番環境や機密データへの直接アクセスを避けるのが望ましい設計です。これは次章のセキュリティ設計とも密接に関係します。
@@ -1287,7 +1287,7 @@ export default function Page() {
               <code>OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT</code>
               相当の設定で制御します）。有効化する場合は、機微な値のマスキング（トークンやメールアドレスの伏字化）、トレースバックエンド側でのアクセス制御、保持期間の短縮といった保護策を併せて適用してください。これらを用意できないうちは無効のままにしておくのが安全です。
             </p>
-            <MermaidDiagram chart={MERMAID_19} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_19} />
             <h3 id="73-主要メトリクス">7.3 主要メトリクス</h3>
             <div className="table-scroll">
               <table>
@@ -1340,7 +1340,7 @@ export default function Page() {
                 <strong>外部への通信手段</strong>（メール送信、Pull Request作成、APIコールなど）
               </li>
             </ol>
-            <MermaidDiagram chart={MERMAID_20} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_20} />
             <p>
               Willison氏自身が「この問題を100%確実に防ぐ方法は、いまだにわかっていない」と述べているとおり、ガードレール製品による検知だけに頼るのは危険です。実際に報告されたGitHub
               MCPの脆弱性は、1つのMCPサーバーが「攻撃者が書き込める公開Issueの読み取り」「プライベートリポジトリへのアクセス」「Pull
@@ -1406,7 +1406,7 @@ export default function Page() {
             <p>
               OpenAIの実務ガイドは、ガードレールを単一の防壁ではなく「層」として設計することを推奨しています。
             </p>
-            <MermaidDiagram chart={MERMAID_21} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_21} />
             <h3 id="85-human-in-the-loop設計">8.5 Human-in-the-Loop設計</h3>
             <p>
               高リスクな操作（金銭の移動、外部への送信、本番環境への書き込みなど）や、エージェントが繰り返し失敗しているケースでは、人間の介入を安全装置として組み込むことが不可欠です。これは「効率のための例外」ではなく、マルチエージェントシステムの標準的な設計要素として位置づけるべきです。
@@ -1486,7 +1486,7 @@ export default function Page() {
               </table>
             </div>
             <h3 id="92-フレームワーク選択の意思決定">9.2 フレームワーク選択の意思決定</h3>
-            <MermaidDiagram chart={MERMAID_22} />
+            <MermaidDiagram preserveNaturalScale={true} chart={MERMAID_22} />
             <p>
               いずれのフレームワークを選んでも、業務ロジック自体は再利用可能ですが、フレームワーク固有のオーケストレーションコードは移行時に書き直しが必要になる点に留意してください。MCPやA2Aといった標準プロトコルへの対応が進むほど、この「フレームワークのロックイン」は将来的に緩和されていくと見られています。
             </p>

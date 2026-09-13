@@ -10822,51 +10822,61 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
     margin: 0;
   }
 
+  /* テキスト全般（ノード、エッジ、シーケンス図アクター、メッセージ、クラスター見出し） */
+  .mermaid svg foreignObject > div,
+  .mermaid svg .nodeLabel,
+  .mermaid svg text,
+  .mermaid svg tspan {
+    color: #1a2233 !important;
+    fill: #1a2233 !important;
+    font-family: var(--font-sans) !important;
+  }
+
   /* ノードの図形（四角・角丸・サークル・菱形・多角形） */
   .mermaid svg .node rect,
   .mermaid svg .node circle,
   .mermaid svg .node ellipse,
   .mermaid svg .node polygon,
   .mermaid svg .node path {
-    fill: var(--accent-soft, #eaf1ff) !important;
-    stroke: var(--accent, #2f6fed) !important;
-    stroke-width: 1.5px !important;
+    fill: #eaf1ff !important;
+    stroke: #2f6fed !important;
+    stroke-width: 1.2px !important;
   }
 
-  /* ノードのテキスト */
-  .mermaid svg .node .nodeLabel,
-  .mermaid svg .node .nodeLabel *,
-  .mermaid svg .node foreignObject div,
-  .mermaid svg .node text,
-  .mermaid svg .node tspan {
-    color: var(--text, #1a2233) !important;
-    fill: var(--text, #1a2233) !important;
-    font-family: var(--font-sans) !important;
-  }
-
-  /* 接続線（エッジ） */
-  .mermaid svg .edgePath .path {
-    stroke: var(--accent, #2f6fed) !important;
-    stroke-width: 1.5px !important;
+  /* 接続線（エッジ）とシーケンス図のメッセージ線・ライフライン */
+  .mermaid svg .edgePath .path,
+  .mermaid svg .flowchart-link,
+  .mermaid svg line,
+  .mermaid svg .messageLine0,
+  .mermaid svg .messageLine1 {
+    stroke: #5b6472 !important;
+    stroke-width: 1.2px !important;
   }
 
   /* 矢印マーカー */
   .mermaid svg .marker,
-  .mermaid svg defs marker path {
-    fill: var(--accent, #2f6fed) !important;
-    stroke: var(--accent, #2f6fed) !important;
+  .mermaid svg defs marker path,
+  .mermaid svg marker path {
+    fill: #5b6472 !important;
+    stroke: #5b6472 !important;
   }
 
   /* エッジラベル（条件分岐などのテキスト） */
   .mermaid svg .edgeLabel {
-    color: var(--text, #1a2233) !important;
     font-size: 13px !important;
+    color: #1a2233 !important;
   }
-  .mermaid svg .edgeLabel .nodeLabel,
-  .mermaid svg .edgeLabel text,
-  .mermaid svg .edgeLabel tspan {
-    color: var(--text, #1a2233) !important;
-    fill: var(--text, #1a2233) !important;
+  /* 空のラベル要素が白枠として残るのを完全に防止 */
+  .mermaid svg .edgeLabel:empty,
+  .mermaid svg .edgeLabel span:empty {
+    display: none !important;
+  }
+  .mermaid svg .edgeLabel span:not(:empty) {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1a2233 !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
   }
   .mermaid svg .edgeLabel rect,
   .mermaid svg .edgeLabel .labelBkg {
@@ -10877,36 +10887,30 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
 
   /* サブグラフ（クラスター） */
   .mermaid svg .cluster rect {
-    fill: var(--bg-alt, #f6f8fb) !important;
-    stroke: var(--border-strong, #d3dbe8) !important;
-    stroke-width: 1.5px !important;
+    fill: #f6f8fb !important;
+    stroke: #d3dbe8 !important;
+    stroke-width: 1.2px !important;
   }
   .mermaid svg .cluster text,
   .mermaid svg .cluster .nodeLabel {
-    color: var(--text, #1a2233) !important;
-    fill: var(--text, #1a2233) !important;
+    color: #1a2233 !important;
+    fill: #1a2233 !important;
     font-weight: 700 !important;
   }
 
-  /* シーケンス図 */
+  /* シーケンス図のアクター（ボックス） */
   .mermaid svg rect.actor,
   .mermaid svg .actor-top,
   .mermaid svg .actor-bottom {
-    fill: var(--accent-soft, #eaf1ff) !important;
-    stroke: var(--accent, #2f6fed) !important;
-    stroke-width: 1.5px !important;
+    fill: #eaf1ff !important;
+    stroke: #2f6fed !important;
+    stroke-width: 1.2px !important;
   }
-  .mermaid svg text.actor {
-    fill: var(--text, #1a2233) !important;
-    font-weight: 700 !important;
-  }
-  .mermaid svg .messageLine0,
-  .mermaid svg .messageLine1 {
-    stroke: var(--accent, #2f6fed) !important;
-    stroke-width: 1.5px !important;
-  }
-  .mermaid svg .messageText {
-    fill: var(--text, #1a2233) !important;
+  .mermaid svg text.actor,
+  .mermaid svg text.actor tspan {
+    color: #1a2233 !important;
+    fill: #1a2233 !important;
+    font-weight: 600 !important;
   }
 
   /* 危険ノード（dangerFill） */
@@ -10915,11 +10919,12 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
   .mermaid svg .dangerFill path {
     fill: var(--danger-bg, #fdecee) !important;
     stroke: var(--danger-border, #d64550) !important;
-    stroke-width: 1.5px !important;
+    stroke-width: 1.2px !important;
   }
   .mermaid svg .dangerFill .nodeLabel,
   .mermaid svg .dangerFill .nodeLabel *,
-  .mermaid svg .dangerFill text {
+  .mermaid svg .dangerFill text,
+  .mermaid svg .dangerFill tspan {
     color: var(--danger-text, #8a1220) !important;
     fill: var(--danger-text, #8a1220) !important;
   }
