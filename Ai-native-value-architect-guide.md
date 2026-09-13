@@ -659,6 +659,7 @@ flowchart TD
 ## 10. 参考文献・ソース一覧
 
 ### 公式情報源(Scaled Agile, Inc.)
+
 1. [AI-Native Value Architect Certification](https://scaledagile.com/certification/ai-native-value-architect/) — 認定資格の概要ページ
 2. [AI Value Architect(役割定義)](https://framework.scaledagile.com/ain-safe-ai-value-architect) — 役割の公式定義
 3. [AI-Native SAFe Session 3: AI-Native Teams, Roles, and ARTs](https://framework.scaledagile.com/blog/ai-native-safe-session-3-ai-native-teams-roles-and-arts) — 5つの責任領域の解説
@@ -666,16 +667,19 @@ flowchart TD
 5. [Scaled Agile Releases AI-Native SAFe(プレスリリース)](https://www.prnewswire.com/news-releases/scaled-agile-releases-ai-native-safe-a-new-version-of-the-worlds-most-trusted-framework-to-provide-governance-for-the-ai-era-302807369.html) — AI-Native SAFe全体像
 
 ### 認定トレーニングパートナー(コース内容の裏付け)
+
 6. [AI-Native Value Architect(Cprime)](https://www.cprime.com/learning/courses/ai-native-value-architect/) — 詳細なコースアウトライン
 7. [AI-Native Value Architect(Capgemini Academy)](https://academy.capgemini.com/course/ai-native-value-architect-en) — 試験形式のクロスチェック
 8. [AI-Native Value Architect(Pretty Agile)](https://prettyagile.com.au/course/ai-native-value-architect) — 試験形式のクロスチェック
 9. [What is an AI Value Architect? Role & Skills(Gladwell Academy)](https://www.gladwellacademy.com/knowledge/blogs/what-is-an-ai-value-architect) — 5つの責任領域の第三者要約
 
 ### 業界調査・データソース
+
 10. [MIT Report Finds Most AI Business Investments Fail, Reveals 'GenAI Divide'](https://virtualizationreview.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide.aspx) — MIT NANDA「GenAI Divide」95%統計の報道
 11. [Gartner Survey Reveals That CEOs Believe Their Executive Teams Lack AI Savviness](https://www.gartner.com/en/newsroom/press-releases/2025-05-06-gartner-survey-reveals-that-ceos-believe-their-executive-teams-lack-ai-savviness) — 経営層のAI習熟度に関するGartner調査
 
 ### 技術解説記事(RAG vs Fine-Tuning、ガバナンス)
+
 12. [Should You Use RAG or Fine-Tune Your LLM?(Actian)](https://www.actian.com/blog/databases/should-you-use-rag-or-fine-tune-your-llm/) — コスト構造の詳細分析
 13. [RAG vs Fine-Tuning in 2026: A Decision Framework for LLM Teams(Winder.ai)](https://winder.ai/rag-vs-fine-tuning-2026-decision-framework/) — 2026年時点の意思決定フレームワーク
 14. [RAG vs. Fine-Tuning for Enterprise: A Practitioner's Decision Framework](https://4xxi.com/articles/rag-vs-fine-tuning/) — 実務者による判断マトリクス
