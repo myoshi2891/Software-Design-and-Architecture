@@ -57,7 +57,8 @@
         "app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx",
         "app/development-methodologies/extreme-programming-comprehensive-guide/page.tsx",
         "app/development-methodologies/feature-driven-development-comprehensive-guide/page.tsx",
-        "app/recommended-books/building-llm-powered-applications-guide/page.tsx"
+        "app/recommended-books/building-llm-powered-applications-guide/page.tsx",
+        "app/recommended-books/architecting-generative-ai-applications-guide/page.tsx"
       ],
       "linter": {
         "rules": {

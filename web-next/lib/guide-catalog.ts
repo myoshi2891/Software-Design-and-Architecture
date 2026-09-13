@@ -203,6 +203,13 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary: "Valentina Alto著『Building LLM Powered Applications』を起点に最新実践知を学ぶ",
         status: "published",
       },
+      {
+        name: "生成AIアプリ構築ガイド",
+        href: "/recommended-books/architecting-generative-ai-applications-guide",
+        summary:
+          "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
+        status: "published",
+      },
     ],
   },
 ];

@@ -1,8 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ArchitectingGenAiChecklist, {
-  type ChecklistItem,
-} from "./ArchitectingGenAiChecklist";
+import ArchitectingGenAiChecklist, { type ChecklistItem } from "./ArchitectingGenAiChecklist";
 
 const testItems: readonly ChecklistItem[] = [
   { id: "chk-1", text: "プロトタイプ着手前に仮説を明文化した" },

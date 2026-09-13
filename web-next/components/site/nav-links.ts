@@ -137,6 +137,10 @@ export const navLinks: readonly NavLink[] = [
         name: "LLMアプリ構築ガイド",
         href: "/recommended-books/building-llm-powered-applications-guide",
       },
+      {
+        name: "生成AIアプリ構築ガイド",
+        href: "/recommended-books/architecting-generative-ai-applications-guide",
+      },
     ],
   },
 ];
