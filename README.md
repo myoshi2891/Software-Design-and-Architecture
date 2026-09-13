@@ -105,9 +105,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/architecting-generative-ai-applications-guide`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/page.tsx)
     — 生成AIアプリケーションアーキテクチャ完全ガイドを移植（16 セクション・Mermaid 28 図・table 16・コードブロック 2・チェックリスト 19 項目）。
     固定サイドバー・scroll-spy を [`ArchitectingGenAiSidebar.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiSidebar.tsx)、実践チェックリストを [`ArchitectingGenAiChecklist.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiChecklist.tsx) でクライアント描画
-  - [`/recommended-books/designing-multi-agent-systems-guide`](web-next/app/recommended-books/designing-multi-agent-systems-guide/page.tsx)
+  - [`/design-principles/designing-multi-agent-systems-guide`](web-next/app/design-principles/designing-multi-agent-systems-guide/page.tsx)
     — マルチエージェントシステムの設計ガイドを移植（16 セクション・Mermaid 22 図・table 10・コードブロック 1・チェックリスト 13 項目）。
-    固定サイドバー・scroll-spy を [`MultiAgentSidebar.tsx`](web-next/app/recommended-books/designing-multi-agent-systems-guide/MultiAgentSidebar.tsx)、設計チェックリストを [`MultiAgentChecklist.tsx`](web-next/app/recommended-books/designing-multi-agent-systems-guide/MultiAgentChecklist.tsx) でクライアント描画
+    固定サイドバー・scroll-spy を [`MultiAgentSidebar.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentSidebar.tsx)、設計チェックリストを [`MultiAgentChecklist.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentChecklist.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、

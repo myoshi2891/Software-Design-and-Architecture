@@ -2,9 +2,7 @@
 
 ## 本ガイドについて
 
-ご提示いただいた O'Reilly のページ（`https://www.oreilly.com/library/view/designing-with-multi-agent/9783110797473/`）は、Evangelos Pantazis 著・De Gruyter 刊『*Designing with Multi-Agent Systems*』（2024年2月刊）でした。実際に内容を確認したところ、この書籍は**建築・エンジニアリング・建設（AEC）分野**において、ファサード設計やシェル構造設計などの初期設計段階にマルチエージェントシステム（群知能によるボトムアップ的な形態生成）を応用する研究書であり、ソフトウェア/AIエンジニアリングにおける「LLMエージェントを複数連携させるシステム設計」とは主題が異なります。
-
-そのため本ガイドでは、書籍の章構成をなぞるのではなく、**2026年9月時点でのソフトウェア/AIエンジニアリングにおけるマルチエージェントシステム設計**を、Anthropic・OpenAI・Google・Cognition・Linux Foundation（Agentic AI Foundation）・OWASP などの一次情報に基づいて初学者向けに再構成しました。参考にした情報源のURLはすべて末尾の参考文献に明記しています。
+**2026年9月時点でのソフトウェア/AIエンジニアリングにおけるマルチエージェントシステム設計**を、Anthropic・OpenAI・Google・Cognition・Linux Foundation（Agentic AI Foundation）・OWASP などの一次情報に基づいて初学者向けに再構成しました。参考にした情報源のURLはすべて末尾の参考文献に明記しています。
 
 ---
 
