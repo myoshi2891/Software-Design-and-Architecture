@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import MultiAgentChecklist from "./MultiAgentChecklist";
-import MultiAgentSidebar, { type NavGroup } from "./MultiAgentSidebar";
+import MultiAgentSidebar, { type NavH2Item } from "./MultiAgentSidebar";
 
 export const metadata: Metadata = {
   title: "マルチエージェントシステムの設計（Designing Multi-Agent Systems）— 初学者向け実践ガイド",
@@ -10,32 +10,20 @@ export const metadata: Metadata = {
     "Anthropic・OpenAI・Google・Cognition・Linux Foundation（Agentic AI Foundation）・OWASP など、著名な国際的組織・開発者の一次情報に基づき、ソフトウェア/AIエンジニアリングにおけるマルチエージェントシステム設計をステップバイステップで解説します。",
 };
 
-const NAV_GROUPS: readonly NavGroup[] = [
+const NAV_ITEMS: readonly NavH2Item[] = [
   {
-    title: "はじめに",
-    items: [
-      {
-        id: "top",
-        label: "はじめに",
-      },
-    ],
+    id: "top",
+    label: "はじめに",
+    isSolo: true,
   },
   {
-    title: "本ガイドについて",
-    items: [
-      {
-        id: "本ガイドについて",
-        label: "本ガイドについて",
-      },
-    ],
+    id: "本ガイドについて",
+    label: "本ガイドについて",
   },
   {
-    title: "第0部　前提知識 — LLMエージェントとは何か",
-    items: [
-      {
-        id: "第0部-前提知識--llmエージェントとは何か",
-        label: "第0部　前提知識 — LLMエージェントとは何か",
-      },
+    id: "第0部-前提知識--llmエージェントとは何か",
+    label: "第0部　前提知識 — LLMエージェントとは何か",
+    subItems: [
       {
         id: "01-llmエージェントの基本ループ",
         label: "0.1 LLMエージェントの基本ループ",
@@ -51,12 +39,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第1部　なぜマルチエージェントなのか — 効果とコスト、そして反論",
-    items: [
-      {
-        id: "第1部-なぜマルチエージェントなのか--効果とコストそして反論",
-        label: "第1部　なぜマルチエージェントなのか — 効果とコスト、そして反論",
-      },
+    id: "第1部-なぜマルチエージェントなのか--効果とコストそして反論",
+    label: "第1部　なぜマルチエージェントなのか — 効果とコスト、そして反論",
+    subItems: [
       {
         id: "11-anthropicの知見902の性能向上と15倍のトークンコスト",
         label: "1.1 Anthropicの知見：90.2%の性能向上と15倍のトークンコスト",
@@ -76,12 +61,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第2部　基本設計パターン9種",
-    items: [
-      {
-        id: "第2部-基本設計パターン9種",
-        label: "第2部　基本設計パターン9種",
-      },
+    id: "第2部-基本設計パターン9種",
+    label: "第2部　基本設計パターン9種",
+    subItems: [
       {
         id: "21-パイプライン逐次実行パターン",
         label: "2.1 パイプライン（逐次実行）パターン",
@@ -125,12 +107,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第3部　コンテキストエンジニアリングと状態設計",
-    items: [
-      {
-        id: "第3部-コンテキストエンジニアリングと状態設計",
-        label: "第3部　コンテキストエンジニアリングと状態設計",
-      },
+    id: "第3部-コンテキストエンジニアリングと状態設計",
+    label: "第3部　コンテキストエンジニアリングと状態設計",
+    subItems: [
       {
         id: "31-コンテキストウィンドウという希少資源",
         label: "3.1 コンテキストウィンドウという希少資源",
@@ -154,12 +133,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第4部　エージェント間通信プロトコル",
-    items: [
-      {
-        id: "第4部-エージェント間通信プロトコル",
-        label: "第4部　エージェント間通信プロトコル",
-      },
+    id: "第4部-エージェント間通信プロトコル",
+    label: "第4部　エージェント間通信プロトコル",
+    subItems: [
       {
         id: "41-mcpmodel-context-protocol",
         label: "4.1 MCP（Model Context Protocol）",
@@ -179,21 +155,13 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第5部　メモリアーキテクチャ",
-    items: [
-      {
-        id: "第5部-メモリアーキテクチャ",
-        label: "第5部　メモリアーキテクチャ",
-      },
-    ],
+    id: "第5部-メモリアーキテクチャ",
+    label: "第5部　メモリアーキテクチャ",
   },
   {
-    title: "第6部　ツール利用と権限設計",
-    items: [
-      {
-        id: "第6部-ツール利用と権限設計",
-        label: "第6部　ツール利用と権限設計",
-      },
+    id: "第6部-ツール利用と権限設計",
+    label: "第6部　ツール利用と権限設計",
+    subItems: [
       {
         id: "61-ツール設計原則",
         label: "6.1 ツール設計原則",
@@ -209,12 +177,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第7部　評価とオブザーバビリティ",
-    items: [
-      {
-        id: "第7部-評価とオブザーバビリティ",
-        label: "第7部　評価とオブザーバビリティ",
-      },
+    id: "第7部-評価とオブザーバビリティ",
+    label: "第7部　評価とオブザーバビリティ",
+    subItems: [
       {
         id: "71-評価駆動開発evaluation-driven-development",
         label: "7.1 評価駆動開発（Evaluation-Driven Development）",
@@ -230,12 +195,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第8部　安全性とセキュリティ設計",
-    items: [
-      {
-        id: "第8部-安全性とセキュリティ設計",
-        label: "第8部　安全性とセキュリティ設計",
-      },
+    id: "第8部-安全性とセキュリティ設計",
+    label: "第8部　安全性とセキュリティ設計",
+    subItems: [
       {
         id: "81-lethal-trifecta致死の三要素",
         label: "8.1 Lethal Trifecta（致死の三要素）",
@@ -259,12 +221,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第9部　実装フレームワークの選択（2026年版）",
-    items: [
-      {
-        id: "第9部-実装フレームワークの選択2026年版",
-        label: "第9部　実装フレームワークの選択（2026年版）",
-      },
+    id: "第9部-実装フレームワークの選択2026年版",
+    label: "第9部　実装フレームワークの選択（2026年版）",
+    subItems: [
       {
         id: "91-フレームワーク比較表",
         label: "9.1 フレームワーク比較表",
@@ -276,12 +235,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第10部　設計チェックリストとアンチパターン",
-    items: [
-      {
-        id: "第10部-設計チェックリストとアンチパターン",
-        label: "第10部　設計チェックリストとアンチパターン",
-      },
+    id: "第10部-設計チェックリストとアンチパターン",
+    label: "第10部　設計チェックリストとアンチパターン",
+    subItems: [
       {
         id: "101-設計チェックリスト",
         label: "10.1 設計チェックリスト",
@@ -293,40 +249,20 @@ const NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    title: "第11部　2026年9月時点の最新動向",
-    items: [
-      {
-        id: "第11部-2026年9月時点の最新動向",
-        label: "第11部　2026年9月時点の最新動向",
-      },
-    ],
+    id: "第11部-2026年9月時点の最新動向",
+    label: "第11部　2026年9月時点の最新動向",
   },
   {
-    title: "学習ロードマップ",
-    items: [
-      {
-        id: "学習ロードマップ",
-        label: "学習ロードマップ",
-      },
-    ],
+    id: "学習ロードマップ",
+    label: "学習ロードマップ",
   },
   {
-    title: "用語集",
-    items: [
-      {
-        id: "用語集",
-        label: "用語集",
-      },
-    ],
+    id: "用語集",
+    label: "用語集",
   },
   {
-    title: "参考文献",
-    items: [
-      {
-        id: "参考文献",
-        label: "参考文献",
-      },
-    ],
+    id: "参考文献",
+    label: "参考文献",
   },
 ];
 
@@ -687,7 +623,7 @@ export default function Page() {
   return (
     <div className="designing-multi-agent-systems-guide">
       <div className="layout">
-        <MultiAgentSidebar groups={NAV_GROUPS} />
+        <MultiAgentSidebar items={NAV_ITEMS} />
         <main className="main">
           <header className="hero" id="top">
             <span className="hero-eyebrow">初学者向け実践ガイド &middot; 2026年9月</span>

@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-export type NavItem = {
+export type NavSubItem = {
   readonly id: string;
   readonly label: string;
 };
 
-export type NavGroup = {
-  readonly title: string;
-  readonly items: readonly NavItem[];
+export type NavH2Item = {
+  readonly id: string;
+  readonly label: string;
+  readonly isSolo?: boolean;
+  readonly subItems?: readonly NavSubItem[];
 };
 
 type MultiAgentSidebarProps = {
-  readonly groups: readonly NavGroup[];
+  readonly items: readonly NavH2Item[];
 };
 
-export default function MultiAgentSidebar({ groups }: MultiAgentSidebarProps) {
+export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>(() => {
-    return groups[0]?.items[0]?.id ?? "top";
+    return items[0]?.id ?? "top";
   });
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -30,9 +32,18 @@ export default function MultiAgentSidebar({ groups }: MultiAgentSidebarProps) {
       return;
     }
 
-    const allItems = groups.flatMap((g) => g.items);
-    const elements = allItems
-      .map((item) => document.getElementById(item.id))
+    const allIds: string[] = [];
+    for (const item of items) {
+      allIds.push(item.id);
+      if (item.subItems) {
+        for (const sub of item.subItems) {
+          allIds.push(sub.id);
+        }
+      }
+    }
+
+    const elements = allIds
+      .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
 
     const observer = new IntersectionObserver(
@@ -53,7 +64,7 @@ export default function MultiAgentSidebar({ groups }: MultiAgentSidebarProps) {
     return () => {
       observer.disconnect();
     };
-  }, [groups]);
+  }, [items]);
 
   return (
     <>
@@ -85,28 +96,41 @@ export default function MultiAgentSidebar({ groups }: MultiAgentSidebarProps) {
         </div>
 
         <ul className="nav-list">
-          {groups.map((group) => (
-            <li key={group.title} className="nav-group-item">
-              <ul className="nav-sub-list">
-                {group.items.map((item) => {
-                  const isActive = activeId === item.id;
-                  const isH2 = !item.id.includes(".") && !item.id.match(/^\d+\.\d+/);
-                  return (
-                    <li key={item.id} className={`nav-item ${isH2 ? "nav-h2" : "nav-h3"}`}>
-                      <a
-                        href={`#${item.id}`}
-                        className={`nav-link ${isActive ? "active" : ""}`}
-                        data-target={item.id}
-                        onClick={closeMenu}
-                      >
-                        {item.label}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </li>
-          ))}
+          {items.map((item) => {
+            const isH2Active = activeId === item.id;
+            return (
+              <li key={item.id} className={`nav-item ${item.isSolo ? "nav-h2-solo" : "nav-h2"}`}>
+                <a
+                  href={`#${item.id}`}
+                  className={`nav-link ${isH2Active ? "active" : ""}`}
+                  data-target={item.id}
+                  onClick={closeMenu}
+                >
+                  {item.label}
+                </a>
+
+                {item.subItems && item.subItems.length > 0 && (
+                  <ul className="nav-sub">
+                    {item.subItems.map((sub) => {
+                      const isSubActive = activeId === sub.id;
+                      return (
+                        <li key={sub.id} className="nav-item nav-h3">
+                          <a
+                            href={`#${sub.id}`}
+                            className={`nav-link ${isSubActive ? "active" : ""}`}
+                            data-target={sub.id}
+                            onClick={closeMenu}
+                          >
+                            {sub.label}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </>

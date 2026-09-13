@@ -10585,29 +10585,25 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
     margin: 0;
     padding: 0 8px;
   }
-  .nav-group-item {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .nav-sub-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
   .nav-item {
     margin: 1px 0;
     min-width: 0;
     list-style: none;
   }
-  .nav-h2 > .nav-link {
+  .nav-h2 > .nav-link,
+  .nav-h2-solo > .nav-link {
     font-weight: 700;
     font-size: 14.5px;
     padding: 8px 10px;
   }
+  .nav-sub {
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0 0 0 8px;
+  }
   .nav-h3 > .nav-link {
     font-size: 13.5px;
-    padding: 6px 8px 6px 20px;
+    padding: 6px 8px;
     color: var(--text-dim);
   }
   .nav-link {
@@ -10631,6 +10627,9 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
     color: var(--accent-dark);
     border-left-color: var(--accent);
     font-weight: 700;
+  }
+  .nav-h3 > .nav-link.active {
+    color: var(--accent-dark);
   }
 
   /* --- メイン --- */
@@ -10795,7 +10794,7 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
     border-bottom: none;
   }
 
-  /* --- Mermaid --- */
+  /* --- Mermaid 図解（原本のライトモード・青基調デザイン完全再現） --- */
   .mermaid {
     width: 100%;
     display: flex;
@@ -10810,10 +10809,119 @@ body.has-common-header .architecting-generative-ai-applications-guide h4 {
   }
   .mermaid svg {
     flex-shrink: 0;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  .mermaid svg foreignObject {
+    overflow: visible;
   }
   .mermaid p {
     color: inherit;
     margin: 0;
+  }
+
+  /* ノードの図形（四角・角丸・サークル・菱形・多角形） */
+  .mermaid svg .node rect,
+  .mermaid svg .node circle,
+  .mermaid svg .node ellipse,
+  .mermaid svg .node polygon,
+  .mermaid svg .node path {
+    fill: var(--accent-soft, #eaf1ff) !important;
+    stroke: var(--accent, #2f6fed) !important;
+    stroke-width: 1.5px !important;
+  }
+
+  /* ノードのテキスト */
+  .mermaid svg .node .nodeLabel,
+  .mermaid svg .node .nodeLabel *,
+  .mermaid svg .node foreignObject div,
+  .mermaid svg .node text,
+  .mermaid svg .node tspan {
+    color: var(--text, #1a2233) !important;
+    fill: var(--text, #1a2233) !important;
+    font-family: var(--font-sans) !important;
+  }
+
+  /* 接続線（エッジ） */
+  .mermaid svg .edgePath .path {
+    stroke: var(--accent, #2f6fed) !important;
+    stroke-width: 1.5px !important;
+  }
+
+  /* 矢印マーカー */
+  .mermaid svg .marker,
+  .mermaid svg defs marker path {
+    fill: var(--accent, #2f6fed) !important;
+    stroke: var(--accent, #2f6fed) !important;
+  }
+
+  /* エッジラベル（条件分岐などのテキスト） */
+  .mermaid svg .edgeLabel {
+    color: var(--text, #1a2233) !important;
+    font-size: 13px !important;
+  }
+  .mermaid svg .edgeLabel .nodeLabel,
+  .mermaid svg .edgeLabel text,
+  .mermaid svg .edgeLabel tspan {
+    color: var(--text, #1a2233) !important;
+    fill: var(--text, #1a2233) !important;
+  }
+  .mermaid svg .edgeLabel rect,
+  .mermaid svg .edgeLabel .labelBkg {
+    fill: #ffffff !important;
+    stroke: none !important;
+    opacity: 0.95 !important;
+  }
+
+  /* サブグラフ（クラスター） */
+  .mermaid svg .cluster rect {
+    fill: var(--bg-alt, #f6f8fb) !important;
+    stroke: var(--border-strong, #d3dbe8) !important;
+    stroke-width: 1.5px !important;
+  }
+  .mermaid svg .cluster text,
+  .mermaid svg .cluster .nodeLabel {
+    color: var(--text, #1a2233) !important;
+    fill: var(--text, #1a2233) !important;
+    font-weight: 700 !important;
+  }
+
+  /* シーケンス図 */
+  .mermaid svg rect.actor,
+  .mermaid svg .actor-top,
+  .mermaid svg .actor-bottom {
+    fill: var(--accent-soft, #eaf1ff) !important;
+    stroke: var(--accent, #2f6fed) !important;
+    stroke-width: 1.5px !important;
+  }
+  .mermaid svg text.actor {
+    fill: var(--text, #1a2233) !important;
+    font-weight: 700 !important;
+  }
+  .mermaid svg .messageLine0,
+  .mermaid svg .messageLine1 {
+    stroke: var(--accent, #2f6fed) !important;
+    stroke-width: 1.5px !important;
+  }
+  .mermaid svg .messageText {
+    fill: var(--text, #1a2233) !important;
+  }
+
+  /* 危険ノード（dangerFill） */
+  .mermaid svg .dangerFill rect,
+  .mermaid svg .dangerFill polygon,
+  .mermaid svg .dangerFill path {
+    fill: var(--danger-bg, #fdecee) !important;
+    stroke: var(--danger-border, #d64550) !important;
+    stroke-width: 1.5px !important;
+  }
+  .mermaid svg .dangerFill .nodeLabel,
+  .mermaid svg .dangerFill .nodeLabel *,
+  .mermaid svg .dangerFill text {
+    color: var(--danger-text, #8a1220) !important;
+    fill: var(--danger-text, #8a1220) !important;
   }
 
   /* --- コードブロック --- */
@@ -11055,11 +11163,13 @@ body.has-common-header .designing-multi-agent-systems-guide .sidebar-toggle {
   top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 14px);
 }
 
+body.has-common-header .designing-multi-agent-systems-guide .hero,
 body.has-common-header .designing-multi-agent-systems-guide h2,
 body.has-common-header .designing-multi-agent-systems-guide h3,
 body.has-common-header .designing-multi-agent-systems-guide h4 {
   scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
+
 
 
 
