@@ -54,6 +54,7 @@
 ## 厳守事項・実行制約（絶対遵守）
 
 ### 1. 実行コマンド制約
+
 - **パッケージマネージャーは Bun を使用してください**: `npm` / `npx` / `yarn` / `pnpm` / `node` の実行は禁止です。
 - **テスト実行**: 必ず `(cd web-next && bun run test <対象テストパス>)` で実行してください（`bun test` は vitest/jsdom 設定を無視するため禁止）。
 - **Biome Lint 実行**: 必ず対象ファイル/ディレクトリを指定してください（例: `(cd web-next && bun run lint app/<カテゴリ>/<slug>)`）。引数なしで `bun run lint:fix` や `bunx biome check --write` をリポジトリ全体に実行することは禁止です。
@@ -136,11 +137,13 @@ flowchart TD
 1. `web-next/app/[移行先カテゴリ]/[移行先slug]/page.test.tsx` を作成します。
    - 先頭に `// @vitest-environment jsdom` を記述。
    - `MermaidDiagram` は軽量モックに差し替える:
+
      ```tsx
      vi.mock("@/components/MermaidDiagram", () => ({
        default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
      }));
      ```
+
    - **契約テストの必須アサーション（最低 6 契約）**:
      1. `h1` テキストの一致検証
      2. `h2` 見出し数の完全一致検証
@@ -231,7 +234,7 @@ flowchart TD
 
 ---
 
-## 参考文献・関連ファイル
+## 参考文献・ソース一覧
 
 - **開発規約**: [`GEMINI.md`](../GEMINI.md)
 - **プロジェクトガイドライン**: [`CLAUDE.md`](../CLAUDE.md)
