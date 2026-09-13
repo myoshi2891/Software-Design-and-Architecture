@@ -72,7 +72,6 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
 
         {groups.map((group) => (
           <div key={group.title}>
-            {group.title ? <div className="nav-group-title">{group.title}</div> : null}
             {group.items.map((item) => {
               const isActive = activeId === item.id;
               const isH2 =

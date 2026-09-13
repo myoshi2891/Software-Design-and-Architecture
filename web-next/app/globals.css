@@ -10102,7 +10102,9 @@ body.has-common-header .building-llm-powered-applications-guide section {
   .main {
     margin-left: var(--sidebar-width);
     padding: 48px 56px 100px 56px;
-    max-width: 1200px;
+    max-width: none;
+    width: calc(100% - var(--sidebar-width));
+    box-sizing: border-box;
   }
 
   .hero {
