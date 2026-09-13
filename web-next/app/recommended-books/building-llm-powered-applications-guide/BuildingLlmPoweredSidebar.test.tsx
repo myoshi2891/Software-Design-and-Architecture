@@ -28,12 +28,15 @@ const TEST_GROUPS: NavGroup[] = [
 
 type IOCallback = (entries: IntersectionObserverEntry[]) => void;
 let ioCallback: IOCallback | null = null;
+let observedTargets: Element[] = [];
 
 class CapturingIO implements IntersectionObserver {
   readonly root = null;
   readonly rootMargin = "";
   readonly thresholds: ReadonlyArray<number> = [];
-  observe = vi.fn();
+  observe = vi.fn((target: Element) => {
+    observedTargets.push(target);
+  });
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn(() => []);
@@ -45,6 +48,9 @@ class CapturingIO implements IntersectionObserver {
 function intersect(id: string): void {
   const target = document.getElementById(id);
   if (!target) throw new Error(`section #${id} not found`);
+  if (!observedTargets.includes(target)) {
+    throw new Error(`section #${id} was not registered via observe()`);
+  }
   const entry = {
     isIntersecting: true,
     target,
@@ -57,6 +63,7 @@ describe("BuildingLlmPoweredSidebar", () => {
 
   beforeEach(() => {
     ioCallback = null;
+    observedTargets = [];
     originalIntersectionObserver = globalThis.IntersectionObserver;
     globalThis.IntersectionObserver = CapturingIO as unknown as typeof IntersectionObserver;
     document.body.insertAdjacentHTML(
