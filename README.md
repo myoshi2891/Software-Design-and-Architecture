@@ -102,6 +102,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/building-llm-powered-applications-guide`](web-next/app/recommended-books/building-llm-powered-applications-guide/page.tsx)
     — LLMパワードアプリケーション構築ガイドを移植（18 セクション・Mermaid 15 図・table 7・コードブロック 2・チェックリスト 7 項目）。
     固定サイドバー・scroll-spy を [`BuildingLlmPoweredSidebar.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/BuildingLlmPoweredSidebar.tsx)、本番チェックリストを [`LaunchChecklist.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/LaunchChecklist.tsx) でクライアント描画
+  - [`/recommended-books/architecting-generative-ai-applications-guide`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/page.tsx)
+    — 生成AIアプリケーションアーキテクチャ完全ガイドを移植（16 セクション・Mermaid 28 図・table 16・コードブロック 2・チェックリスト 19 項目）。
+    固定サイドバー・scroll-spy を [`ArchitectingGenAiSidebar.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiSidebar.tsx)、実践チェックリストを [`ArchitectingGenAiChecklist.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiChecklist.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
