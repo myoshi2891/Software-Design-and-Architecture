@@ -39,6 +39,13 @@ type Props = {
   items?: NavItem[];
 };
 
+// CSS 属性セレクタの二重引用符内に安全に埋め込むためのエスケープ。
+// CSS.escape はダブルクォート内の文字列エスケープ用途ではなく識別子用途のため使わず、
+// jsdom 25 は CSS.escape 自体を実装していない（グローバル CSS が undefined）ため独自定義する。
+function escapeAttributeValue(value: string): string {
+  return value.replace(/["\\]/g, (char) => `\\${char}`);
+}
+
 /**
  * XP包括ガイドの固定サイドバーおよび進捗バーコンポーネント。
  */
@@ -50,7 +57,7 @@ export default function XpSidebar({ items = NAV_ITEMS }: Props) {
   // items が空のときは従来どおり .section-anchor 全体を対象にする（空セレクタは不正）。
   const sectionSelector =
     items.length > 0
-      ? items.map((item) => `.section-anchor[id="${item.id}"]`).join(", ")
+      ? items.map((item) => `.section-anchor[id="${escapeAttributeValue(item.id)}"]`).join(", ")
       : ".section-anchor";
   const activeId = useScrollSpy(sectionSelector, items[0]?.id ?? "s1");
 
