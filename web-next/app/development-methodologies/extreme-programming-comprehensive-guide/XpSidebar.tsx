@@ -43,7 +43,9 @@ type Props = {
 // CSS.escape はダブルクォート内の文字列エスケープ用途ではなく識別子用途のため使わず、
 // jsdom 25 は CSS.escape 自体を実装していない（グローバル CSS が undefined）ため独自定義する。
 function escapeAttributeValue(value: string): string {
-  return value.replace(/["\\]/g, (char) => `\\${char}`);
+  return value
+    .replace(/["\\]/g, (char) => `\\${char}`)
+    .replace(/[\n\r\f]/g, (char) => `\\${char.charCodeAt(0).toString(16)} `);
 }
 
 /**

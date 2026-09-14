@@ -157,4 +157,12 @@ describe("XpSidebar", () => {
     expect(current).toHaveLength(1);
     expect(current[0]?.getAttribute("href")).toBe("#s5");
   });
+
+  // item.id に生の改行が含まれると、属性セレクタの二重引用符内で不正な CSS 文字列となり、
+  // useScrollSpy 内の querySelectorAll(sectionSelector) が SyntaxError を投げる。
+  // escapeAttributeValue が改行を CSS 16進エスケープへ変換していることを保証する。
+  it("item.id に改行を含んでいても SyntaxError を投げずにレンダリングできる", () => {
+    const itemsWithNewline: NavItem[] = [{ id: "s1\ns2", num: "1", label: "改行混入" }];
+    expect(() => render(<XpSidebar items={itemsWithNewline} />)).not.toThrow();
+  });
 });
