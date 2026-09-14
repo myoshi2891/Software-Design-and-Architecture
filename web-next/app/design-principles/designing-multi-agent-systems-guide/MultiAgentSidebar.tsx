@@ -31,7 +31,11 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => {
     setIsOpen(false);
-    toggleButtonRef.current?.focus();
+    // トグルボタンはモバイル表示でのみ可視のため、デスクトップの nav リンククリックでは
+    // 非表示ボタンへフォーカスを移さない（クリックしたリンクにフォーカスを残す）。
+    if (isMobile) {
+      toggleButtonRef.current?.focus();
+    }
   };
 
   useEffect(() => {
@@ -80,13 +84,26 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
 
+    const intersectingEntries = new Map<string, IntersectionObserverEntry>();
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+            intersectingEntries.set(entry.target.id, entry);
+          } else {
+            intersectingEntries.delete(entry.target.id);
           }
         }
+
+        if (intersectingEntries.size === 0) {
+          return;
+        }
+
+        const topmost = [...intersectingEntries.values()].reduce((top, entry) =>
+          entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top
+        );
+        setActiveId(topmost.target.id);
       },
       { rootMargin: "-15% 0px -75% 0px", threshold: 0 }
     );
