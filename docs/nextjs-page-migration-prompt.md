@@ -179,6 +179,7 @@ flowchart TD
    - 必要に応じて同階層に `<Topic>Sidebar.tsx`（`"use client"`）を作成。
 2. `web-next/app/globals.css` にスコープクラス（`.[スコープクラス名] { … }`）を追加し、元 HTML のスタイル・ページ固有トークン・手書き span 構文ハイライト定義（`.kw`, `.st`, `.fn`, `.cm`, `.nu`）を移植します。
 3. `web-next/biome.json` の `overrides` に当該ページを追加し、`noDangerouslySetInnerHtml: "off"` を設定します:
+
    ```jsonc
    {
      "includes": ["app/[移行先カテゴリ]/[移行先slug]/page.tsx"],
@@ -191,13 +192,17 @@ flowchart TD
      }
    }
    ```
+
 4. `web-next/lib/guide-catalog.ts` の該当エントリの `status` を `"published"` に更新します。
 5. 契約テストおよびカタログナビテストを実行し、すべて成功（Green）することを確認します:
+
    ```bash
    (cd web-next && bun run test app/[移行先カテゴリ]/[移行先slug]/page.test.tsx)
    (cd web-next && bun run test lib/guide-catalog-nav.test.ts)
    ```
+
 6. PII・絶対パスの混入がないことを検証し、Green コミットを実行します:
+
    ```bash
    git diff --cached | grep -E '^\+[^+]' | grep -E '(/Users/|/home/|C:\\Users\\)'
    git commit -m "feat(web-next): implement [移行先slug] with 100% source parity"
@@ -208,19 +213,26 @@ flowchart TD
 ### Phase 4: [Refactor] 品質検証とリファクタコミット
 
 1. Lint および型チェックを実行し、エラーがゼロであることを確認します:
+
    ```bash
    (cd web-next && bun run lint app/[移行先カテゴリ]/[移行先slug])
    (cd web-next && bun run typecheck)
    ```
+
 2. 全体テストを実行し、リグレッションがないことを確認します:
+
    ```bash
    (cd web-next && bun run test)
    ```
+
 3. プロダクションビルドを実行し、ビルドエラーがないことを確認します:
+
    ```bash
    (cd web-next && bun run build)
    ```
+
 4. コード整理や重複排除を行った場合は、PII 検査後にリファクタコミットを実行します（コード変更がない場合はスキップ可）:
+
    ```bash
    git commit -m "refactor(web-next): clean up styles and components for [移行先slug]"
    ```
@@ -231,10 +243,12 @@ flowchart TD
 
 1. `GEMINI.md` および `README.md` の「移行済み」リストに新規移行ページを追記・同期します。
 2. PII・絶対パスの混入がないことを検証し、Docs コミットを実行します:
+
    ```bash
    git diff --cached | grep -E '^\+[^+]' | grep -E '(/Users/|/home/|C:\\Users\\)'
    git commit -m "chore(docs): sync specifications and update catalog for [移行先slug]"
    ```
+
 3. ユーザーへ実装完了を報告し、ブラウザで確認すべきローカル URL（例: `http://localhost:3000/[移行先カテゴリ]/[移行先slug]`）を提示して手動目視確認を依頼してください。
 
 ---
