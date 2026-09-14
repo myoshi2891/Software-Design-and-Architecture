@@ -53,11 +53,14 @@ export default function BuildingLlmPoweredSidebar({ groups }: BuildingLlmPowered
 
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
+        const intersecting = entries.filter((entry) => entry.isIntersecting);
+        if (intersecting.length === 0) {
+          return;
         }
+        const topmost = intersecting.reduce((top, entry) =>
+          entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top
+        );
+        setActiveId(topmost.target.id);
       },
       { rootMargin: "-20% 0px -70% 0px" }
     );

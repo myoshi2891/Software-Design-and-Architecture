@@ -54,6 +54,7 @@ function intersect(id: string): void {
   const entry = {
     isIntersecting: true,
     target,
+    boundingClientRect: { top: 0 } as DOMRectReadOnly,
   } as unknown as IntersectionObserverEntry;
   act(() => ioCallback?.([entry]));
 }
