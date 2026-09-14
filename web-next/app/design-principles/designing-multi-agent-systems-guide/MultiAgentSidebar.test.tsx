@@ -46,12 +46,21 @@ describe("MultiAgentSidebar", () => {
     const sidebar = screen.getByRole("navigation");
 
     expect(sidebar.classList.contains("open")).toBe(false);
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+    expect(toggleButton).toHaveAttribute("aria-controls", "sidebar");
+    expect(toggleButton).toHaveAccessibleName("メニューを開く");
 
     fireEvent.click(toggleButton);
     expect(sidebar.classList.contains("open")).toBe(true);
+    expect(toggleButton).toHaveAttribute("aria-expanded", "true");
+    expect(toggleButton).toHaveAttribute("aria-controls", "sidebar");
+    expect(toggleButton).toHaveAccessibleName("メニューを閉じる");
 
     fireEvent.click(toggleButton);
     expect(sidebar.classList.contains("open")).toBe(false);
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+    expect(toggleButton).toHaveAttribute("aria-controls", "sidebar");
+    expect(toggleButton).toHaveAccessibleName("メニューを開く");
   });
 
   it("リンククリック時にサイドバーを閉じる", () => {
