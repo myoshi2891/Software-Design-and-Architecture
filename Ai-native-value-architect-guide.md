@@ -16,6 +16,7 @@
 
 ## 目次
 
+0. [前提知識のおさらい](#0-前提知識のおさらい)
 1. [認定資格の全体像](#1-認定資格の全体像)
 2. [AI Value Architectとは何か](#2-ai-value-architectとは何か)
 3. [ドメイン1: Developing the AI-Native Change Agent (28–32%)](#3-ドメイン1-developing-the-ai-native-change-agent-2832)
