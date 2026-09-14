@@ -50,11 +50,14 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
 
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
+        const intersecting = entries.filter((entry) => entry.isIntersecting);
+        if (intersecting.length === 0) {
+          return;
         }
+        const topmost = intersecting.reduce((top, entry) =>
+          entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top
+        );
+        setActiveId(topmost.target.id);
       },
       { rootMargin: "-15% 0px -75% 0px", threshold: 0 }
     );
@@ -75,6 +78,8 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
         className="sidebar-toggle"
         id="sidebar-toggle"
         aria-label="メニュー"
+        aria-expanded={isOpen}
+        aria-controls="sidebar"
         onClick={toggleMenu}
       >
         &#9776;
