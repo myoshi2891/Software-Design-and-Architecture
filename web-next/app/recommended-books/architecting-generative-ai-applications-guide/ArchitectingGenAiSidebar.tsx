@@ -48,13 +48,23 @@ export default function ArchitectingGenAiSidebar({ groups }: ArchitectingGenAiSi
       .map((item) => document.getElementById(item.id))
       .filter((el): el is HTMLElement => el !== null);
 
+    const intersectingEntries = new Map<string, IntersectionObserverEntry>();
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const intersecting = entries.filter((entry) => entry.isIntersecting);
-        if (intersecting.length === 0) {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            intersectingEntries.set(entry.target.id, entry);
+          } else {
+            intersectingEntries.delete(entry.target.id);
+          }
+        }
+
+        if (intersectingEntries.size === 0) {
           return;
         }
-        const topmost = intersecting.reduce((top, entry) =>
+
+        const topmost = [...intersectingEntries.values()].reduce((top, entry) =>
           entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top
         );
         setActiveId(topmost.target.id);
