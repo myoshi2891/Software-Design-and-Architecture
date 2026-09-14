@@ -62,6 +62,7 @@
 - **原本ファイルの保持**: 原本 HTML/Markdown は削除せず保持してください。
 
 ### 2. 100% 完全移植とスタイリング防犯原則（要約・省略・縮約の絶対禁止）
+
 - **完全移植の義務**: ソース HTML の要約、省略、縮約、代表抽出、見出しの言い換えは重大な規約違反です。全セクション・全段落・全リスト項目・全図表・全コードブロック・全外部リンクを 100% 漏れなく JSX へ転写してください。
 - **Server Component デフォルト**: `page.tsx` は Server Component を維持してください（`"use client"` 禁止）。
 - **クライアント chrome の分離**: 固定サイドバー・進捗バー・scroll-spy などのクライアント interactivity は、別ファイル `<Topic>Sidebar.tsx`（`"use client"`）に分離し、本文セクションは Server Component の children または DOM 経由で監視してください。
@@ -76,6 +77,7 @@
   - **アンカーめり込み防止**: 見出し等に `scroll-margin-top: calc(var(--header-height, 60px) + 80px)` を適用してください。
 
 ### 3. 厳格な TDD（Red → Green → Refactor → Docs）とコミット分割
+
 - **一括コミット厳禁**: テスト・実装・リファクタ・ドキュメントを 1 コミットにまとめることは重大な規約違反です。各論理ステップ完了ごとにコミットを実行してください。
 - **Red フェーズの厳守**: 失敗するテスト（Red）を確認せずに実装コードを書いてはなりません。
 - **コミットメッセージ形式**:
@@ -86,6 +88,7 @@
 - **PII・絶対パス検査**: すべてのコミット前に、必ず `git diff --cached` でユーザー名やローカル絶対パス（`/Users/` 等）が含まれていないことを確認してください。
 
 ### 4. ガイドカタログ登録とグローバルナビ同期
+
 - 新規ページは `web-next/lib/guide-catalog.ts` の該当エントリの `status` を `"published"` に更新してください。
 - 必要に応じて `web-next/components/site/nav-links.ts` と整合していることを確認し、契約テスト `(cd web-next && bun run test lib/guide-catalog-nav.test.ts)` の通過を確認してください。
 
@@ -156,11 +159,13 @@ flowchart TD
 2. サイドバーが存在する場合は、同階層に `<Topic>Sidebar.test.tsx` を作成し、進捗バー計算と scroll-spy の active 切替（IntersectionObserver スタブ使用）をテストします。
 
 3. テストを実行し、**テストが失敗すること（Red）** を確認します:
+
    ```bash
    (cd web-next && bun run test app/[移行先カテゴリ]/[移行先slug]/page.test.tsx)
    ```
 
 4. PII・絶対パスの混入がないことを検証し、Red コミットを実行します:
+
    ```bash
    git diff --cached | grep -E '^\+[^+]' | grep -E '(/Users/|/home/|C:\\Users\\)'
    git commit -m "test(web-next): add failing contract specs for [移行先slug]"
