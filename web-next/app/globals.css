@@ -137,7 +137,7 @@ body {
   .category[data-category="development-methodologies"] { --cat: var(--c-green-200); }
   .category[data-category="product-and-enterprise"] { --cat: var(--c-amber-200); }
   .category[data-category="css-design-system-guide"] { --cat: var(--c-teal-200); }
-  .category[data-category="recommended-books"] { --cat: var(--c-purple-200); }
+  .category[data-category="recommended-books"] { --cat: var(--c-coral-200); }
 
   .category-head {
     display: flex;
