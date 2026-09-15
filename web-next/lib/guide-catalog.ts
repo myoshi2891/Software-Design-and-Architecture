@@ -107,6 +107,13 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary: "カプセル化・継承・多態でモデルを表現する",
         status: "planned",
       },
+      {
+        name: "マルチエージェントシステムの設計",
+        href: "/design-principles/designing-multi-agent-systems-guide",
+        summary:
+          "主要各社の一次情報に基づき、LLMマルチエージェントシステムの設計パターンと実装を学ぶ",
+        status: "published",
+      },
     ],
   },
   {
@@ -190,6 +197,25 @@ export const guideCatalog: readonly GuideCategory[] = [
         href: "/css-design-system-guide/normal-animation-architecture-tokens-performance-tools",
         summary: "動きとトークン設計、性能とツール選び",
         status: "planned",
+      },
+    ],
+  },
+  {
+    id: "recommended-books",
+    name: "推薦書籍",
+    entries: [
+      {
+        name: "LLMアプリ構築ガイド",
+        href: "/recommended-books/building-llm-powered-applications-guide",
+        summary: "Valentina Alto著『Building LLM Powered Applications』を起点に最新実践知を学ぶ",
+        status: "published",
+      },
+      {
+        name: "生成AIアプリ構築ガイド",
+        href: "/recommended-books/architecting-generative-ai-applications-guide",
+        summary:
+          "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
+        status: "published",
       },
     ],
   },

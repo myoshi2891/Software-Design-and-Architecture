@@ -24,6 +24,36 @@ const THEME_VARIABLES = {
   fontSize: "16px",
 } as const;
 
+// mermaid.run() は描画 ID を `mermaid-${Date.now()}` でしか採番せず（node_modules/mermaid の
+// InitIDGenerator）、同一ミリ秒にマウントされた複数図で ID が衝突する。フローチャート等の
+// renderer は document.querySelector('[id="..."]') と文書全体を走査して描画先 SVG を決めるため、
+// 衝突すると後発の図が先行図の SVG へ描き込まれ「図の混在」「空枠」が発生する。
+// 対策は (1) 呼び出し側で衝突しない ID を採番して mermaid.render() を直接呼ぶ、
+//        (2) グローバル設定（initialize）と描画を直列化する、の 2 点。
+// import("mermaid") をインスタンスごとに呼ぶと、同時マウント時にモジュール解決と
+// initialize（グローバル設定）が競合する。モジュールスコープで 1 本の Promise を共有する。
+let mermaidModulePromise: Promise<typeof import("mermaid")> | null = null;
+function loadMermaid(): Promise<typeof import("mermaid")> {
+  mermaidModulePromise ??= import("mermaid");
+  return mermaidModulePromise;
+}
+
+let mermaidInitialized = false;
+let diagramSeq = 0;
+function nextDiagramId(): string {
+  diagramSeq += 1;
+  return `mermaid-svg-${Date.now()}-${diagramSeq}`;
+}
+
+// mermaid は initialize のグローバル設定を描画時に参照するため、描画は 1 件ずつ直列に流す。
+let renderQueue: Promise<unknown> = Promise.resolve();
+function enqueueRender<T>(task: () => Promise<T>): Promise<T> {
+  const result = renderQueue.then(task, task);
+  // キューは失敗しても後続を止めない（エラーは呼び出し側で処理する）
+  renderQueue = result.catch(() => undefined);
+  return result;
+}
+
 /**
  * Mermaid ソースから制御行（%%{init:...}%%、--- フロントマター、%% コメント、空行）を
  * 取り除き、最初の図種宣言行を返す。
@@ -117,21 +147,24 @@ const MermaidDiagram = memo(function MermaidDiagram({
 
   useEffect(() => {
     let active = true;
-    void import("mermaid")
+    void loadMermaid()
       .then(async (m) => {
         if (!active || !ref.current) return;
-        m.default.initialize({
-          startOnLoad: false,
-          theme: "dark",
-          themeVariables: THEME_VARIABLES,
-          htmlLabels: true,
-          flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
-          sequence: { useMaxWidth: false },
-          gantt: { fontSize: 16 },
-          pie: { textPosition: 0.75 },
-        });
-        ref.current.textContent = chart;
-        ref.current.removeAttribute("data-processed");
+        // 設定は全図で共通。描画中に別インスタンスが initialize を呼ぶとグローバル設定が
+        // 書き換わるため、初回のみ実行する。
+        if (!mermaidInitialized) {
+          mermaidInitialized = true;
+          m.default.initialize({
+            startOnLoad: false,
+            theme: "dark",
+            themeVariables: THEME_VARIABLES,
+            htmlLabels: true,
+            flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
+            sequence: { useMaxWidth: false },
+            gantt: { fontSize: 16 },
+            pie: { textPosition: 0.75 },
+          });
+        }
         try {
           // Web フォント読込前に採寸すると日本語ラベルの幅が不足して末尾が切れる
           // （スキル fix-mermaid §可読性・文字切れ対策）。jsdom など FontFaceSet 非対応の
@@ -143,13 +176,20 @@ const MermaidDiagram = memo(function MermaidDiagram({
             console.warn("[MermaidDiagram] document.fonts.ready failed:", fontErr);
           }
           if (!active || !ref.current) return;
-          await m.default.run({ nodes: [ref.current] });
-          // SVG 後処理：run() が innerHTML を SVG に置き換えた直後に実施
-          if (active && ref.current) {
-            const svgEl = ref.current.querySelector("svg");
-            if (svgEl instanceof SVGSVGElement) {
-              applySvgFixups(svgEl, chart, preserveNaturalScale);
-            }
+          // run() ではなく render() を使い、ID を呼び出し側で一意に採番する（ID 衝突対策）。
+          // 第 3 引数にコンテナを渡すと採寸がページ内（.mbox スコープ）で行われ、
+          // body 直下へ退避した場合のようなフォントサイズ差による文字切れを避けられる。
+          const target = ref.current;
+          const { svg, bindFunctions } = await enqueueRender(() =>
+            m.default.render(nextDiagramId(), chart, target)
+          );
+          if (!active || !ref.current) return;
+          ref.current.innerHTML = svg;
+          bindFunctions?.(ref.current);
+          // SVG 後処理：innerHTML 注入直後のライブ DOM に対して実施
+          const svgEl = ref.current.querySelector("svg");
+          if (svgEl instanceof SVGSVGElement) {
+            applySvgFixups(svgEl, chart, preserveNaturalScale);
           }
         } catch (err) {
           console.error("[MermaidDiagram] render failed:", err);

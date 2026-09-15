@@ -27,6 +27,7 @@
 - Component-Oriented Development
 - Domain-Driven Design (DDD)
 - Object-Oriented Programming (OOP)
+- Designing Multi-Agent Systems
 
 ### 3. 開発手法 (`development-methodologies/`)
 
@@ -47,13 +48,19 @@
 - 総合ガイド (`general/comprehensive-guide/`)
 - CSS デザインシステムガイド (`css-design-system-guide/`)
 
+### 6. 推薦書籍 (`recommended-books/`)
+
+技術書を起点に、最新実践知を体系化したガイドです。
+- Building LLM Powered Applications
+- Architecting Generative AI Applications
+
 ## Web アプリ (`web-next/`)
 
 静的 HTML ガイドを Next.js (App Router) ページとして再実装する Web アプリです。
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 22 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 25 本を
 一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -99,6 +106,15 @@ Testing Library（契約テスト）を採用しています。
   - [`/development-methodologies/feature-driven-development-comprehensive-guide`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/page.tsx)
     — FDD（フィーチャー駆動開発）完全ガイドを移植（15 セクション・Mermaid 21 図・table 12・コードブロック 3・SVG 2 図）。
     固定サイドバー・進捗バー・scroll-spy を [`FddSidebar.tsx`](web-next/app/development-methodologies/feature-driven-development-comprehensive-guide/FddSidebar.tsx) でクライアント描画
+  - [`/recommended-books/building-llm-powered-applications-guide`](web-next/app/recommended-books/building-llm-powered-applications-guide/page.tsx)
+    — LLMパワードアプリケーション構築ガイドを移植（18 セクション・Mermaid 15 図・table 7・コードブロック 2・チェックリスト 7 項目）。
+    固定サイドバー・scroll-spy を [`BuildingLlmPoweredSidebar.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/BuildingLlmPoweredSidebar.tsx)、本番チェックリストを [`LaunchChecklist.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/LaunchChecklist.tsx) でクライアント描画
+  - [`/recommended-books/architecting-generative-ai-applications-guide`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/page.tsx)
+    — 生成AIアプリケーションアーキテクチャ完全ガイドを移植（16 セクション・Mermaid 28 図・table 16・コードブロック 2・チェックリスト 19 項目）。
+    固定サイドバー・scroll-spy を [`ArchitectingGenAiSidebar.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiSidebar.tsx)、実践チェックリストを [`ArchitectingGenAiChecklist.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiChecklist.tsx) でクライアント描画
+  - [`/design-principles/designing-multi-agent-systems-guide`](web-next/app/design-principles/designing-multi-agent-systems-guide/page.tsx)
+    — マルチエージェントシステムの設計ガイドを移植（16 セクション・Mermaid 22 図・table 10・コードブロック 1・チェックリスト 13 項目）。
+    固定サイドバー・scroll-spy を [`MultiAgentSidebar.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentSidebar.tsx)、設計チェックリストを [`MultiAgentChecklist.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentChecklist.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、

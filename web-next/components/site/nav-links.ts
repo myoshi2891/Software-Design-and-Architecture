@@ -75,6 +75,10 @@ export const navLinks: readonly NavLink[] = [
         name: "オブジェクト指向プログラミング",
         href: "/design-principles/object-oriented-programming-comprehensive-guide",
       },
+      {
+        name: "マルチエージェントシステムの設計",
+        href: "/design-principles/designing-multi-agent-systems-guide",
+      },
     ],
   },
   {
@@ -127,6 +131,19 @@ export const navLinks: readonly NavLink[] = [
       {
         name: "アニメーション / 設計 / トークン",
         href: "/css-design-system-guide/normal-animation-architecture-tokens-performance-tools",
+      },
+    ],
+  },
+  {
+    name: "推薦書籍",
+    children: [
+      {
+        name: "LLMアプリ構築ガイド",
+        href: "/recommended-books/building-llm-powered-applications-guide",
+      },
+      {
+        name: "生成AIアプリ構築ガイド",
+        href: "/recommended-books/architecting-generative-ai-applications-guide",
       },
     ],
   },

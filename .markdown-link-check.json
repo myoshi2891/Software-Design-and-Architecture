@@ -239,6 +239,9 @@
     },
     {
       "pattern": "^https://ai\\.meta\\.com/blog/"
+    },
+    {
+      "pattern": "^https://virtualizationreview\\.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide\\.aspx$"
     }
   ],
   "replacementPatterns": [],

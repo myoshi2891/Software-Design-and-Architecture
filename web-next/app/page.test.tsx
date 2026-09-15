@@ -80,8 +80,8 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
-    expect(text).toContain("22");
-    expect(text).toContain("14");
+    expect(text).toContain("25");
+    expect(text).toContain("17");
     expect(text).toContain("8");
   });
 });

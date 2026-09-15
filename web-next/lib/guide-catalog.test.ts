@@ -14,17 +14,17 @@ function allEntries(): readonly GuideEntry[] {
 }
 
 describe("guideCatalog structure", () => {
-  it("defines 5 categories", () => {
-    expect(guideCatalog.length).toBe(5);
+  it("defines 6 categories", () => {
+    expect(guideCatalog.length).toBe(6);
   });
 
-  it("holds 22 guides in total", () => {
-    expect(allEntries().length).toBe(22);
+  it("holds 25 guides in total", () => {
+    expect(allEntries().length).toBe(25);
   });
 
-  it("splits into 14 published and 8 planned guides", () => {
+  it("splits into 17 published and 8 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(14);
+    expect(entries.filter((e) => e.status === "published").length).toBe(17);
     expect(entries.filter((e) => e.status === "planned").length).toBe(8);
   });
 
