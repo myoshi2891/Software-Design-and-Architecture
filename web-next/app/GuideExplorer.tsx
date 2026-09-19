@@ -13,7 +13,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { guideCatalog } from "@/lib/guide-catalog";
 
 const categoryDetails: Record<
@@ -66,6 +66,7 @@ const normalize = (value: string) => value.normalize("NFKC").toLocaleLowerCase()
 export function GuideExplorer() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState("all");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const terms = normalize(query).split(/\s+/).filter(Boolean);
   const categories = guideCatalog
     .map((category) => ({
@@ -92,6 +93,7 @@ export function GuideExplorer() {
         <div className="guide-search">
           <IconSearch size={18} aria-hidden="true" />
           <input
+            ref={searchInputRef}
             type="search"
             aria-label="ガイドを検索"
             placeholder="キーワードで探す…"
@@ -99,7 +101,14 @@ export function GuideExplorer() {
             onChange={(event) => setQuery(event.target.value)}
           />
           {query && (
-            <button type="button" aria-label="検索をクリア" onClick={() => setQuery("")}>
+            <button
+              type="button"
+              aria-label="検索をクリア"
+              onClick={() => {
+                setQuery("");
+                searchInputRef.current?.focus();
+              }}
+            >
               <IconX size={16} aria-hidden="true" />
             </button>
           )}
