@@ -11,7 +11,7 @@ type Props = {
 };
 
 // 元 HTML の mermaid.initialize 設定（dark テーマ + カスタム themeVariables）を移植。
-// fontSize は採寸と実描画を一致させるため絶対値 16px で明示する（スキル fix-mermaid §採寸値と CSS 文字サイズを一致させる）。
+// 各図解のフォント文字サイズは 1rem で統一する（スキル fix-mermaid §Mermaid の採寸値と CSS 文字サイズを一致させる）。
 const THEME_VARIABLES = {
   background: "#161b27",
   primaryColor: "#2d1f4e",
@@ -21,7 +21,7 @@ const THEME_VARIABLES = {
   secondaryColor: "#0f2e2e",
   tertiaryColor: "#1e2535",
   edgeLabelBackground: "#161b27",
-  fontSize: "16px",
+  fontSize: "1rem",
 } as const;
 
 // mermaid.run() は描画 ID を `mermaid-${Date.now()}` でしか採番せず（node_modules/mermaid の

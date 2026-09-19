@@ -221,7 +221,7 @@ mermaid.initialize({
 **禁止事項**:
 
 - 異なる図種へ同じ `minWidth` / `maxHeight` を一括適用しない
-- `%%{init: {"themeVariables": {"fontSize": "Xpx"}}}%%` で図ごとにフォントサイズを変えない — 採寸値と CSS の実描画値が乖離し、ノード枠からはみ出す
+- `%%{init: {"themeVariables": {"fontSize": "..."}}}%%` で図ごとにフォントサイズを変えない — 各図解のフォントサイズは `1rem` で統一し、採寸値と CSS の実描画値が乖離してノード枠からはみ出すのを防ぐ
 - `width:'100%'` を SVG に直接適用しない（小さい図が全幅へ異常拡大する）
 - 縦長図へ `max-height` を付けない（横幅と文字まで縮小する）
 - 1ページの問題を直すために共通コンポーネントの既定動作を変更しない
@@ -355,12 +355,12 @@ m.default.initialize({
     secondaryColor: "#0f2e2e",
     tertiaryColor: "#1e2535",
     edgeLabelBackground: "#161b27",
-    fontSize: "16px",  // SVG 採寸に使う明示値。採寸値と CSS 実描画値を一致させる（1rem のような相対値は禁止）
+    fontSize: "1rem",  // 各図解のフォントの文字サイズは 1rem。採寸値と CSS 実描画値を一致させる
   },
   htmlLabels: true,
   flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
   sequence: { useMaxWidth: false },
-  gantt: { fontSize: 16 },
+  gantt: { fontSize: 16 },  // gantt のみ Mermaid API が px 数値を受け付けるため 16（= 1rem 相当）
   pie: { textPosition: 0.75 },
 });
 ```
@@ -377,7 +377,9 @@ m.default.initialize({
 - `style.overflow = "visible"` で viewBox はみ出し描画の途切れを防止
 - 再処理時に前回の `minWidth` を事前クリア
 
-### Mermaid の採寸値と CSS 文字サイズを一致させる
+### Mermaid の採寸値と CSS 文字サイズを一致させる（フォントサイズ 1rem 統一）
+
+各図解のフォントの文字サイズは **`1rem`** で統一し、採寸値と CSS の実描画サイズを完全に一致させる。
 
 ```css
 /* globals.css の .mbox スコープ内に記述 */
@@ -390,7 +392,7 @@ m.default.initialize({
 .mbox svg text,
 .mbox svg tspan {
   overflow: visible;
-  font-size: 16px !important;
+  font-size: 1rem !important;
 }
 ```
 

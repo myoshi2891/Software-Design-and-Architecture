@@ -7949,14 +7949,14 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     overflow: visible;
   }
 
-  /* 採寸値（16px）と実描画値を一致させる（スキル fix-mermaid §採寸値と CSS 文字サイズを一致させる） */
+  /* 各図解のフォント文字サイズを 1rem に統一（スキル fix-mermaid §Mermaid の採寸値と CSS 文字サイズを一致させる） */
   .mbox svg foreignObject > div,
   .mbox svg .nodeLabel,
   .mbox svg .edgeLabel,
   .mbox svg text,
   .mbox svg tspan {
     overflow: visible;
-    font-size: 16px !important;
+    font-size: 1rem !important;
   }
 
   .cb {
