@@ -98,7 +98,7 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 25 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カテゴリ別に全 26 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
@@ -151,6 +151,10 @@ flowchart TD
     （URL `/design-principles/designing-multi-agent-systems-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`MultiAgentSidebar.tsx`）に分離、
     設計チェックリストをクライアントコンポーネント（`MultiAgentChecklist.tsx`）に分離。
+  - `app/certification-exams/ai-native-value-architect-guide/page.tsx`
+    （URL `/certification-exams/ai-native-value-architect-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`AiNativeValueArchitectSidebar.tsx`）に分離、
+    学習チェックリストをクライアントコンポーネント（`AiNativeChecklist.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
   `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
   索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
