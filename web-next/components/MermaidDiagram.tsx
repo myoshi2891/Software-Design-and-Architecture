@@ -12,7 +12,8 @@ type Props = {
 
 // 元 HTML の mermaid.initialize 設定（dark テーマ + カスタム themeVariables）を移植。
 // themeVariables.fontSize は Mermaid 内部の SVG レイアウト採寸に使われるため絶対 px 値が必須。
-// CSS 側を font-size: 1rem にし、ルートフォント 16px と一致させることで 1rem の視覚サイズを実現する。
+// CSS 側で SVG 内部要素の font-size を上書きすることはなく、Mermaid が採寸した 16px の値が
+// そのまま描画に使われる（= ルートフォントサイズ 16px、すなわち 1rem と一致する）。
 const THEME_VARIABLES = {
   background: "#161b27",
   primaryColor: "#2d1f4e",
