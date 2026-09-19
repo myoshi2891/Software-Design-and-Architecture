@@ -224,6 +224,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Valliappa Lakshmananら著『Generative AI Design Patterns』を起点に32の設計パターンを学ぶ",
         status: "published",
       },
+      {
+        name: "AIエージェントアプリ構築ガイド",
+        href: "/recommended-books/building-applications-with-ai-agents-guide",
+        summary:
+          "Michael Albada著『Building Applications with AI Agents』を起点にエージェント開発を学ぶ",
+        status: "published",
+      },
     ],
   },
   {

@@ -80,7 +80,7 @@ describe("building-applications-with-ai-agents-guide page contract", () => {
   it("globals.css に .building-applications-with-ai-agents-guide のスコープ定義が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../../globals.css");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
     expect(cssContent).toContain(".building-applications-with-ai-agents-guide");
