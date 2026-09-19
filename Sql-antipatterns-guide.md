@@ -20,7 +20,7 @@
 
 ## この本は何のための本か
 
-「アンチパターン」とは、一見うまくいきそうに見えるのに、実際には後々まで開発者を苦しめる「悪い設計パターン」のことです。本書は、著者のBill Karwinが長年SQLに関する質問に答え続けてきた経験から、開発者が繰り返しハマる失敗を25個（本文24章＋ボーナス2章）選び出し、それぞれに名前を付けて「見分け方」と「治し方」を示した一冊です。
+「アンチパターン」とは、一見うまくいきそうに見えるのに、実際には後々まで開発者を苦しめる「悪い設計パターン」のことです。本書は、著者のBill Karwinが長年SQLに関する質問に答え続けてきた経験から、開発者が繰り返しハマる失敗を26個（本文24章＋ボーナス2章）選び出し、それぞれに名前を付けて「見分け方」と「治し方」を示した一冊です。
 
 日本語版監訳者であり、テスト駆動開発の普及やSQLアンチパターン初版（2013年）の企画を持ち込んだことでも知られる和田卓人氏は、2025年7月に開催されたイベント「t-wadaさんに聞く！SQLアンチパターン第2版」で、本書の意義を次のように語っています。AIエージェントに自然言語で指示してコードを書かせる「バイブコーディング」が広がる中で、UIなどは作り直しがきいても、いったんデータベースに入ったデータは後戻りできない、だからこそ他人の失敗から学び、落とし穴に名前を付けて回避することに価値がある、という趣旨の説明です。
 
@@ -342,7 +342,7 @@ SELECT * FROM Bugs WHERE assigned_to IS NOT NULL;
 ```
 
 - **見分け方**：集計関数の結果がNULLを含む行によって直感と違う挙動になる（`NOT IN`のサブクエリにNULLが混ざると結果が空になる、というミニアンチパターンも紹介されています）。
-- **解決策**：NULLを「値が存在しないことを示す一意な値」として一貫した方法で扱う。`COALESCE()`で既定値に変換する、`IS NULL`／`IS NOT NULL`で明示的に比較する、といった対処を徹底する。
+- **解決策**：NULLを「値が不明または存在しないことを示す特別なマーカー」として一貫した方法で扱う。`COALESCE()`で既定値に変換する、`IS NULL`／`IS NOT NULL`で明示的に比較する、といった対処を徹底する。
 
 ### 15章 アンビギュアスグループ（曖昧なグループ）
 
@@ -387,7 +387,7 @@ SQLをアプリケーションコードからどう扱うか、開発プロセ�
 
 ### 20章 リーダブルパスワード（読み取り可能パスワード）
 
-パスワードを忘れたユーザーに再送できるようにと、パスワードを平文やリバーシブルな暗号化（複合化できる暗号）で保存してしまうアンチパターンです。
+パスワードを忘れたユーザーに再送できるようにと、パスワードを平文やリバーシブルな暗号化（復号可能な暗号）で保存してしまうアンチパターンです。
 
 ```mermaid
 flowchart LR
@@ -639,15 +639,13 @@ flowchart TD
 | 4 | Pragmatic Bookshelf公式サイト「SQL Antipatterns, Volume 1」（原著第2版・全27章の詳細目次） | https://pragprog.com/titles/bksap1/sql-antipatterns-volume-1/ |
 | 5 | Pragmatic Bookshelf公式サイト「SQL Antipatterns」（原著初版・絶版、比較用） | https://pragprog.com/titles/bksqla/sql-antipatterns/ |
 | 6 | Findy Media「t-wadaさんに聞く！『SQLアンチパターン第2版』全27章まとめて紹介」（監訳者・和田卓人氏によるイベント解説） | https://findy-code.io/media/articles/event-sql-antipatterns-250728 |
-| 7 | Bill Karwin氏自身のブログ「EAV FAIL – Keeping It Simple」（EAVアンチパターンについての著者本人の解説） | https://karwin.com/blog/index.php/2009/05/21/eav-fail/ |
-| 8 | Bill Karwin氏によるカンファレンス発表資料「MENTOR Your Indexes」（Independent Oracle Users Group、2010年） | https://www.slideshare.net/billkarwin/mentor-your-indexes |
-| 9 | Hacker News「SQL Antipatterns」関連スレッド（EAV／JSONB列をめぐる議論） | https://news.ycombinator.com/item?id=44921630 |
-| 10 | Hacker News Books「SQL Antipatterns」への複数スレッドでの言及まとめ | https://hackernewsbooks.com/book/sql-antipatterns-avoiding-the-pitfalls-of-database-programming-pragmatic-programmers/82dcec03ae132a12ea055412f7945ef2 |
-| 11 | Tyler Hillery氏の個人ブログ「SQL Antipatterns: Avoiding the Pitfalls of Database Programming」書評 | https://tylerhillery.com/notes/sql-antipatterns/ |
-| 12 | openlamptech（英語圏の開発者ブログ）「Book Recommendation - SQL Antipatterns」 | https://openlamptech.substack.com/p/book-recommendation-sql-antipatterns |
-| 13 | Amazon.co.jp「SQLアンチパターン 第2版」商品ページ（全27章の日本語章タイトル一覧） | https://www.amazon.co.jp/dp/4814400748 |
-| 14 | Goodreads「SQL Antipatterns」作品ページ（版一覧・レーティング） | https://www.goodreads.com/work/editions/11753471-sql-antipatterns-avoiding-the-pitfalls-of-database-programming-pragmat |
-| 15 | Internet Archive「SQL Antipatterns」初版スキャン（Bill Karwin著、2011年） | https://archive.org/details/sqlantipatternsa0000karw |
-| 16 | 幡ヶ谷亭直吉ブログ「『SQLアンチパターン 第2版』を読んで」（日本語読者による読書メモ、2025年10月） | https://hiliteeternal.hatenablog.com/entry/2025/10/17/211849 |
+| 7 | Bill Karwin氏によるカンファレンス発表資料「MENTOR Your Indexes」（Independent Oracle Users Group、2010年） | https://www.slideshare.net/billkarwin/mentor-your-indexes |
+| 8 | Hacker News「SQL Antipatterns」関連スレッド（EAV／JSONB列をめぐる議論） | https://news.ycombinator.com/item?id=44921630 |
+| 9 | Tyler Hillery氏の個人ブログ「SQL Antipatterns: Avoiding the Pitfalls of Database Programming」書評 | https://tylerhillery.com/notes/sql-antipatterns/ |
+| 10 | openlamptech（英語圏の開発者ブログ）「Book Recommendation - SQL Antipatterns」 | https://openlamptech.substack.com/p/book-recommendation-sql-antipatterns |
+| 11 | Amazon.co.jp「SQLアンチパターン 第2版」商品ページ（全27章の日本語章タイトル一覧） | https://www.amazon.co.jp/dp/4814400748 |
+| 12 | Goodreads「SQL Antipatterns」作品ページ（版一覧・レーティング） | https://www.goodreads.com/work/editions/11753471-sql-antipatterns-avoiding-the-pitfalls-of-database-programming-pragmat |
+| 13 | Internet Archive「SQL Antipatterns」初版スキャン（Bill Karwin著、2011年） | https://archive.org/details/sqlantipatternsa0000karw |
+| 14 | 幡ヶ谷亭直吉ブログ「『SQLアンチパターン 第2版』を読んで」（日本語読者による読書メモ、2025年10月） | https://hiliteeternal.hatenablog.com/entry/2025/10/17/211849 |
 
 > 本ガイドは上記の公開情報をもとに2026年9月時点でまとめたものです。書籍の正確な内容は必ず原著・日本語版そのものをご確認ください。
