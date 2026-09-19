@@ -1,7 +1,7 @@
 "use client";
 
 import { IconBook, IconInfoCircle, IconLink, IconMenu2, IconRobot } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type NavItem = {
   readonly id: string;
@@ -29,28 +29,25 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
-  const closeMenu = () => setIsOpen(false);
-  const closeScrim = () => {
+  const closeMenuAndFocusToggle = useCallback(() => {
     setIsOpen(false);
     const toggle = toggleRef.current;
     if (toggle && window.getComputedStyle(toggle).display !== "none") {
       toggle.focus();
     }
-  };
+  }, []);
+  const closeMenu = closeMenuAndFocusToggle;
+  const closeScrim = closeMenuAndFocusToggle;
 
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setIsOpen(false);
-      const toggle = toggleRef.current;
-      if (toggle && window.getComputedStyle(toggle).display !== "none") {
-        toggle.focus();
-      }
+      closeMenuAndFocusToggle();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, closeMenuAndFocusToggle]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
