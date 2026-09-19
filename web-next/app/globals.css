@@ -7949,14 +7949,15 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
     overflow: visible;
   }
 
-  /* 各図解のフォント文字サイズを 1rem に統一（スキル fix-mermaid §Mermaid の採寸値と CSS 文字サイズを一致させる） */
+  /* 文字サイズは themeVariables.fontSize "16px"（= 1rem）の採寸値に委ねる。
+     SVG 内部要素へ font-size を !important で一律強制すると、エッジラベル等の
+     階層が壊れ採寸値と実描画が乖離する（スキル fix-mermaid §SVG 内部要素へ font-size を強制しない）。 */
   .mbox svg foreignObject > div,
   .mbox svg .nodeLabel,
   .mbox svg .edgeLabel,
   .mbox svg text,
   .mbox svg tspan {
     overflow: visible;
-    font-size: 1rem !important;
   }
 
   .cb {
@@ -9679,7 +9680,6 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
   .diagram-wrap .mermaid svg text,
   .diagram-wrap .mermaid svg tspan {
     overflow: visible;
-    font-size: 1rem !important;
     font-family: var(--font-body);
   }
   .diagram-wrap .mermaid svg .edgeLabel {
@@ -11910,6 +11910,15 @@ body.has-common-header .ai-native-value-architect-guide h3 {
   .mermaid-wrapper .mermaid {
     display: flex;
     justify-content: safe center;
+  }
+  /* 原本 HTML 準拠: SVG は実寸のまま（flex-shrink: 0）中央配置し、親幅へ引き伸ばさない。
+     幅が親を超える場合のみ max-width: 100% で縮小し、.mermaid-wrapper 側で横スクロールする。 */
+  .mermaid-wrapper .mermaid svg {
+    flex-shrink: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
   }
 
   /* ---------- Checklist ---------- */
