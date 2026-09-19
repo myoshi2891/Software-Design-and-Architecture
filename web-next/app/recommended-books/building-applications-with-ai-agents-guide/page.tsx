@@ -2027,7 +2027,7 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
           <footer className="footer">
             <p>
-              本ガイドはMarkdown版と内容・図表・出典を揃えたHTML版です。AIエージェント分野は変化が速いため、フレームワークや統計情報は各出典URLで最新状況をご確認ください。
+              AIエージェント分野は変化が速いため、フレームワークや統計情報は各出典URLで最新状況をご確認ください。
             </p>
           </footer>
         </main>

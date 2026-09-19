@@ -98,7 +98,7 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 27 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カテゴリ別に全 28 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
@@ -151,6 +151,10 @@ flowchart TD
     （URL `/recommended-books/generative-ai-design-patterns-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`GenerativeAiDesignPatternsSidebar.tsx`）に分離、
     導入前チェックリストをクライアントコンポーネント（`GenerativeAiDesignPatternsChecklist.tsx`）に分離。
+  - `app/recommended-books/building-applications-with-ai-agents-guide/page.tsx`
+    （URL `/recommended-books/building-applications-with-ai-agents-guide`）。固定サイドバー +
+    scroll-spy をクライアントコンポーネント（`BuildingApplicationsWithAiAgentsSidebar.tsx`）に分離、
+    まとめチェックリストをクライアントコンポーネント（`BuildingApplicationsWithAiAgentsChecklist.tsx`）に分離。
   - `app/design-principles/designing-multi-agent-systems-guide/page.tsx`
     （URL `/design-principles/designing-multi-agent-systems-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`MultiAgentSidebar.tsx`）に分離、

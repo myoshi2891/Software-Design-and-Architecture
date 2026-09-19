@@ -54,6 +54,7 @@
 - Building LLM Powered Applications
 - Architecting Generative AI Applications
 - Generative AI Design Patterns
+- Building Applications with AI Agents
 
 ### 7. 資格試験 (`certification-exams/`)
 
@@ -66,7 +67,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 27 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 28 本を
 一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -121,6 +122,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/generative-ai-design-patterns-guide`](web-next/app/recommended-books/generative-ai-design-patterns-guide/page.tsx)
     — 生成AIデザインパターン実践ガイドを移植（17 セクション・Mermaid 23 図・table 5・チェックリスト 14 項目）。
     固定サイドバー・scroll-spy を [`GenerativeAiDesignPatternsSidebar.tsx`](web-next/app/recommended-books/generative-ai-design-patterns-guide/GenerativeAiDesignPatternsSidebar.tsx)、導入前チェックリストを [`GenerativeAiDesignPatternsChecklist.tsx`](web-next/app/recommended-books/generative-ai-design-patterns-guide/GenerativeAiDesignPatternsChecklist.tsx) でクライアント描画
+  - [`/recommended-books/building-applications-with-ai-agents-guide`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/page.tsx)
+    — AIエージェントアプリケーション構築完全ガイドを移植（18 セクション・Mermaid 14 図・table 12・コードブロック 2・チェックリスト 6 項目）。
+    固定サイドバー・scroll-spy を [`BuildingApplicationsWithAiAgentsSidebar.tsx`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/BuildingApplicationsWithAiAgentsSidebar.tsx)、まとめチェックリストを [`BuildingApplicationsWithAiAgentsChecklist.tsx`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/BuildingApplicationsWithAiAgentsChecklist.tsx) でクライアント描画
   - [`/design-principles/designing-multi-agent-systems-guide`](web-next/app/design-principles/designing-multi-agent-systems-guide/page.tsx)
     — マルチエージェントシステムの設計ガイドを移植（16 セクション・Mermaid 22 図・table 10・コードブロック 1・チェックリスト 13 項目）。
     固定サイドバー・scroll-spy を [`MultiAgentSidebar.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentSidebar.tsx)、設計チェックリストを [`MultiAgentChecklist.tsx`](web-next/app/design-principles/designing-multi-agent-systems-guide/MultiAgentChecklist.tsx) でクライアント描画
