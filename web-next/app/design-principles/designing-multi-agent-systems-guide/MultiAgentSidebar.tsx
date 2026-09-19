@@ -57,13 +57,17 @@ export default function MultiAgentSidebar({ items }: MultiAgentSidebarProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsOpen(false);
-        toggleButtonRef.current?.focus();
+        // トグルボタンはモバイル表示でのみ可視のため、デスクトップでは
+        // 非表示ボタンへフォーカスを移さない（closeMenu と同じ方針）。
+        if (isMobile) {
+          toggleButtonRef.current?.focus();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {

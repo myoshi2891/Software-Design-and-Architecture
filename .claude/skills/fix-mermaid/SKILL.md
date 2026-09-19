@@ -30,7 +30,7 @@ Run --> Fix["applySvgFixups: ライブ DOM 操作"]
 Fix --> W["width と height 属性を除去し style.width に自然px, maxWidth 100%"]
 Fix --> V["viewBox 高さ拡張: sequence と state は +110, その他は +15"]
 Fix --> O["overflow visible: foreignObject の右端切れ対策"]
-W --> CSS["globals.css の .mbox スコープ: 採寸値と実描画の font-size を一致"]
+W --> CSS["globals.css の .mbox スコープ: overflow visible のみ - font-size は強制しない"]
 V --> CSS
 O --> CSS
 CSS --> Out["表示"]
@@ -221,8 +221,10 @@ mermaid.initialize({
 **禁止事項**:
 
 - 異なる図種へ同じ `minWidth` / `maxHeight` を一括適用しない
-- `%%{init: {"themeVariables": {"fontSize": "Xpx"}}}%%` で図ごとにフォントサイズを変えない — 採寸値と CSS の実描画値が乖離し、ノード枠からはみ出す
-- `width:'100%'` を SVG に直接適用しない（小さい図が全幅へ異常拡大する）
+- `%%{init: {"themeVariables": {"fontSize": "..."}}}%%` で図ごとにフォントサイズを変えない — `themeVariables.fontSize` は Mermaid 内部の SVG レイアウト採寸に使う絶対 px 値（`"16px"` = 1rem）のみを設定する
+- SVG 内部要素（`text` / `tspan` / `.nodeLabel` / `.edgeLabel`）へ CSS の `font-size: ... !important` を一律強制しない（ラベル階層が壊れ、採寸値と実描画が乖離する）
+- `width:'100%'` / `width:'auto'` を SVG に直接適用しない（小さい図が全幅へ異常拡大する）
+- 狭い図を固定幅（`480px` / `650px` 等）へ引き伸ばさない — SVG 全体がスケールされ、viewBox 内 16px の文字が数倍の巨大文字になる。特に `flowchart TB` のような縦直列図は viewBox 幅が 180〜250px しかないため 3〜5 倍に拡大される
 - 縦長図へ `max-height` を付けない（横幅と文字まで縮小する）
 - 1ページの問題を直すために共通コンポーネントの既定動作を変更しない
 
@@ -355,12 +357,12 @@ m.default.initialize({
     secondaryColor: "#0f2e2e",
     tertiaryColor: "#1e2535",
     edgeLabelBackground: "#161b27",
-    fontSize: "16px",  // SVG 採寸に使う明示値。採寸値と CSS 実描画値を一致させる（1rem のような相対値は禁止）
+    fontSize: "16px",  // Mermaid 採寸用絶対値（= ルートフォント 16px = 1rem）。「1rem」等の相対値は Mermaid が正しくパースできずデフォルト大文字にフォールバックするため禁止。CSS 側で font-size を上書きしない
   },
   htmlLabels: true,
   flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
   sequence: { useMaxWidth: false },
-  gantt: { fontSize: 16 },
+  gantt: { fontSize: 16 },  // gantt のみ Mermaid API が px 数値を受け付けるため 16（= 1rem 相当）
   pie: { textPosition: 0.75 },
 });
 ```
@@ -371,26 +373,31 @@ m.default.initialize({
 
 `applySvgFixups` の実装は `web-next/components/MermaidDiagram.tsx` を正本とする。主要ロジック:
 
-- SVG の `width`/`height` 属性を除去し、`style.width = "${w}px"`、`maxWidth = "100%"` をセット
+- SVG の `width`/`height` 属性を除去し、`style.width = "${w}px"`（viewBox 由来の自然幅・引き伸ばし禁止）、`maxWidth = "100%"`、`height = "auto"`、`margin = "0 auto"` をセット
 - `preserveNaturalScale=true` のとき `minWidth` を `${w}px` に固定
 - `viewBox` の高さを `+extraHeight` 拡張（sequence/state: +110、その他: +15）
 - `style.overflow = "visible"` で viewBox はみ出し描画の途切れを防止
 - 再処理時に前回の `minWidth` を事前クリア
 
-### Mermaid の採寸値と CSS 文字サイズを一致させる
+### 文字サイズは Mermaid の採寸値に一元化する
+
+**各図解の文字サイズは `themeVariables.fontSize` の `"16px"`（= ルートフォント 16px = 1rem）だけで決める。**
+
+> ⚠️ `themeVariables.fontSize` に `"1rem"` 等の相対値を指定してはならない。Mermaid は内部 SVG レイアウトの採寸にこの値を絶対 px として使用するため、相対値はパースに失敗しデフォルトの大きな文字サイズにフォールバックする。
+> ⚠️ CSS で SVG 内部要素（`text` / `tspan` / `.nodeLabel` / `.edgeLabel`）に `font-size: ... !important` を一律強制してはならない。エッジラベルや注釈の階層関係（Mermaid が図種ごとに与える相対サイズ）が壊れ、さらに SVG がスケールされた際に viewBox 座標系と文字寸法が乖離して文字切れ・巨大化の原因になる。CSS 側は `overflow: visible` などのクリップ解除に留める。
 
 ```css
 /* globals.css の .mbox スコープ内に記述 */
 .mbox svg foreignObject {
   overflow: visible;
 }
+/* クリップ解除のみ。font-size は Mermaid の採寸値（16px）に委ねる */
 .mbox svg foreignObject > div,
 .mbox svg .nodeLabel,
 .mbox svg .edgeLabel,
 .mbox svg text,
 .mbox svg tspan {
   overflow: visible;
-  font-size: 16px !important;
 }
 ```
 

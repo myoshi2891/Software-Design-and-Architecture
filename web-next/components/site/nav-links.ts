@@ -145,6 +145,23 @@ export const navLinks: readonly NavLink[] = [
         name: "生成AIアプリ構築ガイド",
         href: "/recommended-books/architecting-generative-ai-applications-guide",
       },
+      {
+        name: "生成AIデザインパターン",
+        href: "/recommended-books/generative-ai-design-patterns-guide",
+      },
+      {
+        name: "AIエージェントアプリ構築ガイド",
+        href: "/recommended-books/building-applications-with-ai-agents-guide",
+      },
+    ],
+  },
+  {
+    name: "資格試験",
+    children: [
+      {
+        name: "AI-Native Value Architect 認定",
+        href: "/certification-exams/ai-native-value-architect-guide",
+      },
     ],
   },
 ];

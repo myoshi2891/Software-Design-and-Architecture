@@ -6,12 +6,14 @@ type Props = {
   id?: string;
   style?: React.CSSProperties;
   className?: string;
-  /** true のとき viewBox 由来の自然 px 幅で表示（縮小なし）。false（既定）のとき狭い図を最小 480px まで拡大。 */
+  /** true のとき viewBox 由来の自然 px 幅を minWidth にも固定し、コンテナ幅による縮小を抑止する。 */
   preserveNaturalScale?: boolean;
 };
 
 // 元 HTML の mermaid.initialize 設定（dark テーマ + カスタム themeVariables）を移植。
-// fontSize は採寸と実描画を一致させるため絶対値 16px で明示する（スキル fix-mermaid §採寸値と CSS 文字サイズを一致させる）。
+// themeVariables.fontSize は Mermaid 内部の SVG レイアウト採寸に使われるため絶対 px 値が必須。
+// CSS 側で SVG 内部要素の font-size を上書きすることはなく、Mermaid が採寸した 16px の値が
+// そのまま描画に使われる（= ルートフォントサイズ 16px、すなわち 1rem と一致する）。
 const THEME_VARIABLES = {
   background: "#161b27",
   primaryColor: "#2d1f4e",
@@ -21,7 +23,7 @@ const THEME_VARIABLES = {
   secondaryColor: "#0f2e2e",
   tertiaryColor: "#1e2535",
   edgeLabelBackground: "#161b27",
-  fontSize: "16px",
+  fontSize: "16px", // Mermaid 採寸用絶対値（= 1rem = ルートフォント 16px）
 } as const;
 
 // mermaid.run() は描画 ID を `mermaid-${Date.now()}` でしか採番せず（node_modules/mermaid の
@@ -82,7 +84,11 @@ export function detectDiagramType(chart: string): string {
  * SVG 後処理：viewBox 由来の自然幅を設定し、下部見切れを防ぐ高さ拡張を行う。
  * スキル fix-mermaid §SVG 後処理は「文字列加工」ではなく「ライブ DOM 操作」で行う に準拠。
  */
-function applySvgFixups(svgEl: SVGSVGElement, chart: string, preserveNaturalScale: boolean): void {
+export function applySvgFixups(
+  svgEl: SVGSVGElement,
+  chart: string,
+  preserveNaturalScale: boolean
+): void {
   svgEl.removeAttribute("width");
   svgEl.removeAttribute("height");
   svgEl.style.height = "auto";
@@ -102,24 +108,19 @@ function applySvgFixups(svgEl: SVGSVGElement, chart: string, preserveNaturalScal
   const extraHeight = isSequenceOrState ? 110 : 15;
   const [x, y, w, h] = parts as [number, number, number, number];
 
-  let targetWidth: number;
-  if (preserveNaturalScale && w > 0) {
-    // 自然幅モード: Mermaid の採寸倍率をそのまま維持
-    targetWidth = w;
-  } else if (!preserveNaturalScale && w > 0 && w < 550) {
-    // 狭い図を最小 480px まで拡大（文字を潰さない範囲）
-    targetWidth = Math.min(650, Math.max(Math.round(w * 1.35), 480));
-  } else {
-    targetWidth = w;
-  }
-
-  svgEl.style.width = `${targetWidth}px`;
+  // 表示幅は viewBox 由来の自然 px 幅に固定する（スキル fix-mermaid §SVG 幅の鉄則）。
+  // 狭い図を 480px 等へ引き伸ばすと SVG 全体がスケールされ、viewBox 内 16px の文字が
+  // 2〜4 倍の巨大文字になる（flowchart TB のような縦直列図で顕著）。
+  // width:'100%' / width:'auto' も同じ理由で不可（intrinsic サイズを持たない SVG は
+  // コンテナ全幅まで伸びる）。コンテナより広い図は maxWidth: 100% で縮小フィットする。
+  svgEl.style.display = "block";
+  svgEl.style.width = `${w}px`;
   svgEl.style.maxWidth = "100%";
-  if (preserveNaturalScale && targetWidth > 0) {
-    svgEl.style.minWidth = `${targetWidth}px`;
+  svgEl.style.marginInline = "auto";
+  if (preserveNaturalScale && w > 0) {
+    svgEl.style.minWidth = `${w}px`;
   }
   // 高さ上限は付けない（縦長図に max-height を掛けると横幅と文字まで縮小するため）。
-  // 再処理時に前回値が残らないよう常に "none" で明示リセットする。
   svgEl.style.maxHeight = "none";
   svgEl.setAttribute("viewBox", `${x} ${y} ${w} ${h + extraHeight}`);
 }
@@ -214,7 +215,9 @@ const MermaidDiagram = memo(function MermaidDiagram({
       id={id}
       className={`mermaid ${className || ""}`}
       ref={ref}
-      style={{ width: "100%", minHeight: "4rem", ...style }}
+      // コンテナは行幅いっぱいを確保し、中の SVG は applySvgFixups の自然幅 + margin auto
+      // （CSS 側は justify-content: safe center）で中央寄せする。SVG 自体は引き伸ばさない。
+      style={{ width: "100%", maxWidth: "100%", minHeight: "4rem", ...style }}
     />
   );
 });

@@ -217,6 +217,32 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
         status: "published",
       },
+      {
+        name: "生成AIデザインパターン",
+        href: "/recommended-books/generative-ai-design-patterns-guide",
+        summary:
+          "Valliappa Lakshmananら著『Generative AI Design Patterns』を起点に32の設計パターンを学ぶ",
+        status: "published",
+      },
+      {
+        name: "AIエージェントアプリ構築ガイド",
+        href: "/recommended-books/building-applications-with-ai-agents-guide",
+        summary:
+          "Michael Albada著『Building Applications with AI Agents』を起点にエージェント開発を学ぶ",
+        status: "published",
+      },
+    ],
+  },
+  {
+    id: "certification-exams",
+    name: "資格試験",
+    entries: [
+      {
+        name: "AI-Native Value Architect 認定",
+        href: "/certification-exams/ai-native-value-architect-guide",
+        summary: "Scaled Agileの公式4ドメインに沿って、AI時代の価値創造アーキテクトを学ぶ",
+        status: "published",
+      },
     ],
   },
 ];

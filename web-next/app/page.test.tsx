@@ -7,7 +7,7 @@
 // - 公開済み 14 本がリンクとして出る。未移行 8 本はリンクにしない。
 // - 内部リンクはすべて "/" 始まりで ".html" を含まない。
 
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { guideCatalog } from "@/lib/guide-catalog";
 import HomePage from "./page";
@@ -80,8 +80,39 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
-    expect(text).toContain("25");
-    expect(text).toContain("17");
+    expect(text).toContain("28");
+    expect(text).toContain("20");
     expect(text).toContain("8");
+  });
+
+  it("normalizes full-width search input and searches summaries", () => {
+    const container = renderIndex();
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "ＡＰＩ" } });
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(1);
+    expect(container.querySelector(".guide-name")).toHaveTextContent("API ファースト設計");
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "依存 内側" } });
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(1);
+    expect(container.querySelector(".guide-name")).toHaveTextContent("クリーンアーキテクチャ");
+  });
+
+  it("combines category filters with search and resets an empty result", () => {
+    const container = renderIndex();
+    fireEvent.click(screen.getByRole("button", { name: "設計原則" }));
+    expect(container.querySelectorAll(".category")).toHaveLength(1);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(5);
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
+    expect(screen.getByRole("status")).toHaveTextContent("0 本");
+    fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(28);
+    expect(screen.getByRole("searchbox")).toHaveValue("");
+    expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("lets readers pause and resume the illustration", () => {
+    const container = renderIndex();
+    fireEvent.click(screen.getByRole("button", { name: "アニメーションを停止" }));
+    expect(container.querySelector(".architecture-visual")).toHaveAttribute("data-paused", "true");
+    fireEvent.click(screen.getByRole("button", { name: "アニメーションを再生" }));
+    expect(container.querySelector(".architecture-visual")).toHaveAttribute("data-paused", "false");
   });
 });

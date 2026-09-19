@@ -30,13 +30,13 @@ function collectHrefs(links: readonly NavLink[]): string[] {
 }
 
 describe("nav-links structure", () => {
-  it("defines 6 top-level entries", () => {
-    expect(navLinks.length).toBe(6);
+  it("defines 7 top-level entries", () => {
+    expect(navLinks.length).toBe(7);
   });
 
   it("contains only dropdown groups at the top level", () => {
     const dropdowns = navLinks.filter(isDropdown);
-    expect(dropdowns.length).toBe(6);
+    expect(dropdowns.length).toBe(7);
     expect(dropdowns.length).toBe(navLinks.length);
   });
 
