@@ -11548,7 +11548,7 @@ body.has-common-header .designing-multi-agent-systems-guide h4 {
     font-weight: 600;
     font-size: 15px;
     text-decoration: none;
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   .ref-body a:hover {
@@ -11610,6 +11610,12 @@ body.has-common-header:has(.ai-native-value-architect-guide) {
 body.has-common-header .ai-native-value-architect-guide .sidebar {
   top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
   height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
+@media (max-width: 900px) {
+  body.has-common-header .ai-native-value-architect-guide .sidebar {
+    height: auto;
+  }
 }
 
 body.has-common-header .ai-native-value-architect-guide .progress-bar {
