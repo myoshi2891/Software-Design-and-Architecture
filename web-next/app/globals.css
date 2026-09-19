@@ -9806,6 +9806,12 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
   }
 }
 
+html:has(.building-llm-powered-applications-guide),
+body.has-common-header:has(.building-llm-powered-applications-guide) {
+  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  background: #faf7ef;
+}
+
 body.has-common-header .building-llm-powered-applications-guide .sidebar {
   top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
   height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
