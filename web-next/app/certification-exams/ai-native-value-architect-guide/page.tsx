@@ -17,14 +17,46 @@ export const metadata = {
     "Scaled Agile, Inc. が提供する認定資格を、初学者向けにステップバイステップで解説する非公式の学習資料です。",
 };
 
-const DIAGRAM_PIE = `pie showData
+const MERMAID_LIGHT_INIT = `%%{init: {
+  "theme": "neutral",
+  "themeVariables": {
+    "background": "#FFFFFF",
+    "primaryColor": "#EEF1F8",
+    "primaryTextColor": "#161B26",
+    "primaryBorderColor": "#2E3F72",
+    "lineColor": "#161B26",
+    "secondaryColor": "#FAF1DF",
+    "secondaryBorderColor": "#B8802A",
+    "tertiaryColor": "#EAF4EC",
+    "tertiaryBorderColor": "#2F6B3D",
+    "edgeLabelBackground": "#FFFFFF",
+    "fontFamily": "\\"Source Serif 4\\", Georgia, serif",
+    "fontSize": "16px",
+    "pie1": "#C9D3EA",
+    "pie2": "#F1DDAE",
+    "pie3": "#BFE0DB",
+    "pie4": "#E8C7D6",
+    "pieStrokeColor": "#FFFFFF",
+    "pieOuterStrokeColor": "#FFFFFF",
+    "pieOuterStrokeWidth": "3px",
+    "pieOpacity": "1",
+    "pieSectionTextColor": "#161B26",
+    "pieSectionTextSize": "16px",
+    "pieLegendTextColor": "#161B26",
+    "pieLegendTextSize": "16px",
+    "pieTitleTextColor": "#161B26"
+  }
+}}%%
+`;
+
+const DIAGRAM_PIE = `${MERMAID_LIGHT_INIT}pie showData
 title 試験ドメイン別 出題比率(中央値)
 "Developing the AI-Native Change Agent" : 30
 "Strategy, Alignment, and Governance" : 35
 "Solution Design and Delivery" : 15.5
 "Value Realization and Organizational Change" : 18`;
 
-const DIAGRAM_ART = `flowchart TD
+const DIAGRAM_ART = `${MERMAID_LIGHT_INIT}flowchart TD
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
@@ -42,7 +74,7 @@ AVA -->|"AI Fluencyで橋渡し"| ENG
 BIZ -->|"期待値・投資判断"| AVA
 ENG -->|"実現可能性・トレードオフ"| AVA`;
 
-const DIAGRAM_FAILURE = `flowchart LR
+const DIAGRAM_FAILURE = `${MERMAID_LIGHT_INIT}flowchart LR
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
@@ -62,7 +94,7 @@ D5 --> GY
 GY --> FF
 FF --> SCALE`;
 
-const DIAGRAM_PLAYBOOK = `flowchart LR
+const DIAGRAM_PLAYBOOK = `${MERMAID_LIGHT_INIT}flowchart LR
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
@@ -75,7 +107,7 @@ B --> C
 C --> D
 D -->|"継続的フィードバック"| A`;
 
-const DIAGRAM_RAGFT = `flowchart TD
+const DIAGRAM_RAGFT = `${MERMAID_LIGHT_INIT}flowchart TD
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
@@ -94,7 +126,7 @@ RAG --> Q3
 Q3 -->|"はい"| HYB
 Q3 -->|"いいえ"| RAGFINAL`;
 
-const DIAGRAM_LIFECYCLE = `flowchart LR
+const DIAGRAM_LIFECYCLE = `${MERMAID_LIGHT_INIT}flowchart LR
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;
@@ -107,7 +139,7 @@ DI --> DE
 DE --> DL
 DL -->|"学びを次のサイクルへ還元"| S`;
 
-const DIAGRAM_INTEGRATION = `flowchart TD
+const DIAGRAM_INTEGRATION = `${MERMAID_LIGHT_INIT}flowchart TD
 classDef box fill:#EEF1F8,stroke:#2E3F72,color:#161B26;
 classDef hub fill:#FAF1DF,stroke:#B8802A,color:#161B26;
 classDef done fill:#EAF4EC,stroke:#2F6B3D,color:#161B26;

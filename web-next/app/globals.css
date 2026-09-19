@@ -11146,7 +11146,7 @@ body.has-common-header .designing-multi-agent-systems-guide h4 {
   .main {
     margin-left: var(--sidebar-width);
     padding: 56px 64px 96px;
-    max-width: 960px;
+    max-width: none;
   }
 
   .main h1 {
@@ -11318,11 +11318,64 @@ body.has-common-header .designing-multi-agent-systems-guide h4 {
     background: var(--color-paper-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-  }
 
-  .diagram-wrap .mermaid-target {
-    display: flex;
-    justify-content: center;
+    .mermaid-target {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .mermaid {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 100% !important;
+      text-align: center !important;
+    }
+
+    .mermaid svg {
+      margin: 0 auto !important;
+      display: block !important;
+    }
+
+    .edgeLabel,
+    .edgeLabel rect {
+      background-color: var(--color-paper-raised) !important;
+      fill: var(--color-paper-raised) !important;
+      color: var(--color-ink) !important;
+    }
+    .edgeLabel span,
+    .edgeLabel p {
+      background-color: var(--color-paper-raised) !important;
+      color: var(--color-ink) !important;
+      font-family: var(--font-serif) !important;
+    }
+
+    .flowchart-link {
+      stroke: var(--color-ink) !important;
+    }
+    .marker {
+      fill: var(--color-ink) !important;
+      stroke: var(--color-ink) !important;
+    }
+
+    .pieTitleText {
+      fill: var(--color-ink) !important;
+      font-family: var(--font-serif) !important;
+      font-size: 18px !important;
+      font-weight: 700 !important;
+    }
+    .legend text {
+      fill: var(--color-ink) !important;
+      font-family: var(--font-sans) !important;
+      font-size: 14px !important;
+    }
+    .slice text {
+      fill: var(--color-ink) !important;
+      font-family: var(--font-serif) !important;
+      font-weight: 600 !important;
+    }
   }
 
   .diagram-caption {
@@ -11540,6 +11593,12 @@ body.has-common-header .designing-multi-agent-systems-guide h4 {
       padding: 32px 20px 64px;
     }
   }
+}
+
+html:has(.ai-native-value-architect-guide),
+body.has-common-header:has(.ai-native-value-architect-guide) {
+  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  background: #F6F7F9;
 }
 
 body.has-common-header .ai-native-value-architect-guide .sidebar {
