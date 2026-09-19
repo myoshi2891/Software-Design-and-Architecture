@@ -9534,8 +9534,8 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
 
   /* ===== Hero ===== */
   .hero {
-    margin: 2.6rem 0 2.2rem;
-    padding: 2.4rem 2.6rem;
+    margin: 1rem 0 2.2rem;
+    padding: 1.6rem 2.6rem 2rem;
     background: linear-gradient(135deg, var(--indigo-soft) 0%, var(--gold-soft) 100%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -9798,7 +9798,7 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
     }
     .sidebar.open { transform: translateX(0); }
     .main { margin-left: 0; padding: 0 1.1rem 4rem; }
-    .hero { padding: 1.6rem 1.3rem; margin: 1.4rem 0; }
+    .hero { padding: 1.4rem 1.3rem; margin: 0.8rem 0 1.4rem; }
     .sidebar-overlay {
       display: none; position: fixed; inset: 0; background: rgba(36, 31, 26, 0.35); z-index: 39;
     }
