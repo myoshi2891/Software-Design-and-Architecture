@@ -60,4 +60,21 @@ describe("GenerativeAiDesignPatternsSidebar", () => {
     fireEvent.click(firstLink);
     expect(sidebar.classList.contains("open")).toBe(false);
   });
+
+  it("Escapeキー押下でサイドバーを閉じ、フォーカスをトグルボタンへ戻す", () => {
+    render(<GenerativeAiDesignPatternsSidebar groups={testGroups} />);
+    const toggleButton = screen.getByRole("button", { name: /メニュー/i });
+    const sidebar = screen.getByRole("navigation");
+
+    fireEvent.click(toggleButton);
+    expect(sidebar.classList.contains("open")).toBe(true);
+
+    const firstLink = screen.getByText("第0部: 生成AIエンジニアリングの基礎知識");
+    firstLink.focus();
+    expect(document.activeElement).toBe(firstLink);
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(sidebar.classList.contains("open")).toBe(false);
+    expect(document.activeElement).toBe(toggleButton);
+  });
 });

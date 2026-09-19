@@ -1,7 +1,7 @@
 "use client";
 
 import { IconBook, IconInfoCircle, IconLink, IconMenu2, IconRobot } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type NavItem = {
   readonly id: string;
@@ -26,6 +26,7 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
   const [activeId, setActiveId] = useState<string>(() => {
     return groups[0]?.items[0]?.id ?? "about";
   });
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
@@ -33,7 +34,12 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key !== "Escape") return;
+      setIsOpen(false);
+      const toggle = toggleRef.current;
+      if (toggle && window.getComputedStyle(toggle).display !== "none") {
+        toggle.focus();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -100,6 +106,7 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
     <>
       <div className="mobile-bar">
         <button
+          ref={toggleRef}
           type="button"
           id="menuToggle"
           aria-expanded={isOpen}

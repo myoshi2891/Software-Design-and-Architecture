@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export type NavItem = {
   readonly id: string;
@@ -24,6 +24,7 @@ export default function GenerativeAiDesignPatternsSidebar({
   const [activeId, setActiveId] = useState<string>(() => {
     return groups[0]?.items[0]?.id ?? "はじめにこのガイドについて";
   });
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
@@ -34,7 +35,12 @@ export default function GenerativeAiDesignPatternsSidebar({
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key !== "Escape") return;
+      setIsOpen(false);
+      const toggle = toggleRef.current;
+      if (toggle && window.getComputedStyle(toggle).display !== "none") {
+        toggle.focus();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -98,6 +104,7 @@ export default function GenerativeAiDesignPatternsSidebar({
   return (
     <>
       <button
+        ref={toggleRef}
         type="button"
         className="sidebar-toggle"
         id="sidebar-toggle"
@@ -114,7 +121,7 @@ export default function GenerativeAiDesignPatternsSidebar({
 
         <ul>
           {groups.map((group, gIdx) => (
-            <div key={group.title ?? `group-${gIdx}`}>
+            <Fragment key={group.title ?? `group-${gIdx}`}>
               {group.title && (
                 <li
                   className="sidebar-group-title"
@@ -135,6 +142,7 @@ export default function GenerativeAiDesignPatternsSidebar({
                   <a
                     href={`#${item.id}`}
                     className={activeId === item.id ? "active" : ""}
+                    aria-current={activeId === item.id ? "location" : undefined}
                     onClick={closeMenu}
                   >
                     {item.label}
@@ -146,6 +154,7 @@ export default function GenerativeAiDesignPatternsSidebar({
                           <a
                             href={`#${child.id}`}
                             className={activeId === child.id ? "active" : ""}
+                            aria-current={activeId === child.id ? "location" : undefined}
                             onClick={closeMenu}
                           >
                             {child.label}
@@ -156,7 +165,7 @@ export default function GenerativeAiDesignPatternsSidebar({
                   )}
                 </li>
               ))}
-            </div>
+            </Fragment>
           ))}
         </ul>
       </nav>
