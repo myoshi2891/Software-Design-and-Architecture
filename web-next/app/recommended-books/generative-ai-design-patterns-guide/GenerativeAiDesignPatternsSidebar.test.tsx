@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import GenerativeAiDesignPatternsSidebar, { type NavGroup } from "./GenerativeAiDesignPatternsSidebar";
+import GenerativeAiDesignPatternsSidebar, {
+  type NavGroup,
+} from "./GenerativeAiDesignPatternsSidebar";
 
 const testGroups: readonly NavGroup[] = [
   {

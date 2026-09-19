@@ -116,7 +116,17 @@ export default function GenerativeAiDesignPatternsSidebar({
           {groups.map((group, gIdx) => (
             <div key={group.title ?? `group-${gIdx}`}>
               {group.title && (
-                <li className="sidebar-group-title" style={{ padding: "12px 20px 4px", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-faint)", fontWeight: 700 }}>
+                <li
+                  className="sidebar-group-title"
+                  style={{
+                    padding: "12px 20px 4px",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "var(--text-faint)",
+                    fontWeight: 700,
+                  }}
+                >
                   {group.title}
                 </li>
               )}

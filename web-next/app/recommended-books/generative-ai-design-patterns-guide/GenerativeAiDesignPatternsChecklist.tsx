@@ -36,11 +36,7 @@ export default function GenerativeAiDesignPatternsChecklist({
           return (
             <li key={item.id}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => toggle(item.id)}
-                />
+                <input type="checkbox" checked={isDone} onChange={() => toggle(item.id)} />
                 {item.text}
               </label>
             </li>
