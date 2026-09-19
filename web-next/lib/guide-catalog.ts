@@ -226,8 +226,7 @@ export const guideCatalog: readonly GuideCategory[] = [
       {
         name: "AI-Native Value Architect 認定",
         href: "/certification-exams/ai-native-value-architect-guide",
-        summary:
-          "Scaled Agileの公式4ドメインに沿って、AI時代の価値創造アーキテクトを学ぶ",
+        summary: "Scaled Agileの公式4ドメインに沿って、AI時代の価値創造アーキテクトを学ぶ",
         status: "published",
       },
     ],

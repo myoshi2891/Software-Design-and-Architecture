@@ -61,7 +61,9 @@ export default function AiNativeChecklist() {
   return (
     <div className="checklist-container">
       <div className="checklist-status-bar">
-        <span className="checklist-status-text">進捗状況: {doneCount} / {CHECKLIST_ITEMS.length} 完了</span>
+        <span className="checklist-status-text">
+          進捗状況: {doneCount} / {CHECKLIST_ITEMS.length} 完了
+        </span>
       </div>
       <ul className="checklist">
         {CHECKLIST_ITEMS.map((item) => {
@@ -69,11 +71,7 @@ export default function AiNativeChecklist() {
           return (
             <li key={item.id} className={isChecked ? "checked" : ""}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() => toggle(item.id)}
-                />
+                <input type="checkbox" checked={isChecked} onChange={() => toggle(item.id)} />
                 <span>{item.text}</span>
               </label>
             </li>

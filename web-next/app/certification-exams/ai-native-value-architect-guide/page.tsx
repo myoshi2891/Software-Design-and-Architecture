@@ -1,5 +1,3 @@
-import { Ext } from "@/components/Ext";
-import MermaidDiagram from "@/components/MermaidDiagram";
 import {
   IconBulb,
   IconClock,
@@ -8,6 +6,8 @@ import {
   IconSitemap,
   IconTargetArrow,
 } from "@tabler/icons-react";
+import { Ext } from "@/components/Ext";
+import MermaidDiagram from "@/components/MermaidDiagram";
 import AiNativeChecklist from "./AiNativeChecklist";
 import AiNativeValueArchitectSidebar from "./AiNativeValueArchitectSidebar";
 
@@ -188,7 +188,9 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
                 <tr>
                   <td>ART（Agile Release Train）</td>
-                  <td>共通のミッションに向けて動く、複数のAgileチームの集合体（50〜125名規模が目安）</td>
+                  <td>
+                    共通のミッションに向けて動く、複数のAgileチームの集合体（50〜125名規模が目安）
+                  </td>
                 </tr>
                 <tr>
                   <td>RTE（Release Train Engineer）</td>
@@ -204,7 +206,9 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
               </tbody>
             </table>
-            <p>これらの用語に馴染みがない場合は、本ガイドと合わせてSAFeの基礎資料を参照することをおすすめします。</p>
+            <p>
+              これらの用語に馴染みがない場合は、本ガイドと合わせてSAFeの基礎資料を参照することをおすすめします。
+            </p>
           </section>
 
           <section className="section" id="overview">
@@ -233,7 +237,10 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
                 <tr>
                   <td>研修時間</td>
-                  <td>2日間・16時間（対面 or リモート、リモートはプライベート／エンタープライズ研修のみ）</td>
+                  <td>
+                    2日間・16時間（対面 or
+                    リモート、リモートはプライベート／エンタープライズ研修のみ）
+                  </td>
                 </tr>
                 <tr>
                   <td>認定取得方法</td>
@@ -245,7 +252,9 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
                 <tr>
                   <td>前身コース</td>
-                  <td>AI-Native Change Agent（本コースが置き換え、ポートフォリオ内の同じ位置を占める）</td>
+                  <td>
+                    AI-Native Change Agent（本コースが置き換え、ポートフォリオ内の同じ位置を占める）
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -271,11 +280,13 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  前提条件は「なし」だが、実際にはScrumMaster/Team Coach、SPC、RTE、System Architect、Product Manager/Owner
+                  前提条件は「なし」だが、実際にはScrumMaster/Team Coach、SPC、RTE、System
+                  Architect、Product Manager/Owner
                   としてARTで実務経験がある人が対象として想定されている。未経験でいきなり受験するより、まずARTでの実務（ファシリテーション・ステークホルダー調整）を一定期間経験してから臨む方が、事例ベースの設問に対応しやすい。
                 </li>
                 <li>
-                  「新しい役職（job title）」ではなく「既存の役割に追加する能力」という位置づけを理解した上で学習すると、試験問題の文脈（誰が・どの立場で・何をするか）を読み違えにくい。
+                  「新しい役職（job
+                  title）」ではなく「既存の役割に追加する能力」という位置づけを理解した上で学習すると、試験問題の文脈（誰が・どの立場で・何をするか）を読み違えにくい。
                 </li>
               </ul>
             </div>
@@ -323,7 +334,9 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
                 <tr>
                   <td>再受験ポリシー</td>
-                  <td>1回目不合格後は即再受験可、2回目不合格後は10日待機、3回目不合格後は30日待機、以降は毎回30日待機</td>
+                  <td>
+                    1回目不合格後は即再受験可、2回目不合格後は10日待機、3回目不合格後は30日待機、以降は毎回30日待機
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -344,9 +357,12 @@ export default function AiNativeValueArchitectPage() {
                 ベストプラクティス
               </div>
               <ul>
-                <li>未回答の設問は不正解として扱われる仕様のため、時間切れが近づいたら分からない問題も必ず何かを選択して埋める。</li>
                 <li>
-                  練習問題（Practice Test）は本番と同じ出題数・難易度・時間配分・ドメイン構成で提供され、無制限に受験できる。ただし合格しても本試験の合格を保証しないため、「形式に慣れる」ためのツールと割り切って活用する。
+                  未回答の設問は不正解として扱われる仕様のため、時間切れが近づいたら分からない問題も必ず何かを選択して埋める。
+                </li>
+                <li>
+                  練習問題（Practice
+                  Test）は本番と同じ出題数・難易度・時間配分・ドメイン構成で提供され、無制限に受験できる。ただし合格しても本試験の合格を保証しないため、「形式に慣れる」ためのツールと割り切って活用する。
                 </li>
               </ul>
             </div>
@@ -366,28 +382,39 @@ export default function AiNativeValueArchitectPage() {
                     <strong>Developing the AI-Native Change Agent</strong>
                   </td>
                   <td>28–32%</td>
-                  <td>個人のAIロードマップとスキル構築 / 組織への影響力とリーダーシップ / ギャップの診断とコラボレーションの促進</td>
+                  <td>
+                    個人のAIロードマップとスキル構築 / 組織への影響力とリーダーシップ /
+                    ギャップの診断とコラボレーションの促進
+                  </td>
                 </tr>
                 <tr>
                   <td>
                     <strong>Strategy, Alignment, and Governance</strong>
                   </td>
                   <td>33–37%</td>
-                  <td>ステークホルダーの整合性とコンフリクトマネジメント / 適応型計画とリスクマネジメント / 投資ケースとガバナンス</td>
+                  <td>
+                    ステークホルダーの整合性とコンフリクトマネジメント /
+                    適応型計画とリスクマネジメント / 投資ケースとガバナンス
+                  </td>
                 </tr>
                 <tr>
                   <td>
                     <strong>Solution Design and Delivery</strong>
                   </td>
                   <td>15–16%</td>
-                  <td>反復的デリバリーとクイックウィン / レディネスとモメンタム / Designフェーズのファシリテーション</td>
+                  <td>
+                    反復的デリバリーとクイックウィン / レディネスとモメンタム /
+                    Designフェーズのファシリテーション
+                  </td>
                 </tr>
                 <tr>
                   <td>
                     <strong>Value Realization and Organizational Change</strong>
                   </td>
                   <td>17–19%</td>
-                  <td>インパクトのためのストーリーテリング / 価値の測定 / 結果のコミュニケーション</td>
+                  <td>
+                    インパクトのためのストーリーテリング / 価値の測定 / 結果のコミュニケーション
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -404,7 +431,9 @@ export default function AiNativeValueArchitectPage() {
                 補足
               </div>
               <p>
-                公式ページが公表しているのは各ドメインの出題比率の「範囲」（例: 28–32%）です。上の円グラフは各範囲の中央値（30% / 35% / 15.5% / 18%）を用いて視覚化したものであり、合計は概算で100%に近い値になりますが、公式な単一の数値ではありません。学習配分の目安としてご利用ください。
+                公式ページが公表しているのは各ドメインの出題比率の「範囲」（例:
+                28–32%）です。上の円グラフは各範囲の中央値（30% / 35% / 15.5% /
+                18%）を用いて視覚化したものであり、合計は概算で100%に近い値になりますが、公式な単一の数値ではありません。学習配分の目安としてご利用ください。
               </p>
             </div>
             <div className="callout source">
@@ -425,7 +454,13 @@ export default function AiNativeValueArchitectPage() {
                 補足（名称の混乱を避ける）
               </div>
               <p>
-                ドメイン名「Developing the AI-Native Change Agent」には、旧コース名「AI-Native Change Agent」がそのまま残っています。認定資格自体の名称は「AI-Native Value Architect」に変わりましたが、試験ドメインの命名は更新されていないため、学習者は「Change Agent」と「Value Architect」が別の資格だと誤解しないよう注意してください。Cprimeの公開コース説明ページでは、本コースが旧「AI-Native Change Agent」コースを置き換え、ポートフォリオ上の同じ位置を占めると明記されています。両者は同一の役割を指しています。
+                ドメイン名「Developing the AI-Native Change Agent」には、旧コース名「AI-Native
+                Change Agent」がそのまま残っています。認定資格自体の名称は「AI-Native Value
+                Architect」に変わりましたが、試験ドメインの命名は更新されていないため、学習者は「Change
+                Agent」と「Value
+                Architect」が別の資格だと誤解しないよう注意してください。Cprimeの公開コース説明ページでは、本コースが旧「AI-Native
+                Change
+                Agent」コースを置き換え、ポートフォリオ上の同じ位置を占めると明記されています。両者は同一の役割を指しています。
               </p>
             </div>
 
@@ -436,10 +471,13 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  出題比率が最も高いのは「Strategy, Alignment, and Governance」（33–37%）。学習時間の配分もこの比率に合わせ、Value Maximizer Playbookとリスクのビジネス言語への翻訳（第4章）に最も多くの時間を割く。
+                  出題比率が最も高いのは「Strategy, Alignment, and
+                  Governance」（33–37%）。学習時間の配分もこの比率に合わせ、Value Maximizer
+                  Playbookとリスクのビジネス言語への翻訳（第4章）に最も多くの時間を割く。
                 </li>
                 <li>
-                  逆に「Solution Design and Delivery」は15–16%と比率が低いが、実務上は最も手を動かす領域（Sense/Discover/Design/Deliverの実行）である。出題比率と実務での重要度は必ずしも一致しない点を意識する。
+                  逆に「Solution Design and
+                  Delivery」は15–16%と比率が低いが、実務上は最も手を動かす領域（Sense/Discover/Design/Deliverの実行）である。出題比率と実務での重要度は必ずしも一致しない点を意識する。
                 </li>
               </ul>
             </div>
@@ -450,7 +488,9 @@ export default function AiNativeValueArchitectPage() {
 
             <h3>2.1 なぜ今この役割が必要なのか:「POCグレイブヤード」問題</h3>
             <p>
-              多くの組織がAI導入で直面しているのは、技術そのものの失敗ではなく「試作（Proof of Concept）から本番運用への道筋を誰も設計していない」という組織的な失敗です。データが準備できていない、運用が計画されていない、リスクの範囲が定まっていない、定着化が仕組み化されていない、価値が測定されていない——これらが重なった結果、有望なデモが本番運用に至らないまま放置される状態を指して「POCグレイブヤード（POC Graveyard）」と呼びます。
+              多くの組織がAI導入で直面しているのは、技術そのものの失敗ではなく「試作（Proof of
+              Concept）から本番運用への道筋を誰も設計していない」という組織的な失敗です。データが準備できていない、運用が計画されていない、リスクの範囲が定まっていない、定着化が仕組み化されていない、価値が測定されていない——これらが重なった結果、有望なデモが本番運用に至らないまま放置される状態を指して「POCグレイブヤード（POC
+              Graveyard）」と呼びます。
             </p>
             <div className="callout source">
               <div className="callout-label">
@@ -464,7 +504,9 @@ export default function AiNativeValueArchitectPage() {
               </p>
             </div>
             <p>
-              この問題を裏付ける外部データとして、MIT Media LabのProject NANDAが2025年に発表した調査「The GenAI Divide: State of AI in Business 2025」があります。300件の公開AI導入事例の分析、150名超の経営層へのインタビュー、350名規模の従業員調査に基づき、企業の生成AIパイロットの約95%が測定可能な財務的リターンを生んでいないと報告されています。成功した組織（全体の約5%）は、単一の課題に集中し、外部パートナーと連携し、バックオフィス業務の自動化に注力する傾向があったとされています。
+              この問題を裏付ける外部データとして、MIT Media LabのProject
+              NANDAが2025年に発表した調査「The GenAI Divide: State of AI in Business
+              2025」があります。300件の公開AI導入事例の分析、150名超の経営層へのインタビュー、350名規模の従業員調査に基づき、企業の生成AIパイロットの約95%が測定可能な財務的リターンを生んでいないと報告されています。成功した組織（全体の約5%）は、単一の課題に集中し、外部パートナーと連携し、バックオフィス業務の自動化に注力する傾向があったとされています。
             </p>
             <div className="callout note">
               <div className="callout-label">
@@ -472,7 +514,9 @@ export default function AiNativeValueArchitectPage() {
                 補足
               </div>
               <p>
-                この「95%」という数値は、MIT NANDAの原論文そのものではなく、同調査を報じた専門メディアの記事を通じて確認したものです。原論文本体（PDF）を直接参照したものではないため、正確な調査方法・定義の詳細を確認したい場合は、記事内で言及されているMIT NANDAの一次レポートに当たることをおすすめします。
+                この「95%」という数値は、MIT
+                NANDAの原論文そのものではなく、同調査を報じた専門メディアの記事を通じて確認したものです。原論文本体（PDF）を直接参照したものではないため、正確な調査方法・定義の詳細を確認したい場合は、記事内で言及されているMIT
+                NANDAの一次レポートに当たることをおすすめします。
               </p>
             </div>
             <div className="callout source">
@@ -482,13 +526,15 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <p>
                 <Ext href="https://virtualizationreview.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide.aspx">
-                  MIT Report Finds Most AI Business Investments Fail, Reveals &apos;GenAI Divide&apos;
+                  MIT Report Finds Most AI Business Investments Fail, Reveals &apos;GenAI
+                  Divide&apos;
                 </Ext>
                 （Virtualization Review, MIT NANDA調査の報道）
               </p>
             </div>
             <p>
-              また、Gartnerの調査では、CEOの多くがAIを次のビジネス時代を切り開く技術と認識する一方、自社の経営幹部チームのAIに対する習熟度（AI savviness）には懐疑的であるという「認識のギャップ」も指摘されています。
+              また、Gartnerの調査では、CEOの多くがAIを次のビジネス時代を切り開く技術と認識する一方、自社の経営幹部チームのAIに対する習熟度（AI
+              savviness）には懐疑的であるという「認識のギャップ」も指摘されています。
             </p>
             <div className="callout source">
               <div className="callout-label">
@@ -497,7 +543,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <p>
                 <Ext href="https://www.gartner.com/en/newsroom/press-releases/2025-05-06-gartner-survey-reveals-that-ceos-believe-their-executive-teams-lack-ai-savviness">
-                  Gartner Survey Reveals That CEOs Believe Their Executive Teams Lack AI Savviness（Gartner公式プレスリリース）
+                  Gartner Survey Reveals That CEOs Believe Their Executive Teams Lack AI
+                  Savviness（Gartner公式プレスリリース）
                 </Ext>
               </p>
             </div>
@@ -508,24 +555,29 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  これらの統計は「AIツールが悪い」のではなく「導入プロセスの設計が不十分」であることを示している。AI Value Architectとして提案するときは、常にツール選定の議論ではなく「本番化までの道筋（運用・リスク・定着・測定）」の議論にステークホルダーを引き戻すことを意識する。
+                  これらの統計は「AIツールが悪い」のではなく「導入プロセスの設計が不十分」であることを示している。AI
+                  Value
+                  Architectとして提案するときは、常にツール選定の議論ではなく「本番化までの道筋（運用・リスク・定着・測定）」の議論にステークホルダーを引き戻すことを意識する。
                 </li>
               </ul>
             </div>
 
             <h3>2.2 役割の定義</h3>
             <p>
-              AI Value Architectは、ART（Agile Release Train）上に置かれた専任の役割として、Scaled Agileが公式に定義したものです。次の3つの性質をあわせ持つ、境界線上の存在として説明されています。
+              AI Value Architectは、ART（Agile Release Train）上に置かれた専任の役割として、Scaled
+              Agileが公式に定義したものです。次の3つの性質をあわせ持つ、境界線上の存在として説明されています。
             </p>
             <ul>
               <li>
-                <strong>business-literate（ビジネスに精通している）</strong>——ただしBusiness Ownerそのものではない
+                <strong>business-literate（ビジネスに精通している）</strong>——ただしBusiness
+                Ownerそのものではない
               </li>
               <li>
                 <strong>AI-fluent（AIに堪能である）</strong>——ただしAI開発者そのものではない
               </li>
               <li>
-                <strong>facilitative（ファシリテーション能力がある）</strong>——ただし単なるファシリテーターではない
+                <strong>facilitative（ファシリテーション能力がある）</strong>
+                ——ただし単なるファシリテーターではない
               </li>
             </ul>
             <p>
@@ -555,7 +607,9 @@ export default function AiNativeValueArchitectPage() {
             </div>
 
             <p>
-              このAI Value Architectという役割は、SAFeの新しい運用モデルである<strong>AI-Native SAFe</strong>の中で正式に定義された役割の一つです。AI-Native SAFeは、チーム編成・役割定義・ワークフロー・人とAIの引き継ぎ方を再設計し、AI時代のガバナンスをSAFeに組み込んだバージョンとして発表されました。
+              このAI Value Architectという役割は、SAFeの新しい運用モデルである
+              <strong>AI-Native SAFe</strong>の中で正式に定義された役割の一つです。AI-Native
+              SAFeは、チーム編成・役割定義・ワークフロー・人とAIの引き継ぎ方を再設計し、AI時代のガバナンスをSAFeに組み込んだバージョンとして発表されました。
             </p>
             <div className="callout source">
               <div className="callout-label">
@@ -600,7 +654,9 @@ export default function AiNativeValueArchitectPage() {
                 </tr>
               </tbody>
             </table>
-            <p>新しい採用ポジションではなく、「今の役割に新しい能力を足す」形で組織内から育成することが想定されています。</p>
+            <p>
+              新しい採用ポジションではなく、「今の役割に新しい能力を足す」形で組織内から育成することが想定されています。
+            </p>
             <div className="callout source">
               <div className="callout-label">
                 <IconExternalLink size={16} />
@@ -619,13 +675,18 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  自分がどの既存ロールから移行するかによって、伸ばすべきスキルの優先順位は異なる。例えばSystem Architect出身者はAI Fluencyの土台があるため、第3章のファシリテーション・組織影響力のスキルを重点的に鍛えると良い。逆にScrumMaster出身者はファシリテーションの土台があるため、第4章のRAG/Fine-Tuning経済性のような技術トレードオフの理解を重点的に補う。
+                  自分がどの既存ロールから移行するかによって、伸ばすべきスキルの優先順位は異なる。例えばSystem
+                  Architect出身者はAI
+                  Fluencyの土台があるため、第3章のファシリテーション・組織影響力のスキルを重点的に鍛えると良い。逆にScrumMaster出身者はファシリテーションの土台があるため、第4章のRAG/Fine-Tuning経済性のような技術トレードオフの理解を重点的に補う。
                 </li>
               </ul>
             </div>
 
             <h3>2.4 5つの責任領域</h3>
-            <p>Scaled Agileは、AI Value Architectの役割を構成する責任範囲として、次の5つの領域を公式に定義しています。</p>
+            <p>
+              Scaled Agileは、AI Value
+              Architectの役割を構成する責任範囲として、次の5つの領域を公式に定義しています。
+            </p>
             <table>
               <thead>
                 <tr>
@@ -640,35 +701,47 @@ export default function AiNativeValueArchitectPage() {
                   <td>
                     <strong>Coaching AI Adoption</strong>（AI導入のコーチング）
                   </td>
-                  <td>AIの責任ある活用をコーチングの規律として捉え、自分自身とチーム双方のAI Fluencyを高める</td>
+                  <td>
+                    AIの責任ある活用をコーチングの規律として捉え、自分自身とチーム双方のAI
+                    Fluencyを高める
+                  </td>
                 </tr>
                 <tr>
                   <td>2</td>
                   <td>
                     <strong>Unlocking Value from Existing Tools</strong>（既存ツールからの価値解放）
                   </td>
-                  <td>組織がすでに保有・契約しているツールに眠るAI機能を掘り起こし、ワークフロー改善に活かす</td>
+                  <td>
+                    組織がすでに保有・契約しているツールに眠るAI機能を掘り起こし、ワークフロー改善に活かす
+                  </td>
                 </tr>
                 <tr>
                   <td>3</td>
                   <td>
                     <strong>Bridging Business and Technology</strong>（ビジネスと技術の橋渡し）
                   </td>
-                  <td>リスク・法務・データ・倫理といった新しい論点を、技術課題ではなくビジネス機会として扱い、部門横断の連携を進める</td>
+                  <td>
+                    リスク・法務・データ・倫理といった新しい論点を、技術課題ではなくビジネス機会として扱い、部門横断の連携を進める
+                  </td>
                 </tr>
                 <tr>
                   <td>4</td>
                   <td>
-                    <strong>Facilitating AI Solution Development</strong>（AIソリューション開発のファシリテーション）
+                    <strong>Facilitating AI Solution Development</strong>
+                    （AIソリューション開発のファシリテーション）
                   </td>
-                  <td>データ品質の変化・モデルドリフト・評価ギャップなど、AI特有の新しい失敗モードに対して適切な議論の場を作る</td>
+                  <td>
+                    データ品質の変化・モデルドリフト・評価ギャップなど、AI特有の新しい失敗モードに対して適切な議論の場を作る
+                  </td>
                 </tr>
                 <tr>
                   <td>5</td>
                   <td>
                     <strong>Optimizing Outcomes</strong>（アウトカムの最適化）
                   </td>
-                  <td>ワークフローや製品へのAI組み込みが、最終的にビジネスと顧客にとってより良い結果を生んでいるかを継続的に見る</td>
+                  <td>
+                    ワークフローや製品へのAI組み込みが、最終的にビジネスと顧客にとってより良い結果を生んでいるかを継続的に見る
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -679,7 +752,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <p>
                 <Ext href="https://framework.scaledagile.com/blog/ai-native-safe-session-3-ai-native-teams-roles-and-arts">
-                  AI-Native SAFe Session 3: AI-Native Teams, Roles, and ARTs（Scaled Agile公式ブログ）
+                  AI-Native SAFe Session 3: AI-Native Teams, Roles, and ARTs（Scaled
+                  Agile公式ブログ）
                 </Ext>
                 、
                 <Ext href="https://www.gladwellacademy.com/knowledge/blogs/what-is-an-ai-value-architect">
@@ -694,19 +768,26 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  <strong>領域1（コーチング）:</strong> 「使い方」だけでなく「いつ価値が出るか」「出力をどう評価するか」「どこに人間の判断が必要か」までセットでチームに伝える。ツールのトレーニングと混同しない。
+                  <strong>領域1（コーチング）:</strong>{" "}
+                  「使い方」だけでなく「いつ価値が出るか」「出力をどう評価するか」「どこに人間の判断が必要か」までセットでチームに伝える。ツールのトレーニングと混同しない。
                 </li>
                 <li>
-                  <strong>領域2（既存資産の活用）:</strong> 新規ツール導入の稟議を書く前に、既存の契約（Microsoft 365 Copilot、Google Workspaceなど）に含まれるAI機能の利用率を必ず棚卸しする（詳細は第4章のValue Maximizer Playbookを参照）。
+                  <strong>領域2（既存資産の活用）:</strong>{" "}
+                  新規ツール導入の稟議を書く前に、既存の契約（Microsoft 365 Copilot、Google
+                  Workspaceなど）に含まれるAI機能の利用率を必ず棚卸しする（詳細は第4章のValue
+                  Maximizer Playbookを参照）。
                 </li>
                 <li>
-                  <strong>領域3（橋渡し）:</strong> 法務・データ・倫理の担当者を「後から巻き込む承認者」ではなく「最初から同席するチームメンバー」として扱う。
+                  <strong>領域3（橋渡し）:</strong>{" "}
+                  法務・データ・倫理の担当者を「後から巻き込む承認者」ではなく「最初から同席するチームメンバー」として扱う。
                 </li>
                 <li>
-                  <strong>領域4（ファシリテーション）:</strong> モデルドリフトやデータ品質の劣化は、小規模なテストでは発見しにくい。本番相当のデータ量・期間でのモニタリング計画を、設計フェーズの段階で合意しておく。
+                  <strong>領域4（ファシリテーション）:</strong>{" "}
+                  モデルドリフトやデータ品質の劣化は、小規模なテストでは発見しにくい。本番相当のデータ量・期間でのモニタリング計画を、設計フェーズの段階で合意しておく。
                 </li>
                 <li>
-                  <strong>領域5（最適化）:</strong> 「導入した」ことと「アウトカムが改善した」ことは別物。第6章の価値測定のフレームを使って、定期的にアウトカム指標を振り返る場を設ける。
+                  <strong>領域5（最適化）:</strong>{" "}
+                  「導入した」ことと「アウトカムが改善した」ことは別物。第6章の価値測定のフレームを使って、定期的にアウトカム指標を振り返る場を設ける。
                 </li>
               </ul>
             </div>
@@ -721,7 +802,15 @@ export default function AiNativeValueArchitectPage() {
                 補足（出典の性質について）
               </div>
               <p>
-                本章および第4〜6章で扱う「5つの失敗モード」「Feasibility Filters」「Value Maximizer Playbook」「AI-Native Solution Lifecycle」「コアアーティファクト（Solution Charter / Value Blueprint）」「AI-Powered Story Amplifier」といった名称・枠組みの多くは、Scaled Agileの認定トレーニングパートナーであるCprimeが公開しているコースアウトラインに基づいています。Scaled Agile自身の公式ページ（scaledagile.com、framework.scaledagile.com）にも同様の記載（特に「80%の隠れた価値」「Audit, Activate, Optimize, Centralize framework」「Sense, Discover, Design, Deliverフェーズ」）が確認できるため、コースの核となる枠組みであることは裏付けられていますが、各項目の細部の定義まではScaled Agileの公開フレームワーク用語集で独立に定義されているわけではありません。試験本番での用語の厳密な定義は、公式コース教材を優先してください。
+                本章および第4〜6章で扱う「5つの失敗モード」「Feasibility Filters」「Value Maximizer
+                Playbook」「AI-Native Solution Lifecycle」「コアアーティファクト（Solution Charter /
+                Value Blueprint）」「AI-Powered Story
+                Amplifier」といった名称・枠組みの多くは、Scaled
+                Agileの認定トレーニングパートナーであるCprimeが公開しているコースアウトラインに基づいています。Scaled
+                Agile自身の公式ページ（scaledagile.com、framework.scaledagile.com）にも同様の記載（特に「80%の隠れた価値」「Audit,
+                Activate, Optimize, Centralize framework」「Sense, Discover, Design,
+                Deliverフェーズ」）が確認できるため、コースの核となる枠組みであることは裏付けられていますが、各項目の細部の定義まではScaled
+                Agileの公開フレームワーク用語集で独立に定義されているわけではありません。試験本番での用語の厳密な定義は、公式コース教材を優先してください。
               </p>
             </div>
 
@@ -804,14 +893,16 @@ export default function AiNativeValueArchitectPage() {
                   5つの失敗モードは「診断チェックリスト」として使う。新しいAI施策の提案を受けたら、まずこの5項目に照らして弱点を洗い出す習慣をつける。
                 </li>
                 <li>
-                  5つのうち複数が同時に該当する施策（例: データも運用計画もない状態でリスクも未定義）は、着手前に必ずステークホルダーへの是正提案を行う。
+                  5つのうち複数が同時に該当する施策（例:
+                  データも運用計画もない状態でリスクも未定義）は、着手前に必ずステークホルダーへの是正提案を行う。
                 </li>
               </ul>
             </div>
 
             <h3>3.2 Feasibility Filters</h3>
             <p>
-              Feasibility Filtersは、コードを1行も書く前に、施策の実現可能性を検証する一連の問いです。5つの失敗モードそれぞれに対応する形で設計されています。
+              Feasibility
+              Filtersは、コードを1行も書く前に、施策の実現可能性を検証する一連の問いです。5つの失敗モードそれぞれに対応する形で設計されています。
             </p>
             <table>
               <thead>
@@ -856,7 +947,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  Feasibility Filtersは一度きりのゲートではなく、Sense/Discover/Design/Deliver各フェーズ（第5章）の節目で繰り返し当てるチェックポイントとして運用する。
+                  Feasibility
+                  Filtersは一度きりのゲートではなく、Sense/Discover/Design/Deliver各フェーズ（第5章）の節目で繰り返し当てるチェックポイントとして運用する。
                 </li>
                 <li>
                   全ての項目で満点を求めず、「どのリスクを受容し、どのリスクは着手前に解消すべきか」を明示的に合意することが目的である。
@@ -865,7 +957,10 @@ export default function AiNativeValueArchitectPage() {
             </div>
 
             <h3>3.3 個人のAIロードマップとスキル構築</h3>
-            <p>AI Value Architect自身のAI Fluencyを継続的に高めるための、個人のスキルロードマップの考え方です。</p>
+            <p>
+              AI Value Architect自身のAI
+              Fluencyを継続的に高めるための、個人のスキルロードマップの考え方です。
+            </p>
             <table>
               <thead>
                 <tr>
@@ -910,7 +1005,9 @@ export default function AiNativeValueArchitectPage() {
 
             <h3>3.4 組織への影響力とリーダーシップ</h3>
             <p>
-              AI Value Architectには直接的な人事権限がないことが多いため、公式な権威ではなく「信頼」と「実績」による非公式な影響力（informal authority）を築くことが求められます。
+              AI Value
+              Architectには直接的な人事権限がないことが多いため、公式な権威ではなく「信頼」と「実績」による非公式な影響力（informal
+              authority）を築くことが求められます。
             </p>
             <div className="callout practice">
               <div className="callout-label">
@@ -921,7 +1018,9 @@ export default function AiNativeValueArchitectPage() {
                 <li>
                   大きな変革を提案する前に、小さく・低リスクな「クイックウィン」（第5章参照）を先に見せて信頼を積み上げる。
                 </li>
-                <li>経営層・現場双方の言葉で同じ内容を語れるよう、説明のバリエーションを複数用意しておく。</li>
+                <li>
+                  経営層・現場双方の言葉で同じ内容を語れるよう、説明のバリエーションを複数用意しておく。
+                </li>
               </ul>
             </div>
 
@@ -936,7 +1035,8 @@ export default function AiNativeValueArchitectPage() {
                   ギャップ診断は「技術ギャップ」だけでなく「スキルギャップ」「プロセスギャップ」「文化ギャップ」の3種類に分けて観察する。
                 </li>
                 <li>
-                  コラボレーションを促す場では、AI Value Architect自身が答えを出すのではなく、適切な問いを投げてチーム自身に気づかせるファシリテーションを優先する。
+                  コラボレーションを促す場では、AI Value
+                  Architect自身が答えを出すのではなく、適切な問いを投げてチーム自身に気づかせるファシリテーションを優先する。
                 </li>
               </ul>
             </div>
@@ -944,13 +1044,17 @@ export default function AiNativeValueArchitectPage() {
 
           <section className="section" id="domain2">
             <h2>4. ドメイン2: Strategy, Alignment, and Governance（33–37%）</h2>
-            <p>出題比率が最も高いドメインです。学習時間の配分もここに最も厚く割り当ててください。</p>
+            <p>
+              出題比率が最も高いドメインです。学習時間の配分もここに最も厚く割り当ててください。
+            </p>
 
             <h3>4.1 Value Maximizer Playbook: Audit → Activate → Optimize → Centralize</h3>
             <p>
-              多くの組織は、新しいAIツールを次々と導入する前に、「すでに保有しているAI機能の多くが未活用のまま眠っている」という前提に立つ必要があります。Scaled Agile自身の公式ページとCprimeのコース説明はいずれも、組織が既に保有するAIツールの
+              多くの組織は、新しいAIツールを次々と導入する前に、「すでに保有しているAI機能の多くが未活用のまま眠っている」という前提に立つ必要があります。Scaled
+              Agile自身の公式ページとCprimeのコース説明はいずれも、組織が既に保有するAIツールの
               <strong>「80%の隠れた価値（潜在能力）」</strong>
-              を掘り起こすことをこのフレームワークの狙いとして明記しています。Value Maximizer Playbookは、その隠れた価値を段階的に掘り起こすための4段階フレームワークです。
+              を掘り起こすことをこのフレームワークの狙いとして明記しています。Value Maximizer
+              Playbookは、その隠れた価値を段階的に掘り起こすための4段階フレームワークです。
             </p>
             <table>
               <thead>
@@ -1006,7 +1110,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <p>
                 <Ext href="https://scaledagile.com/certification/ai-native-value-architect/">
-                  AI-Native Value Architect Certification（Scaled Agile公式、「80%の隠れた価値」の記載元）
+                  AI-Native Value Architect Certification（Scaled
+                  Agile公式、「80%の隠れた価値」の記載元）
                 </Ext>
                 、
                 <Ext href="https://www.cprime.com/learning/courses/ai-native-value-architect/">
@@ -1021,24 +1126,33 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  <strong>Audit:</strong> 新規ツール予算を要求する前に、必ずこのフェーズを実施する。多くの場合、追加費用ゼロで解決できる課題がここで見つかる。
+                  <strong>Audit:</strong>{" "}
+                  新規ツール予算を要求する前に、必ずこのフェーズを実施する。多くの場合、追加費用ゼロで解決できる課題がここで見つかる。
                 </li>
                 <li>
-                  <strong>Activate:</strong> 機能を有効化しただけで満足せず、実際に使われているかを利用ログで確認する。
+                  <strong>Activate:</strong>{" "}
+                  機能を有効化しただけで満足せず、実際に使われているかを利用ログで確認する。
                 </li>
                 <li>
-                  <strong>Optimize:</strong> 「AIを使うこと」ではなく「業務のアウトカムが改善すること」をゴールに設定する。
+                  <strong>Optimize:</strong>{" "}
+                  「AIを使うこと」ではなく「業務のアウトカムが改善すること」をゴールに設定する。
                 </li>
                 <li>
-                  <strong>Centralize:</strong> 1チームでの成功事例を全社展開する際は、そのチーム固有の前提条件（データ、権限、文化）を明示した上で横展開する。
+                  <strong>Centralize:</strong>{" "}
+                  1チームでの成功事例を全社展開する際は、そのチーム固有の前提条件（データ、権限、文化）を明示した上で横展開する。
                 </li>
               </ul>
             </div>
 
             <h3>4.2 リスクを戦略に変換する: RAG vs. Fine-Tuning の経済性</h3>
             <p>
-              AI Value Architectには、技術的なトレードオフを経営層にも伝わる「ビジネス言語」に翻訳するAI Fluencyが求められます。試験でも頻出する典型例が、
-              <strong>RAG（Retrieval-Augmented Generation）と Fine-Tuning のコスト構造の違い</strong>です。
+              AI Value
+              Architectには、技術的なトレードオフを経営層にも伝わる「ビジネス言語」に翻訳するAI
+              Fluencyが求められます。試験でも頻出する典型例が、
+              <strong>
+                RAG（Retrieval-Augmented Generation）と Fine-Tuning のコスト構造の違い
+              </strong>
+              です。
             </p>
             <table>
               <thead>
@@ -1113,7 +1227,8 @@ export default function AiNativeValueArchitectPage() {
                 </Ext>
                 、
                 <Ext href="https://4xxi.com/articles/rag-vs-fine-tuning/">
-                  RAG vs. Fine-Tuning for Enterprise: A Practitioner&apos;s Decision Framework（4xxi）
+                  RAG vs. Fine-Tuning for Enterprise: A Practitioner&apos;s Decision
+                  Framework（4xxi）
                 </Ext>
               </p>
             </div>
@@ -1145,7 +1260,9 @@ export default function AiNativeValueArchitectPage() {
                 <li>
                   ビジネスオーナー・エンジニアリング・エンドユーザーの三者は、しばしば「成功」の定義そのものが異なる。合意形成の場では、まず各者にとっての成功の定義を言語化させてから議論を始める。
                 </li>
-                <li>対立が生じたときは、立場（position）ではなく背後にある利害（interest）に焦点を当てて仲介する。</li>
+                <li>
+                  対立が生じたときは、立場（position）ではなく背後にある利害（interest）に焦点を当てて仲介する。
+                </li>
               </ul>
             </div>
 
@@ -1189,10 +1306,12 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  投資ケース（Investment Case）には、必ず「本番化までの総コスト（TCO）」を含める。PoC段階のコストだけで承認を取ると、後工程で予算超過が発覚しやすい。
+                  投資ケース（Investment
+                  Case）には、必ず「本番化までの総コスト（TCO）」を含める。PoC段階のコストだけで承認を取ると、後工程で予算超過が発覚しやすい。
                 </li>
                 <li>
-                  ガバナンス要件は「後から付け足す」のではなく、Solution Charter（第5章）の初期段階からリスク・コンプライアンス要件として組み込む。
+                  ガバナンス要件は「後から付け足す」のではなく、Solution
+                  Charter（第5章）の初期段階からリスク・コンプライアンス要件として組み込む。
                 </li>
               </ul>
             </div>
@@ -1202,7 +1321,9 @@ export default function AiNativeValueArchitectPage() {
             <h2>5. ドメイン3: Solution Design and Delivery（15–16%）</h2>
 
             <h3>5.1 AI-Native Solution Lifecycle 全体像</h3>
-            <p>AI施策を「最初のシグナル」から「本番化の意思決定」まで導くための4フェーズのライフサイクルです。</p>
+            <p>
+              AI施策を「最初のシグナル」から「本番化の意思決定」まで導くための4フェーズのライフサイクルです。
+            </p>
             <table>
               <thead>
                 <tr>
@@ -1280,7 +1401,8 @@ export default function AiNativeValueArchitectPage() {
                   4フェーズは一方通行の「ウォーターフォール」ではなく、Deliverで得た学びをSenseに還流させる循環として運用する。
                 </li>
                 <li>
-                  各フェーズの終わりに、第3章のFeasibility Filtersを再度当てて「次のフェーズに進んでよいか」を明示的に判断する。
+                  各フェーズの終わりに、第3章のFeasibility
+                  Filtersを再度当てて「次のフェーズに進んでよいか」を明示的に判断する。
                 </li>
               </ul>
             </div>
@@ -1292,7 +1414,9 @@ export default function AiNativeValueArchitectPage() {
                 ベストプラクティス
               </div>
               <ul>
-                <li>大きな一発勝負のローンチではなく、小さく価値を証明できる単位に分割して段階的にリリースする。</li>
+                <li>
+                  大きな一発勝負のローンチではなく、小さく価値を証明できる単位に分割して段階的にリリースする。
+                </li>
                 <li>
                   最初のクイックウィンは「効果が大きいが実現が容易な」領域（低リスク・高頻度の定型業務など）から選ぶと、組織内の信頼を早期に獲得しやすい。
                 </li>
@@ -1309,7 +1433,9 @@ export default function AiNativeValueArchitectPage() {
                 <li>
                   技術的な準備（データ・インフラ）だけでなく、利用者側の心理的な準備（変化への抵抗感、スキル不足への不安）も「レディネス」の一部として評価する。
                 </li>
-                <li>初期の勢い（モメンタム）を維持するため、進捗や小さな成功を定期的に可視化して共有する。</li>
+                <li>
+                  初期の勢い（モメンタム）を維持するため、進捗や小さな成功を定期的に可視化して共有する。
+                </li>
               </ul>
             </div>
 
@@ -1367,7 +1493,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <p>
                 <Ext href="https://www.cprime.com/learning/courses/ai-native-value-architect/">
-                  AI-Native Value Architect（Cprime, 認定トレーニングパートナー、「Value Blueprint」の名称が明記された記載元）
+                  AI-Native Value Architect（Cprime, 認定トレーニングパートナー、「Value
+                  Blueprint」の名称が明記された記載元）
                 </Ext>
               </p>
             </div>
@@ -1378,7 +1505,8 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  Solution CharterとValue Blueprintは別文書として扱う。Charterは「何を・なぜやるか」の初期合意、Blueprintは「どうやるか」の最終設計として役割を分ける。
+                  Solution CharterとValue
+                  Blueprintは別文書として扱う。Charterは「何を・なぜやるか」の初期合意、Blueprintは「どうやるか」の最終設計として役割を分ける。
                 </li>
                 <li>
                   どちらの文書も、経営層・技術者・エンドユーザーの全員が読んで理解できる言葉で書く。専門用語だけで構成しない。
@@ -1392,7 +1520,8 @@ export default function AiNativeValueArchitectPage() {
 
             <h3>6.1 AI-Powered Story Amplifier: インパクトのためのストーリーテリング</h3>
             <p>
-              技術的な成功指標（精度、処理時間短縮など）をそのまま経営層に報告しても、資金調達や全社展開の後押しにはなりにくいことがあります。AI-Powered Story Amplifierは、技術指標をC-suite向けの説得力あるナラティブに変換する手法です。
+              技術的な成功指標（精度、処理時間短縮など）をそのまま経営層に報告しても、資金調達や全社展開の後押しにはなりにくいことがあります。AI-Powered
+              Story Amplifierは、技術指標をC-suite向けの説得力あるナラティブに変換する手法です。
             </p>
             <div className="callout practice">
               <div className="callout-label">
@@ -1401,16 +1530,20 @@ export default function AiNativeValueArchitectPage() {
               </div>
               <ul>
                 <li>
-                  <strong>課題（Before）:</strong> 何が問題だったのかを、数字ではなく「痛み」として描写する
+                  <strong>課題（Before）:</strong>{" "}
+                  何が問題だったのかを、数字ではなく「痛み」として描写する
                 </li>
                 <li>
-                  <strong>介入（What we did）:</strong> どのAIソリューションをどう適用したかを簡潔に説明する
+                  <strong>介入（What we did）:</strong>{" "}
+                  どのAIソリューションをどう適用したかを簡潔に説明する
                 </li>
                 <li>
-                  <strong>結果（Impact）:</strong> ビジネス指標（コスト削減額、対応時間短縮、顧客満足度など）で示す
+                  <strong>結果（Impact）:</strong>{" "}
+                  ビジネス指標（コスト削減額、対応時間短縮、顧客満足度など）で示す
                 </li>
                 <li>
-                  <strong>次への提案（Ask）:</strong> この成功を踏まえて何を承認・投資してほしいかを明確に伝える
+                  <strong>次への提案（Ask）:</strong>{" "}
+                  この成功を踏まえて何を承認・投資してほしいかを明確に伝える
                 </li>
               </ul>
             </div>
@@ -1434,7 +1567,9 @@ export default function AiNativeValueArchitectPage() {
                 <li>
                   技術的な成功指標（モデルの精度など）は、必ずビジネス指標（時間・コスト・収益・リスク低減）に変換してから報告する。技術指標だけの報告は、非技術系の経営層には伝わりにくい。
                 </li>
-                <li>定量的な数字だけでなく、実際の利用者の声（定性的なエピソード）を1つ添えると説得力が増す。</li>
+                <li>
+                  定量的な数字だけでなく、実際の利用者の声（定性的なエピソード）を1つ添えると説得力が増す。
+                </li>
               </ul>
             </div>
 
@@ -1449,7 +1584,8 @@ export default function AiNativeValueArchitectPage() {
                   測定指標は「効率性（時間・コスト削減）」「品質（エラー率・満足度）」「リスク低減（コンプライアンス違反件数など）」「収益（売上・解約率）」「定着度（利用率・継続利用率）」の5カテゴリでバランスよく設計する。効率性だけに偏ると、品質やリスクの悪化を見逃す。
                 </li>
                 <li>
-                  着手前（第3章のUnmeasured Value対策）にベースラインを取得しておかないと、事後の効果測定ができなくなる点に注意する。
+                  着手前（第3章のUnmeasured
+                  Value対策）にベースラインを取得しておかないと、事後の効果測定ができなくなる点に注意する。
                 </li>
               </ul>
             </div>
@@ -1473,7 +1609,10 @@ export default function AiNativeValueArchitectPage() {
 
           <section className="section" id="map">
             <h2>7. 全体統合マップ</h2>
-            <p>これまでの内容を1つの図に統合すると、AI Value Architectの役割は次のような構造で捉えられます。</p>
+            <p>
+              これまでの内容を1つの図に統合すると、AI Value
+              Architectの役割は次のような構造で捉えられます。
+            </p>
 
             <div className="diagram-wrap">
               <div className="mermaid-target">
@@ -1487,10 +1626,12 @@ export default function AiNativeValueArchitectPage() {
                 <strong>5つの責任領域</strong>（第2章）は、AI Value Architectが日常的に果たす役割
               </li>
               <li>
-                <strong>Value Maximizer Playbook</strong>（第4章）は、既存資産から価値を引き出す横断的な手法
+                <strong>Value Maximizer Playbook</strong>
+                （第4章）は、既存資産から価値を引き出す横断的な手法
               </li>
               <li>
-                <strong>AI-Native Solution Lifecycle</strong>（第5章）は、個別施策を前に進める縦の時間軸
+                <strong>AI-Native Solution Lifecycle</strong>
+                （第5章）は、個別施策を前に進める縦の時間軸
               </li>
               <li>
                 <strong>コアアーティファクト</strong>（第5章）は、関係者の合意を形にする成果物
@@ -1533,7 +1674,10 @@ export default function AiNativeValueArchitectPage() {
                   <td>
                     <strong>GenAI Divide</strong>
                   </td>
-                  <td>AIを実験導入する組織と、実際に業務変革・財務的リターンを得る組織との間の格差（MIT NANDA 2025）</td>
+                  <td>
+                    AIを実験導入する組織と、実際に業務変革・財務的リターンを得る組織との間の格差（MIT
+                    NANDA 2025）
+                  </td>
                 </tr>
                 <tr>
                   <td>
@@ -1551,7 +1695,9 @@ export default function AiNativeValueArchitectPage() {
                   <td>
                     <strong>Fine-Tuning</strong>
                   </td>
-                  <td>追加データでモデル自体のパラメータを再学習させ、知識や振る舞いを内部化する技術</td>
+                  <td>
+                    追加データでモデル自体のパラメータを再学習させ、知識や振る舞いを内部化する技術
+                  </td>
                 </tr>
                 <tr>
                   <td>
@@ -1684,7 +1830,8 @@ export default function AiNativeValueArchitectPage() {
                 <span className="ref-num">10</span>
                 <div className="ref-body">
                   <Ext href="https://virtualizationreview.com/articles/2025/08/19/mit-report-finds-most-ai-business-investments-fail-reveals-genai-divide.aspx">
-                    MIT Report Finds Most AI Business Investments Fail, Reveals &apos;GenAI Divide&apos;
+                    MIT Report Finds Most AI Business Investments Fail, Reveals &apos;GenAI
+                    Divide&apos;
                   </Ext>
                   <p className="ref-desc">MIT NANDA「GenAI Divide」95%統計の報道</p>
                 </div>

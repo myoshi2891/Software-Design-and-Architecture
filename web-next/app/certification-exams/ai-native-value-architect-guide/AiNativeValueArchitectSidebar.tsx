@@ -60,13 +60,9 @@ type Props = {
   readonly groups?: readonly NavGroup[];
 };
 
-export default function AiNativeValueArchitectSidebar({
-  groups = DEFAULT_NAV_GROUPS,
-}: Props) {
+export default function AiNativeValueArchitectSidebar({ groups = DEFAULT_NAV_GROUPS }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);
-  const [activeId, setActiveId] = useState<string | null>(
-    groups[0]?.items[0]?.id ?? null
-  );
+  const [activeId, setActiveId] = useState<string | null>(groups[0]?.items[0]?.id ?? null);
 
   // ── 進捗バー: スクロール量に応じて scaleX を更新 ──
   useEffect(() => {
@@ -84,17 +80,14 @@ export default function AiNativeValueArchitectSidebar({
 
   // ── サイドバー現在地: IntersectionObserver で可視 section を追跡 ──
   useEffect(() => {
-    const sections = Array.from(
-      document.querySelectorAll<HTMLElement>("section.section[id]")
-    );
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("section.section[id]"));
     if (sections.length === 0) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const intersecting = entries.filter((e) => e.isIntersecting);
         if (intersecting.length > 0) {
           const topmost = intersecting.reduce((prev, curr) => {
-            return curr.target.getBoundingClientRect().y <
-              prev.target.getBoundingClientRect().y
+            return curr.target.getBoundingClientRect().y < prev.target.getBoundingClientRect().y
               ? curr
               : prev;
           });

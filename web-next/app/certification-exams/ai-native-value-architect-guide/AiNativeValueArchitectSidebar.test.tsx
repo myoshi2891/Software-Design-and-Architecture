@@ -1,9 +1,7 @@
 // @vitest-environment jsdom
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AiNativeValueArchitectSidebar, {
-  type NavGroup,
-} from "./AiNativeValueArchitectSidebar";
+import AiNativeValueArchitectSidebar, { type NavGroup } from "./AiNativeValueArchitectSidebar";
 
 const GROUPS: NavGroup[] = [
   {
