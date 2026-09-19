@@ -221,7 +221,7 @@ mermaid.initialize({
 **禁止事項**:
 
 - 異なる図種へ同じ `minWidth` / `maxHeight` を一括適用しない
-- `%%{init: {"themeVariables": {"fontSize": "..."}}}%%` で図ごとにフォントサイズを変えない — 各図解のフォントサイズは `1rem` で統一し、採寸値と CSS の実描画値が乖離してノード枠からはみ出すのを防ぐ
+- `%%{init: {"themeVariables": {"fontSize": "..."}}}%%` で図ごとにフォントサイズを変えない — `themeVariables.fontSize` は Mermaid 内部の SVG レイアウト採寸に使う絶対 px 値（`"16px"`）を設定する。CSS 側に `font-size: 1rem !important` を当て、ルートフォント 16px と一致させることで視覚的に 1rem を実現する
 - `width:'100%'` を SVG に直接適用しない（小さい図が全幅へ異常拡大する）
 - 縦長図へ `max-height` を付けない（横幅と文字まで縮小する）
 - 1ページの問題を直すために共通コンポーネントの既定動作を変更しない
@@ -355,7 +355,7 @@ m.default.initialize({
     secondaryColor: "#0f2e2e",
     tertiaryColor: "#1e2535",
     edgeLabelBackground: "#161b27",
-    fontSize: "1rem",  // 各図解のフォントの文字サイズは 1rem。採寸値と CSS 実描画値を一致させる
+    fontSize: "16px",  // Mermaid 採寸用絶対値。CSS 側を font-size: 1rem にしてルートフォント 16px = 1rem の視覚サイズを実現する（「1rem」等の相対値は Mermaid が正しくパースできずデフォルト大文字にフォールバックするため禁止）
   },
   htmlLabels: true,
   flowchart: { curve: "basis", htmlLabels: true, useMaxWidth: false },
@@ -377,15 +377,20 @@ m.default.initialize({
 - `style.overflow = "visible"` で viewBox はみ出し描画の途切れを防止
 - 再処理時に前回の `minWidth` を事前クリア
 
-### Mermaid の採寸値と CSS 文字サイズを一致させる（フォントサイズ 1rem 統一）
+### Mermaid の採寸値と CSS 文字サイズを一致させる
 
-各図解のフォントの文字サイズは **`1rem`** で統一し、採寸値と CSS の実描画サイズを完全に一致させる。
+**各図解のフォントの文字サイズは視覚的に `1rem`（ルートフォント 16px）で統一する。**
+
+> ⚠️ `themeVariables.fontSize` に `"1rem"` 等の相対値を指定してはならない。Mermaid は内部 SVG レイアウトの採寸にこの値を絶対 px として使用するため、相対値はパースに失敗しデフォルトの大きな文字サイズにフォールバックする。
+
+正しい方法は `themeVariables.fontSize` を **`"16px"`（= 1rem）** にし、CSS 側で `font-size: 1rem !important` を当てることで両者を一致させる。
 
 ```css
 /* globals.css の .mbox スコープ内に記述 */
 .mbox svg foreignObject {
   overflow: visible;
 }
+/* 各図解のフォント文字サイズを 1rem に統一 */
 .mbox svg foreignObject > div,
 .mbox svg .nodeLabel,
 .mbox svg .edgeLabel,
