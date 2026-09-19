@@ -155,7 +155,7 @@ describe("generative-ai-design-patterns-guide page contract", () => {
   it("globals.css に .generative-ai-design-patterns-guide のスコープ定義が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../../globals.css");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
     expect(cssContent).toContain(".generative-ai-design-patterns-guide");

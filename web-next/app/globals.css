@@ -11626,6 +11626,463 @@ body.has-common-header .ai-native-value-architect-guide h3 {
   --cat: #e4aa8f;
 }
 
+/* ==========================================================================
+   Generative AI Design Patterns Guide Page Scoped Styles
+   ========================================================================== */
+.generative-ai-design-patterns-guide {
+  --bg: #07111e;
+  --bg-elevated: #0c1a2c;
+  --card: #0f1e33;
+  --card-border: #1c3350;
+  --text: #e7edf7;
+  --text-dim: #93a4c3;
+  --text-faint: #5f7290;
+  --accent: #7c9eff;
+  --accent-soft: #274069;
+  --success: #34d399;
+  --success-soft: #12321f;
+  --danger: #e2657a;
+  --danger-soft: #3a1420;
+  --warn: #e8a33d;
+  --warn-soft: #3a2a1a;
+  --radius: 12px;
+  --sidebar-w: 300px;
+
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.85;
+  font-size: 16px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .layout {
+    display: block;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--card-border);
+    padding: 24px 0 40px;
+    z-index: 50;
+  }
+  .sidebar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .sidebar::-webkit-scrollbar-thumb {
+    background: var(--card-border);
+    border-radius: 4px;
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 12px;
+    letter-spacing: .02em;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar > ul > div > li {
+    margin: 0;
+  }
+  .sidebar a {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    border-left: 2px solid transparent;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .sidebar a:hover {
+    background: var(--card);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .sidebar > ul > div > li > a {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .sidebar ul ul {
+    margin: 0;
+  }
+  .sidebar ul ul a {
+    padding: 6px 20px 6px 34px;
+    font-size: 12.5px;
+    color: var(--text-faint);
+  }
+  .sidebar a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .sidebar ul ul a.active {
+    color: var(--accent);
+  }
+
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 60;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------- Main ---------- */
+  .main {
+    margin-left: var(--sidebar-w);
+    padding: 0 56px 100px;
+  }
+
+  .hero {
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 40px;
+  }
+  .hero h1 {
+    font-size: 2.3rem;
+    line-height: 1.4;
+    margin: 0 0 20px;
+    background: linear-gradient(90deg, #ffffff, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .lede {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+    line-height: 1.9;
+    max-width: 920px;
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+    margin: 0 0 24px;
+  }
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 999px;
+  }
+
+  .main h2 {
+    font-size: 1.55rem;
+    margin: 56px 0 20px;
+    padding-top: 8px;
+    color: #fff;
+    border-top: 1px solid var(--card-border);
+    scroll-margin-top: calc(var(--header-height, 60px) + 80px);
+  }
+  .main h2:first-of-type {
+    border-top: none;
+  }
+  .main h3 {
+    font-size: 1.18rem;
+    margin: 36px 0 14px;
+    color: var(--accent);
+    scroll-margin-top: calc(var(--header-height, 60px) + 80px);
+  }
+  .main h4 {
+    font-size: 1rem;
+    margin: 24px 0 10px;
+    color: var(--text);
+  }
+  .main p {
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+  .main ul,
+  .main ol {
+    margin: 0 0 16px;
+    padding-left: 1.4em;
+    color: var(--text);
+  }
+  .main li {
+    margin: 0 0 8px;
+  }
+  .main strong {
+    color: #fff;
+  }
+  .main hr {
+    display: none;
+  }
+
+  footer.disclaimer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--card-border);
+    color: var(--text-faint);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  /* ---------- Tables ---------- */
+  .table-scroll {
+    overflow-x: auto;
+    margin: 0 0 24px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14.5px;
+    min-width: 480px;
+  }
+  table caption {
+    caption-side: top;
+    padding: 10px 14px;
+    color: var(--text-dim);
+    text-align: left;
+    font-size: 13px;
+  }
+  th,
+  td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+    vertical-align: top;
+  }
+  tr.header {
+    background: var(--accent-soft);
+  }
+  tr.header th {
+    color: #fff;
+    font-weight: 700;
+  }
+  tr.odd {
+    background: rgba(255, 255, 255, .015);
+  }
+  tr.even {
+    background: transparent;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ---------- Mermaid ---------- */
+  .mermaid-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 0 0 28px;
+  }
+  .mermaid-wrapper .mermaid {
+    display: flex;
+    justify-content: safe center;
+  }
+
+  /* ---------- Checklist ---------- */
+  .checklist-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 8px 8px;
+    margin: 0 0 24px;
+  }
+  .checklist-progress {
+    padding: 12px 16px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 1px solid var(--card-border);
+  }
+  ul.task-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+  }
+  ul.task-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 16px;
+    margin: 0;
+    border-radius: 8px;
+    transition: background .15s;
+  }
+  ul.task-list li:hover {
+    background: rgba(255, 255, 255, .03);
+  }
+  ul.task-list li label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    width: 100%;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  ul.task-list input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+    margin-top: 2px;
+    border: 2px solid var(--card-border);
+    border-radius: 5px;
+    background: var(--bg);
+    cursor: pointer;
+    position: relative;
+  }
+  ul.task-list input[type="checkbox"]:checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  ul.task-list input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid #07111e;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  ul.task-list li:has(input:checked) label {
+    color: var(--text-faint);
+    text-decoration: line-through;
+  }
+
+  /* ---------- References ---------- */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0 0 24px;
+  }
+  .ref-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+  }
+  .ref-badge {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ref-body {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    min-width: 0;
+  }
+  .ref-body a {
+    word-break: break-all;
+  }
+
+  /* ---------- Glossary ---------- */
+  #glossary table {
+    font-size: 14px;
+  }
+
+  @media (max-width: 980px) {
+    .ref-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform .2s;
+      box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    .sidebar-toggle {
+      display: flex;
+    }
+    .sidebar-brand {
+      padding-top: 64px;
+    }
+    .main {
+      margin-left: 0;
+      padding: 0 20px 80px;
+    }
+    .hero {
+      padding: 80px 0 32px;
+    }
+    .hero h1 {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+body.has-common-header .generative-ai-design-patterns-guide .sidebar {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .generative-ai-design-patterns-guide .sidebar-toggle {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 14px);
+}
+
+body.has-common-header .generative-ai-design-patterns-guide h2,
+body.has-common-header .generative-ai-design-patterns-guide h3 {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
+
+
 
 
 

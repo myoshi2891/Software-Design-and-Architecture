@@ -217,6 +217,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
         status: "published",
       },
+      {
+        name: "生成AIデザインパターン",
+        href: "/recommended-books/generative-ai-design-patterns-guide",
+        summary:
+          "Valliappa Lakshmananら著『Generative AI Design Patterns』を起点に32の設計パターンを学ぶ",
+        status: "published",
+      },
     ],
   },
   {
