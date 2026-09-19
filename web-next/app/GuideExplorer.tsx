@@ -204,6 +204,7 @@ export function GuideExplorer() {
             onClick={() => {
               setQuery("");
               setSelected("all");
+              searchInputRef.current?.focus();
             }}
           >
             検索と絞り込みをリセット
