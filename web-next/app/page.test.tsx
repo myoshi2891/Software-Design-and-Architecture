@@ -80,8 +80,8 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
-    expect(text).toContain("25");
-    expect(text).toContain("17");
+    expect(text).toContain("26");
+    expect(text).toContain("18");
     expect(text).toContain("8");
   });
 
@@ -97,13 +97,13 @@ describe("HomePage (guide index)", () => {
 
   it("combines category filters with search and resets an empty result", () => {
     const container = renderIndex();
-    fireEvent.click(screen.getByRole("button", { name: "設計原則", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "設計原則" }));
     expect(container.querySelectorAll(".category")).toHaveLength(1);
     expect(container.querySelectorAll(".guide-row")).toHaveLength(5);
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 本");
     fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
-    expect(container.querySelectorAll(".guide-row")).toHaveLength(25);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(26);
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
   });

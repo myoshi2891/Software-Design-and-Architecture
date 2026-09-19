@@ -11557,6 +11557,10 @@ body.has-common-header .ai-native-value-architect-guide h3 {
   scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
 }
 
+.category[data-category="recommended-books"] {
+  --cat: #e4aa8f;
+}
+
 
 
 
