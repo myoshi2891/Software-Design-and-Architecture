@@ -141,6 +141,22 @@ describe("BuildingApplicationsWithAiAgentsSidebar", () => {
     expect(sidebar?.classList.contains("open")).toBe(false);
   });
 
+  it("スクリム押下でサイドバーを閉じ、フォーカスをトグルボタンへ戻す", () => {
+    const { container } = render(<BuildingApplicationsWithAiAgentsSidebar groups={TEST_GROUPS} />);
+    const toggleBtn = container.querySelector("#menuToggle");
+    if (!toggleBtn) throw new Error("toggleBtn not found");
+
+    fireEvent.click(toggleBtn);
+    const sidebar = container.querySelector("#sidebar");
+    expect(sidebar?.classList.contains("open")).toBe(true);
+
+    const overlay = container.querySelector("#scrim");
+    if (!overlay) throw new Error("overlay not found");
+    fireEvent.click(overlay);
+    expect(sidebar?.classList.contains("open")).toBe(false);
+    expect(document.activeElement).toBe(toggleBtn);
+  });
+
   it("Escapeキー押下でサイドバーを閉じ、フォーカスをトグルボタンへ戻す", () => {
     const { container } = render(<BuildingApplicationsWithAiAgentsSidebar groups={TEST_GROUPS} />);
     const toggleBtn = container.querySelector("#menuToggle");

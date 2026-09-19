@@ -30,6 +30,13 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
+  const closeScrim = () => {
+    setIsOpen(false);
+    const toggle = toggleRef.current;
+    if (toggle && window.getComputedStyle(toggle).display !== "none") {
+      toggle.focus();
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -125,7 +132,7 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
           type="button"
           className="scrim show"
           id="scrim"
-          onClick={closeMenu}
+          onClick={closeScrim}
           aria-label="メニューを閉じる"
         />
       )}
