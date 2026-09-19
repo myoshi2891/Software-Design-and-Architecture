@@ -16,7 +16,7 @@
 ## 書籍基本情報
 
 | 項目 | 内容 |
-|---|---|
+| --- | --- |
 | 原題 | *Refactoring Databases: Evolutionary Database Design* |
 | 著者 | Scott W. Ambler、Pramod J. Sadalage |
 | シリーズ | Addison-Wesley Signature Series（編者 Martin Fowler） |
@@ -93,7 +93,7 @@ flowchart TD
 各章の内容は次の通りです。
 
 | 章 | タイトル | 主な内容 |
-|---|---|---|
+| --- | --- | --- |
 | 第1章 | Evolutionary Database Development | 進化的データベース開発の全体像、回帰テスト、構成管理、開発者用サンドボックス |
 | 第2章 | Database Refactoring | データベースリファクタリングの定義、コードリファクタリングとの違い、分類、データベースの「臭い」 |
 | 第3章 | The Process of Database Refactoring | リファクタリングを実施する具体的な手順（メカニクス） |
@@ -150,7 +150,7 @@ flowchart LR
 ```
 
 | 臭い | 説明 |
-|---|---|
+| --- | --- |
 | マルチパーパスカラム | 1つの列が複数の目的で使われ、値の意味を判別する追加ロジックが必要になっている状態 |
 | マルチパーパステーブル | 1つのテーブルに複数種類のエンティティが混在している状態 |
 | 冗長データ | 同じ値が複数箇所に重複して保存され、不整合が起きやすい状態 |
@@ -252,7 +252,7 @@ flowchart LR
 ```
 
 | カテゴリ | 定義 |
-|---|---|
+| --- | --- |
 | 構造（Structural） | テーブル構造そのものに対する変更 |
 | データ品質（Data Quality） | 保存されている値の一貫性・妥当性を高める変更 |
 | 参照整合性（Referential Integrity） | 関連する行の存在保証や、不要になった行の適切な削除に関する変更 |
@@ -269,7 +269,7 @@ flowchart LR
 テーブルやカラムの「形」そのものを変えるリファクタリングです。本書で最もページ数が割かれているカテゴリ（第6章、本文で最も長い章）で、日常的に最もよく使う分類でもあります。
 
 | リファクタリング名 | 何をするか |
-|---|---|
+| --- | --- |
 | Drop Column | 使われなくなった列を削除する |
 | Drop Table | 使われなくなったテーブルを削除する |
 | Drop View | 使われなくなったビューを削除する |
@@ -297,7 +297,7 @@ flowchart LR
 保存されているデータの値そのものの一貫性・妥当性を高めるリファクタリングです（第7章）。
 
 | リファクタリング名 | 何をするか |
-|---|---|
+| --- | --- |
 | Add Lookup Table | 特定の値の集合を管理するためのルックアップテーブルを追加する |
 | Apply Standard Codes | バラバラな表記のコード値を標準化されたコード体系に統一する |
 | Apply Standard Type | 同じ意味の列で異なるデータ型が使われている状態を統一する |
@@ -321,7 +321,7 @@ flowchart LR
 関連する行同士の整合性を保証したり、不要な行を適切に扱ったりするためのリファクタリングです（第8章）。
 
 | リファクタリング名 | 何をするか |
-|---|---|
+| --- | --- |
 | Add Foreign Key Constraint | 他のテーブルとの関連を保証する外部キー制約を追加する |
 | Add Trigger for Calculated Column | 計算列の値を自動更新するトリガーを追加する |
 | Drop Foreign Key Constraint | 不要になった外部キー制約を削除する |
@@ -350,7 +350,7 @@ flowchart TD
 外部プログラムがデータベースとやり取りする「方法」自体を改善するリファクタリングです（第9章）。
 
 | リファクタリング名 | 何をするか |
-|---|---|
+| --- | --- |
 | Add CRUD Methods | 特定のエンティティに対するCRUD（作成・取得・更新・削除）操作をストアドプロシージャとして整備する |
 | Add Mirror Table | 別のデータベースに、既存テーブルの複製（ミラー）テーブルを作成する |
 | Add Read Method | エンティティを取得するための読み取り専用メソッドを追加する |
@@ -373,7 +373,7 @@ flowchart TD
 **メソッドリファクタリング（第10章）**は、ストアドプロシージャ・トリガー・関数といった「データベース内のコード」に対するリファクタリングです。多くはMartin Fowlerの原著『Refactoring』にあるコードリファクタリングカタログを、データベースのメソッドに適用したものです。
 
 | リファクタリング名 | 何をするか |
-|---|---|
+| --- | --- |
 | Rename Method | メソッド名をより分かりやすい名前に変更する |
 | Parameterize Method(s) | 似た処理をするメソッド群を、パラメータで振る舞いを切り替える1つのメソッドに統合する |
 | Remove Parameter | 使われなくなった引数を削除する |
@@ -386,7 +386,7 @@ flowchart TD
 **変換（Transformations、第11章）**は、リファクタリングとは異なり、データベースの意味論そのものを変える追加的な変更です。純粋なリファクタリング（振る舞いを変えない変更）と区別して扱われます。
 
 | 変換名 | 何をするか |
-|---|---|
+| --- | --- |
 | Insert Data | 新しいデータを挿入する（新機能のための初期データ投入など） |
 | Introduce New Column | 新しい情報を保持するための列を追加する |
 | Introduce New Table | 新しいエンティティを表すテーブルを追加する |
@@ -409,10 +409,10 @@ flowchart LR
     B --> C["2 SUBSTRで<br/>既存データを分割して<br/>新しい列に移行"]
     C --> D["3 アプリケーションコードを<br/>新しい列を使うように変更"]
     D --> E["4 インデックスを<br/>新しい列に張り直す"]
-    E --> F["5 古いinventory_code列を<br/>削除する"]
+    E --> F["5 移行期間を経てから<br/>別のContractスクリプトで<br/>旧inventory_code列を削除する"]
 ```
 
-このリファクタリングを実現する移行スクリプトの例（Oracle SQLの場合）は次のようになります。
+このリファクタリング（Expand〜Migrateフェーズ）を実現する移行スクリプトの例（Oracle SQLの場合）は次のようになります。
 
 ```sql
 ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
@@ -427,13 +427,13 @@ DROP INDEX uidx_inventory_code;
 
 CREATE UNIQUE INDEX uidx_inventory_identifier
   ON inventory (location_code, batch_number, serial_number);
-
-ALTER TABLE inventory DROP COLUMN product_inventory_code;
 ```
 
 このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム（マイグレーションスクリプトとして）にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。
 
-> ポイント：スキーマ変更（列追加・削除）、データ移行（SUBSTRによる分割）、アクセスコード変更（アプリ側の参照列の変更）がすべて1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。
+旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。
+
+> ポイント：スキーマ変更（列追加）、データ移行（SUBSTRによる分割）、アクセスコード変更（アプリ側の参照列の変更）が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。一方で旧列の削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
 
 ---
 
@@ -498,7 +498,7 @@ Martin FowlerとPramod Sadalageによる2016年改訂版の「Evolutionary Datab
 ## 用語集
 
 | 用語 | 説明 |
-|---|---|
+| --- | --- |
 | データベースリファクタリング | 意味論を変えずにデータベース設計を改善する小さな変更。スキーマ変更・データ移行・アクセスコード変更の3つを伴う |
 | データベースの臭い | リファクタリングが必要であることを示す設計上の兆候 |
 | 破壊的な変更（destructive change） | 既存のアクセスコードを壊す可能性がある変更 |
@@ -537,53 +537,80 @@ Martin FowlerとPramod Sadalageによる2016年改訂版の「Evolutionary Datab
 
 **著者自身・関係者による一次情報**
 
-- Pramod Sadalage 公式カタログサイト「Refactoring Databases: Evolutionary Database Design」（全リファクタリング一覧、翻訳版情報）  
+- Pramod Sadalage 公式カタログサイト「Refactoring Databases: Evolutionary Database Design」（全リファクタリング一覧、翻訳版情報）
+
   https://databaserefactoring.com/
-- Scott W. Ambler「The Agile Data (AD) Method: Catalog of Database Refactorings」  
+
+- Scott W. Ambler「The Agile Data (AD) Method: Catalog of Database Refactorings」
+
   https://agiledata.org/?p=3391
-- Scott W. Ambler「Catalog of Database Refactorings: Referential Integrity Refactorings」  
+
+- Scott W. Ambler「Catalog of Database Refactorings: Referential Integrity Refactorings」
+
   https://agiledata.org/?p=3539
-- Scott W. Ambler「Catalog of Database Refactorings: Architectural Refactorings」  
+
+- Scott W. Ambler「Catalog of Database Refactorings: Architectural Refactorings」
+
   https://agiledata.org/?p=3551
-- Scott W. Ambler「Catalog of Database Refactorings: Data Quality Refactorings」  
+
+- Scott W. Ambler「Catalog of Database Refactorings: Data Quality Refactorings」
+
   https://agiledata.org/?p=3520
 
 **Martin Fowler（国際的に著名なソフトウェアアーキテクト）による記事**
 
-- Martin Fowler, Pramod Sadalage「Evolutionary Database Design」（2016年改訂版）  
+- Martin Fowler, Pramod Sadalage「Evolutionary Database Design」（2016年改訂版）
+
   https://martinfowler.com/articles/evodb.html
-- Martin Fowler「ParallelChange」（bliki）  
+
+- Martin Fowler「ParallelChange」（bliki）
+
   https://www.martinfowler.com/bliki/ParallelChange.html
 
 **出版社・書誌情報**
 
-- O'Reilly Online Learning 書籍ページ  
+- O'Reilly Online Learning 書籍ページ
+
   https://www.oreilly.com/library/view/refactoring-databases-evolutionary/0321293533/
-- InformIt 商品ページ  
+
+- InformIt 商品ページ
+
   https://www.informit.com/store/refactoring-databases-evolutionary-database-design-9780132652117
-- Pramod J. Sadalage 著者紹介（InformIt）  
+
+- Pramod J. Sadalage 著者紹介（InformIt）
+
   https://www.informit.com/authors/bio/E26DAF98-2469-43EB-A05C-CA60B2F82A27
-- 目次詳細（eBay掲載）  
+
+- 目次詳細（eBay掲載）
+
   https://www.ebay.com/p/102876595
 
 **書評・解説記事**
 
-- ACM Queue「Review of Refactoring Databases: Evolutionary Database Design」  
-  https://queue.acm.org/detail.cfm?id=1160453
-- Red Gate Simple Talk「Refactoring Databases: The Process」（本書第3章からの抜粋記事）  
+- ACM Queue「Review of Refactoring Databases: Evolutionary Database Design」（原文は403で直接アクセス不可のためInternet Archive保存版を掲載）
+
+  https://web.archive.org/web/20240710022711/https://queue.acm.org/detail.cfm?id=1160453
+
+- Red Gate Simple Talk「Refactoring Databases: The Process」（本書第3章からの抜粋記事）
+
   https://www.red-gate.com/simple-talk/databases/sql-server/database-administration-sql-server/refactoring-databases-the-process/
-- Red Gate Simple Talk「Database Refactoring」（構造リファクタリングの解説）  
+
+- Red Gate Simple Talk「Database Refactoring」（構造リファクタリングの解説）
+
   https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/database-refactoring/
-- ApexSQL Solution Center「SQL database refactoring techniques」（データベースの臭いの解説）  
+
+- ApexSQL Solution Center「SQL database refactoring techniques」（データベースの臭いの解説）
+
   https://solutioncenter.apexsql.com/?p=3629
 
 **現代の実践とのつながり**
 
-- Pete Hodgson「Expand/Contract: making a breaking change without a big bang」  
+- Pete Hodgson「Expand/Contract: making a breaking change without a big bang」
+
   https://blog.thepete.net/blog/2023/12/05/expand/contract-making-a-breaking-change-without-a-big-bang
 
 **日本語版情報**
 
-- 「リファクタリング (データベース)」Weblio辞書（Wikipedia由来、日本語版書誌情報を含む）  
+- 「リファクタリング (データベース)」Weblio辞書（Wikipedia由来、日本語版書誌情報を含む）
+
   https://www.weblio.jp/content/Database+refactoring
-  
