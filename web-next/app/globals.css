@@ -9684,7 +9684,6 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
   }
   .diagram-wrap .mermaid svg .edgeLabel {
     overflow: visible;
-    font-size: 0.9rem !important;
     color: var(--ink) !important;
   }
   .diagram-wrap .mermaid svg .edgeLabel rect,
@@ -9808,7 +9807,6 @@ body.has-common-header .feature-driven-development-comprehensive-guide section {
 
 html:has(.building-llm-powered-applications-guide),
 body.has-common-header:has(.building-llm-powered-applications-guide) {
-  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
   background: #faf7ef;
 }
 
@@ -11603,7 +11601,6 @@ body.has-common-header .designing-multi-agent-systems-guide h4 {
 
 html:has(.ai-native-value-architect-guide),
 body.has-common-header:has(.ai-native-value-architect-guide) {
-  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
   background: #F6F7F9;
 }
 
@@ -12432,7 +12429,6 @@ body.has-common-header .generative-ai-design-patterns-guide h3 {
 
 html:has(.building-applications-with-ai-agents-guide),
 body.has-common-header:has(.building-applications-with-ai-agents-guide) {
-  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
   background: #faf6ec;
 }
 

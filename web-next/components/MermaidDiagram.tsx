@@ -116,7 +116,7 @@ export function applySvgFixups(
   svgEl.style.display = "block";
   svgEl.style.width = `${w}px`;
   svgEl.style.maxWidth = "100%";
-  svgEl.style.margin = "0 auto";
+  svgEl.style.marginInline = "auto";
   if (preserveNaturalScale && w > 0) {
     svgEl.style.minWidth = `${w}px`;
   }
