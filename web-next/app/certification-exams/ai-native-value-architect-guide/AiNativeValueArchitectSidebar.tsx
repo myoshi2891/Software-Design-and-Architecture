@@ -82,16 +82,22 @@ export default function AiNativeValueArchitectSidebar({ groups = DEFAULT_NAV_GRO
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("section.section[id]"));
     if (sections.length === 0) return;
+    const intersectingIds = new Set<string>();
     const observer = new IntersectionObserver(
       (entries) => {
-        const intersecting = entries.filter((e) => e.isIntersecting);
-        if (intersecting.length > 0) {
-          const topmost = intersecting.reduce((prev, curr) => {
-            return curr.target.getBoundingClientRect().y < prev.target.getBoundingClientRect().y
-              ? curr
-              : prev;
-          });
-          setActiveId(topmost.target.id);
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            intersectingIds.add(entry.target.id);
+          } else {
+            intersectingIds.delete(entry.target.id);
+          }
+        }
+        const visible = sections.filter((s) => intersectingIds.has(s.id));
+        if (visible.length > 0) {
+          const topmost = visible.reduce((prev, curr) =>
+            curr.getBoundingClientRect().y < prev.getBoundingClientRect().y ? curr : prev
+          );
+          setActiveId(topmost.id);
         }
       },
       { rootMargin: "-20% 0px -60% 0px", threshold: 0 }

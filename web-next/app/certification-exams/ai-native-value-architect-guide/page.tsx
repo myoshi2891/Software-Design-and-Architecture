@@ -367,7 +367,7 @@ export default function AiNativeValueArchitectPage() {
                 <tr>
                   <td>再受験ポリシー</td>
                   <td>
-                    1回目不合格後は即再受験可、2回目不合格後は10日待機、3回目不合格後は30日待機、以降は毎回30日待機
+                    2回目不合格後に初回の有料再受験が即座に可能、その再受験の不合格後は10日待機、以降は毎回30日待機
                   </td>
                 </tr>
               </tbody>
