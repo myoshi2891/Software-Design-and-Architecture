@@ -384,7 +384,6 @@ m.default.initialize({
 **各図解の文字サイズは `themeVariables.fontSize` の `"16px"`（= ルートフォント 16px = 1rem）だけで決める。**
 
 > ⚠️ `themeVariables.fontSize` に `"1rem"` 等の相対値を指定してはならない。Mermaid は内部 SVG レイアウトの採寸にこの値を絶対 px として使用するため、相対値はパースに失敗しデフォルトの大きな文字サイズにフォールバックする。
-
 > ⚠️ CSS で SVG 内部要素（`text` / `tspan` / `.nodeLabel` / `.edgeLabel`）に `font-size: ... !important` を一律強制してはならない。エッジラベルや注釈の階層関係（Mermaid が図種ごとに与える相対サイズ）が壊れ、さらに SVG がスケールされた際に viewBox 座標系と文字寸法が乖離して文字切れ・巨大化の原因になる。CSS 側は `overflow: visible` などのクリップ解除に留める。
 
 ```css
