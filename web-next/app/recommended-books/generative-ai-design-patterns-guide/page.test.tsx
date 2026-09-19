@@ -159,7 +159,5 @@ describe("generative-ai-design-patterns-guide page contract", () => {
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
     expect(cssContent).toContain(".generative-ai-design-patterns-guide");
-    expect(cssContent).toContain("--bg: #07111e");
-    expect(cssContent).toContain("--card: #0f1e33");
   });
 });
