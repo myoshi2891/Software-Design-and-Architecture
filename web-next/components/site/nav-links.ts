@@ -147,4 +147,13 @@ export const navLinks: readonly NavLink[] = [
       },
     ],
   },
+  {
+    name: "資格試験",
+    children: [
+      {
+        name: "AI-Native Value Architect 認定",
+        href: "/certification-exams/ai-native-value-architect-guide",
+      },
+    ],
+  },
 ];

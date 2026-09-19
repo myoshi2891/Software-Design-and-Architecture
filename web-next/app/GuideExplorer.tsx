@@ -4,6 +4,7 @@ import {
   IconArrowUpRight,
   IconBook2,
   IconBuildingSkyscraper,
+  IconCertificate,
   IconCompass,
   IconPalette,
   IconRepeat,
@@ -15,7 +16,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { guideCatalog } from "@/lib/guide-catalog";
 
-const categoryDetails = {
+const categoryDetails: Record<
+  string,
+  {
+    icon: typeof IconStack2;
+    label: string;
+    description: string;
+  }
+> = {
   architecture: {
     icon: IconStack2,
     label: "ARCHITECTURE",
@@ -45,6 +53,11 @@ const categoryDetails = {
     icon: IconBook2,
     label: "BOOKS & INSIGHTS",
     description: "書籍を起点に、生成 AI 時代の実践知を深める。",
+  },
+  "certification-exams": {
+    icon: IconCertificate,
+    label: "CERTIFICATION EXAMS",
+    description: "公式ドメインと出題基準に沿って、資格認定の知識を体系的に学ぶ。",
   },
 };
 

@@ -591,6 +591,9 @@
   .category[data-category="recommended-books"] {
     --cat: #e4aa8f;
   }
+  .category[data-category="certification-exams"] {
+    --cat: #e094ba;
+  }
   .category-topline {
     display: flex;
     align-items: center;
