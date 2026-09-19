@@ -421,7 +421,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </div>
             <h1>AIエージェントによるアプリケーション構築</h1>
             <p className="hero-lead">
-              初学者のためのステップバイステップガイド。O&apos;Reilly『Building Applications with AI Agents』の章構成を土台に、Anthropic・OpenAI・Google・Simon Willison氏・Dex Horthy氏・Andrej Karpathy氏らの一次情報を2026年9月9日時点までウェブ検索で確認しながら再構成しました。
+              初学者のためのステップバイステップガイド。O&apos;Reilly『Building Applications with AI
+              Agents』の章構成を土台に、Anthropic・OpenAI・Google・Simon Willison氏・Dex
+              Horthy氏・Andrej
+              Karpathy氏らの一次情報を2026年9月9日時点までウェブ検索で確認しながら再構成しました。
             </p>
             <div className="hero-meta">
               <span className="chip">
@@ -455,7 +458,11 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </h2>
             <div className="prose">
               <p>
-                このガイドは、2025年9月に刊行されたMichael Albada著『Building Applications with AI Agents』（O&apos;Reilly Media）の章構成をベースに、2026年9月9日時点までの最新動向をウェブ検索で確認しながら、AIエージェント開発を初めて学ぶ人向けに再構成した解説資料です。Anthropic・OpenAI・Google・著名な独立系開発者（Simon Willison氏、Dex Horthy氏、Andrej Karpathy氏など）による一次情報を優先的に参照し、各セクションの末尾および巻末の参考文献に出典URLを明記しています。
+                このガイドは、2025年9月に刊行されたMichael Albada著『Building Applications with AI
+                Agents』（O&apos;Reilly
+                Media）の章構成をベースに、2026年9月9日時点までの最新動向をウェブ検索で確認しながら、AIエージェント開発を初めて学ぶ人向けに再構成した解説資料です。Anthropic・OpenAI・Google・著名な独立系開発者（Simon
+                Willison氏、Dex Horthy氏、Andrej
+                Karpathy氏など）による一次情報を優先的に参照し、各セクションの末尾および巻末の参考文献に出典URLを明記しています。
               </p>
 
               <h3>
@@ -515,16 +522,19 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               </p>
               <ol>
                 <li>
-                  <strong>概念編（ステップ1〜3）</strong>: エージェントとは何か、ワークフローとの違い、基本構成要素
+                  <strong>概念編（ステップ1〜3）</strong>:
+                  エージェントとは何か、ワークフローとの違い、基本構成要素
                 </li>
                 <li>
-                  <strong>設計編（ステップ4〜8）</strong>: オーケストレーションパターン、ツール連携、メモリ、マルチエージェント化、エージェント間通信
+                  <strong>設計編（ステップ4〜8）</strong>:
+                  オーケストレーションパターン、ツール連携、メモリ、マルチエージェント化、エージェント間通信
                 </li>
                 <li>
                   <strong>実装編（ステップ9）</strong>: フレームワークの選び方
                 </li>
                 <li>
-                  <strong>運用編（ステップ10〜13）</strong>: 評価、モニタリング、セキュリティ、人間との協働
+                  <strong>運用編（ステップ10〜13）</strong>:
+                  評価、モニタリング、セキュリティ、人間との協働
                 </li>
                 <li>
                   <strong>まとめ（ステップ14）</strong>: 学習ロードマップ
@@ -546,18 +556,22 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             <div className="prose">
               <h3>1-1. 定義がようやく定まりつつある</h3>
               <p>
-                「エージェント」という言葉は、ベンダーやブログによって指す範囲がバラバラで、長年「生産的な会話を妨げる曖昧な用語」として批判されてきました。しかし、著名な独立系開発者であるSimon Willison氏は2025年9月の投稿で、業界がようやく実務的に使える定義に収束してきたと述べ、次のように定義しました。
+                「エージェント」という言葉は、ベンダーやブログによって指す範囲がバラバラで、長年「生産的な会話を妨げる曖昧な用語」として批判されてきました。しかし、著名な独立系開発者であるSimon
+                Willison氏は2025年9月の投稿で、業界がようやく実務的に使える定義に収束してきたと述べ、次のように定義しました。
               </p>
               <blockquote>
-                「LLMエージェントとは、目標を達成するためにツールをループの中で実行するシステムである」（Simon Willison氏、2025年9月）
+                「LLMエージェントとは、目標を達成するためにツールをループの中で実行するシステムである」（Simon
+                Willison氏、2025年9月）
               </blockquote>
               <p>この定義のポイントは2つです。</p>
               <ul>
                 <li>
-                  <strong>ツールをループで実行する</strong>: LLMがツール（関数呼び出し）を使い、その結果を再びLLMに読み込ませて次の行動を考えるというサイクルを繰り返します。
+                  <strong>ツールをループで実行する</strong>:
+                  LLMがツール（関数呼び出し）を使い、その結果を再びLLMに読み込ませて次の行動を考えるというサイクルを繰り返します。
                 </li>
                 <li>
-                  <strong>目標を達成するため</strong>: 無限ループではなく、明確な終了条件（ゴールへの到達、または失敗の判断）を持ちます。
+                  <strong>目標を達成するため</strong>:
+                  無限ループではなく、明確な終了条件（ゴールへの到達、または失敗の判断）を持ちます。
                 </li>
               </ul>
               <p>
@@ -577,7 +591,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Simon Willison「I think &quot;agent&quot; may finally have a widely enough agreed upon definition to be useful jargon now」／Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref5">参考文献5</a>・<a href="#ref2">2</a>・<a href="#ref3">3</a>）
+                  <b>出典</b>: Simon Willison「I think &quot;agent&quot; may finally have a widely
+                  enough agreed upon definition to be useful jargon now」／Anthropic「Building
+                  Effective Agents」／OpenAI「A Practical Guide to Building Agents」（
+                  <a href="#ref5">参考文献5</a>・<a href="#ref2">2</a>・<a href="#ref3">3</a>）
                 </div>
               </div>
             </div>
@@ -593,14 +610,17 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             <div className="prose">
               <h3>2-1. Anthropicによるアーキテクチャ上の区別</h3>
               <p>
-                Anthropicはエンジニアリングブログ「Building Effective Agents」で、AI活用システムを大きく2つに分けています。
+                Anthropicはエンジニアリングブログ「Building Effective
+                Agents」で、AI活用システムを大きく2つに分けています。
               </p>
               <ul>
                 <li>
-                  <strong>ワークフロー</strong>: LLMとツールが、あらかじめ決められたコードの経路に沿ってオーケストレーションされるシステム
+                  <strong>ワークフロー</strong>:
+                  LLMとツールが、あらかじめ決められたコードの経路に沿ってオーケストレーションされるシステム
                 </li>
                 <li>
-                  <strong>エージェント</strong>: LLM自身が自分の処理の進め方やツールの使い方を動的に決定し、制御を握るシステム
+                  <strong>エージェント</strong>:
+                  LLM自身が自分の処理の進め方やツールの使い方を動的に決定し、制御を握るシステム
                 </li>
               </ul>
 
@@ -628,7 +648,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <tbody>
                     <tr>
                       <td>プロンプトチェイニング</td>
-                      <td>タスクを順番に処理する複数ステップに分解し、各ステップの出力を次の入力にする</td>
+                      <td>
+                        タスクを順番に処理する複数ステップに分解し、各ステップの出力を次の入力にする
+                      </td>
                     </tr>
                     <tr>
                       <td>ルーティング</td>
@@ -657,13 +679,15 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <p className="diagram-caption">図3: ワークフローパターンの選び方（判断フロー）</p>
 
               <p>
-                OpenAIの「A Practical Guide to Building Agents」も同じ方向性で、システムを分割・複雑化する目安として「条件分岐が多くプロンプトが肥大化してきた」「似たようなツールが多すぎて選択を誤る」といったシグナルを挙げています。まずは最も単純な構成から始め、これらのシグナルが出てから段階的に複雑にしていくのが、両社に共通する推奨アプローチです。
+                OpenAIの「A Practical Guide to Building
+                Agents」も同じ方向性で、システムを分割・複雑化する目安として「条件分岐が多くプロンプトが肥大化してきた」「似たようなツールが多すぎて選択を誤る」といったシグナルを挙げています。まずは最も単純な構成から始め、これらのシグナルが出てから段階的に複雑にしていくのが、両社に共通する推奨アプローチです。
               </p>
 
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref2">参考文献2</a>・<a href="#ref3">3</a>）
+                  <b>出典</b>: Anthropic「Building Effective Agents」／OpenAI「A Practical Guide to
+                  Building Agents」（<a href="#ref2">参考文献2</a>・<a href="#ref3">3</a>）
                 </div>
               </div>
             </div>
@@ -678,7 +702,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </h2>
             <div className="prose">
               <p>
-                書籍『Building Applications with AI Agents』の第2章では、エージェントシステムを構成する4つの中核要素が整理されています。
+                書籍『Building Applications with AI
+                Agents』の第2章では、エージェントシステムを構成する4つの中核要素が整理されています。
               </p>
 
               <div className="mermaid-wrap">
@@ -727,7 +752,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第2章「Designing Agent Systems」（<a href="#ref1">参考文献1</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第2章「Designing Agent Systems」（<a href="#ref1">参考文献1</a>）
                 </div>
               </div>
             </div>
@@ -738,7 +764,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <IconCategory2 size={16} className="ti" /> Step 4
             </div>
             <h2>
-              <IconCategory2 size={24} className="ti" /> エージェントの種類（オーケストレーションパターン）
+              <IconCategory2 size={24} className="ti" />{" "}
+              エージェントの種類（オーケストレーションパターン）
             </h2>
             <div className="prose">
               <p>
@@ -756,7 +783,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <tbody>
                     <tr>
                       <td>Reflex Agent</td>
-                      <td>ルールや直接的なマッピングに従って即座に反応する。複雑な推論を行わない</td>
+                      <td>
+                        ルールや直接的なマッピングに従って即座に反応する。複雑な推論を行わない
+                      </td>
                       <td>単純な分類・振り分けタスク</td>
                     </tr>
                     <tr>
@@ -771,7 +800,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                     </tr>
                     <tr>
                       <td>Query-Decomposition Agent</td>
-                      <td>複雑な問いを複数のサブクエスチョンに分解し、個別に解決してから統合する</td>
+                      <td>
+                        複雑な問いを複数のサブクエスチョンに分解し、個別に解決してから統合する
+                      </td>
                       <td>複合的な調査・分析タスク</td>
                     </tr>
                     <tr>
@@ -798,24 +829,31 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>信頼性を高めるための12の原則</h3>
               <p>
-                HumanLayer社のDex Horthy氏は、100人以上の開発者への聞き取りをもとに「12-Factor Agents」というGitHubリポジトリをまとめ、Heroku社の有名な「12-factor app」にならって、信頼性の高いLLMアプリケーションを作るための工学的な原則を提示しました。特に本ステップに関連が深いのは次の2つです。
+                HumanLayer社のDex Horthy氏は、100人以上の開発者への聞き取りをもとに「12-Factor
+                Agents」というGitHubリポジトリをまとめ、Heroku社の有名な「12-factor
+                app」にならって、信頼性の高いLLMアプリケーションを作るための工学的な原則を提示しました。特に本ステップに関連が深いのは次の2つです。
               </p>
               <ul>
                 <li>
-                  <strong>制御フローを自分で持つ（Own your control flow）</strong>: フレームワークに丸投げせず、分岐やループのロジックを自分のコードで管理する
+                  <strong>制御フローを自分で持つ（Own your control flow）</strong>:
+                  フレームワークに丸投げせず、分岐やループのロジックを自分のコードで管理する
                 </li>
                 <li>
-                  <strong>小さく焦点を絞ったエージェントにする（Small, Focused Agents）</strong>: 1つのエージェントに詰め込みすぎず、責務を分割する
+                  <strong>小さく焦点を絞ったエージェントにする（Small, Focused Agents）</strong>:
+                  1つのエージェントに詰め込みすぎず、責務を分割する
                 </li>
               </ul>
               <p>
-                このリポジトリはHacker Newsで大きな話題となり、フレームワーク批判ではなく「フレームワークに取り入れてほしい設計原則集」として位置づけられています。
+                このリポジトリはHacker
+                Newsで大きな話題となり、フレームワーク批判ではなく「フレームワークに取り入れてほしい設計原則集」として位置づけられています。
               </p>
 
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第5章「Orchestration」／Dex Horthy・HumanLayer「12-Factor Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref4">4</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第5章「Orchestration」／Dex Horthy・HumanLayer「12-Factor Agents」（
+                  <a href="#ref1">参考文献1</a>・<a href="#ref4">4</a>）
                 </div>
               </div>
             </div>
@@ -836,52 +874,75 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>5-2. Model Context Protocol（MCP）とは</h3>
               <p>
-                以前は、AIモデルと外部ツール・データソースを接続するたびに、その組み合わせ専用の連携コードを書く必要がありました。これは「M個のモデル×N個のツール」の分だけ統合が必要になる、いわゆるM×N問題と呼ばれる状態です。Anthropicは2024年11月、この問題を解決するオープン標準としてModel Context Protocol（MCP）を発表しました。MCPは「AIアプリケーション向けのUSB-Cポートのようなもの」と例えられており、モデル側の実装を1つに標準化するだけで、あらゆるツール・データソースに接続できるようになります。
+                以前は、AIモデルと外部ツール・データソースを接続するたびに、その組み合わせ専用の連携コードを書く必要がありました。これは「M個のモデル×N個のツール」の分だけ統合が必要になる、いわゆるM×N問題と呼ばれる状態です。Anthropicは2024年11月、この問題を解決するオープン標準としてModel
+                Context
+                Protocol（MCP）を発表しました。MCPは「AIアプリケーション向けのUSB-Cポートのようなもの」と例えられており、モデル側の実装を1つに標準化するだけで、あらゆるツール・データソースに接続できるようになります。
               </p>
 
               <div className="mermaid-wrap">
                 <MermaidDiagram chart={DIAGRAM_5} />
               </div>
-              <p className="diagram-caption">図6: MCPのアーキテクチャ ― ホスト・クライアント・サーバー構成</p>
+              <p className="diagram-caption">
+                図6: MCPのアーキテクチャ ― ホスト・クライアント・サーバー構成
+              </p>
 
               <p>
-                MCPは2026年までにOpenAIやGoogle DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2025年12月9日時点で月間およそ9,700万回でしたが、2026年7月28日版の仕様公開時点ではTier 1 SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています。2025年12月には、Anthropicの一存で管理するのではなく、Linux Foundation傘下の「Agentic AI Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
+                MCPは2026年までにOpenAIやGoogle
+                DeepMind、Microsoftを含む業界標準として広く採用されました。ダウンロード規模は2025年12月9日時点で月間およそ9,700万回でしたが、2026年7月28日版の仕様公開時点ではTier
+                1
+                SDK（TypeScript・Python・Go・C#）合計で月間5億回近くに達しています。2025年12月には、Anthropicの一存で管理するのではなく、Linux
+                Foundation傘下の「Agentic AI
+                Foundation」に寄贈され、ベンダー中立なコミュニティ運営の標準となっています。
               </p>
 
               <h4>
-                <IconServer2 size={18} className="ti" /> 最小構成のMCPサーバーとエージェントループ（実行可能な例）
+                <IconServer2 size={18} className="ti" />{" "}
+                最小構成のMCPサーバーとエージェントループ（実行可能な例）
               </h4>
               <p>
-                上図の「MCPサーバー ファイルシステム／データベースAPI」に相当する最小のサーバーと、それを呼び出すエージェントループを示します。ツール呼び出し・終了条件・エラー処理という、エージェント実装の3要素がすべて含まれています。
+                上図の「MCPサーバー
+                ファイルシステム／データベースAPI」に相当する最小のサーバーと、それを呼び出すエージェントループを示します。ツール呼び出し・終了条件・エラー処理という、エージェント実装の3要素がすべて含まれています。
               </p>
 
               <div className="code-block">
                 <div className="code-block-head">
-                  <IconBrandPython size={18} className="ti" /> inventory_server.py ― MCPサーバー側　依存: pip install &quot;mcp[cli]&gt;=2,&lt;3&quot; &quot;pydantic&gt;=2&quot;　起動: python inventory_server.py（stdio）
+                  <IconBrandPython size={18} className="ti" /> inventory_server.py ―
+                  MCPサーバー側　依存: pip install &quot;mcp[cli]&gt;=2,&lt;3&quot;
+                  &quot;pydantic&gt;=2&quot;　起動: python inventory_server.py（stdio）
                 </div>
                 <pre dangerouslySetInnerHTML={{ __html: CODE_INVENTORY_SERVER }} />
               </div>
 
               <div className="code-block">
                 <div className="code-block-head">
-                  <IconBrandPython size={18} className="ti" /> agent_loop.py ― エージェント（MCPクライアント）側　依存: pip install &quot;mcp[cli]&gt;=2,&lt;3&quot;　実行: python agent_loop.py
+                  <IconBrandPython size={18} className="ti" /> agent_loop.py ―
+                  エージェント（MCPクライアント）側　依存: pip install
+                  &quot;mcp[cli]&gt;=2,&lt;3&quot;　実行: python agent_loop.py
                 </div>
                 <pre dangerouslySetInnerHTML={{ __html: CODE_AGENT_LOOP }} />
               </div>
 
               <p>
-                このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し → 結果の観測 → 終了判定」の繰り返しです。<code>MAX_STEPS</code> のような上限と、<code>is_error</code> を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。
+                このループが示すとおり、エージェントの制御構造は「ツール一覧の取得 → 呼び出し →
+                結果の観測 → 終了判定」の繰り返しです。<code>MAX_STEPS</code> のような上限と、
+                <code>is_error</code>{" "}
+                を観測として扱うエラー処理を最初から組み込んでおくことが、本番運用でのコスト暴走・無限ループの防止につながります。
               </p>
 
               <h3>5-3. ツールを自動生成するエージェント</h3>
               <p>
-                書籍では、基盤モデル自身が新しいツールをその場で作り出す「Foundation Models as Tool Makers」というテーマも扱われています。必要なコードをリアルタイムに生成し、それをツールとして即座に利用するというアプローチで、あらかじめ用意していないタスクへの適応力を高める手法として注目されています。
+                書籍では、基盤モデル自身が新しいツールをその場で作り出す「Foundation Models as Tool
+                Makers」というテーマも扱われています。必要なコードをリアルタイムに生成し、それをツールとして即座に利用するというアプローチで、あらかじめ用意していないタスクへの適応力を高める手法として注目されています。
               </p>
 
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第4章「Tool Use」／Anthropic「Introducing the Model Context Protocol」／WorkOS「Everything your team needs to know about MCP in 2026」／Model Context Protocol公式ドキュメント（<a href="#ref1">参考文献1</a>・<a href="#ref7">7</a>・<a href="#ref9">9</a>・<a href="#ref8">8</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第4章「Tool
+                  Use」／Anthropic「Introducing the Model Context Protocol」／WorkOS「Everything
+                  your team needs to know about MCP in 2026」／Model Context
+                  Protocol公式ドキュメント（<a href="#ref1">参考文献1</a>・<a href="#ref7">7</a>・
+                  <a href="#ref9">9</a>・<a href="#ref8">8</a>）
                 </div>
               </div>
             </div>
@@ -935,7 +996,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>6-2. RAG（検索拡張生成）の基本フロー</h3>
               <p>
-                長期記憶を実現する代表的な仕組みがRAG（Retrieval-Augmented Generation）です。ユーザーの質問に関連する情報をベクトルストアなどから検索し、それをプロンプトに追加してからLLMに回答させます。
+                長期記憶を実現する代表的な仕組みがRAG（Retrieval-Augmented
+                Generation）です。ユーザーの質問に関連する情報をベクトルストアなどから検索し、それをプロンプトに追加してからLLMに回答させます。
               </p>
               <div className="mermaid-wrap">
                 <MermaidDiagram chart={DIAGRAM_6} />
@@ -950,7 +1012,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第6章「Knowledge and Memory」（<a href="#ref1">参考文献1</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第6章「Knowledge and Memory」（<a href="#ref1">参考文献1</a>）
                 </div>
               </div>
             </div>
@@ -1023,7 +1086,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第2章・第8章／OpenAI「A Practical Guide to Building Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第2章・第8章／OpenAI「A Practical Guide to Building Agents」（
+                  <a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）
                 </div>
               </div>
             </div>
@@ -1038,7 +1103,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </h2>
             <div className="prose">
               <p>
-                マルチエージェント構成が一般的になるにつれ、「エージェントとツールをどうつなぐか」だけでなく「異なるベンダー・フレームワークで作られたエージェント同士をどうつなぐか」という課題が浮上しました。これに応えるのがGoogleが2025年4月に発表したAgent2Agent（A2A）プロトコルです。A2Aは同年6月にLinux Foundationへ寄贈され、2026年8月27日にはMCPと同じくAgentic AI Foundation（AAIF）のGrowth Stageプロジェクトとして受け入れられています。
+                マルチエージェント構成が一般的になるにつれ、「エージェントとツールをどうつなぐか」だけでなく「異なるベンダー・フレームワークで作られたエージェント同士をどうつなぐか」という課題が浮上しました。これに応えるのがGoogleが2025年4月に発表したAgent2Agent（A2A）プロトコルです。A2Aは同年6月にLinux
+                Foundationへ寄贈され、2026年8月27日にはMCPと同じくAgentic AI
+                Foundation（AAIF）のGrowth Stageプロジェクトとして受け入れられています。
               </p>
 
               <div className="table-wrap">
@@ -1069,7 +1136,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                     <tr>
                       <td>主な仕組み</td>
                       <td>ホスト・クライアント・サーバー構成、JSON-RPC 2.0</td>
-                      <td>Agent Cardによる能力の公開、タスクのライフサイクル管理、HTTP＋SSE＋JSON-RPC 2.0</td>
+                      <td>
+                        Agent Cardによる能力の公開、タスクのライフサイクル管理、HTTP＋SSE＋JSON-RPC
+                        2.0
+                      </td>
                     </tr>
                     <tr>
                       <td>たとえ</td>
@@ -1091,7 +1161,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Google Developers Blog「Google Cloud donates A2A to Linux Foundation」／A2A Protocol公式ブログ「A New Chapter for A2A: Joining the Agentic AI Foundation」（<a href="#ref10">参考文献10</a>・<a href="#ref11">11</a>）
+                  <b>出典</b>: Google Developers Blog「Google Cloud donates A2A to Linux
+                  Foundation」／A2A Protocol公式ブログ「A New Chapter for A2A: Joining the Agentic
+                  AI Foundation」（<a href="#ref10">参考文献10</a>・<a href="#ref11">11</a>）
                 </div>
               </div>
             </div>
@@ -1106,7 +1178,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </h2>
             <div className="prose">
               <p>
-                書籍の第1章では、LangGraph、AutoGen、CrewAI、OpenAI Agents SDKという4つの代表的なフレームワークが紹介されています。2026年9月時点では、これにAnthropicのClaude Agent SDKや、GoogleのAgent Development Kit（ADK）を加えた選択肢が実務でよく比較されています。
+                書籍の第1章では、LangGraph、AutoGen、CrewAI、OpenAI Agents
+                SDKという4つの代表的なフレームワークが紹介されています。2026年9月時点では、これにAnthropicのClaude
+                Agent SDKや、GoogleのAgent Development
+                Kit（ADK）を加えた選択肢が実務でよく比較されています。
               </p>
 
               <div className="table-wrap">
@@ -1175,20 +1250,31 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               </div>
 
               <h3>選び方の目安</h3>
-              <p>現場のエンジニアの声を集めた比較記事では、次のような使い分けがよく紹介されています。</p>
+              <p>
+                現場のエンジニアの声を集めた比較記事では、次のような使い分けがよく紹介されています。
+              </p>
               <ul>
                 <li>まずCrewAIのような軽量なフレームワークでロジックの妥当性を素早く検証する</li>
-                <li>本番運用に進む段階で、チェックポイントやエラーリカバリーが充実したLangGraphに移行する</li>
-                <li>OpenAI Agents SDKやClaude Agent SDKのようなベンダーSDKは、特定モデルへの依存を許容できるならシンプルさのメリットが大きい</li>
+                <li>
+                  本番運用に進む段階で、チェックポイントやエラーリカバリーが充実したLangGraphに移行する
+                </li>
+                <li>
+                  OpenAI Agents SDKやClaude Agent
+                  SDKのようなベンダーSDKは、特定モデルへの依存を許容できるならシンプルさのメリットが大きい
+                </li>
               </ul>
               <p>
-                また、AutoGenはMicrosoftの開発方針転換（より広範なMicrosoft Agent Frameworkへの統合）により、新規機能開発のペースが落ちているという指摘もあるため、新規プロジェクトで採用する場合は最新の開発状況を確認することをおすすめします。
+                また、AutoGenはMicrosoftの開発方針転換（より広範なMicrosoft Agent
+                Frameworkへの統合）により、新規機能開発のペースが落ちているという指摘もあるため、新規プロジェクトで採用する場合は最新の開発状況を確認することをおすすめします。
               </p>
 
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第1章／Firecrawl「The best open source frameworks for building AI agents in 2026」／Techsy「LangGraph vs CrewAI vs OpenAI Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref15">15</a>・<a href="#ref16">16</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第1章／Firecrawl「The best open source frameworks for building AI agents
+                  in 2026」／Techsy「LangGraph vs CrewAI vs OpenAI Agents」（
+                  <a href="#ref1">参考文献1</a>・<a href="#ref15">15</a>・<a href="#ref16">16</a>）
                 </div>
               </div>
             </div>
@@ -1215,10 +1301,12 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <p>評価は大きく2段階に分けられます。</p>
               <ul>
                 <li>
-                  <strong>コンポーネント評価</strong>: ツール選択が正しいか、計画立案が妥当か、メモリの検索精度は十分か、学習（Reflectionやファインチューニング）が効果を上げているかを個別に検証する
+                  <strong>コンポーネント評価</strong>:
+                  ツール選択が正しいか、計画立案が妥当か、メモリの検索精度は十分か、学習（Reflectionやファインチューニング）が効果を上げているかを個別に検証する
                 </li>
                 <li>
-                  <strong>全体評価（ホリスティック評価）</strong>: エンドツーエンドのシナリオでの性能、一貫性、応答間の整合性、幻覚（ハルシネーション）の発生率、想定外の入力への対応力を検証する
+                  <strong>全体評価（ホリスティック評価）</strong>:
+                  エンドツーエンドのシナリオでの性能、一貫性、応答間の整合性、幻覚（ハルシネーション）の発生率、想定外の入力への対応力を検証する
                 </li>
               </ul>
 
@@ -1230,7 +1318,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第9章「Validation and Measurement」／OpenAI「A Practical Guide to Building Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第9章「Validation and Measurement」／OpenAI「A Practical Guide to Building
+                  Agents」（<a href="#ref1">参考文献1</a>・<a href="#ref3">3</a>）
                 </div>
               </div>
             </div>
@@ -1245,7 +1335,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             </h2>
             <div className="prose">
               <h3>11-1. モニタリングスタックの選択肢</h3>
-              <p>書籍第10章では、代表的な観測性（オブザーバビリティ）スタックが紹介されています。</p>
+              <p>
+                書籍第10章では、代表的な観測性（オブザーバビリティ）スタックが紹介されています。
+              </p>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -1273,7 +1365,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                     </tr>
                     <tr>
                       <td>Langfuse</td>
-                      <td>LLMアプリケーションに特化したトレース・評価・プロンプト管理プラットフォーム</td>
+                      <td>
+                        LLMアプリケーションに特化したトレース・評価・プロンプト管理プラットフォーム
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1298,7 +1392,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第10章「Monitoring in Production」・第11章「Improvement Loops」（<a href="#ref1">参考文献1</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第10章「Monitoring in Production」・第11章「Improvement Loops」（
+                  <a href="#ref1">参考文献1</a>）
                 </div>
               </div>
             </div>
@@ -1314,17 +1410,22 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
             <div className="prose">
               <h3>12-1. Lethal Trifecta（危険な三要素の組み合わせ）</h3>
               <p>
-                セキュリティ研究者としても知られるSimon Willison氏は2025年6月、エージェントに関わる重大なリスクパターンを「Lethal Trifecta（致死的な三要素）」と名付けました。次の3つの能力が1つのエージェントに同時に揃うと、攻撃者に悪用される危険性が急激に高まるという考え方です。
+                セキュリティ研究者としても知られるSimon
+                Willison氏は2025年6月、エージェントに関わる重大なリスクパターンを「Lethal
+                Trifecta（致死的な三要素）」と名付けました。次の3つの能力が1つのエージェントに同時に揃うと、攻撃者に悪用される危険性が急激に高まるという考え方です。
               </p>
               <ul>
                 <li>
-                  <strong>プライベートデータへのアクセス</strong>: メール、社内文書、顧客情報などを読み取れる
+                  <strong>プライベートデータへのアクセス</strong>:
+                  メール、社内文書、顧客情報などを読み取れる
                 </li>
                 <li>
-                  <strong>信頼できないコンテンツの処理</strong>: 外部のWebページやメール本文など、攻撃者が操作できるかもしれない情報を読み込む
+                  <strong>信頼できないコンテンツの処理</strong>:
+                  外部のWebページやメール本文など、攻撃者が操作できるかもしれない情報を読み込む
                 </li>
                 <li>
-                  <strong>外部への通信手段</strong>: 読み取った情報を外部に送信できる（メール送信、API呼び出しなど）
+                  <strong>外部への通信手段</strong>:
+                  読み取った情報を外部に送信できる（メール送信、API呼び出しなど）
                 </li>
               </ul>
               <div className="mermaid-wrap">
@@ -1338,7 +1439,11 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>12-2. MAESTROフレームワークによる脅威モデリング</h3>
               <p>
-                書籍第12章でも触れられているように、エージェント特有のリスクには、従来のSTRIDEのようなソフトウェアセキュリティの脅威モデリング手法だけでは対応しきれない部分があります。そこでCloud Security Alliance（CSA）は2025年2月、エージェント型AI専用の脅威モデリングフレームワーク「MAESTRO（Multi-Agent Environment, Security, Threat, Risk, and Outcome）」を発表しました。MAESTROは、システムを7つのレイヤーに分解して段階的に脅威を洗い出す手法で、代表的なレイヤーの切り口は次の通りです。
+                書籍第12章でも触れられているように、エージェント特有のリスクには、従来のSTRIDEのようなソフトウェアセキュリティの脅威モデリング手法だけでは対応しきれない部分があります。そこでCloud
+                Security
+                Alliance（CSA）は2025年2月、エージェント型AI専用の脅威モデリングフレームワーク「MAESTRO（Multi-Agent
+                Environment, Security, Threat, Risk, and
+                Outcome）」を発表しました。MAESTROは、システムを7つのレイヤーに分解して段階的に脅威を洗い出す手法で、代表的なレイヤーの切り口は次の通りです。
               </p>
               <div className="table-wrap">
                 <table>
@@ -1382,29 +1487,41 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               </div>
 
               <h3>12-3. 実践的な防御策</h3>
-              <p>書籍とここまでの出典を踏まえると、実務では次のような対策の組み合わせが有効です。</p>
+              <p>
+                書籍とここまでの出典を踏まえると、実務では次のような対策の組み合わせが有効です。
+              </p>
               <ul>
                 <li>
-                  <strong>最小権限の原則</strong>: エージェントに与えるツールの権限を必要最小限にとどめる
+                  <strong>最小権限の原則</strong>:
+                  エージェントに与えるツールの権限を必要最小限にとどめる
                 </li>
                 <li>
-                  <strong>人間による承認</strong>: リスクの高い操作（送金、外部送信、削除など）は人間の承認を経てから実行する（12-Factor Agentsの「ツール呼び出しで人間に連絡する」という原則とも一致）
+                  <strong>人間による承認</strong>:
+                  リスクの高い操作（送金、外部送信、削除など）は人間の承認を経てから実行する（12-Factor
+                  Agentsの「ツール呼び出しで人間に連絡する」という原則とも一致）
                 </li>
                 <li>
                   <strong>サンドボックス化</strong>: 実行環境を隔離し、被害範囲を限定する
                 </li>
                 <li>
-                  <strong>継続的なレッドチーミング</strong>: 実際に攻撃を試みることで、想定していなかった穴を発見する
+                  <strong>継続的なレッドチーミング</strong>:
+                  実際に攻撃を試みることで、想定していなかった穴を発見する
                 </li>
                 <li>
-                  <strong>監視とロギング</strong>: 監査に必要な最小限のメタデータ（タイムスタンプ、実行主体、ツール名、成否、レイテンシ、リクエストID）のみを記録し、異常を検知できるようにする。プロンプト本文・ツール引数・ツール実行結果・PII・アクセストークン等の秘密情報はマスキングまたは除外する。ペイロードを保存する場合は、対象を障害調査に必要なエラー時のツール引数だけに限定し、値はハッシュ化または上位数十文字への切り詰めを行う。ログの閲覧はセキュリティ担当ロールに限定し（アクセス制御）、保存期間を定めて（例: 監査ログ1年、デバッグログ30日）期限到達後は自動削除する
+                  <strong>監視とロギング</strong>:
+                  監査に必要な最小限のメタデータ（タイムスタンプ、実行主体、ツール名、成否、レイテンシ、リクエストID）のみを記録し、異常を検知できるようにする。プロンプト本文・ツール引数・ツール実行結果・PII・アクセストークン等の秘密情報はマスキングまたは除外する。ペイロードを保存する場合は、対象を障害調査に必要なエラー時のツール引数だけに限定し、値はハッシュ化または上位数十文字への切り詰めを行う。ログの閲覧はセキュリティ担当ロールに限定し（アクセス制御）、保存期間を定めて（例:
+                  監査ログ1年、デバッグログ30日）期限到達後は自動削除する
                 </li>
               </ul>
 
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第12章「Protecting Agentic Systems」／Simon Willison「The lethal trifecta for AI agents」／Cloud Security Alliance「Agentic AI Threat Modeling Framework: MAESTRO」（<a href="#ref1">参考文献1</a>・<a href="#ref6">6</a>・<a href="#ref12">12</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI
+                  Agents』第12章「Protecting Agentic Systems」／Simon Willison「The lethal trifecta
+                  for AI agents」／Cloud Security Alliance「Agentic AI Threat Modeling Framework:
+                  MAESTRO」（<a href="#ref1">参考文献1</a>・<a href="#ref6">6</a>・
+                  <a href="#ref12">12</a>）
                 </div>
               </div>
             </div>
@@ -1432,7 +1549,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>13-2. 説明責任は人間に残る</h3>
               <p>
-                Simon Willison氏は、人間には「説明責任（accountability）」という、AIエージェントに肩代わりさせられない要素があると指摘しています。エージェントが下した判断であっても、それを許可し、監督し、結果に責任を持つのは最終的に人間であるという前提は、エスカレーション設計（エージェントがどのタイミングで人間に判断を委ねるか）やガバナンス設計の基本になります。
+                Simon
+                Willison氏は、人間には「説明責任（accountability）」という、AIエージェントに肩代わりさせられない要素があると指摘しています。エージェントが下した判断であっても、それを許可し、監督し、結果に責任を持つのは最終的に人間であるという前提は、エスカレーション設計（エージェントがどのタイミングで人間に判断を委ねるか）やガバナンス設計の基本になります。
               </p>
 
               <h3>13-3. エスカレーション設計のポイント</h3>
@@ -1440,7 +1558,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                 書籍では、信頼の構築を「ライフサイクル」として捉え、次のような観点を継続的に見直すことが推奨されています。
               </p>
               <ul>
-                <li>エージェントがどのような場面で自信度の低さを表明し、人間に確認を求めるべきか</li>
+                <li>
+                  エージェントがどのような場面で自信度の低さを表明し、人間に確認を求めるべきか
+                </li>
                 <li>
                   失敗したときに、どのようにユーザーへ丁寧に伝え、次の一手を提示するか（グレースフルデグラデーション）
                 </li>
@@ -1450,7 +1570,11 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第3章「User Experience Design for Agentic Systems」・第13章「Human-Agent Collaboration」／Simon Willison「I think &quot;agent&quot; may finally have a widely enough agreed upon definition」（<a href="#ref1">参考文献1</a>・<a href="#ref5">5</a>）
+                  <b>出典</b>: Michael Albada『Building Applications with AI Agents』第3章「User
+                  Experience Design for Agentic Systems」・第13章「Human-Agent
+                  Collaboration」／Simon Willison「I think &quot;agent&quot; may finally have a
+                  widely enough agreed upon definition」（<a href="#ref1">参考文献1</a>・
+                  <a href="#ref5">5</a>）
                 </div>
               </div>
             </div>
@@ -1531,7 +1655,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
 
               <h3>14-2. 「エージェンティック・エンジニアリング」という新しい職能</h3>
               <p>
-                元OpenAI共同創業者のAndrej Karpathy氏は、2026年4月のSequoia Capital主催イベント「AI Ascent 2026」で、自身が2025年に提唱した「バイブコーディング（vibe coding、AIの出力を深く検証せずに受け入れる開発スタイル）」の先にある、より規律だったスタイルとして「エージェンティック・エンジニアリング（agentic engineering）」という概念を提示しました。Karpathy氏はこれを、仕様設計、差分レビュー、評価ループの構築、権限管理など、複数の自律的なエージェントを協調させながらプロフェッショナルな品質を維持する実践知だと説明しています。バイブコーディングが「誰でも試作できる」という参入障壁の低さ（床）を引き下げる一方、エージェンティック・エンジニアリングは「専門家が到達できる品質の天井」を引き上げるものだと位置づけられており、本ガイドで扱ってきた評価・監視・セキュリティ・人間との協働といったテーマは、まさにこの「天井」を支える実務スキルに当たります。
+                元OpenAI共同創業者のAndrej Karpathy氏は、2026年4月のSequoia Capital主催イベント「AI
+                Ascent 2026」で、自身が2025年に提唱した「バイブコーディング（vibe
+                coding、AIの出力を深く検証せずに受け入れる開発スタイル）」の先にある、より規律だったスタイルとして「エージェンティック・エンジニアリング（agentic
+                engineering）」という概念を提示しました。Karpathy氏はこれを、仕様設計、差分レビュー、評価ループの構築、権限管理など、複数の自律的なエージェントを協調させながらプロフェッショナルな品質を維持する実践知だと説明しています。バイブコーディングが「誰でも試作できる」という参入障壁の低さ（床）を引き下げる一方、エージェンティック・エンジニアリングは「専門家が到達できる品質の天井」を引き上げるものだと位置づけられており、本ガイドで扱ってきた評価・監視・セキュリティ・人間との協働といったテーマは、まさにこの「天井」を支える実務スキルに当たります。
               </p>
 
               <h3>14-3. まとめチェックリスト</h3>
@@ -1544,7 +1671,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               <div className="source-note">
                 <IconLink size={18} className="ti" />
                 <div>
-                  <b>出典</b>: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（<a href="#ref13">参考文献13</a>・<a href="#ref14">14</a>）
+                  <b>出典</b>: Andrej Karpathy「Sequoia Ascent 2026 summary」／Sequoia
+                  Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」（
+                  <a href="#ref13">参考文献13</a>・<a href="#ref14">14</a>）
                 </div>
               </div>
             </div>
@@ -1571,27 +1700,39 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                     </tr>
                     <tr>
                       <td>MCP（Model Context Protocol）</td>
-                      <td>AIモデルと外部ツール・データソースを標準化された方法で接続するオープンプロトコル</td>
+                      <td>
+                        AIモデルと外部ツール・データソースを標準化された方法で接続するオープンプロトコル
+                      </td>
                     </tr>
                     <tr>
                       <td>A2A（Agent2Agent）</td>
-                      <td>異なるベンダー・フレームワークのエージェント同士が発見・通信・タスク委譲を行うためのオープンプロトコル</td>
+                      <td>
+                        異なるベンダー・フレームワークのエージェント同士が発見・通信・タスク委譲を行うためのオープンプロトコル
+                      </td>
                     </tr>
                     <tr>
                       <td>RAG（Retrieval-Augmented Generation）</td>
-                      <td>外部の知識を検索してプロンプトに追加し、それをもとにLLMが回答を生成する手法</td>
+                      <td>
+                        外部の知識を検索してプロンプトに追加し、それをもとにLLMが回答を生成する手法
+                      </td>
                     </tr>
                     <tr>
                       <td>ReAct</td>
-                      <td>「思考（Reasoning）」と「行動（Acting）」を交互に繰り返すエージェントのループ構造</td>
+                      <td>
+                        「思考（Reasoning）」と「行動（Acting）」を交互に繰り返すエージェントのループ構造
+                      </td>
                     </tr>
                     <tr>
                       <td>オーケストレーター・ワーカー</td>
-                      <td>中央のエージェントがタスクを分解し、複数のワーカーエージェントに割り振るパターン</td>
+                      <td>
+                        中央のエージェントがタスクを分解し、複数のワーカーエージェントに割り振るパターン
+                      </td>
                     </tr>
                     <tr>
                       <td>Lethal Trifecta</td>
-                      <td>プライベートデータへのアクセス、信頼できないコンテンツの処理、外部通信手段の3つが揃う危険な状態</td>
+                      <td>
+                        プライベートデータへのアクセス、信頼できないコンテンツの処理、外部通信手段の3つが揃う危険な状態
+                      </td>
                     </tr>
                     <tr>
                       <td>MAESTRO</td>
@@ -1607,7 +1748,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                     </tr>
                     <tr>
                       <td>ベクトルストア</td>
-                      <td>テキストなどを埋め込みベクトルに変換して保存し、意味的な類似検索を可能にするデータベース</td>
+                      <td>
+                        テキストなどを埋め込みベクトルに変換して保存し、意味的な類似検索を可能にするデータベース
+                      </td>
                     </tr>
                     <tr>
                       <td>ナレッジグラフ</td>
@@ -1658,7 +1801,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                 <li className="ref-card" id="ref3">
                   <span className="ref-num">3</span>
                   <div className="ref-body">
-                    <div className="ref-title">OpenAI「A Practical Guide to Building Agents」(PDF)</div>
+                    <div className="ref-title">
+                      OpenAI「A Practical Guide to Building Agents」(PDF)
+                    </div>
                     <Ext
                       className="ref-url"
                       href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf"
@@ -1680,7 +1825,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">5</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Simon Willison「I think &apos;agent&apos; may finally have a widely enough agreed upon definition to be useful jargon now」
+                      Simon Willison「I think &apos;agent&apos; may finally have a widely enough
+                      agreed upon definition to be useful jargon now」
                     </div>
                     <div className="ref-meta">2025年9月18日</div>
                     <Ext className="ref-url" href="https://simonwillison.net/2025/Sep/18/agents/">
@@ -1692,7 +1838,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">6</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Simon Willison「The lethal trifecta for AI agents: private data, untrusted content, and external communication」
+                      Simon Willison「The lethal trifecta for AI agents: private data, untrusted
+                      content, and external communication」
                     </div>
                     <div className="ref-meta">2025年6月16日</div>
                     <Ext
@@ -1706,7 +1853,9 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                 <li className="ref-card" id="ref7">
                   <span className="ref-num">7</span>
                   <div className="ref-body">
-                    <div className="ref-title">Anthropic「Introducing the Model Context Protocol」</div>
+                    <div className="ref-title">
+                      Anthropic「Introducing the Model Context Protocol」
+                    </div>
                     <div className="ref-meta">2024年11月</div>
                     <Ext
                       className="ref-url"
@@ -1776,7 +1925,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">12</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Cloud Security Alliance（Ken Huang氏執筆）「Agentic AI Threat Modeling Framework: MAESTRO」
+                      Cloud Security Alliance（Ken Huang氏執筆）「Agentic AI Threat Modeling
+                      Framework: MAESTRO」
                     </div>
                     <div className="ref-meta">2025年2月6日</div>
                     <Ext
@@ -1791,7 +1941,10 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">13</span>
                   <div className="ref-body">
                     <div className="ref-title">Andrej Karpathy「Sequoia Ascent 2026 summary」</div>
-                    <Ext className="ref-url" href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">
+                    <Ext
+                      className="ref-url"
+                      href="https://karpathy.bearblog.dev/sequoia-ascent-2026/"
+                    >
                       https://karpathy.bearblog.dev/sequoia-ascent-2026/
                     </Ext>
                   </div>
@@ -1800,7 +1953,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">14</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic Engineering」(YouTube)
+                      Sequoia Capital「Andrej Karpathy: From Vibe Coding to Agentic
+                      Engineering」(YouTube)
                     </div>
                     <div className="ref-meta">2026年4月</div>
                     <Ext className="ref-url" href="https://www.youtube.com/watch?v=96jN2OCOfLs">
@@ -1839,9 +1993,14 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                 <li className="ref-card" id="ref17">
                   <span className="ref-num">17</span>
                   <div className="ref-body">
-                    <div className="ref-title">Model Context Protocol Blog「The 2026-07-28 Specification」</div>
+                    <div className="ref-title">
+                      Model Context Protocol Blog「The 2026-07-28 Specification」
+                    </div>
                     <div className="ref-meta">2026年7月28日</div>
-                    <Ext className="ref-url" href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">
+                    <Ext
+                      className="ref-url"
+                      href="https://blog.modelcontextprotocol.io/posts/2026-07-28/"
+                    >
                       https://blog.modelcontextprotocol.io/posts/2026-07-28/
                     </Ext>
                   </div>
@@ -1850,7 +2009,8 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
                   <span className="ref-num">18</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Model Context Protocol Blog「MCP joins the Agentic AI Foundation」（月間約9,700万ダウンロードの出典）
+                      Model Context Protocol Blog「MCP joins the Agentic AI
+                      Foundation」（月間約9,700万ダウンロードの出典）
                     </div>
                     <div className="ref-meta">2025年12月9日</div>
                     <Ext

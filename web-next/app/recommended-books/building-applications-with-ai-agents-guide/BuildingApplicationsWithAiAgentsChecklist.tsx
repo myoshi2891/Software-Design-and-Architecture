@@ -34,11 +34,7 @@ export default function BuildingApplicationsWithAiAgentsChecklist({
           return (
             <li key={item.id} className={isDone ? "done" : ""}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => handleToggle(item.id)}
-                />
+                <input type="checkbox" checked={isDone} onChange={() => handleToggle(item.id)} />
                 <span className="checklist-text">{item.text}</span>
               </label>
             </li>

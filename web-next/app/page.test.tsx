@@ -80,8 +80,8 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
-    expect(text).toContain("27");
-    expect(text).toContain("19");
+    expect(text).toContain("28");
+    expect(text).toContain("20");
     expect(text).toContain("8");
   });
 
@@ -103,7 +103,7 @@ describe("HomePage (guide index)", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 本");
     fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
-    expect(container.querySelectorAll(".guide-row")).toHaveLength(27);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(28);
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
   });

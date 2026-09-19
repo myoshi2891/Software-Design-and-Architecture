@@ -3,9 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
-  default: ({ chart }: { chart: string }) => (
-    <div className="mermaid" data-chart={chart} />
-  ),
+  default: ({ chart }: { chart: string }) => <div className="mermaid" data-chart={chart} />,
 }));
 
 import Page from "./page";

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  IconBook,
-  IconInfoCircle,
-  IconLink,
-  IconMenu2,
-  IconRobot,
-} from "@tabler/icons-react";
+import { IconBook, IconInfoCircle, IconLink, IconMenu2, IconRobot } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 export type NavItem = {
@@ -119,29 +113,21 @@ export default function BuildingApplicationsWithAiAgentsSidebar({
         </div>
       </div>
 
-      <div
-        className={`scrim ${isOpen ? "show" : ""}`}
-        id="scrim"
-        onClick={closeMenu}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") closeMenu();
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label="メニューを閉じる"
-      />
+      {isOpen && (
+        <button
+          type="button"
+          className="scrim show"
+          id="scrim"
+          onClick={closeMenu}
+          aria-label="メニューを閉じる"
+        />
+      )}
 
-      <nav
-        className={`sidebar ${isOpen ? "open" : ""}`}
-        id="sidebar"
-        aria-label="ガイドの目次"
-      >
+      <nav className={`sidebar ${isOpen ? "open" : ""}`} id="sidebar" aria-label="ガイドの目次">
         <div className="brand">
           <IconRobot size={24} className="ti" /> AIエージェント構築ガイド
         </div>
-        <div className="brand-sub">
-          Building Applications with AI Agents 初学者ガイド
-        </div>
+        <div className="brand-sub">Building Applications with AI Agents 初学者ガイド</div>
 
         {groups.map((group) => (
           <div key={group.title}>
