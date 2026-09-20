@@ -133,6 +133,7 @@ export default function AiNativeValueArchitectSidebar({ groups = DEFAULT_NAV_GRO
                     key={item.id}
                     href={`#${item.id}`}
                     className={activeId === item.id ? "active" : ""}
+                    aria-current={activeId === item.id ? "location" : undefined}
                   >
                     {Icon ? <Icon size={18} /> : null}
                     <span>{item.label}</span>
