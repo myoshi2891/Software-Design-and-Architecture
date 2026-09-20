@@ -202,6 +202,13 @@ ALTER TABLE customer RENAME TO client;
 
 -- 移行期間中、旧名customerでアクセスするコードのために
 -- ビューを用意しておく
+-- 注：これは読み取り専用の例であり、旧customerが持っていた全列を
+--     公開しているわけではない。旧コードが参照する列は必ずSELECT句に
+--     含めること。旧コードがcustomerへ書き込む場合、単純な列のサブセットを
+--     選択しただけのビューは各DBMSの「更新可能ビュー」の条件（単一テーブル
+--     由来、集約や重複除去を含まない等）を満たさない限り書き込み不可となる
+--     ため、対象DBMSの更新可能ビュー規則を確認するか、INSTEAD OFトリガーで
+--     client側への書き込みを代行する実装を追加する必要がある。
 CREATE VIEW customer AS
 SELECT id, first_name, last_name FROM client;
 ```
