@@ -428,7 +428,7 @@ ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
 
 UPDATE inventory SET location_code = SUBSTR(product_inventory_code,1,6);
 UPDATE inventory SET batch_number = SUBSTR(product_inventory_code,7,6);
-UPDATE inventory SET serial_number = SUBSTR(product_inventory_code,11,10);
+UPDATE inventory SET serial_number = SUBSTR(product_inventory_code,13,10);
 
 DROP INDEX uidx_inventory_code;
 
@@ -465,6 +465,8 @@ ALTER TABLE customer RENAME TO client;
 CREATE VIEW customer AS
 SELECT id, first_name, last_name FROM client;
 ```
+
+このビューも、Step 6で触れた「更新可能ビュー」の条件（単一テーブル由来である、集約や重複除去を含まないなど）を満たす場合に限り書き込みが可能であり、読み書きの互換性を無条件に保証するものではありません。条件を満たさないDBMS・列構成では、Step 6と同様にINSTEAD OFトリガーを追加してclient側への書き込みを代行する実装が必要です。
 
 この移行期間の長さは組織によって様々です。Martin FowlerとPramod Sadalageの記事によれば、数ヶ月で終わる場合もあれば、大規模な組織では数年かかることもあると述べられています。重要なのは「移行期間をどれだけ短くできるか」ではなく、「移行期間中も新旧両方が安全に動き続けること」を保証する設計です。
 
