@@ -416,4 +416,4 @@ flowchart TD
 14. [Database Design for Mere Mortals - Amazon.com（第3版）](https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493) ― 著者略歴（Microsoft Visual Studio グループでのプログラムマネージャー経験など）を掲載
 15. [Normalization in Database Design: 1NF, 2NF, 3NF Explained with Examples - relationaldbdesign.com](https://www.relationaldbdesign.com/database-analysis/module3/intro-normal-forms.php) ― 本書と併読できる正規化理論の補足教材
 16. [Database Design for Mere Mortals - Summary excerpt（flylib.com）](https://flylib.com/books/en/1.199.1.38/1/) ― 著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋
-17. [Summit '97: Normalization Is a Nice Theory - David Adams & Dan Beckett](http://www.island-data.com/downloads/papers/normalization.pdf) ― 本書の第3正規形の説明が実務コミュニティでどのように参照されてきたかを示す資料
+17. [Summit '97: Normalization Is a Nice Theory - David Adams & Dan Beckett](https://web.archive.org/web/20240415161702/http://island-data.com/downloads/papers/normalization.pdf) ― 本書の第3正規形の説明が実務コミュニティでどのように参照されてきたかを示す資料

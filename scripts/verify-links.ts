@@ -133,11 +133,17 @@ if (fs.existsSync(configPath)) {
  * CI ランナーの IP から並列アクセスすると Read the Docs 等が 429 を返すため、
  * 恒久的なリンク切れ (404 等) と区別して扱う必要がある。
  *
- * @param status - HTTP ステータスコード
+ * status 0 は curl のタイムアウト・接続失敗を表す内部表現で、
+ * GitHub 等の一時的な応答遅延による偽陽性の主因となるため常に再試行する。
+ * 5xx も同様にサーバー側の一時障害とみなす。
+ *
+ * @param status - HTTP ステータスコード（0 は curl のタイムアウト・接続失敗）
  * @param retryOn429 - 429 を再試行対象とするか
  * @returns 再試行すべきなら true
  */
 export function isRetryableStatus(status: number, retryOn429: boolean): boolean {
+  if (status === 0) return true;
+  if (status >= 500 && status < 600) return true;
   return retryOn429 && status === 429;
 }
 

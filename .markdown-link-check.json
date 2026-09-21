@@ -245,6 +245,12 @@
     },
     {
       "pattern": "^https://openlamptech\\.substack\\.com"
+    },
+    {
+      "pattern": "^https://queue\\.acm\\.org"
+    },
+    {
+      "pattern": "^https://(www\\.)?bookshop\\.org"
     }
   ],
   "replacementPatterns": [],
