@@ -123,6 +123,18 @@ describe('isRetryableStatus', () => {
     expect(isRetryableStatus(404, true)).toBe(false);
     expect(isRetryableStatus(200, true)).toBe(false);
   });
+
+  // curl のタイムアウト・接続失敗は status 0 で表現される。
+  // GitHub 等の応答遅延による偽陽性を避けるため、retryOn429 の設定に依らず再試行する
+  test('status 0（タイムアウト・接続失敗）は再試行対象', () => {
+    expect(isRetryableStatus(0, true)).toBe(true);
+    expect(isRetryableStatus(0, false)).toBe(true);
+  });
+
+  test('5xx のような一時的サーバーエラーは再試行対象', () => {
+    expect(isRetryableStatus(502, false)).toBe(true);
+    expect(isRetryableStatus(503, false)).toBe(true);
+  });
 });
 
 describe('retryDelaySeconds', () => {
