@@ -369,7 +369,7 @@ tbody tr:hover { background: var(--paper-alt); }
 <div class="layout">
   <header class="mobile-bar">
     <span class="brand">DB設計 Mere Mortals</span>
-    <button id="menu-toggle" aria-label="メニューを開く"><i class="ti ti-menu-2"></i></button>
+    <button id="menu-toggle" aria-label="メニューを開く" aria-controls="sidebar" aria-expanded="false"><i class="ti ti-menu-2"></i></button>
   </header>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -1322,13 +1322,25 @@ function setupMobileMenu() {
   const btn = document.getElementById('menu-toggle');
   const sidebar = document.getElementById('sidebar');
   const scrim = document.getElementById('scrim');
-  function open() { sidebar.classList.add('open'); scrim.classList.add('show'); }
-  function close() { sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+  // サイドバーは 980px 以下でのみ画面外へ退避する。デスクトップ幅では常時表示なので
+  // inert にしてはならず、モバイル幅かつ閉状態のときだけキーボード操作から除外する。
+  const mobileQuery = window.matchMedia('(max-width: 980px)');
+  function setState(isOpen) {
+    sidebar.classList.toggle('open', isOpen);
+    scrim.classList.toggle('show', isOpen);
+    btn.setAttribute('aria-expanded', String(isOpen));
+    sidebar.inert = mobileQuery.matches && !isOpen;
+  }
+  function open() { setState(true); }
+  function close() { setState(false); }
   btn.addEventListener('click', () => {
     sidebar.classList.contains('open') ? close() : open();
   });
   scrim.addEventListener('click', close);
   sidebar.querySelectorAll('.nav-a').forEach(a => a.addEventListener('click', close));
+  // ビューポート幅が変わったら inert の要否を再評価する
+  mobileQuery.addEventListener('change', () => setState(sidebar.classList.contains('open')));
+  setState(false);
 }
 
 /* ---------- Checklist ---------- */
