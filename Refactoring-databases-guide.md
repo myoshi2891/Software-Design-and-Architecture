@@ -439,13 +439,23 @@ BEGIN
      OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL
          AND :NEW.location_code IS NULL) THEN
     -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
+    -- NULL は「値なし」として3列そろって NULL に落とす
     :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
     :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
     :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
-  ELSIF :NEW.location_code IS NOT NULL
-        AND :NEW.batch_number IS NOT NULL
-        AND :NEW.serial_number IS NOT NULL THEN
-    -- 新アプリが3列を書いた場合 → 旧列へ連結して反映
+  ELSIF :NEW.location_code IS NULL
+        AND :NEW.batch_number IS NULL
+        AND :NEW.serial_number IS NULL THEN
+    -- 新アプリが3列すべてを NULL にした場合 → 旧列も NULL にそろえる
+    :NEW.product_inventory_code := NULL;
+  ELSIF :NEW.location_code IS NULL
+        OR :NEW.batch_number IS NULL
+        OR :NEW.serial_number IS NULL THEN
+    -- 部分的な書き込みは旧列との乖離を生むため、黙って放置せず拒否する
+    RAISE_APPLICATION_ERROR(-20001,
+      'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+  ELSE
+    -- 新アプリが3列すべてを書いた場合 → 旧列へ連結して反映
     :NEW.product_inventory_code := RPAD(:NEW.location_code, 6)
                                 || RPAD(:NEW.batch_number, 6)
                                 || RPAD(:NEW.serial_number, 10);
@@ -460,10 +470,13 @@ UPDATE inventory
        serial_number = SUBSTR(product_inventory_code,13,10);
 
 -- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
+-- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
+-- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する
 SELECT COUNT(*) AS mismatch_count
   FROM inventory
- WHERE product_inventory_code
-       <> RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10);
+ WHERE DECODE(product_inventory_code,
+              RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
+              0, 1) = 1;
 
 DROP INDEX uidx_inventory_code;
 
