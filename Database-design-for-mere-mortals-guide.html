@@ -414,7 +414,7 @@ tbody tr:hover { background: var(--paper-alt); }
 
     </nav>
   </aside>
-  <div class="main">
+  <main class="main">
     
 <section class="hero">
   <span class="hero-kicker"><i class="ti ti-book"></i>初学者向け解説ガイド</span>
@@ -514,7 +514,7 @@ tbody tr:hover { background: var(--paper-alt); }
   <h2>学習ロードマップ</h2>
   <div class="diagram-wrap">
   <div class="diagram-canvas" data-diagram-id="diag-2"><div class="diagram-loading">図を描画しています…</div></div>
-  <div class="diagram-caption">Step0からStep15、そして次のステップへの学習の流れ</div>
+  <div class="diagram-caption">Step0からStep16、そして次のステップへの学習の流れ</div>
 </div>
 </section>
 
@@ -847,7 +847,7 @@ tbody tr:hover { background: var(--paper-alt); }
   <h2>学習チェックリスト</h2>
   <div class="checklist-box">
     <div class="checklist-progress">
-      <span id="checklist-count">0 / 11 完了</span>
+      <span id="checklist-count" role="status" aria-live="polite" aria-atomic="true">0 / 11 完了</span>
       <div class="checklist-bar"><div class="checklist-bar-fill" id="checklist-fill"></div></div>
     </div>
     <div class="check-item">
@@ -1053,7 +1053,7 @@ tbody tr:hover { background: var(--paper-alt); }
   <p>本ガイドは公開情報をもとに作成した解説資料です。原著の正確な内容については、出版元またはO'Reilly Online Learning等の一次情報を参照してください。</p>
 </footer>
 
-  </div>
+  </main>
 </div>
 <script>
 
@@ -1112,7 +1112,8 @@ flowchart TD
     S4 --> S5["Step5から13 設計プロセスの実践"]
     S5 --> S14["Step14 悪いデザインを避ける"]
     S14 --> S15["Step15 例外を理解する"]
-    S15 --> Next["次のステップ SQLと発展的トピックへ"]
+    S15 --> S16["Step16 結び"]
+    S16 --> Next["次のステップ SQLと発展的トピックへ"]
     ${CLASS_DEFS}
     class S0 hub;
     class Next done;
@@ -1239,24 +1240,41 @@ flowchart TD
 };
 
 async function renderAllDiagrams() {
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'base',
-    themeVariables: {
-      fontFamily: '"Noto Sans JP", sans-serif',
-      fontSize: '16px',
-      primaryColor: '#eef0fb',
-      primaryBorderColor: '#3f51b5',
-      primaryTextColor: '#2b2620',
-      lineColor: '#8a8272',
-      secondaryColor: '#faf0d4',
-      tertiaryColor: '#ffffff'
-    },
-    flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis' },
-    securityLevel: 'loose'
-  });
-
   const placeholders = document.querySelectorAll('[data-diagram-id]');
+  function markAllFailed() {
+    for (const el of placeholders) {
+      el.innerHTML = '<div class="diagram-loading">図の読み込みに失敗しました</div>';
+    }
+  }
+  // CDN 未到達時は mermaid が未定義になる。ローディング表示のまま放置しない。
+  if (typeof window.mermaid === 'undefined') {
+    console.error('mermaid is not available');
+    markAllFailed();
+    return;
+  }
+  try {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: '"Noto Sans JP", sans-serif',
+        fontSize: '16px',
+        primaryColor: '#eef0fb',
+        primaryBorderColor: '#3f51b5',
+        primaryTextColor: '#2b2620',
+        lineColor: '#8a8272',
+        secondaryColor: '#faf0d4',
+        tertiaryColor: '#ffffff'
+      },
+      flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis' },
+      securityLevel: 'loose'
+    });
+  } catch (e) {
+    console.error('mermaid initialize error', e);
+    markAllFailed();
+    return;
+  }
+
   for (const el of placeholders) {
     const id = el.getAttribute('data-diagram-id');
     const src = DIAGRAMS[id];
@@ -1308,8 +1326,14 @@ function setupSidebarHighlight() {
       const rect = t.el.getBoundingClientRect();
       if (rect.top <= threshold) current = t;
     }
-    navLinks.forEach(a => a.classList.remove('active'));
-    if (current) current.a.classList.add('active');
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      a.removeAttribute('aria-current');
+    });
+    if (current) {
+      current.a.classList.add('active');
+      current.a.setAttribute('aria-current', 'location');
+    }
   }
   window.addEventListener('scroll', () => {
     if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
@@ -1338,8 +1362,9 @@ function setupMobileMenu() {
   });
   scrim.addEventListener('click', close);
   sidebar.querySelectorAll('.nav-a').forEach(a => a.addEventListener('click', close));
-  // ビューポート幅が変わったら inert の要否を再評価する
-  mobileQuery.addEventListener('change', () => setState(sidebar.classList.contains('open')));
+  // ビューポート幅が変わったら閉状態へ戻す。.scrim.show はメディアクエリ外で
+  // 定義されているため、開いたまま広げるとデスクトップ幅で全画面オーバーレイが残る。
+  mobileQuery.addEventListener('change', close);
   setState(false);
 }
 
