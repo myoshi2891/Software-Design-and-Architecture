@@ -1007,13 +1007,47 @@ pre.mermaid{
     <pre><code id="code-step15" data-lang="sql" class="language-sql"></code></pre>
   </div>
   <script type="text/plain" data-code-for="code-step15">
+    -- === Expandフェーズ: 新しい構造を追加する ===
     ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
     ALTER TABLE inventory ADD batch_number VARCHAR2(6) NULL;
     ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
 
-    UPDATE inventory SET location_code = SUBSTR(product_inventory_code,1,6);
-    UPDATE inventory SET batch_number = SUBSTR(product_inventory_code,7,6);
-    UPDATE inventory SET serial_number = SUBSTR(product_inventory_code,13,10);
+    -- 移行期間中は旧アプリが product_inventory_code を、
+    -- 新アプリが3列を更新しうる。どちらから書かれても両表現が一致するよう、
+    -- バックフィルより先に双方向同期トリガーを有効化する。
+    CREATE OR REPLACE TRIGGER trg_inventory_code_sync
+    BEFORE INSERT OR UPDATE ON inventory
+    FOR EACH ROW
+    BEGIN
+      IF UPDATING('product_inventory_code')
+         OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL
+             AND :NEW.location_code IS NULL) THEN
+        -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
+        :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
+        :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
+        :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
+      ELSIF :NEW.location_code IS NOT NULL
+            AND :NEW.batch_number IS NOT NULL
+            AND :NEW.serial_number IS NOT NULL THEN
+        -- 新アプリが3列を書いた場合 → 旧列へ連結して反映
+        :NEW.product_inventory_code := RPAD(:NEW.location_code, 6)
+                                    || RPAD(:NEW.batch_number, 6)
+                                    || RPAD(:NEW.serial_number, 10);
+      END IF;
+    END;
+    /
+
+    -- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
+    UPDATE inventory
+       SET location_code = SUBSTR(product_inventory_code,1,6),
+           batch_number  = SUBSTR(product_inventory_code,7,6),
+           serial_number = SUBSTR(product_inventory_code,13,10);
+
+    -- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
+    SELECT COUNT(*) AS mismatch_count
+      FROM inventory
+     WHERE product_inventory_code
+           <> RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10);
 
     DROP INDEX uidx_inventory_code;
 
@@ -1022,13 +1056,13 @@ pre.mermaid{
   </script>
   <div class="prose">
     <p>このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム(マイグレーションスクリプトとして)にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。</p>
-    <p>旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition period)」の考え方に沿って、この時点ではまだ削除しません。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、<code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code> を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。</p>
+    <p>旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition period)」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、<code>DROP TRIGGER trg_inventory_code_sync;</code> と <code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code> を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。同期トリガーの削除は必ず旧列の削除と同じスクリプトで行い、片方だけが残る中途半端な状態を作らないようにします。</p>
   </div>
   <div class="callout forest">
     <i class="ti ti-bulb"></i>
     <div class="callout-body">
       <span class="callout-title">ポイント</span>
-      <p>スキーマ変更(列追加)、データ移行(SUBSTRによる分割)、アクセスコード変更(アプリ側の参照列の変更)が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。一方で旧列の削除(収縮)は、移行期間を経た後の独立したリファクタリングとして扱います。</p>
+      <p>スキーマ変更(列追加と同期トリガー)、データ移行(SUBSTRによる分割とバックフィル)、アクセスコード変更(アプリ側の参照列の変更)が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。同期トリガーをバックフィルより<strong>先に</strong>有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除(収縮)は、移行期間を経た後の独立したリファクタリングとして扱います。</p>
     </div>
   </div>
 </section>
@@ -1233,12 +1267,17 @@ const DIAGRAMS = {
   "diag-7": "flowchart TD\n    Q{\"データベースを使うアプリケーションは　いくつあるか\"}\n    Q -->|\"単一アプリケーション\"| S[\"変更の影響範囲を自分たちで完全に把握できる　比較的シンプルに進められる\"]\n    Q -->|\"複数アプリケーション　共有データベース\"| M[\"他チームへの通知・移行期間の確保・　ビューやトリガーでの後方互換性維持が必須になる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8860b,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class S done;\n    class M box;",
   "diag-8": "flowchart LR\n    Cat[\"リファクタリングカタログ全体\"] --> A[\"構造　Structural\"]\n    Cat --> B[\"データ品質　Data Quality\"]\n    Cat --> C[\"参照整合性　Referential Integrity\"]\n    Cat --> D[\"アーキテクチャ　Architectural\"]\n    Cat --> E[\"メソッド　Method\"]\n    Cat --> F[\"変換　Transformations　意味論を変える非リファクタリング\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8794a,color:#2b2620,stroke-width:2px;\n    class Cat hub;\n    class F box;",
   "diag-9": "flowchart TD\n    Q{\"論理的に削除された行を　どう扱うか\"}\n    Q -->|\"Introduce Soft Delete\"| A[\"削除フラグ列を追加し　物理的な行は残したまま論理的に非表示にする\"]\n    Q -->|\"Introduce Hard Delete\"| B[\"削除フラグ列をやめて　行そのものを物理的に削除する\"]\n    A --> C[\"監査や復旧が必要な業務でよく使われる\"]\n    B --> D[\"不要データを増やさず　シンプルさを保ちたい場合に使われる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class C,D done;",
-  "diag-10": "flowchart LR\n    A[\"変更前　inventory_code列に場所・ロット・シリアルが連結されて格納\"] --> B[\"1 新しい3つの列を追加　location_code・batch_number・serial_number\"]\n    B --> C[\"2 SUBSTRで既存データを分割して新しい列に移行\"]\n    C --> D[\"3 アプリケーションコードを新しい列を使うように変更\"]\n    D --> E[\"4 インデックスを新しい列に張り直す\"]\n    E --> F[\"5 移行期間を経てから別のContractスクリプトで旧inventory_code列を削除する\"]\n    classDef box fill:#faf3df,stroke:#b8790a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A box;\n    class F done;",
+  "diag-10": "flowchart LR\n    A[\"変更前　inventory_code列に場所・ロット・シリアルが連結されて格納\"] --> B[\"1 新しい3つの列を追加　location_code・batch_number・serial_number\"]\n    B --> C[\"2 新旧を双方向に同期するトリガーを有効化する\"]\n    C --> C2[\"3 SUBSTRで既存データを分割して新しい列にバックフィルし検証する\"]\n    C2 --> D[\"4 アプリケーションコードを新しい列を使うように変更\"]\n    D --> E[\"5 インデックスを新しい列に張り直す\"]\n    E --> F[\"6 移行期間を経てから別のContractスクリプトで同期トリガーと旧inventory_code列を削除する\"]\n    classDef box fill:#faf3df,stroke:#b8790a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A box;\n    class F done;",
   "diag-11": "flowchart LR\n    A[\"1 テーブル名を変更　customerからclientへ\"] --> B[\"2 旧名customerで参照できるビューを作成\"]\n    B --> C[\"3 移行期間中は新旧どちらの名前からもアクセス可能にする\"]\n    C --> D[\"4 全ての利用アプリがclientへ移行したことを確認\"]\n    D --> E[\"5 移行期間終了後customerビューを削除\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class E done;",
   "diag-12": "flowchart LR\n    A[\"開発者がマイグレーションスクリプトを書く\"] --> B[\"バージョン管理へコミットする\"]\n    B --> C[\"CIサーバーが検知して自動実行\"]\n    C --> D[\"FlywayやLiquibaseなどのツールがスキーマ差分を適用\"]\n    D --> E[\"自動テストでアプリとDBの整合性を検証\"]\n    E --> F[\"デプロイパイプラインを通じて本番まで反映\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class F done;"
 };
 
-mermaid.initialize({
+// Mermaid の CDN が到達不能な場合でも、ハイライト・サイドバー・モバイルメニュー等の
+// 初期化を巻き添えにしないよう、利用可否を判定してから初期化する。
+const MERMAID_AVAILABLE = typeof window.mermaid !== "undefined";
+
+if(MERMAID_AVAILABLE){
+  mermaid.initialize({
   startOnLoad:false,
   theme:"base",
   securityLevel:"loose",
@@ -1253,10 +1292,17 @@ mermaid.initialize({
     secondaryColor:"#faf3df",
     tertiaryColor:"#f6ecf1"
   }
-});
+  });
+}
 
 async function renderAllDiagrams(){
   const wraps = document.querySelectorAll("[data-diagram-id]");
+  if(!MERMAID_AVAILABLE){
+    wraps.forEach(wrap => {
+      wrap.innerHTML = '<div class="diagram-loading">図を読み込めませんでした（Mermaid の読み込みに失敗しました）</div>';
+    });
+    return;
+  }
   for(const wrap of wraps){
     const id = wrap.getAttribute("data-diagram-id");
     const src = dedent(DIAGRAMS[id] || "");

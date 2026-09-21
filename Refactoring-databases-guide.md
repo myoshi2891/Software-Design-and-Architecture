@@ -413,22 +413,57 @@ flowchart TD
 ```mermaid
 flowchart LR
     A["変更前<br/>inventory_code列に<br/>場所・ロット・シリアルが<br/>連結されて格納"] --> B["1 新しい3つの列を追加<br/>location_code / batch_number / serial_number"]
-    B --> C["2 SUBSTRで<br/>既存データを分割して<br/>新しい列に移行"]
-    C --> D["3 アプリケーションコードを<br/>新しい列を使うように変更"]
-    D --> E["4 インデックスを<br/>新しい列に張り直す"]
-    E --> F["5 移行期間を経てから<br/>別のContractスクリプトで<br/>旧inventory_code列を削除する"]
+    B --> C["2 新旧を双方向に同期する<br/>トリガーを有効化する"]
+    C --> C2["3 SUBSTRで既存データを分割して<br/>新しい列にバックフィルし検証する"]
+    C2 --> D["4 アプリケーションコードを<br/>新しい列を使うように変更"]
+    D --> E["5 インデックスを<br/>新しい列に張り直す"]
+    E --> F["6 移行期間を経てから<br/>別のContractスクリプトで<br/>同期トリガーと旧inventory_code列を削除する"]
 ```
 
 このリファクタリング（Expand〜Migrateフェーズ）を実現する移行スクリプトの例（Oracle SQLの場合）は次のようになります。
 
 ```sql
+-- === Expandフェーズ: 新しい構造を追加する ===
 ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD batch_number VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
 
-UPDATE inventory SET location_code = SUBSTR(product_inventory_code,1,6);
-UPDATE inventory SET batch_number = SUBSTR(product_inventory_code,7,6);
-UPDATE inventory SET serial_number = SUBSTR(product_inventory_code,13,10);
+-- 移行期間中は旧アプリが product_inventory_code を、
+-- 新アプリが3列を更新しうる。どちらから書かれても両表現が一致するよう、
+-- バックフィルより先に双方向同期トリガーを有効化する。
+CREATE OR REPLACE TRIGGER trg_inventory_code_sync
+BEFORE INSERT OR UPDATE ON inventory
+FOR EACH ROW
+BEGIN
+  IF UPDATING('product_inventory_code')
+     OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL
+         AND :NEW.location_code IS NULL) THEN
+    -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
+    :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
+    :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
+    :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
+  ELSIF :NEW.location_code IS NOT NULL
+        AND :NEW.batch_number IS NOT NULL
+        AND :NEW.serial_number IS NOT NULL THEN
+    -- 新アプリが3列を書いた場合 → 旧列へ連結して反映
+    :NEW.product_inventory_code := RPAD(:NEW.location_code, 6)
+                                || RPAD(:NEW.batch_number, 6)
+                                || RPAD(:NEW.serial_number, 10);
+  END IF;
+END;
+/
+
+-- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
+UPDATE inventory
+   SET location_code = SUBSTR(product_inventory_code,1,6),
+       batch_number  = SUBSTR(product_inventory_code,7,6),
+       serial_number = SUBSTR(product_inventory_code,13,10);
+
+-- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
+SELECT COUNT(*) AS mismatch_count
+  FROM inventory
+ WHERE product_inventory_code
+       <> RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10);
 
 DROP INDEX uidx_inventory_code;
 
@@ -438,9 +473,9 @@ CREATE UNIQUE INDEX uidx_inventory_identifier
 
 このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム（マイグレーションスクリプトとして）にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。
 
-旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。
+旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`DROP TRIGGER trg_inventory_code_sync;` と `ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。同期トリガーの削除は必ず旧列の削除と同じスクリプトで行い、片方だけが残る中途半端な状態を作らないようにします。
 
-> ポイント：スキーマ変更（列追加）、データ移行（SUBSTRによる分割）、アクセスコード変更（アプリ側の参照列の変更）が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。一方で旧列の削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
+> ポイント：スキーマ変更（列追加と同期トリガー）、データ移行（SUBSTRによる分割とバックフィル）、アクセスコード変更（アプリ側の参照列の変更）が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。同期トリガーをバックフィルより**先に**有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
 
 ---
 
