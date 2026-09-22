@@ -119,9 +119,9 @@ flowchart TB
 
 | 用語 | 説明 |
 |---|---|
-| 読み書きロック（Read/Write Lock） | 読み取りは共有ロック、書き込みは排他ロックで制御する基本方式 |
+| 読み書きロック（Read/Write Lock） | 共有ロックと排他ロックでアクセスを調停する基本方式。InnoDBでは通常の `SELECT` は共有ロックを取らず（後述のMVCCによる一貫性読み取り）、`SELECT ... FOR SHARE` / `FOR UPDATE` のようなロッキングリードと書き込みだけが明示的にロックを取得する |
 | ロック粒度（Lock Granularity） | テーブル単位・行単位など、ロックの範囲。InnoDBは行レベルロックが基本 |
-| MVCC | ロックを取らずに「その時点のスナップショット」を読める仕組み。読み取りが書き込みをブロックしにくくなる |
+| MVCC | 通常の `SELECT`（一貫性読み取り）がロックを取らずに「その時点のスナップショット」を読める仕組み。READ COMMITTED / REPEATABLE READ ではこれが既定の動作で、読み取りと書き込みが互いをブロックしにくくなる。ロッキングリードは対象外で、最新行に対してロックを取る |
 | デッドロック | 複数のトランザクションが互いのロック解放を待ち合って停止する状態。InnoDBは自動検出してどちらかをロールバックする |
 
 ### 1-3. トランザクション分離レベル
@@ -220,7 +220,7 @@ MySQLのパフォーマンスは、MySQL単体の設定だけでなく、稼働�
 - **SSD/フラッシュストレージ**: ランダムI/Oに強く、現在のMySQL運用ではほぼ標準
 - **RAID構成**: RAID10は読み書き双方の性能と冗長性のバランスが良く、多くの本番環境で採用される
 - **ファイルシステム**: ext4やXFSなど、ジャーナリングファイルシステムが一般的
-- **ディスクI/Oスケジューラ**: NVMeでは `none`（mq-deadline以外を使わない）などカーネル・ストレージ特性に応じた選択が必要
+- **ディスクI/Oスケジューラ**: Linuxのマルチキュー環境では `none`（スケジューリングを行わずデバイスへ直接発行）と `mq-deadline`（レイテンシ上限を設ける）が主な選択肢。どちらが有利かはカーネルバージョン・デバイス・ワークロードで変わるため、実際のワークロードでベンチマークを取って決める
 
 ### 4-3. メモリとスワップ
 
@@ -252,12 +252,12 @@ flowchart TB
 innodb_buffer_pool_size = 12G        # 物理メモリに応じて調整
 innodb_buffer_pool_instances = 8     # バッファプールを複数インスタンスに分割
 innodb_flush_log_at_trx_commit = 1   # デフォルト。耐久性重視
-innodb_log_file_size = 2G            # 更新の多いワークロードでは大きめに
+innodb_redo_log_capacity = 2G        # 更新の多いワークロードでは大きめに（8.0.30以降）
 max_connections = 500
 thread_cache_size = 100
 ```
 
-> 補足: MySQL 8.0.30以降は `innodb_log_file_size` に代わり `innodb_redo_log_capacity` で再起動なしにredoログ容量を動的変更できるようになりました（詳細は本ガイド末尾の「2026年時点でのアップデート情報」を参照）。
+> 補足: 原著執筆時点では `innodb_log_file_size` を使いますが、MySQL 8.0.30以降はこれに代わる `innodb_redo_log_capacity` が推奨で、再起動なしにredoログ容量を動的変更できます（詳細は本ガイド末尾の「2026年時点でのアップデート情報」を参照）。
 
 ### 5-3. 設定変更で気をつけること
 
@@ -580,7 +580,7 @@ MySQL 8.4 LTSでは、20個ものInnoDB関連変数のデフォルト値が、�
 | innodb_change_buffering | all | none |
 | innodb_buffer_pool_in_core_file | ON | 環境によりOFF（コアダンプ時のメモリ内容を含めない） |
 
-出典: MySQL Community ManagerのFrédéric Descamps氏（lefred.be）およびOracle MySQL公式ブログの解説を参照しています。
+出典: MySQL Community ManagerのFrédéric Descamps氏（lefred.be）の解説、および MySQL 8.4 リファレンスマニュアルの InnoDB システム変数の記載を参照しています。
 
 ### 動的なInnoDB Redoログ（Dynamic InnoDB Redo Log）
 
@@ -588,7 +588,7 @@ MySQL 8.0.30以降、本書執筆時点で使われていた `innodb_log_file_si
 
 ### Percona発の最新パフォーマンス検証（2026年）
 
-Perconaは2026年に入ってからも継続的にMySQLエコシステムのベンチマークを公開しています。2026年のPerconaのMySQLエコシステム性能検証レポートでは、MySQL/Percona Server 8.4系と9.x系のOLTPワークロードでの挙動が比較され、バージョンごとの性能特性の違いが詳細に報告されています。本書の内容を実践に移す際は、こうした最新のベンチマークデータも合わせて確認することが推奨されます。
+Perconaは2026年に入ってからも継続的にMySQLエコシステムのベンチマークを公開しています。2026年のPerconaのMySQLエコシステム性能検証レポートでは、MySQL（5.7 / 8.0 / 8.4 / 9.6）・Percona Server（5.7 / 8.0 / 8.4）・MariaDBの計10バージョンがsysbench OLTPで比較されています（Percona Server の 9.x 系は比較対象に含まれていません）。バッファプールサイズ・並列度・ネットワーク越しの実行といった条件別に、バージョンごとの性能特性の違いが報告されています。本書の内容を実践に移す際は、こうした最新のベンチマークデータも合わせて確認することが推奨されます。
 
 ### 水平スケーリングのエコシステム（Vitess / PlanetScale）
 
@@ -664,8 +664,8 @@ Perconaは2026年に入ってからも継続的にMySQLエコシステムのベ�
 - Percona Blog「2026 MySQL Ecosystem Performance Benchmark Report」: https://www.percona.com/blog/2026-mysql-ecosystem-performance-benchmark-report/
 - Percona Blog「MySQL January 2026 Performance Review」: https://www.percona.com/blog/mysql-january-2026-performance-review/
 - Percona Blog「Performance Progression of Percona Server for MySQL 8.4」: https://www.percona.com/blog/performance-progression-of-percona-server-for-mysql-8-4/
-- Oracle MySQL公式ブログ「Auto Adapting Configuration Parameters in MySQL」: https://blogs.oracle.com/mysql/auto-adapting-configuration-parameters-in-mysql
-- Oracle MySQL公式ブログ「Dynamic InnoDB Redo Log in MySQL 8.0」: https://blogs.oracle.com/mysql/dynamic-innodb-redo-log-in-mysql-80
+- MySQL 8.4 リファレンスマニュアル「InnoDB Startup Options and System Variables」（8.4 LTS で見直されたInnoDB変数の既定値の一次情報）: https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html
+- MySQL 8.4 リファレンスマニュアル「Redo Log」（`innodb_redo_log_capacity` による動的なRedoログ容量変更）: https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html
 - Frédéric Descamps氏（Oracle MySQL Community Manager）ブログ「MySQL 8.4 LTS: New Production-Ready Defaults for InnoDB」: https://lefred.be/content/mysql-8-4-lts-new-production-ready-defaults-for-innodb/
 - Vitess公式ドキュメント「VTGate」: https://vitess.io/docs/concepts/vtgate/
 - Vitess公式ドキュメント「Components FAQ」: https://vitess.io/docs/faq/getting-started/components
