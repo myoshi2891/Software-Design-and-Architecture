@@ -1353,6 +1353,8 @@ function setupMobileMenu() {
     sidebar.classList.toggle('open', isOpen);
     scrim.classList.toggle('show', isOpen);
     btn.setAttribute('aria-expanded', String(isOpen));
+    // ラベルは「押すと何が起きるか」を示すため、開閉状態に合わせて反転させる
+    btn.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
     sidebar.inert = mobileQuery.matches && !isOpen;
   }
   function open() { setState(true); }
