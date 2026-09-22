@@ -280,7 +280,7 @@ LSM-Tree の基本的な考え方は次の通りです。
 ```mermaid
 flowchart TB
     Write["書き込みリクエスト"] --> Memtable["Memtable（メモリ上のソート済み構造）"]
-    Write --> WALog["WALへの書き込み（耐障害性の確保）"]
+    Write --> WALog["WALへの書き込み（WAL有効時のみ・その場合に耐障害性を確保）"]
     Memtable -- 一定サイズに到達 --> Flush["ディスクへフラッシュ"]
     Flush --> SSTable0["SSTable（新しいレベル）"]
     SSTable0 --> Compaction["バックグラウンドでのコンパクション処理"]

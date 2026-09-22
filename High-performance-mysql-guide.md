@@ -250,8 +250,9 @@ flowchart TB
 # 本書の考え方に基づく設定例（値は環境ごとに調整が必要）
 [mysqld]
 innodb_buffer_pool_size = 12G        # 物理メモリに応じて調整
-innodb_buffer_pool_instances = 8     # バッファプールを分割。8は buffer_pool_size >= 1GB の64bit環境での既定値
-                                     # 上の 12G / 高並列OLTP を前提とした値。CPUコア数と並列度に応じて見直す
+innodb_buffer_pool_instances = 8     # バッファプールを分割。8は上の 12G / 高並列OLTP を前提とした一例であり、8.4の既定値ではない
+                                     # MySQL 8.4 の既定値はバッファプールサイズと利用可能な論理プロセッサ数から算出される
+                                     # ワークロード（CPUコア数と並列度）に応じて見直す
 innodb_flush_log_at_trx_commit = 1   # デフォルト。耐久性重視
 innodb_redo_log_capacity = 2G        # 更新の多いワークロードでは大きめに（8.0.30以降）
 max_connections = 500
@@ -573,7 +574,7 @@ flowchart LR
 
 ### InnoDBのデフォルト値の見直し
 
-MySQL 8.4 LTSでは、20個ものInnoDB関連変数のデフォルト値が、現代のハードウェア・ワークロードに合わせて見直されました。代表例は次のとおりです。
+MySQL 8.4 LTSでは、20個のサーバー変数（うち15個がInnoDB関連）のデフォルト値が、現代のハードウェア・ワークロードに合わせて見直されました。代表例は次のとおりです。
 
 | 変数 | 従来のデフォルト | 8.4 LTSでのデフォルト |
 |---|---|---|

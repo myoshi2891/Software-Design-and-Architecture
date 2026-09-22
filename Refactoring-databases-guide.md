@@ -424,6 +424,10 @@ flowchart LR
 
 ```sql
 -- === Expandフェーズ: 新しい構造を追加する ===
+-- 失敗した時点でスクリプトを止める。最初のDDLより前に宣言しないと、
+-- 列追加やトリガー作成の失敗を見逃したままバックフィルへ進んでしまう。
+WHENEVER SQLERROR EXIT FAILURE ROLLBACK
+
 ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD batch_number VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
@@ -469,6 +473,14 @@ BEGIN
   ELSIF old_written THEN
     -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
     -- NULL は「値なし」として3列そろって NULL に落とす
+    -- 22文字（場所6+ロット6+シリアル10）でない値を SUBSTR にかけると、
+    -- 短すぎれば NULL や切り詰めた値が、長すぎれば末尾が捨てられた値が
+    -- 黙って入るため、分解の前に長さを検証して拒否する。
+    IF :NEW.product_inventory_code IS NOT NULL
+       AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+      RAISE_APPLICATION_ERROR(-20005,
+        'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+    END IF;
     :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
     :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
     :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
@@ -494,6 +506,25 @@ BEGIN
 END;
 /
 
+-- CREATE OR REPLACE TRIGGER は本体のコンパイルに失敗してもコマンド自体は成功し、
+-- INVALID なトリガーが残る（WHENEVER SQLERROR では捕まらない）。同期が効かないまま
+-- バックフィルへ進まないよう、ここで明示的にコンパイルエラーを検査する。
+DECLARE
+  error_count PLS_INTEGER;
+BEGIN
+  SELECT COUNT(*)
+    INTO error_count
+    FROM user_errors
+   WHERE name = 'TRG_INVENTORY_CODE_SYNC'
+     AND type = 'TRIGGER';
+
+  IF error_count > 0 THEN
+    RAISE_APPLICATION_ERROR(-20004,
+      '同期トリガー trg_inventory_code_sync のコンパイルに失敗しました。移行を中止します');
+  END IF;
+END;
+/
+
 -- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
 -- 3列を直接 SET すると新列→旧列の同期分岐が走り、検証の基準にしたい
 -- product_inventory_code をトリガーが再連結値で上書きしてしまう（変換誤りを検出できなくなる）。
@@ -506,8 +537,7 @@ UPDATE inventory
 -- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
 -- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する。
 -- 件数を表示するだけでは誰も見落としに気づけないため、0件でなければ
--- エラーを送出してスクリプトを止める。
-WHENEVER SQLERROR EXIT FAILURE ROLLBACK
+-- エラーを送出してスクリプトを止める（中止は冒頭の WHENEVER SQLERROR に従う）。
 DECLARE
   mismatch_count PLS_INTEGER;
 BEGIN

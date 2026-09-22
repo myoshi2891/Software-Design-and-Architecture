@@ -1265,7 +1265,7 @@ async function renderAllDiagrams() {
   const placeholders = document.querySelectorAll('[data-diagram-id]');
   function markAllFailed() {
     for (const el of placeholders) {
-      el.innerHTML = '<div class="diagram-loading">図の読み込みに失敗しました</div>';
+      el.innerHTML = '<div class="diagram-loading" role="alert">図の読み込みに失敗しました</div>';
     }
   }
   // CDN 未到達時は mermaid が未定義になる。ローディング表示のまま放置しない。
@@ -1326,7 +1326,7 @@ async function renderAllDiagrams() {
         }
       }
     } catch (e) {
-      el.innerHTML = '<div class="diagram-loading">図の読み込みに失敗しました</div>';
+      el.innerHTML = '<div class="diagram-loading" role="alert">図の読み込みに失敗しました</div>';
       console.error('mermaid render error for', id, e);
     }
   }
