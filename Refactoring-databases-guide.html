@@ -1065,12 +1065,26 @@ pre.mermaid{
 
     -- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
     -- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
-    -- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する
-    SELECT COUNT(*) AS mismatch_count
-      FROM inventory
-     WHERE DECODE(product_inventory_code,
-                  RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
-                  0, 1) = 1;
+    -- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する。
+    -- 件数を表示するだけでは誰も見落としに気づけないため、0件でなければ
+    -- エラーを送出してスクリプトを止める。
+    WHENEVER SQLERROR EXIT FAILURE ROLLBACK
+    DECLARE
+      mismatch_count PLS_INTEGER;
+    BEGIN
+      SELECT COUNT(*)
+        INTO mismatch_count
+        FROM inventory
+       WHERE DECODE(product_inventory_code,
+                    RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
+                    0, 1) = 1;
+
+      IF mismatch_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20002,
+          '分割結果が旧列と一致しない行が ' || mismatch_count || ' 件あります。移行を中止します');
+      END IF;
+    END;
+    /
 
     -- 新しい一意制約を先に作ってから旧インデックスを落とす。
     -- 逆順にすると、その間だけ一意性が誰にも強制されない窓ができる。
