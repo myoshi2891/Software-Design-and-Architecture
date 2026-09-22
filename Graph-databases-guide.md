@@ -26,7 +26,7 @@
 | ページ数 | 236ページ |
 | 難易度 | 中級から上級(ただし基礎から説明されている) |
 | 主に扱うグラフDB | Neo4j(クエリ言語はCypher) |
-| 無料配布 | Neo4j公式サイトから今もPDF/ePub/Mobiで無料配布中 |
+| 無料配布 | Neo4j公式サイトから今もPDF / iBooks / Kindle形式で無料配布中 |
 | 参照URL | https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/ |
 
 O'Reillyの書籍ページによると、本書は高度に接続されたデータを管理・検索するためのグラフデータベースの実践的な設計・実装方法を学べる一冊で、第2版では最新のCypher構文に合わせてコード例と図版が刷新されています。データモデリングやクエリ、コード例を通じて、組織がグラフデータベースをどう活用して競合より優位に立っているかを学べる構成になっています。
@@ -416,7 +416,7 @@ ACID(Atomicity, Consistency, Isolation, Durability)は個々のトランザク�
 ```mermaid
 flowchart TD
     U1["Cypher 2011年よりNeo4jのクエリ言語として普及"] --> U2["2024年4月 GQLがISO IEC 39075として国際標準化"]
-    U2 --> U3["Neo4j含む各社がGQL準拠へ移行を表明"]
+    U2 --> U3["Neo4j含む各社が段階的なGQL対応を進行中"]
     U3 --> U4["ベクター検索とグラフを組み合わせたGraphRAGが台頭"]
     U4 --> U5["LLMの回答をグラフの関係性で裏付ける取り組みが広がる"]
 ```
@@ -429,7 +429,7 @@ flowchart TD
 
 ### 2. GraphRAG: LLMとナレッジグラフの融合
 
-2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented Generation)がベクトル検索だけに頼っていたのに対し、GraphRAGはナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。
+2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented Generation)がベクトル検索やキーワード検索(BM25など)、それらを組み合わせたハイブリッド検索で関連文書を集めるのに対し、GraphRAGはさらにナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。
 
 Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends 2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する`neo4j-graphrag-python`パッケージ、LlamaIndexの`PropertyGraphIndex`、LangChainの`LLMGraphTransformer`など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。
 
@@ -439,8 +439,8 @@ Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の
 
 | 製品 | データモデル | クエリ言語 | 特徴 |
 |---|---|---|---|
-| Neo4j | プロパティグラフ | Cypher(GQL準拠へ移行中) | 最大手。GraphAcademyなど学習コンテンツが充実、GraphRAG関連ツールも自社提供 |
-| TigerGraph | プロパティグラフ | GSQL(GQL準拠) | 並列処理を活かした大規模グラフ分析に強み |
+| Neo4j | プロパティグラフ | Cypher(GQLへ段階的に対応中) | 最大手。公式のGQL準拠ドキュメントによれば必須機能の多くと任意機能の相当部分に対応済みだが、未対応の必須機能が残っており実装が進行中。GraphAcademyなど学習コンテンツが充実、GraphRAG関連ツールも自社提供 |
+| TigerGraph | プロパティグラフ | GSQL(GQL標準化に参画・対応を推進中) | GSQLは独自言語で、GQLへ全面準拠しているわけではない。並列処理を活かした大規模グラフ分析に強み |
 | ArangoDB | マルチモデル(ドキュメント+グラフ) | AQL | ドキュメントDBとグラフDBを1つのエンジンに統合 |
 | Amazon Neptune | プロパティグラフ、RDF両対応 | openCypher, Gremlin, SPARQL | AWSのフルマネージドサービス、複数クエリ言語に対応 |
 | JanusGraph | プロパティグラフ | Gremlin | OSS。分散ストレージ(Cassandra等)の上に構築可能 |
@@ -531,7 +531,7 @@ Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の
     https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/
 11. Dan McCreary — “How to Explain Index-Free Adjacency to Your Manager”(Medium)
     https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a
-12. Mingxi Wu(TigerGraph CEO)— “The Rise of GQL: A New ISO Standard in Graph Query Language”(Hacker News 111ポイント)
+12. Mingxi Wu(TigerGraph CEO)— “The Rise of GQL: A New ISO Standard in Graph Query Language”(TigerGraph公式ブログ)
     https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language
 13. TheNewStack — “GQL: A New ISO Standard for Querying Graph Databases”
     https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/
