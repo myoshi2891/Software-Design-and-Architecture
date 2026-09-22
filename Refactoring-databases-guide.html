@@ -518,7 +518,7 @@ pre.mermaid{
 
 <header class="mobile-bar">
   <span class="brand">Refactoring Databases ガイド</span>
-  <button id="menuToggle" type="button"><i class="ti ti-menu-2"></i>目次</button>
+  <button id="menuToggle" type="button"><i class="ti ti-menu-2" aria-hidden="true"></i>目次</button>
 </header>
 <div class="scrim" id="scrim"></div>
 
@@ -1056,10 +1056,12 @@ pre.mermaid{
     /
 
     -- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
+    -- 3列を直接 SET すると新列→旧列の同期分岐が走り、検証の基準にしたい
+    -- product_inventory_code をトリガーが再連結値で上書きしてしまう（変換誤りを検出できなくなる）。
+    -- 旧列を自身の値で更新し、旧列→新列の分岐に分解処理を行わせる。
     UPDATE inventory
-       SET location_code = SUBSTR(product_inventory_code,1,6),
-           batch_number  = SUBSTR(product_inventory_code,7,6),
-           serial_number = SUBSTR(product_inventory_code,13,10);
+       SET product_inventory_code = product_inventory_code
+     WHERE product_inventory_code IS NOT NULL;
 
     -- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
     -- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
@@ -1070,10 +1072,12 @@ pre.mermaid{
                   RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
                   0, 1) = 1;
 
-    DROP INDEX uidx_inventory_code;
-
+    -- 新しい一意制約を先に作ってから旧インデックスを落とす。
+    -- 逆順にすると、その間だけ一意性が誰にも強制されない窓ができる。
     CREATE UNIQUE INDEX uidx_inventory_identifier
       ON inventory (location_code, batch_number, serial_number);
+
+    DROP INDEX uidx_inventory_code;
   </script>
   <div class="prose">
     <p>このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム(マイグレーションスクリプトとして)にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。</p>
@@ -1083,7 +1087,7 @@ pre.mermaid{
     <i class="ti ti-bulb"></i>
     <div class="callout-body">
       <span class="callout-title">ポイント</span>
-      <p>スキーマ変更(列追加と同期トリガー)、データ移行(SUBSTRによる分割とバックフィル)、アクセスコード変更(アプリ側の参照列の変更)が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。同期トリガーをバックフィルより<strong>先に</strong>有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除(収縮)は、移行期間を経た後の独立したリファクタリングとして扱います。</p>
+      <p>スキーマ変更(列追加と同期トリガー)、データ移行(SUBSTRによる分割とバックフィル)、そしてアクセスコード変更(アプリ側の参照列の変更)を<strong>同じ変更セット(リリース)として管理する</strong>点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。上記のSQLはこのうちスキーマ変更とデータ移行にあたり、アクセスコード変更はアプリケーション側のリポジトリで行われますが、リリース単位としては切り離さずに扱います。同期トリガーをバックフィルより<strong>先に</strong>有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除(収縮)は、移行期間を経た後の独立したリファクタリングとして扱います。</p>
     </div>
   </div>
 </section>
