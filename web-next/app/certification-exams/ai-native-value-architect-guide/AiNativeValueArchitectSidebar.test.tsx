@@ -48,6 +48,20 @@ class CapturingIO implements IntersectionObserver {
   }
 }
 
+/** active な 1 件だけが aria-current="location" を持ち、他は属性自体を持たないこと。 */
+function expectAriaCurrentOnly(container: HTMLElement, href: string): void {
+  const links = Array.from(container.querySelectorAll("nav a"));
+  const current = links.filter((a) => a.hasAttribute("aria-current"));
+  expect(current).toHaveLength(1);
+  expect(current[0]?.getAttribute("href")).toBe(href);
+  expect(current[0]?.getAttribute("aria-current")).toBe("location");
+  for (const link of links) {
+    if (link.getAttribute("href") !== href) {
+      expect(link.hasAttribute("aria-current")).toBe(false);
+    }
+  }
+}
+
 function intersect(id: string): void {
   const target = document.getElementById(id);
   if (!target) throw new Error(`section #${id} not found`);
@@ -112,6 +126,11 @@ describe("AiNativeValueArchitectSidebar", () => {
     expect(active[0]?.getAttribute("href")).toBe("#prereq");
   });
 
+  it('初期状態では先頭の nav 項目だけが aria-current="location" を持つ', () => {
+    const { container } = render(<AiNativeValueArchitectSidebar groups={GROUPS} />);
+    expectAriaCurrentOnly(container, "#prereq");
+  });
+
   it("section が交差すると対応する nav 項目だけが active になる", () => {
     const { container } = render(<AiNativeValueArchitectSidebar groups={GROUPS} />);
 
@@ -120,5 +139,13 @@ describe("AiNativeValueArchitectSidebar", () => {
     const active = container.querySelectorAll("nav a.active");
     expect(active).toHaveLength(1);
     expect(active[0]?.getAttribute("href")).toBe("#domain1");
+  });
+
+  it('section が交差すると aria-current="location" も対応する 1 件だけに移る', () => {
+    const { container } = render(<AiNativeValueArchitectSidebar groups={GROUPS} />);
+
+    intersect("domain1");
+
+    expectAriaCurrentOnly(container, "#domain1");
   });
 });
