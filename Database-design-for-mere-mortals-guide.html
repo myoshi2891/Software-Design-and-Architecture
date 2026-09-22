@@ -1371,6 +1371,9 @@ function setupMobileMenu() {
   // サイドバーは 980px 以下でのみ画面外へ退避する。デスクトップ幅では常時表示なので
   // inert にしてはならず、モバイル幅かつ閉状態のときだけキーボード操作から除外する。
   const mobileQuery = window.matchMedia('(max-width: 980px)');
+  // メニュー展開中は背後の本文をキーボード操作から除外する。開閉ボタンは
+  // mobile-bar 側（main の外）にあるため、inert にしても閉じられなくならない。
+  const main = document.getElementById('main-content');
   function setState(isOpen) {
     sidebar.classList.toggle('open', isOpen);
     scrim.classList.toggle('show', isOpen);
@@ -1378,6 +1381,7 @@ function setupMobileMenu() {
     // ラベルは「押すと何が起きるか」を示すため、開閉状態に合わせて反転させる
     btn.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
     sidebar.inert = mobileQuery.matches && !isOpen;
+    main.inert = mobileQuery.matches && isOpen;
   }
   function open() { setState(true); }
   function close() { setState(false); }

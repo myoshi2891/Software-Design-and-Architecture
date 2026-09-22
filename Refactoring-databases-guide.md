@@ -459,6 +459,22 @@ BEGIN
   IF old_written AND new_written THEN
     -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
     -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+    -- まず単独で書かれた場合と同じ入力検証を適用する。不正な長さや部分的な
+    -- NULL を「一致しない」エラーとして報告すると、原因が分かりにくくなる。
+    IF :NEW.product_inventory_code IS NOT NULL
+       AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+      RAISE_APPLICATION_ERROR(-20005,
+        'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+    END IF;
+    IF (:NEW.location_code IS NULL
+        OR :NEW.batch_number IS NULL
+        OR :NEW.serial_number IS NULL)
+       AND NOT (:NEW.location_code IS NULL
+                AND :NEW.batch_number IS NULL
+                AND :NEW.serial_number IS NULL) THEN
+      RAISE_APPLICATION_ERROR(-20001,
+        'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+    END IF;
     composed := RPAD(:NEW.location_code, 6)
              || RPAD(:NEW.batch_number, 6)
              || RPAD(:NEW.serial_number, 10);
@@ -565,7 +581,11 @@ DROP INDEX uidx_inventory_code;
 
 このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム（マイグレーションスクリプトとして）にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。
 
-旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`DROP TRIGGER trg_inventory_code_sync;` と `ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。同期トリガーの削除は必ず旧列の削除と同じスクリプトで行い、片方だけが残る中途半端な状態を作らないようにします。
+旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`DROP TRIGGER trg_inventory_code_sync;` と `ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。ここで注意が必要なのは、Oracle の DDL は文ごとに暗黙コミットされるため、`DROP TRIGGER` と `ALTER TABLE ... DROP COLUMN` を同じスクリプトにまとめても原子的にはならない点です。`DROP TRIGGER` が成功したあとに列削除が失敗すると、同期トリガーだけが失われ旧列が残った状態がコミット済みとして残り、以後の書き込みで旧列と新3列が乖離していきます（`WHENEVER SQLERROR EXIT FAILURE ROLLBACK` は未コミットのトランザクションを戻すだけで、すでにコミットされた DDL は取り消せません）。そのため Contract フェーズは次の手順で実施します。
+
+1. **事前確認**：`USER_DEPENDENCIES` / `ALL_DEPENDENCIES` で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、`ALTER TABLE` や `DROP ANY TRIGGER` の権限、および `ALTER TABLE ... DROP COLUMN` が取る排他ロックを取得できる時間帯かを確認する。
+2. **実行後の検証**：`USER_TRIGGERS` と `USER_TAB_COLUMNS` を照会し、同期トリガーと旧列の**両方**が消えていることを確認する。片方だけが残っていれば中途半端な状態である。
+3. **列削除が失敗した場合の復旧**：まず同期トリガーを作り直して双方向同期を復旧させ、Step 15 の検証クエリ（`DECODE` による NULL 安全な突き合わせ）で旧列と新3列の不一致行を洗い出して修復する。そのうえで失敗の原因（依存オブジェクト・権限・ロック競合）を取り除き、列削除を再実行する。
 
 > ポイント：スキーマ変更（列追加と同期トリガー）、データ移行（SUBSTRによる分割とバックフィル）、そしてアクセスコード変更（アプリ側の参照列の変更）を**同じ変更セット（リリース）として管理する**点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。上記のSQLはこのうちスキーマ変更とデータ移行にあたり、アクセスコード変更はアプリケーション側のリポジトリで行われますが、リリース単位としては切り離さずに扱います。同期トリガーをバックフィルより**先に**有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
 

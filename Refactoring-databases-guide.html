@@ -1043,6 +1043,22 @@ pre.mermaid{
       IF old_written AND new_written THEN
         -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
         -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+        -- まず単独で書かれた場合と同じ入力検証を適用する。不正な長さや部分的な
+        -- NULL を「一致しない」エラーとして報告すると、原因が分かりにくくなる。
+        IF :NEW.product_inventory_code IS NOT NULL
+           AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+          RAISE_APPLICATION_ERROR(-20005,
+            'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+        END IF;
+        IF (:NEW.location_code IS NULL
+            OR :NEW.batch_number IS NULL
+            OR :NEW.serial_number IS NULL)
+           AND NOT (:NEW.location_code IS NULL
+                    AND :NEW.batch_number IS NULL
+                    AND :NEW.serial_number IS NULL) THEN
+          RAISE_APPLICATION_ERROR(-20001,
+            'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+        END IF;
         composed := RPAD(:NEW.location_code, 6)
                  || RPAD(:NEW.batch_number, 6)
                  || RPAD(:NEW.serial_number, 10);
@@ -1148,7 +1164,12 @@ pre.mermaid{
   </script>
   <div class="prose">
     <p>このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム(マイグレーションスクリプトとして)にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。</p>
-    <p>旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition period)」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、<code>DROP TRIGGER trg_inventory_code_sync;</code> と <code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code> を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。同期トリガーの削除は必ず旧列の削除と同じスクリプトで行い、片方だけが残る中途半端な状態を作らないようにします。</p>
+    <p>旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition period)」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、<code>DROP TRIGGER trg_inventory_code_sync;</code> と <code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code> を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。ここで注意が必要なのは、Oracle の DDL は文ごとに暗黙コミットされるため、<code>DROP TRIGGER</code> と <code>ALTER TABLE ... DROP COLUMN</code> を同じスクリプトにまとめても原子的にはならない点です。<code>DROP TRIGGER</code> が成功したあとに列削除が失敗すると、同期トリガーだけが失われ旧列が残った状態がコミット済みとして残り、以後の書き込みで旧列と新3列が乖離していきます(<code>WHENEVER SQLERROR EXIT FAILURE ROLLBACK</code> は未コミットのトランザクションを戻すだけで、すでにコミットされた DDL は取り消せません)。</p>
+    <ol class="step-list">
+      <li><div><strong>事前確認</strong> — <code>USER_DEPENDENCIES</code> / <code>ALL_DEPENDENCIES</code> で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、<code>ALTER TABLE</code> や <code>DROP ANY TRIGGER</code> の権限、および <code>ALTER TABLE ... DROP COLUMN</code> が取る排他ロックを取得できる時間帯かを確認します。</div></li>
+      <li><div><strong>実行後の検証</strong> — <code>USER_TRIGGERS</code> と <code>USER_TAB_COLUMNS</code> を照会し、同期トリガーと旧列の<strong>両方</strong>が消えていることを確認します。片方だけが残っていれば中途半端な状態です。</div></li>
+      <li><div><strong>列削除が失敗した場合の復旧</strong> — まず同期トリガーを作り直して双方向同期を復旧させ、Step 15 の検証クエリ(<code>DECODE</code> による NULL 安全な突き合わせ)で旧列と新3列の不一致行を洗い出して修復します。そのうえで失敗の原因(依存オブジェクト・権限・ロック競合)を取り除き、列削除を再実行します。</div></li>
+    </ol>
   </div>
   <div class="callout forest">
     <i class="ti ti-bulb"></i>

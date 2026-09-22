@@ -16,7 +16,7 @@
 - 分散データベースで「たまに古いデータが読めてしまう」「ノード障害時にデータが消えた」といった問題の根本原因を理解したい
 - 自分自身でデータベースやキャッシュ、キューといったインフラコンポーネントを設計・実装したい
 
-本書 *Database Internals* は、まさにこうした問いに答えるために書かれた一冊です。著者の Alex Petrov 氏は Apache Cassandra のコミッター兼 PMC（Project Management Committee）メンバーであり、Apple でデータインフラストラクチャエンジニアとして働いてきた実務家です。本書は特定の製品を分解するのではなく、PostgreSQL・MySQL・MongoDB（WiredTiger）・Cassandra・etcd・CockroachDB・Spanner など、多種多様なデータベースに共通する「概念」を抽出して解説する点に特徴があります。
+本書 *Database Internals* は、まさにこうした問いに答えるために書かれた一冊です。著者の Alex Petrov 氏は Apache Cassandra のコミッター兼 PMC（Project Management Committee）メンバーであり、分散データベースの開発に携わってきた実務家です。本書は特定の製品を分解するのではなく、PostgreSQL・MySQL・MongoDB（WiredTiger）・Cassandra・etcd・CockroachDB・Spanner など、多種多様なデータベースに共通する「概念」を抽出して解説する点に特徴があります。
 
 本ガイドでは、原著全14章の内容を **18のステップ** に整理し、それぞれに Mermaid 図と具体例を添えて、初学者が挫折しないように解説していきます。
 
@@ -34,7 +34,7 @@
 | ISBN（紙版） | 978-1492040347 |
 | ISBN（電子版） | 978-1492040309 / 978-1492040330 |
 | 構成 | 全2部・全14章 + 付録A（参考文献一覧） |
-| 著者の経歴 | Apache Cassandra コミッター・PMCメンバー、Apple のデータインフラストラクチャエンジニア。DataStax でのシニアソフトウェアエンジニア経験もある |
+| 著者の経歴 | Apache Cassandra コミッター・PMCメンバー。分散データベース・ストレージエンジンの開発実務の経験を持つ |
 | 公式サイト | [databass.dev](https://www.databass.dev/)（著者本人が運営する本書の公式コンパニオンサイト。正誤表・著者情報を掲載） |
 
 ---
@@ -182,7 +182,7 @@ B-Tree の各ノードは、多くの場合ディスク上の固定サイズの�
 | スロット配列（ポインタ配列） | 各セル（キーと値のペア）へのオフセットを保持する配列。ページ先頭側から伸びていく |
 | セル領域 | 実際のキー・値のバイト列。ページ末尾側から逆方向に詰められていく |
 
-スロット配列とセル領域を両端から向かい合わせに成長させることで、ページ内の空き領域を柔軟に使い切りつつ、セルの物理的な並び順を変えずに「論理的な順序」だけをスロット配列の並べ替えで表現できます。これにより、キーの挿入・削除のたびに大量のバイト列をコピーし直す必要がなくなります。
+スロット配列とセル領域を両端から向かい合わせに成長させることで、ページ内の空き領域を柔軟に使い切りつつ、セルの物理的な並び順を変えずに「論理的な順序」だけをスロット配列の並べ替えで表現できます。これにより、キーの挿入・削除のたびに毎回大量のバイト列をコピーし直す事態を避けられます。ただしセルは可変長であるため、削除で生じた隙間の再利用や、断片化して連続した空き領域が確保できなくなった場合には、セルの移動やページのコンパクション（デフラグ）が必要になります。
 
 このほか、本書ではプリミティブ型のバイナリエンコーディング方法、可変長文字列の扱い方、ページのバージョニング（フォーマット変更への対応）、チェックサムによる破損検出といった、実務でファイルフォーマットを設計する際に必須となる要素技術が解説されています。
 
@@ -591,6 +591,6 @@ flowchart TB
 13. Hippocampus's Garden による書評（*Designing Data-Intensive Applications* との比較を含む） ― https://hippocampus-garden.com/book_review_petrov/
 14. Goodreads の本書ページ（Emre Sevinç氏による、*Designing Data-Intensive Applications* および *Cassandra: The Definitive Guide* と並ぶ位置づけについてのレビューを含む） ― https://www.goodreads.com/book/show/44647144-database-internals
 15. 章ごとの学習ノート・要約（コミュニティによる読書ノート） ― https://notes.stonecharioteer.com/books/database-internals/index.html
-16. 著者 Alex Petrov 氏の経歴に関する情報（Apache Cassandra コミッター・PMCメンバー、Appleでの職務経歴） ― https://bookshop.org/p/books/database-internals-a-deep-dive-into-how-distributed-data-systems-work-alex-petrov/79ff30324a22a51e
+16. 本書の販売ページ（書籍概要と著者紹介: Apache Cassandra コミッター・PMCメンバー） ― https://bookshop.org/p/books/database-internals-a-deep-dive-into-how-distributed-data-systems-work-alex-petrov/79ff30324a22a51e
 
 > 補足: 本ガイドは上記の一次情報源（公式ページ・著者本人の発信）を中心に事実関係を確認したうえで、内容の解説自体はB-Tree・LSM-Tree・Paxos・Raft・CAP定理などコンピュータサイエンスの標準的な公知の知識に基づき、著作権保護対象である書籍本文の再現を避けて独自の言葉で執筆しています。
