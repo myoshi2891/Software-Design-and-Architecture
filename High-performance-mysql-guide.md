@@ -250,7 +250,8 @@ flowchart TB
 # 本書の考え方に基づく設定例（値は環境ごとに調整が必要）
 [mysqld]
 innodb_buffer_pool_size = 12G        # 物理メモリに応じて調整
-innodb_buffer_pool_instances = 8     # バッファプールを複数インスタンスに分割
+innodb_buffer_pool_instances = 8     # バッファプールを分割。8は buffer_pool_size >= 1GB の64bit環境での既定値
+                                     # 上の 12G / 高並列OLTP を前提とした値。CPUコア数と並列度に応じて見直す
 innodb_flush_log_at_trx_commit = 1   # デフォルト。耐久性重視
 innodb_redo_log_capacity = 2G        # 更新の多いワークロードでは大きめに（8.0.30以降）
 max_connections = 500
@@ -374,7 +375,7 @@ flowchart LR
 - **JOINクエリ**: 結合順序と結合に使う列のインデックスが性能を左右する
 - **GROUP BY + ROLLUP**: 集計の粒度を増やすほどコストが増える点に注意
 - **LIMIT / OFFSET**: 大きなOFFSET値は、スキップする行も内部的には読み込むため非効率になりやすい
-- **SQL_CALC_FOUND_ROWS**: ページネーションでよく使われるが、実際には別クエリで`COUNT`した方が速いことが多い
+- **SQL_CALC_FOUND_ROWS**: ページネーションでよく使われてきたが、`SQL_CALC_FOUND_ROWS` と `FOUND_ROWS()` はMySQL 8.0.17で非推奨となり、MySQL 8.4時点でも将来の削除が予告されている。`LIMIT` 付きの取得クエリと、総件数を求める `COUNT(*)` クエリを別々に発行する方式へ移行する
 
 ---
 
