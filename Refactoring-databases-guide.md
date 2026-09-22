@@ -406,18 +406,18 @@ flowchart TD
 
 ## Step 15：実践ウォークスルー① Split Column をやってみる
 
-ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫（inventory）テーブルの `inventory_code` 列を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。
+ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫（inventory）テーブルの在庫コード列（本ガイドでは `product_inventory_code` とします）を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。
 
 **変更前の状態**：`inventory` テーブルには `product_inventory_code` という1つの列があり、そこに「場所コード」「ロット番号」「シリアル番号」が連結された文字列として格納されています。ある開発者（記事内では「Jen」）が、これら3つの情報を個別に検索・更新できるようにする、というユーザーストーリーを実装することになりました。
 
 ```mermaid
 flowchart LR
-    A["変更前<br/>inventory_code列に<br/>場所・ロット・シリアルが<br/>連結されて格納"] --> B["1 新しい3つの列を追加<br/>location_code / batch_number / serial_number"]
+    A["変更前<br/>product_inventory_code列に<br/>場所・ロット・シリアルが<br/>連結されて格納"] --> B["1 新しい3つの列を追加<br/>location_code / batch_number / serial_number"]
     B --> C["2 新旧を双方向に同期する<br/>トリガーを有効化する"]
     C --> C2["3 SUBSTRで既存データを分割して<br/>新しい列にバックフィルし検証する"]
     C2 --> D["4 アプリケーションコードを<br/>新しい列を使うように変更"]
     D --> E["5 インデックスを<br/>新しい列に張り直す"]
-    E --> F["6 移行期間を経てから<br/>別のContractスクリプトで<br/>同期トリガーと旧inventory_code列を削除する"]
+    E --> F["6 移行期間を経てから<br/>別のContractスクリプトで<br/>同期トリガーと旧product_inventory_code列を削除する"]
 ```
 
 このリファクタリング（Expand〜Migrateフェーズ）を実現する移行スクリプトの例（Oracle SQLの場合）は次のようになります。
@@ -434,22 +434,45 @@ ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
 CREATE OR REPLACE TRIGGER trg_inventory_code_sync
 BEFORE INSERT OR UPDATE ON inventory
 FOR EACH ROW
+DECLARE
+  -- 旧列側・新列側のどちらが書かれたかを判定する。:NEW.<列> は更新対象外の
+  -- 列でも現在の行値が入るため、値の有無ではなく「書かれたか」で分岐しないと、
+  -- 無関係な UPDATE（数量の更新など）で同期処理が誤って走ってしまう。
+  -- INSERT では UPDATING が使えないので、値が入っているかで判断する。
+  old_written BOOLEAN;
+  new_written BOOLEAN;
+  composed    inventory.product_inventory_code%TYPE;
 BEGIN
-  IF UPDATING('product_inventory_code')
-     OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL
-         AND :NEW.location_code IS NULL) THEN
+  old_written := UPDATING('product_inventory_code')
+                 OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL);
+  new_written := UPDATING('location_code')
+                 OR UPDATING('batch_number')
+                 OR UPDATING('serial_number')
+                 OR (INSERTING AND (:NEW.location_code IS NOT NULL
+                                    OR :NEW.batch_number IS NOT NULL
+                                    OR :NEW.serial_number IS NOT NULL));
+
+  IF old_written AND new_written THEN
+    -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
+    -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+    composed := RPAD(:NEW.location_code, 6)
+             || RPAD(:NEW.batch_number, 6)
+             || RPAD(:NEW.serial_number, 10);
+    -- NULL 同士は等しいとみなす。片側だけ NULL のケースを個別に書くことで、
+    -- 比較結果が NULL になって IF が素通りするのを避ける。
+    IF (composed IS NULL AND :NEW.product_inventory_code IS NOT NULL)
+       OR (composed IS NOT NULL AND :NEW.product_inventory_code IS NULL)
+       OR (composed IS NOT NULL AND composed <> :NEW.product_inventory_code) THEN
+      RAISE_APPLICATION_ERROR(-20003,
+        'product_inventory_code と location_code / batch_number / serial_number が同時に指定され、内容が一致しません。どちらか一方だけを更新してください');
+    END IF;
+  ELSIF old_written THEN
     -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
     -- NULL は「値なし」として3列そろって NULL に落とす
     :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
     :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
     :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
-  ELSIF INSERTING
-        OR UPDATING('location_code')
-        OR UPDATING('batch_number')
-        OR UPDATING('serial_number') THEN
-    -- :NEW.<列> は更新対象外の列でも現在の行値が入る。この条件でガードしないと、
-    -- 3列に無関係な UPDATE（数量の更新など）でも下の分岐が走り、
-    -- 3列が NULL のままの行で旧列を消してしまう。
+  ELSIF new_written THEN
     IF :NEW.location_code IS NULL
        AND :NEW.batch_number IS NULL
        AND :NEW.serial_number IS NULL THEN

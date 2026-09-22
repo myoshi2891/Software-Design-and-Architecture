@@ -992,7 +992,7 @@ pre.mermaid{
 <section class="section" id="step15">
   <h2><i class="ti ti-flask"></i>Step 15：実践ウォークスルー ① Split Column をやってみる</h2>
   <div class="prose">
-    <p>ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫(inventory)テーブルの <code>inventory_code</code> 列を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。</p>
+    <p>ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫(inventory)テーブルの在庫コード列(本ガイドでは <code>product_inventory_code</code> とします)を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。</p>
     <p><strong>変更前の状態</strong>：<code>inventory</code> テーブルには <code>product_inventory_code</code> という1つの列があり、そこに「場所コード」「ロット番号」「シリアル番号」が連結された文字列として格納されています。ある開発者(記事内では「Jen」)が、これら3つの情報を個別に検索・更新できるようにする、というユーザーストーリーを実装することになりました。</p>
   </div>
   <div class="diagram-wrap">
@@ -1003,7 +1003,7 @@ pre.mermaid{
     <p>このリファクタリング(Expand〜Migrateフェーズ)を実現する移行スクリプトの例(Oracle SQLの場合)は次のようになります。</p>
   </div>
   <div class="code-block">
-    <div class="code-block-head"><span>SQL — inventory_code の Split Column</span><i class="ti ti-brand-databricks"></i></div>
+    <div class="code-block-head"><span>SQL — product_inventory_code の Split Column</span><i class="ti ti-brand-databricks"></i></div>
     <pre><code id="code-step15" data-lang="sql" class="language-sql"></code></pre>
   </div>
   <script type="text/plain" data-code-for="code-step15">
@@ -1018,22 +1018,45 @@ pre.mermaid{
     CREATE OR REPLACE TRIGGER trg_inventory_code_sync
     BEFORE INSERT OR UPDATE ON inventory
     FOR EACH ROW
+    DECLARE
+      -- 旧列側・新列側のどちらが書かれたかを判定する。:NEW.<列> は更新対象外の
+      -- 列でも現在の行値が入るため、値の有無ではなく「書かれたか」で分岐しないと、
+      -- 無関係な UPDATE（数量の更新など）で同期処理が誤って走ってしまう。
+      -- INSERT では UPDATING が使えないので、値が入っているかで判断する。
+      old_written BOOLEAN;
+      new_written BOOLEAN;
+      composed    inventory.product_inventory_code%TYPE;
     BEGIN
-      IF UPDATING('product_inventory_code')
-         OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL
-             AND :NEW.location_code IS NULL) THEN
+      old_written := UPDATING('product_inventory_code')
+                     OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL);
+      new_written := UPDATING('location_code')
+                     OR UPDATING('batch_number')
+                     OR UPDATING('serial_number')
+                     OR (INSERTING AND (:NEW.location_code IS NOT NULL
+                                        OR :NEW.batch_number IS NOT NULL
+                                        OR :NEW.serial_number IS NOT NULL));
+
+      IF old_written AND new_written THEN
+        -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
+        -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+        composed := RPAD(:NEW.location_code, 6)
+                 || RPAD(:NEW.batch_number, 6)
+                 || RPAD(:NEW.serial_number, 10);
+        -- NULL 同士は等しいとみなす。片側だけ NULL のケースを個別に書くことで、
+        -- 比較結果が NULL になって IF が素通りするのを避ける。
+        IF (composed IS NULL AND :NEW.product_inventory_code IS NOT NULL)
+           OR (composed IS NOT NULL AND :NEW.product_inventory_code IS NULL)
+           OR (composed IS NOT NULL AND composed <> :NEW.product_inventory_code) THEN
+          RAISE_APPLICATION_ERROR(-20003,
+            'product_inventory_code と location_code / batch_number / serial_number が同時に指定され、内容が一致しません。どちらか一方だけを更新してください');
+        END IF;
+      ELSIF old_written THEN
         -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
         -- NULL は「値なし」として3列そろって NULL に落とす
         :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
         :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
         :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
-      ELSIF INSERTING
-            OR UPDATING('location_code')
-            OR UPDATING('batch_number')
-            OR UPDATING('serial_number') THEN
-        -- :NEW.<列> は更新対象外の列でも現在の行値が入る。この条件でガードしないと、
-        -- 3列に無関係な UPDATE（数量の更新など）でも下の分岐が走り、
-        -- 3列が NULL のままの行で旧列を消してしまう。
+      ELSIF new_written THEN
         IF :NEW.location_code IS NULL
            AND :NEW.batch_number IS NULL
            AND :NEW.serial_number IS NULL THEN
@@ -1210,7 +1233,7 @@ pre.mermaid{
     <div class="checklist-progress">
       <i class="ti ti-target-arrow"></i>
       <div class="progress-track"><div class="progress-fill" id="checklistFill"></div></div>
-      <span id="checklistLabel">0 / 8 完了</span>
+      <span id="checklistLabel" role="status" aria-live="polite">0 / 8 完了</span>
     </div>
     <div class="check-item"><input type="checkbox" id="chk1"><label for="chk1">データベースリファクタリングが「スキーマ変更・データ移行・アクセスコード変更」の3つを同時に伴う理由を説明できる</label></div>
     <div class="check-item"><input type="checkbox" id="chk2"><label for="chk2">データベースの臭いを3つ以上挙げ、それぞれどのリファクタリングで対処できそうか説明できる</label></div>
@@ -1306,7 +1329,7 @@ const DIAGRAMS = {
   "diag-7": "flowchart TD\n    Q{\"データベースを使うアプリケーションは　いくつあるか\"}\n    Q -->|\"単一アプリケーション\"| S[\"変更の影響範囲を自分たちで完全に把握できる　比較的シンプルに進められる\"]\n    Q -->|\"複数アプリケーション　共有データベース\"| M[\"他チームへの通知・移行期間の確保・　ビューやトリガーでの後方互換性維持が必須になる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8860b,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class S done;\n    class M box;",
   "diag-8": "flowchart LR\n    Cat[\"リファクタリングカタログ全体\"] --> A[\"構造　Structural\"]\n    Cat --> B[\"データ品質　Data Quality\"]\n    Cat --> C[\"参照整合性　Referential Integrity\"]\n    Cat --> D[\"アーキテクチャ　Architectural\"]\n    Cat --> E[\"メソッド　Method\"]\n    Cat --> F[\"変換　Transformations　意味論を変える非リファクタリング\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8794a,color:#2b2620,stroke-width:2px;\n    class Cat hub;\n    class F box;",
   "diag-9": "flowchart TD\n    Q{\"論理的に削除された行を　どう扱うか\"}\n    Q -->|\"Introduce Soft Delete\"| A[\"削除フラグ列を追加し　物理的な行は残したまま論理的に非表示にする\"]\n    Q -->|\"Introduce Hard Delete\"| B[\"削除フラグ列をやめて　行そのものを物理的に削除する\"]\n    A --> C[\"監査や復旧が必要な業務でよく使われる\"]\n    B --> D[\"不要データを増やさず　シンプルさを保ちたい場合に使われる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class C,D done;",
-  "diag-10": "flowchart LR\n    A[\"変更前　inventory_code列に場所・ロット・シリアルが連結されて格納\"] --> B[\"1 新しい3つの列を追加　location_code・batch_number・serial_number\"]\n    B --> C[\"2 新旧を双方向に同期するトリガーを有効化する\"]\n    C --> C2[\"3 SUBSTRで既存データを分割して新しい列にバックフィルし検証する\"]\n    C2 --> D[\"4 アプリケーションコードを新しい列を使うように変更\"]\n    D --> E[\"5 インデックスを新しい列に張り直す\"]\n    E --> F[\"6 移行期間を経てから別のContractスクリプトで同期トリガーと旧inventory_code列を削除する\"]\n    classDef box fill:#faf3df,stroke:#b8790a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A box;\n    class F done;",
+  "diag-10": "flowchart LR\n    A[\"変更前　product_inventory_code列に場所・ロット・シリアルが連結されて格納\"] --> B[\"1 新しい3つの列を追加　location_code・batch_number・serial_number\"]\n    B --> C[\"2 新旧を双方向に同期するトリガーを有効化する\"]\n    C --> C2[\"3 SUBSTRで既存データを分割して新しい列にバックフィルし検証する\"]\n    C2 --> D[\"4 アプリケーションコードを新しい列を使うように変更\"]\n    D --> E[\"5 インデックスを新しい列に張り直す\"]\n    E --> F[\"6 移行期間を経てから別のContractスクリプトで同期トリガーと旧product_inventory_code列を削除する\"]\n    classDef box fill:#faf3df,stroke:#b8790a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A box;\n    class F done;",
   "diag-11": "flowchart LR\n    A[\"1 テーブル名を変更　customerからclientへ\"] --> B[\"2 旧名customerで参照できるビューを作成\"]\n    B --> C[\"3 移行期間中は新旧どちらの名前からもアクセス可能にする\"]\n    C --> D[\"4 全ての利用アプリがclientへ移行したことを確認\"]\n    D --> E[\"5 移行期間終了後customerビューを削除\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class E done;",
   "diag-12": "flowchart LR\n    A[\"開発者がマイグレーションスクリプトを書く\"] --> B[\"バージョン管理へコミットする\"]\n    B --> C[\"CIサーバーが検知して自動実行\"]\n    C --> D[\"FlywayやLiquibaseなどのツールがスキーマ差分を適用\"]\n    D --> E[\"自動テストでアプリとDBの整合性を検証\"]\n    E --> F[\"デプロイパイプラインを通じて本番まで反映\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class F done;"
 };
