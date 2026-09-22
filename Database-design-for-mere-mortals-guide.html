@@ -106,6 +106,27 @@ a:hover { text-decoration: underline; }
 .nav-a:hover { background: var(--paper-alt); color: var(--ink); text-decoration: none; }
 .nav-a.active { color: var(--indigo); border-left-color: var(--indigo); background: var(--indigo-light); font-weight: 700; }
 
+/* キーボード利用者がサイドバーのナビを読み飛ばして本文へ移動するためのリンク。
+   フォーカスされるまでは画面外へ退避させ、視覚的には見えないようにする。 */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 0 0 8px 8px;
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top .15s ease;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .main {
   margin-left: var(--sidebar-w);
   min-height: 100vh;
@@ -365,6 +386,7 @@ tbody tr:hover { background: var(--paper-alt); }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">本文へスキップ</a>
 <div class="scrim" id="scrim"></div>
 <div class="layout">
   <header class="mobile-bar">
@@ -414,7 +436,7 @@ tbody tr:hover { background: var(--paper-alt); }
 
     </nav>
   </aside>
-  <main class="main">
+  <main class="main" id="main-content" tabindex="-1">
     
 <section class="hero">
   <span class="hero-kicker"><i class="ti ti-book"></i>初学者向け解説ガイド</span>
