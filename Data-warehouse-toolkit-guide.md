@@ -118,7 +118,7 @@ flowchart LR
         O3["例: 注文入力, 在庫更新,<br/>会員登録"]
     end
     subgraph OLAP["OLAP / DW-BI: 分析システム"]
-        A1["非正規化された<br/>スタースキーマ"]
+        A1["Kimball方式の<br/>プレゼンテーション層では<br/>非正規化されたスタースキーマ<br/>(構成により3NFのEDWも併用)"]
         A2["大量データを<br/>集計・比較する"]
         A3["例: 月次売上推移,<br/>店舗別ランキング"]
     end
@@ -412,10 +412,12 @@ flowchart LR
         DD2["商品"]
         DD3["店舗/拠点"]
         DD4["サプライヤー"]
+        DD5["顧客"]
     end
     BP1 --> DD1
     BP1 --> DD2
     BP1 --> DD3
+    BP1 --> DD5
     BP2 --> DD1
     BP2 --> DD2
     BP2 --> DD3
