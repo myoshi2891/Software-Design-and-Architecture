@@ -558,8 +558,11 @@ END;
 
 -- 注意：ALTER TABLE は Oracle では暗黙にコミットされるため、上の -20004 で
 -- スクリプトを中止しても、直前に追加した3列は残ったままになる。エラーが
--- DDL をロールバックしてくれることはない。したがって失敗時は、下記いずれかの
--- 手順で「トリガーも新列も存在しない」状態へ明示的に戻してから再実行する。
+-- DDL をロールバックしてくれることはない。同様に、3本の ALTER TABLE ADD の
+-- 途中（例: 2本目）で失敗した場合も、それまでに成功した列だけが残り、トリガーは
+-- まだ作成されていない。したがって失敗時は、下記いずれかの手順で「トリガーも
+-- 新列も存在しない」状態へ明示的に戻してから再実行する（列追加の途中で止まった
+-- 場合は、トリガーが存在しないため手順Bは使えず、手順Aで復旧する）。
 --
 --   復旧手順A（推奨・Expandをやり直す）:
 --     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
@@ -567,9 +570,16 @@ END;
 --        SELECT line, position, text FROM user_errors
 --         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
 --        を実行し、結果を出力・保存しておく
---     3. DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+--        （列追加の途中で失敗しトリガー作成まで到達していない場合、この結果は0行になる）
+--     3. トリガーが作成済みの場合に限り除去する。存在しないトリガーの DROP は
+--        ORA-04080 で失敗するため、先に存在を確認する:
+--        SELECT trigger_name, status FROM user_triggers
+--         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+--        → 1行返った場合のみ実行する:
+--        DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
 --     4. 列ごとに、DROP の直前に存在を確認してから削除する（存在しない列の DROP は
---        ORA-00904 で失敗するため、前回の復旧が途中まで進んでいた場合に備える）:
+--        ORA-00904 で失敗するため、列追加が途中で止まっていた場合や、前回の復旧が
+--        途中まで進んでいた場合に備える）:
 --        SELECT column_name FROM user_tab_columns
 --         WHERE table_name = 'INVENTORY'
 --           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
