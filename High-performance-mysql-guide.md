@@ -119,7 +119,7 @@ flowchart TB
 
 | 用語 | 説明 |
 |---|---|
-| 読み書きロック（Read/Write Lock） | 共有ロックと排他ロックでアクセスを調停する基本方式。InnoDBでは通常の `SELECT` は共有ロックを取らず（後述のMVCCによる一貫性読み取り）、`SELECT ... FOR SHARE` / `FOR UPDATE` のようなロッキングリードと書き込みだけが明示的にロックを取得する |
+| 読み書きロック（Read/Write Lock） | 共有ロックと排他ロックでアクセスを調停する基本方式。InnoDBでは `READ COMMITTED` / `REPEATABLE READ` における通常の `SELECT` は共有ロックを取らず（後述のMVCCによる一貫性読み取り）、`SELECT ... FOR SHARE` / `FOR UPDATE` のようなロッキングリードと書き込みだけが明示的にロックを取得する。ただし `SERIALIZABLE` で autocommit が無効な場合、InnoDBは通常の `SELECT` を暗黙的に `SELECT ... FOR SHARE` として扱い、共有ロックを取得する |
 | ロック粒度（Lock Granularity） | テーブル単位・行単位など、ロックの範囲。InnoDBは行レベルロックが基本 |
 | MVCC | 通常の `SELECT`（一貫性読み取り）がロックを取らずに「その時点のスナップショット」を読める仕組み。READ COMMITTED / REPEATABLE READ ではこれが既定の動作で、読み取りと書き込みが互いをブロックしにくくなる。ロッキングリードは対象外で、最新行に対してロックを取る |
 | デッドロック | 複数のトランザクションが互いのロック解放を待ち合って停止する状態。InnoDBは自動検出してどちらかをロールバックする |
