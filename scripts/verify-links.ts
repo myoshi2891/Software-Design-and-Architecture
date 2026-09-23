@@ -267,7 +267,7 @@ function extractUrls(file: string, content: string): string[] {
  *
  * @param args - Command-line arguments to pass to curl
  * @param timeoutSec - Maximum execution time in seconds; the process is killed if it exceeds `timeoutSec + 2` seconds
- * @returns An object with the trimmed stdout on success, or an `error` if curl timed out, encountered a process error, or exited with a non-zero code and stdout did not contain a three-digit HTTP status code. `exitCode` holds curl's exit code (28 when killed by the watchdog timer, undefined on spawn errors)
+ * @returns An object with the trimmed stdout on success, or an `error` if curl timed out, encountered a process error, or exited with any non-zero code (even if stdout contains an HTTP status, e.g. a 3xx whose redirect target was unreachable). `exitCode` holds curl's exit code (28 when killed by the watchdog timer, undefined on spawn errors)
  */
 function curlAsync(
   args: string[],
@@ -292,8 +292,7 @@ function curlAsync(
     child.on('close', (code: number | null) => {
       clearTimeout(timer);
       const trimmedStdout = stdout.trim();
-      const hasValidStatus = /^[1-9]\d{2}$/.test(trimmedStdout);
-      if (code !== 0 && !hasValidStatus) {
+      if (code !== 0) {
         resolve({
           stdout: '0',
           error: new Error(`curl exited with code ${code ?? 'null'}: ${stderr}`),
