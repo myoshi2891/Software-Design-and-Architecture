@@ -202,15 +202,21 @@ ALTER TABLE customer RENAME TO client;
 
 -- 移行期間中、旧名customerでアクセスするコードのために
 -- ビューを用意しておく
--- 注：これは読み取り専用の例であり、旧customerが持っていた全列を
---     公開しているわけではない。旧コードが参照する列は必ずSELECT句に
---     含めること。旧コードがcustomerへ書き込む場合、単純な列のサブセットを
---     選択しただけのビューは各DBMSの「更新可能ビュー」の条件（単一テーブル
---     由来、集約や重複除去を含まない等）を満たさない限り書き込み不可となる
---     ため、対象DBMSの更新可能ビュー規則を確認するか、INSTEAD OFトリガーで
---     client側への書き込みを代行する実装を追加する必要がある。
+-- 注：この例は旧customerが持っていた全列を公開しているわけではない。
+--     旧コードが参照する列は必ずSELECT句に含めること。
+--     また、下記のような単一テーブルからの単純な列射影は、多くのDBMSで
+--     「更新可能ビュー」の条件（単一テーブル由来、集約・DISTINCT・GROUP BYを
+--     含まない等）を満たすため、明示しなければINSERT/UPDATE/DELETEが
+--     そのままclientへ通ってしまう。意図に応じて次のいずれかを選ぶこと。
+--     (a) 読み取り専用にしたい場合：旧コードのロールにSELECTのみをGRANTする、
+--         または対象DBMSでDMLを拒否する定義（Oracleなら WITH READ ONLY、
+--         PostgreSQLなら書き込みを拒否するINSTEAD OFトリガー）を付与する。
+--     (b) 書き込み互換を残したい場合：対象DBMSの更新可能ビュー規則を確認し、
+--         条件を満たさない形（複数テーブルの結合、列の変換を伴う等）であれば
+--         INSTEAD OFトリガーでclient側への書き込みを代行する実装を追加する。
 CREATE VIEW customer AS
-SELECT id, first_name, last_name FROM client;
+SELECT id, first_name, last_name FROM client
+WITH READ ONLY;  -- (a) を選ぶ場合。(b) なら削除する
 ```
 
 移行期間が終わり、依存している全アプリケーションが新しいテーブル名を使うようになったことを確認できたら、このビューを削除して「収縮」フェーズを完了させます。
@@ -540,6 +546,34 @@ BEGIN
   END IF;
 END;
 /
+
+-- 注意：ALTER TABLE は Oracle では暗黙にコミットされるため、上の -20004 で
+-- スクリプトを中止しても、直前に追加した3列は残ったままになる。エラーが
+-- DDL をロールバックしてくれることはない。したがって失敗時は、下記いずれかの
+-- 手順で「トリガーも新列も存在しない」状態へ明示的に戻してから再実行する。
+--
+--   復旧手順A（推奨・Expandをやり直す）:
+--     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
+--     2. DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+--     3. ALTER TABLE inventory DROP COLUMN serial_number;
+--        ALTER TABLE inventory DROP COLUMN batch_number;
+--        ALTER TABLE inventory DROP COLUMN location_code;
+--     4. USER_ERRORS の内容でトリガー本体を修正し、Expandフェーズを先頭から再実行する
+--
+--   復旧手順B（列を残したままトリガーだけ直す）:
+--     1. SELECT line, position, text FROM user_errors
+--         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+--        で原因を特定する
+--     2. トリガー本体を修正して CREATE OR REPLACE TRIGGER を再実行し、
+--        上のコンパイル検査ブロックを再度通す
+--     3. 検査が通るまでバックフィル（Migrateフェーズ）へ進まない。列が存在するのに
+--        同期が効かない期間に書き込みが入った場合は、手順Aで列ごと作り直す
+--
+-- なお、ALTER TABLE を実行する前にトリガー本体をコンパイル検証したい場合は、
+-- 開発・ステージング環境で3列を追加済みのスキーマに対して先に
+-- CREATE OR REPLACE TRIGGER とこの検査ブロックを通し、本番では検証済みの
+-- 本体のみを適用する運用にする（本番の ALTER TABLE 前に単体で検証することは
+-- できない。トリガー本体が新列を参照するため、列が無ければ必ず INVALID になる）。
 
 -- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
 -- 3列を直接 SET すると新列→旧列の同期分岐が走り、検証の基準にしたい
