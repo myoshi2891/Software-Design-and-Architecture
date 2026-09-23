@@ -128,21 +128,41 @@ if (fs.existsSync(configPath)) {
 }
 
 /**
+ * 一時的な失敗とみなして再試行する curl の終了コード。
+ *
+ * 6: ホスト名解決失敗 / 7: 接続失敗 / 28: タイムアウト /
+ * 52: 空応答 / 55: 送信失敗 / 56: 受信失敗（接続リセット等）。
+ * 証明書検証失敗（60 等）は含めない。
+ */
+const RETRYABLE_CURL_EXIT_CODES: ReadonlySet<number> = new Set([6, 7, 28, 52, 55, 56]);
+
+/** curl の `--max-time` 相当のタイムアウトを表す終了コード。 */
+const CURL_EXIT_TIMEOUT = 28;
+
+/**
  * ステータスコードが一時的エラーで、再試行する価値があるかを判定する。
  *
  * CI ランナーの IP から並列アクセスすると Read the Docs 等が 429 を返すため、
  * 恒久的なリンク切れ (404 等) と区別して扱う必要がある。
  *
- * status 0 は curl のタイムアウト・接続失敗を表す内部表現で、
- * GitHub 等の一時的な応答遅延による偽陽性の主因となるため常に再試行する。
- * 5xx も同様にサーバー側の一時障害とみなす。
+ * status 0 は curl が HTTP ステータスを得られなかったことを表す内部表現。
+ * GitHub 等の一時的な応答遅延による偽陽性の主因となるタイムアウト・接続系エラーだけを
+ * 再試行し、証明書検証失敗（exit 60 等）のように待っても解消しない失敗は再試行しない。
+ * 5xx はサーバー側の一時障害とみなす。
  *
- * @param status - HTTP ステータスコード（0 は curl のタイムアウト・接続失敗）
+ * @param status - HTTP ステータスコード（0 は curl が応答を得られなかった場合）
  * @param retryOn429 - 429 を再試行対象とするか
+ * @param curlExitCode - status 0 の原因となった curl の終了コード（不明なら undefined）
  * @returns 再試行すべきなら true
  */
-export function isRetryableStatus(status: number, retryOn429: boolean): boolean {
-  if (status === 0) return true;
+export function isRetryableStatus(
+  status: number,
+  retryOn429: boolean,
+  curlExitCode?: number
+): boolean {
+  if (status === 0) {
+    return curlExitCode !== undefined && RETRYABLE_CURL_EXIT_CODES.has(curlExitCode);
+  }
   if (status >= 500 && status < 600) return true;
   return retryOn429 && status === 429;
 }
@@ -247,12 +267,12 @@ function extractUrls(file: string, content: string): string[] {
  *
  * @param args - Command-line arguments to pass to curl
  * @param timeoutSec - Maximum execution time in seconds; the process is killed if it exceeds `timeoutSec + 2` seconds
- * @returns An object with the trimmed stdout on success, or an `error` if curl timed out, encountered a process error, or exited with a non-zero code and stdout did not contain a three-digit HTTP status code
+ * @returns An object with the trimmed stdout on success, or an `error` if curl timed out, encountered a process error, or exited with a non-zero code and stdout did not contain a three-digit HTTP status code. `exitCode` holds curl's exit code (28 when killed by the watchdog timer, undefined on spawn errors)
  */
 function curlAsync(
   args: string[],
   timeoutSec: number
-): Promise<{ stdout: string; error?: Error }> {
+): Promise<{ stdout: string; error?: Error; exitCode?: number }> {
   return new Promise((resolve) => {
     const child = spawn('curl', args);
     let stdout = '';
@@ -260,7 +280,11 @@ function curlAsync(
 
     const timer = setTimeout(() => {
       child.kill();
-      resolve({ stdout: '0', error: new Error(`curl timed out after ${timeoutSec}s: ${stderr}`) });
+      resolve({
+        stdout: '0',
+        error: new Error(`curl timed out after ${timeoutSec}s: ${stderr}`),
+        exitCode: CURL_EXIT_TIMEOUT,
+      });
     }, (timeoutSec + 2) * 1000);
 
     child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
@@ -273,6 +297,7 @@ function curlAsync(
         resolve({
           stdout: '0',
           error: new Error(`curl exited with code ${code ?? 'null'}: ${stderr}`),
+          exitCode: code ?? undefined,
         });
         return;
       }
@@ -334,15 +359,23 @@ export function buildCurlArgs(url: string, timeoutSec: number, method: 'HEAD' | 
   return args;
 }
 
+/** URL 検証 1 回分の結果。curlExitCode は status 0 の原因となった curl の終了コード。 */
+type ProbeResult = { ok: boolean; status: number; error?: string; curlExitCode?: number };
+
 async function probeUrl(
   url: string,
   timeoutSec: number
-): Promise<{ ok: boolean; status: number; error?: string }> {
+): Promise<ProbeResult> {
   // まず HEAD リクエストで試みる
   const headResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'HEAD'), timeoutSec);
 
   if (headResult.error) {
-    return { ok: false, status: 0, error: `curl error: ${headResult.error.message}` };
+    return {
+      ok: false,
+      status: 0,
+      error: `curl error: ${headResult.error.message}`,
+      curlExitCode: headResult.exitCode,
+    };
   }
 
   const headStatus = parseInt(headResult.stdout, 10);
@@ -356,7 +389,12 @@ async function probeUrl(
   const getResult = await curlAsync(buildCurlArgs(url, timeoutSec, 'GET'), timeoutSec);
 
   if (getResult.error) {
-    return { ok: false, status: 0, error: `curl error: ${getResult.error.message}` };
+    return {
+      ok: false,
+      status: 0,
+      error: `curl error: ${getResult.error.message}`,
+      curlExitCode: getResult.exitCode,
+    };
   }
 
   const getStatus = parseInt(getResult.stdout, 10);
@@ -386,12 +424,14 @@ function sleep(seconds: number): Promise<void> {
 async function verifyUrl(
   url: string,
   timeoutSec: number = 10
-): Promise<{ ok: boolean; status: number; error?: string }> {
+): Promise<ProbeResult> {
   let result = await probeUrl(url, timeoutSec);
 
   for (let attempt = 1; attempt <= retryConfig.retryCount; attempt++) {
     if (result.ok) return result;
-    if (!isRetryableStatus(result.status, retryConfig.retryOn429)) return result;
+    if (!isRetryableStatus(result.status, retryConfig.retryOn429, result.curlExitCode)) {
+      return result;
+    }
 
     const delaySec = retryDelaySeconds(attempt, retryConfig.retryDelaySec);
     console.log(
