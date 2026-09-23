@@ -23,7 +23,7 @@
 | 版 | 第2版(2015年6月) |
 | 著者 | Ian Robinson, Jim Webber, Emil Eifrem |
 | 出版社 | O'Reilly Media, Inc. |
-| ページ数 | 236ページ |
+| ページ数 | 236ページ(第2版。224ページは2013年刊行の第1版の表記のため、第2版を扱う本ガイドでは採用しない) |
 | 難易度 | 中級から上級(ただし基礎から説明されている) |
 | 主に扱うグラフDB | Neo4j(クエリ言語はCypher) |
 | 無料配布 | Neo4j公式サイトから今もPDF / iBooks / Kindle形式で無料配布中 |
@@ -531,7 +531,7 @@ Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の
    https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html
 10. datawookie.dev — 独立系開発者による書評
     https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/
-11. Dan McCreary — “How to Explain Index-Free Adjacency to Your Manager”(Medium)
+11. Dan McCreary — “The Neighborhood Walk Story”(Medium)
     https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a
 12. Mingxi Wu(TigerGraph CEO)— “The Rise of GQL: A New ISO Standard in Graph Query Language”(TigerGraph公式ブログ)
     https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language
