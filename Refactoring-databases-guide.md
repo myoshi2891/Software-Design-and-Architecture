@@ -620,8 +620,10 @@ END;
 
 -- 新しい一意制約を先に作ってから旧インデックスを落とす。
 -- 逆順にすると、その間だけ一意性が誰にも強制されない窓ができる。
+-- 列ごとの複合キーだと末尾空白だけが異なる値を別物とみなし、RPAD 後に
+-- 同じ旧コードになる行を許してしまうため、旧コード生成と同じ式で一意性を保証する。
 CREATE UNIQUE INDEX uidx_inventory_identifier
-  ON inventory (location_code, batch_number, serial_number);
+  ON inventory (RPAD(location_code, 6) || RPAD(batch_number, 6) || RPAD(serial_number, 10));
 
 DROP INDEX uidx_inventory_code;
 ```
