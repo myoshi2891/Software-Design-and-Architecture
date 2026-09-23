@@ -407,6 +407,7 @@ tbody tr:hover { background: var(--paper-alt); }
 <a class="nav-a" href="#structure"><i class="ti ti-sitemap"></i>本書の全体構成</a>
 <a class="nav-a" href="#philosophy"><i class="ti ti-bulb"></i>設計思想</a>
 <a class="nav-a" href="#roadmap"><i class="ti ti-route"></i>学習ロードマップ</a>
+<a class="nav-a" href="#step0"><i class="ti ti-help-circle"></i>Step0 なぜ設計を学ぶのか</a>
 <div class="nav-group-label">Part I 基礎</div>
 <a class="nav-a" href="#step1"><i class="ti ti-database"></i>Step1 リレーショナルDB</a>
 <a class="nav-a" href="#step2"><i class="ti ti-target"></i>Step2 設計目標</a>
@@ -538,6 +539,15 @@ tbody tr:hover { background: var(--paper-alt); }
   <div class="diagram-canvas" data-diagram-id="diag-2"><div class="diagram-loading">図を描画しています…</div></div>
   <div class="diagram-caption">Step0からStep16、そして次のステップへの学習の流れ</div>
 </div>
+</section>
+
+
+<section class="section prose" id="step0">
+  <div class="section-eyebrow"><i class="ti ti-help-circle"></i>導入</div>
+  <h2>Step0: なぜ設計を学ぶのか</h2>
+  <p>本編に入る前に、そもそもなぜデータベースの「設計」を学ぶ必要があるのかを確認しておきます。DBMS製品の操作やSQLの書き方を覚えれば、テーブルを作ってデータを入れること自体はすぐにできるようになります。しかし、どのテーブルにどのフィールドを持たせ、テーブル同士をどう関連づけるかという構造の判断は、製品の操作知識からは導き出せません。</p>
+  <p>構造を十分に検討しないまま作られたデータベースは、データの重複・矛盾・更新時の不整合といった問題を後から引き起こし、運用が進むほど修正のコストが膨らんでいきます(Step2・Step14で詳しく扱います)。設計を学ぶことは、こうした問題を作り込む前に防ぐための投資です。</p>
+  <p>また本書の設計手法は特定のDBMS製品やSQL方言に依存しないため、一度身につければ利用する製品が変わっても通用します。このガイドでは、この動機を出発点として、Step1以降でリレーショナルデータベースの基礎から設計プロセスの実践へと順に進んでいきます。</p>
 </section>
 
 
@@ -1055,7 +1065,7 @@ tbody tr:hover { background: var(--paper-alt); }
   <div class="ref-num">16</div>
   <div class="ref-body">
     <div class="ref-title">Database Design for Mere Mortals - Summary excerpt(flylib.com)</div>
-    <a class="ref-url" href="https://flylib.com/books/en/1.199.1.38/1/" target="_blank" rel="noopener">https://flylib.com/books/en/1.199.1.38/1/</a>
+    <a class="ref-url" href="https://web.archive.org/web/20171121234330/http://flylib.com/books/en/1.199.1.38/1/" target="_blank" rel="noopener">https://web.archive.org/web/20171121234330/http://flylib.com/books/en/1.199.1.38/1/</a>
     <div class="ref-note">著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋</div>
   </div>
 </div>
