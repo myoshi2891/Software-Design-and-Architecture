@@ -190,6 +190,9 @@
       "pattern": "^https?://(www\\.)?oreilly\\.com"
     },
     {
+      "pattern": "^https?://(www\\.)?oreilly\\.co\\.jp(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
       "pattern": "^https?://(www\\.)?theleanstartup\\.com"
     },
     {
