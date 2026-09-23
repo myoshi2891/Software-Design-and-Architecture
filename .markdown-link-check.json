@@ -263,6 +263,9 @@
     },
     {
       "pattern": "^https?://dev\\.mysql\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?xebia\\.com(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],
