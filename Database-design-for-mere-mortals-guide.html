@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css" integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.min.js" integrity="sha384-1CMXl090wj8Dd6YfnzSQUOgWbE6suWCaenYG7pox5AX7apTpY3PmJMeS2oPql4Gk" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.min.js" integrity="sha384-1CMXl090wj8Dd6YfnzSQUOgWbE6suWCaenYG7pox5AX7apTpY3PmJMeS2oPql4Gk" crossorigin="anonymous"></script>
 <style>
 
 :root {
@@ -1100,6 +1100,8 @@ classDef box fill:#faf0d4,stroke:#b8860b,stroke-width:2px,color:#4a3a08;
 const DIAGRAMS = {
 "diag-0": dedent(`
 flowchart LR
+    accTitle: 書籍全体の構成
+    accDescr: 書籍はPart IからPart IVの4部構成。Part Iは第1章から第3章でリレーショナルデータベース・設計目標・用語の基礎を、Part IIは第4章から第13章で設計プロセス10ステップを、Part IIIは第14章から第16章で悪いデザイン・ルールの例外・結びを扱い、Part IVは付録AからHの参考資料である。
     Title["書籍全体"] --> P1["Part I  リレーショナルデータベース設計の基礎"]
     Title --> P2["Part II  設計プロセス"]
     Title --> P3["Part III  その他の設計課題"]
@@ -1117,6 +1119,8 @@ flowchart LR
 `),
 "diag-1": dedent(`
 flowchart LR
+    accTitle: 学術的アプローチと本書の実践的アプローチの比較
+    accDescr: 整理されていないデータから整合性の取れたデータベースへ至る道筋は2つある。学術的な正規化アプローチは第1正規形から第5正規形まで関数従属などの形式的用語で段階的に検証する。本書の実践的アプローチはインタビューとミッションステートメントから出発し、理想的フィールドと理想的テーブルの基準で検証する。どちらも同じゴールに到達する。
     Start["整理されていないデータ"] --> Academic["学術的な正規化アプローチ 第1正規形から第5正規形まで段階的に検証し 関数従属など形式的な用語を使用"]
     Start --> Practical["本書の実践的アプローチ 理想的フィールドと理想的テーブルの基準で検証し インタビューとミッションステートメントから出発"]
     Academic --> Goal["整合性の取れた構造化データベース"]
@@ -1127,6 +1131,8 @@ flowchart LR
 `),
 "diag-2": dedent(`
 flowchart TD
+    accTitle: 本ガイドの学習順序
+    accDescr: Step0の設計を学ぶ理由から始まり、リレーショナルデータベース、設計目標、用語、設計プロセス全体像、Step5から13の設計プロセスの実践、悪いデザインの回避、例外の理解、結びの順に一直線に進み、最後にSQLと発展的トピックへ進む。
     S0["Step0 なぜ設計を学ぶのか"] --> S1["Step1 リレーショナルデータベースとは"]
     S1 --> S2["Step2 設計目標"]
     S2 --> S3["Step3 用語"]
@@ -1142,6 +1148,8 @@ flowchart TD
 `),
 "diag-3": dedent(`
 flowchart LR
+    accTitle: テーブル間リレーションシップの4類型
+    accDescr: 1対1は社員と社員専用ロッカー、1対多は顧客と複数の注文、多対多は学生と複数の講座への登録、自己参照は社員が上司である別の社員を参照する例で示される。
     R["テーブル間リレーションシップの4類型"] --> R1["1対1"]
     R --> R2["1対多"]
     R --> R3["多対多"]
@@ -1155,6 +1163,8 @@ flowchart LR
 `),
 "diag-4": dedent(`
 flowchart TD
+    accTitle: 設計プロセスの7段階
+    accDescr: ミッションステートメントの定義、現行データベースの分析、データ構造の作成、テーブルリレーションシップの確立、ビジネスルールの定義、ビューの定義、データ整合性の見直しの順に進み、見直しの結果に応じて最初の段階へ戻る反復的なプロセスである。
     M1["1 ミッションステートメントの定義"] --> M2["2 現行データベースの分析"]
     M2 --> M3["3 データ構造の作成"]
     M3 --> M4["4 テーブルリレーションシップの確立"]
@@ -1167,6 +1177,8 @@ flowchart TD
 `),
 "diag-5": dedent(`
 flowchart TD
+    accTitle: ミッションステートメント作成までの流れ
+    accDescr: インタビューを準備し、利用者とマネジメントの双方にインタビューして要件と情報項目を収集する。収集結果からミッションステートメントを作成し、それをもとにミッションオブジェクティブを作成する。
     Prep["インタビューの準備"] --> UserI["利用者へのインタビュー"]
     Prep --> MgmtI["マネジメントへのインタビュー"]
     UserI --> Collect["要件と情報項目の収集"]
@@ -1179,6 +1191,8 @@ flowchart TD
 `),
 "diag-6": dedent(`
 flowchart TD
+    accTitle: 現行データベース分析の流れ
+    accDescr: 現行データベースが紙ベースかレガシーシステムかを確認し、データの収集方法と情報の提示方法を並行して確認する。両方の結果を踏まえて利用者とマネジメントに追加インタビューを行い、暫定フィールドリスト、計算フィールドリストの順に作成して、最後に利用者とマネジメントがレビューする。
     Know["現行データベースを把握する"] --> Type["紙ベースかレガシーシステムかを確認"]
     Type --> Collect["データの収集方法を確認"]
     Type --> Present["情報の提示方法を確認"]
@@ -1193,6 +1207,8 @@ flowchart TD
 `),
 "diag-7": dedent(`
 flowchart TD
+    accTitle: テーブル構造を確定するまでの流れ
+    accDescr: 主題対象を洗い出して暫定テーブルリストを作り、最終テーブルリストを確定する。各テーブルにフィールドを割り当て、理想的フィールドの基準、理想的テーブルの基準の順に検証し、必要に応じてサブセットテーブルを分離する。
     Subjects["主題対象の洗い出し"] --> Prelim["暫定テーブルリストの作成"]
     Prelim --> Final["最終テーブルリストの確定"]
     Final --> Assign["各テーブルへのフィールド割り当て"]
@@ -1205,6 +1221,8 @@ flowchart TD
 `),
 "diag-8": dedent(`
 flowchart TD
+    accTitle: キーの分類
+    accDescr: テーブル内のフィールドは候補キーと非キーフィールドに分かれる。候補キーの中から1つを選んだものがプライマリキーであり、選ばれなかった残りの候補キーが代替キーとなる。
     All["テーブル内のすべてのフィールド"] --> Candidate["候補キー"]
     All --> NonKey["非キーフィールド"]
     Candidate --> Primary["プライマリキー 候補キーの中から1つを選定"]
@@ -1215,6 +1233,8 @@ flowchart TD
 `),
 "diag-9": dedent(`
 flowchart TD
+    accTitle: フィールド仕様を構成する3つの要素
+    accDescr: フィールド仕様は3種類の要素で1つのフィールドを定義する。一般要素は名称・説明・種別など、そのフィールドが何を表すかを人に伝える情報を担う。物理要素はデータ型・長さ・必須入力かどうかなど、値をどう格納するかを定める。論理要素は値の範囲・デフォルト値・検証規則など、どの値を正しいとみなすかを定める。3つの要素は並列の関係にあり、すべてがそろってはじめてフィールドの定義が完結する。
     Spec["フィールド仕様"] --> General["一般要素 名称 説明 種別など"]
     Spec --> Physical["物理要素 データ型 長さ 必須入力かどうかなど"]
     Spec --> Logical["論理要素 値の範囲 デフォルト値 検証規則など"]
@@ -1223,6 +1243,8 @@ flowchart TD
 `),
 "diag-10": dedent(`
 flowchart TD
+    accTitle: 親レコード削除時の削除規則
+    accDescr: 親レコードが削除されるとき、子レコードの扱いは3通りから選ぶ。子も連動して削除するならカスケード削除、子が存在する限り削除を禁止するなら削除を制限、子の外部キーを空値にするならNullに設定である。
     Delete["親レコードが削除される"] --> Q{"子レコードはどう扱うか"}
     Q -->|"子も連動して削除する"| Cascade["カスケード削除"]
     Q -->|"子が存在する限り削除を禁止する"| Restrict["削除を制限"]
@@ -1233,6 +1255,8 @@ flowchart TD
 `),
 "diag-11": dedent(`
 flowchart TD
+    accTitle: ビジネスルールの分類
+    accDescr: ビジネスルールはフィールド固有のルールとリレーションシップ固有のルールに分かれる。前者は入力可能な値の範囲や形式に関する制約、後者は参加のタイプや削除規則に関する制約を定める。
     Rules["ビジネスルール"] --> Field["フィールド固有のルール"]
     Rules --> Relation["リレーションシップ固有のルール"]
     Field --> FieldEx["入力可能な値の範囲や形式に関する制約"]
@@ -1242,6 +1266,8 @@ flowchart TD
 `),
 "diag-12": dedent(`
 flowchart TD
+    accTitle: ビューの3類型
+    accDescr: ビューには、単純な抽出や表示に使うデータビュー、合計や平均などの集計結果を示す集計ビュー、データ整合性の確認に使う検証ビューの3種類がある。
     Views["ビュー"] --> DataView["データビュー 単純な抽出 表示用"]
     Views --> AggView["集計ビュー 合計や平均などの集計結果"]
     Views --> ValView["検証ビュー データ整合性確認用"]
@@ -1250,6 +1276,8 @@ flowchart TD
 `),
 "diag-13": dedent(`
 flowchart TD
+    accTitle: 避けるべき設計アプローチ
+    accDescr: フラットファイル設計はすべての情報を1枚の巨大な表に詰め込む。スプレッドシート型設計は行と列の見た目にとらわれて主題ごとの分離を怠る。特定ソフトウェア主導の設計は特定製品の機能制約を設計要件と混同する。
     Bad["避けるべき設計アプローチ"] --> Flat["フラットファイル設計"]
     Bad --> Spread["スプレッドシート型設計"]
     Bad --> SoftwareDriven["特定ソフトウェア主導の設計"]
