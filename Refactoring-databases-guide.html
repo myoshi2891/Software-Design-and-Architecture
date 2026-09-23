@@ -1033,6 +1033,11 @@ pre.mermaid{
       -- 列でも現在の行値が入るため、値の有無ではなく「書かれたか」で分岐しないと、
       -- 無関係な UPDATE（数量の更新など）で同期処理が誤って走ってしまう。
       -- INSERT では UPDATING が使えないので、値が入っているかで判断する。
+      -- このため INSERT では「列の省略」と「明示的な NULL 指定」を区別できず、
+      -- 新3列がすべて NULL なら「書かれていない」とみなす。旧列に値を入れつつ
+      -- 新3列に明示的に NULL を指定する INSERT は契約上禁止とする（旧列の分解値で
+      -- 3列が埋められる）。INSERT で両表現を同時に指定する場合は、新3列にも
+      -- 旧列と一致する値を指定すること。
       old_written BOOLEAN;
       new_written BOOLEAN;
       composed    inventory.product_inventory_code%TYPE;
@@ -1122,7 +1127,8 @@ pre.mermaid{
         INTO error_count
         FROM user_errors
        WHERE name = 'TRG_INVENTORY_CODE_SYNC'
-         AND type = 'TRIGGER';
+         AND type = 'TRIGGER'
+         AND attribute = 'ERROR';  -- 警告（WARNING）は失敗扱いにしない
 
       IF error_count > 0 THEN
         RAISE_APPLICATION_ERROR(-20004,
@@ -1138,11 +1144,15 @@ pre.mermaid{
     --
     --   復旧手順A(推奨・Expandをやり直す):
     --     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
-    --     2. DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
-    --     3. ALTER TABLE inventory DROP COLUMN serial_number;
+    --     2. トリガーを DROP すると USER_ERRORS の該当行も消えるため、先に
+    --        SELECT line, position, text FROM user_errors
+    --         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+    --        を実行し、結果を出力・保存しておく
+    --     3. DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+    --     4. ALTER TABLE inventory DROP COLUMN serial_number;
     --        ALTER TABLE inventory DROP COLUMN batch_number;
     --        ALTER TABLE inventory DROP COLUMN location_code;
-    --     4. USER_ERRORS の内容でトリガー本体を修正し、Expandフェーズを先頭から再実行する
+    --     5. 手順2で保存したエラー情報をもとにトリガー本体を修正し、Expandフェーズを先頭から再実行する
     --
     --   復旧手順B(列を残したままトリガーだけ直す):
     --     1. SELECT line, position, text FROM user_errors
