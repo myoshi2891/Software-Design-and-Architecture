@@ -432,6 +432,9 @@ flowchart LR
 -- === Expandフェーズ: 新しい構造を追加する ===
 -- 失敗した時点でスクリプトを止める。最初のDDLより前に宣言しないと、
 -- 列追加やトリガー作成の失敗を見逃したままバックフィルへ進んでしまう。
+-- WHENEVER SQLERROR は SQL*Plus（および SQLcl などの SQL*Plus 互換ランナー）の指令のため、
+-- CI でも SQL*Plus 互換ランナーで適用する。別のランナー（Flyway / Liquibase 等）を使う場合は、
+-- この行をそのランナーが備えるエラー時中断の仕組みに置き換える。
 WHENEVER SQLERROR EXIT FAILURE ROLLBACK
 
 ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
