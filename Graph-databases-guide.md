@@ -433,7 +433,7 @@ flowchart TD
 
 2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented Generation)がベクトル検索やキーワード検索(BM25など)、それらを組み合わせたハイブリッド検索で関連文書を集めるのに対し、GraphRAGはさらにナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。
 
-Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends 2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する`neo4j-graphrag-python`パッケージ、LlamaIndexの`PropertyGraphIndex`、LangChainの`LLMGraphTransformer`など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。
+Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends 2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する`neo4j-graphrag`パッケージ（PyPIの配布名。公式リポジトリ名は`neo4j-graphrag-python`）、LlamaIndexの`PropertyGraphIndex`、LangChainの`LLMGraphTransformer`など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。
 
 ---
 
