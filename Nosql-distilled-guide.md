@@ -57,7 +57,7 @@ flowchart LR
     A --> Core["Step1〜Step6<br/>中核概念"]
     B --> Core
     Core --> Impl["Step7〜Step10<br/>4種類の実装"]
-    Impl --> Ops["Step11〜Step13<br/>運用と使い分け"]
+    Impl --> Ops["Step11〜Step14<br/>運用と使い分け"]
     Ops --> Now["2026年時点の補足"]
     Now --> Goal(["自分のプロジェクトで<br/>NoSQLを検討できる"])
 ```
