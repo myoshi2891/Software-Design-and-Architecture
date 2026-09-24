@@ -187,7 +187,7 @@ flowchart TB
 
 Performance Schemaの生データは列数が多く読みにくいため、`sys` スキーマという「人間向けのビュー集」が用意されています。例えば以下のような用途で使われます。
 
-| 目的 | 使うビュー（例） |
+| 目的 | 使うビュー／テーブル（例） |
 |---|---|
 | 遅いSQL文の特定 | `sys.statements_with_runtimes_in_95th_percentile` |
 | メタデータロック待ちの確認 | `sys.schema_table_lock_waits` |
