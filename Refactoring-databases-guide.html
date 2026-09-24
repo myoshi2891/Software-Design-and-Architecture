@@ -366,15 +366,15 @@ pre.mermaid{
 
 /* ---------- Step list ---------- */
 .step-list{list-style:none;margin:1.2em 0;padding:0;counter-reset:step;}
-.step-list li{
+.step-list > li{
   counter-increment:step;
   display:flex;
   gap:14px;
   padding:12px 0;
   border-bottom:1px dashed var(--border);
 }
-.step-list li:last-child{border-bottom:none;}
-.step-list li::before{
+.step-list > li:last-child{border-bottom:none;}
+.step-list > li::before{
   content:counter(step);
   flex:none;
   width:30px;height:30px;
@@ -1139,8 +1139,11 @@ pre.mermaid{
 
     -- 注意：ALTER TABLE は Oracle では暗黙にコミットされるため、上の -20004 で
     -- スクリプトを中止しても、直前に追加した3列は残ったままになる。エラーが
-    -- DDL をロールバックしてくれることはない。したがって失敗時は、下記いずれかの
-    -- 手順で「トリガーも新列も存在しない」状態へ明示的に戻してから再実行する。
+    -- DDL をロールバックしてくれることはない。同様に、3本の ALTER TABLE ADD の
+    -- 途中（例: 2本目）で失敗した場合も、それまでに成功した列だけが残り、トリガーは
+    -- まだ作成されていない。したがって失敗時は、下記いずれかの手順で「トリガーも
+    -- 新列も存在しない」状態へ明示的に戻してから再実行する（列追加の途中で止まった
+    -- 場合は、トリガーが存在しないため手順Bは使えず、手順Aで復旧する）。
     --
     --   復旧手順A(推奨・Expandをやり直す):
     --     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
@@ -1148,11 +1151,36 @@ pre.mermaid{
     --        SELECT line, position, text FROM user_errors
     --         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
     --        を実行し、結果を出力・保存しておく
-    --     3. DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
-    --     4. ALTER TABLE inventory DROP COLUMN serial_number;
+    --        （列追加の途中で失敗しトリガー作成まで到達していない場合、この結果は0行になる）
+    --     3. トリガーが作成済みの場合に限り除去する。存在しないトリガーの DROP は
+    --        ORA-04080 で失敗するため、先に存在を確認する:
+    --        SELECT trigger_name, status FROM user_triggers
+    --         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+    --        → 1行返った場合のみ実行する:
+    --        DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+    --     4. 列ごとに、DROP の直前に存在を確認してから削除する（存在しない列の DROP は
+    --        ORA-00904 で失敗するため、列追加が途中で止まっていた場合や、前回の復旧が
+    --        途中まで進んでいた場合に備える）:
+    --        SELECT column_name FROM user_tab_columns
+    --         WHERE table_name = 'INVENTORY'
+    --           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+    --        → 結果に残っている列だけを対象に、1文ずつ実行する:
+    --        ALTER TABLE inventory DROP COLUMN serial_number;
     --        ALTER TABLE inventory DROP COLUMN batch_number;
     --        ALTER TABLE inventory DROP COLUMN location_code;
-    --     5. 手順2で保存したエラー情報をもとにトリガー本体を修正し、Expandフェーズを先頭から再実行する
+    --     5. 各 DDL の実行後に、DDL は文ごとに暗黙コミットされ途中失敗でも戻らないため、
+    --        トリガーと新列の残存状態を毎回確認する:
+    --        SELECT trigger_name, status FROM user_triggers
+    --         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+    --        SELECT column_name FROM user_tab_columns
+    --         WHERE table_name = 'INVENTORY'
+    --           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+    --        確認した状態ごとの対処:
+    --          - トリガーが残っている → 手順3の DROP TRIGGER を再実行する
+    --          - 新列が一部だけ残っている → 残っている列についてのみ手順4を再実行する
+    --          - DROP が権限・ロック競合で失敗した → 原因を取り除いてから同じ手順を再実行する
+    --        トリガー・新3列がいずれも存在しない（両クエリとも0行）ことを確認できるまで次へ進まない
+    --     6. 手順2で保存したエラー情報をもとにトリガー本体を修正し、Expandフェーズを先頭から再実行する
     --
     --   復旧手順B(列を残したままトリガーだけ直す):
     --     1. SELECT line, position, text FROM user_errors
@@ -1212,7 +1240,16 @@ pre.mermaid{
     <ol class="step-list">
       <li><div><strong>事前確認</strong> — <code>USER_DEPENDENCIES</code> / <code>ALL_DEPENDENCIES</code> で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、<code>ALTER TABLE</code> や <code>DROP ANY TRIGGER</code> の権限、および <code>ALTER TABLE ... DROP COLUMN</code> が取る排他ロックを取得できる時間帯かを確認します。</div></li>
       <li><div><strong>実行後の検証</strong> — <code>USER_TRIGGERS</code> と <code>USER_TAB_COLUMNS</code> を照会し、同期トリガーと旧列の<strong>両方</strong>が消えていることを確認します。片方だけが残っていれば中途半端な状態です。</div></li>
-      <li><div><strong>列削除が失敗した場合の復旧</strong> — まず同期トリガーを作り直して双方向同期を復旧させ、Step 15 の検証クエリ(<code>DECODE</code> による NULL 安全な突き合わせ)で旧列と新3列の不一致行を洗い出して修復します。そのうえで失敗の原因(依存オブジェクト・権限・ロック競合)を取り除き、列削除を再実行します。</div></li>
+      <li><div><strong>列削除が失敗した場合の復旧</strong> — 同期トリガーが無い状態では書き込みのたびに乖離が広がるため、次の順で進めます。
+        <ol>
+          <li><strong>書き込みを停止する</strong>:<code>inventory</code> へ書き込むアプリケーション・バッチを止めます(メンテナンスモードへの切り替えや、書き込み系デプロイの停止など)。停止しないまま修復やトリガー再作成を行うと、作業中の更新が片側にしか反映されず不一致が再発します。</li>
+          <li><strong>正とする表現を決める</strong>:Contract フェーズに入った時点ではすべての利用者が新3列へ切り替わっているはずなので、原則として<strong>新3列を正</strong>とし、旧列を再連結値で上書きします。旧列にしか書かない利用者が残っていたことが判明した場合は、その期間の更新を旧列側から新3列へ反映する必要があるため、どちらを正とするかを利用者の切り替え状況から判断し、記録に残します。</li>
+          <li><strong>競合行の解決方針を定める</strong>:両方の表現がそれぞれ異なる更新を受けた行(どちらを採っても片方の更新が失われる行)は機械的に上書きせず、更新履歴や監査ログ・業務担当者の確認に基づいて行ごとに正しい値を決めます。</li>
+          <li><strong>不一致の特定と修復</strong>:Step 15 の検証クエリ(<code>DECODE</code> による NULL 安全な突き合わせ)で旧列と新3列の不一致行を洗い出し、上の方針に従って修復したうえで、同じ検証クエリが0件になることを確認します。</li>
+          <li><strong>同期トリガーの再作成</strong>:修復が完了してから同期トリガーを再作成し、コンパイル検査を通して双方向同期を復旧させます。そのうえで書き込みを再開します。</li>
+          <li><strong>列削除の再実行</strong>:失敗の原因(依存オブジェクト・権限・ロック競合)を取り除き、Contract フェーズを再実行します。</li>
+        </ol>
+      </div></li>
     </ol>
   </div>
   <div class="callout forest">
