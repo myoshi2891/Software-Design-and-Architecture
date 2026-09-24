@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLアンチパターン 第2版 - 初学者のためのステップバイステップ解説ガイド</title>
+<meta name="description" content="Bill Karwin著『SQL Antipatterns』日本語版第2版を、初学者向けに全27章ステップバイステップで解説するガイド。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css" integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/styles/github.min.css" integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
+<style>
+
+:root{
+  --paper:#faf6ee;
+  --paper-alt:#f2ead9;
+  --card:#fffdf8;
+  --ink:#242019;
+  --ink-soft:#5a5346;
+  --ink-faint:#8b8371;
+  --border:#e3d9c2;
+  --border-soft:#ede4d0;
+  --indigo:#3a3592;
+  --indigo-soft:#eae8fb;
+  --indigo-ink:#211d5e;
+  --gold:#9c6a17;
+  --gold-soft:#f6ead0;
+  --forest:#1f6b46;
+  --forest-soft:#dff0e4;
+  --plum:#7c3468;
+  --plum-soft:#f3e3ee;
+  --shadow:0 1px 2px rgba(36,32,25,.06), 0 8px 24px rgba(36,32,25,.06);
+  --radius:14px;
+  --sidebar-w:300px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Source Serif 4","Noto Serif JP",serif;
+  color:var(--ink);
+  line-height:1.4;
+  font-weight:700;
+}
+a{color:var(--indigo);}
+a:hover{color:var(--indigo-ink);}
+img{max-width:100%;}
+.ti{line-height:1;}
+
+/* ---------- Layout ---------- */
+.layout{display:block;}
+.sidebar{
+  position:fixed;
+  top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--paper-alt);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:28px 0 40px;
+  z-index:40;
+}
+.sidebar-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:0 22px 20px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:14px;
+}
+.sidebar-brand .ti{font-size:1.5rem;color:var(--indigo);}
+.sidebar-brand-text{font-family:"Source Serif 4",serif;font-weight:700;font-size:1.02rem;color:var(--ink);}
+.sidebar-brand-sub{font-size:1rem;color:var(--ink-faint);margin-top:2px;}
+.nav-group-label{
+  font-size:1rem;letter-spacing:.08em;color:var(--ink-faint);
+  text-transform:uppercase;padding:14px 22px 6px;font-weight:700;
+}
+.nav-list{list-style:none;margin:0;padding:0;}
+.nav-item a{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 22px;
+  color:var(--ink-soft);
+  text-decoration:none;
+  font-size:1rem;
+  border-left:3px solid transparent;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.nav-item a .ti{font-size:1.05rem;color:var(--ink-faint);flex-shrink:0;}
+.nav-item a:hover{background:var(--indigo-soft);color:var(--indigo-ink);}
+.nav-item a.active{
+  background:var(--indigo-soft);
+  color:var(--indigo-ink);
+  border-left-color:var(--indigo);
+  font-weight:700;
+}
+.nav-item a.active .ti{color:var(--indigo);}
+
+.main{margin-left:var(--sidebar-w);min-height:100vh;}
+
+/* ---------- Mobile bar ---------- */
+.mobile-bar{
+  display:none;
+  position:sticky;top:0;z-index:50;
+  align-items:center;gap:12px;
+  background:var(--paper-alt);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  font-size:1rem;
+}
+.mobile-bar button{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--ink);cursor:pointer;
+}
+.mobile-bar .brand{font-family:"Source Serif 4",serif;font-weight:700;font-size:1rem;color:var(--ink);}
+.scrim{display:none;position:fixed;inset:0;background:rgba(36,32,25,.35);z-index:39;}
+.scrim.show{display:block;}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:64px 56px 40px;
+  border-bottom:1px solid var(--border);
+  background:
+    radial-gradient(1100px 320px at 85% -10%, var(--indigo-soft), transparent 60%),
+    radial-gradient(900px 260px at 0% 0%, var(--gold-soft), transparent 55%);
+  max-width:none;
+}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:1rem;font-weight:700;letter-spacing:.04em;
+  color:var(--indigo-ink);background:var(--indigo-soft);
+  padding:6px 14px;border-radius:999px;margin-bottom:20px;
+}
+.hero-title{
+  font-size:2.35rem;margin:0 0 16px;max-width:none;
+}
+.hero-lead{
+  font-size:1.12rem;color:var(--ink-soft);max-width:none;margin:0 0 8px;
+}
+.hero-note{
+  font-size:1rem;color:var(--ink-faint);max-width:none;margin:18px 0 0;
+  border-left:3px solid var(--gold);padding-left:14px;
+}
+
+/* ---------- Section ---------- */
+.section{
+  padding:52px 56px;
+  border-bottom:1px solid var(--border);
+  max-width:none;
+}
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+.section-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--indigo-soft);color:var(--indigo);
+  font-size:1.35rem;flex-shrink:0;
+}
+.section h2{font-size:1.6rem;margin:0;max-width:none;}
+.section-sub{font-size:1rem;color:var(--ink-faint);margin-top:2px;}
+.prose{max-width:none;}
+.prose p{margin:0 0 16px;max-width:none;overflow-wrap:break-word;}
+.prose li{overflow-wrap:break-word;}
+.prose h3{font-size:1.28rem;margin:34px 0 12px;padding-top:6px;}
+.prose h3:first-child{margin-top:0;}
+.prose h4{font-size:1.08rem;margin:22px 0 10px;color:var(--indigo-ink);}
+.prose ul,.prose ol{padding-left:1.4em;margin:0 0 16px;}
+.prose ul li,.prose ol li{margin-bottom:7px;}
+.prose strong{color:var(--ink);}
+.step-divider{height:1px;background:var(--border);margin:38px 0;border:none;}
+
+/* ---------- Cards / kv ---------- */
+.book-card{
+  display:flex;gap:26px;align-items:stretch;flex-wrap:wrap;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);
+  margin-bottom:26px;
+}
+.book-cover{
+  flex:0 0 180px;min-height:230px;border-radius:10px;
+  background:linear-gradient(160deg,var(--indigo) 0%, #241f6e 60%, #171351 100%);
+  color:#f4f1ff;display:flex;flex-direction:column;justify-content:space-between;
+  padding:20px 16px;box-shadow:var(--shadow);
+}
+.book-cover .bc-top{font-size:1rem;letter-spacing:.08em;opacity:.75;}
+.book-cover .bc-title{font-family:"Source Serif 4",serif;font-weight:700;font-size:1.18rem;line-height:1.4;}
+.book-cover .bc-author{font-size:1rem;opacity:.85;}
+.book-card-body{flex:1;min-width:240px;}
+.book-card-body p{margin:0 0 12px;overflow-wrap:break-word;}
+.table-wrap{overflow-x:auto;min-width:0;margin:0 0 22px;border:1px solid var(--border);border-radius:12px;background:var(--card);}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:1rem;}
+.kv-table{min-width:0;}
+.table-wrap .kv-table{min-width:0;}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--border-soft);vertical-align:top;overflow-wrap:anywhere;}
+thead th{background:var(--paper-alt);color:var(--ink);font-weight:700;font-size:1rem;border-bottom:1px solid var(--border);}
+.kv-table th{background:transparent;color:var(--ink-faint);font-weight:700;width:34%;}
+table tbody tr:nth-child(even){background:var(--paper-alt);}
+.kv-table tbody tr:nth-child(even){background:transparent;}
+.kv-table tbody tr{border-bottom:1px solid var(--border-soft);}
+
+/* ---------- Callout ---------- */
+.callout{
+  display:flex;gap:14px;background:var(--gold-soft);
+  border:1px solid #e6cd9a;border-radius:12px;padding:18px 20px;margin:0 0 20px;
+}
+.callout .ti{font-size:1.3rem;color:var(--gold);flex-shrink:0;margin-top:2px;}
+.callout-body{flex:1;min-width:0;}
+.callout-body p{margin:0 0 8px;}
+.callout-body p:last-child{margin-bottom:0;}
+.callout-title{font-weight:700;color:var(--ink);}
+.callout.plum{background:var(--plum-soft);border-color:#dcb9cf;}
+.callout.plum .ti{color:var(--plum);}
+.callout.forest{background:var(--forest-soft);border-color:#b9d9c3;}
+.callout.forest .ti{color:var(--forest);}
+
+/* ---------- Mermaid ---------- */
+.diagram-wrap{margin:22px 0 28px;}
+.diagram-fig{
+  overflow-x:auto;
+  display:flex;justify-content:safe center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:20px 12px;
+}
+.diagram-fig svg{flex-shrink:0;max-width:none;height:auto;}
+.diagram-cap{font-size:1rem;color:var(--ink-faint);text-align:center;margin-top:10px;}
+.diagram-loading{font-size:1rem;color:var(--ink-faint);padding:30px;text-align:center;}
+
+/* ---------- Code blocks ---------- */
+.code-block{margin:0 0 22px;border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
+.code-block-head{
+  background:var(--paper-alt);color:var(--ink-faint);font-size:1rem;letter-spacing:.03em;
+  padding:8px 16px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  border-bottom:1px solid var(--border);
+}
+.code-block pre{margin:0;overflow-x:auto;background:var(--card);padding:16px 18px;}
+.code-block code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:1rem;line-height:1.7;color:var(--ink);}
+
+/* ---------- Checklist ---------- */
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.checklist li{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:13px 16px;
+}
+.checklist input[type="checkbox"]{
+  appearance:none;-webkit-appearance:none;
+  width:20px;height:20px;flex-shrink:0;margin-top:2px;
+  border:2px solid var(--ink-faint);border-radius:6px;
+  cursor:pointer;position:relative;font-size:1rem;
+}
+.checklist input[type="checkbox"]:checked{background:var(--forest);border-color:var(--forest);}
+.checklist input[type="checkbox"]:checked::after{
+  content:"";position:absolute;left:5px;top:1px;width:6px;height:11px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(40deg);
+}
+.checklist label{cursor:pointer;flex:1;overflow-wrap:break-word;}
+.checklist li.done label{color:var(--ink-faint);text-decoration:line-through;}
+.checklist-progress{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  font-size:1rem;color:var(--ink-soft);
+}
+.progress-bar{flex:1;height:8px;background:var(--border-soft);border-radius:999px;overflow:hidden;}
+.progress-bar-fill{height:100%;width:0%;background:var(--forest);transition:width .25s;}
+
+/* ---------- References ---------- */
+.ref-list{display:flex;flex-direction:column;gap:10px;}
+.ref-card{
+  display:flex;gap:14px;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;align-items:flex-start;
+}
+.ref-num{
+  flex-shrink:0;width:28px;height:28px;border-radius:8px;background:var(--indigo-soft);
+  color:var(--indigo-ink);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.ref-body{flex:1;min-width:0;}
+.ref-title{font-weight:700;color:var(--ink);margin-bottom:3px;overflow-wrap:break-word;}
+.ref-url{
+  font-size:1rem;color:var(--indigo);word-break:break-all;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+/* ---------- Footer ---------- */
+.footer{
+  padding:34px 56px;max-width:none;
+  color:var(--ink-faint);font-size:1rem;
+}
+
+/* ---------- Utility ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:1rem;font-weight:700;padding:4px 11px;border-radius:999px;
+  background:var(--forest-soft);color:var(--forest);margin-right:6px;
+}
+.badge.gold{background:var(--gold-soft);color:var(--gold);}
+.badge.plum{background:var(--plum-soft);color:var(--plum);}
+.badge.indigo{background:var(--indigo-soft);color:var(--indigo-ink);}
+
+/* ---------- Mermaid tooltip / native checkbox sub-1rem guards ---------- */
+.mermaidTooltip{font-size:1rem!important;}
+input[type="checkbox"]{font-size:1rem;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:980px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s ease;box-shadow:0 0 0 2000px rgba(0,0,0,0);}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 24px rgba(0,0,0,.18);}
+  .main{margin-left:0;}
+  .mobile-bar{display:flex;}
+  .mobile-bar button{font-size:1rem;}
+  .hero{padding:34px 22px 28px;}
+  .hero-title{font-size:1.7rem;}
+  .section{padding:34px 22px;}
+  .footer{padding:26px 22px;}
+  .book-card{flex-direction:column;}
+  .book-cover{flex:0 0 auto;min-height:150px;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="mobile-bar">
+  <button id="menuToggle" aria-label="メニュー"><i class="ti ti-menu-2"></i></button>
+  <span class="brand">SQLアンチパターン 第2版</span>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="ti ti-book-2"></i>
+      <div>
+        <div class="sidebar-brand-text">SQLアンチパターン 第2版</div>
+        <div class="sidebar-brand-sub">初学者向けステップバイステップガイド</div>
+      </div>
+    </div>
+    <div class="nav-group-label">目次</div>
+    <ul class="nav-list">
+<li class="nav-item"><a href="#book-info"><i class="ti ti-info-square-rounded"></i><span>書籍情報</span></a></li>
+<li class="nav-item"><a href="#about"><i class="ti ti-bulb"></i><span>この本は何のための本か</span></a></li>
+<li class="nav-item"><a href="#audience"><i class="ti ti-users"></i><span>対象読者・使い方</span></a></li>
+<li class="nav-item"><a href="#overview"><i class="ti ti-sitemap"></i><span>本書の全体像</span></a></li>
+<li class="nav-item"><a href="#chapter-list"><i class="ti ti-list-details"></i><span>全27章 一覧表</span></a></li>
+<li class="nav-item"><a href="#step0"><i class="ti ti-flag"></i><span>Step0 アンチパターンとは何か</span></a></li>
+<li class="nav-item"><a href="#step1"><i class="ti ti-database"></i><span>Step1 論理設計（2〜9章）</span></a></li>
+<li class="nav-item"><a href="#step2"><i class="ti ti-server-2"></i><span>Step2 物理設計（10〜13章）</span></a></li>
+<li class="nav-item"><a href="#step3"><i class="ti ti-terminal-2"></i><span>Step3 クエリ（14〜19章）</span></a></li>
+<li class="nav-item"><a href="#step4"><i class="ti ti-shield-lock"></i><span>Step4 アプリ開発（20〜25章）</span></a></li>
+<li class="nav-item"><a href="#step5"><i class="ti ti-key"></i><span>Step5 外部キー（26〜27章）</span></a></li>
+<li class="nav-item"><a href="#step6"><i class="ti ti-stack-2"></i><span>Step6 付録A 正規化</span></a></li>
+<li class="nav-item"><a href="#step7"><i class="ti ti-gift"></i><span>Step7 日本語版限定付録</span></a></li>
+<li class="nav-item"><a href="#editions"><i class="ti ti-refresh"></i><span>初版から第2版への変化</span></a></li>
+<li class="nav-item"><a href="#voices"><i class="ti ti-message-circle-2"></i><span>国際的な評価</span></a></li>
+<li class="nav-item"><a href="#critical"><i class="ti ti-alert-triangle"></i><span>批判的に読む</span></a></li>
+<li class="nav-item"><a href="#roadmap"><i class="ti ti-route"></i><span>学習ロードマップ</span></a></li>
+<li class="nav-item"><a href="#checklist"><i class="ti ti-checklist"></i><span>チェックリスト</span></a></li>
+<li class="nav-item"><a href="#summary"><i class="ti ti-flag-check"></i><span>まとめ</span></a></li>
+<li class="nav-item"><a href="#references"><i class="ti ti-link"></i><span>参考文献・出典</span></a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+
+<header class="hero">
+  <span class="hero-kicker"><i class="ti ti-book-2"></i>データベース設計ガイド</span>
+  <h1 class="hero-title">SQLアンチパターン 第2版<br>初学者のためのステップバイステップ解説ガイド</h1>
+  <p class="hero-lead">原著 <em>SQL Antipatterns, Volume 1: Avoiding the Pitfalls of Database Programming</em>（Bill Karwin著、Pragmatic Bookshelf）/ 日本語版『SQLアンチパターン 第2版』(オライリー・ジャパン、2025年7月刊)を題材に、データベース設計とSQLを学び始めたばかりの人に向けて、全27章の内容を噛み砕いて解説します。</p>
+  <p class="hero-note">出典 : <a href="https://www.oreilly.co.jp/books/9784814400744/" target="_blank" rel="noopener">オライリー・ジャパン公式サイト（9784814400744）</a>。フローチャートはすべてMermaidで描画し、比較情報はMarkdown形式の表で示しています。ASCIIアートによる図解は使用していません。</p>
+</header>
+
+
+<section class="section" id="book-info">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-info-square-rounded"></i></span>
+    <div>
+      <h2>書籍情報</h2>
+      <p class="section-sub">原著・日本語版の基本データ</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="book-card">
+      <div class="book-cover">
+        <div class="bc-top">O'REILLY JAPAN</div>
+        <div class="bc-title">SQLアンチパターン<br>第2版</div>
+        <div class="bc-author">Bill Karwin 著<br>和田卓人 監訳</div>
+      </div>
+      <div class="book-card-body">
+        <div class="table-wrap">
+          <table class="kv-table">
+            <tbody>
+              <tr><th>原題</th><td>SQL Antipatterns, Volume 1: Avoiding the Pitfalls of Database Programming</td></tr>
+              <tr><th>著者</th><td>Bill Karwin</td></tr>
+              <tr><th>原著出版社</th><td>Pragmatic Bookshelf（初版 2010年 / 第2版 2022年10月）</td></tr>
+              <tr><th>日本語版タイトル</th><td>SQLアンチパターン 第2版 データベースプログラミングで陥りがちな失敗とその対策</td></tr>
+              <tr><th>日本語版出版社</th><td>オライリー・ジャパン（発売元 オーム社）</td></tr>
+              <tr><th>監訳</th><td>和田卓人（t-wada）</td></tr>
+              <tr><th>日本語版発売日</th><td>2025年7月</td></tr>
+              <tr><th>ISBN</th><td>978-4-8144-0074-4</td></tr>
+              <tr><th>ページ数</th><td>約400ページ（原著第2版は378ページ）</td></tr>
+              <tr><th>章構成</th><td>全27章 + 付録A（正規化のルール）+ 日本語版限定付録「砂の城」</td></tr>
+              <tr><th>本書の分類</th><td>4部構成 + ボーナス1部 : 論理設計 / 物理設計 / クエリ / アプリケーション開発 / 外部キーのミニアンチパターン</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="about">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-bulb"></i></span>
+    <div>
+      <h2>この本は何のための本か</h2>
+      <p class="section-sub">アンチパターンという考え方</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>「アンチパターン」とは、一見うまくいきそうに見えるのに、実際には後々まで開発者を苦しめる「悪い設計パターン」のことです。本書は、著者のBill Karwinが長年SQLに関する質問に答え続けてきた経験から、開発者が繰り返しハマる失敗を26個（本文24章 + ボーナス2章）選び出し、それぞれに名前を付けて「見分け方」と「治し方」を示した一冊です。</p>
+    <p>日本語版監訳者であり、テスト駆動開発の普及やSQLアンチパターン初版（2013年）の企画を持ち込んだことでも知られる和田卓人氏は、2025年7月に開催されたイベント「t-wadaさんに聞く！SQLアンチパターン第2版」で、本書の意義を次のように語っています。AIエージェントに自然言語で指示してコードを書かせる「バイブコーディング」が広がる中で、UIなどは作り直しがきいても、いったんデータベースに入ったデータは後戻りできない、だからこそ他人の失敗から学び、落とし穴に名前を付けて回避することに価値がある、という趣旨の説明です。</p>
+    <p>本ガイドは、この原著・日本語版の構成に沿って、初学者にもわかりやすいように各アンチパターンを「目的」「アンチパターン（何がまずいか）」「見分け方」「使ってもよい場合」「解決策」という本書自身の章構成（t-wada氏の言う「アンチパターンの解剖」）に合わせて整理し直したものです。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-anatomy"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図1 : アンチパターンの解剖（本書各章共通の説明の型）</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="audience">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-users"></i></span>
+    <div>
+      <h2>対象読者・使い方</h2>
+      <p class="section-sub">誰のための本か、どう読むか</p>
+    </div>
+  </div>
+  <div class="prose">
+    <ul>
+      <li>SQLの基本文法（SELECT / INSERT / JOINなど）は書けるが、テーブル設計や実務でのSQL運用に自信がない人</li>
+      <li>独学や業務で「なんとなく動くSQL」を書いてきたが、体系的な知識を身につけたい人</li>
+      <li>レビューやアーキテクチャ設計で「このテーブル設計は大丈夫か」を判断する立場になった人</li>
+    </ul>
+    <p>各ステップは独立して読めるように書かれていますが、初めて読む場合はStep0から順に読み進めることをおすすめします。すでに設計で困っている場合は、該当するアンチパターン名から拾い読みしても構いません。</p>
+  </div>
+</section>
+
+
+<section class="section" id="overview">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-sitemap"></i></span>
+    <div>
+      <h2>本書の全体像（4部構成 + ボーナス）</h2>
+      <p class="section-sub">5つのパートと付録の位置づけ</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>原著・日本語版とも大きな構成は初版から変わらず、「データベース論理設計」「データベース物理設計」「クエリ」「アプリケーション開発」という4つのカテゴリでアンチパターンを紹介しています。第2版では、これに「外部キーのミニアンチパターン」を集めたボーナスパートが加わりました。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-overview"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図2 : 本書の全体構成（1章から付録Aまで）</p>
+    </div>
+    <p>各部に含まれる章の内訳は、このあとの一覧表で確認できます。</p>
+    <p>書名から「SQLの書き方に関する本」だと誤解されがちですが、実際にカバーしている範囲はテーブル設計・物理設計・インデックス設計・SQLインジェクションなどのセキュリティ・パスワードの扱い・スケールを見据えたアプリケーション設計まで及びます。「SQLのアンチパターン」という名前から連想される内容は、実は第Ⅲ部（クエリのアンチパターン）だけです。世間で最も評価が高いのは第Ⅰ部（データベース論理設計）で、テーブル設計の失敗は後々まで響くというのが、多くの読者に支持されている理由だとされています。</p>
+  </div>
+</section>
+
+
+<section class="section" id="chapter-list">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-list-details"></i></span>
+    <div>
+      <h2>全27章 一覧表</h2>
+      <p class="section-sub">章番号・アンチパターン名・英語名・要約</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>部</th><th>章</th><th>アンチパターン名（日本語）</th><th>英語名</th><th>ひとことで言うと</th></tr></thead>
+        <tbody>
+          <tr><td>-</td><td>1章</td><td>アンチパターンとは何か</td><td>What's an Antipattern?</td><td>本書の読み方・用語の導入</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>2章</td><td>ジェイウォーク（信号無視）</td><td>Jaywalking</td><td>カンマ区切りで複数値を1列に詰め込む</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>3章</td><td>ナイーブツリー（素朴な木）</td><td>Naive Trees</td><td>親IDだけで木構造を表現し続ける</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>4章</td><td>IDリクワイアド（とりあえずID）</td><td>ID Required</td><td>すべてのテーブルに機械的にid列を追加する</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>5章</td><td>キーレスエントリ（外部キー嫌い）</td><td>Keyless Entry</td><td>外部キー制約を敬遠する</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>6章</td><td>EAV（エンティティ・アトリビュート・バリュー）</td><td>Entity-Attribute-Value</td><td>何にでも対応できる汎用属性テーブルを作る</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>7章</td><td>ポリモーフィック関連</td><td>Polymorphic Associations</td><td>1つの外部キー列で複数の親テーブルを指す</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>8章</td><td>マルチカラムアトリビュート（複数列属性）</td><td>Multicolumn Attributes</td><td>繰り返し項目のために列を横に増やす</td></tr>
+          <tr><td>Ⅰ 論理設計</td><td>9章</td><td>メタデータトリブル（メタデータ大増殖）</td><td>Metadata Tribbles</td><td>スケールのためにテーブルや列を複製する</td></tr>
+          <tr><td>Ⅱ 物理設計</td><td>10章</td><td>ラウンディングエラー（丸め誤差）</td><td>Rounding Errors</td><td>金額をFLOATで扱う</td></tr>
+          <tr><td>Ⅱ 物理設計</td><td>11章</td><td>サーティワンフレーバー（31のフレーバー）</td><td>31 Flavors</td><td>列定義に許容値を直接書き込む</td></tr>
+          <tr><td>Ⅱ 物理設計</td><td>12章</td><td>ファントムファイル（幻のファイル）</td><td>Phantom Files</td><td>画像等をDB外のファイルシステムだけで管理する</td></tr>
+          <tr><td>Ⅱ 物理設計</td><td>13章</td><td>インデックスショットガン（闇雲インデックス）</td><td>Index Shotgun</td><td>根拠なくインデックスを増減させる</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>14章</td><td>フィア・オブ・ジ・アンノウン（恐怖のunknown）</td><td>Fear of the Unknown</td><td>NULLを普通の値のように扱う / 逆に恐れすぎる</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>15章</td><td>アンビギュアスグループ（曖昧なグループ）</td><td>Ambiguous Groups</td><td>GROUP BYで非集約列を無自覚に参照する</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>16章</td><td>ランダムセレクション</td><td>Random Selection</td><td>ORDER BY RAND()でランダム行を取る</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>17章</td><td>プアマンズ・サーチエンジン（貧者のサーチエンジン）</td><td>Poor Man's Search Engine</td><td>LIKE述語だけで全文検索を実装する</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>18章</td><td>スパゲッティクエリ</td><td>Spaghetti Query</td><td>1つの巨大なクエリで全部を解決しようとする</td></tr>
+          <tr><td>Ⅲ クエリ</td><td>19章</td><td>インプリシットカラム（暗黙の列）</td><td>Implicit Columns</td><td>SELECT *やカラム省略のINSERTを多用する</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>20章</td><td>リーダブルパスワード（読み取り可能パスワード）</td><td>Readable Passwords</td><td>パスワードを平文やリバーシブルな形で保存する</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>21章</td><td>SQLインジェクション</td><td>SQL Injection</td><td>未検証の入力をSQLとして実行してしまう</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>22章</td><td>シュードキー・ニートフリーク（疑似キー潔癖症）</td><td>Pseudokey Neat-Freak</td><td>欠番になった連番IDを詰め直そうとする</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>23章</td><td>シー・ノー・エビル（臭いものに蓋）</td><td>See No Evil</td><td>エラーやSQLの戻り値をチェックしない</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>24章</td><td>ディプロマティック・イミュニティ（外交特権）</td><td>Diplomatic Immunity</td><td>SQLだけ開発プラクティスの対象外にする</td></tr>
+          <tr><td>Ⅳ アプリ開発</td><td>25章</td><td>スタンダード・オペレーティング・プロシージャ（さびついた開発標準）</td><td>Standard Operating Procedures</td><td>何でもストアドプロシージャで解決しようとする</td></tr>
+          <tr><td>Ⅴ ボーナス</td><td>26章</td><td>標準SQLにおける外部キーの誤った使い方</td><td>Foreign Key Mistakes in Standard SQL</td><td>外部キー定義そのものの典型的ミス集</td></tr>
+          <tr><td>Ⅴ ボーナス</td><td>27章</td><td>MySQLにおける外部キーの誤った使い方</td><td>Foreign Key Mistakes in MySQL</td><td>MySQL固有の外部キーの落とし穴</td></tr>
+          <tr><td>-</td><td>付録A</td><td>正規化のルール</td><td>Rules of Normalization</td><td>正規形の基礎知識のおさらい</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>参考 : 原著第2版の目次は出版社Pragmatic Bookshelfの公式ページで確認できます（<a href="https://pragprog.com/titles/bksap1/sql-antipatterns-volume-1/" target="_blank" rel="noopener">pragprog.com/titles/bksap1</a>）。日本語版の詳細な目次はオライリー・ジャパン公式ページ（<a href="https://www.oreilly.co.jp/books/9784814400744/" target="_blank" rel="noopener">oreilly.co.jp/books/9784814400744</a>）で立ち読みできます。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step0">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-flag"></i></span>
+    <div>
+      <h2>Step0 : アンチパターンとは何か（1章）</h2>
+      <p class="section-sub">本書を読むための土台</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>本書冒頭の1章では、以降の章を読むための土台となる考え方が説明されます。</p>
+    <ul>
+      <li><strong>アンチパターンの2つのタイプ</strong> : 問題を認識せずに繰り返し使ってしまう「無自覚な」アンチパターンと、短期的な都合で意図的に選び、後で技術的負債として返ってくる「意図的な」アンチパターンがあります。</li>
+      <li><strong>アンチパターンの解剖</strong> : 本書は各章を「目的（何を達成したいか）」「アンチパターン（ありがちな失敗）」「見分け方」「使ってもよい場合」「解決策」という共通の型で説明します。この型自体が、読者が自分のプロジェクトのアンチパターンを発見するためのチェックリストになります。</li>
+      <li><strong>ER図とサンプルデータベース</strong> : 本書全体を通じて、バグ追跡システム（Bugs、Accounts、Productsなどのテーブル）という一貫したサンプルデータベースが使われ、各章のアンチパターンがこのサンプルに即して説明されます。</li>
+    </ul>
+    <div class="callout">
+      <i class="ti ti-info-circle"></i>
+      <div class="callout-body">
+        <p><span class="callout-title">初学者が押さえておくべきポイント</span></p>
+        <p>「アンチパターンは常に間違いというわけではない」という点です。本書のすべての章に「使ってもよい場合」の節があるのはそのためで、後述する各アンチパターンでも同様に、正しい原則だけでなく例外的に許容される状況を必ず併記します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="step1">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-database"></i></span>
+    <div>
+      <h2>Step1 : 第Ⅰ部 データベース論理設計のアンチパターン（2〜9章）</h2>
+      <p class="section-sub">テーブルにどんな情報を、どんな形で格納するか</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>テーブルにどんな情報を、どんな形で格納するかを決めるのが論理設計です。ここでの失敗は、アプリケーションが育つにつれてじわじわと開発を苦しめるため、本書の中でも特に評価が高いパートです。</p>
+
+    <h3>2章 ジェイウォーク（信号無視）</h3>
+    <div class="table-wrap">
+      <table class="kv-table">
+        <tbody>
+          <tr><th>目的</th><td>1つの実体（たとえば「製品」）に対して複数の値（複数のアカウントIDなど）を持たせたい</td></tr>
+          <tr><th>アンチパターン</th><td>account_ids列に "12,34,56" のようなカンマ区切り文字列を保存する</td></tr>
+          <tr><th>見分け方</th><td>クエリの中に LIKE '%,34,%' のような部分一致検索が現れる</td></tr>
+          <tr><th>使ってもよい場合</th><td>値の集合をアプリケーション側で完全にブラックボックスとして扱い、DB側で検索・結合・集計を一切行わない場合に限り許容されることがある</td></tr>
+          <tr><th>解決策</th><td>多対多の関係を表す「交差テーブル（intersection table）」を作る</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-block-head">sql</div>
+      <pre><code class="language-sql" data-code-id="code-1"></code></pre>
+    </div>
+    <script type="text/plain" id="code-1">-- アンチパターン：カンマ区切りで複数値を1列に詰め込む
+CREATE TABLE Products (
+  product_id   INTEGER PRIMARY KEY,
+  product_name VARCHAR(100),
+  account_ids  VARCHAR(500) -- "12,34,56" のような文字列
+);
+
+-- 解決策：交差テーブルを作成する
+CREATE TABLE Contacts (
+  product_id INTEGER NOT NULL REFERENCES Products(product_id),
+  account_id INTEGER NOT NULL REFERENCES Accounts(account_id),
+  PRIMARY KEY (product_id, account_id)
+);</script>
+    <p>交差テーブルにすれば、集計（COUNT）や結合（JOIN）、特定の値を含むかどうかの検索がすべて標準的なSQLで書けるようになり、値の長さ制限や区切り文字の衝突といった問題からも解放されます。</p>
+
+    <h3>3章 ナイーブツリー（素朴な木）</h3>
+    <p>組織図やコメントの返信ツリーのような階層構造を、親のIDだけを持つ「隣接リスト（Adjacency List）」で表現し続けると、先祖や子孫をすべて取得するクエリが極端に複雑になります。本書では4つの代表的なモデルが比較されます。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-tree-models"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図3 : 階層構造を表す4つのモデル</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>モデル</th><th>考え方</th><th>長所</th><th>短所</th></tr></thead>
+        <tbody>
+          <tr><td>隣接リスト（Adjacency List）</td><td>各行がparent_idを1つだけ持つ</td><td>1階層のJOINは簡単</td><td>任意の深さの先祖・子孫の取得が困難</td></tr>
+          <tr><td>経路列挙（Path Enumeration）</td><td>1/4/8/ のような経路文字列を持つ</td><td>LIKEで先祖・子孫を検索できる</td><td>経路の整合性を保証しにくい</td></tr>
+          <tr><td>入れ子集合（Nested Set）</td><td>各ノードがleftとrightの数値を持つ</td><td>部分木の取得が高速</td><td>挿入・移動のたびに広範囲の再計算が必要</td></tr>
+          <tr><td>閉包テーブル（Closure Table）</td><td>祖先と子孫のペアを別テーブルに全て保存</td><td>階層クエリも更新もシンプル</td><td>データ量がノード数の2乗に近づきうる</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>第2版で最も大きく変わった章の1つがこの3章です。初版（2013年）の時点では、再帰SQL（CTE : Common Table Expression）の標準化は進んでいたものの、各データベース製品での実装状況がまちまちだったため、隣接リストによる階層格納は明確なアンチパターンとされていました。しかし現在ではほとんどの主要なRDBMSがCTEを実装しているため、隣接リストは「必ずしもアンチパターンとは限らない」という記述に更新されています。これは、日本語版監訳者の和田卓人氏がイベントで特に強調していた変更点です。</p>
+    <div class="code-block">
+      <div class="code-block-head">sql</div>
+      <pre><code class="language-sql" data-code-id="code-2"></code></pre>
+    </div>
+    <script type="text/plain" id="code-2">-- 隣接リストでも、再帰CTEを使えば子孫を取得できる（現在の主要RDBMSで利用可）
+WITH RECURSIVE Descendants AS (
+  SELECT comment_id, parent_id, 1 AS depth
+  FROM Comments
+  WHERE comment_id = 1
+  UNION ALL
+  SELECT c.comment_id, c.parent_id, d.depth + 1
+  FROM Comments c
+  JOIN Descendants d ON c.parent_id = d.comment_id
+)
+SELECT * FROM Descendants;</script>
+    <p>それでも、深い階層に対して高頻度で先祖・子孫を検索するようなユースケースでは、経路列挙・入れ子集合・閉包テーブルといった代替モデルの方が適していることがあります。どのモデルを選ぶべきかは、「更新頻度」と「階層クエリの複雑さ・頻度」のどちらを優先するかで決まります。</p>
+
+    <h3>4章 IDリクワイアド（とりあえずID）</h3>
+    <p>「すべてのテーブルはidという名前の自動採番の主キーを持つべき」というルールを機械的に適用すると、交差テーブルのような複合主キーが自然なテーブルにまで無意味なid列を追加してしまったり、本来複合キーで表現すべき一意性制約が緩んでしまったりします。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 多対多の交差テーブルなのに、(product_id, account_id)の複合主キーではなく、無関係な連番idだけが主キーになっている。</li>
+      <li><strong>使ってもよい場合</strong> : ORMのようなツールが単一列の主キーを前提としている場合など、規約を一律に適用した方が開発効率が上がるケースもあります。</li>
+      <li><strong>解決策</strong> : 主キーの規約はテーブルごとの性質に合わせて選ぶ（Tailored to Fit）。交差テーブルには複合主キーを、それ以外のエンティティには用途に応じた代理キーを使う、という判断を意識的に行います。</li>
+    </ul>
+
+    <h3>5章 キーレスエントリ（外部キー嫌い）</h3>
+    <p>パフォーマンス低下やスキーマ変更の面倒さを理由に、外部キー制約をあえて使わない設計です。</p>
+    <ul>
+      <li><strong>アンチパターン</strong> : 外部キー制約を宣言せず、アプリケーションコード側だけで参照整合性を保とうとする。</li>
+      <li><strong>見分け方</strong> : 「完璧なコードを書けば制約は不要」という前提に立っている、孤立したレコード（親を失った子レコード）が発生する、原因調査に時間がかかる。</li>
+      <li><strong>使ってもよい場合</strong> : 意図的にデータウェアハウスなどでロード速度を優先し、整合性チェックをETL側で完結させる場合。</li>
+      <li><strong>解決策</strong> : 外部キー制約を宣言する。複数テーブルにまたがる変更（ON UPDATE CASCADE / ON DELETE CASCADEなど）もサポートされており、心配されるほどのオーバーヘッドにはならないケースが大半です。</li>
+    </ul>
+
+    <h3>6章 EAV（エンティティ・アトリビュート・バリュー）</h3>
+    <p>「どんな属性でも柔軟に追加できるように」と、entity_id・attribute_name・attribute_valueという3列だけの汎用テーブルを作る設計です。著者のBill Karwinは、自身のブログでも「EAV設計はアンチパターンである」と繰り返し述べており、キー・バリューのペアをまとめて1つのBLOB / JSON列に格納する方が、中途半端なEAVよりまだましだとさえ書いています（出典は参考文献を参照）。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-eav"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図4 : EAVパターンとサブタイプのモデル化</p>
+    </div>
+    <ul>
+      <li><strong>見分け方</strong> : 型やNOT NULLといった通常の列制約が一切使えず、必須属性の有無をアプリケーションコードでしかチェックできていない。1行分のデータを得るために大量のOUTER JOINや行の縦横変換が必要になっている。</li>
+      <li><strong>使ってもよい場合</strong> : 属性の種類が本当に予測不能で、かつ属性ごとの検索やSQLレベルでの制約が不要な、ごく限定的なメタデータ格納。</li>
+      <li><strong>解決策</strong> : サブタイプをテーブルとしてモデル化する（単一テーブル継承、クラステーブル継承、半構造化データ列の追加など）。</li>
+    </ul>
+
+    <h3>7章 ポリモーフィック関連</h3>
+    <p>1つの外部キー列（例 : issue_id）で、issue_typeのような種別列と組み合わせて複数の親テーブル（BugsとFeatures）のどちらかを指そうとする設計です。標準SQLの外部キー制約は「1つの列が1つの親テーブルのみを参照する」ことを前提にしているため、この設計では外部キー制約そのものを宣言できません。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 外部キー制約が存在しない列に対して、アプリケーションコード側でissue_typeによって参照先テーブルを分岐させている。</li>
+      <li><strong>解決策</strong> : 関連を単純化する。具体的には、共通の親テーブル（Issues）を用意し、BugsとFeaturesの両方がそれを参照するように設計を反転させる（交差テーブルを介した多対多にする方法も含む）。</li>
+    </ul>
+
+    <h3>8章 マルチカラムアトリビュート（複数列属性）</h3>
+    <p>繰り返し発生しうる値（電話番号1、電話番号2、電話番号3……）のために、テーブルにphone1、phone2、phone3のような列を横に並べていく設計です。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 似た名前の列が連番で複数存在する。特定の値を検索するクエリが WHERE phone1 = ? OR phone2 = ? OR phone3 = ? のようにOR条件で列挙されている。列の上限（例 : 電話番号は3つまで）が業務要件ではなくテーブル設計の都合で決まっている。</li>
+      <li><strong>使ってもよい場合</strong> : 値の数が固定かつ小さく、それぞれの列の意味が明確に異なる場合（例 : start_dateとend_dateのように、繰り返しではなく別の意味を持つ列）。</li>
+      <li><strong>解決策</strong> : 従属テーブル（1対多の関係を持つ別テーブル）を作成する。</li>
+    </ul>
+
+    <h3>9章 メタデータトリブル（メタデータ大増殖）</h3>
+    <p>データ量の増加に対応するため、Bugs_2024、Bugs_2025のように年ごとにテーブルを複製したり、同じ意味の列をtag1〜tag10のように複製したりする設計です。名前の由来はスタートレックに登場する爆発的に増殖する生物「トリブル」から来ています。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 似た名前のテーブルや列が周期的（年度・月・カテゴリごと）に増え続けている。集計のために複数テーブルをUNIONする必要がある。</li>
+      <li><strong>解決策</strong> : パーティショニングと正規化。物理的な分割が必要な場合はデータベース製品のパーティショニング機能を使い、論理設計としては1つの正規化されたテーブルに保つ。</li>
+    </ul>
+  </div>
+</section>
+
+
+<section class="section" id="step2">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-server-2"></i></span>
+    <div>
+      <h2>Step2 : 第Ⅱ部 データベース物理設計のアンチパターン（10〜13章）</h2>
+      <p class="section-sub">どう格納し、どう最適化するか</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>物理設計は、データ型やインデックスなど「どう格納し、どう最適化するか」を扱います。</p>
+
+    <h3>10章 ラウンディングエラー（丸め誤差）</h3>
+    <p>金額のような小数をFLOAT（浮動小数点数）型で扱うと、2進数表現の都合上、10進数の小数を正確に表現できず、丸め誤差が積み重なっていきます。</p>
+    <div class="code-block">
+      <div class="code-block-head">sql</div>
+      <pre><code class="language-sql" data-code-id="code-3"></code></pre>
+    </div>
+    <script type="text/plain" id="code-3">-- アンチパターン：金額をFLOATで扱う
+CREATE TABLE Accounts (
+  account_id INTEGER PRIMARY KEY,
+  balance    FLOAT
+);
+
+-- 解決策：NUMERIC（DECIMAL）型で正確な10進数を扱う
+CREATE TABLE Accounts (
+  account_id INTEGER PRIMARY KEY,
+  balance    NUMERIC(9, 2)
+);</script>
+    <ul>
+      <li><strong>見分け方</strong> : SUM()した合計金額が期待値と数円〜数十円ずれる。WHERE balance = 100.00 のような等価比較が意図通りに動かない。</li>
+      <li><strong>使ってもよい場合</strong> : 科学技術計算など、10進数としての正確さより広い範囲・高速な演算が優先される場合。</li>
+      <li><strong>解決策</strong> : NUMERIC / DECIMAL型を使う。</li>
+    </ul>
+
+    <h3>11章 サーティワンフレーバー（31のフレーバー）</h3>
+    <p>列に入りうる値の一覧を、CHECK (status IN ('open','closed','pending')) のように列定義やCHECK制約の中に直接書き込む設計です。名前は「31種類のアイスクリームフレーバー」を扱うチェーン店の喩えから来ています。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 値の選択肢を1つ追加・削除するたびにALTER TABLEが必要になる。似た制約が複数のテーブルに重複してコピーされている。</li>
+      <li><strong>使ってもよい場合</strong> : 値の集合が本当に固定で、将来変わる可能性がほぼないことが確実な場合。</li>
+      <li><strong>解決策</strong> : 許容値を別テーブルの行（データ）として持ち、外部キー制約で参照させる。</li>
+    </ul>
+
+    <h3>12章 ファントムファイル（幻のファイル）</h3>
+    <p>画像などのバイナリデータについて、「大きなデータはDBに入れるべきではない」という思い込みから、ファイルパスだけをDBに保存し、実体はファイルシステムだけで管理する設計です。</p>
+    <ul>
+      <li><strong>見分け方</strong> : DBのレコードは削除されたのに対応するファイルだけが残り続ける（あるいはその逆）、いわゆる「幽霊ファイル」問題が発生している。ファイルとDBレコードのバックアップ・トランザクションの整合性を取るのに苦労している。</li>
+      <li><strong>解決策</strong> : 必要に応じてBLOB型を使う。ファイルシステムで管理する場合も、トランザクションやバックアップの整合性戦略をきちんと設計する。</li>
+    </ul>
+
+    <h3>13章 インデックスショットガン（闇雲インデックス）</h3>
+    <p>根拠や計測なしにインデックスを追加したり削除したりする設計です。著者Bill Karwinは、この章の解決策として「MENTOR」というニーモニック（頭字語）を提唱しており、自身の技術カンファレンス発表（Independent Oracle Users Group、2010年）でも同じ枠組みを使って解説しています。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-mentor"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図5 : MENTOR インデックス設計の手順</p>
+    </div>
+    <ul>
+      <li><strong>Measure（計測）</strong> : どのクエリが最もコストを消費しているかをスロークエリログやプロファイラで特定する。</li>
+      <li><strong>Explain（説明）</strong> : EXPLAIN文で実行計画を確認し、インデックスが使われていないクエリを洗い出す。</li>
+      <li><strong>Nominate（指名）</strong> : WHERE句・JOIN条件・ORDER BY・MIN() / MAX()で使われる列をインデックス候補として選ぶ。</li>
+      <li><strong>Test（検証）</strong> : インデックス追加前後で実際に性能が改善したかを検証する。</li>
+      <li><strong>Optimize（最適化）</strong> : 不要な冗長インデックスを削除し、キャッシュに乗る範囲でインデックスを絞り込む。</li>
+      <li><strong>Rebuild（再構築）</strong> : インデックスは断片化するため、定期的な再構築・統計情報の更新を行う。</li>
+    </ul>
+    <p><strong>使ってもよい場合</strong> : 小規模で読み取りが少ないテーブルなど、インデックスの費用対効果自体が低い場合はインデックスを増やさない判断も正しい。<strong>解決策</strong> : 勘や思いつきではなく、MENTORの手順に沿ってインデックスを設計する。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step3">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-terminal-2"></i></span>
+    <div>
+      <h2>Step3 : 第Ⅲ部 クエリのアンチパターン（14〜19章）</h2>
+      <p class="section-sub">SQL文そのものの書き方</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>SQL文そのものの書き方に関するアンチパターンです。書名から連想されやすい「SQLの書き方」の話題は、実はこの第Ⅲ部に集中しています。</p>
+
+    <h3>14章 フィア・オブ・ジ・アンノウン（恐怖のunknown）</h3>
+    <p>NULL（値が未知・未設定であることを表す特別な状態）を、0や空文字列のような「普通の値」として扱ってしまう、あるいは逆にNULLを避けようとして無理にダミー値を入れてしまうアンチパターンです。</p>
+    <div class="code-block">
+      <div class="code-block-head">sql</div>
+      <pre><code class="language-sql" data-code-id="code-4"></code></pre>
+    </div>
+    <script type="text/plain" id="code-4">-- アンチパターン：NULLを通常の値と混同する比較
+SELECT * FROM Bugs WHERE assigned_to = NULL; -- 常に真にならない
+
+-- 解決策：IS NULL / IS NOT NULLでNULLを一意な特別な値として扱う
+SELECT * FROM Bugs WHERE assigned_to IS NULL;
+SELECT * FROM Bugs WHERE assigned_to IS NOT NULL;</script>
+    <ul>
+      <li><strong>見分け方</strong> : 集計関数の結果がNULLを含む行によって直感と違う挙動になる（NOT INのサブクエリにNULLが混ざると結果が空になる、というミニアンチパターンも紹介されています）。</li>
+      <li><strong>解決策</strong> : NULLを「値が不明または存在しないことを示す特別なマーカー」として一貫した方法で扱う。COALESCE()で既定値に変換する、IS NULL / IS NOT NULLで明示的に比較する、といった対処を徹底する。</li>
+    </ul>
+
+    <h3>15章 アンビギュアスグループ（曖昧なグループ）</h3>
+    <p>GROUP BYを使ったクエリで、集約関数にもGROUP BY句にも含まれない列をSELECTしてしまい、「どの行の値が返るか不定」な曖昧なクエリになってしまうアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 「グループの中で最大値を持つ行を1行取得したい」というよくある要件に対して、GROUP BYだけで非グループ化列を無自覚に選択している。</li>
+      <li><strong>解決策</strong> : 関数従属性のある列のみをクエリする、相関サブクエリを使う、導出テーブル（サブクエリ）を使う、JOINを使う、他の列にも集約関数を適用する、グループごとにすべての値を連結する、といった複数の代替策が紹介されています。データベース間の移植性を考慮した「ポータブルSQL」というミニアンチパターンも収録されています。</li>
+    </ul>
+
+    <h3>16章 ランダムセレクション</h3>
+    <p>テーブルからランダムに1行取得したいときに、ORDER BY RAND()（あるいはRANDOM()）で全行を並び替えてからLIMIT 1する設計です。行数が多いテーブルでは全行のソートコストがかかり、極端に遅くなります。</p>
+    <ul>
+      <li><strong>見分け方</strong> : ランダム抽出のクエリが行数に比例して遅くなる。</li>
+      <li><strong>解決策</strong> : 最小値と最大値の間からランダムなキー値を選ぶ、欠番の次のキー値を選ぶ、すべてのキー値のリストを受け取ってアプリケーション側でランダムに選ぶ、オフセットを用いてランダムに行を選ぶ、といった「特定の順番に依存しない」複数の代替策が紹介されています。</li>
+    </ul>
+
+    <h3>17章 プアマンズ・サーチエンジン（貧者のサーチエンジン）</h3>
+    <p>全文検索を実装したいときに、LIKE '%keyword%' のようなパターンマッチ述語だけで済ませてしまう設計です。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 検索が遅い、関連度でのランキングができない、活用形やあいまい検索に対応できない。</li>
+      <li><strong>解決策</strong> : 各データベース製品が提供するベンダー拡張機能（MySQLの全文検索インデックス、Oracleのテキストインデックス、Microsoft SQL Serverの全文検索、PostgreSQLのテキスト検索、SQLiteのFTS）や、サードパーティの検索エンジンを使う。</li>
+    </ul>
+
+    <h3>18章 スパゲッティクエリ</h3>
+    <p>複雑な問題を、可読性を犠牲にしてでも1つの巨大なSQL文で解決しようとするアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 1つのクエリに大量のJOINやCASE式、サブクエリが詰め込まれていて、書いた本人でも後から追えなくなっている。</li>
+      <li><strong>解決策</strong> : 分割統治（Divide and Conquer）。複雑な問題を複数のシンプルなクエリに分割し、アプリケーションコード側で組み合わせる。</li>
+    </ul>
+
+    <h3>19章 インプリシットカラム（暗黙の列）</h3>
+    <p>SELECT * や、列名を指定しない INSERT INTO table VALUES (...) のように、列を明示せずに省略記法を多用するアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : テーブルに列を追加しただけでアプリケーションが壊れる、意図しない列まで取得してネットワーク・メモリを無駄にしている。</li>
+      <li><strong>解決策</strong> : 列を明示的に指定する。タイピング量を減らす目的だけで省略記法を使わない。</li>
+    </ul>
+  </div>
+</section>
+
+
+<section class="section" id="step4">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-shield-lock"></i></span>
+    <div>
+      <h2>Step4 : 第Ⅳ部 アプリケーション開発のアンチパターン（20〜25章）</h2>
+      <p class="section-sub">SQLをアプリケーションコードからどう扱うか</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>SQLをアプリケーションコードからどう扱うか、開発プロセスにどう組み込むかに関するアンチパターンです。</p>
+
+    <h3>20章 リーダブルパスワード（読み取り可能パスワード）</h3>
+    <p>パスワードを忘れたユーザーに再送できるようにと、パスワードを平文やリバーシブルな暗号化（復号可能な暗号）で保存してしまうアンチパターンです。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-password"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図6 : ソルト付きハッシュによるパスワード保存の流れ</p>
+    </div>
+    <ul>
+      <li><strong>見分け方</strong> : 「パスワードを忘れた場合はメールでお送りします」という機能が存在する（＝平文または復号可能な形で保存している証拠）。</li>
+      <li><strong>解決策</strong> : ソルト付きハッシュ（salted hash）を保存する。ハッシュ文字列を保存するデータ型についての「Storing Hash Strings in VARCHAR」というミニアンチパターンも収録されています。</li>
+    </ul>
+
+    <h3>21章 SQLインジェクション</h3>
+    <p>未検証の外部入力を、そのままSQL文の一部として実行してしまうアンチパターンです。攻撃者が入力欄に不正なSQL断片を仕込むことで、意図しないクエリが実行されてしまいます。</p>
+    <div class="code-block">
+      <div class="code-block-head">sql</div>
+      <pre><code class="language-sql" data-code-id="code-5"></code></pre>
+    </div>
+    <script type="text/plain" id="code-5">-- アンチパターン：文字列連結でSQLを組み立てる
+-- 入力値: ' OR '1'='1
+query = "SELECT * FROM Accounts WHERE email = '" + input + "'"
+
+-- 解決策：プレースホルダとバインド変数を使う
+SELECT * FROM Accounts WHERE email = ?;
+-- パラメータとして input を渡す（SQL文字列には決して連結しない）</script>
+    <ul>
+      <li><strong>見分け方</strong> : SQL文字列をアプリケーションコード側で単純な文字列連結によって組み立てている。</li>
+      <li><strong>解決策</strong> : 「誰も信用しない（Trust No One）」。プレースホルダ（バインド変数）を使ったプリペアドステートメントで、コードとデータを明確に分離する。クオートの中にパラメータを書いてしまうという典型的な実装ミスも「ミニアンチパターン」として取り上げられています。</li>
+    </ul>
+
+    <h3>22章 シュードキー・ニートフリーク（疑似キー潔癖症）</h3>
+    <p>削除によって連番の主キーに欠番ができるのを気にして、IDを詰め直そうとするアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 削除・再採番のたびに関連テーブルの外部キーまで更新する必要が生じ、余計な複雑さと不整合のリスクを生んでいる。</li>
+      <li><strong>解決策</strong> : 「気にしない（Get Over It）」。代理キーはあくまで内部的な識別子であり、連続性や美しさを保証する必要はないと割り切る。</li>
+    </ul>
+
+    <h3>23章 シー・ノー・エビル（臭いものに蓋）</h3>
+    <p>SQL文の戻り値やエラーコードをチェックせず、成功したものとみなしてコードを進めてしまうアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : 診断せずに「動いているはず」と判断している、エラーが握りつぶされてログにすら残っていない。</li>
+      <li><strong>解決策</strong> : 戻り値や例外を必ずチェックし、エラーから優雅に回復する。デバッグ時には、実際にデータベースに送られたSQL文そのものを確認する。構文エラーメッセージの読み方についてのミニアンチパターンも収録されています。</li>
+    </ul>
+
+    <h3>24章 ディプロマティック・イミュニティ（外交特権）</h3>
+    <p>アプリケーションコードには適用しているバージョン管理・コードレビュー・テストといった開発プラクティスを、「SQLは特別だから」という理由で適用しないアンチパターンです。</p>
+    <ul>
+      <li><strong>見分け方</strong> : スキーマ定義やクエリがGitなどのバージョン管理の対象外になっている、SQLに対する単体テスト・結合テストが存在しない。</li>
+      <li><strong>解決策</strong> : SQLコードも第一級の成果物として扱う「包括的な品質文化」を築く。具体的には、文書化・バージョン管理・テスト・複数ブランチの扱いをアプリケーションコードと同じ水準で行う。</li>
+    </ul>
+
+    <h3>25章 スタンダード・オペレーティング・プロシージャ（さびついた開発標準）</h3>
+    <p>第2版で新設された章の1つです。ビジネスロジックを「とりあえずストアドプロシージャで実装する」という、かつての開発標準を無批判に踏襲してしまうアンチパターンを扱います。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-sop"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図7 : かつての標準的アプローチから現代的な構成への移行</p>
+    </div>
+    <ul>
+      <li><strong>アンチパターン</strong> : 「声の大きい人に従う」形で、移植性・デバッグのしやすさ・拡張性を検討せずにストアドプロシージャを多用する。</li>
+      <li><strong>使ってもよい場合</strong> : 権限を絞った特権操作、ネットワーク往復を減らしたい重い処理、頻度の低い管理系バッチ処理など、ストアドプロシージャが適したユースケースも存在します。</li>
+      <li><strong>解決策</strong> : モダンなアプリケーションアーキテクチャを採用する。ビジネスロジックは基本的にアプリケーションコード側に置き、ストアドプロシージャは適材適所で使う。</li>
+    </ul>
+  </div>
+</section>
+
+
+<section class="section" id="step5">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-key"></i></span>
+    <div>
+      <h2>Step5 : 第Ⅴ部 ボーナス : 外部キーのミニアンチパターン（26〜27章）</h2>
+      <p class="section-sub">外部キー定義でありがちな間違い</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>第2版で新設されたボーナスパートで、外部キー制約そのものの定義でありがちな間違いを集めたリファレンス的な2章です。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-fk"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図8 : 外部キーのよくある間違い</p>
+    </div>
+
+    <h3>26章 標準SQLにおける外部キーの誤った使い方</h3>
+    <p>参照の方向を逆にしてしまう、まだ作成されていないテーブルを参照しようとしてエラーになる、親テーブルの主キーやユニークキーではない列を参照してしまう、複合キーに対して列ごとに別々の制約を作ってしまう、列の順序を取り違える、データ型や文字コード・照合順序が一致していない、孤立データを生んでしまう、NOT NULL列にSET NULLオプションを指定してしまう、重複した制約名を作ってしまう、互換性のないテーブルタイプ同士を参照させてしまう、といった標準SQLレベルでの典型的なミスが列挙されます。</p>
+
+    <h3>27章 MySQLにおける外部キーの誤った使い方</h3>
+    <p>互換性のないストレージエンジン（InnoDBとMyISAMの混在など）を使う、外部キーに不必要に大きなデータ型を使う、一意でないインデックスへの外部キーを定義しようとする、インライン参照構文の落とし穴、デフォルトの参照構文（REFERENCES句だけで実際には制約が有効になっていない等）の誤解、MySQL特有の互換性のないテーブルタイプの組み合わせなど、MySQLというデータベース製品固有の外部キーの落とし穴がまとめられています。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step6">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-stack-2"></i></span>
+    <div>
+      <h2>Step6 : 付録A 正規化のルール</h2>
+      <p class="section-sub">本編を理解するための前提知識</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>本編の各章を理解するための前提知識として、付録Aではリレーション（テーブル）の定義と正規化の基礎がまとめられています。</p>
+    <ul>
+      <li><strong>リレーションの5つの性質</strong> : 行に上下の順序がない / 列に左右の順序がない / 重複行を許可しない / すべての列は単一の型を持ち各行に1つの値を持つ / 行に隠れた構成要素がない。</li>
+      <li><strong>正規化の神話</strong> : 「正規化すればするほど良い」という単純化された理解ではなく、正規化は目的（更新時の不整合を防ぐこと）のための手段であるという位置づけが強調されます。</li>
+      <li><strong>各正規形の概要</strong> : 第1正規形・第2正規形・第3正規形・ボイス・コッド正規形・第4正規形・第5正規形について、それぞれが防ぐ異常（更新異常・挿入異常・削除異常）の観点から簡潔に説明されます。</li>
+      <li><strong>正規化は常識的なもの</strong> : 難解な理論というより、「1つの事実は1か所にだけ記録する」という常識的な設計原則の体系化として位置づけられています。</li>
+    </ul>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-normalization"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図9 : 正規形の段階</p>
+    </div>
+    <p>本書全体を通じて登場する「交差テーブルを作る」「サブタイプをモデル化する」「従属テーブルに分ける」といった解決策の多くは、この正規化の考え方を具体的な設計判断に落とし込んだものだと理解すると、各章のつながりが見えやすくなります。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step7">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-gift"></i></span>
+    <div>
+      <h2>Step7 : 日本語版限定付録「砂の城」</h2>
+      <p class="section-sub">日本語版だけの書き下ろし特典</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>日本語版だけの特典として、MySQL・Oracleに精通したデータベースエンジニアである奥野幹也氏による書き下ろしの追加アンチパターン「砂の城」が用意されています。これは初版の日本語版に収録されていた「25章 砂の城」を第2版向けに改訂したもので、オライリー・ジャパンの公式サイトから「関連ファイル」としてPDFをダウンロードできます。地震や津波のような自然災害に起因するシビアアクシデントへの備えという文脈から着想を得た、日本語版ならではの視点によるアンチパターンです（詳細は巻末の参考文献のリンク先PDFを参照してください）。</p>
+  </div>
+</section>
+
+
+<section class="section" id="editions">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-refresh"></i></span>
+    <div>
+      <h2>初版から第2版への変化</h2>
+      <p class="section-sub">監訳者・和田卓人氏の解説をもとに</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>日本語版監訳者の和田卓人氏によるイベント解説（Findy Media、2025年10月公開）をもとに、初版（2013年の日本語版、原著2010年）から第2版（2025年の日本語版、原著2022年）への主な変化を整理します。</p>
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-editions"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図10 : 初版から第2版への主な変化</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>変化</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>ページ数</td><td>48ページ増（第2版は全400ページ）</td></tr>
+          <tr><td>新設された章</td><td>25章 スタンダード・オペレーティング・プロシージャ、26章・27章 外部キーのミニアンチパターン（合計3章）</td></tr>
+          <tr><td>削除された章</td><td>初版24章「マジック・ビーンズ」。RailsやLaravelなどで広く使われるActive Recordパターンを名指しでアンチパターン扱いしていたが、第2版ではこの12年でActive Record系ORMが多くの事業を支えてきた実績を踏まえ、「採用＝アンチパターンではない」という整理に変わり、章ごと削除された</td></tr>
+          <tr><td>最も内容が変わった既存章</td><td>3章「ナイーブツリー」。CTE（再帰SQL）の実装が主要RDBMSに広く普及したことを受け、隣接リストを「必ずしもアンチパターンとは限らない」と再評価する記述に更新</td></tr>
+          <tr><td>ミニ・アンチパターン</td><td>新たに15本追加（章末の短いコラムとして収録）</td></tr>
+          <tr><td>コード例の言語</td><td>PHPからPythonに刷新</td></tr>
+          <tr><td>改訂規模</td><td>監訳作業で確認された原文の変更箇所は400〜450箇所程度</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>この変化の背景として、t-wada氏は2025年のイベントで「バイブコーディング」（AIエージェントに自然言語で指示してコードやシステムを作らせる開発スタイル）が広がる時代性についても言及しており、UIのようにやり直しがきく部分と違って、データベースに一度入ったデータの構造は後から挽回しにくいからこそ、他人の失敗に名前を付けて学ぶ本書の価値が今なお高い、という趣旨の解説をしています。</p>
+  </div>
+</section>
+
+
+<section class="section" id="voices">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-message-circle-2"></i></span>
+    <div>
+      <h2>国際的な開発者・コミュニティでの評価</h2>
+      <p class="section-sub">著者本人の発信からHacker News、書評まで</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>本書は原著の初版（2010年）以来、英語圏の開発者コミュニティで継続的に参照されてきました。</p>
+    <p><strong>著者自身による情報発信</strong> : 著者のBill Karwinは、書籍出版に先立つ2009年の自身のブログ記事「EAV FAIL」で、EAV（実体・属性・値）設計を明確に「アンチパターン」と呼び、キー・バリューのペアをまとめて1つの列に格納する方がEAVよりましだと述べています。また、13章「インデックスショットガン」の核となる「MENTOR」という手法は、著者自身がIndependent Oracle Users Groupのイベント（2010年）で発表したスライド「MENTOR Your Indexes」でも詳しく解説されています。</p>
+    <p><strong>Hacker Newsでの言及</strong> : 技術者コミュニティHacker Newsでは、データベース設計に関する議論のたびに本書がしばしば引用されており、「フレームワークの多くはアンチパターンを助長する設計になっている」という文脈で、C. J. Dateの浩瀚な教科書と対比しつつ「読みやすい入門書」として紹介されるコメントも見られます。別のスレッドでは、JSONB列の使用に関する議論の中で、EAVパターンの問題点を説明する際の代表的な参考文献として挙げられています。</p>
+    <p><strong>書評・要約サイト</strong> : Goodreadsには560件を超えるレーティングが寄せられ（平均4.0前後）、「短く要点を突いた各章の構成」「アンチパターンを使ってよい場面まで併記している点」が高く評価されている一方、「提示される解決策の説明がやや駆け足」という指摘も見られます。開発者個人のブログ（Tyler Hillery氏、openlamptech等）でも、実務でのSQL経験がある読者からの具体的な学びが多数共有されています。</p>
+  </div>
+</section>
+
+
+<section class="section" id="critical">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-alert-triangle"></i></span>
+    <div>
+      <h2>批判的に読む</h2>
+      <p class="section-sub">初学者が知っておくとよい限界</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="callout plum">
+      <i class="ti ti-notebook"></i>
+      <div class="callout-body">
+        <p><span class="callout-title">前提知識が必要</span></p>
+        <p>本書はSQLの入門書（SELECT文の書き方など）ではありません。基本文法をすでに理解している読者が、設計判断の「引き出し」を増やすための本という位置づけです。</p>
+      </div>
+    </div>
+    <div class="callout plum">
+      <i class="ti ti-server"></i>
+      <div class="callout-body">
+        <p><span class="callout-title">MySQL中心の例</span></p>
+        <p>コード例はMySQL 8.0を主軸にしつつ他のRDBMSにも言及されますが、細部の挙動（NULLの扱い、拡張構文など）は製品ごとに異なるため、自分が使う製品のドキュメントでの裏取りが必要です。</p>
+      </div>
+    </div>
+    <div class="callout plum">
+      <i class="ti ti-history"></i>
+      <div class="callout-body">
+        <p><span class="callout-title">評価が変わりうることの好例</span></p>
+        <p>削除された旧24章「マジック・ビーンズ」をめぐるActive Recordパターンの評価の変化（アンチパターン扱いの撤回）は、設計原則が「銀の弾丸」ではなく、エコシステムの成熟度によって評価が変わりうることを示しています。読者自身の現場でも、当時アンチパターンとされていたものが今は許容される、あるいはその逆が起こりうることを念頭に置くとよいでしょう。</p>
+      </div>
+    </div>
+    <div class="callout plum">
+      <i class="ti ti-puzzle"></i>
+      <div class="callout-body">
+        <p><span class="callout-title">カタログ形式ゆえの限界</span></p>
+        <p>25個のアンチパターンは独立した章として並んでいますが、実務では複数のアンチパターンが絡み合って発生します（たとえばEAVとポリモーフィック関連が併発するなど）。本書を読んだ後は、自分たちのスキーマ全体を俯瞰し、複合的な問題として捉え直す作業が別途必要です。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="roadmap">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-route"></i></span>
+    <div>
+      <h2>学習ロードマップ</h2>
+      <p class="section-sub">どの順番で読むか</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-roadmap"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図11 : 学習ロードマップ</p>
+    </div>
+    <p>初めて本書に触れる場合は、まず第Ⅰ部（論理設計）だけでも読み終えることを目標にするとよいでしょう。テーブル設計の判断は後から変更するコストが最も高いため、最初に投資する価値があります。すでに稼働中のシステムを抱えている場合は、第Ⅳ部（アプリケーション開発）の21章「SQLインジェクション」と20章「リーダブルパスワード」から先に点検することを強くおすすめします。</p>
+  </div>
+</section>
+
+
+<section class="section" id="checklist">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-checklist"></i></span>
+    <div>
+      <h2>チェックリスト</h2>
+      <p class="section-sub">自分たちのスキーマ・SQLコードの点検用</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>自分たちのデータベース・SQLコードに、本書で紹介されたアンチパターンが潜んでいないかを確認するための25項目です。</p>
+    <div class="checklist-progress">
+      <span id="checklistCounter">0 / 25 完了</span>
+      <div class="progress-bar"><div class="progress-bar-fill" id="checklistFill"></div></div>
+    </div>
+    <ul class="checklist" id="checklistItems">
+      <li><input type="checkbox" id="c1"><label for="c1">カンマ区切りの値を1つの列に詰め込んでいる列はないか（2章 ジェイウォーク）</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2">親IDだけに頼った木構造で、先祖・子孫の取得クエリが複雑化していないか（3章 ナイーブツリー）</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">すべてのテーブルに機械的にid列を追加し、複合主キーが自然なテーブルまで壊していないか（4章 IDリクワイアド）</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">外部キー制約を敬遠し、参照整合性をアプリケーションコード任せにしていないか（5章 キーレスエントリ）</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">汎用的な属性テーブル（EAV）で何にでも対応しようとしていないか（6章 EAV）</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6">1つの外部キー列で複数の親テーブルを指そうとしていないか（7章 ポリモーフィック関連）</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7">繰り返し項目のために列を横に増やし続けていないか（8章 マルチカラムアトリビュート）</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8">スケールのためにテーブルや列を年度・カテゴリごとに複製していないか（9章 メタデータトリブル）</label></li>
+      <li><input type="checkbox" id="c9"><label for="c9">金額をFLOAT型で扱っていないか（10章 ラウンディングエラー）</label></li>
+      <li><input type="checkbox" id="c10"><label for="c10">許容値を列定義やCHECK制約に直接書き込んでいないか（11章 サーティワンフレーバー）</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11">ファイルとDBレコードの整合性戦略を決めずにファイルシステムだけで運用していないか（12章 ファントムファイル）</label></li>
+      <li><input type="checkbox" id="c12"><label for="c12">根拠のないままインデックスを追加・削除していないか（13章 インデックスショットガン）</label></li>
+      <li><input type="checkbox" id="c13"><label for="c13">NULLを普通の値のように比較・演算していないか（14章 フィア・オブ・ジ・アンノウン）</label></li>
+      <li><input type="checkbox" id="c14"><label for="c14">GROUP BYクエリで非集約列を無自覚に選択していないか（15章 アンビギュアスグループ）</label></li>
+      <li><input type="checkbox" id="c15"><label for="c15">ORDER BY RAND()で全行をソートしてランダム抽出していないか（16章 ランダムセレクション）</label></li>
+      <li><input type="checkbox" id="c16"><label for="c16">全文検索をLIKE '%...%'だけで実装していないか（17章 プアマンズ・サーチエンジン）</label></li>
+      <li><input type="checkbox" id="c17"><label for="c17">1つの巨大なクエリで複雑な問題を解決しようとしていないか（18章 スパゲッティクエリ）</label></li>
+      <li><input type="checkbox" id="c18"><label for="c18">SELECT *や列名省略のINSERTを本番コードで使っていないか（19章 インプリシットカラム）</label></li>
+      <li><input type="checkbox" id="c19"><label for="c19">パスワードを平文や復号可能な形で保存していないか（20章 リーダブルパスワード）</label></li>
+      <li><input type="checkbox" id="c20"><label for="c20">SQL文を文字列連結で組み立てている箇所はないか（21章 SQLインジェクション）</label></li>
+      <li><input type="checkbox" id="c21"><label for="c21">欠番になった連番IDを詰め直そうとしていないか（22章 シュードキー・ニートフリーク）</label></li>
+      <li><input type="checkbox" id="c22"><label for="c22">SQL文の戻り値やエラーをチェックせずに握りつぶしていないか（23章 シー・ノー・エビル）</label></li>
+      <li><input type="checkbox" id="c23"><label for="c23">SQLコードだけレビュー・バージョン管理・テストの対象外になっていないか（24章 ディプロマティック・イミュニティ）</label></li>
+      <li><input type="checkbox" id="c24"><label for="c24">ビジネスロジックを安易にストアドプロシージャへ寄せていないか（25章 スタンダード・オペレーティング・プロシージャ）</label></li>
+      <li><input type="checkbox" id="c25"><label for="c25">外部キー定義自体に、参照方向・列順序・データ型不一致などの誤りがないか（26〜27章 外部キーのミニアンチパターン）</label></li>
+    </ul>
+  </div>
+</section>
+
+
+<section class="section" id="summary">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-flag-check"></i></span>
+    <div>
+      <h2>まとめ</h2>
+      <p class="section-sub">本書の価値</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="diagram-wrap">
+      <div class="diagram-fig" data-diagram="d-summary"><div class="diagram-loading">図を描画しています…</div></div>
+      <p class="diagram-cap">図12 : まとめ</p>
+    </div>
+    <p>本書の価値は、単に「正しいテーブル設計」を丸暗記させることではなく、それぞれのアンチパターンに固有の名前を与えることで、チーム内で「これはジェイウォークだよね」「EAVになりかけてない？」といった共通言語を持てるようにする点にあります。25個すべてを一度に覚える必要はありません。まずは自分たちのプロジェクトで実際に困っている章から読み始め、本ガイドのチェックリストを使って定期的に見直す習慣をつけることをおすすめします。</p>
+  </div>
+</section>
+
+
+<section class="section" id="references">
+  <div class="section-head">
+    <span class="section-icon"><i class="ti ti-link"></i></span>
+    <div>
+      <h2>参考文献・出典</h2>
+      <p class="section-sub">全16件の一次情報・国際的な開発者の発信</p>
+    </div>
+  </div>
+  <div class="prose">
+    <div class="ref-list">
+      <div class="ref-card"><span class="ref-num">1</span><div class="ref-body"><div class="ref-title">オライリー・ジャパン公式サイト「SQLアンチパターン 第2版」書籍紹介・目次立ち読み</div><div class="ref-url">https://www.oreilly.co.jp/books/9784814400744/</div></div></div>
+      <div class="ref-card"><span class="ref-num">2</span><div class="ref-body"><div class="ref-title">オーム社（Ohmsha）「SQLアンチパターン（第2版）」書籍ページ</div><div class="ref-url">https://www.ohmsha.co.jp/book/9784814400744/</div></div></div>
+      <div class="ref-card"><span class="ref-num">3</span><div class="ref-body"><div class="ref-title">オライリー・ジャパン日本語版付録PDF「砂の城」（奥野幹也氏 書き下ろし）</div><div class="ref-url">https://www.oreilly.co.jp/pub/9784814400744/sql-antipatterns-2nd-sunanoshiro.pdf</div></div></div>
+      <div class="ref-card"><span class="ref-num">4</span><div class="ref-body"><div class="ref-title">Pragmatic Bookshelf公式サイト「SQL Antipatterns, Volume 1」（原著第2版・全27章の詳細目次）</div><div class="ref-url">https://pragprog.com/titles/bksap1/sql-antipatterns-volume-1/</div></div></div>
+      <div class="ref-card"><span class="ref-num">5</span><div class="ref-body"><div class="ref-title">Pragmatic Bookshelf公式サイト「SQL Antipatterns」（原著初版・絶版、比較用）</div><div class="ref-url">https://pragprog.com/titles/bksqla/sql-antipatterns/</div></div></div>
+      <div class="ref-card"><span class="ref-num">6</span><div class="ref-body"><div class="ref-title">Findy Media「t-wadaさんに聞く！『SQLアンチパターン第2版』全27章まとめて紹介」（監訳者・和田卓人氏によるイベント解説）</div><div class="ref-url">https://findy-code.io/media/articles/event-sql-antipatterns-250728</div></div></div>
+      <div class="ref-card"><span class="ref-num">7</span><div class="ref-body"><div class="ref-title">Bill Karwin氏自身のブログ「EAV FAIL - Keeping It Simple」（EAVアンチパターンについての著者本人の解説）</div><div class="ref-url">https://web.archive.org/web/20251117070854/https://karwin.com/blog/index.php/2009/05/21/eav-fail/</div></div></div>
+      <div class="ref-card"><span class="ref-num">8</span><div class="ref-body"><div class="ref-title">Bill Karwin氏によるカンファレンス発表資料「MENTOR Your Indexes」（Independent Oracle Users Group、2010年）</div><div class="ref-url">https://www.slideshare.net/billkarwin/mentor-your-indexes</div></div></div>
+      <div class="ref-card"><span class="ref-num">9</span><div class="ref-body"><div class="ref-title">Hacker News「SQL Antipatterns」関連スレッド（EAV / JSONB列をめぐる議論）</div><div class="ref-url">https://news.ycombinator.com/item?id=44921630</div></div></div>
+      <div class="ref-card"><span class="ref-num">10</span><div class="ref-body"><div class="ref-title">Hacker News Books「SQL Antipatterns」への複数スレッドでの言及まとめ</div><div class="ref-url">https://web.archive.org/web/20250916025923/https://hackernewsbooks.com/book/sql-antipatterns-avoiding-the-pitfalls-of-database-programming-pragmatic-programmers/82dcec03ae132a12ea055412f7945ef2</div></div></div>
+      <div class="ref-card"><span class="ref-num">11</span><div class="ref-body"><div class="ref-title">Tyler Hillery氏の個人ブログ「SQL Antipatterns: Avoiding the Pitfalls of Database Programming」書評</div><div class="ref-url">https://tylerhillery.com/notes/sql-antipatterns/</div></div></div>
+      <div class="ref-card"><span class="ref-num">12</span><div class="ref-body"><div class="ref-title">openlamptech（英語圏の開発者ブログ）「Book Recommendation - SQL Antipatterns」</div><div class="ref-url">https://openlamptech.substack.com/p/book-recommendation-sql-antipatterns</div></div></div>
+      <div class="ref-card"><span class="ref-num">13</span><div class="ref-body"><div class="ref-title">Amazon.co.jp「SQLアンチパターン 第2版」商品ページ（全27章の日本語章タイトル一覧）</div><div class="ref-url">https://www.amazon.co.jp/dp/4814400748</div></div></div>
+      <div class="ref-card"><span class="ref-num">14</span><div class="ref-body"><div class="ref-title">Goodreads「SQL Antipatterns」作品ページ（版一覧・レーティング）</div><div class="ref-url">https://www.goodreads.com/work/editions/11753471-sql-antipatterns-avoiding-the-pitfalls-of-database-programming-pragmat</div></div></div>
+      <div class="ref-card"><span class="ref-num">15</span><div class="ref-body"><div class="ref-title">Internet Archive「SQL Antipatterns」初版スキャン（Bill Karwin著、2011年）</div><div class="ref-url">https://archive.org/details/sqlantipatternsa0000karw</div></div></div>
+      <div class="ref-card"><span class="ref-num">16</span><div class="ref-body"><div class="ref-title">幡ヶ谷亭直吉ブログ「『SQLアンチパターン 第2版』を読んで」（日本語読者による読書メモ、2025年10月）</div><div class="ref-url">https://hiliteeternal.hatenablog.com/entry/2025/10/17/211849</div></div></div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <p>本ガイドは上記の公開情報をもとに2026年9月時点でまとめたものです。書籍の正確な内容は必ず原著・日本語版そのものをご確認ください。</p>
+</footer>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.min.js" integrity="sha384-1CMXl090wj8Dd6YfnzSQUOgWbE6suWCaenYG7pox5AX7apTpY3PmJMeS2oPql4Gk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/highlight.min.js" integrity="sha384-wjfDDhOPPdjtva8vWBhWeVprSpmxisEu5aYT3q1JyACqXpdKpo3PWZTMVq24MBix" crossorigin="anonymous"></script>
+<script>
+
+const DIAGRAMS = {
+  "d-anatomy": `flowchart LR
+    A[目的　何を達成したいか] --> B[アンチパターン　ありがちな失敗]
+    B --> C[見分け方　どう気づくか]
+    C --> D[使ってよい場合　例外的に許容される]
+    D --> E[解決策　正しい設計]
+    E -.->|フィードバック| A
+    class E done
+    class A hub
+`,
+  "d-overview": `flowchart TB
+    Ch1[1章　アンチパターンとは何か] --> P1[第Ⅰ部　データベース論理設計　8章]
+    P1 --> P2[第Ⅱ部　データベース物理設計　4章]
+    P2 --> P3[第Ⅲ部　クエリ　6章]
+    P3 --> P4[第Ⅳ部　アプリケーション開発　6章]
+    P4 --> P5[第Ⅴ部　外部キーのミニアンチパターン　2章]
+    P5 --> AppA[付録A　正規化のルール]
+    class Ch1 hub
+    class AppA done
+`,
+  "d-tree-models": `flowchart TB
+    Title[階層構造を表す4つのモデル] --> M1[隣接リスト　Adjacency List]
+    Title --> M2[経路列挙　Path Enumeration]
+    Title --> M3[入れ子集合　Nested Set]
+    Title --> M4[閉包テーブル　Closure Table]
+    class Title hub
+`,
+  "d-mentor": `flowchart TB
+    MENTOR[MENTOR　インデックス設計の手順] --> M[Measure　計測する]
+    MENTOR --> E[Explain　実行計画を確認する]
+    MENTOR --> N[Nominate　候補列を選定する]
+    MENTOR --> T[Test　効果を検証する]
+    MENTOR --> O[Optimize　キャッシュ効率を最適化する]
+    MENTOR --> R[Rebuild　定期的に再構築する]
+    M --> E --> N --> T --> O --> R
+    class MENTOR hub
+    class R done
+`,
+  "d-password": `flowchart LR
+    A[ユーザーが登録するパスワード] --> B{ソルトを生成}
+    B --> C[パスワード＋ソルトをハッシュ化]
+    C --> D[ハッシュ値のみをDBに保存]
+    D --> E[ログイン時　入力値を同じ方法でハッシュ化して比較]
+    class E done
+`,
+  "d-eav": `flowchart TB
+    EAV[EAVパターン　汎用属性テーブル] --> ISSUES1[Issues]
+    ISSUES1 --> ATTR[IssueAttributes　属性を行として保存]
+    EAV -.->|書き換え| SUB[解決策　サブタイプのモデル化]
+    SUB --> ISSUES2[Issues　共通列]
+    ISSUES2 --> BUG[BugIssues　バグ固有列]
+    ISSUES2 --> FEAT[FeatureIssues　要望固有列]
+    class EAV box
+    class SUB done
+`,
+  "d-sop": `flowchart TB
+    OLD[かつての標準的アプローチ] --> O1[ビジネスロジックをストアドプロシージャに集約]
+    O1 --> O2[手続き型言語でDB内に実装]
+    O2 --> O3[デプロイのたび手動で更新]
+    OLD -.->|用途を見極めて移行| NEW[現代的なアプリケーション構成]
+    NEW --> N1[ビジネスロジックはアプリケーション層に実装]
+    N1 --> N2[モダンな言語とフレームワークを活用]
+    N2 --> N3[CI/CDでコードと一緒にデプロイ]
+    class OLD box
+    class NEW done
+`,
+  "d-fk": `flowchart LR
+    FK[外部キーのよくある間違い] --> a[参照の向きを逆にしてしまう]
+    FK --> b[まだ存在しないテーブルを参照してしまう]
+    FK --> c[親テーブルのキーではない列を参照してしまう]
+    FK --> d[複合キーの列ごとに別々の制約を作ってしまう]
+    FK --> e[列の順序を間違える]
+    FK --> f[データ型や照合順序が一致していない]
+    FK --> g[孤立データ　オーファンを作ってしまう]
+    FK --> h[NULL不可の列にSET NULLを指定してしまう]
+    FK --> i[MySQL固有　互換性のないストレージエンジンを使う]
+    FK --> j[MySQL固有　一意でないインデックスを参照させてしまう]
+    class FK hub
+`,
+  "d-normalization": `flowchart TB
+    N1[第1正規形　繰り返し項目を排除] --> N2[第2正規形　部分関数従属を排除]
+    N2 --> N3[第3正規形　推移的関数従属を排除]
+    N3 --> NBC[ボイス・コッド正規形　候補キー以外への従属を排除]
+    NBC --> N4[第4正規形　多値従属を排除]
+    N4 --> N5[第5正規形　結合従属を排除]
+    class N1 hub
+    class N5 done
+`,
+  "d-editions": `flowchart TB
+    OLD[初版　全25章相当　コード例はPHP] -->|3章を新設| NEW[第2版　全27章　コード例はPython]
+    OLD -->|旧24章を削除| NEW
+    OLD -->|3章の内容を刷新| NEW
+    OLD -->|ミニアンチパターン15本を追加| NEW
+    class OLD box
+    class NEW done
+`,
+  "d-roadmap": `flowchart TB
+    Start[SQLの基本文法は書ける] --> R1[Step1　論理設計　2〜9章を読む]
+    R1 --> R2[Step2〜3　物理設計とクエリ　10〜19章を読む]
+    R2 --> R3[Step4　アプリケーション開発　20〜25章を読む]
+    R3 --> R4[Step5〜6　外部キーと正規化　26〜27章　付録Aで仕上げる]
+    R4 --> Apply[自分たちのスキーマとクエリをチェックリストで点検する]
+    class Start hub
+    class Apply done
+`,
+  "d-summary": `flowchart TB
+    A[SQLアンチパターン 第2版] --> B[25個のアンチパターンに名前を付けて可視化する]
+    B --> C[共通の型で理解する　目的→アンチパターン→見分け方→使ってよい場合→解決策]
+    C --> D[自分たちのスキーマとクエリをチェックリストで点検する]
+    D --> E[設計判断の理由をチームで説明できるようになる]
+    class A hub
+    class E done
+`
+};
+
+
+function dedent(str){
+  const lines = str.replace(/^\n/, "").replace(/\n\s*$/, "").split("\n");
+  let min = Infinity;
+  for(const line of lines){
+    if(line.trim() === "") continue;
+    const m = line.match(/^(\s*)/);
+    min = Math.min(min, m[1].length);
+  }
+  if(!isFinite(min)) min = 0;
+  return lines.map(l => l.slice(min)).join("\n");
+}
+
+mermaid.initialize({
+  startOnLoad:false,
+  theme:"base",
+  securityLevel:"loose",
+  fontFamily:"Noto Sans JP, sans-serif",
+  themeVariables:{
+    fontSize:"16px",
+    primaryColor:"#eae8fb",
+    primaryBorderColor:"#3a3592",
+    primaryTextColor:"#242019",
+    lineColor:"#9c6a17",
+    secondaryColor:"#f6ead0",
+    tertiaryColor:"#fffdf8",
+    background:"#fffdf8",
+    mainBkg:"#eae8fb",
+    nodeBorder:"#3a3592",
+    clusterBkg:"#f2ead9",
+    clusterBorder:"#e3d9c2",
+    edgeLabelBackground:"#faf6ee",
+    textColor:"#242019"
+  },
+  flowchart:{ useMaxWidth:false, htmlLabels:true, curve:"basis" }
+});
+
+const CLASS_CSS = `
+  classDef hub fill:#eae8fb,stroke:#3a3592,stroke-width:2px,color:#211d5e;
+  classDef done fill:#dff0e4,stroke:#1f6b46,stroke-width:2px,color:#123d28;
+  classDef box fill:#f6ead0,stroke:#9c6a17,stroke-width:2px,color:#5c3f0e;
+`;
+
+async function renderAllDiagrams(){
+  const nodes = document.querySelectorAll(".diagram-fig[data-diagram]");
+  for(const el of nodes){
+    const key = el.getAttribute("data-diagram");
+    let src = DIAGRAMS[key];
+    if(!src){ el.innerHTML = '<div class="diagram-loading">図を読み込めませんでした</div>'; continue; }
+    src = dedent(src) + "\n" + CLASS_CSS;
+    try{
+      const id = "svg-" + key;
+      const { svg } = await mermaid.render(id, src);
+      el.innerHTML = svg;
+      const svgEl = el.querySelector("svg");
+      if(svgEl){
+        svgEl.removeAttribute("width");
+        svgEl.removeAttribute("height");
+        const vb = svgEl.getAttribute("viewBox");
+        if(vb){
+          const parts = vb.split(/\s+/).map(Number);
+          const w = parts[2];
+          svgEl.style.width = w + "px";
+        }
+        svgEl.style.maxWidth = "none";
+        svgEl.style.height = "auto";
+        svgEl.style.overflow = "visible";
+        svgEl.style.flexShrink = "0";
+      }
+    }catch(err){
+      el.innerHTML = '<div class="diagram-loading">図の描画に失敗しました: ' + (err && err.message ? err.message : err) + '</div>';
+      console.error("mermaid render error", key, err);
+    }
+  }
+}
+
+/* ---------- Code block injection ---------- */
+function injectCodeBlocks(){
+  document.querySelectorAll("code[data-code-id]").forEach(codeEl => {
+    const id = codeEl.getAttribute("data-code-id");
+    const raw = document.getElementById(id);
+    if(raw){
+      codeEl.textContent = dedent(raw.textContent);
+    }
+  });
+}
+
+/* ---------- Mobile menu ---------- */
+function setupMobileMenu(){
+  const btn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+  const scrim = document.getElementById("scrim");
+  function open(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
+  function close(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+  btn.addEventListener("click", () => {
+    sidebar.classList.contains("open") ? close() : open();
+  });
+  scrim.addEventListener("click", close);
+  sidebar.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
+}
+
+/* ---------- Sidebar active highlight (scroll-position based) ---------- */
+function setupActiveHighlight(){
+  const links = Array.from(document.querySelectorAll(".nav-item a"));
+  const targets = links.map(a => document.getElementById(a.getAttribute("href").slice(1))).filter(Boolean);
+  let ticking = false;
+  function update(){
+    ticking = false;
+    let activeIdx = 0;
+    const threshold = window.innerHeight * 0.25;
+    for(let i=0;i<targets.length;i++){
+      const rect = targets[i].getBoundingClientRect();
+      if(rect.top <= threshold) activeIdx = i;
+    }
+    links.forEach(a => a.classList.remove("active"));
+    if(links[activeIdx]) links[activeIdx].classList.add("active");
+  }
+  window.addEventListener("scroll", () => {
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  });
+  update();
+}
+
+/* ---------- Checklist ---------- */
+function setupChecklist(){
+  const list = document.getElementById("checklistItems");
+  if(!list) return;
+  const boxes = Array.from(list.querySelectorAll('input[type="checkbox"]'));
+  const counter = document.getElementById("checklistCounter");
+  const fill = document.getElementById("checklistFill");
+  function update(){
+    const done = boxes.filter(b => b.checked).length;
+    if(counter) counter.textContent = done + " / " + boxes.length + " 完了";
+    if(fill) fill.style.width = (boxes.length ? (done/boxes.length*100) : 0) + "%";
+    boxes.forEach(b => {
+      const li = b.closest("li");
+      if(li) li.classList.toggle("done", b.checked);
+    });
+  }
+  boxes.forEach(b => b.addEventListener("change", update));
+  update();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  injectCodeBlocks();
+  if(window.hljs){ window.hljs.highlightAll(); }
+  renderAllDiagrams();
+  setupMobileMenu();
+  setupActiveHighlight();
+  setupChecklist();
+});
+
+</script>
+</body>
+</html>

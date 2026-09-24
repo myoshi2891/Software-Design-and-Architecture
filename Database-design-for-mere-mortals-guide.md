@@ -52,7 +52,7 @@ Part Iで基礎知識と用語を固め、Part II（本書の中核、10章分�
 
 ## この本の設計思想：正規化理論ではなく「独自メソッド」
 
-多くのデータベース教科書は第1正規形（1NF）から第5正規形（5NF）までを段階的に検証する「正規化」を設計の中心に据えます。しかし本書は違うアプローチを取ります。Hernandezは、関数従属性や非キー属性といった形式的な用語は初学者には難解すぎると考え、代わりに「理想的フィールド（ideal field）」「理想的テーブル（ideal table）」という独自の基準でテーブル構造を検証する、より実践的な手法を提示しています。正規化そのものは付録Gで補足的に扱われるにとどまり、本編の設計プロセスには組み込まれていません。
+多くのデータベース教科書は第1正規形（1NF）から第5正規形（5NF）までを段階的に検証する「正規化」を設計の中心に据えます。しかし本書は違うアプローチを取ります。Hernandezは、関数従属性や非キー属性といった形式的な用語は初学者には難解すぎると考え、代わりに「理想的フィールド（ideal field）」「理想的テーブル（ideal table）」という独自の基準でテーブル構造を検証する、より実践的な手法を提示しています。正規化については第2章に「Normalization」の説明があり、付録Gでも補足的に扱われますが、通常の正規化手順そのものは本編の設計プロセスには組み込まれていません。
 
 ```mermaid
 flowchart LR
@@ -81,7 +81,8 @@ flowchart TD
     S4 --> S5["Step5〜13 設計プロセスの実践"]
     S5 --> S14["Step14 悪いデザインを避ける"]
     S14 --> S15["Step15 例外を理解する"]
-    S15 --> Next["次のステップ SQLと発展的トピックへ"]
+    S15 --> S16["Step16 結び"]
+    S16 --> Next["次のステップ SQLと発展的トピックへ"]
 ```
 
 ---
@@ -232,8 +233,8 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    All["テーブル内のすべてのフィールド"] --> Candidate["候補キー"]
-    All --> NonKey["非キーフィールド"]
+    All["テーブル内のフィールド（単一または組み合わせ）"] --> Candidate["候補キー（一意に識別できるフィールドまたはその組み合わせ。どのフィールドを除いても一意性を保てない最小構成）"]
+    All --> NonKey["非キーフィールド（どの候補キーにも含まれないフィールド）"]
     Candidate --> Primary["プライマリキー（候補キーの中から1つを選定）"]
     Candidate --> Alternate["代替キー（選ばれなかった残りの候補キー）"]
 ```
@@ -356,7 +357,7 @@ flowchart TD
 | 第1正規形（1NF） | 繰り返しグループを排除し、各フィールドの値を単一の値にする |
 | 第2正規形（2NF） | 複合キーの一部にのみ従属する項目を別テーブルへ分離する |
 | 第3正規形（3NF） | 主キー以外の項目同士の従属関係（推移的従属）を排除する |
-| ボイス–コッド正規形（BCNF） | 3NFをさらに厳密化し、すべての決定項が候補キーになるようにする |
+| ボイス–コッド正規形（BCNF） | 3NFをさらに厳密化し、すべての決定項がスーパーキーになるようにする |
 | 第4・第5正規形 | 多値従属性や結合従属性に起因する冗長性を排除する |
 
 本書の「理想的フィールド」基準はおおむね1NF〜2NFの目的に、「理想的テーブル」基準はおおむね2NF〜3NFの目的に対応すると捉えると、両者のアプローチを橋渡しして理解しやすくなります。
@@ -415,5 +416,5 @@ flowchart TD
 13. [Database Design for Mere Mortals: 25th Anniversary Edition, 4th edition - Pearson+](https://www.pearson.com/en-us/pearsonplus/p/9780137459667) ― 出版元 Pearson の公式販売ページ
 14. [Database Design for Mere Mortals - Amazon.com（第3版）](https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493) ― 著者略歴（Microsoft Visual Studio グループでのプログラムマネージャー経験など）を掲載
 15. [Normalization in Database Design: 1NF, 2NF, 3NF Explained with Examples - relationaldbdesign.com](https://www.relationaldbdesign.com/database-analysis/module3/intro-normal-forms.php) ― 本書と併読できる正規化理論の補足教材
-16. [Database Design for Mere Mortals - Summary excerpt（flylib.com）](https://flylib.com/books/en/1.199.1.38/1/) ― 著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋
-17. [Summit '97: Normalization Is a Nice Theory - David Adams & Dan Beckett](http://www.island-data.com/downloads/papers/normalization.pdf) ― 本書の第3正規形の説明が実務コミュニティでどのように参照されてきたかを示す資料
+16. [Database Design for Mere Mortals - Summary excerpt（flylib.com）](https://web.archive.org/web/20171121234330/http://flylib.com/books/en/1.199.1.38/1/) ― 著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋
+17. [Summit '97: Normalization Is a Nice Theory - David Adams & Dan Beckett](https://web.archive.org/web/20240415161702/http://island-data.com/downloads/papers/normalization.pdf) ― 本書の第3正規形の説明が実務コミュニティでどのように参照されてきたかを示す資料

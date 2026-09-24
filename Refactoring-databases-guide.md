@@ -202,8 +202,21 @@ ALTER TABLE customer RENAME TO client;
 
 -- 移行期間中、旧名customerでアクセスするコードのために
 -- ビューを用意しておく
+-- 注：この例は旧customerが持っていた全列を公開しているわけではない。
+--     旧コードが参照する列は必ずSELECT句に含めること。
+--     また、下記のような単一テーブルからの単純な列射影は、多くのDBMSで
+--     「更新可能ビュー」の条件（単一テーブル由来、集約・DISTINCT・GROUP BYを
+--     含まない等）を満たすため、明示しなければINSERT/UPDATE/DELETEが
+--     そのままclientへ通ってしまう。意図に応じて次のいずれかを選ぶこと。
+--     (a) 読み取り専用にしたい場合：旧コードのロールにSELECTのみをGRANTする、
+--         または対象DBMSでDMLを拒否する定義（Oracleなら WITH READ ONLY、
+--         PostgreSQLなら書き込みを拒否するINSTEAD OFトリガー）を付与する。
+--     (b) 書き込み互換を残したい場合：対象DBMSの更新可能ビュー規則を確認し、
+--         条件を満たさない形（複数テーブルの結合、列の変換を伴う等）であれば
+--         INSTEAD OFトリガーでclient側への書き込みを代行する実装を追加する。
 CREATE VIEW customer AS
-SELECT id, first_name, last_name FROM client;
+SELECT id, first_name, last_name FROM client
+WITH READ ONLY;  -- (a) を選ぶ場合。(b) なら削除する
 ```
 
 移行期間が終わり、依存している全アプリケーションが新しいテーブル名を使うようになったことを確認できたら、このビューを削除して「収縮」フェーズを完了させます。
@@ -399,41 +412,265 @@ flowchart TD
 
 ## Step 15：実践ウォークスルー① Split Column をやってみる
 
-ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫（inventory）テーブルの `inventory_code` 列を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。
+ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫（inventory）テーブルの在庫コード列（本ガイドでは `product_inventory_code` とします）を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。
 
 **変更前の状態**：`inventory` テーブルには `product_inventory_code` という1つの列があり、そこに「場所コード」「ロット番号」「シリアル番号」が連結された文字列として格納されています。ある開発者（記事内では「Jen」）が、これら3つの情報を個別に検索・更新できるようにする、というユーザーストーリーを実装することになりました。
 
 ```mermaid
 flowchart LR
-    A["変更前<br/>inventory_code列に<br/>場所・ロット・シリアルが<br/>連結されて格納"] --> B["1 新しい3つの列を追加<br/>location_code / batch_number / serial_number"]
-    B --> C["2 SUBSTRで<br/>既存データを分割して<br/>新しい列に移行"]
-    C --> D["3 アプリケーションコードを<br/>新しい列を使うように変更"]
-    D --> E["4 インデックスを<br/>新しい列に張り直す"]
-    E --> F["5 移行期間を経てから<br/>別のContractスクリプトで<br/>旧inventory_code列を削除する"]
+    A["変更前<br/>product_inventory_code列に<br/>場所・ロット・シリアルが<br/>連結されて格納"] --> B["1 新しい3つの列を追加<br/>location_code / batch_number / serial_number"]
+    B --> C["2 新旧を双方向に同期する<br/>トリガーを有効化する"]
+    C --> C2["3 SUBSTRで既存データを分割して<br/>新しい列にバックフィルし検証する"]
+    C2 --> D["4 アプリケーションコードを<br/>新しい列を使うように変更"]
+    D --> E["5 インデックスを<br/>新しい列に張り直す"]
+    E --> F["6 移行期間を経てから<br/>別のContractスクリプトで<br/>同期トリガーと旧product_inventory_code列を削除する"]
 ```
 
 このリファクタリング（Expand〜Migrateフェーズ）を実現する移行スクリプトの例（Oracle SQLの場合）は次のようになります。
 
 ```sql
+-- === Expandフェーズ: 新しい構造を追加する ===
+-- 失敗した時点でスクリプトを止める。最初のDDLより前に宣言しないと、
+-- 列追加やトリガー作成の失敗を見逃したままバックフィルへ進んでしまう。
+-- WHENEVER SQLERROR は SQL*Plus（および SQLcl などの SQL*Plus 互換ランナー）の指令のため、
+-- CI でも SQL*Plus 互換ランナーで適用する。別のランナー（Flyway / Liquibase 等）を使う場合は、
+-- この行をそのランナーが備えるエラー時中断の仕組みに置き換える。
+WHENEVER SQLERROR EXIT FAILURE ROLLBACK
+
 ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD batch_number VARCHAR2(6) NULL;
 ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
 
-UPDATE inventory SET location_code = SUBSTR(product_inventory_code,1,6);
-UPDATE inventory SET batch_number = SUBSTR(product_inventory_code,7,6);
-UPDATE inventory SET serial_number = SUBSTR(product_inventory_code,11,10);
+-- 移行期間中は旧アプリが product_inventory_code を、
+-- 新アプリが3列を更新しうる。どちらから書かれても両表現が一致するよう、
+-- バックフィルより先に双方向同期トリガーを有効化する。
+CREATE OR REPLACE TRIGGER trg_inventory_code_sync
+BEFORE INSERT OR UPDATE ON inventory
+FOR EACH ROW
+DECLARE
+  -- 旧列側・新列側のどちらが書かれたかを判定する。:NEW.<列> は更新対象外の
+  -- 列でも現在の行値が入るため、値の有無ではなく「書かれたか」で分岐しないと、
+  -- 無関係な UPDATE（数量の更新など）で同期処理が誤って走ってしまう。
+  -- INSERT では UPDATING が使えないので、値が入っているかで判断する。
+  -- このため INSERT では「列の省略」と「明示的な NULL 指定」を区別できず、
+  -- 新3列がすべて NULL なら「書かれていない」とみなす。旧列に値を入れつつ
+  -- 新3列に明示的に NULL を指定する INSERT は契約上禁止とする（旧列の分解値で
+  -- 3列が埋められる）。INSERT で両表現を同時に指定する場合は、新3列にも
+  -- 旧列と一致する値を指定すること。
+  old_written BOOLEAN;
+  new_written BOOLEAN;
+  composed    inventory.product_inventory_code%TYPE;
+BEGIN
+  old_written := UPDATING('product_inventory_code')
+                 OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL);
+  new_written := UPDATING('location_code')
+                 OR UPDATING('batch_number')
+                 OR UPDATING('serial_number')
+                 OR (INSERTING AND (:NEW.location_code IS NOT NULL
+                                    OR :NEW.batch_number IS NOT NULL
+                                    OR :NEW.serial_number IS NOT NULL));
+
+  IF old_written AND new_written THEN
+    -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
+    -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+    -- まず単独で書かれた場合と同じ入力検証を適用する。不正な長さや部分的な
+    -- NULL を「一致しない」エラーとして報告すると、原因が分かりにくくなる。
+    IF :NEW.product_inventory_code IS NOT NULL
+       AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+      RAISE_APPLICATION_ERROR(-20005,
+        'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+    END IF;
+    IF (:NEW.location_code IS NULL
+        OR :NEW.batch_number IS NULL
+        OR :NEW.serial_number IS NULL)
+       AND NOT (:NEW.location_code IS NULL
+                AND :NEW.batch_number IS NULL
+                AND :NEW.serial_number IS NULL) THEN
+      RAISE_APPLICATION_ERROR(-20001,
+        'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+    END IF;
+    composed := RPAD(:NEW.location_code, 6)
+             || RPAD(:NEW.batch_number, 6)
+             || RPAD(:NEW.serial_number, 10);
+    -- NULL 同士は等しいとみなす。片側だけ NULL のケースを個別に書くことで、
+    -- 比較結果が NULL になって IF が素通りするのを避ける。
+    IF (composed IS NULL AND :NEW.product_inventory_code IS NOT NULL)
+       OR (composed IS NOT NULL AND :NEW.product_inventory_code IS NULL)
+       OR (composed IS NOT NULL AND composed <> :NEW.product_inventory_code) THEN
+      RAISE_APPLICATION_ERROR(-20003,
+        'product_inventory_code と location_code / batch_number / serial_number が同時に指定され、内容が一致しません。どちらか一方だけを更新してください');
+    END IF;
+  ELSIF old_written THEN
+    -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
+    -- NULL は「値なし」として3列そろって NULL に落とす
+    -- 22文字（場所6+ロット6+シリアル10）でない値を SUBSTR にかけると、
+    -- 短すぎれば NULL や切り詰めた値が、長すぎれば末尾が捨てられた値が
+    -- 黙って入るため、分解の前に長さを検証して拒否する。
+    IF :NEW.product_inventory_code IS NOT NULL
+       AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+      RAISE_APPLICATION_ERROR(-20005,
+        'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+    END IF;
+    :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
+    :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
+    :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
+  ELSIF new_written THEN
+    IF :NEW.location_code IS NULL
+       AND :NEW.batch_number IS NULL
+       AND :NEW.serial_number IS NULL THEN
+      -- 新アプリが3列すべてを NULL にした場合 → 旧列も NULL にそろえる
+      :NEW.product_inventory_code := NULL;
+    ELSIF :NEW.location_code IS NULL
+          OR :NEW.batch_number IS NULL
+          OR :NEW.serial_number IS NULL THEN
+      -- 部分的な書き込みは旧列との乖離を生むため、黙って放置せず拒否する
+      RAISE_APPLICATION_ERROR(-20001,
+        'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+    ELSE
+      -- 新アプリが3列すべてを書いた場合 → 旧列へ連結して反映
+      :NEW.product_inventory_code := RPAD(:NEW.location_code, 6)
+                                  || RPAD(:NEW.batch_number, 6)
+                                  || RPAD(:NEW.serial_number, 10);
+    END IF;
+  END IF;
+END;
+/
+
+-- CREATE OR REPLACE TRIGGER は本体のコンパイルに失敗してもコマンド自体は成功し、
+-- INVALID なトリガーが残る（WHENEVER SQLERROR では捕まらない）。同期が効かないまま
+-- バックフィルへ進まないよう、ここで明示的にコンパイルエラーを検査する。
+DECLARE
+  error_count PLS_INTEGER;
+BEGIN
+  SELECT COUNT(*)
+    INTO error_count
+    FROM user_errors
+   WHERE name = 'TRG_INVENTORY_CODE_SYNC'
+     AND type = 'TRIGGER'
+     AND attribute = 'ERROR';  -- 警告（WARNING）は失敗扱いにしない
+
+  IF error_count > 0 THEN
+    RAISE_APPLICATION_ERROR(-20004,
+      '同期トリガー trg_inventory_code_sync のコンパイルに失敗しました。移行を中止します');
+  END IF;
+END;
+/
+
+-- 注意：ALTER TABLE は Oracle では暗黙にコミットされるため、上の -20004 で
+-- スクリプトを中止しても、直前に追加した3列は残ったままになる。エラーが
+-- DDL をロールバックしてくれることはない。同様に、3本の ALTER TABLE ADD の
+-- 途中（例: 2本目）で失敗した場合も、それまでに成功した列だけが残り、トリガーは
+-- まだ作成されていない。したがって失敗時は、下記いずれかの手順で「トリガーも
+-- 新列も存在しない」状態へ明示的に戻してから再実行する（列追加の途中で止まった
+-- 場合は、トリガーが存在しないため手順Bは使えず、手順Aで復旧する）。
+--
+--   復旧手順A（推奨・Expandをやり直す）:
+--     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
+--     2. トリガーを DROP すると USER_ERRORS の該当行も消えるため、先に
+--        SELECT line, position, text FROM user_errors
+--         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+--        を実行し、結果を出力・保存しておく
+--        （列追加の途中で失敗しトリガー作成まで到達していない場合、この結果は0行になる）
+--     3. トリガーが作成済みの場合に限り除去する。存在しないトリガーの DROP は
+--        ORA-04080 で失敗するため、先に存在を確認する:
+--        SELECT trigger_name, status FROM user_triggers
+--         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+--        → 1行返った場合のみ実行する:
+--        DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+--     4. 列ごとに、DROP の直前に存在を確認してから削除する（存在しない列の DROP は
+--        ORA-00904 で失敗するため、列追加が途中で止まっていた場合や、前回の復旧が
+--        途中まで進んでいた場合に備える）:
+--        SELECT column_name FROM user_tab_columns
+--         WHERE table_name = 'INVENTORY'
+--           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+--        → 結果に残っている列だけを対象に、1文ずつ実行する:
+--        ALTER TABLE inventory DROP COLUMN serial_number;
+--        ALTER TABLE inventory DROP COLUMN batch_number;
+--        ALTER TABLE inventory DROP COLUMN location_code;
+--     5. 各 DDL の実行後に、DDL は文ごとに暗黙コミットされ途中失敗でも戻らないため、
+--        トリガーと新列の残存状態を毎回確認する:
+--        SELECT trigger_name, status FROM user_triggers
+--         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+--        SELECT column_name FROM user_tab_columns
+--         WHERE table_name = 'INVENTORY'
+--           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+--        確認した状態ごとの対処:
+--          - トリガーが残っている → 手順3の DROP TRIGGER を再実行する
+--          - 新列が一部だけ残っている → 残っている列についてのみ手順4を再実行する
+--          - DROP が権限・ロック競合で失敗した → 原因を取り除いてから同じ手順を再実行する
+--        トリガー・新3列がいずれも存在しない（両クエリとも0行）ことを確認できるまで次へ進まない
+--     6. 手順2で保存したエラー情報をもとにトリガー本体を修正し、Expandフェーズを先頭から再実行する
+--
+--   復旧手順B（列を残したままトリガーだけ直す）:
+--     1. SELECT line, position, text FROM user_errors
+--         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+--        で原因を特定する
+--     2. トリガー本体を修正して CREATE OR REPLACE TRIGGER を再実行し、
+--        上のコンパイル検査ブロックを再度通す
+--     3. 検査が通るまでバックフィル（Migrateフェーズ）へ進まない。列が存在するのに
+--        同期が効かない期間に書き込みが入った場合は、手順Aで列ごと作り直す
+--
+-- なお、ALTER TABLE を実行する前にトリガー本体をコンパイル検証したい場合は、
+-- 開発・ステージング環境で3列を追加済みのスキーマに対して先に
+-- CREATE OR REPLACE TRIGGER とこの検査ブロックを通し、本番では検証済みの
+-- 本体のみを適用する運用にする（本番の ALTER TABLE 前に単体で検証することは
+-- できない。トリガー本体が新列を参照するため、列が無ければ必ず INVALID になる）。
+
+-- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
+-- 3列を直接 SET すると新列→旧列の同期分岐が走り、検証の基準にしたい
+-- product_inventory_code をトリガーが再連結値で上書きしてしまう（変換誤りを検出できなくなる）。
+-- 旧列を自身の値で更新し、旧列→新列の分岐に分解処理を行わせる。
+UPDATE inventory
+   SET product_inventory_code = product_inventory_code
+ WHERE product_inventory_code IS NOT NULL;
+
+-- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
+-- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
+-- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する。
+-- 件数を表示するだけでは誰も見落としに気づけないため、0件でなければ
+-- エラーを送出してスクリプトを止める（中止は冒頭の WHENEVER SQLERROR に従う）。
+DECLARE
+  mismatch_count PLS_INTEGER;
+BEGIN
+  SELECT COUNT(*)
+    INTO mismatch_count
+    FROM inventory
+   WHERE DECODE(product_inventory_code,
+                RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
+                0, 1) = 1;
+
+  IF mismatch_count > 0 THEN
+    RAISE_APPLICATION_ERROR(-20002,
+      '分割結果が旧列と一致しない行が ' || mismatch_count || ' 件あります。移行を中止します');
+  END IF;
+END;
+/
+
+-- 新しい一意制約を先に作ってから旧インデックスを落とす。
+-- 逆順にすると、その間だけ一意性が誰にも強制されない窓ができる。
+-- 列ごとの複合キーだと末尾空白だけが異なる値を別物とみなし、RPAD 後に
+-- 同じ旧コードになる行を許してしまうため、旧コード生成と同じ式で一意性を保証する。
+CREATE UNIQUE INDEX uidx_inventory_identifier
+  ON inventory (RPAD(location_code, 6) || RPAD(batch_number, 6) || RPAD(serial_number, 10));
 
 DROP INDEX uidx_inventory_code;
-
-CREATE UNIQUE INDEX uidx_inventory_identifier
-  ON inventory (location_code, batch_number, serial_number);
 ```
 
 このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム（マイグレーションスクリプトとして）にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。
 
-旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。
+旧列 `product_inventory_code` は、Step 6で説明した「移行期間（transition period）」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者（アプリケーション・レポートなど）が新しい3列を参照するように切り替わったことを確認できてから、`DROP TRIGGER trg_inventory_code_sync;` と `ALTER TABLE inventory DROP COLUMN product_inventory_code;` を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。ここで注意が必要なのは、Oracle の DDL は文ごとに暗黙コミットされるため、`DROP TRIGGER` と `ALTER TABLE ... DROP COLUMN` を同じスクリプトにまとめても原子的にはならない点です。`DROP TRIGGER` が成功したあとに列削除が失敗すると、同期トリガーだけが失われ旧列が残った状態がコミット済みとして残り、以後の書き込みで旧列と新3列が乖離していきます（`WHENEVER SQLERROR EXIT FAILURE ROLLBACK` は未コミットのトランザクションを戻すだけで、すでにコミットされた DDL は取り消せません）。そのため Contract フェーズは次の手順で実施します。
 
-> ポイント：スキーマ変更（列追加）、データ移行（SUBSTRによる分割）、アクセスコード変更（アプリ側の参照列の変更）が1つのマイグレーションスクリプトと1回のコミットにまとめられている点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。一方で旧列の削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
+1. **事前確認**：`USER_DEPENDENCIES` / `ALL_DEPENDENCIES` で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、`ALTER TABLE` や `DROP ANY TRIGGER` の権限、および `ALTER TABLE ... DROP COLUMN` が取る排他ロックを取得できる時間帯かを確認する。
+2. **実行後の検証**：`USER_TRIGGERS` と `USER_TAB_COLUMNS` を照会し、同期トリガーと旧列の**両方**が消えていることを確認する。片方だけが残っていれば中途半端な状態である。
+3. **列削除が失敗した場合の復旧**：同期トリガーが無い状態では書き込みのたびに乖離が広がるため、次の順で進める。
+   1. **書き込みを停止する**：`inventory` へ書き込むアプリケーション・バッチを止める（メンテナンスモードへの切り替えや、書き込み系デプロイの停止など）。停止しないまま修復やトリガー再作成を行うと、作業中の更新が片側にしか反映されず不一致が再発する。
+   2. **正とする表現を決める**：Contract フェーズに入った時点ではすべての利用者が新3列へ切り替わっているはずなので、原則として**新3列を正**とし、旧列を再連結値で上書きする。旧列にしか書かない利用者が残っていたことが判明した場合は、その期間の更新を旧列側から新3列へ反映する必要があるため、どちらを正とするかを利用者の切り替え状況から判断し、記録に残す。
+   3. **競合行の解決方針を定める**：両方の表現がそれぞれ異なる更新を受けた行（どちらを採っても片方の更新が失われる行）は機械的に上書きせず、更新履歴や監査ログ・業務担当者の確認に基づいて行ごとに正しい値を決める。
+   4. **不一致の特定と修復**：Step 15 の検証クエリ（`DECODE` による NULL 安全な突き合わせ）で旧列と新3列の不一致行を洗い出し、上の方針に従って修復したうえで、同じ検証クエリが0件になることを確認する。
+   5. **同期トリガーの再作成**：修復が完了してから同期トリガーを再作成し、コンパイル検査を通して双方向同期を復旧させる。そのうえで書き込みを再開する。
+   6. **列削除の再実行**：失敗の原因（依存オブジェクト・権限・ロック競合）を取り除き、Contract フェーズを再実行する。
+
+> ポイント：スキーマ変更（列追加と同期トリガー）、データ移行（SUBSTRによる分割とバックフィル）、そしてアクセスコード変更（アプリ側の参照列の変更）を**同じ変更セット（リリース）として管理する**点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。上記のSQLはこのうちスキーマ変更とデータ移行にあたり、アクセスコード変更はアプリケーション側のリポジトリで行われますが、リリース単位としては切り離さずに扱います。同期トリガーをバックフィルより**先に**有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除（収縮）は、移行期間を経た後の独立したリファクタリングとして扱います。
 
 ---
 
@@ -458,6 +695,8 @@ ALTER TABLE customer RENAME TO client;
 CREATE VIEW customer AS
 SELECT id, first_name, last_name FROM client;
 ```
+
+このビューも、Step 6で触れた「更新可能ビュー」の条件（単一テーブル由来である、集約や重複除去を含まないなど）を満たす場合に限り書き込みが可能であり、読み書きの互換性を無条件に保証するものではありません。条件を満たさないDBMS・列構成では、Step 6と同様にINSTEAD OFトリガーを追加してclient側への書き込みを代行する実装が必要です。
 
 この移行期間の長さは組織によって様々です。Martin FowlerとPramod Sadalageの記事によれば、数ヶ月で終わる場合もあれば、大規模な組織では数年かかることもあると述べられています。重要なのは「移行期間をどれだけ短くできるか」ではなく、「移行期間中も新旧両方が安全に動き続けること」を保証する設計です。
 

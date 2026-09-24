@@ -190,6 +190,9 @@
       "pattern": "^https?://(www\\.)?oreilly\\.com"
     },
     {
+      "pattern": "^https?://(www\\.)?oreilly\\.co\\.jp(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
       "pattern": "^https?://(www\\.)?theleanstartup\\.com"
     },
     {
@@ -245,6 +248,27 @@
     },
     {
       "pattern": "^https://openlamptech\\.substack\\.com"
+    },
+    {
+      "pattern": "^https://queue\\.acm\\.org(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https://(www\\.)?bookshop\\.org(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://([a-z0-9-]+\\.)?medium\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?db-engines\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://dev\\.mysql\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?xebia\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?agiledata\\.org(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],

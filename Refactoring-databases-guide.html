@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refactoring Databases: Evolutionary Database Design 初学者向け完全ガイド</title>
+<meta name="description" content="Scott W. Ambler と Pramod J. Sadalage の著書『Refactoring Databases: Evolutionary Database Design』を初学者向けにステップバイステップで解説するガイド。">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css"
+  integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/styles/github.min.css"
+  integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
+
+<style>
+
+:root{
+  --paper:#f7f4ee;
+  --paper-alt:#efe9db;
+  --card:#ffffff;
+  --ink:#2b2620;
+  --ink-soft:#6b6355;
+  --border:#ddd4bd;
+  --indigo:#3b4d8a;
+  --indigo-soft:#eef0f9;
+  --gold:#a8790a;
+  --gold-soft:#faf3df;
+  --forest:#2f6b4f;
+  --forest-soft:#e8f3ec;
+  --plum:#7b3f61;
+  --plum-soft:#f6ecf1;
+  --sidebar-w:296px;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(43,38,32,.08), 0 8px 24px rgba(43,38,32,.06);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:1rem;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Source Serif 4","Noto Serif JP",serif;
+  font-weight:700;
+  color:var(--ink);
+  line-height:1.4;
+}
+p{margin:0 0 1.05em;overflow-wrap:break-word;}
+a{color:var(--indigo);}
+ul,ol{overflow-wrap:break-word;}
+li{overflow-wrap:break-word;}
+code{overflow-wrap:anywhere;font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+blockquote{overflow-wrap:break-word;}
+td,th,dd,dt{overflow-wrap:break-word;}
+
+.layout{display:block;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:fixed;
+  top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--card);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:28px 0 40px;
+  z-index:40;
+}
+.sidebar-brand{
+  padding:0 24px 20px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:14px;
+}
+.sidebar-brand .eyebrow{
+  font-size:1rem;
+  letter-spacing:.06em;
+  color:var(--indigo);
+  font-weight:700;
+  text-transform:uppercase;
+}
+.sidebar-brand h1{
+  font-size:1.08rem;
+  margin:.4em 0 0;
+  line-height:1.5;
+}
+.sidebar nav{padding:6px 12px;}
+.sidebar nav a{
+  display:flex;
+  align-items:center;
+  gap:.6em;
+  padding:9px 12px;
+  border-radius:10px;
+  color:var(--ink-soft);
+  text-decoration:none;
+  font-size:1rem;
+  line-height:1.4;
+}
+.sidebar nav a i{font-size:1.05rem;color:var(--indigo);flex:none;}
+.sidebar nav a:hover{background:var(--paper-alt);color:var(--ink);}
+.sidebar nav a.active{background:var(--indigo-soft);color:var(--indigo);font-weight:700;}
+.nav-group-label{
+  font-size:1rem;
+  color:var(--ink-soft);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  padding:16px 16px 6px;
+  font-weight:700;
+}
+
+/* ---------- Mobile bar ---------- */
+.mobile-bar{
+  display:none;
+  position:sticky;top:0;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  align-items:center;
+  justify-content:space-between;
+  z-index:50;
+  font-size:1rem;
+}
+.mobile-bar .brand{font-weight:700;font-family:"Source Serif 4",serif;font-size:1rem;}
+.mobile-bar button{
+  background:var(--indigo);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:8px 12px;
+  font-size:1rem;
+  display:flex;
+  align-items:center;
+  gap:.4em;
+}
+.scrim{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(43,38,32,.4);
+  z-index:39;
+}
+
+/* ---------- Main ---------- */
+.main{margin-left:var(--sidebar-w);}
+.hero{
+  padding:56px 56px 40px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,var(--paper-alt),var(--paper));
+}
+.hero .eyebrow{
+  color:var(--indigo);
+  font-weight:700;
+  font-size:1rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.hero h1{
+  font-size:2.2rem;
+  margin:.5em 0 .4em;
+  max-width:none;
+}
+.hero .lead{
+  font-size:1.08rem;
+  color:var(--ink-soft);
+  max-width:none;
+}
+.hero .badges{display:flex;flex-wrap:wrap;gap:.6em;margin-top:1.2em;}
+.badge{
+  display:inline-flex;align-items:center;gap:.4em;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:.4em .9em;
+  font-size:1rem;
+  color:var(--ink-soft);
+}
+.badge i{color:var(--indigo);}
+
+.section{
+  padding:44px 56px;
+  border-bottom:1px solid var(--border);
+  max-width:none;
+}
+.section h2{
+  font-size:1.55rem;
+  display:flex;align-items:center;gap:.5em;
+  margin:0 0 .7em;
+}
+.section h2 i{color:var(--indigo);font-size:1.3rem;}
+.section h3{font-size:1.2rem;margin:1.6em 0 .6em;}
+.section h4{font-size:1.05rem;margin:1.3em 0 .5em;color:var(--indigo);}
+.prose{max-width:none;}
+.prose p{max-width:none;}
+
+/* ---------- Callouts ---------- */
+.callout{
+  display:flex;
+  gap:.9em;
+  background:var(--indigo-soft);
+  border:1px solid var(--border);
+  border-left:4px solid var(--indigo);
+  border-radius:10px;
+  padding:16px 18px;
+  margin:1.2em 0;
+}
+.callout.gold{background:var(--gold-soft);border-left-color:var(--gold);}
+.callout.forest{background:var(--forest-soft);border-left-color:var(--forest);}
+.callout.plum{background:var(--plum-soft);border-left-color:var(--plum);}
+.callout i{font-size:1.3rem;color:var(--indigo);flex:none;margin-top:.1em;}
+.callout.gold i{color:var(--gold);}
+.callout.forest i{color:var(--forest);}
+.callout.plum i{color:var(--plum);}
+.callout-body{flex:1;min-width:0;}
+.callout-title{font-weight:700;display:block;margin-bottom:.3em;}
+.callout-body p{margin:0 0 .6em;}
+.callout-body p:last-child{margin-bottom:0;}
+
+/* ---------- Tables ---------- */
+.table-wrap{
+  overflow-x:auto;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin:1.3em 0;
+  background:var(--card);
+  min-width:0;
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:480px;
+  font-size:1rem;
+}
+.kv-table{min-width:0;}
+th,td{
+  text-align:left;
+  padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+}
+thead th{
+  background:var(--paper-alt);
+  font-weight:700;
+  color:var(--ink);
+  white-space:nowrap;
+}
+.kv-table th{
+  background:transparent;
+  white-space:nowrap;
+  width:1%;
+  color:var(--ink-soft);
+  font-weight:700;
+  border-right:1px solid var(--border);
+}
+tbody tr:last-child td{border-bottom:none;}
+table tbody tr:nth-child(even){background:var(--paper-alt);}
+.kv-table tbody tr:nth-child(even){background:transparent;}
+
+/* ---------- Book info card ---------- */
+.book-card{
+  display:flex;
+  gap:24px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  margin:1.2em 0;
+  box-shadow:var(--shadow);
+  flex-wrap:wrap;
+}
+.book-cover{
+  min-height:170px;
+  width:150px;
+  flex:none;
+  align-self:flex-start;
+  border-radius:10px;
+  background:linear-gradient(160deg,var(--indigo),#2a3763);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  padding:14px;
+}
+.book-cover-text{
+  color:#fff;
+  text-align:center;
+  font-family:"Source Serif 4",serif;
+  font-weight:700;
+  font-size:1rem;
+  line-height:1.4;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+.book-card-body{flex:1;min-width:240px;}
+.book-card-body h3{margin-top:0;}
+
+/* ---------- Mermaid ---------- */
+.diagram-wrap{
+  margin:1.4em 0;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+  padding:18px;
+  overflow-x:auto;
+}
+.diagram-wrap .mermaid-title{
+  font-size:1rem;
+  color:var(--ink-soft);
+  margin-bottom:.6em;
+  display:flex;align-items:center;gap:.4em;
+}
+.diagram-wrap .mermaid-title i{color:var(--indigo);}
+pre.mermaid{
+  width:100%;
+  display:flex;
+  justify-content:safe center;
+  margin:0;
+}
+.mermaid svg{
+  max-width:none;
+  height:auto;
+  overflow:visible;
+  flex-shrink:0;
+}
+.diagram-loading{
+  color:var(--ink-soft);
+  font-size:1rem;
+  text-align:center;
+  padding:20px;
+}
+
+/* ---------- Code blocks ---------- */
+.code-block{
+  margin:1.3em 0;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--card);
+}
+.code-block-head{
+  background:var(--paper-alt);
+  color:var(--ink-soft);
+  font-size:1rem;
+  padding:8px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+}
+.code-block pre{
+  margin:0;
+  padding:16px 18px;
+  overflow-x:auto;
+  background:var(--card);
+}
+.code-block code{
+  font-size:1rem;
+  line-height:1.7;
+}
+
+/* ---------- Step list ---------- */
+.step-list{list-style:none;margin:1.2em 0;padding:0;counter-reset:step;}
+.step-list > li{
+  counter-increment:step;
+  display:flex;
+  gap:14px;
+  padding:12px 0;
+  border-bottom:1px dashed var(--border);
+}
+.step-list > li:last-child{border-bottom:none;}
+.step-list > li::before{
+  content:counter(step);
+  flex:none;
+  width:30px;height:30px;
+  border-radius:50%;
+  background:var(--indigo);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;
+  font-size:1rem;
+}
+
+/* ---------- Reference cards ---------- */
+.ref-group-label{
+  font-weight:700;
+  color:var(--indigo);
+  margin:1.6em 0 .6em;
+  font-size:1rem;
+  display:flex;align-items:center;gap:.5em;
+}
+.ref-group-label i{font-size:1.05rem;}
+.ref-card{
+  display:flex;
+  gap:14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 18px;
+  margin-bottom:10px;
+  align-items:flex-start;
+}
+.ref-card i{color:var(--indigo);font-size:1.15rem;margin-top:.2em;flex:none;}
+.ref-card-body{min-width:0;flex:1;}
+.ref-card-title{font-weight:700;display:block;margin-bottom:.25em;}
+.ref-card .ref-url{
+  word-break:break-all;
+  font-size:1rem;
+  color:var(--ink-soft);
+}
+
+/* ---------- Checklist ---------- */
+.checklist-wrap{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px 24px;
+  margin:1.2em 0;
+}
+.checklist-progress{
+  display:flex;align-items:center;gap:.8em;
+  margin-bottom:1em;
+  font-weight:700;
+  color:var(--indigo);
+}
+.progress-track{
+  flex:1;height:8px;border-radius:999px;background:var(--paper-alt);overflow:hidden;
+}
+.progress-fill{height:100%;width:0%;background:var(--indigo);border-radius:999px;transition:width .25s ease;}
+.check-item{
+  display:flex;align-items:flex-start;gap:.8em;
+  padding:9px 0;
+  border-bottom:1px solid var(--border);
+}
+.check-item:last-child{border-bottom:none;}
+.check-item input[type=checkbox]{
+  appearance:none;
+  width:22px;height:22px;
+  flex:none;
+  border:2px solid var(--border);
+  border-radius:6px;
+  margin-top:.15em;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+  background:var(--card);
+}
+.check-item input[type=checkbox]:checked{
+  background:var(--indigo);
+  border-color:var(--indigo);
+}
+.check-item input[type=checkbox]:checked::after{
+  content:"\ea5e";
+  font-family:"tabler-icons";
+  color:#fff;
+  font-size:1rem;
+}
+.check-item label{cursor:pointer;line-height:1.6;}
+.check-item.done label{color:var(--ink-soft);text-decoration:line-through;}
+
+/* ---------- Glossary dl ---------- */
+.glossary dt{font-weight:700;color:var(--indigo);margin-top:1em;}
+.glossary dd{margin:.2em 0 0;color:var(--ink-soft);}
+
+/* ---------- Footer ---------- */
+.footer{
+  padding:40px 56px 60px;
+  color:var(--ink-soft);
+  font-size:1rem;
+  max-width:none;
+}
+
+/* ---------- Utility ---------- */
+.icon-chip{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:9px;
+  background:var(--indigo-soft);color:var(--indigo);
+  flex:none;
+}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+.mermaidTooltip{font-size:1rem !important;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:980px){
+  .sidebar{
+    transform:translateX(-100%);
+    transition:transform .25s ease;
+    width:82vw;
+    max-width:320px;
+    box-shadow:0 0 40px rgba(0,0,0,.2);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .mobile-bar{display:flex;}
+  .scrim.open{display:block;}
+  .hero,.section,.footer{padding-left:22px;padding-right:22px;}
+}
+@media (max-width:600px){
+  .hero{padding-top:28px;padding-bottom:28px;}
+  .hero h1{font-size:1.5rem;}
+  .section{padding-top:32px;padding-bottom:32px;}
+  .book-card{padding:16px;}
+  .book-cover{width:110px;min-height:130px;}
+  .book-cover-text{font-size:1rem;}
+}
+
+</style>
+</head>
+<body>
+
+
+<header class="mobile-bar">
+  <span class="brand">Refactoring Databases ガイド</span>
+  <button id="menuToggle" type="button"><i class="ti ti-menu-2" aria-hidden="true"></i>目次</button>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="eyebrow">Beginner's Guide</span>
+    <h1>Refactoring Databases<br>初学者向け完全ガイド</h1>
+  </div>
+  <nav>
+    <div class="nav-group-label">はじめに</div>
+    <a href="#intro"><i class="ti ti-info-circle"></i>この記事について</a>
+    <a href="#book-info"><i class="ti ti-book"></i>書籍基本情報</a>
+    <a href="#authors"><i class="ti ti-users"></i>著者について</a>
+
+    <div class="nav-group-label">基礎編</div>
+    <a href="#step0"><i class="ti ti-route"></i>Step 0 学習ロードマップ</a>
+    <a href="#step1"><i class="ti ti-bulb"></i>Step 1 なぜ必要か</a>
+    <a href="#step2"><i class="ti ti-layout-grid"></i>Step 2 全体構成</a>
+    <a href="#step3"><i class="ti ti-puzzle"></i>Step 3 リファクタリングとは</a>
+    <a href="#step4"><i class="ti ti-alert-triangle"></i>Step 4 データベースの臭い</a>
+    <a href="#step5"><i class="ti ti-list-check"></i>Step 5 プロセス</a>
+    <a href="#step6"><i class="ti ti-arrows-shuffle"></i>Step 6 移行期間</a>
+    <a href="#step7"><i class="ti ti-server"></i>Step 7 デプロイ戦略</a>
+    <a href="#step8"><i class="ti ti-git-branch"></i>Step 8 戦略の要点</a>
+
+    <div class="nav-group-label">カタログ編</div>
+    <a href="#step9"><i class="ti ti-category"></i>Step 9 カタログ全体像</a>
+    <a href="#step10"><i class="ti ti-table"></i>Step 10 構造</a>
+    <a href="#step11"><i class="ti ti-shield-check"></i>Step 11 データ品質</a>
+    <a href="#step12"><i class="ti ti-link"></i>Step 12 参照整合性</a>
+    <a href="#step13"><i class="ti ti-building-arch"></i>Step 13 アーキテクチャ</a>
+    <a href="#step14"><i class="ti ti-code"></i>Step 14 メソッドと変換</a>
+
+    <div class="nav-group-label">実践とまとめ</div>
+    <a href="#step15"><i class="ti ti-flask"></i>Step 15 実践 ① Split Column</a>
+    <a href="#step16"><i class="ti ti-flask-2"></i>Step 16 実践 ② Rename Table</a>
+    <a href="#step17"><i class="ti ti-rocket"></i>Step 17 現代との接続</a>
+    <a href="#critical"><i class="ti ti-scale"></i>批判的に読む</a>
+    <a href="#glossary"><i class="ti ti-vocabulary"></i>用語集</a>
+    <a href="#checklist"><i class="ti ti-checkbox"></i>理解度チェック</a>
+    <a href="#summary"><i class="ti ti-flag"></i>まとめ</a>
+    <a href="#references"><i class="ti ti-external-link"></i>参考文献</a>
+  </nav>
+</aside>
+
+<div class="main">
+
+<section class="hero" id="intro">
+  <span class="eyebrow">Beginner's Step-by-Step Guide</span>
+  <h1>『Refactoring Databases: Evolutionary Database Design』<br>初学者向け完全ガイド</h1>
+  <p class="lead">原著：Scott W. Ambler, Pramod J. Sadalage『Refactoring Databases: Evolutionary Database Design』(Addison-Wesley Professional, 2006)。本ガイドはウェブ検索で得られた一次情報・著者自身が公開している資料・国際的に著名な開発者の記事をもとに、2026年9月19日時点の情報を反映して作成しています。</p>
+  <div class="badges">
+    <span class="badge"><i class="ti ti-vector-triangle"></i>ASCIIアート不使用</span>
+    <span class="badge"><i class="ti ti-chart-dots-3"></i>図解はすべてMermaid</span>
+    <span class="badge"><i class="ti ti-table"></i>一覧はすべてMarkdown表</span>
+    <span class="badge"><i class="ti ti-language"></i>日本語版情報つき</span>
+  </div>
+
+  <div class="callout">
+    <i class="ti ti-info-circle"></i>
+    <div class="callout-body">
+      <span class="callout-title">この記事について</span>
+      <p>「データベースの設計は最初に一度だけ固めるもの」——多くのエンジニアが暗黙のうちにそう信じています。しかしアジャイル開発が当たり前になった現在、アプリケーションコードだけでなくデータベースのスキーマも反復的に進化させる必要があります。その方法論を初めて体系立てて示したのが、本ガイドで扱う『Refactoring Databases』です。</p>
+      <p>本書は2006年の出版ながら、著者の一人 Pramod Sadalage が Martin Fowler と共著した記事「Evolutionary Database Design」(martinfowler.com、2016年に全面改訂)や、現在の Flyway・Liquibase といったマイグレーションツール、さらには「Expand/Contract(拡張・収縮)パターン」と呼ばれる今日のゼロダウンタイムデプロイ手法の直接の源流になっています。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="book-info">
+  <h2><i class="ti ti-book"></i>書籍基本情報</h2>
+  <div class="book-card">
+    <div class="book-cover"><div class="book-cover-text">Refactoring<br>Databases<br><span style="font-weight:400;">Ambler &amp; Sadalage</span></div></div>
+    <div class="book-card-body">
+      <div class="table-wrap">
+        <table class="kv-table">
+          <tbody>
+            <tr><th>原題</th><td><em>Refactoring Databases: Evolutionary Database Design</em></td></tr>
+            <tr><th>著者</th><td>Scott W. Ambler、Pramod J. Sadalage</td></tr>
+            <tr><th>シリーズ</th><td>Addison-Wesley Signature Series(編者 Martin Fowler)</td></tr>
+            <tr><th>出版社</th><td>Addison-Wesley Professional</td></tr>
+            <tr><th>初版発行</th><td>2006年3月</td></tr>
+            <tr><th>ページ数</th><td>384ページ、11章 + 付録</td></tr>
+            <tr><th>ISBN-13(ハードカバー)</th><td>978-0-321-29353-4</td></tr>
+            <tr><th>ISBN-13(ペーパーバック)</th><td>978-0-321-77451-4</td></tr>
+            <tr><th>日本語版</th><td>『データベース・リファクタリング　データベースの体質改善テクニック』ピアソン・エデュケーション、2008年4月10日</td></tr>
+            <tr><th>日本語版ISBN</th><td>978-4-89471-500-4</td></tr>
+            <tr><th>主な読者層</th><td>アプリケーション開発者、DBA、アーキテクト、アジャイル / DevOpsチーム</td></tr>
+            <tr><th>前提知識</th><td>SQLの基礎、リレーショナルデータベースの基本概念(正規化・外部キーなど)</td></tr>
+            <tr><th>収録リファクタリング数</th><td>60〜70種類以上(構造・データ品質・参照整合性・アーキテクチャ・メソッドの5分類 + 変換)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:1em;color:var(--ink-soft);">出典：O'Reilly掲載ページ、Amazon商品ページ、InformIt商品ページ、eBay掲載の目次情報(詳細URLは参考文献セクションを参照)。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="authors">
+  <h2><i class="ti ti-users"></i>著者について</h2>
+  <div class="prose">
+    <p><strong>Scott W. Ambler</strong>は、アジャイルモデリング(Agile Modeling)やアジャイルデータ(Agile Data)手法の提唱者として知られるソフトウェアプロセス改善コンサルタントです。トロント近郊を拠点に、のちにDisciplined Agile(DA)の実践リーダーとしても活動しています。</p>
+    <p><strong>Pramod J. Sadalage</strong>は ThoughtWorks のプリンシパルコンサルタントで、1999年に大規模なJ2EEアプリケーションでエクストリーム・プログラミング(XP)を実践していた際、進化的データベース設計とデータベースリファクタリングの手法を最初に考案した人物です。のちに Martin Fowler と共著で『NoSQL Distilled』も執筆しています。</p>
+    <p><strong>Martin Fowler</strong>は本書のシリーズ編者であり、序文も寄せています。さらにPramod Sadalageと共著で公開記事「Evolutionary Database Design」(初出2003年、2016年に大幅改訂)を執筆しており、本書のエッセンスを無料で読める形にまとめています。</p>
+  </div>
+</section>
+
+<section class="section" id="step0">
+  <h2><i class="ti ti-route"></i>Step 0：学習ロードマップ — どこから読むか</h2>
+  <div class="prose">
+    <p>本書は約380ページと決して短くありませんが、全員が最初から最後まで通読する必要はありません。目的別に読む章を絞るのが実践的です。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：読者タイプ別のおすすめの読み方</div>
+    <pre class="mermaid" data-diagram-id="diag-0"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>本ガイドでは、この4タイプすべてに必要な知識を横断的にカバーしつつ、初学者が迷わないよう順序立てて解説します。</p>
+  </div>
+</section>
+
+<section class="section" id="step1">
+  <h2><i class="ti ti-bulb"></i>Step 1：なぜ「進化的データベース設計」が必要なのか</h2>
+  <div class="prose">
+    <p>ウォーターフォール型の開発では、要件定義フェーズでデータベース設計を完全に固め、以後は変更しないことが前提でした。しかしアジャイル開発では要求は反復(イテレーション)を重ねるごとに明らかになっていきます。アプリケーションコードは「リファクタリング」という手法で安全に進化させられるようになった一方、データベースは長らく「一度作ったら触れない聖域」として扱われてきました。これが両者の間に生まれる根本的なミスマッチです。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：アジャイル開発とデータベース設計のミスマッチ</div>
+    <pre class="mermaid" data-diagram-id="diag-1"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>本書の目的は、Martin Fowlerが1999年の著書『Refactoring: Improving the Design of Existing Code』でコードに対して確立した「振る舞いを変えずに内部構造を改善する」という考え方を、データベースのスキーマ・データ・ストアドプロシージャにも適用できる形で体系化することにあります。</p>
+  </div>
+</section>
+
+<section class="section" id="step2">
+  <h2><i class="ti ti-layout-grid"></i>Step 2：本の全体構成</h2>
+  <div class="prose">
+    <p>本書は大きく「基礎編(第1〜5章)」と「カタログ編(第6〜11章)」の2部構成になっており、巻末にUMLデータモデリング表記法の付録・用語集・推奨図書リストが付いています。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：本書の全体構成</div>
+    <pre class="mermaid" data-diagram-id="diag-2"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose"><p>各章の内容は次の通りです。</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>章</th><th>タイトル</th><th>主な内容</th></tr></thead>
+      <tbody>
+        <tr><td>第1章</td><td>Evolutionary Database Development</td><td>進化的データベース開発の全体像、回帰テスト、構成管理、開発者用サンドボックス</td></tr>
+        <tr><td>第2章</td><td>Database Refactoring</td><td>データベースリファクタリングの定義、コードリファクタリングとの違い、分類、データベースの「臭い」</td></tr>
+        <tr><td>第3章</td><td>The Process of Database Refactoring</td><td>リファクタリングを実施する具体的な手順(メカニクス)</td></tr>
+        <tr><td>第4章</td><td>Deploying into Production</td><td>本番環境へのデプロイ戦略、スケジュールダウンタイムと継続稼働</td></tr>
+        <tr><td>第5章</td><td>Database Refactoring Strategies</td><td>単一アプリケーションDBと複数アプリケーションDBでの戦略の違い</td></tr>
+        <tr><td>第6章</td><td>Structural Refactorings</td><td>構造リファクタリング(テーブル構造の変更)</td></tr>
+        <tr><td>第7章</td><td>Data Quality Refactorings</td><td>データ品質リファクタリング(値の一貫性・妥当性の改善)</td></tr>
+        <tr><td>第8章</td><td>Referential Integrity Refactorings</td><td>参照整合性リファクタリング(外部キー・削除方針など)</td></tr>
+        <tr><td>第9章</td><td>Architectural Refactorings</td><td>アーキテクチャリファクタリング(外部プログラムとの連携方法の改善)</td></tr>
+        <tr><td>第10章</td><td>Method Refactorings</td><td>メソッドリファクタリング(ストアドプロシージャ・トリガー・関数の改善)</td></tr>
+        <tr><td>第11章</td><td>Transformations</td><td>変換(意味論を変える、非リファクタリングな変更)</td></tr>
+        <tr><td>付録A</td><td>The UML Data Modeling Notation</td><td>本書内で使われるUML表記法の解説</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：eBay掲載の詳細目次、ACM Queueによる書評、dokumen.pub掲載の章立て情報(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step3">
+  <h2><i class="ti ti-puzzle"></i>Step 3：データベースリファクタリングとは何か</h2>
+  <div class="prose">
+    <p>Martin Fowlerによるコードリファクタリングの定義は「観測可能な振る舞いを変えずに、理解しやすく安価に変更できるようにソフトウェアの内部構造に加える変更」でした。本書はこれをデータベースに拡張し、次のように定義しています。</p>
+  </div>
+  <div class="callout gold">
+    <i class="ti ti-quote"></i>
+    <div class="callout-body">
+      <p>データベースリファクタリングとは、データベーススキーマに対する小さな変更であり、意味論(保存されている情報の内容や解釈のされ方)を変えずに設計を改善するものである。</p>
+    </div>
+  </div>
+  <div class="prose">
+    <p>ここで重要なのは、データベースリファクタリングがコードリファクタリングと違い、<strong>同時に3つの異なる変更</strong>を伴う点です。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：データベースリファクタリングを構成する3つの変更</div>
+    <pre class="mermaid" data-diagram-id="diag-3"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>スキーマだけ変えてデータを移行し忘れる、あるいはアクセスコードの更新を忘れる——このどれか一つでも欠けると、リファクタリングは未完了のまま本番に混乱をもたらします。Martin Fowlerは自身の記事の中で、この三位一体性こそがデータベースリファクタリングを(単純に見えて)コードリファクタリングより難しくしている理由だと述べています。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step4">
+  <h2><i class="ti ti-alert-triangle"></i>Step 4：データベースの「臭い」を見分ける</h2>
+  <div class="prose">
+    <p>コードに「コードの臭い(code smell)」があるように、データベースにも「データベースの臭い(database smell)」があります。Scott Ambler が2003年に提唱したこの概念は、リファクタリングが必要かどうかを判断する手がかりになります。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：データベースの臭いの一覧</div>
+    <pre class="mermaid" data-diagram-id="diag-4"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>臭い</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td>マルチパーパスカラム</td><td>1つの列が複数の目的で使われ、値の意味を判別する追加ロジックが必要になっている状態</td></tr>
+        <tr><td>マルチパーパステーブル</td><td>1つのテーブルに複数種類のエンティティが混在している状態</td></tr>
+        <tr><td>冗長データ</td><td>同じ値が複数箇所に重複して保存され、不整合が起きやすい状態</td></tr>
+        <tr><td>カラムが多すぎる表</td><td>表が複数のエンティティの情報を無理に1つにまとめている兆候</td></tr>
+        <tr><td>行が多すぎる表</td><td>検索・更新に時間がかかり、パフォーマンス上の問題を引き起こしやすい状態</td></tr>
+        <tr><td>スマートカラム</td><td>値の中の位置ごとに異なる意味を持たせている列(例：コードの前半が地域、後半が種別など)</td></tr>
+        <tr><td>変更への恐怖</td><td>誰もそのテーブルの仕組みを正確に把握しておらず、触るのを避けている状態</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：ApexSQL Solution Centerによる解説記事(Ambler, 2003年提唱の内容を要約したもの。参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step5">
+  <h2><i class="ti ti-list-check"></i>Step 5：リファクタリングのプロセス(メカニクス)</h2>
+  <div class="prose">
+    <p>第3章では、1つのデータベースリファクタリングを安全に実施するための具体的な手順が示されています。本書ではこれを「メカニクス(mechanics)」と呼びます。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：リファクタリングのメカニクス</div>
+    <pre class="mermaid" data-diagram-id="diag-5"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>ポイントは、いきなり古い構造を削除するのではなく、まず「非推奨化(deprecate)」して一定の移行期間を設けることです。これにより、そのデータベースに依存している他のアプリケーションやレポートが安全に追従できる猶予が生まれます。この移行期間の考え方は次のStepで詳しく扱います。</p>
+  </div>
+</section>
+
+<section class="section" id="step6">
+  <h2><i class="ti ti-arrows-shuffle"></i>Step 6：移行期間とパラレルチェンジ(Parallel Change)パターン</h2>
+  <div class="prose">
+    <p>破壊的な変更(destructive change：既存のアクセスコードを壊してしまう可能性のある変更)を行う場合、本書は「移行期間(transition period)」を設けることを推奨しています。これは、新旧両方の構造を一定期間並行してサポートし、依存している側が自分のペースで移行できるようにする考え方です。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：Expand → Migrate → Contract の3段階</div>
+    <pre class="mermaid" data-diagram-id="diag-6"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>この「拡張 → 移行 → 収縮」という3段階の考え方は、のちにMartin Fowlerが自身のbliki(ブログ的な用語辞典)で「Parallel Change(並行変更、別名 expand/contract パターン)」として整理し直したものと本質的に同じです。現在では、ローリングデプロイやゼロダウンタイムデプロイを実現するための標準的な手法として、Flyway・Liquibaseのようなツールを使う多くのチームに広く使われています。</p>
+    <p>例えばテーブル名を変更する場合、本書は次のようなテクニックを示しています。</p>
+  </div>
+  <div class="code-block">
+    <div class="code-block-head"><span>SQL — 移行期間中のビューによる後方互換</span><i class="ti ti-brand-databricks"></i></div>
+    <pre><code id="code-step6" data-lang="sql" class="language-sql"></code></pre>
+  </div>
+  <script type="text/plain" data-code-for="code-step6">
+    -- customerテーブルをclientへリネームする
+    ALTER TABLE customer RENAME TO client;
+
+    -- 移行期間中、旧名customerでアクセスするコードのために
+    -- ビューを用意しておく
+    -- 注：この例は旧customerが持っていた全列を公開しているわけではない。
+    --     旧コードが参照する列は必ずSELECT句に含めること。
+    --     また、下記のような単一テーブルからの単純な列射影は、多くのDBMSで
+    --     「更新可能ビュー」の条件(単一テーブル由来、集約・DISTINCT・GROUP BYを
+    --     含まない等)を満たすため、明示しなければINSERT/UPDATE/DELETEが
+    --     そのままclientへ通ってしまう。意図に応じて次のいずれかを選ぶこと。
+    --     (a) 読み取り専用にしたい場合：旧コードのロールにSELECTのみをGRANTする、
+    --         または対象DBMSでDMLを拒否する定義(Oracleなら WITH READ ONLY、
+    --         PostgreSQLなら書き込みを拒否するINSTEAD OFトリガー)を付与する。
+    --     (b) 書き込み互換を残したい場合：対象DBMSの更新可能ビュー規則を確認し、
+    --         条件を満たさない形(複数テーブルの結合、列の変換を伴う等)であれば
+    --         INSTEAD OFトリガーでclient側への書き込みを代行する実装を追加する。
+    CREATE VIEW customer AS
+    SELECT id, first_name, last_name FROM client
+    WITH READ ONLY;  -- (a) を選ぶ場合。(b) なら削除する
+  </script>
+  <div class="prose">
+    <p>移行期間が終わり、依存している全アプリケーションが新しいテーブル名を使うようになったことを確認できたら、このビューを削除して「収縮」フェーズを完了させます。</p>
+  </div>
+</section>
+
+<section class="section" id="step7">
+  <h2><i class="ti ti-server"></i>Step 7：本番環境へのデプロイ戦略</h2>
+  <div class="prose">
+    <p>第4章では、開発中のデータベースだけでなく、すでに本番稼働しているデータベースへリファクタリングを適用する際の難しさを扱っています。大きな分かれ道は「データベースを利用するアプリケーションが1つだけか、複数か」です。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：単一アプリケーションDBと共有データベースの分かれ道</div>
+    <pre class="mermaid" data-diagram-id="diag-7"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>複数アプリケーションが同じデータベースを共有している状況(いわゆる Shared Database パターン)では、あるチームの変更が別のチームのアプリケーションを予期せず壊してしまうリスクが常につきまといます。本書はこのリスクを軽減するために、変更の事前告知、移行期間の確保、そして必要であれば外部キー制約・トリガー・ビューを使った後方互換性の維持を具体的な手順とともに紹介しています。</p>
+  </div>
+</section>
+
+<section class="section" id="step8">
+  <h2><i class="ti ti-git-branch"></i>Step 8：単一アプリ vs 複数アプリのデータベース戦略</h2>
+  <div class="prose">
+    <p>第5章「Database Refactoring Strategies」では、リファクタリングを実施するにあたっての基本方針が示されています。要点は次の3つに集約できます。</p>
+  </div>
+  <ol class="step-list">
+    <li><div><strong>変更はできるだけ小さくする</strong> — 1回のリファクタリングで変える範囲を最小限にとどめることで、問題が起きたときの原因特定と復旧が容易になります。</div></li>
+    <li><div><strong>常にテストしてからコミットする</strong> — 自分のローカル環境(サンドボックス)でスキーマ変更・データ移行・回帰テストをすべて実行し、グリーンになってから共有リポジトリに反映します。</div></li>
+    <li><div><strong>本番相当の環境で検証する</strong> — 特に複数アプリケーションが依存する共有データベースでは、ステージング環境などでリファクタリングの影響を確認してから本番に適用します。</div></li>
+  </ol>
+  <div class="prose">
+    <p>これらは、次章以降で紹介するあらゆる個別のリファクタリング手法に共通して適用される原則です。</p>
+  </div>
+</section>
+
+
+<section class="section" id="step9">
+  <h2><i class="ti ti-category"></i>Step 9：リファクタリングカタログ全体像</h2>
+  <div class="prose">
+    <p>本書の後半(第6〜11章)は、実際に使える60〜70種類以上のリファクタリングを収録したカタログになっています。分類は5つの「リファクタリング」カテゴリと、1つの「非リファクタリング」カテゴリ(変換)です。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：カタログの6分類</div>
+    <pre class="mermaid" data-diagram-id="diag-8"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>カテゴリ</th><th>定義</th></tr></thead>
+      <tbody>
+        <tr><td>構造(Structural)</td><td>テーブル構造そのものに対する変更</td></tr>
+        <tr><td>データ品質(Data Quality)</td><td>保存されている値の一貫性・妥当性を高める変更</td></tr>
+        <tr><td>参照整合性(Referential Integrity)</td><td>関連する行の存在保証や、不要になった行の適切な削除に関する変更</td></tr>
+        <tr><td>アーキテクチャ(Architectural)</td><td>外部プログラムがデータベースとやり取りする方法を改善する変更</td></tr>
+        <tr><td>メソッド(Method)</td><td>ストアドプロシージャ・ストアド関数・トリガーの品質を改善する変更</td></tr>
+        <tr><td>変換(Transformations)</td><td>新しい要素を追加したり既存要素を変更したりすることで、意味論そのものを変える変更(リファクタリングではない)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：Scott Ambler自身が運営するAgile Data(agiledata.org)「Catalog of Database Refactorings」、および著者自身の公式カタログサイト databaserefactoring.com(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step10">
+  <h2><i class="ti ti-table"></i>Step 10：構造リファクタリング(Structural Refactorings)</h2>
+  <div class="prose">
+    <p>テーブルやカラムの「形」そのものを変えるリファクタリングです。本書で最もページ数が割かれているカテゴリ(第6章、本文で最も長い章)で、日常的に最もよく使う分類でもあります。</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リファクタリング名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Drop Column</td><td>使われなくなった列を削除する</td></tr>
+        <tr><td>Drop Table</td><td>使われなくなったテーブルを削除する</td></tr>
+        <tr><td>Drop View</td><td>使われなくなったビューを削除する</td></tr>
+        <tr><td>Introduce Calculated Column</td><td>他の列から計算できる値を格納する列を新設する</td></tr>
+        <tr><td>Introduce Surrogate Key</td><td>意味を持たない代理キー(連番など)を主キーとして導入する</td></tr>
+        <tr><td>Merge Columns</td><td>複数の列を1つに統合する</td></tr>
+        <tr><td>Merge Tables</td><td>複数のテーブルを1つに統合する</td></tr>
+        <tr><td>Move Column</td><td>列を別のテーブルへ移動する</td></tr>
+        <tr><td>Rename Column</td><td>列名をより分かりやすい名前に変更する</td></tr>
+        <tr><td>Rename Table</td><td>テーブル名をより分かりやすい名前に変更する</td></tr>
+        <tr><td>Rename View</td><td>ビュー名をより分かりやすい名前に変更する</td></tr>
+        <tr><td>Replace LOB with Table</td><td>大きなオブジェクト型(BLOB/CLOB)の列を別テーブルに置き換える</td></tr>
+        <tr><td>Replace Column</td><td>列のデータ型や意味を別のものに置き換える</td></tr>
+        <tr><td>Replace One-To-Many with Associative Table</td><td>1対多の関係を、中間の関連テーブルを使った表現に置き換える</td></tr>
+        <tr><td>Replace Surrogate Key with Natural Key</td><td>代理キーを、業務上意味のある自然キーに置き換える</td></tr>
+        <tr><td>Split Column</td><td>1つの列に詰め込まれている複数の情報を、複数の列に分割する</td></tr>
+        <tr><td>Split Table</td><td>1つのテーブルを複数のテーブルに分割する</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：databaserefactoring.com(著者公式サイト)に掲載されたStructural Refactoringsの一覧、Red Gate Simple Talk掲載の解説記事(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step11">
+  <h2><i class="ti ti-shield-check"></i>Step 11：データ品質リファクタリング(Data Quality Refactorings)</h2>
+  <div class="prose"><p>保存されているデータの値そのものの一貫性・妥当性を高めるリファクタリングです(第7章)。</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リファクタリング名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Add Lookup Table</td><td>特定の値の集合を管理するためのルックアップテーブルを追加する</td></tr>
+        <tr><td>Apply Standard Codes</td><td>バラバラな表記のコード値を標準化されたコード体系に統一する</td></tr>
+        <tr><td>Apply Standard Type</td><td>同じ意味の列で異なるデータ型が使われている状態を統一する</td></tr>
+        <tr><td>Consolidate Key Strategy</td><td>キーの採番方式(自然キー / 代理キー)をデータベース全体で統一する</td></tr>
+        <tr><td>Drop Column Constraint</td><td>不要になった列制約を削除する</td></tr>
+        <tr><td>Drop Default Value</td><td>不要になったデフォルト値を削除する</td></tr>
+        <tr><td>Drop Non Nullable</td><td>不要になったNOT NULL制約を緩める</td></tr>
+        <tr><td>Introduce Column Constraint</td><td>値の妥当性を保証するための列制約を追加する</td></tr>
+        <tr><td>Introduce Common Format</td><td>日付や電話番号など、表記ゆれのある値の書式を統一する</td></tr>
+        <tr><td>Introduce Default Value</td><td>列にデフォルト値を導入する</td></tr>
+        <tr><td>Make Column Non Nullable</td><td>NULL値を許可していた列にNOT NULL制約を導入する</td></tr>
+        <tr><td>Move Data</td><td>データを別の場所(列やテーブル)へ移動する</td></tr>
+        <tr><td>Replace Type Code with Property Flags</td><td>種別コード列を、複数の真偽値(フラグ)列に置き換える</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Data Quality Refactorings」(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step12">
+  <h2><i class="ti ti-link"></i>Step 12：参照整合性リファクタリング(Referential Integrity Refactorings)</h2>
+  <div class="prose"><p>関連する行同士の整合性を保証したり、不要な行を適切に扱ったりするためのリファクタリングです(第8章)。</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リファクタリング名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Add Foreign Key Constraint</td><td>他のテーブルとの関連を保証する外部キー制約を追加する</td></tr>
+        <tr><td>Add Trigger for Calculated Column</td><td>計算列の値を自動更新するトリガーを追加する</td></tr>
+        <tr><td>Drop Foreign Key Constraint</td><td>不要になった外部キー制約を削除する</td></tr>
+        <tr><td>Introduce Cascading Delete</td><td>親行が削除されたときに関連する子行も自動的に削除されるようにする</td></tr>
+        <tr><td>Introduce Hard Delete</td><td>削除フラグ列を廃止し、行そのものを物理的に削除するようにする</td></tr>
+        <tr><td>Introduce Soft Delete</td><td>行を物理削除せず、削除フラグを立てるだけにする</td></tr>
+        <tr><td>Introduce Trigger for History</td><td>データ変更履歴(監査ログ)を記録するトリガーを追加する</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose"><p>このカテゴリで特に初学者が迷いやすいのが「論理削除(Soft Delete)」と「物理削除(Hard Delete)」のどちらを選ぶかという判断です。</p></div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：Soft DeleteとHard Deleteの使い分け</div>
+    <pre class="mermaid" data-diagram-id="diag-9"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <p style="color:var(--ink-soft);">出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Referential Integrity Refactorings」(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step13">
+  <h2><i class="ti ti-building-arch"></i>Step 13：アーキテクチャリファクタリング(Architectural Refactorings)</h2>
+  <div class="prose"><p>外部プログラムがデータベースとやり取りする「方法」自体を改善するリファクタリングです(第9章)。</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リファクタリング名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Add CRUD Methods</td><td>特定のエンティティに対するCRUD(作成・取得・更新・削除)操作をストアドプロシージャとして整備する</td></tr>
+        <tr><td>Add Mirror Table</td><td>別のデータベースに、既存テーブルの複製(ミラー)テーブルを作成する</td></tr>
+        <tr><td>Add Read Method</td><td>エンティティを取得するための読み取り専用メソッドを追加する</td></tr>
+        <tr><td>Encapsulate Table with View</td><td>既存テーブルへの直接アクセスをビューで包み、内部構造の変更をアプリから隠蔽する</td></tr>
+        <tr><td>Introduce Calculation Method</td><td>計算ロジックをストアドプロシージャ / 関数として切り出す</td></tr>
+        <tr><td>Introduce Index</td><td>検索性能を高めるためのインデックスを追加する</td></tr>
+        <tr><td>Introduce Read Only Table</td><td>読み取り専用として扱うべきテーブルであることを明示する</td></tr>
+        <tr><td>Migrate Method from Database</td><td>データベース内にあるロジックをアプリケーション層へ移す</td></tr>
+        <tr><td>Migrate Method to Database</td><td>アプリケーション層にあるロジックをデータベース内へ移す</td></tr>
+        <tr><td>Replace Method(s) with View</td><td>複数のメソッドをまとめて1つのビューに置き換える</td></tr>
+        <tr><td>Replace View with Method(s)</td><td>ビューを、より柔軟なメソッド(ストアドプロシージャ)に置き換える</td></tr>
+        <tr><td>Use Official Data Source</td><td>ある実体について、複製されたデータではなく公式のデータソースを参照するように変更する</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Architectural Refactorings」(参考文献セクション参照)。</p>
+</section>
+
+<section class="section" id="step14">
+  <h2><i class="ti ti-code"></i>Step 14：メソッドリファクタリングと変換(Transformations)</h2>
+  <div class="prose">
+    <p><strong>メソッドリファクタリング(第10章)</strong>は、ストアドプロシージャ・トリガー・関数といった「データベース内のコード」に対するリファクタリングです。多くはMartin Fowlerの原著『Refactoring』にあるコードリファクタリングカタログを、データベースのメソッドに適用したものです。</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リファクタリング名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Rename Method</td><td>メソッド名をより分かりやすい名前に変更する</td></tr>
+        <tr><td>Parameterize Method(s)</td><td>似た処理をするメソッド群を、パラメータで振る舞いを切り替える1つのメソッドに統合する</td></tr>
+        <tr><td>Remove Parameter</td><td>使われなくなった引数を削除する</td></tr>
+        <tr><td>Reorder Parameters</td><td>引数の並び順を整理し直す</td></tr>
+        <tr><td>Extract Method</td><td>長い処理の一部を、別の名前付きメソッドとして切り出す</td></tr>
+        <tr><td>Decompose Conditional</td><td>複雑な条件分岐を、意味の分かる名前のメソッドに分解する</td></tr>
+        <tr><td>Introduce Variable</td><td>分かりにくい式に名前を付けて変数化する</td></tr>
+        <tr><td>Substitute Algorithm</td><td>分かりにくいアルゴリズムを、より明快なものに置き換える</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <p><strong>変換(Transformations、第11章)</strong>は、リファクタリングとは異なり、データベースの意味論そのものを変える追加的な変更です。純粋なリファクタリング(振る舞いを変えない変更)と区別して扱われます。</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>変換名</th><th>何をするか</th></tr></thead>
+      <tbody>
+        <tr><td>Insert Data</td><td>新しいデータを挿入する(新機能のための初期データ投入など)</td></tr>
+        <tr><td>Introduce New Column</td><td>新しい情報を保持するための列を追加する</td></tr>
+        <tr><td>Introduce New Table</td><td>新しいエンティティを表すテーブルを追加する</td></tr>
+        <tr><td>Introduce View</td><td>新しい切り口でデータを見せるビューを追加する</td></tr>
+        <tr><td>Update Data</td><td>既存データの値を更新する(新しい要件に合わせた書き換えなど)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-soft);">出典：databaserefactoring.com(著者公式サイト)に掲載されたMethod RefactoringsおよびTransformationの一覧(参考文献セクション参照)。</p>
+</section>
+
+
+<section class="section" id="step15">
+  <h2><i class="ti ti-flask"></i>Step 15：実践ウォークスルー ① Split Column をやってみる</h2>
+  <div class="prose">
+    <p>ここからは、実際のシナリオに沿って構造リファクタリングを1つ体験してみましょう。題材は Martin Fowler と Pramod Sadalage の記事「Evolutionary Database Design」で紹介されている「在庫(inventory)テーブルの在庫コード列(本ガイドでは <code>product_inventory_code</code> とします)を、場所・ロット番号・シリアル番号の3つの列に分割する」という例です。</p>
+    <p><strong>変更前の状態</strong>：<code>inventory</code> テーブルには <code>product_inventory_code</code> という1つの列があり、そこに「場所コード」「ロット番号」「シリアル番号」が連結された文字列として格納されています。ある開発者(記事内では「Jen」)が、これら3つの情報を個別に検索・更新できるようにする、というユーザーストーリーを実装することになりました。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：Split Column の実施手順</div>
+    <pre class="mermaid" data-diagram-id="diag-10"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>このリファクタリング(Expand〜Migrateフェーズ)を実現する移行スクリプトの例(Oracle SQLの場合)は次のようになります。</p>
+  </div>
+  <div class="code-block">
+    <div class="code-block-head"><span>SQL — product_inventory_code の Split Column</span><i class="ti ti-brand-databricks"></i></div>
+    <pre><code id="code-step15" data-lang="sql" class="language-sql"></code></pre>
+  </div>
+  <script type="text/plain" data-code-for="code-step15">
+    -- === Expandフェーズ: 新しい構造を追加する ===
+    -- 失敗した時点でスクリプトを止める。最初のDDLより前に宣言しないと、
+    -- 列追加やトリガー作成の失敗を見逃したままバックフィルへ進んでしまう。
+    WHENEVER SQLERROR EXIT FAILURE ROLLBACK
+
+    ALTER TABLE inventory ADD location_code VARCHAR2(6) NULL;
+    ALTER TABLE inventory ADD batch_number VARCHAR2(6) NULL;
+    ALTER TABLE inventory ADD serial_number VARCHAR2(10) NULL;
+
+    -- 移行期間中は旧アプリが product_inventory_code を、
+    -- 新アプリが3列を更新しうる。どちらから書かれても両表現が一致するよう、
+    -- バックフィルより先に双方向同期トリガーを有効化する。
+    CREATE OR REPLACE TRIGGER trg_inventory_code_sync
+    BEFORE INSERT OR UPDATE ON inventory
+    FOR EACH ROW
+    DECLARE
+      -- 旧列側・新列側のどちらが書かれたかを判定する。:NEW.<列> は更新対象外の
+      -- 列でも現在の行値が入るため、値の有無ではなく「書かれたか」で分岐しないと、
+      -- 無関係な UPDATE（数量の更新など）で同期処理が誤って走ってしまう。
+      -- INSERT では UPDATING が使えないので、値が入っているかで判断する。
+      -- このため INSERT では「列の省略」と「明示的な NULL 指定」を区別できず、
+      -- 新3列がすべて NULL なら「書かれていない」とみなす。旧列に値を入れつつ
+      -- 新3列に明示的に NULL を指定する INSERT は契約上禁止とする（旧列の分解値で
+      -- 3列が埋められる）。INSERT で両表現を同時に指定する場合は、新3列にも
+      -- 旧列と一致する値を指定すること。
+      old_written BOOLEAN;
+      new_written BOOLEAN;
+      composed    inventory.product_inventory_code%TYPE;
+    BEGIN
+      old_written := UPDATING('product_inventory_code')
+                     OR (INSERTING AND :NEW.product_inventory_code IS NOT NULL);
+      new_written := UPDATING('location_code')
+                     OR UPDATING('batch_number')
+                     OR UPDATING('serial_number')
+                     OR (INSERTING AND (:NEW.location_code IS NOT NULL
+                                        OR :NEW.batch_number IS NOT NULL
+                                        OR :NEW.serial_number IS NOT NULL));
+
+      IF old_written AND new_written THEN
+        -- 旧列と新3列が同時に書かれた場合。どちらかを黙って上書きすると
+        -- 書き手の意図した値が失われるため、一致しているかを検査して拒否する。
+        -- まず単独で書かれた場合と同じ入力検証を適用する。不正な長さや部分的な
+        -- NULL を「一致しない」エラーとして報告すると、原因が分かりにくくなる。
+        IF :NEW.product_inventory_code IS NOT NULL
+           AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+          RAISE_APPLICATION_ERROR(-20005,
+            'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+        END IF;
+        IF (:NEW.location_code IS NULL
+            OR :NEW.batch_number IS NULL
+            OR :NEW.serial_number IS NULL)
+           AND NOT (:NEW.location_code IS NULL
+                    AND :NEW.batch_number IS NULL
+                    AND :NEW.serial_number IS NULL) THEN
+          RAISE_APPLICATION_ERROR(-20001,
+            'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+        END IF;
+        composed := RPAD(:NEW.location_code, 6)
+                 || RPAD(:NEW.batch_number, 6)
+                 || RPAD(:NEW.serial_number, 10);
+        -- NULL 同士は等しいとみなす。片側だけ NULL のケースを個別に書くことで、
+        -- 比較結果が NULL になって IF が素通りするのを避ける。
+        IF (composed IS NULL AND :NEW.product_inventory_code IS NOT NULL)
+           OR (composed IS NOT NULL AND :NEW.product_inventory_code IS NULL)
+           OR (composed IS NOT NULL AND composed <> :NEW.product_inventory_code) THEN
+          RAISE_APPLICATION_ERROR(-20003,
+            'product_inventory_code と location_code / batch_number / serial_number が同時に指定され、内容が一致しません。どちらか一方だけを更新してください');
+        END IF;
+      ELSIF old_written THEN
+        -- 旧アプリが連結文字列を書いた場合 → 新しい3列へ分解して反映
+        -- NULL は「値なし」として3列そろって NULL に落とす
+        -- 22文字（場所6+ロット6+シリアル10）でない値を SUBSTR にかけると、
+        -- 短すぎれば NULL や切り詰めた値が、長すぎれば末尾が捨てられた値が
+        -- 黙って入るため、分解の前に長さを検証して拒否する。
+        IF :NEW.product_inventory_code IS NOT NULL
+           AND LENGTH(:NEW.product_inventory_code) <> 22 THEN
+          RAISE_APPLICATION_ERROR(-20005,
+            'product_inventory_code は22文字（場所6+ロット6+シリアル10）である必要があります');
+        END IF;
+        :NEW.location_code := SUBSTR(:NEW.product_inventory_code, 1, 6);
+        :NEW.batch_number  := SUBSTR(:NEW.product_inventory_code, 7, 6);
+        :NEW.serial_number := SUBSTR(:NEW.product_inventory_code, 13, 10);
+      ELSIF new_written THEN
+        IF :NEW.location_code IS NULL
+           AND :NEW.batch_number IS NULL
+           AND :NEW.serial_number IS NULL THEN
+          -- 新アプリが3列すべてを NULL にした場合 → 旧列も NULL にそろえる
+          :NEW.product_inventory_code := NULL;
+        ELSIF :NEW.location_code IS NULL
+              OR :NEW.batch_number IS NULL
+              OR :NEW.serial_number IS NULL THEN
+          -- 部分的な書き込みは旧列との乖離を生むため、黙って放置せず拒否する
+          RAISE_APPLICATION_ERROR(-20001,
+            'location_code / batch_number / serial_number は3列すべてに値を指定するか、3列すべてを NULL にしてください');
+        ELSE
+          -- 新アプリが3列すべてを書いた場合 → 旧列へ連結して反映
+          :NEW.product_inventory_code := RPAD(:NEW.location_code, 6)
+                                      || RPAD(:NEW.batch_number, 6)
+                                      || RPAD(:NEW.serial_number, 10);
+        END IF;
+      END IF;
+    END;
+    /
+
+    -- CREATE OR REPLACE TRIGGER は本体のコンパイルに失敗してもコマンド自体は成功し、
+    -- INVALID なトリガーが残る（WHENEVER SQLERROR では捕まらない）。同期が効かないまま
+    -- バックフィルへ進まないよう、ここで明示的にコンパイルエラーを検査する。
+    DECLARE
+      error_count PLS_INTEGER;
+    BEGIN
+      SELECT COUNT(*)
+        INTO error_count
+        FROM user_errors
+       WHERE name = 'TRG_INVENTORY_CODE_SYNC'
+         AND type = 'TRIGGER'
+         AND attribute = 'ERROR';  -- 警告（WARNING）は失敗扱いにしない
+
+      IF error_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20004,
+          '同期トリガー trg_inventory_code_sync のコンパイルに失敗しました。移行を中止します');
+      END IF;
+    END;
+    /
+
+    -- 注意：ALTER TABLE は Oracle では暗黙にコミットされるため、上の -20004 で
+    -- スクリプトを中止しても、直前に追加した3列は残ったままになる。エラーが
+    -- DDL をロールバックしてくれることはない。同様に、3本の ALTER TABLE ADD の
+    -- 途中（例: 2本目）で失敗した場合も、それまでに成功した列だけが残り、トリガーは
+    -- まだ作成されていない。したがって失敗時は、下記いずれかの手順で「トリガーも
+    -- 新列も存在しない」状態へ明示的に戻してから再実行する（列追加の途中で止まった
+    -- 場合は、トリガーが存在しないため手順Bは使えず、手順Aで復旧する）。
+    --
+    --   復旧手順A(推奨・Expandをやり直す):
+    --     1. 同期が効いていない状態で書き込みが入らないよう、アプリの当該デプロイを止める
+    --     2. トリガーを DROP すると USER_ERRORS の該当行も消えるため、先に
+    --        SELECT line, position, text FROM user_errors
+    --         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+    --        を実行し、結果を出力・保存しておく
+    --        （列追加の途中で失敗しトリガー作成まで到達していない場合、この結果は0行になる）
+    --     3. トリガーが作成済みの場合に限り除去する。存在しないトリガーの DROP は
+    --        ORA-04080 で失敗するため、先に存在を確認する:
+    --        SELECT trigger_name, status FROM user_triggers
+    --         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+    --        → 1行返った場合のみ実行する:
+    --        DROP TRIGGER trg_inventory_code_sync;          -- INVALID なトリガーを除去
+    --     4. 列ごとに、DROP の直前に存在を確認してから削除する（存在しない列の DROP は
+    --        ORA-00904 で失敗するため、列追加が途中で止まっていた場合や、前回の復旧が
+    --        途中まで進んでいた場合に備える）:
+    --        SELECT column_name FROM user_tab_columns
+    --         WHERE table_name = 'INVENTORY'
+    --           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+    --        → 結果に残っている列だけを対象に、1文ずつ実行する:
+    --        ALTER TABLE inventory DROP COLUMN serial_number;
+    --        ALTER TABLE inventory DROP COLUMN batch_number;
+    --        ALTER TABLE inventory DROP COLUMN location_code;
+    --     5. 各 DDL の実行後に、DDL は文ごとに暗黙コミットされ途中失敗でも戻らないため、
+    --        トリガーと新列の残存状態を毎回確認する:
+    --        SELECT trigger_name, status FROM user_triggers
+    --         WHERE trigger_name = 'TRG_INVENTORY_CODE_SYNC';
+    --        SELECT column_name FROM user_tab_columns
+    --         WHERE table_name = 'INVENTORY'
+    --           AND column_name IN ('SERIAL_NUMBER', 'BATCH_NUMBER', 'LOCATION_CODE');
+    --        確認した状態ごとの対処:
+    --          - トリガーが残っている → 手順3の DROP TRIGGER を再実行する
+    --          - 新列が一部だけ残っている → 残っている列についてのみ手順4を再実行する
+    --          - DROP が権限・ロック競合で失敗した → 原因を取り除いてから同じ手順を再実行する
+    --        トリガー・新3列がいずれも存在しない（両クエリとも0行）ことを確認できるまで次へ進まない
+    --     6. 手順2で保存したエラー情報をもとにトリガー本体を修正し、Expandフェーズを先頭から再実行する
+    --
+    --   復旧手順B(列を残したままトリガーだけ直す):
+    --     1. SELECT line, position, text FROM user_errors
+    --         WHERE name = 'TRG_INVENTORY_CODE_SYNC' AND type = 'TRIGGER' ORDER BY sequence;
+    --        で原因を特定する
+    --     2. トリガー本体を修正して CREATE OR REPLACE TRIGGER を再実行し、
+    --        上のコンパイル検査ブロックを再度通す
+    --     3. 検査が通るまでバックフィル(Migrateフェーズ)へ進まない。列が存在するのに
+    --        同期が効かない期間に書き込みが入った場合は、手順Aで列ごと作り直す
+    --
+    -- なお、ALTER TABLE を実行する前にトリガー本体をコンパイル検証したい場合は、
+    -- 開発・ステージング環境で3列を追加済みのスキーマに対して先に
+    -- CREATE OR REPLACE TRIGGER とこの検査ブロックを通し、本番では検証済みの
+    -- 本体のみを適用する運用にする(本番の ALTER TABLE 前に単体で検証することは
+    -- できない。トリガー本体が新列を参照するため、列が無ければ必ず INVALID になる)。
+
+    -- === Migrateフェーズ: 同期が有効な状態で既存データをバックフィルする ===
+    -- 3列を直接 SET すると新列→旧列の同期分岐が走り、検証の基準にしたい
+    -- product_inventory_code をトリガーが再連結値で上書きしてしまう（変換誤りを検出できなくなる）。
+    -- 旧列を自身の値で更新し、旧列→新列の分岐に分解処理を行わせる。
+    UPDATE inventory
+       SET product_inventory_code = product_inventory_code
+     WHERE product_inventory_code IS NOT NULL;
+
+    -- 検証: 分解した3列を再連結すると旧列と一致することを確認する（0件が期待値）
+    -- `<>` は片方が NULL だと NULL を返し WHERE に弾かれて不一致を見逃すため、
+    -- NULL 同士を等しいとみなす DECODE で NULL 安全に比較する。
+    -- 件数を表示するだけでは誰も見落としに気づけないため、0件でなければ
+    -- エラーを送出してスクリプトを止める（中止は冒頭の WHENEVER SQLERROR に従う）。
+    DECLARE
+      mismatch_count PLS_INTEGER;
+    BEGIN
+      SELECT COUNT(*)
+        INTO mismatch_count
+        FROM inventory
+       WHERE DECODE(product_inventory_code,
+                    RPAD(location_code,6) || RPAD(batch_number,6) || RPAD(serial_number,10),
+                    0, 1) = 1;
+
+      IF mismatch_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20002,
+          '分割結果が旧列と一致しない行が ' || mismatch_count || ' 件あります。移行を中止します');
+      END IF;
+    END;
+    /
+
+    -- 新しい一意制約を先に作ってから旧インデックスを落とす。
+    -- 逆順にすると、その間だけ一意性が誰にも強制されない窓ができる。
+    CREATE UNIQUE INDEX uidx_inventory_identifier
+      ON inventory (location_code, batch_number, serial_number);
+
+    DROP INDEX uidx_inventory_code;
+  </script>
+  <div class="prose">
+    <p>このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム(マイグレーションスクリプトとして)にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。</p>
+    <p>旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition period)」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、<code>DROP TRIGGER trg_inventory_code_sync;</code> と <code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code> を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。ここで注意が必要なのは、Oracle の DDL は文ごとに暗黙コミットされるため、<code>DROP TRIGGER</code> と <code>ALTER TABLE ... DROP COLUMN</code> を同じスクリプトにまとめても原子的にはならない点です。<code>DROP TRIGGER</code> が成功したあとに列削除が失敗すると、同期トリガーだけが失われ旧列が残った状態がコミット済みとして残り、以後の書き込みで旧列と新3列が乖離していきます(<code>WHENEVER SQLERROR EXIT FAILURE ROLLBACK</code> は未コミットのトランザクションを戻すだけで、すでにコミットされた DDL は取り消せません)。</p>
+    <ol class="step-list">
+      <li><div><strong>事前確認</strong> — <code>USER_DEPENDENCIES</code> / <code>ALL_DEPENDENCIES</code> で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、<code>ALTER TABLE</code> や <code>DROP ANY TRIGGER</code> の権限、および <code>ALTER TABLE ... DROP COLUMN</code> が取る排他ロックを取得できる時間帯かを確認します。</div></li>
+      <li><div><strong>実行後の検証</strong> — <code>USER_TRIGGERS</code> と <code>USER_TAB_COLUMNS</code> を照会し、同期トリガーと旧列の<strong>両方</strong>が消えていることを確認します。片方だけが残っていれば中途半端な状態です。</div></li>
+      <li><div><strong>列削除が失敗した場合の復旧</strong> — 同期トリガーが無い状態では書き込みのたびに乖離が広がるため、次の順で進めます。
+        <ol>
+          <li><strong>書き込みを停止する</strong>:<code>inventory</code> へ書き込むアプリケーション・バッチを止めます(メンテナンスモードへの切り替えや、書き込み系デプロイの停止など)。停止しないまま修復やトリガー再作成を行うと、作業中の更新が片側にしか反映されず不一致が再発します。</li>
+          <li><strong>正とする表現を決める</strong>:Contract フェーズに入った時点ではすべての利用者が新3列へ切り替わっているはずなので、原則として<strong>新3列を正</strong>とし、旧列を再連結値で上書きします。旧列にしか書かない利用者が残っていたことが判明した場合は、その期間の更新を旧列側から新3列へ反映する必要があるため、どちらを正とするかを利用者の切り替え状況から判断し、記録に残します。</li>
+          <li><strong>競合行の解決方針を定める</strong>:両方の表現がそれぞれ異なる更新を受けた行(どちらを採っても片方の更新が失われる行)は機械的に上書きせず、更新履歴や監査ログ・業務担当者の確認に基づいて行ごとに正しい値を決めます。</li>
+          <li><strong>不一致の特定と修復</strong>:Step 15 の検証クエリ(<code>DECODE</code> による NULL 安全な突き合わせ)で旧列と新3列の不一致行を洗い出し、上の方針に従って修復したうえで、同じ検証クエリが0件になることを確認します。</li>
+          <li><strong>同期トリガーの再作成</strong>:修復が完了してから同期トリガーを再作成し、コンパイル検査を通して双方向同期を復旧させます。そのうえで書き込みを再開します。</li>
+          <li><strong>列削除の再実行</strong>:失敗の原因(依存オブジェクト・権限・ロック競合)を取り除き、Contract フェーズを再実行します。</li>
+        </ol>
+      </div></li>
+    </ol>
+  </div>
+  <div class="callout forest">
+    <i class="ti ti-bulb"></i>
+    <div class="callout-body">
+      <span class="callout-title">ポイント</span>
+      <p>スキーマ変更(列追加と同期トリガー)、データ移行(SUBSTRによる分割とバックフィル)、そしてアクセスコード変更(アプリ側の参照列の変更)を<strong>同じ変更セット(リリース)として管理する</strong>点が、Step 3で説明した「3つの変更が揃って1つのリファクタリング」という原則を体現しています。上記のSQLはこのうちスキーマ変更とデータ移行にあたり、アクセスコード変更はアプリケーション側のリポジトリで行われますが、リリース単位としては切り離さずに扱います。同期トリガーをバックフィルより<strong>先に</strong>有効化するのが要点で、順序が逆だと、バックフィルからトリガー有効化までの間に発生した更新を取りこぼします。一方で旧列と同期トリガーの削除(収縮)は、移行期間を経た後の独立したリファクタリングとして扱います。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="step16">
+  <h2><i class="ti ti-flask-2"></i>Step 16：実践ウォークスルー ② Rename Table と移行期間</h2>
+  <div class="prose">
+    <p>続いて、Step 6で紹介した「移行期間」の考え方を、テーブル名変更という具体的な例で確認します。<code>customer</code> テーブルを、より業務の実態に合った <code>client</code> という名前に変更したいとします。</p>
+    <p>複数のアプリケーションがこの <code>customer</code> テーブルに依存している場合、いきなり <code>RENAME</code> すると、まだ移行していないアプリケーションのSQLが一斉にエラーになってしまいます。そこで本書は次のような段階的な手順を示しています。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：Rename Table の段階的な移行手順</div>
+    <pre class="mermaid" data-diagram-id="diag-11"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-block-head"><span>SQL — テーブル名変更と互換ビュー</span><i class="ti ti-brand-databricks"></i></div>
+    <pre><code id="code-step16" data-lang="sql" class="language-sql"></code></pre>
+  </div>
+  <script type="text/plain" data-code-for="code-step16">
+    -- ステップ1〜2：テーブル名を変更し、旧名のビューを用意する
+    ALTER TABLE customer RENAME TO client;
+
+    CREATE VIEW customer AS
+    SELECT id, first_name, last_name FROM client;
+  </script>
+  <div class="prose">
+    <p>このビューも、Step 6で触れた「更新可能ビュー」の条件(単一テーブル由来である、集約や重複除去を含まないなど)を満たす場合に限り書き込みが可能であり、読み書きの互換性を無条件に保証するものではありません。条件を満たさないDBMS・列構成では、Step 6と同様にINSTEAD OFトリガーを追加してclient側への書き込みを代行する実装が必要です。</p>
+    <p>この移行期間の長さは組織によって様々です。Martin FowlerとPramod Sadalageの記事によれば、数ヶ月で終わる場合もあれば、大規模な組織では数年かかることもあると述べられています。重要なのは「移行期間をどれだけ短くできるか」ではなく、「移行期間中も新旧両方が安全に動き続けること」を保証する設計です。</p>
+  </div>
+</section>
+
+<section class="section" id="step17">
+  <h2><i class="ti ti-rocket"></i>Step 17：現代における位置づけ — Flyway・Liquibaseと Expand/Contract パターン</h2>
+  <div class="prose">
+    <p>本書が出版された2006年当時、データベースマイグレーションを自動化する専用ツールはまだ黎明期でした。しかし本書とその考え方は、その後のツールチェーンの標準的な設計思想の土台になっています。</p>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid-title"><i class="ti ti-chart-dots-3"></i>図：CI/CDパイプラインにおけるマイグレーションの自動化</div>
+    <pre class="mermaid" data-diagram-id="diag-12"><div class="diagram-loading">図を描画しています…</div></pre>
+  </div>
+  <div class="prose">
+    <p>Martin FowlerとPramod Sadalageによる2016年改訂版の「Evolutionary Database Design」では、本書で示された考え方を土台に、Flyway・Liquibase・MyBatis Migrationsなどの具体的なツールでの実装例が追加され、CI/CDパイプラインの中でどう自動化するかが詳しく解説されています。さらにこの記事の中では、本書のStep 6で紹介した「移行期間」の考え方が、Martin Fowlerのbliki上の別記事「Parallel Change」として独立して整理し直されており、現在では「Expand/Contract パターン」という呼び名で、ゼロダウンタイムデプロイやローリングデプロイを実現するための標準的な語彙として業界に広く定着しています。</p>
+    <p>また、本書が提唱した「開発者は各自が自分専用のデータベースインスタンスを持つべきである」という実践は、当時はデータベースのライセンス費用や運用コストの高さから実現が難しいこともありましたが、クラウドネイティブなデータベース基盤の進化により、より低コストで実現しやすくなってきています。</p>
+  </div>
+  <div class="callout plum">
+    <i class="ti ti-clock"></i>
+    <div class="callout-body">
+      <span class="callout-title">補足(2026年9月時点)</span>
+      <p>この「開発者ごとに独立したデータベースインスタンスを持つ」という考え方が、コピーオンライトによるブランチ機能を備えた新しいクラウドデータベース基盤の登場によって、より実践しやすくなってきているという指摘も見られます。技術の進化とともに、本書が2006年に示した理念がより実現しやすい形へと近づいている一例と言えるでしょう。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="critical">
+  <h2><i class="ti ti-scale"></i>批判的に読む — この本の限界と時代背景</h2>
+  <div class="prose"><p>初学者が本書を手に取る前に知っておくとよい留意点をまとめます。</p></div>
+  <div class="callout gold">
+    <i class="ti ti-calendar"></i>
+    <div class="callout-body">
+      <span class="callout-title">出版は2006年</span>
+      <p>本文中のコード例はOracleとJavaを中心に書かれており、C#・C++・VB.NETや、DB2・SQL Server・MySQL・Sybaseへの応用は「読み替えれば可能」という位置づけです。当時はFlyway・Liquibaseのような専用マイグレーションツールがまだ存在しない、または黎明期だったため、本書自体はスクリプトを手作業に近い形で管理する前提で書かれています。</p>
+    </div>
+  </div>
+  <div class="callout gold">
+    <i class="ti ti-database-off"></i>
+    <div class="callout-body">
+      <span class="callout-title">NoSQLやスキーマレスDBへの言及はない</span>
+      <p>本書はリレーショナルデータベースを前提としています。NoSQLデータベースにおける「暗黙のスキーマ」の進化的な扱い方は、後年のMartin Fowlerの記事や『NoSQL Distilled』(Fowler・Sadalage共著)で補完的に扱われています。</p>
+    </div>
+  </div>
+  <div class="callout gold">
+    <i class="ti ti-list-details"></i>
+    <div class="callout-body">
+      <span class="callout-title">カタログの網羅性には既に限界がある</span>
+      <p>2019年には研究者によって新しいカテゴリの追加提案がなされているなど、データベースリファクタリングというテーマ自体が本書出版後も学術的・実務的に発展を続けています。</p>
+    </div>
+  </div>
+  <div class="callout forest">
+    <i class="ti ti-check"></i>
+    <div class="callout-body">
+      <span class="callout-title">それでも中核となる考え方は褪せていない</span>
+      <p>「スキーマ・データ・アクセスコードの3つを同時に扱う」「移行期間を設けて段階的に変更する」「小さな変更を積み重ねる」という原則は、2016年のMartin Fowler・Sadalage共著記事、そして現在広く使われるExpand/Contractパターンにそのまま受け継がれており、内容の古さよりも先見性の方が際立つ一冊です。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="glossary">
+  <h2><i class="ti ti-vocabulary"></i>用語集</h2>
+  <dl class="glossary">
+    <dt>データベースリファクタリング</dt><dd>意味論を変えずにデータベース設計を改善する小さな変更。スキーマ変更・データ移行・アクセスコード変更の3つを伴う</dd>
+    <dt>データベースの臭い</dt><dd>リファクタリングが必要であることを示す設計上の兆候</dd>
+    <dt>破壊的な変更(destructive change)</dt><dd>既存のアクセスコードを壊す可能性がある変更</dd>
+    <dt>移行期間(transition period)</dt><dd>新旧両方の構造を一定期間並行してサポートする期間</dd>
+    <dt>Parallel Change / Expand-Contract</dt><dd>移行期間の考え方を「拡張・移行・収縮」の3フェーズに整理した、現在広く使われる用語</dd>
+    <dt>マイグレーションスクリプト</dt><dd>スキーマ変更とデータ移行の内容を記述し、バージョン管理下に置く実行可能なスクリプト</dd>
+    <dt>単一アプリケーションデータベース</dt><dd>1つのアプリケーションだけが利用するデータベース</dd>
+    <dt>共有データベース(Shared Database)</dt><dd>複数のアプリケーションが同じデータベースを利用する構成</dd>
+    <dt>サンドボックス</dt><dd>開発者が他者に影響を与えずに自由に実験できる、自分専用のデータベース環境</dd>
+    <dt>変換(Transformation)</dt><dd>意味論そのものを変える、リファクタリングではない変更</dd>
+  </dl>
+</section>
+
+<section class="section" id="checklist">
+  <h2><i class="ti ti-checkbox"></i>理解度チェックリスト</h2>
+  <div class="checklist-wrap">
+    <div class="checklist-progress">
+      <i class="ti ti-target-arrow"></i>
+      <div class="progress-track"><div class="progress-fill" id="checklistFill"></div></div>
+      <span id="checklistLabel" role="status" aria-live="polite">0 / 8 完了</span>
+    </div>
+    <div class="check-item"><input type="checkbox" id="chk1"><label for="chk1">データベースリファクタリングが「スキーマ変更・データ移行・アクセスコード変更」の3つを同時に伴う理由を説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk2"><label for="chk2">データベースの臭いを3つ以上挙げ、それぞれどのリファクタリングで対処できそうか説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk3"><label for="chk3">「破壊的な変更」と「非破壊的な変更」の違いを説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk4"><label for="chk4">移行期間(Expand/Contract パターン)がなぜ必要か、Rename Tableの例で説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk5"><label for="chk5">構造・データ品質・参照整合性・アーキテクチャ・メソッドの5分類それぞれの目的を、自分の言葉で説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk6"><label for="chk6">Soft DeleteとHard Deleteをどう使い分けるか判断できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk7"><label for="chk7">単一アプリケーションDBと共有データベースで、リファクタリングの進め方がどう変わるか説明できる</label></div>
+    <div class="check-item"><input type="checkbox" id="chk8"><label for="chk8">本書の考え方が、Flyway・LiquibaseなどのCI/CDツールとどうつながっているか説明できる</label></div>
+  </div>
+</section>
+
+<section class="section" id="summary">
+  <h2><i class="ti ti-flag"></i>まとめ</h2>
+  <div class="prose">
+    <p>『Refactoring Databases: Evolutionary Database Design』は、アジャイル開発においてアプリケーションコードと同じ速度でデータベースを安全に進化させるための方法論を、初めて体系立てて示した一冊です。中心にあるのは「小さな変更を積み重ねる」「スキーマ・データ・アクセスコードを常にセットで扱う」「移行期間を設けて段階的に変更する」というシンプルな原則であり、これらは2006年の出版から20年近く経った現在も、Flyway・Liquibaseといったマイグレーションツールや、ゼロダウンタイムデプロイの標準手法であるExpand/Contractパターンという形で開発現場に息づいています。まずは自分のプロジェクトで日常的に発生している「データベースの臭い」を1つ見つけ、本ガイドで紹介したメカニクスに沿って小さなリファクタリングを試してみることから始めるとよいでしょう。</p>
+  </div>
+</section>
+
+<section class="section" id="references">
+  <h2><i class="ti ti-external-link"></i>参考文献</h2>
+  <div class="prose"><p>本ガイドの作成にあたり、以下の情報源を参照しました。可能な限り、著者自身が公開している一次情報や、国際的に著名な開発者・組織による記事を優先しています。</p></div>
+
+  <div class="ref-group-label"><i class="ti ti-star"></i>著者自身・関係者による一次情報</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Pramod Sadalage 公式カタログサイト「Refactoring Databases」(全リファクタリング一覧、翻訳版情報)</span><span class="ref-url">https://databaserefactoring.com/</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Scott W. Ambler「The Agile Data (AD) Method: Catalog of Database Refactorings」</span><span class="ref-url">https://agiledata.org/?p=3391</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Scott W. Ambler「Catalog of Database Refactorings: Referential Integrity Refactorings」</span><span class="ref-url">https://agiledata.org/?p=3539</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Scott W. Ambler「Catalog of Database Refactorings: Architectural Refactorings」</span><span class="ref-url">https://agiledata.org/?p=3551</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Scott W. Ambler「Catalog of Database Refactorings: Data Quality Refactorings」</span><span class="ref-url">https://agiledata.org/?p=3520</span></div></div>
+
+  <div class="ref-group-label"><i class="ti ti-user-star"></i>Martin Fowler(国際的に著名なソフトウェアアーキテクト)による記事</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Martin Fowler, Pramod Sadalage「Evolutionary Database Design」(2016年改訂版)</span><span class="ref-url">https://martinfowler.com/articles/evodb.html</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Martin Fowler「ParallelChange」(bliki)</span><span class="ref-url">https://www.martinfowler.com/bliki/ParallelChange.html</span></div></div>
+
+  <div class="ref-group-label"><i class="ti ti-building-store"></i>出版社・書誌情報</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">O'Reilly Online Learning 書籍ページ</span><span class="ref-url">https://www.oreilly.com/library/view/refactoring-databases-evolutionary/0321293533/</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">InformIt 商品ページ</span><span class="ref-url">https://www.informit.com/store/refactoring-databases-evolutionary-database-design-9780132652117</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Pramod J. Sadalage 著者紹介(InformIt)</span><span class="ref-url">https://www.informit.com/authors/bio/E26DAF98-2469-43EB-A05C-CA60B2F82A27</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">目次詳細(eBay掲載)</span><span class="ref-url">https://www.ebay.com/p/102876595</span></div></div>
+
+  <div class="ref-group-label"><i class="ti ti-news"></i>書評・解説記事</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">ACM Queue「Review of Refactoring Databases: Evolutionary Database Design」(原文は403で直接アクセス不可のためInternet Archive保存版を掲載)</span><span class="ref-url">https://web.archive.org/web/20240710022711/https://queue.acm.org/detail.cfm?id=1160453</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Red Gate Simple Talk「Refactoring Databases: The Process」(本書第3章からの抜粋記事)</span><span class="ref-url">https://www.red-gate.com/simple-talk/databases/sql-server/database-administration-sql-server/refactoring-databases-the-process/</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Red Gate Simple Talk「Database Refactoring」(構造リファクタリングの解説)</span><span class="ref-url">https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/database-refactoring/</span></div></div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">ApexSQL Solution Center「SQL database refactoring techniques」(データベースの臭いの解説)</span><span class="ref-url">https://solutioncenter.apexsql.com/?p=3629</span></div></div>
+
+  <div class="ref-group-label"><i class="ti ti-refresh"></i>現代の実践とのつながり</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">Pete Hodgson「Expand/Contract: making a breaking change without a big bang」</span><span class="ref-url">https://blog.thepete.net/blog/2023/12/05/expand/contract-making-a-breaking-change-without-a-big-bang</span></div></div>
+
+  <div class="ref-group-label"><i class="ti ti-language-hiragana"></i>日本語版情報</div>
+  <div class="ref-card"><i class="ti ti-link"></i><div class="ref-card-body"><span class="ref-card-title">「リファクタリング (データベース)」Weblio辞書(Wikipedia由来、日本語版書誌情報を含む)</span><span class="ref-url">https://www.weblio.jp/content/Database+refactoring</span></div></div>
+</section>
+
+<footer class="footer">
+  <p>本ガイドはウェブ検索で得られた公開情報をもとに作成した非公式の学習補助資料であり、Addison-Wesley Professional、Pearson、Scott W. Ambler、Pramod J. Sadalage、Martin Fowler、ThoughtWorksとは提携・承認関係にありません。正確な内容は必ず原著および各参考文献の一次情報をご確認ください。</p>
+  <p>作成日：2026年9月20日 / 情報基準日：2026年9月19日</p>
+</footer>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"
+  integrity="sha384-o+g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/highlight.min.js"
+  integrity="sha384-wjfDDhOPPdjtva8vWBhWeVprSpmxisEu5aYT3q1JyACqXpdKpo3PWZTMVq24MBix" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/languages/sql.min.js"
+  integrity="sha384-xmw+Wgf/U9GjB60m9/I4SBh8zETMwAFC8GqSL7kCfkfgoKHDffjcnkQrNpQLc/96" crossorigin="anonymous"></script>
+
+<script>
+
+function dedent(str){
+  if(!str) return "";
+  const lines = str.replace(/^\n/,"").replace(/\s+$/,"").split("\n");
+  let minIndent = Infinity;
+  for(const line of lines){
+    if(line.trim().length===0) continue;
+    const m = line.match(/^(\s*)/);
+    minIndent = Math.min(minIndent, m[1].length);
+  }
+  if(!isFinite(minIndent)) minIndent = 0;
+  return lines.map(l => l.slice(minIndent)).join("\n");
+}
+
+const DIAGRAMS = {
+  "diag-0": "flowchart TD\n    P[\"読者タイプ別　おすすめの読み方\"] --> A[\"初めてアジャイル開発に触れるアプリ開発者　第1〜3章と第6章\"]\n    P --> B[\"既存システムを保守するDBA・データエンジニア　第2〜4章と第7〜9章\"]\n    P --> C[\"移行基盤を設計するアーキテクト・テックリード　第4〜5章と第9章\"]\n    P --> D[\"CI/CDやマイグレーションツールを扱うエンジニア　第3章と付録\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    class P hub;",
+  "diag-1": "flowchart LR\n    A[\"要求は開発の初期段階では　まだ全て確定していない\"] --> B[\"アプリケーションコードは　反復的に進化していく\"]\n    B --> C{\"データベース設計は　どう扱うべきか\"}\n    C -->|\"従来型　最初に固定する\"| D[\"仕様変更のたびに　大規模な移行作業が発生\"]\n    C -->|\"進化的アプローチ\"| E[\"小さなリファクタリングを　積み重ねて安全に進化させる\"]\n    D --> F[\"俊敏性が失われる\"]\n    E --> G[\"アジャイル開発と　歩調を合わせられる\"]\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8860b,color:#2b2620,stroke-width:2px;\n    class E,G done;\n    class D box;",
+  "diag-2": "flowchart TD\n    T[\"Refactoring Databases　全11章 + 付録\"] --> P1[\"基礎編　第1〜5章　進化的開発の考え方とプロセス\"]\n    P1 --> P2[\"カタログ編　第6〜11章　70以上のリファクタリング集\"]\n    P2 --> P3[\"付録・用語集・参考文献\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class T hub;\n    class P3 done;",
+  "diag-3": "flowchart TD\n    R[\"データベースリファクタリング　意味論を変えない小さな変更\"] --> S[\"スキーマの変更　テーブル・カラム・制約など\"]\n    R --> M[\"データの移行　既存データを新しい形に変換\"]\n    R --> C[\"アクセスコードの変更　アプリ・ビュー・ストアドプロシージャ\"]\n    S --> Done[\"3つ全てが揃って　初めて1つのリファクタリングが完了する\"]\n    M --> Done\n    C --> Done\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class R hub;\n    class Done done;",
+  "diag-4": "flowchart LR\n    A[\"マルチパーパスカラム　1つの列に複数の意味\"] --> Z[\"データベースの臭い\"]\n    B[\"マルチパーパステーブル　1つの表に複数の実体\"] --> Z\n    C[\"冗長データ　同じ値が複数箇所に重複\"] --> Z\n    D[\"カラムが多すぎる表　凝集度の低さの兆候\"] --> Z\n    E[\"行が多すぎる表　パフォーマンス問題の兆候\"] --> Z\n    F[\"スマートカラム　位置ごとに意味が変わる列\"] --> Z\n    G[\"変更への恐怖　誰も触りたがらないテーブル\"] --> Z\n    Z --> H[\"リファクタリングを検討するサイン\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class Z hub;\n    class H done;",
+  "diag-5": "flowchart LR\n    A[\"変更が本当に　必要か検証する\"] --> B[\"最も適切な　リファクタリングを選ぶ\"]\n    B --> C[\"既存の要素を　非推奨化する\"]\n    C --> D[\"テストで　影響範囲を確認する\"]\n    D --> E[\"スキーマ変更・データ移行・　アクセスコード変更を実施\"]\n    E --> F[\"回帰テストを実行する\"]\n    F --> G[\"バージョン管理に　コミットする\"]\n    G --> H[\"変更をチームに周知する\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class H done;",
+  "diag-6": "flowchart LR\n    A[\"Expand　拡張　新しい構造を追加し旧構造はそのまま残す\"] --> B[\"Migrate　移行期間　新旧両方を同時にサポートする\"]\n    B --> C[\"Contract　収縮　旧構造を撤去し新構造だけにする\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class C done;",
+  "diag-7": "flowchart TD\n    Q{\"データベースを使うアプリケーションは　いくつあるか\"}\n    Q -->|\"単一アプリケーション\"| S[\"変更の影響範囲を自分たちで完全に把握できる　比較的シンプルに進められる\"]\n    Q -->|\"複数アプリケーション　共有データベース\"| M[\"他チームへの通知・移行期間の確保・　ビューやトリガーでの後方互換性維持が必須になる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8860b,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class S done;\n    class M box;",
+  "diag-8": "flowchart LR\n    Cat[\"リファクタリングカタログ全体\"] --> A[\"構造　Structural\"]\n    Cat --> B[\"データ品質　Data Quality\"]\n    Cat --> C[\"参照整合性　Referential Integrity\"]\n    Cat --> D[\"アーキテクチャ　Architectural\"]\n    Cat --> E[\"メソッド　Method\"]\n    Cat --> F[\"変換　Transformations　意味論を変える非リファクタリング\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef box fill:#faf3df,stroke:#b8794a,color:#2b2620,stroke-width:2px;\n    class Cat hub;\n    class F box;",
+  "diag-9": "flowchart TD\n    Q{\"論理的に削除された行を　どう扱うか\"}\n    Q -->|\"Introduce Soft Delete\"| A[\"削除フラグ列を追加し　物理的な行は残したまま論理的に非表示にする\"]\n    Q -->|\"Introduce Hard Delete\"| B[\"削除フラグ列をやめて　行そのものを物理的に削除する\"]\n    A --> C[\"監査や復旧が必要な業務でよく使われる\"]\n    B --> D[\"不要データを増やさず　シンプルさを保ちたい場合に使われる\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class Q hub;\n    class C,D done;",
+  "diag-10": "flowchart LR\n    A[\"変更前　product_inventory_code列に場所・ロット・シリアルが連結されて格納\"] --> B[\"1 新しい3つの列を追加　location_code・batch_number・serial_number\"]\n    B --> C[\"2 新旧を双方向に同期するトリガーを有効化する\"]\n    C --> C2[\"3 SUBSTRで既存データを分割して新しい列にバックフィルし検証する\"]\n    C2 --> D[\"4 アプリケーションコードを新しい列を使うように変更\"]\n    D --> E[\"5 インデックスを新しい列に張り直す\"]\n    E --> F[\"6 移行期間を経てから別のContractスクリプトで同期トリガーと旧product_inventory_code列を削除する\"]\n    classDef box fill:#faf3df,stroke:#b8790a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A box;\n    class F done;",
+  "diag-11": "flowchart LR\n    A[\"1 テーブル名を変更　customerからclientへ\"] --> B[\"2 旧名customerで参照できるビューを作成\"]\n    B --> C[\"3 移行期間中は新旧どちらの名前からもアクセス可能にする\"]\n    C --> D[\"4 全ての利用アプリがclientへ移行したことを確認\"]\n    D --> E[\"5 移行期間終了後customerビューを削除\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class E done;",
+  "diag-12": "flowchart LR\n    A[\"開発者がマイグレーションスクリプトを書く\"] --> B[\"バージョン管理へコミットする\"]\n    B --> C[\"CIサーバーが検知して自動実行\"]\n    C --> D[\"FlywayやLiquibaseなどのツールがスキーマ差分を適用\"]\n    D --> E[\"自動テストでアプリとDBの整合性を検証\"]\n    E --> F[\"デプロイパイプラインを通じて本番まで反映\"]\n    classDef hub fill:#eef0f9,stroke:#3b4d8a,color:#2b2620,stroke-width:2px;\n    classDef done fill:#e8f3ec,stroke:#2f6b4f,color:#2b2620,stroke-width:2px;\n    class A hub;\n    class F done;"
+};
+
+// Mermaid の CDN が到達不能な場合でも、ハイライト・サイドバー・モバイルメニュー等の
+// 初期化を巻き添えにしないよう、利用可否を判定してから初期化する。
+const MERMAID_AVAILABLE = typeof window.mermaid !== "undefined";
+
+if(MERMAID_AVAILABLE){
+  mermaid.initialize({
+  startOnLoad:false,
+  theme:"base",
+  securityLevel:"loose",
+  fontFamily:"Noto Sans JP, sans-serif",
+  themeVariables:{
+    fontSize:"16px",
+    primaryColor:"#eef0f9",
+    primaryBorderColor:"#3b4d8a",
+    primaryTextColor:"#2b2620",
+    lineColor:"#9a917c",
+    background:"#ffffff",
+    secondaryColor:"#faf3df",
+    tertiaryColor:"#f6ecf1"
+  }
+  });
+}
+
+async function renderAllDiagrams(){
+  const wraps = document.querySelectorAll("[data-diagram-id]");
+  if(!MERMAID_AVAILABLE){
+    wraps.forEach(wrap => {
+      wrap.innerHTML = '<div class="diagram-loading">図を読み込めませんでした（Mermaid の読み込みに失敗しました）</div>';
+    });
+    return;
+  }
+  for(const wrap of wraps){
+    const id = wrap.getAttribute("data-diagram-id");
+    const src = dedent(DIAGRAMS[id] || "");
+    if(!src) continue;
+    try{
+      const {svg} = await mermaid.render(id+"-svg", src);
+      wrap.innerHTML = svg;
+      const svgEl = wrap.querySelector("svg");
+      if(svgEl){
+        svgEl.removeAttribute("width");
+        svgEl.removeAttribute("height");
+        const vb = svgEl.getAttribute("viewBox");
+        if(vb){
+          const parts = vb.split(/\s+/).map(Number);
+          const w = parts[2], h = parts[3];
+          svgEl.style.width = w + "px";
+          svgEl.style.height = "auto";
+          svgEl.setAttribute("viewBox", `0 0 ${w} ${h+15}`);
+        }
+        svgEl.style.maxWidth = "none";
+        svgEl.style.overflow = "visible";
+        svgEl.style.flexShrink = "0";
+      }
+    }catch(e){
+      wrap.innerHTML = '<div class="diagram-loading">図の描画に失敗しました</div>';
+      console.error("mermaid render error", id, e);
+    }
+  }
+}
+
+/* ---------- Sidebar scroll-position active highlighting ---------- */
+function setupSidebarHighlight(){
+  const links = Array.from(document.querySelectorAll(".sidebar nav a[href^='#']"));
+  const targets = links.map(a => ({
+    link:a,
+    el:document.querySelector(a.getAttribute("href"))
+  })).filter(t => t.el);
+
+  let ticking = false;
+  function update(){
+    ticking = false;
+    let active = null;
+    for(const t of targets){
+      const rect = t.el.getBoundingClientRect();
+      if(rect.top <= window.innerHeight*0.25){
+        active = t;
+      }
+    }
+    if(!active && targets.length) active = targets[0];
+    links.forEach(l => {
+      l.classList.remove("active");
+      l.removeAttribute("aria-current");
+    });
+    if(active){
+      active.link.classList.add("active");
+      active.link.setAttribute("aria-current", "location");
+    }
+  }
+  window.addEventListener("scroll", () => {
+    if(!ticking){
+      window.requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, {passive:true});
+  update();
+}
+
+/* ---------- Mobile menu ---------- */
+function setupMobileMenu(){
+  const btn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+  const scrim = document.getElementById("scrim");
+  if(!btn || !sidebar) return;
+  const mql = window.matchMedia("(max-width: 980px)");
+  btn.setAttribute("aria-controls", "sidebar");
+  btn.setAttribute("aria-expanded", "false");
+  function applyClosedRestriction(){
+    if(mql.matches && !sidebar.classList.contains("open")){
+      sidebar.setAttribute("inert", "");
+      sidebar.setAttribute("aria-hidden", "true");
+    } else {
+      sidebar.removeAttribute("inert");
+      sidebar.removeAttribute("aria-hidden");
+    }
+  }
+  function open(){
+    sidebar.classList.add("open");
+    if(scrim) scrim.classList.add("open");
+    btn.setAttribute("aria-expanded", "true");
+    applyClosedRestriction();
+  }
+  function close(){
+    const hadFocusInside = sidebar.contains(document.activeElement);
+    sidebar.classList.remove("open");
+    if(scrim) scrim.classList.remove("open");
+    btn.setAttribute("aria-expanded", "false");
+    applyClosedRestriction();
+    if(hadFocusInside) btn.focus();
+  }
+  if(scrim) scrim.addEventListener("click", close);
+  btn.addEventListener("click", () => { sidebar.classList.contains("open") ? close() : open(); });
+  document.querySelectorAll(".sidebar nav a").forEach(a => a.addEventListener("click", close));
+  mql.addEventListener("change", applyClosedRestriction);
+  applyClosedRestriction();
+}
+
+/* ---------- Checklist ---------- */
+function setupChecklist(){
+  const items = document.querySelectorAll(".check-item input[type=checkbox]");
+  const fill = document.getElementById("checklistFill");
+  const label = document.getElementById("checklistLabel");
+  function update(){
+    let done = 0;
+    items.forEach(cb => { if(cb.checked) done++; });
+    const total = items.length;
+    if(fill) fill.style.width = (total? (done/total*100):0) + "%";
+    if(label) label.textContent = done + " / " + total + " 完了";
+    items.forEach(cb => {
+      const item = cb.closest(".check-item");
+      if(item) item.classList.toggle("done", cb.checked);
+    });
+  }
+  items.forEach(cb => cb.addEventListener("change", update));
+  update();
+}
+
+/* ---------- Code blocks: inject from script tags then highlight ---------- */
+function injectCodeBlocks(){
+  document.querySelectorAll("script[data-code-for]").forEach(scriptEl => {
+    const targetId = scriptEl.getAttribute("data-code-for");
+    const codeEl = document.getElementById(targetId);
+    if(codeEl){
+      codeEl.textContent = dedent(scriptEl.textContent);
+    }
+  });
+  if(window.hljs){
+    document.querySelectorAll("code[data-lang]").forEach(el => {
+      hljs.highlightElement(el);
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  injectCodeBlocks();
+  setupSidebarHighlight();
+  setupMobileMenu();
+  setupChecklist();
+  renderAllDiagrams();
+});
+
+</script>
+
+</body>
+</html>
