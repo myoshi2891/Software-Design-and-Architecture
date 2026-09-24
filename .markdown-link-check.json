@@ -266,6 +266,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?xebia\\.com(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?agiledata\\.org(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],
