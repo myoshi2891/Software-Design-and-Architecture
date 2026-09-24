@@ -56,9 +56,9 @@
 
 ## 2. 著者について
 
-**Ralph Kimball** は、スタンフォード大学で電気工学の博士号を取得後、Xerox PARC（パロアルト研究所）に在籍し、マウス・アイコン・ウィンドウを初めて商用製品に搭載した「Xerox Star Workstation」の主任設計者の一人として活躍しました。その後、意思決定支援ソフトウェア企業Metaphor Computer Systemsの副社長を経て、1986年にRed Brick Systemsを創業（CEOは1992年まで）。同社はデータウェアハウス向けに最適化されたリレーショナルデータベースで知られ、ビットマップインデックスによって当時の他製品より大幅に高速な性能を実現していました。その後Kimball Groupを設立し、1982年以降データウェアハウス／BI業界のビジョナリーとして活動を続けています。
+**Ralph Kimball** は、スタンフォード大学で電気工学の博士号を取得後、Xerox PARC（パロアルト研究所）に在籍し、マウス・アイコン・ウィンドウを初めて商用製品に搭載した「Xerox Star Workstation」の主任設計者の一人として活躍しました。その後、意思決定支援ソフトウェア企業Metaphor Computer Systemsの副社長を経て、1986年にRed Brick Systemsを創業（CEOは1992年まで）。同社はデータウェアハウス向けに最適化されたリレーショナルデータベースで知られ、ビットマップインデックスによって当時の他製品より大幅に高速な性能を実現していました。その後Kimball Groupを設立し、ディメンショナルアプローチの第一人者としてデータウェアハウス／BI業界を牽引しました。Kimball Groupは2015年末に活動を終了しており、Kimball自身も現在は引退しています。
 
-**Margy Ross** はKimball Groupの社長であり、Ralph Kimballとの共著者として5冊のToolkitシリーズを執筆。1982年以来30年以上にわたりデータウェアハウス／BI領域に専念してきた人物です。
+**Margy Ross** はKimball Groupの元社長であり、Ralph Kimballとの共著者として5冊のToolkitシリーズを執筆。1982年以来データウェアハウス／BI領域に専念してきた人物で、Kimball Groupの活動終了後もDecisionWorksを通じてディメンショナルモデリングの講座を提供し続けています。
 
 両者による「Kimball方式（ディメンショナルモデリング）」は、Bill Inmonが提唱する方式と並び、データウェアハウス設計における二大方法論の一つとされています。
 
@@ -273,6 +273,8 @@ CREATE TABLE dim_product (
 );
 
 -- ファクトテーブル（ディメンションへの外部キー + 数値）
+-- ※ dim_date・dim_customer・dim_store・dim_promotion は、dim_product と同様に
+--   サロゲートキーを主キーとするディメンションテーブルとして事前に作成済みとする
 CREATE TABLE fact_sales (
     date_key         INT REFERENCES dim_date(date_key),
     product_key      INT REFERENCES dim_product(product_key),
