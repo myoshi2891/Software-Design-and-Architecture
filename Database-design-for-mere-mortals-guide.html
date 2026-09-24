@@ -377,6 +377,8 @@ tbody tr:hover { background: var(--paper-alt); }
   .sidebar.open { transform: translateX(0); }
   .main { margin-left: 0; }
   .mobile-bar { display: flex; }
+  /* sticky な mobile-bar（高さ約67px）の下にアンカー先が隠れないよう、その分を上乗せする */
+  html { scroll-padding-top: 92px; }
   .hero, .section, .footer { padding-left: 22px; padding-right: 22px; }
   .content { padding-left: 22px; padding-right: 22px; }
   .book-card { flex-direction: column; }
