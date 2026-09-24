@@ -7,6 +7,8 @@ import {
   parseDurationSeconds,
   parseRetryCount,
   retryDelaySeconds,
+  verifyUrl,
+  type VerifyUrlDeps,
 } from './verify-links';
 
 describe('buildCurlArgs', () => {
@@ -145,6 +147,52 @@ describe('isRetryableStatus', () => {
   test('5xx のような一時的サーバーエラーは再試行対象', () => {
     expect(isRetryableStatus(502, false)).toBe(true);
     expect(isRetryableStatus(503, false)).toBe(true);
+  });
+});
+
+describe('verifyUrl', () => {
+  /**
+   * curl が指定の終了コードで失敗し続けるプローブと、実時間を消費しない待機を用意する。
+   * ネットワークにも実際の sleep にも依存せず、再試行の判定経路だけを検証する。
+   */
+  function createDeps(curlExitCode: number): { deps: VerifyUrlDeps; probeCalls: () => number } {
+    let calls = 0;
+    const deps: VerifyUrlDeps = {
+      probe: async () => {
+        calls++;
+        return { ok: false, status: 0, error: 'curl error', curlExitCode };
+      },
+      wait: async () => {},
+      retry: { retryOn429: true, retryCount: 1, retryDelaySec: 1 },
+    };
+    return { deps, probeCalls: () => calls };
+  }
+
+  // exit 28 が isRetryableStatus まで伝搬しなければ、タイムアウトが再試行されず偽陽性になる
+  test('curl exit 28（タイムアウト）は再試行し、プローブを2回呼ぶ', async () => {
+    // Arrange
+    const { deps, probeCalls } = createDeps(28);
+
+    // Act
+    const result = await verifyUrl('https://example.com/', 10, deps);
+
+    // Assert
+    expect(result.ok).toBe(false);
+    expect(result.curlExitCode).toBe(28);
+    expect(probeCalls()).toBe(2);
+  });
+
+  test('curl exit 60（証明書検証失敗）は再試行せず、プローブを1回だけ呼ぶ', async () => {
+    // Arrange
+    const { deps, probeCalls } = createDeps(60);
+
+    // Act
+    const result = await verifyUrl('https://example.com/', 10, deps);
+
+    // Assert
+    expect(result.ok).toBe(false);
+    expect(result.curlExitCode).toBe(60);
+    expect(probeCalls()).toBe(1);
   });
 });
 
