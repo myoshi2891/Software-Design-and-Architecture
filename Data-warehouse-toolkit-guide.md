@@ -276,6 +276,7 @@ CREATE TABLE dim_product (
 CREATE TABLE fact_sales (
     date_key         INT REFERENCES dim_date(date_key),
     product_key      INT REFERENCES dim_product(product_key),
+    customer_key     INT REFERENCES dim_customer(customer_key),
     store_key        INT REFERENCES dim_store(store_key),
     promotion_key    INT REFERENCES dim_promotion(promotion_key),
     sales_quantity   INT,
