@@ -18,7 +18,7 @@ const DEFAULT_RETRY_DELAY_SEC = 10;
 export const MAX_RETRY_COUNT = 10;
 export const MAX_RETRY_DELAY_SEC = 300;
 
-interface RetryConfig {
+export interface RetryConfig {
   /** 429 (Too Many Requests) を一時的エラーとして再試行するか */
   retryOn429: boolean;
   /** 最大再試行回数（初回プローブは含まない） */
@@ -359,7 +359,7 @@ export function buildCurlArgs(url: string, timeoutSec: number, method: 'HEAD' | 
 }
 
 /** URL 検証 1 回分の結果。curlExitCode は status 0 の原因となった curl の終了コード。 */
-type ProbeResult = { ok: boolean; status: number; error?: string; curlExitCode?: number };
+export type ProbeResult = { ok: boolean; status: number; error?: string; curlExitCode?: number };
 
 async function probeUrl(
   url: string,
@@ -413,31 +413,41 @@ function sleep(seconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
+/** verifyUrl の外部依存。テストからネットワーク・実時間の待機なしに差し替えるために公開する。 */
+export interface VerifyUrlDeps {
+  probe: (url: string, timeoutSec: number) => Promise<ProbeResult>;
+  wait: (seconds: number) => Promise<void>;
+  retry: RetryConfig;
+}
+
 /**
  * URL の到達性を検証する。一時的なレート制限 (429) は設定に従って再試行する。
  *
  * @param url - 検証対象の URL
  * @param timeoutSec - 1 回のリクエストの最大所要秒数
+ * @param deps - プローブ・待機・再試行設定（既定は curl・実時間の待機・設定ファイル値）
  * @returns 検証結果。失敗時は HTTP ステータスとエラーメッセージを含む
  */
-async function verifyUrl(
+export async function verifyUrl(
   url: string,
-  timeoutSec: number = 10
+  timeoutSec: number = 10,
+  deps: VerifyUrlDeps = { probe: probeUrl, wait: sleep, retry: retryConfig }
 ): Promise<ProbeResult> {
-  let result = await probeUrl(url, timeoutSec);
+  const { probe, wait, retry } = deps;
+  let result = await probe(url, timeoutSec);
 
-  for (let attempt = 1; attempt <= retryConfig.retryCount; attempt++) {
+  for (let attempt = 1; attempt <= retry.retryCount; attempt++) {
     if (result.ok) return result;
-    if (!isRetryableStatus(result.status, retryConfig.retryOn429, result.curlExitCode)) {
+    if (!isRetryableStatus(result.status, retry.retryOn429, result.curlExitCode)) {
       return result;
     }
 
-    const delaySec = retryDelaySeconds(attempt, retryConfig.retryDelaySec);
+    const delaySec = retryDelaySeconds(attempt, retry.retryDelaySec);
     console.log(
-      `  RETRY (${attempt}/${retryConfig.retryCount}): ${url} [Status: ${result.status}] waiting ${delaySec}s ...`
+      `  RETRY (${attempt}/${retry.retryCount}): ${url} [Status: ${result.status}] waiting ${delaySec}s ...`
     );
-    await sleep(delaySec);
-    result = await probeUrl(url, timeoutSec);
+    await wait(delaySec);
+    result = await probe(url, timeoutSec);
   }
 
   return result;
