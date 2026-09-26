@@ -282,10 +282,11 @@ table tbody tr:hover{background:var(--paper-alt)}
 
 @media (max-width:980px){
   .sidebar{
-    transform:translateX(-100%);transition:transform .2s ease;
+    transform:translateX(-100%);visibility:hidden;
+    transition:transform .2s ease, visibility 0s linear .2s;
     width:82vw;max-width:320px;box-shadow:0 0 40px rgba(0,0,0,.25);
   }
-  .sidebar.open{transform:translateX(0)}
+  .sidebar.open{transform:translateX(0);visibility:visible;transition:transform .2s ease, visibility 0s}
   .main{margin-left:0}
   .mobile-bar{display:flex}
   .mobile-bar button{font-size:1rem}
@@ -305,7 +306,7 @@ table tbody tr:hover{background:var(--paper-alt)}
 <body>
 <div class="mobile-bar">
   <div class="m-title">Graph Databases 初学者ガイド</div>
-  <button id="menuBtn" aria-label="メニューを開く"><i class="ti ti-menu-2"></i>メニュー</button>
+  <button type="button" id="menuBtn" aria-label="メニューを開く" aria-controls="sidebar" aria-expanded="false"><i class="ti ti-menu-2" aria-hidden="true"></i>メニュー</button>
 </div>
 <div class="sidebar-scrim" id="scrim"></div>
 <div class="layout">
@@ -1007,12 +1008,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.getElementById("sidebar");
   const scrim = document.getElementById("scrim");
   const menuBtn = document.getElementById("menuBtn");
-  function openMenu(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
-  function closeMenu(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+  function openMenu(){
+    sidebar.classList.add("open"); scrim.classList.add("show");
+    if (menuBtn) menuBtn.setAttribute("aria-expanded", "true");
+  }
+  function closeMenu(){
+    sidebar.classList.remove("open"); scrim.classList.remove("show");
+    if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
+  }
   if (menuBtn) menuBtn.addEventListener("click", () => {
     sidebar.classList.contains("open") ? closeMenu() : openMenu();
   });
   if (scrim) scrim.addEventListener("click", closeMenu);
+  // Escape で閉じ、フォーカスをメニューボタンへ戻す
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !sidebar.classList.contains("open")) return;
+    closeMenu();
+    if (menuBtn) menuBtn.focus();
+  });
   document.querySelectorAll(".sidebar a.nav-a").forEach(a => {
     a.addEventListener("click", closeMenu);
   });
