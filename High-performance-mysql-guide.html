@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High Performance MySQL 徹底解説ガイド | 初学者向けステップバイステップ解説</title>
+<meta name="description" content="O'Reilly『High Performance MySQL, 4th Edition』を章立てに沿って初学者向けにステップバイステップで解説。Mermaid図解と参考文献URL付き。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css" integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/styles/atom-one-light.min.css" integrity="sha384-w6Ujm1VWa9HYFqGc89oAPn/DWDi2gUamjNrq9DRvEYm2X3ClItg9Y9xs1ViVo5b5" crossorigin="anonymous">
+<style>
+:root{
+  --paper:#f6f1e5;
+  --paper-alt:#efe6d0;
+  --card:#fffdf8;
+  --card-2:#faf4e6;
+  --ink:#2b2420;
+  --ink-soft:#5d5347;
+  --ink-faint:#726858;
+  --border:#ddd0b3;
+  --border-soft:#e8ddc4;
+  --indigo:#4b4a9e;
+  --indigo-dark:#2e2d68;
+  --indigo-soft:#e5e2f7;
+  --gold:#7d5c14;
+  --gold-soft:#f3e6c4;
+  --forest:#2f6f52;
+  --forest-soft:#d9ecdf;
+  --plum:#7a3f66;
+  --plum-soft:#efe0ea;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 2px 14px rgba(43,36,32,0.09);
+  --shadow-lg:0 8px 30px rgba(43,36,32,0.14);
+  --sidebar-w:298px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:1.5rem;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Serif 4","Zen Kaku Gothic New",serif;
+  line-height:1.85;
+  font-size:1.03rem;
+  -webkit-font-smoothing:antialiased;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+h1,h2,h3,h4{
+  font-family:"Zen Kaku Gothic New","Source Serif 4",sans-serif;
+  color:var(--ink);
+  line-height:1.45;
+  font-weight:700;
+  overflow-wrap:break-word;
+}
+a{color:var(--indigo-dark);text-decoration-color:rgba(75,74,158,0.35);text-underline-offset:3px;}
+a:hover{color:var(--indigo);}
+img,svg{max-width:100%;}
+p{margin:0 0 1.1em;}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh;align-items:flex-start;}
+
+.sidebar{
+  position:fixed;
+  top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--card-2);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:1.6rem 0 3rem;
+  z-index:40;
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.brand{
+  padding:0 1.4rem 1.2rem;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:1rem;
+}
+.brand .kicker{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.08em;
+  color:var(--indigo);
+  background:var(--indigo-soft);
+  padding:.3rem .6rem;border-radius:999px;
+  margin-bottom:.7rem;
+}
+.brand h1{font-size:1.12rem;margin:0 0 .3rem;line-height:1.5;}
+.brand p{font-size:1rem;color:var(--ink-soft);margin:0;}
+
+.nav-group{padding:0 .9rem;margin-bottom:.35rem;}
+.nav-group-title{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.06em;
+  color:var(--ink-faint);
+  text-transform:uppercase;
+  padding:.85rem .5rem .35rem;
+}
+.nav-link{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.44rem .55rem;
+  border-radius:var(--radius-sm);
+  font-size:1rem;
+  color:var(--ink-soft);
+  text-decoration:none;
+  transition:background .15s ease,color .15s ease;
+}
+.nav-link i{font-size:1rem;color:var(--ink-faint);flex-shrink:0;}
+.nav-link:hover{background:var(--paper-alt);color:var(--ink);}
+.nav-link.active{
+  background:var(--indigo-soft);
+  color:var(--indigo-dark);
+  font-weight:600;
+}
+.nav-link.active i{color:var(--indigo-dark);}
+
+.menu-toggle{
+  display:none;
+  position:fixed;top:.85rem;left:.85rem;z-index:60;
+  width:44px;height:44px;
+  align-items:center;justify-content:center;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  box-shadow:var(--shadow);
+  font-size:1.25rem;color:var(--ink);
+  cursor:pointer;
+}
+.scrim{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(30,25,20,.45);
+  z-index:45;
+}
+.scrim.show{display:block;}
+
+.content{
+  margin-left:var(--sidebar-w);
+  width:calc(100% - var(--sidebar-w));
+  min-width:0;
+  padding:3rem 3.4rem 6rem;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  background:linear-gradient(135deg,var(--indigo-dark),var(--indigo));
+  color:#fbf9ff;
+  border-radius:var(--radius);
+  padding:2.6rem 2.6rem;
+  margin-bottom:2.6rem;
+  box-shadow:var(--shadow-lg);
+}
+.hero .kicker{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.09em;
+  background:rgba(255,255,255,.14);
+  padding:.35rem .75rem;border-radius:999px;
+  margin-bottom:1rem;
+}
+.hero h1{color:#fff;font-size:1.9rem;margin:0 0 .8rem;line-height:1.5;}
+.hero p{color:rgba(255,255,255,.88);font-size:1.02rem;max-width:56em;margin:0 0 .3rem;}
+.hero .hero-meta{
+  display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.3rem;
+}
+.hero .hero-meta span{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:600;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  padding:.35rem .75rem;border-radius:999px;
+  display:inline-flex;align-items:center;gap:.35rem;
+}
+
+/* ---------- sections ---------- */
+section.block{
+  margin-bottom:3rem;
+  scroll-margin-top:1.5rem;
+}
+.step-badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.06em;
+  color:var(--indigo-dark);
+  background:var(--indigo-soft);
+  padding:.32rem .78rem;border-radius:999px;
+  margin-bottom:.9rem;
+}
+section.block h2{
+  font-size:1.5rem;
+  margin:0 0 1rem;
+  padding-bottom:.7rem;
+  border-bottom:2px solid var(--border);
+  display:flex;align-items:center;gap:.55rem;
+}
+section.block h2 i{color:var(--indigo);font-size:1.25rem;}
+section.block h3{
+  font-size:1.14rem;
+  margin:1.8rem 0 .8rem;
+  color:var(--indigo-dark);
+}
+.lede{
+  font-size:1.08rem;color:var(--ink-soft);
+  border-left:4px solid var(--indigo);
+  background:var(--card-2);
+  padding:1rem 1.3rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  margin:0 0 1.8rem;
+}
+
+/* ---------- cards / grids ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.4rem 1.6rem;
+  box-shadow:var(--shadow);
+}
+.grid{display:grid;gap:1rem;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+
+.role-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.15rem 1.3rem;
+}
+.role-card .role-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--indigo-soft);color:var(--indigo-dark);
+  font-size:1.15rem;margin-bottom:.7rem;
+}
+.role-card h4{margin:0 0 .4rem;font-size:1rem;}
+.role-card p{margin:0;font-size:1rem;color:var(--ink-soft);}
+
+/* ---------- tables ---------- */
+.table-wrap{
+  overflow-x:auto;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin:0 0 1.6rem;
+  background:var(--card);
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:0;
+  font-size:1rem;
+}
+table.kv{min-width:0;}
+th,td{
+  text-align:left;
+  padding:.72rem 1rem;
+  border-bottom:1px solid var(--border-soft);
+  vertical-align:top;
+}
+thead th{
+  background:var(--paper-alt);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  letter-spacing:.02em;
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--card-2);}
+td code,p code,li code{
+  background:var(--paper-alt);
+  border:1px solid var(--border-soft);
+  border-radius:5px;
+  padding:.12em .42em;
+  font-size:.88em;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  color:var(--indigo-dark);
+}
+
+/* ---------- diagrams ---------- */
+.diagram-wrap{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.4rem;
+  margin:0 0 1.6rem;
+  overflow-x:auto;
+}
+.diagram-wrap .mermaid-target{
+  display:flex;
+  justify-content:center;
+  min-width:min-content;
+}
+.diagram-caption{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;color:var(--ink-faint);
+  margin-top:.8rem;text-align:center;
+}
+.diagram-loading{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;color:var(--ink-faint);
+  padding:2rem;text-align:center;
+}
+
+/* ---------- code blocks ---------- */
+pre{
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  margin:0 0 1.5rem;
+  overflow-x:auto;
+  font-size:1rem;
+}
+pre code.hljs{padding:1.1rem 1.3rem !important;border-radius:var(--radius-sm);}
+.code-label{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.05em;
+  color:var(--ink-faint);
+  margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.35rem;
+}
+
+/* ---------- lists ---------- */
+ul.plain,ol.plain{padding-left:1.35rem;margin:0 0 1.4rem;}
+ul.plain li,ol.plain li{margin-bottom:.55rem;}
+ul.tick{list-style:none;padding:0;margin:0 0 1.4rem;}
+ul.tick li{
+  position:relative;padding-left:1.7rem;margin-bottom:.6rem;
+}
+ul.tick li::before{
+  content:"\ea5e";
+  font-family:"tabler-icons";
+  position:absolute;left:0;top:.05em;
+  color:var(--forest);font-size:1.05rem;
+}
+
+/* ---------- checklist ---------- */
+.checklist-progress{
+  display:flex;align-items:center;gap:1rem;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem 1.3rem;
+  margin-bottom:1.2rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+}
+.checklist-progress .bar{
+  flex:1;height:10px;border-radius:999px;
+  background:var(--paper-alt);overflow:hidden;
+}
+.checklist-progress .bar-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--forest),var(--indigo));
+  transition:width .25s ease;
+}
+.checklist-progress .count{font-size:1rem;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
+.checklist{list-style:none;padding:0;margin:0;}
+.checklist li{
+  border-radius:var(--radius-sm);
+  transition:background .15s ease;
+}
+.checklist li label{
+  position:relative;display:flex;align-items:flex-start;gap:.75rem;
+  padding:.75rem .9rem;
+  cursor:pointer;
+}
+/* 視覚的に隠すがフォーカス・支援技術からは到達可能 */
+.checklist li input[type="checkbox"]{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+.checklist li input[type="checkbox"]:focus-visible + .box{
+  outline:2px solid var(--forest);outline-offset:2px;
+}
+.checklist li:hover{background:var(--card-2);}
+.checklist li .box{
+  flex-shrink:0;width:22px;height:22px;margin-top:.1rem;
+  border:2px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);
+  transition:all .15s ease;
+}
+.checklist li .box i{opacity:0;font-size:1rem;color:#fff;transition:opacity .15s ease;}
+.checklist li.done .box{background:var(--forest);border-color:var(--forest);}
+.checklist li.done .box i{opacity:1;}
+.checklist li.done span.label{color:var(--ink-faint);text-decoration:line-through;}
+.checklist li span.label{font-size:1rem;}
+
+/* ---------- reference cards ---------- */
+.ref-list{display:flex;flex-direction:column;gap:.7rem;}
+.ref-card{
+  display:flex;align-items:center;gap:.9rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:.85rem 1.1rem;
+  text-decoration:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.ref-card:hover{border-color:var(--indigo);box-shadow:var(--shadow);}
+.ref-card .ref-icon{
+  flex-shrink:0;width:36px;height:36px;border-radius:9px;
+  background:var(--indigo-soft);color:var(--indigo-dark);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.ref-card .ref-body{min-width:0;}
+.ref-card .ref-title{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;}
+.ref-card .ref-url{font-size:1rem;color:var(--ink-faint);word-break:break-all;}
+
+/* ---------- callouts ---------- */
+.callout{
+  border-radius:var(--radius);
+  padding:1.1rem 1.4rem;
+  margin:0 0 1.6rem;
+  border:1px solid var(--border);
+  display:flex;gap:.85rem;
+}
+.callout i{font-size:1.3rem;flex-shrink:0;margin-top:.1rem;}
+.callout.note{background:var(--indigo-soft);border-color:#c9c4ef;}
+.callout.note i{color:var(--indigo-dark);}
+.callout.warn{background:var(--gold-soft);border-color:#e3cd8e;}
+.callout.warn i{color:var(--gold);}
+.callout.critical{background:var(--plum-soft);border-color:#d9bccb;}
+.callout.critical i{color:var(--plum);}
+.callout p:last-child{margin-bottom:0;}
+.callout .callout-title{font-weight:700;margin-bottom:.3rem;font-family:"Zen Kaku Gothic New",sans-serif;font-size:1rem;}
+
+/* ---------- part divider ---------- */
+.part-divider{
+  display:flex;align-items:center;gap:1rem;
+  margin:3.4rem 0 2rem;
+}
+.part-divider .part-num{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-weight:900;font-size:1.6rem;color:var(--indigo);
+  flex-shrink:0;
+}
+.part-divider .part-text{flex-shrink:0;}
+.part-divider h2{
+  font-size:1.05rem;margin:0;color:var(--ink-soft);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  letter-spacing:.03em;
+  border:none;padding:0;
+}
+.part-divider .line{flex:1;height:1px;background:var(--border);}
+
+/* ---------- footer ---------- */
+footer.page-footer{
+  border-top:1px solid var(--border);
+  padding-top:2rem;margin-top:3rem;
+  font-size:1rem;color:var(--ink-faint);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .sidebar{
+    transform:translateX(-100%);
+    transition:transform .22s ease;
+    box-shadow:var(--shadow-lg);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .menu-toggle{display:flex;}
+  .content{margin-left:0;width:100%;padding:5rem 1.2rem 4rem;}
+  .hero{padding:2rem 1.4rem;}
+  .hero h1{font-size:1.5rem;}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+}
+@media (max-width:600px){
+  body{font-size:1rem;}
+  section.block h2{font-size:1.28rem;}
+  .content{padding:4.6rem .9rem 3rem;}
+}
+</style>
+</head>
+<body>
+
+<button type="button" class="menu-toggle" id="menuToggle" aria-label="メニューを開く" aria-controls="sidebar" aria-expanded="false"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
+<div class="scrim" id="scrim"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="brand">
+    <span class="kicker"><i class="ti ti-book-2"></i>書籍解説ガイド</span>
+    <h1>High Performance MySQL 徹底解説</h1>
+    <p>第4版を章立てに沿ってステップ解説</p>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">ガイドについて</div>
+    <a class="nav-link" href="#about"><i class="ti ti-info-circle"></i>この記事について</a>
+    <a class="nav-link" href="#book-info"><i class="ti ti-notebook"></i>書籍情報</a>
+    <a class="nav-link" href="#audience"><i class="ti ti-users"></i>対象読者</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">全体像</div>
+    <a class="nav-link" href="#structure"><i class="ti ti-hierarchy-3"></i>本書の全体像</a>
+    <a class="nav-link" href="#roadmap"><i class="ti ti-route"></i>学習ロードマップ</a>
+    <a class="nav-link" href="#step0"><i class="ti ti-flag"></i>Step0 動機</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Part1 基礎</div>
+    <a class="nav-link" href="#step1"><i class="ti ti-cpu"></i>Step1 アーキテクチャ</a>
+    <a class="nav-link" href="#step2"><i class="ti ti-activity"></i>Step2 監視とSLO</a>
+    <a class="nav-link" href="#step3"><i class="ti ti-gauge"></i>Step3 Performance Schema</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Part2 サーバ最適化</div>
+    <a class="nav-link" href="#step4"><i class="ti ti-server-2"></i>Step4 OSとハードウェア</a>
+    <a class="nav-link" href="#step5"><i class="ti ti-settings"></i>Step5 サーバ設定</a>
+    <a class="nav-link" href="#step6"><i class="ti ti-table"></i>Step6 スキーマ設計</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Part3 クエリとインデックス</div>
+    <a class="nav-link" href="#step7"><i class="ti ti-list-search"></i>Step7 インデックス設計</a>
+    <a class="nav-link" href="#step8"><i class="ti ti-zoom-code"></i>Step8 クエリ最適化</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Part4 運用とスケール</div>
+    <a class="nav-link" href="#step9"><i class="ti ti-copy"></i>Step9 レプリケーション</a>
+    <a class="nav-link" href="#step10"><i class="ti ti-database-export"></i>Step10 バックアップ</a>
+    <a class="nav-link" href="#step11"><i class="ti ti-affiliate"></i>Step11 スケーリング</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Part5 クラウドと統制</div>
+    <a class="nav-link" href="#step12"><i class="ti ti-cloud"></i>Step12 クラウド運用</a>
+    <a class="nav-link" href="#step13"><i class="ti ti-shield-check"></i>Step13 コンプライアンス</a>
+    <a class="nav-link" href="#appendix-a"><i class="ti ti-arrow-up-circle"></i>付録A アップグレード</a>
+    <a class="nav-link" href="#appendix-b"><i class="ti ti-brand-docker"></i>付録B Kubernetes</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">補足情報</div>
+    <a class="nav-link" href="#updates2026"><i class="ti ti-refresh"></i>2026年アップデート</a>
+    <a class="nav-link" href="#critical"><i class="ti ti-alert-triangle"></i>批判的に読む</a>
+    <a class="nav-link" href="#checklist"><i class="ti ti-checklist"></i>学習チェックリスト</a>
+    <a class="nav-link" href="#glossary"><i class="ti ti-abc"></i>用語集</a>
+    <a class="nav-link" href="#summary"><i class="ti ti-flag-check"></i>まとめ</a>
+    <a class="nav-link" href="#references"><i class="ti ti-link"></i>参考文献</a>
+  </div>
+</nav>
+
+<main class="content" id="content">
+<header class="hero">
+  <span class="kicker"><i class="ti ti-database"></i>O'REILLY　書籍解説シリーズ</span>
+  <h1>High Performance MySQL: Proven Strategies for Operating at Scale 徹底解説ガイド</h1>
+  <p>初学者からステップアップしたいエンジニアまでを対象に、O'Reilly刊『High Performance MySQL, 4th Edition』（Silvia Botros・Jeremy Tinley 著）の内容を、章立てに沿って一つずつわかりやすく解説します。刊行以降のMySQLエコシステムの変化についても、Percona社やOracle MySQLチームなど国際的に著名な開発者・企業の発信をもとに補足しています。</p>
+  <div class="hero-meta">
+    <span><i class="ti ti-users"></i>Silvia Botros / Jeremy Tinley 著</span>
+    <span><i class="ti ti-calendar"></i>2021年11月刊行 第4版</span>
+    <span><i class="ti ti-stack-2"></i>全13章 + 付録2本</span>
+    <span><i class="ti ti-language"></i>日本語ステップ解説</span>
+  </div>
+</header>
+
+<section class="block" id="about">
+  <span class="step-badge"><i class="ti ti-info-circle"></i>GUIDE INFO</span>
+  <h2><i class="ti ti-info-circle"></i>この記事について</h2>
+  <ul class="tick">
+    <li><strong>対象書籍</strong>：High Performance MySQL: Proven Strategies for Operating at Scale（第4版）<br>原書ページ：<a href="https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/" target="_blank" rel="noopener">https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/</a></li>
+    <li><strong>著者</strong>：Silvia Botros（Twilio シニア・プリンシパルエンジニア、元SendGrid）、Jeremy Tinley（Etsy シニアスタッフエンジニア、MySQL歴20年以上）</li>
+    <li><strong>序文</strong>：Jeremy Cole（元Google / Twitter、InnoDB内部構造研究で国際的に知られるエンジニア）が執筆</li>
+    <li><strong>出版</strong>：O'Reilly Media, Inc. / 2021年11月 / 386ページ</li>
+    <li><strong>本ガイドの方針</strong>：各章の要点をステップごとに整理し、図解はすべてMermaidで表現、比較情報は表形式でまとめています。ASCIIアートによる図解は使用していません。</li>
+  </ul>
+</section>
+
+<section class="block" id="book-info">
+  <h2><i class="ti ti-notebook"></i>書籍情報まとめ</h2>
+  <div class="table-wrap">
+    <table class="kv">
+      <tbody>
+        <tr><th>タイトル</th><td>High Performance MySQL: Proven Strategies for Operating at Scale</td></tr>
+        <tr><th>版</th><td>第4版（Fourth Edition）</td></tr>
+        <tr><th>著者</th><td>Silvia Botros, Jeremy Tinley</td></tr>
+        <tr><th>序文</th><td>Jeremy Cole</td></tr>
+        <tr><th>出版社</th><td>O'Reilly Media, Inc.</td></tr>
+        <tr><th>出版年月</th><td>2021年11月</td></tr>
+        <tr><th>ページ数</th><td>386ページ</td></tr>
+        <tr><th>難易度</th><td>Intermediate to advanced（中級〜上級）</td></tr>
+        <tr><th>章構成</th><td>全13章 + 付録2本</td></tr>
+        <tr><th>ISBN</th><td>9781492080503（電子版） / 9781492080510（ペーパーバック）</td></tr>
+        <tr><th>前版との関係</th><td>第3版（2012年）はBaron Schwartz・Peter Zaitsev・Vadim Tkachenko（いずれもPercona創業に関わった著名なMySQLエンジニア）による著作で、本書はその精神を引き継ぎつつ、SRE的な運用思想やクラウド時代の実践に合わせて全面刷新されています</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="audience">
+  <h2><i class="ti ti-users"></i>対象読者</h2>
+  <p class="lede">本書は「中級〜上級」向けとされていますが、本ガイドでは初学者が段階的に理解できるよう構成を補足しています。以下のような人におすすめです。</p>
+  <div class="grid grid-2">
+    <div class="role-card">
+      <div class="role-icon"><i class="ti ti-code"></i></div>
+      <h4>アプリケーションエンジニア</h4>
+      <p>MySQLを使ったアプリケーションを開発しているが、パフォーマンスやスケールの話になると自信がない人</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon"><i class="ti ti-server-2"></i></div>
+      <h4>これからのDBA / SRE</h4>
+      <p>これからDBA（データベース管理者）やSRE（Site Reliability Engineer）としてMySQL運用に関わる人</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon"><i class="ti ti-tool"></i></div>
+      <h4>インフラ担当者</h4>
+      <p>「なんとなく動いているMySQL」を、根拠を持って設計・運用できるようにしたい人</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon"><i class="ti ti-cloud"></i></div>
+      <h4>クラウド運用の検討者</h4>
+      <p>クラウド上でMySQLを運用する際の選択肢（マネージドサービス vs 自己運用）を理解したい人</p>
+    </div>
+  </div>
+</section>
+<div class="part-divider">
+  <span class="part-num">◆</span>
+  <div class="part-text"><h2>全体像とロードマップ</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="structure">
+  <h2><i class="ti ti-hierarchy-3"></i>本書の全体像（5部構成）</h2>
+  <p>本書の13章＋付録2本は、内容的に次の5つのまとまりに整理できます。この5部構成が、本ガイドの「Step 1」〜「Step 13」の土台になります。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d1"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図1．書籍全体の5部構成</div>
+  </div>
+</section>
+
+<section class="block" id="roadmap">
+  <h2><i class="ti ti-route"></i>学習ロードマップ（役割別のおすすめ順路）</h2>
+  <p>全部を最初から順番に読む必要はありません。自分の立場に応じて、重点的に読む章を変えるのがおすすめです。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d2"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図2．役割別の学習ロードマップ</div>
+  </div>
+</section>
+
+<section class="block" id="step0">
+  <span class="step-badge"><i class="ti ti-flag"></i>STEP 0</span>
+  <h2><i class="ti ti-flag"></i>なぜ「ハイパフォーマンスなMySQL」が必要なのか</h2>
+  <p>MySQLは初期設定のままでも「動く」データベースです。しかし、アクセス数やデータ量が増えてくると、次のような問題が表面化します。</p>
+  <ul class="tick">
+    <li>特定のクエリだけ急に遅くなる</li>
+    <li>ある時間帯だけレプリケーションの遅延が広がる</li>
+    <li>ディスクI/Oがボトルネックになり、スケールアップでは対処しきれなくなる</li>
+    <li>障害発生時に「何がSLA違反の原因か」を素早く特定できない</li>
+  </ul>
+  <p>本書の第4版が第3版（2012年）と大きく異なる点は、単なる内部構造の解説にとどまらず、<strong>「サービスレベル目標（SLO）を起点に、チームとしてどう信頼性を作るか」</strong>という運用思想を前面に出していることです。これは、著者の一人であるSilvia BotrosがSendGridで、数十億通のメール送信を支えるデータベースプラットフォームの構築を支援してきた経験に基づいています。</p>
+</section>
+<div class="part-divider">
+  <span class="part-num">1</span>
+  <div class="part-text"><h2>Part1　基礎　第1章〜第3章</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="step1">
+  <span class="step-badge"><i class="ti ti-cpu"></i>STEP 1 ・ 第1章</span>
+  <h2><i class="ti ti-cpu"></i>MySQLアーキテクチャを理解する</h2>
+
+  <h3>1-1．MySQLの論理アーキテクチャ</h3>
+  <p>MySQLは大きく分けて「接続層」「SQLレイヤー（パーサー・最適化器）」「ストレージエンジン層」の3層構造になっています。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d3"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図3．MySQLの論理アーキテクチャ</div>
+  </div>
+  <p>ポイントは、<strong>SQLレイヤーとストレージエンジン層が分離されている</strong>ことです。これにより、SQL構文の解釈やクエリ最適化はエンジン共通で行いつつ、実際のデータ格納・取得方法だけをストレージエンジンごとに切り替えられます。現在の実務では、ほぼ全てのテーブルで<strong>InnoDB</strong>を使うのが標準です。</p>
+
+  <h3>1-2．同時実行制御（Concurrency Control）</h3>
+  <p>複数のクライアントが同時に同じデータへアクセスするとき、MySQLは「読み書きロック」と「MVCC（多version同時実行制御）」を組み合わせて整合性を保っています。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>用語</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td>読み書きロック</td><td>共有ロックと排他ロックでアクセスを調停する基本方式。InnoDBでは<code>READ COMMITTED</code> / <code>REPEATABLE READ</code>における通常の<code>SELECT</code>は共有ロックを取らず（後述のMVCCによる一貫性読み取り）、<code>SELECT ... FOR SHARE</code> / <code>FOR UPDATE</code>のようなロッキングリードと書き込みだけが明示的にロックを取得する。ただし<code>SERIALIZABLE</code>でautocommitが無効な場合、InnoDBは通常の<code>SELECT</code>を暗黙的に<code>SELECT ... FOR SHARE</code>として扱い、共有ロックを取得する</td></tr>
+        <tr><td>ロック粒度</td><td>テーブル単位・行単位など、ロックの範囲。InnoDBは行レベルロックが基本</td></tr>
+        <tr><td>MVCC</td><td>通常の<code>SELECT</code>（一貫性読み取り）がロックを取らずにスナップショットを読める仕組み。<code>READ COMMITTED</code>では一貫性読み取りのたびに新しいスナップショットを取得し、<code>REPEATABLE READ</code>では同一トランザクション内の最初の一貫性読み取りで確立したスナップショットを使い続ける。どちらもこれが既定の動作で、読み取りと書き込みが互いをブロックしにくくなる。ロッキングリードは対象外で、最新行に対してロックを取る</td></tr>
+        <tr><td>デッドロック</td><td>複数のトランザクションが互いのロック解放を待ち合って停止する状態。InnoDBは自動検出してどちらかをロールバックする</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>1-3．トランザクション分離レベル</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>分離レベル</th><th>ダーティリード</th><th>ノンリピータブルリード</th><th>ファントムリード</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr><td>READ UNCOMMITTED</td><td>発生する</td><td>発生する</td><td>発生する</td><td>ほぼ使われない</td></tr>
+        <tr><td>READ COMMITTED</td><td>防げる</td><td>発生する</td><td>発生する</td><td>多くのOLTPシステムで採用</td></tr>
+        <tr><td>REPEATABLE READ</td><td>防げる</td><td>防げる</td><td>原則防げる（MVCC + ネクストキーロック）</td><td><strong>MySQLのデフォルト</strong></td></tr>
+        <tr><td>SERIALIZABLE</td><td>防げる</td><td>防げる</td><td>防げる</td><td>最も安全だが並行性が大きく低下</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>1-4．その他、第1章で押さえておきたいトピック</h3>
+  <ul class="tick">
+    <li><strong>トランザクションログ（redo log）</strong>：クラッシュ時にコミット済みデータを復元するための仕組み</li>
+    <li><strong>レプリケーション</strong>：第9章で詳しく扱う、複製によるスケールと可用性向上の基礎</li>
+    <li><strong>JSONドキュメントサポート</strong>：MySQL 5.7以降、JSON型カラムでスキーマレスなデータも扱える</li>
+    <li><strong>データディクショナリの刷新とAtomic DDL</strong>：MySQL 8.0でメタデータ管理がトランザクショナルになり、DDL（スキーマ変更）の途中失敗によるメタデータ不整合が起きにくくなった</li>
+  </ul>
+</section>
+<section class="block" id="step2">
+  <span class="step-badge"><i class="ti ti-activity"></i>STEP 2 ・ 第2章</span>
+  <h2><i class="ti ti-activity"></i>SREの視点で監視する</h2>
+  <p class="lede">第4版で最も特徴的な章の一つです。「監視ツールを入れる」ことがゴールではなく、<strong>ビジネス上の信頼性目標からSLI/SLOを定義し、そこから逆算して何を計測すべきかを決める</strong>という考え方を提示しています。</p>
+
+  <h3>2-1．SLI/SLOを起点にした監視サイクル</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d4"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図4．SLI / SLOを起点にした監視サイクル</div>
+  </div>
+
+  <h3>2-2．計測すべき代表的な指標</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>カテゴリ</th><th>具体例</th></tr></thead>
+      <tbody>
+        <tr><td>可用性</td><td>接続成功率、ヘルスチェックの成否</td></tr>
+        <tr><td>クエリレイテンシ</td><td>p50 / p95 / p99 のクエリ応答時間</td></tr>
+        <tr><td>エラー</td><td>デッドロック発生数、接続エラー、レプリケーションエラー</td></tr>
+        <tr><td>長期トレンド</td><td>ディスク使用量の伸び、コネクション数の推移、ビジネスの繁忙期との相関</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>「何を測るか」は技術的な都合ではなく、<strong>顧客が何に困ると『使えない』と感じるか</strong>から逆算すべき、というのが本章の一貫した主張です。これは、著者らが実際にメール配信基盤という「止まったら即座にビジネス影響が出る」システムを運用してきた経験が色濃く反映されています。</p>
+</section>
+
+<section class="block" id="step3">
+  <span class="step-badge"><i class="ti ti-gauge"></i>STEP 3 ・ 第3章</span>
+  <h2><i class="ti ti-gauge"></i>Performance Schemaを使いこなす</h2>
+  <p>Performance Schemaは、MySQLサーバ内部で発生するイベント（クエリ実行、ロック待ち、I/O待ちなど）を計測するための標準機能です。</p>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d5"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図5．Performance Schemaの計測フロー</div>
+  </div>
+
+  <h3>3-1．sysスキーマが便利な理由</h3>
+  <p>Performance Schemaの生データは列数が多く読みにくいため、<code>sys</code>スキーマという「人間向けのビュー集」が用意されています。例えば以下のような用途で使われます。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>目的</th><th>使うビュー（例）</th></tr></thead>
+      <tbody>
+        <tr><td>遅いSQL文の特定</td><td><code>sys.statements_with_runtimes_in_95th_percentile</code></td></tr>
+        <tr><td>メタデータロック待ちの確認</td><td><code>sys.schema_table_lock_waits</code></td></tr>
+        <tr><td>メモリ使用量の内訳確認</td><td><code>sys.memory_global_by_current_bytes</code></td></tr>
+        <tr><td>頻発しているエラーの確認</td><td><code>performance_schema.events_errors_summary_global_by_error</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3-2．有効化・チューニングの基本</h3>
+  <ul class="tick">
+    <li>Performance Schemaは基本的にデフォルトで有効</li>
+    <li>全インストゥルメントを有効化するとオーバーヘッドが増えるため、必要な項目だけを絞って有効化するのが実務的</li>
+    <li><code>performance_schema_max_*</code>系の変数でメモリサイズを調整できる</li>
+  </ul>
+</section>
+<div class="part-divider">
+  <span class="part-num">2</span>
+  <div class="part-text"><h2>Part2　サーバ最適化　第4章〜第6章</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="step4">
+  <span class="step-badge"><i class="ti ti-server-2"></i>STEP 4 ・ 第4章</span>
+  <h2><i class="ti ti-server-2"></i>OS・ハードウェアの最適化</h2>
+  <p>MySQLのパフォーマンスは、MySQL単体の設定だけでなく、稼働しているOSやハードウェアの特性に大きく左右されます。</p>
+
+  <h3>4-1．どこがボトルネックになりやすいか</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>リソース</th><th>ボトルネックになりやすい理由</th><th>対処の方向性</th></tr></thead>
+      <tbody>
+        <tr><td>CPU</td><td>複雑なクエリ・大量の同時接続でコアが埋まる</td><td>コア数と単一スレッド性能のバランスを見て選定</td></tr>
+        <tr><td>メモリ</td><td>InnoDBバッファプールが小さいとディスクI/Oが増える</td><td>ワーキングセット（頻繁にアクセスされるデータ量）に見合ったメモリを確保</td></tr>
+        <tr><td>ディスクI/O</td><td>ランダムI/Oが多いワークロードで顕著</td><td>SSD / NVMeの採用、適切なRAID構成</td></tr>
+        <tr><td>ネットワーク</td><td>レプリケーションや大量データ転送時に顕在化</td><td>帯域とレイテンシの両方を確認</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4-2．ストレージ選定のポイント</h3>
+  <ul class="tick">
+    <li><strong>SSD / フラッシュストレージ</strong>：ランダムI/Oに強く、現在のMySQL運用ではほぼ標準</li>
+    <li><strong>RAID構成</strong>：RAID10は読み書き双方の性能と冗長性のバランスが良く、多くの本番環境で採用される</li>
+    <li><strong>ファイルシステム</strong>：ext4やXFSなど、ジャーナリングファイルシステムが一般的</li>
+    <li><strong>ディスクI/Oスケジューラ</strong>：Linuxのマルチキュー環境では<code>none</code>（スケジューリングを行わずデバイスへ直接発行）と<code>mq-deadline</code>（レイテンシ上限を設ける）が主な選択肢。どちらが有利かはカーネルバージョン・デバイス・ワークロードで変わるため、実際のワークロードでベンチマークを取って決める</li>
+  </ul>
+
+  <h3>4-3．メモリとスワップ</h3>
+  <p>MySQLサーバでスワップが発生すると、バッファプールへのアクセスがディスクI/Oに化けてしまい性能が大きく劣化します。<code>vm.swappiness</code>を低めに設定し、極力スワップが発生しない構成を目指すことが推奨されています。</p>
+</section>
+
+<section class="block" id="step5">
+  <span class="step-badge"><i class="ti ti-settings"></i>STEP 5 ・ 第5章</span>
+  <h2><i class="ti ti-settings"></i>サーバ設定の最適化</h2>
+
+  <h3>5-1．メモリ配分の考え方</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d6"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図6．サーバメモリの配分イメージ</div>
+  </div>
+  <p>よく使われる目安は「専用DBサーバであれば、物理メモリの60〜80%程度をInnoDBバッファプールに割り当てる」という経験則です。ただし、接続数が多い場合は「接続ごとのメモリ使用量 × 最大接続数」も考慮する必要があり、本書ではこの見積もり方を具体的な計算式とともに解説しています。</p>
+
+  <h3>5-2．最低限おさえるべき設定項目（イメージ例）</h3>
+  <div class="code-label"><i class="ti ti-file-text"></i>my.cnf 設定例</div>
+  <pre><code class="language-ini" id="code-myconf"></code></pre>
+  <script type="text/plain" id="src-myconf"># 本書の考え方に基づく設定例（値は環境ごとに調整が必要）
+[mysqld]
+innodb_buffer_pool_size = 12G        # 物理メモリに応じて調整
+innodb_buffer_pool_instances = 8     # バッファプールを分割。8は上の 12G / 高並列OLTP を前提とした一例であり、8.4の既定値ではない
+                                      # MySQL 8.4 の既定値はバッファプールサイズと利用可能な論理プロセッサ数から算出される
+                                      # ワークロード（CPUコア数と並列度）に応じて見直す
+innodb_flush_log_at_trx_commit = 1   # デフォルト。耐久性重視
+innodb_redo_log_capacity = 2G        # 更新の多いワークロードでは大きめに（8.0.30以降）
+max_connections = 500
+thread_cache_size = 100</script>
+
+  <div class="callout note">
+    <i class="ti ti-info-circle"></i>
+    <div>
+      <div class="callout-title">補足</div>
+      <p>原著執筆時点では<code>innodb_log_file_size</code>を使いますが、MySQL 8.0.30以降はこれに代わる<code>innodb_redo_log_capacity</code>が推奨で、再起動なしにRedoログ容量を動的変更できます（詳細は本ガイド末尾の「2026年時点でのアップデート情報」を参照）。</p>
+    </div>
+  </div>
+
+  <h3>5-3．設定変更で気をつけること</h3>
+  <p>本書が繰り返し強調しているのは、「よくわからないままコピペした設定値を入れない」という姿勢です。</p>
+  <ul class="tick">
+    <li>変数のスコープ（グローバル／セッション）を理解してから変更する</li>
+    <li>一度に多くの変数を変えず、変更の影響を1つずつ検証する</li>
+    <li>本番へ適用する前に、ステージング環境で負荷テストを行う</li>
+  </ul>
+</section>
+
+<section class="block" id="step6">
+  <span class="step-badge"><i class="ti ti-table"></i>STEP 6 ・ 第6章</span>
+  <h2><i class="ti ti-table"></i>スキーマ設計と管理</h2>
+
+  <h3>6-1．データ型選びの基本方針</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>データ型カテゴリ</th><th>選び方の原則</th></tr></thead>
+      <tbody>
+        <tr><td>整数型</td><td>必要な範囲に対して最小のバイト数の型を選ぶ（<code>INT</code>で十分なのに<code>BIGINT</code>を使わない等）</td></tr>
+        <tr><td>実数型</td><td>金額など正確性が必要な値は<code>DECIMAL</code>、誤差が許容できる場合は<code>FLOAT</code> / <code>DOUBLE</code></td></tr>
+        <tr><td>文字列型</td><td>可変長データは<code>VARCHAR</code>、固定長かつ短い場合は<code>CHAR</code>も検討</td></tr>
+        <tr><td>日時型</td><td>タイムゾーンを意識するなら<code>TIMESTAMP</code>、範囲が広い場合は<code>DATETIME</code></td></tr>
+        <tr><td>ビットパックデータ</td><td>フラグの集合などは<code>BIT</code>型やビット演算で圧縮できる場合がある</td></tr>
+        <tr><td>JSON</td><td>構造が頻繁に変わる付加的なデータに限定して使い、検索条件になる列は正規化する</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6-2．よくある落とし穴（Schema Design Gotchas）</h3>
+  <ul class="tick">
+    <li><strong>カラムが多すぎるテーブル</strong>：1行のサイズが大きくなり、I/O効率が悪化する</li>
+    <li><strong>JOINが多すぎる設計</strong>：過度な正規化はクエリを複雑にし、最適化器の負担も増える</li>
+    <li><strong>万能ENUMの濫用</strong>：<code>ENUM</code>型は変更コストが高く、値の追加・削除でスキーマ変更が必要になりがち</li>
+    <li><strong>見せかけのENUM</strong>：実質的に無制限に増える値を<code>ENUM</code>にしてしまうアンチパターン</li>
+    <li><strong>「NULLなんて使わない」という誤解</strong>：NULLを無理に避けて意味のない初期値（空文字や0）で代用すると、かえってクエリの意味が曖昧になる</li>
+  </ul>
+
+  <h3>6-3．スキーマ管理をプラットフォーム化する</h3>
+  <p>本書では、スキーマ変更（マイグレーション）を「属人的な手作業」から「データストア基盤の一部として自動化・レビュー可能なプロセス」に変えていくことの重要性が説かれています。オンラインDDLツール（gh-ost、pt-online-schema-changeなど）を使い、本番の読み書きを継続したままダウンタイムを最小化してスキーマ変更を行う運用が現在では一般的です。ただし完全な無停止ではなく、テーブルを切り替えるcut-over時には短時間のメタデータロックが発生します。適用前・適用中は、cut-over時のメタデータロック待ち、レプリカ遅延、行コピーやトリガー・binlog処理による追加負荷を監視する必要があります。</p>
+</section>
+<div class="part-divider">
+  <span class="part-num">3</span>
+  <div class="part-text"><h2>Part3　クエリとインデックス　第7章〜第8章</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="step7">
+  <span class="step-badge"><i class="ti ti-list-search"></i>STEP 7 ・ 第7章</span>
+  <h2><i class="ti ti-list-search"></i>高パフォーマンスのためのインデックス設計</h2>
+
+  <h3>7-1．インデックスの基本</h3>
+  <p>InnoDBのインデックスはB-Tree構造が基本です。行データそのものを格納する「クラスタードインデックス」と、それ以外の「セカンダリインデックス」の違いを理解することが出発点になります。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>インデックス種別</th><th>特徴</th></tr></thead>
+      <tbody>
+        <tr><td>クラスタードインデックス</td><td>行データそのものを葉に格納するインデックス。InnoDBでは、主キーがあれば主キー、なければNOT NULLな適切なUNIQUE索引、それもなければ内部生成のローIDが用いられる</td></tr>
+        <tr><td>セカンダリインデックス</td><td>指定した列の値と、対応するクラスタードインデックスのキー値（通常は主キー値）を持つ。検索後にそのクラスタードインデックスのキーでデータ本体を引き直す</td></tr>
+        <tr><td>カバリングインデックス</td><td>SELECTで必要な列がすべてインデックスに含まれ、テーブル本体へのアクセスが不要になる</td></tr>
+        <tr><td>プレフィックスインデックス</td><td>長い文字列列の先頭N文字だけをインデックス化し、サイズと選択性のバランスを取る</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7-2．インデックス設計の判断フロー</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d7"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図7．インデックス設計の判断フロー</div>
+  </div>
+
+  <h3>7-3．複合インデックスの列順の考え方</h3>
+  <p>複合インデックスでは、<strong>「等価条件で使う列 → 範囲条件やソートで使う列」</strong>の順に並べるのが基本原則です（いわゆる「左端プレフィックスの法則」）。例えば<code>WHERE user_id = ? AND created_at > ?</code>というクエリに対しては、<code>(user_id, created_at)</code>の順で複合インデックスを作るのが効果的です。</p>
+
+  <h3>7-4．インデックスのメンテナンス</h3>
+  <ul class="tick">
+    <li><strong>冗長インデックス・重複インデックス</strong>：<code>(a)</code>と<code>(a, b)</code>のように片方がもう片方の先頭部分と一致する場合、片方が不要になっていることが多い</li>
+    <li><strong>未使用インデックス</strong>：書き込み時のオーバーヘッドだけが発生し読み取りに使われていないインデックスは削除候補</li>
+    <li><strong>統計情報の更新</strong>：<code>ANALYZE TABLE</code>で最適化器が使う統計を最新に保つ</li>
+    <li><strong>断片化の解消</strong>：<code>OPTIMIZE TABLE</code>やオンラインDDLツールでインデックス・データの断片化を整理する</li>
+  </ul>
+</section>
+
+<section class="block" id="step8">
+  <span class="step-badge"><i class="ti ti-zoom-code"></i>STEP 8 ・ 第8章</span>
+  <h2><i class="ti ti-zoom-code"></i>クエリパフォーマンスの最適化</h2>
+
+  <h3>8-1．「なぜクエリは遅くなるのか」を考える出発点</h3>
+  <p>本書は、クエリ最適化の第一歩を「<strong>不要なデータを取得していないか</strong>」というシンプルな問いに置いています。</p>
+  <ul class="tick">
+    <li>必要な列だけを<code>SELECT</code>しているか（<code>SELECT *</code>の濫用を避ける）</li>
+    <li>MySQLが調べている行数（examined rows）と、実際に返している行数（returned rows）に大きな差がないか</li>
+    <li>インデックスを使わずにフルスキャンしていないか</li>
+  </ul>
+
+  <h3>8-2．クエリ最適化の反復サイクル</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d8"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図8．クエリ最適化の反復サイクル</div>
+  </div>
+
+  <h3>8-3．クエリ再構成の代表的なテクニック</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>テクニック</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>複雑なクエリの分割</td><td>EXPLAINと実測でJOINがボトルネックだと確認できた場合に限り、1本の巨大なJOINクエリを複数のシンプルなクエリ＋アプリ側結合へ分けることを検討する。トランザクション境界・往復回数・N+1クエリを制御できることが前提で、常用すべき一般的な最適化手法ではない</td></tr>
+        <tr><td>クエリのチャンク化</td><td>大量データの一括更新・削除を、小さな単位に分割して負荷を平準化する</td></tr>
+        <tr><td>JOIN分解</td><td>サブクエリやJOINを段階的に分解し、それぞれの実行計画を最適化しやすくする</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>8-4．特定パターンのクエリ最適化</h3>
+  <ul class="tick">
+    <li><strong>COUNT()クエリ</strong>：条件なしの<code>COUNT(*)</code>はInnoDBでは想像以上にコストがかかる場合がある</li>
+    <li><strong>JOINクエリ</strong>：結合順序と結合に使う列のインデックスが性能を左右する</li>
+    <li><strong>GROUP BY + ROLLUP</strong>：集計の粒度を増やすほどコストが増える点に注意</li>
+    <li><strong>LIMIT / OFFSET</strong>：大きなOFFSET値は、スキップする行も内部的には読み込むため非効率になりやすい</li>
+    <li><strong>SQL_CALC_FOUND_ROWS</strong>：ページネーションでよく使われてきたが、<code>SQL_CALC_FOUND_ROWS</code>と<code>FOUND_ROWS()</code>はMySQL 8.0.17で非推奨となり、MySQL 8.4時点でも将来の削除が予告されている。<code>LIMIT</code>付きの取得クエリと、総件数を求める<code>COUNT(*)</code>クエリを別々に発行する方式へ移行する</li>
+  </ul>
+</section>
+<div class="part-divider">
+  <span class="part-num">4</span>
+  <div class="part-text"><h2>Part4　運用とスケール　第9章〜第11章</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="step9">
+  <span class="step-badge"><i class="ti ti-copy"></i>STEP 9 ・ 第9章</span>
+  <h2><i class="ti ti-copy"></i>レプリケーション</h2>
+
+  <h3>9-1．レプリケーションの基本トポロジー</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d9"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図9．レプリケーションの基本トポロジー</div>
+  </div>
+
+  <h3>9-2．知っておきたい主要トピック</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>トピック</th><th>概要</th></tr></thead>
+      <tbody>
+        <tr><td>バイナリログフォーマット</td><td>STATEMENT（SQL文そのもの）、ROW（変更行データ）、MIXED（両者の併用）</td></tr>
+        <tr><td>GTID（グローバルトランザクションID）</td><td>トランザクションを一意なIDで識別し、フェイルオーバー後の再同期を容易にする</td></tr>
+        <tr><td>準同期レプリケーション</td><td>ソースが、設定した台数（既定1台）以上のレプリカからACKを受け取るまでコミットの完了応答を待つ。ACKはレプリカがリレーログへ書き込みディスクへフラッシュした時点で返るもので、レプリカ側でのSQL適用・コミットまでは待たない。タイムアウトまでに必要なACKが揃わない場合は非同期レプリケーションへフォールバックする</td></tr>
+        <tr><td>マルチスレッドレプリケーション</td><td>複数ワーカースレッドで並列にレプリケーション適用を行い、レプリケーション遅延を抑える</td></tr>
+        <tr><td>遅延レプリケーション</td><td>意図的に適用を遅らせ、誤操作からの復旧などに利用するレプリカ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>9-3．レプリケーショントポロジーの選択肢</h3>
+  <ul class="tick">
+    <li><strong>Active / Passive</strong>：通常時は1台のソースだけが書き込みを受け付け、もう1台は待機系</li>
+    <li><strong>Active / Read Pool</strong>：1台のソースに対して複数のレプリカが読み取りを分散して受け持つ、最も一般的な構成</li>
+    <li><strong>非推奨のトポロジー</strong>：マルチソースレプリケーションのような複雑な構成は、整合性管理の難易度が高く本書でも慎重な扱いを推奨</li>
+  </ul>
+
+  <h3>9-4．よくあるレプリケーション障害と対処</h3>
+  <ul class="tick">
+    <li>ソース側でのバイナリログ破損</li>
+    <li>サーバIDの重複・未設定</li>
+    <li>一時テーブルの欠落によるレプリケーション停止（STATEMENT形式に固有の問題。ROW／MIXED形式では一時テーブルのみを使う文は通常バイナリログに記録されない。予期しないレプリカ停止で、開いていた一時テーブルが失われた場合に後続の文が失敗する）</li>
+    <li>レプリケーション遅延の増大（大きなトランザクション、単一スレッド適用のボトルネックなどが典型的原因）</li>
+  </ul>
+</section>
+
+<section class="block" id="step10">
+  <span class="step-badge"><i class="ti ti-database-export"></i>STEP 10 ・ 第10章</span>
+  <h2><i class="ti ti-database-export"></i>バックアップとリカバリ</h2>
+
+  <h3>10-1．バックアップ方式の選び方</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d10"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図10．バックアップ方式の選び方</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>方式</th><th>メリット</th><th>デメリット</th></tr></thead>
+      <tbody>
+        <tr><td>論理バックアップ（mysqldump / mydumper）</td><td>SQL文として可搬性が高く、異なるバージョン間の移行にも使える</td><td>データ量が大きいと取得・リストアに時間がかかる</td></tr>
+        <tr><td>物理バックアップ（Percona XtraBackup）</td><td>ファイル単位のコピーで高速、稼働中でも取得可能（ホットバックアップ）</td><td>基本的に同一・互換性あるMySQLバージョン間でのみ利用可能</td></tr>
+        <tr><td>ファイルシステムスナップショット</td><td>ほぼ瞬時に取得できる</td><td>ストレージ側の機能に依存し、一貫性の取り方に注意が必要</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>10-2．バックアップ設計で決めるべきこと</h3>
+  <ul class="tick">
+    <li><strong>RPO（目標復旧時点）とRTO（目標復旧時間）をまず定義する</strong></li>
+    <li>フルバックアップと増分・差分バックアップの組み合わせ方</li>
+    <li>バイナリログの管理（ローテーション、保存期間、専用ストレージへの退避）</li>
+    <li>定期的な「リストア訓練」を行い、バックアップが実際に使えることを確認する</li>
+  </ul>
+</section>
+
+<section class="block" id="step11">
+  <span class="step-badge"><i class="ti ti-affiliate"></i>STEP 11 ・ 第11章</span>
+  <h2><i class="ti ti-affiliate"></i>MySQLのスケーリング</h2>
+
+  <h3>11-1．読み取りスケーリングと書き込みスケーリング</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d11"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図11．読み取りスケーリングと書き込みスケーリング</div>
+  </div>
+
+  <h3>11-2．読み取りスケーリングの要点</h3>
+  <ul class="tick">
+    <li><strong>リードプール</strong>：複数のレプリカに読み取りクエリを分散する。非同期レプリケーションでは書き込み直後にレプリカを読むと反映前の古い値が返りうるため、自分の書き込みを読み返す必要がある読み取りはソースへ固定するか、対象トランザクションのレプリカ適用完了を待ってから読む（<code>WAIT_FOR_EXECUTED_GTID_SET</code>など）方針にする</li>
+    <li><strong>ヘルスチェック</strong>：遅延しているレプリカやダウンしているレプリカをプールから自動的に外す。ただしヘルスチェックは閾値を超えた遅延を検出するだけで、閾値内の遅延による古い読み取りは防げない。半同期レプリケーションのACKもレプリカがバイナリログを受領した時点の保証であり、適用（反映）の完了までは保証しないため、これ単独でも解決にはならない</li>
+    <li><strong>ロードバランシングアルゴリズム</strong>：ラウンドロビン、最小接続数ベースなど、ワークロードに応じた選択</li>
+    <li><strong>キューイング</strong>：瞬間的な負荷急増を平準化する仕組み</li>
+  </ul>
+
+  <h3>11-3．書き込みスケーリングとシャーディング</h3>
+  <p>書き込みが単一サーバの限界に達した場合、データを複数のMySQLインスタンスに分割する「シャーディング」が必要になります。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>検討事項</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>パーティショニングキーの選択</td><td>どの列を基準にデータを分割するか（例：user_id）</td></tr>
+        <tr><td>複数パーティショニングキー</td><td>1つのキーだけでは対応しきれないアクセスパターンへの対処</td></tr>
+        <tr><td>シャードをまたぐクエリ</td><td>集計やJOINがシャードをまたぐ場合の扱い方</td></tr>
+        <tr><td>Vitess</td><td>YouTubeで開発され、CNCFに移管された、MySQL互換の分散データベースミドルウェア。透過的なシャーディングとコネクションプーリングを提供</td></tr>
+        <tr><td>ProxySQL</td><td>クエリルーティングや負荷分散を担う高性能なMySQLプロキシ</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>シャーディングは強力ですが、「アプリケーションがシャーディングキーを意識した設計になっている必要がある」「シャードをまたぐJOINや集計が難しくなる」といったトレードオフを伴うため、本書では<strong>まず読み取りスケーリングや機能分割で対応できないかを検討し、それでも足りない場合の最終手段として書き込みシャーディングを検討する</strong>という順序が推奨されています。</p>
+</section>
+<div class="part-divider">
+  <span class="part-num">5</span>
+  <div class="part-text"><h2>Part5　クラウドと統制　第12章〜第13章 + 付録</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="step12">
+  <span class="step-badge"><i class="ti ti-cloud"></i>STEP 12 ・ 第12章</span>
+  <h2><i class="ti ti-cloud"></i>クラウドでのMySQL</h2>
+
+  <h3>12-1．マネージドサービス vs 自己運用</h3>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d12"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図12．クラウド実行環境の選び方</div>
+  </div>
+
+  <h3>12-2．主要な選択肢の比較</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>選択肢</th><th>特徴</th></tr></thead>
+      <tbody>
+        <tr><td>Amazon Aurora for MySQL</td><td>ストレージ層をAWSが独自最適化し、ストレージ容量が使用量に応じて自動拡張される点と高い可用性が特徴。コンピュート（インスタンス）はプロビジョンド構成では自動スケールせず、負荷に応じた自動増減が必要ならAurora Serverlessを選ぶ</td></tr>
+        <tr><td>GCP Cloud SQL for MySQL</td><td>GCP環境との親和性が高く、運用の簡素化を重視するチーム向け</td></tr>
+        <tr><td>VM上での自己運用</td><td>設定の自由度が最も高い反面、パッチ適用・バックアップ・冗長化まで自前で設計・運用する必要がある</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>12-3．マシンタイプ・ディスクタイプ選定の考え方</h3>
+  <ul class="tick">
+    <li>ワークロードがCPUバウンドかI/Oバウンドかを見極めてから、インスタンスタイプを選ぶ</li>
+    <li>クラウドのブロックストレージにはIOPS・スループットの上限があるため、想定ワークロードに対して十分な性能のディスクタイプを選定する</li>
+    <li>ネットワーク帯域もインスタンスタイプごとに上限があるため、レプリケーションやバックアップ転送量を考慮する</li>
+  </ul>
+</section>
+
+<section class="block" id="step13">
+  <span class="step-badge"><i class="ti ti-shield-check"></i>STEP 13 ・ 第13章</span>
+  <h2><i class="ti ti-shield-check"></i>MySQLにおけるコンプライアンス</h2>
+  <p>現代のMySQL運用では、性能だけでなく「規制・監査要件を満たす設計」も重要なテーマです。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>フレームワーク</th><th>概要</th></tr></thead>
+      <tbody>
+        <tr><td>SOC 2 Type 2</td><td>組織のセキュリティ統制が継続的に機能していることを示す監査基準</td></tr>
+        <tr><td>SOX法（Sarbanes-Oxley Act）</td><td>上場企業の財務報告の正確性・内部統制に関する米国法</td></tr>
+        <tr><td>PCI DSS</td><td>クレジットカード情報を扱う事業者向けのセキュリティ基準</td></tr>
+        <tr><td>HIPAA</td><td>米国における医療情報の保護に関する法律</td></tr>
+        <tr><td>FedRAMP</td><td>米国政府機関向けクラウドサービスのセキュリティ認証制度</td></tr>
+        <tr><td>GDPR</td><td>EU域内の個人データ保護規則</td></tr>
+        <tr><td>Schrems II</td><td>EU-US間の国際データ移転に関する欧州司法裁判所の判決とその影響</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>コンプライアンス実現のための実装ポイント</h3>
+  <ul class="tick">
+    <li><strong>シークレット管理</strong>：パスワードや認証情報をコードや設定ファイルに直書きしない</li>
+    <li><strong>役割とデータの分離</strong>：最小権限の原則に基づいたアクセス制御</li>
+    <li><strong>変更の追跡</strong>：誰が・いつ・何を変更したかを監査可能にする</li>
+    <li><strong>バックアップ・リストア手順の文書化と検証</strong>：障害時にも規定の手順で確実に復旧できることを担保する</li>
+  </ul>
+</section>
+
+<section class="block" id="appendix-a">
+  <span class="step-badge"><i class="ti ti-arrow-up-circle"></i>APPENDIX A</span>
+  <h2><i class="ti ti-arrow-up-circle"></i>付録A．MySQLのアップグレード</h2>
+  <div class="diagram-wrap">
+    <div class="mermaid-target" id="mmd-d13"><div class="diagram-loading">図を読み込み中です…</div></div>
+    <div class="diagram-caption">図13．アップグレードのライフサイクル</div>
+  </div>
+  <ul class="tick">
+    <li><strong>なぜアップグレードするのか</strong>：セキュリティパッチ、性能改善、新機能の活用、サポート切れの回避</li>
+    <li><strong>アップグレードのライフサイクル</strong>：計画 → テスト → 段階的適用 → 監視、という一連の流れを型化する</li>
+    <li><strong>テストの段階</strong>：開発環境でのテスト → 本番ミラー環境でのテスト → レプリカでの実地テスト、と徐々に本番へ近づける</li>
+    <li><strong>大規模環境でのアップグレード</strong>：数百〜数千台規模になると、自動化されたツールチェーンなしでは現実的に運用できない</li>
+  </ul>
+</section>
+
+<section class="block" id="appendix-b">
+  <span class="step-badge"><i class="ti ti-brand-docker"></i>APPENDIX B</span>
+  <h2><i class="ti ti-brand-docker"></i>付録B．MySQL on Kubernetes</h2>
+  <ul class="tick">
+    <li><strong>Kubernetesでのリソースプロビジョニング</strong>：StatefulSetやPersistentVolumeを用いたステートフルなMySQL運用の基本</li>
+    <li><strong>目標を明確に絞り込む</strong>：「Kubernetesで何を解決したいのか」を最初に定義する（オーケストレーションの自動化なのか、リソース効率化なのか）</li>
+    <li><strong>コントロールプレーンの選択</strong>：MySQL Operatorなど、どのツールでクラスタのライフサイクルを管理するかを選定する</li>
+    <li><strong>細部への目配り</strong>：ストレージのパフォーマンス特性、Pod再起動時のフェイルオーバー挙動など、Kubernetes特有の落とし穴に注意する</li>
+  </ul>
+</section>
+<div class="part-divider">
+  <span class="part-num">◆</span>
+  <div class="part-text"><h2>補足情報</h2></div>
+  <div class="line"></div>
+</div>
+
+<section class="block" id="updates2026">
+  <h2><i class="ti ti-refresh"></i>2026年時点でのアップデート情報</h2>
+  <p class="lede">本書第4版は2021年11月刊行のため、それ以降のMySQLエコシステムの進化を補足します。ここでの情報は、Percona（第3版の共著者であるPeter ZaitsevとVadim Tkachenkoが創業した企業）およびOracle MySQLチームの公式発信をもとにしています。</p>
+
+  <h3>MySQLのリリースモデルの変更（MySQL 8.4 LTS）</h3>
+  <p>2024年、MySQLは新しいリリースモデルに移行しました。「Innovationリリース」（新機能を含む短いサポート期間のリリース）と「LTS（長期サポート）リリース」の2系統に分かれ、<strong>MySQL 8.4がその最初のLTSリリース</strong>となりました。本書執筆時点（2021年）にはまだ存在しなかった区分です。</p>
+
+  <h3>InnoDBのデフォルト値の見直し</h3>
+  <p>MySQL 8.4 LTSでは、20個のサーバー変数（うち15個がInnoDB関連）のデフォルト値が、現代のハードウェア・ワークロードに合わせて見直されました。代表例は次のとおりです。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>変数</th><th>従来のデフォルト</th><th>8.4 LTSでのデフォルト</th></tr></thead>
+      <tbody>
+        <tr><td><code>innodb_adaptive_hash_index</code></td><td>ON</td><td>OFF</td></tr>
+        <tr><td><code>innodb_change_buffering</code></td><td>all</td><td>none</td></tr>
+        <tr><td><code>innodb_buffer_pool_in_core_file</code></td><td>ON</td><td>OFF（コアダンプにInnoDBバッファプールのページを含めない）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:1rem;color:var(--ink-faint);">出典：MySQL Community ManagerのFrédéric Descamps氏（lefred.be）の解説、およびMySQL 8.4リファレンスマニュアルのInnoDBシステム変数の記載を参照しています。</p>
+
+  <h3>動的なInnoDB Redoログ（Dynamic InnoDB Redo Log）</h3>
+  <p>MySQL 8.0.30以降、本書執筆時点で使われていた<code>innodb_log_file_size</code>に代わり、<code>innodb_redo_log_capacity</code>という変数でRedoログの「容量」を指定する方式に変わりました。最大の変化は、<strong>サーバを再起動しなくてもRedoログ容量を動的に変更できる</strong>ようになった点です。以前は容量変更のたびに再起動が必要でした。</p>
+
+  <h3>Percona発の最新パフォーマンス検証（2026年）</h3>
+  <p>Perconaは2026年に入ってからも継続的にMySQLエコシステムのベンチマークを公開しています。2026年のPerconaのMySQLエコシステム性能検証レポートでは、MySQL（5.7 / 8.0 / 8.4 / 9.6）・Percona Server（5.7 / 8.0 / 8.4）・MariaDB（10.11 / 11.4 / 12.1）の計10バージョンがsysbench OLTPで比較されています（Percona Serverの9.x系は比較対象に含まれていません）。バッファプールサイズ・並列度・ネットワーク越しの実行といった条件別に、バージョンごとの性能特性の違いが報告されています。本書の内容を実践に移す際は、こうした最新のベンチマークデータも合わせて確認することが推奨されます。</p>
+
+  <h3>水平スケーリングのエコシステム（Vitess / PlanetScale）</h3>
+  <p>本書第11章で紹介されているVitessは、YouTubeが開発しCNCF（Cloud Native Computing Foundation）のプロジェクトとなった、MySQL互換の分散データベースミドルウェアです。VTGate（ステートレスなクエリルーター）とVTTablet（各MySQLインスタンスに付随するサイドカー）という構成で透過的なシャーディングを実現する仕組みは、本書刊行後も継続して進化しています。VitessをベースにしたマネージドサービスであるPlanetScaleも、書き込みスケーリングの選択肢として実務での採用が広がっています。</p>
+</section>
+
+<section class="block" id="critical">
+  <h2><i class="ti ti-alert-triangle"></i>批判的に読む：本書の限界と補完の必要性</h2>
+  <p>どんなに優れた技術書にも刊行時点というものがあります。本書を活用する際は、次の点を意識すると良いでしょう。</p>
+
+  <div class="callout critical">
+    <i class="ti ti-calendar-x"></i>
+    <div>
+      <div class="callout-title">刊行が2021年11月であること</div>
+      <p>MySQL 8.4 LTSのリリースモデル変更（2024年）や、動的Redoログ（MySQL 8.0.30、2022年）など、本書執筆後に登場した機能・変更は当然カバーされていません。</p>
+    </div>
+  </div>
+  <div class="callout warn">
+    <i class="ti ti-versions"></i>
+    <div>
+      <div class="callout-title">バージョン固有のデフォルト値は要確認</div>
+      <p>本書中のサーバ設定の考え方（メモリ配分やバッファプールサイジングの原則）は普遍性が高い一方、具体的なデフォルト値はversionごとに変わるため、必ず利用中のバージョンの公式ドキュメントで確認する必要があります。</p>
+    </div>
+  </div>
+  <div class="callout warn">
+    <i class="ti ti-cloud-off"></i>
+    <div>
+      <div class="callout-title">クラウドサービスの機能は変化が速い</div>
+      <p>第12章で扱われるAurora・Cloud SQLなどのマネージドサービスの機能・価格体系は頻繁にアップデートされるため、最新の公式情報を参照することが不可欠です。</p>
+    </div>
+  </div>
+  <div class="callout note">
+    <i class="ti ti-sparkles"></i>
+    <div>
+      <div class="callout-title">AI・ベクトル検索など新しい用途への言及はない</div>
+      <p>本書刊行後、MySQLエコシステムにはベクトル検索やAIワークロード対応など新たな潮流も生まれています。伝統的なOLTPパフォーマンスチューニングを扱う本書の範囲外であることを理解した上で読む必要があります。</p>
+    </div>
+  </div>
+
+  <p>本書の一番の価値は、個々の設定値の暗記ではなく、<strong>「なぜその設計判断をするのか」という思考プロセス</strong>（SLOから逆算する監視設計、データアクセスパターンから逆算するインデックス設計など）にあります。この思考プロセス自体は版が古くなっても陳腐化しにくい部分です。</p>
+</section>
+
+<section class="block" id="checklist">
+  <h2><i class="ti ti-checklist"></i>学習チェックリスト</h2>
+  <p>以下は、本書の内容を実務に落とし込む際の確認項目です。クリックしてチェックできます。</p>
+  <div class="checklist-progress">
+    <span class="count" id="checklistCount">0 / 9 完了</span>
+    <div class="bar"><div class="bar-fill" id="checklistBar"></div></div>
+  </div>
+  <ul class="checklist" id="checklistItems">
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">自分のサービスにとっての「SLO」を、可用性・レイテンシ・エラー率の観点で言語化できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label"><code>EXPLAIN</code>の出力を読み、フルスキャンが起きているかどうかを判断できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">複合インデックスの列順を、等価条件・範囲条件・ソートの観点で設計できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">InnoDBバッファプールのサイジングを、物理メモリと接続数から見積もれる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">論理バックアップと物理バックアップの使い分けを説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">レプリケーション遅延の主な原因を3つ以上挙げられる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">読み取りスケーリングと書き込みシャーディングのどちらを先に検討すべきか説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">自社のコンプライアンス要件（GDPR、PCI DSSなど）とデータベース設計の関係を意識できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">利用中のMySQLバージョンの公式リリースノートを確認する習慣がある</span></label></li>
+  </ul>
+</section>
+
+<section class="block" id="glossary">
+  <h2><i class="ti ti-abc"></i>用語集</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>用語</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td>InnoDB</td><td>MySQLの標準ストレージエンジン。行レベルロックとMVCCによるトランザクション対応が特徴</td></tr>
+        <tr><td>MVCC</td><td>Multiversion Concurrency Control。複数バージョンのデータを保持し、ロックを最小限に読み取りを可能にする仕組み</td></tr>
+        <tr><td>バッファプール</td><td>InnoDBがデータ・インデックスをメモリ上にキャッシュする領域</td></tr>
+        <tr><td>Redoログ</td><td>クラッシュリカバリのために変更内容を記録するログ</td></tr>
+        <tr><td>GTID</td><td>Global Transaction Identifier。レプリケーションにおいてトランザクションを一意に識別するID</td></tr>
+        <tr><td>カバリングインデックス</td><td>クエリが必要とする列をすべて含み、テーブル本体へのアクセスを不要にするインデックス</td></tr>
+        <tr><td>シャーディング</td><td>データを複数のデータベースインスタンスに分割して格納し、書き込みをスケールさせる手法</td></tr>
+        <tr><td>SLI / SLO</td><td>Service Level Indicator / Objective。信頼性を定量的に定義・計測するための指標と目標値</td></tr>
+        <tr><td>Vitess</td><td>MySQL互換の分散データベースミドルウェア。透過的なシャーディングを提供する</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="summary">
+  <h2><i class="ti ti-flag-check"></i>まとめ</h2>
+  <p>『High Performance MySQL, 4th Edition』は、単なる「MySQLの設定チューニング事典」ではなく、<strong>アーキテクチャの理解 → 計測に基づく監視 → データモデリング → クエリ最適化 → 冗長化・拡張 → クラウド運用・コンプライアンス</strong>という一連の流れを、SRE的な視点で貫いた実践書です。</p>
+  <p>初学者はまず第1章（アーキテクチャ）・第7章（インデックス）・第8章（クエリ最適化）から着手し、運用に関わるようになったら第2章（監視）・第9章（レプリケーション）・第10章（バックアップ）へと読み進めるのがおすすめです。本書刊行以降のバージョン変更点については、本ガイドの「2026年時点でのアップデート情報」やPercona・Oracle MySQLチームの公式発信を併読することで、内容を現在の環境にアップデートしながら活用できます。</p>
+</section>
+
+<section class="block" id="references">
+  <h2><i class="ti ti-link"></i>参考文献</h2>
+  <div class="ref-list">
+    <a class="ref-card" href="https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-book-2"></i></span>
+      <span class="ref-body"><div class="ref-title">O'Reilly公式書籍ページ（目次・概要）</div><div class="ref-url">https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/</div></span>
+    </a>
+    <a class="ref-card" href="https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/foreword01.html" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-feather"></i></span>
+      <span class="ref-body"><div class="ref-title">序文（Jeremy Cole 執筆）</div><div class="ref-url">https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/foreword01.html</div></span>
+    </a>
+    <a class="ref-card" href="https://www.amazon.com/High-Performance-MySQL-Strategies-Operating/dp/1492080519" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-shopping-cart"></i></span>
+      <span class="ref-body"><div class="ref-title">Amazon 書籍ページ（著者プロフィール）</div><div class="ref-url">https://www.amazon.com/High-Performance-MySQL-Strategies-Operating/dp/1492080519</div></span>
+    </a>
+    <a class="ref-card" href="https://www.goodreads.com/book/show/60469941-high-performance-mysql" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-star"></i></span>
+      <span class="ref-body"><div class="ref-title">Goodreads 書籍ページ</div><div class="ref-url">https://www.goodreads.com/book/show/60469941-high-performance-mysql</div></span>
+    </a>
+    <a class="ref-card" href="https://changelog.com/shipit/118" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-microphone-2"></i></span>
+      <span class="ref-body"><div class="ref-title">Changelog「Ship It!」ポッドキャスト　Silvia Botros氏へのインタビュー（#118）</div><div class="ref-url">https://changelog.com/shipit/118</div></span>
+    </a>
+    <a class="ref-card" href="https://medium.com/@dbsmasher" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-brand-medium"></i></span>
+      <span class="ref-body"><div class="ref-title">Silvia Botros氏 Medium プロフィール</div><div class="ref-url">https://medium.com/@dbsmasher</div></span>
+    </a>
+    <a class="ref-card" href="https://leaddev.com/community/silvia-botros" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-user-circle"></i></span>
+      <span class="ref-body"><div class="ref-title">Silvia Botros氏 LeadDevプロフィール</div><div class="ref-url">https://leaddev.com/community/silvia-botros</div></span>
+    </a>
+    <a class="ref-card" href="https://en.wikipedia.org/wiki/Percona" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-building"></i></span>
+      <span class="ref-body"><div class="ref-title">Percona社概要（第3版著者 Peter Zaitsev・Vadim Tkachenkoの経歴）</div><div class="ref-url">https://en.wikipedia.org/wiki/Percona</div></span>
+    </a>
+    <a class="ref-card" href="https://www.percona.com/blog/engineer-duo-google-linkedin-join-innodb-talks/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-microphone-2"></i></span>
+      <span class="ref-body"><div class="ref-title">Jeremy Cole氏によるInnoDB内部構造研究に関するインタビュー記事（Percona）</div><div class="ref-url">https://www.percona.com/blog/engineer-duo-google-linkedin-join-innodb-talks/</div></span>
+    </a>
+    <a class="ref-card" href="https://www.percona.com/blog/mysql-8-4-3-and-9-1-0-major-performance-gains-revealed/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-chart-line"></i></span>
+      <span class="ref-body"><div class="ref-title">Percona Blog「MySQL 8.4.3 and 9.1.0：Major Performance Gains Revealed」</div><div class="ref-url">https://www.percona.com/blog/mysql-8-4-3-and-9-1-0-major-performance-gains-revealed/</div></span>
+    </a>
+    <a class="ref-card" href="https://www.percona.com/blog/2026-mysql-ecosystem-performance-benchmark-report/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-chart-bar"></i></span>
+      <span class="ref-body"><div class="ref-title">Percona Blog「2026 MySQL Ecosystem Performance Benchmark Report」</div><div class="ref-url">https://www.percona.com/blog/2026-mysql-ecosystem-performance-benchmark-report/</div></span>
+    </a>
+    <a class="ref-card" href="https://www.percona.com/blog/mysql-january-2026-performance-review/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-report-analytics"></i></span>
+      <span class="ref-body"><div class="ref-title">Percona Blog「MySQL January 2026 Performance Review」</div><div class="ref-url">https://www.percona.com/blog/mysql-january-2026-performance-review/</div></span>
+    </a>
+    <a class="ref-card" href="https://www.percona.com/blog/performance-progression-of-percona-server-for-mysql-8-4/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-trending-up"></i></span>
+      <span class="ref-body"><div class="ref-title">Percona Blog「Performance Progression of Percona Server for MySQL 8.4」</div><div class="ref-url">https://www.percona.com/blog/performance-progression-of-percona-server-for-mysql-8-4/</div></span>
+    </a>
+    <a class="ref-card" href="https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-file-text"></i></span>
+      <span class="ref-body"><div class="ref-title">MySQL 8.4リファレンスマニュアル「InnoDB Startup Options and System Variables」</div><div class="ref-url">https://dev.mysql.com/doc/refman/8.4/en/innodb-parameters.html</div></span>
+    </a>
+    <a class="ref-card" href="https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-file-text"></i></span>
+      <span class="ref-body"><div class="ref-title">MySQL 8.4リファレンスマニュアル「Redo Log」</div><div class="ref-url">https://dev.mysql.com/doc/refman/8.4/en/innodb-redo-log.html</div></span>
+    </a>
+    <a class="ref-card" href="https://lefred.be/content/mysql-8-4-lts-new-production-ready-defaults-for-innodb/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-brand-blogger"></i></span>
+      <span class="ref-body"><div class="ref-title">Frédéric Descamps氏（Oracle MySQL Community Manager）ブログ「MySQL 8.4 LTS: New Production-Ready Defaults for InnoDB」</div><div class="ref-url">https://lefred.be/content/mysql-8-4-lts-new-production-ready-defaults-for-innodb/</div></span>
+    </a>
+    <a class="ref-card" href="https://vitess.io/docs/concepts/vtgate/" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-affiliate"></i></span>
+      <span class="ref-body"><div class="ref-title">Vitess公式ドキュメント「VTGate」</div><div class="ref-url">https://vitess.io/docs/concepts/vtgate/</div></span>
+    </a>
+    <a class="ref-card" href="https://vitess.io/docs/faq/getting-started/components" target="_blank" rel="noopener">
+      <span class="ref-icon"><i class="ti ti-affiliate"></i></span>
+      <span class="ref-body"><div class="ref-title">Vitess公式ドキュメント「Components FAQ」</div><div class="ref-url">https://vitess.io/docs/faq/getting-started/components</div></span>
+    </a>
+  </div>
+</section>
+
+<footer class="page-footer">
+  <p>本ガイドはO'Reilly刊『High Performance MySQL, 4th Edition』（Silvia Botros・Jeremy Tinley 著）の内容紹介・学習補助を目的とした二次的な解説記事です。書籍本文の引用は行わず、要旨の要約と実務的な補足情報で構成しています。正確な内容は必ず原著および公式ドキュメントをご確認ください。</p>
+</footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js" integrity="sha384-o+g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/highlight.min.js" integrity="sha384-wjfDDhOPPdjtva8vWBhWeVprSpmxisEu5aYT3q1JyACqXpdKpo3PWZTMVq24MBix" crossorigin="anonymous"></script>
+<script>
+(function(){
+  "use strict";
+
+const DIAGRAMS = {
+  d1: "flowchart LR\n    A[\"書籍全体　全13章と付録2本\"]:::hub --> B[\"Part1 基礎　第1章から第3章　アーキテクチャと監視と計測\"]\n    B --> C[\"Part2 サーバ最適化　第4章から第6章　OSと設定とスキーマ設計\"]\n    C --> D[\"Part3 クエリとインデックス　第7章と第8章　実行計画の読み方と改善\"]\n    D --> E[\"Part4 運用とスケール　第9章から第11章　レプリケーションとバックアップと拡張\"]\n    E --> F[\"Part5 クラウドと統制　第12章と第13章と付録　クラウド運用とコンプライアンス\"]\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n",
+  d2: "flowchart TD\n    Start[\"あなたの役割は？\"]:::hub --> Dev[\"アプリケーション開発者\"]\n    Start --> NewDBA[\"これからDBAになる人\"]\n    Start --> SRE[\"SREやインフラ担当\"]\n    Start --> Manager[\"エンジニアリングマネージャー\"]\n\n    Dev --> DevPath[\"第6章のスキーマ設計　第7章のインデックス　第8章のクエリ最適化\"]\n    NewDBA --> DBAPath[\"第1章のアーキテクチャ　第5章のサーバ設定　第9章のレプリケーション　第10章のバックアップ\"]\n    SRE --> SREPath[\"第2章の監視とSLO　第4章のOS最適化　第11章のスケーリング　第12章のクラウド\"]\n    Manager --> MgrPath[\"第2章の監視とSLO　第13章のコンプライアンス\"]\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n",
+  d3: "flowchart TB\n    Client[\"クライアントアプリケーション\"] --> Conn[\"接続管理層　認証とスレッド割り当て\"]\n    Conn --> Parser[\"パーサー　SQL構文解析\"]\n    Parser --> Optimizer[\"クエリ最適化器　実行計画の決定\"]\n    Optimizer --> Exec[\"クエリ実行エンジン\"]\n    Exec --> InnoDB[\"InnoDBストレージエンジン\"]\n    Exec --> Other[\"その他のストレージエンジン　MyISAM等のレガシー用途\"]\n    InnoDB --> Files[\"データファイル　テーブルスペースとログ\"]\n    Other --> Files\n",
+  d4: "flowchart LR\n    A[\"サービスレベル目標SLOを定義する\"] --> B[\"SLIを計測する　可用性とレイテンシとエラー率\"]\n    B --> C[\"ダッシュボードとアラートを構築する\"]\n    C --> D[\"しきい値超過を検知する\"]\n    D --> E[\"原因調査と対応\"]\n    E --> F[\"振り返ってSLOを見直す\"]:::done\n    F --> A\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d5: "flowchart TB\n    A[\"MySQLサーバ内部のイベント発生\"] --> B[\"Instruments　計測ポイントの定義\"]\n    B --> C[\"Consumers　収集したデータをテーブルに集約\"]\n    C --> D[\"sysスキーマ　人間が読みやすい形に変換\"]\n    D --> E[\"遅いクエリやロック待ちやメモリ使用状況の特定\"]:::done\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d6: "flowchart TB\n    RAM[\"サーバの物理メモリ\"]:::hub --> OSCache[\"OSとファイルシステムのキャッシュ\"]\n    RAM --> PerConn[\"接続ごとのメモリ　sort_buffer_size等\"]\n    RAM --> BP[\"InnoDBバッファプール\"]\n    BP --> DataCache[\"データページのキャッシュ\"]\n    BP --> IndexCache[\"インデックスページのキャッシュ\"]\n    BP --> ChangeBuf[\"変更バッファ　セカンダリインデックス更新の遅延反映\"]\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n",
+  d7: "flowchart TD\n    Q[\"遅いクエリを見つけた\"] --> W[\"WHERE句とJOIN条件とORDER BYを確認する\"]\n    W --> S[\"絞り込み効果が高い列を特定する\"]\n    S --> M{\"複数列の複合インデックスが必要か\"}:::box\n    M -->|\"はい\"| ML[\"等価条件、範囲条件、ソートの順で列を並べる\"]\n    M -->|\"いいえ\"| SL[\"単一列インデックスを検討する\"]\n    ML --> C[\"SELECT列も含めたカバリングインデックスを検討する\"]\n    SL --> C\n    C --> V[\"EXPLAINで実行計画を検証する\"]:::done\n    classDef box fill:#f3e6c4,stroke:#b8933b,stroke-width:2px,color:#4a3a15\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d8: "flowchart LR\n    A[\"スロークエリログ等で遅いクエリを検出する\"] --> B[\"EXPLAINで実行計画を確認する\"]\n    B --> C[\"不要なデータ取得を削減する\"]\n    C --> D[\"インデックスやスキーマを調整する\"]\n    D --> E[\"クエリ自体を再構成する\"]\n    E --> F[\"本番相当環境で再測定する\"]\n    F --> G{\"改善したか\"}:::box\n    G -->|\"いいえ\"| B\n    G -->|\"はい\"| H[\"監視に組み込み継続的に観測する\"]:::done\n    classDef box fill:#f3e6c4,stroke:#b8933b,stroke-width:2px,color:#4a3a15\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d9: "flowchart TB\n    Source[\"ソース　旧マスター\"]:::hub --> R1[\"レプリカ1\"]\n    Source --> R2[\"レプリカ2\"]\n    Source --> R3[\"レプリカ3\"]\n    R1 --> Reads[\"読み取り専用トラフィック\"]\n    R2 --> Reads\n    R3 --> Reads\n    Source --> Writes[\"書き込みトラフィック\"]\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n",
+  d10: "flowchart TD\n    B[\"バックアップ方式を選ぶ\"]:::hub --> L[\"論理バックアップ　mysqldumpやmydumper\"]\n    B --> P[\"物理バックアップ　Percona XtraBackupやスナップショット\"]\n    L --> Small[\"移植性重視で比較的小規模なデータ\"]\n    P --> Large[\"高速リストア重視で大規模データ\"]\n    Small --> PITR[\"バイナリログを併用してポイントインタイムリカバリを実現する\"]:::done\n    Large --> PITR\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d11: "flowchart TD\n    Scale[\"スケーリング戦略\"]:::hub --> Read[\"読み取りスケーリング\"]\n    Scale --> Write[\"書き込みスケーリング\"]\n    Read --> RP[\"リードプールとロードバランシング\"]\n    Read --> FuncShard[\"機能単位の分割　Functional Sharding\"]\n    Write --> Shard[\"データのシャーディング\"]\n    Shard --> Middleware[\"VitessやProxySQLなどのミドルウェア\"]\n    classDef hub fill:#e3e0f7,stroke:#4b4a9e,stroke-width:2px,color:#25234f\n",
+  d12: "flowchart TD\n    Start[\"MySQLの実行環境を選ぶ\"] --> Q1{\"運用負荷を減らしたいか\"}:::box\n    Q1 -->|\"はい\"| Managed[\"マネージドサービス　Amazon AuroraやGCP Cloud SQL\"]\n    Q1 -->|\"いいえ\"| Self[\"VM上で自己運用するMySQL\"]\n    Managed --> M2{\"高可用性が必要か\"}:::box\n    M2 -->|\"はい\"| HA[\"マルチAZで自動フェイルオーバー構成にする\"]:::done\n    Self --> S2[\"マシンタイプとディスクタイプを選定する\"]\n    classDef box fill:#f3e6c4,stroke:#b8933b,stroke-width:2px,color:#4a3a15\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+  d13: "flowchart LR\n    A[\"アップグレード計画を立てる\"] --> B[\"開発環境で新バージョンをテストする\"]\n    B --> C[\"本番相当のミラー環境でテストする\"]\n    C --> D[\"レプリカへ先行適用する\"]\n    D --> E[\"段階的にプロモーションする\"]\n    E --> F[\"監視しながら完了を確認する\"]:::done\n    classDef done fill:#d9ecdf,stroke:#2f6f52,stroke-width:2px,color:#173a28\n",
+};
+  /* ---------- code block ---------- */
+  function renderCode(){
+    var src = document.getElementById('src-myconf');
+    var dst = document.getElementById('code-myconf');
+    if(src && dst){
+      dst.textContent = src.textContent;
+      if(window.hljs){ window.hljs.highlightElement(dst); }
+    }
+  }
+  renderCode();
+
+  /* ---------- mermaid ---------- */
+  function renderDiagrams(){
+    if(!window.mermaid){ return; }
+    mermaid.initialize({
+      startOnLoad:false,
+      theme:'base',
+      securityLevel:'strict',
+      fontFamily:'"Zen Kaku Gothic New","Source Serif 4",sans-serif',
+      themeVariables:{
+        primaryColor:'#faf4e6',
+        primaryTextColor:'#2b2420',
+        primaryBorderColor:'#c9bd9b',
+        lineColor:'#8a7f70',
+        secondaryColor:'#e5e2f7',
+        tertiaryColor:'#fffdf8',
+        fontSize:'15px',
+        clusterBkg:'#faf4e6',
+        clusterBorder:'#ddd0b3'
+      },
+      flowchart:{
+        htmlLabels:true,
+        curve:'basis',
+        padding:14
+      }
+    });
+
+    var ids = Object.keys(DIAGRAMS);
+    ids.forEach(function(id){
+      var target = document.getElementById('mmd-' + id);
+      if(!target){ return; }
+      var renderId = 'render-' + id;
+      mermaid.render(renderId, DIAGRAMS[id]).then(function(result){
+        target.innerHTML = result.svg;
+        var svgEl = target.querySelector('svg');
+        if(svgEl){
+          svgEl.style.display = 'block';
+          svgEl.style.maxWidth = 'none';
+          svgEl.style.flexShrink = '0';
+          var vb = svgEl.getAttribute('viewBox');
+          if(vb){
+            var parts = vb.split(/\s+/);
+            if(parts.length === 4){
+              svgEl.style.width = parts[2] + 'px';
+              svgEl.style.height = 'auto';
+            }
+          }
+        }
+      }).catch(function(err){
+        target.innerHTML = '<div class="diagram-loading">図の描画に失敗しました</div>';
+        if(window.console){ console.error('mermaid render error', id, err); }
+      });
+    });
+  }
+  renderDiagrams();
+
+  /* ---------- mobile menu ---------- */
+  var sidebar = document.getElementById('sidebar');
+  var menuToggle = document.getElementById('menuToggle');
+  var scrim = document.getElementById('scrim');
+
+  function openMenu(){
+    sidebar.classList.add('open');
+    scrim.classList.add('show');
+    menuToggle.setAttribute('aria-label','メニューを閉じる');
+    menuToggle.setAttribute('aria-expanded','true');
+  }
+  function closeMenu(){
+    sidebar.classList.remove('open');
+    scrim.classList.remove('show');
+    menuToggle.setAttribute('aria-label','メニューを開く');
+    menuToggle.setAttribute('aria-expanded','false');
+  }
+  menuToggle.addEventListener('click', function(){
+    if(sidebar.classList.contains('open')){ closeMenu(); } else { openMenu(); }
+  });
+  scrim.addEventListener('click', closeMenu);
+  sidebar.querySelectorAll('.nav-link').forEach(function(link){
+    link.addEventListener('click', function(){
+      if(window.innerWidth <= 980){ closeMenu(); }
+    });
+  });
+
+  /* ---------- sidebar active highlighting ---------- */
+  /* Uses a fixed detection line near the top of the viewport and picks the
+     last section (in document order) whose top has crossed above that line.
+     An intersection-ratio approach was tried first but misjudges sections of
+     very different heights (a short section can win on ratio even when a
+     tall section is clearly the one in view), so this simpler line-crossing
+     comparison is used instead. */
+  var navLinks = Array.prototype.slice.call(sidebar.querySelectorAll('.nav-link'));
+  var sections = navLinks.map(function(link){
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    return el ? { id:id, el:el } : null;
+  }).filter(Boolean);
+
+  var ticking = false;
+  function updateActiveLink(){
+    ticking = false;
+    var line = window.innerHeight * 0.22;
+    var currentId = sections.length ? sections[0].id : null;
+    for(var i = 0; i < sections.length; i++){
+      var rect = sections[i].el.getBoundingClientRect();
+      if(rect.top <= line){
+        currentId = sections[i].id;
+      } else {
+        break;
+      }
+    }
+    var nearBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
+    if(nearBottom){ currentId = sections[sections.length - 1].id; }
+    navLinks.forEach(function(link){
+      link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
+    });
+  }
+  function onScroll(){
+    if(!ticking){
+      window.requestAnimationFrame(updateActiveLink);
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll);
+  updateActiveLink();
+
+  /* ---------- checklist ---------- */
+  var checklistItems = document.getElementById('checklistItems');
+  var checklistCount = document.getElementById('checklistCount');
+  var checklistBar = document.getElementById('checklistBar');
+
+  function updateChecklistProgress(){
+    var items = checklistItems.querySelectorAll('li');
+    var done = checklistItems.querySelectorAll('li.done').length;
+    var total = items.length;
+    checklistCount.textContent = done + ' / ' + total + ' 完了';
+    checklistBar.style.width = (total ? (done / total * 100) : 0) + '%';
+  }
+  checklistItems.querySelectorAll('li').forEach(function(li){
+    var input = li.querySelector('input[type="checkbox"]');
+    if(!input){ return; }
+    input.addEventListener('change', function(){
+      li.classList.toggle('done', input.checked);
+      updateChecklistProgress();
+    });
+  });
+  updateChecklistProgress();
+
+})();
+</script>
+</body>
+</html>
