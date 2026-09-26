@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Databases: New Opportunities for Connected Data 初学者ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css" integrity="sha384-ND+q1IVc0KDElX60dZaqKc7Xl9cdxd2PpU2JfVUHcurCkFVtVLFdt9vJfxtHSL3p" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/styles/atom-one-light.min.css" integrity="sha384-w6Ujm1VWa9HYFqGc89oAPn/DWDi2gUamjNrq9DRvEYm2X3ClItg9Y9xs1ViVo5b5" crossorigin="anonymous">
+<style>
+:root{
+  --paper:#f7f3ea;
+  --paper-card:#fffdf8;
+  --paper-alt:#f2ecdd;
+  --ink:#241f3d;
+  --ink-faint:#726858;
+  --indigo:#413d8f;
+  --indigo-dark:#2e2a66;
+  --indigo-soft:#e5e2f7;
+  --gold:#7d5c14;
+  --gold-soft:#f3e3b3;
+  --forest:#1f5d3f;
+  --forest-soft:#bfe4d2;
+  --plum:#6b2f5c;
+  --plum-soft:#ecd9e6;
+  --border:#e4dcc8;
+  --shadow:0 10px 30px -12px rgba(36,31,61,.18);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.85;
+  font-size:16px;
+}
+h1,h2,h3,.display{
+  font-family:"Source Serif 4","Hiragino Mincho ProN","Noto Serif JP",serif;
+  color:var(--ink);
+  line-height:1.4;
+}
+a{color:var(--indigo)}
+.layout{display:block;min-height:100vh}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:266px;
+  background:var(--paper-card);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:28px 0 40px;
+  z-index:40;
+}
+.sidebar .brand{
+  padding:0 22px 18px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:14px;
+}
+.sidebar .brand .ti{color:var(--indigo);font-size:1.5rem}
+.sidebar .brand-title{font-family:"Source Serif 4",serif;font-weight:700;font-size:1.02rem;margin-top:8px;color:var(--ink)}
+.sidebar .brand-sub{font-size:1rem;color:var(--ink-faint);margin-top:2px}
+.sidebar nav{padding:0 12px}
+.sidebar .nav-group-label{
+  font-size:1rem;letter-spacing:.06em;color:var(--ink-faint);
+  text-transform:uppercase;padding:14px 10px 6px;
+}
+.sidebar a.nav-a{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:8px;
+  color:var(--ink);text-decoration:none;font-size:1rem;
+  transition:background .15s;
+}
+.sidebar a.nav-a .ti{font-size:1.02rem;color:var(--ink-faint);flex:0 0 auto}
+.sidebar a.nav-a:hover{background:var(--paper-alt)}
+.sidebar a.nav-a.active{background:var(--indigo-soft);color:var(--indigo-dark);font-weight:700}
+.sidebar a.nav-a.active .ti{color:var(--indigo-dark)}
+
+/* ---------- Main content ---------- */
+.main{margin-left:266px}
+.section, .hero, .footer{
+  width:100%;
+  padding:48px 56px;
+}
+.prose, .section, .hero, .footer{max-width:none}
+.section p, .section li, .usecase-card p, .critique-list span, .checklist .txt, .ref-card .ref-title, .audience-list span{overflow-wrap:break-word}
+
+.hero{
+  background:linear-gradient(160deg,#2e2a66 0%,#413d8f 55%,#5a4fa8 100%);
+  color:#f4f1ff;
+  padding-top:72px;padding-bottom:64px;
+}
+.hero .eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:1rem;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(255,255,255,.12);padding:6px 14px;border-radius:999px;
+  margin-bottom:18px;
+}
+.hero h1{
+  color:#fff;font-size:2.3rem;margin:0 0 18px;max-width:20ch;
+}
+.hero .lede{
+  font-size:1.05rem;color:#e4e0fb;max-width:70ch;margin:0 0 8px;
+}
+.hero .quote{
+  margin-top:22px;padding:16px 20px;border-left:3px solid #b7aef0;
+  background:rgba(255,255,255,.08);border-radius:0 10px 10px 0;
+  font-size:1rem;color:#ede9ff;
+}
+.hero .src-line{margin-top:18px;font-size:1rem;color:#c9c2f2}
+.hero .src-line a{color:#e4e0fb}
+
+.section{border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--indigo);font-weight:700;font-size:1rem;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+}
+.section-eyebrow .ti{font-size:1.05rem}
+.section h2{font-size:1.55rem;margin:0 0 18px}
+.section h3{font-size:1.15rem;margin:26px 0 10px;color:var(--indigo-dark)}
+.section p{margin:0 0 14px}
+.section ul, .section ol{margin:0 0 14px;padding-left:1.4em}
+.section li{margin-bottom:6px}
+
+/* ---------- Cards / lists ---------- */
+.card{
+  background:var(--paper-card);border:1px solid var(--border);
+  border-radius:14px;padding:22px 24px;box-shadow:var(--shadow);
+}
+.audience-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.audience-list li{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--paper-card);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+}
+.audience-list .ti{color:var(--indigo);font-size:1.1rem;margin-top:2px}
+
+.roadmap-note{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--indigo-soft);border-radius:10px;padding:14px 16px;
+  font-size:1rem;color:var(--indigo-dark);margin-top:14px;
+}
+.roadmap-note .ti{font-size:1.1rem;margin-top:1px}
+
+/* ---------- Tables ---------- */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin:18px 0;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--paper-card)}
+table td, table th{overflow-wrap:anywhere;padding:11px 16px;text-align:left;font-size:1rem}
+table thead th{
+  background:var(--indigo-dark);color:#fff;font-weight:700;
+  font-size:1rem;letter-spacing:.02em;
+}
+table tbody tr{border-bottom:1px solid var(--border)}
+table tbody tr:last-child{border-bottom:none}
+table tbody tr:hover{background:var(--paper-alt)}
+
+.kv-table{min-width:0}
+.kv-table th{
+  background:transparent;color:var(--ink);font-weight:700;
+  width:34%;border-right:1px solid var(--border);font-size:1rem;
+}
+.kv-table td{color:var(--ink)}
+.kv-table tr:hover{background:var(--indigo-soft)}
+
+/* ---------- Mermaid ---------- */
+.diagram-card{
+  margin:20px 0;background:var(--paper-card);border:1px solid var(--border);
+  border-radius:14px;padding:22px 20px 18px;box-shadow:var(--shadow);
+}
+.diagram-wrap{
+  width:100%;min-width:0;overflow-x:auto;display:flex;justify-content:safe center;
+  padding:6px 4px;
+}
+.diagram-wrap>*{min-width:0;flex-shrink:0}
+.diagram-caption{
+  text-align:center;font-size:1rem;color:var(--ink-faint);margin-top:2px;
+}
+.diagram-loading{
+  text-align:center;color:var(--ink-faint);font-size:1rem;padding:30px 0;
+}
+
+/* ---------- Code ---------- */
+.code-block{
+  border-radius:12px;overflow:hidden;border:1px solid var(--border);
+  margin:16px 0;box-shadow:var(--shadow);
+}
+.code-block .code-label{
+  background:var(--indigo-dark);color:#fff;font-size:1rem;
+  letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;
+}
+.code-block pre{margin:0;overflow-x:auto;padding:16px 18px;background:#fbf9f3}
+.code-block code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:1rem;line-height:1.7}
+
+/* ---------- Use-case / glossary grid ---------- */
+.usecase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:18px 0}
+.usecase-card{
+  background:var(--paper-card);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;
+}
+.usecase-card .ti{color:var(--indigo);font-size:1.3rem;margin-bottom:8px;display:block}
+.usecase-card h4{margin:0 0 6px;font-size:1rem;color:var(--ink)}
+.usecase-card p{margin:0;font-size:1rem;color:var(--ink-faint)}
+
+/* ---------- Critical reading ---------- */
+.critique-card{
+  background:var(--gold-soft);border:1px solid #e6cf87;border-radius:14px;
+  padding:6px 20px;box-shadow:var(--shadow);
+}
+.critique-list{list-style:none;padding:0;margin:0}
+.critique-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:16px 0;color:#4a3908;
+  border-bottom:1px solid rgba(74,57,8,.16);
+}
+.critique-list li:last-child{border-bottom:none}
+.critique-list .ti{color:var(--gold);font-size:1.1rem;margin-top:2px;flex:0 0 auto}
+
+/* ---------- Checklist ---------- */
+.checklist-progress{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;
+  background:var(--paper-card);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;
+}
+.checklist-progress .bar{flex:1;height:8px;border-radius:999px;background:var(--paper-alt);overflow:hidden}
+.checklist-progress .bar-fill{height:100%;background:var(--forest);width:0%;transition:width .25s}
+.checklist-progress .count{font-size:1rem;color:var(--ink-faint);white-space:nowrap}
+.checklist{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.checklist li{
+  background:var(--paper-card);border:1px solid var(--border);border-radius:10px;
+}
+.checklist label{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 14px;cursor:pointer;font-size:1rem;
+}
+.checklist input[type="checkbox"]{
+  appearance:none;-webkit-appearance:none;width:20px;height:20px;flex:0 0 auto;
+  border:2px solid var(--indigo);border-radius:6px;margin-top:1px;position:relative;cursor:pointer;
+  font-size:1rem;
+}
+.checklist input[type="checkbox"]:checked{background:var(--indigo);}
+.checklist input[type="checkbox"]:checked::after{
+  content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+.checklist li.done label span.txt{color:var(--ink-faint);text-decoration:line-through}
+
+/* ---------- References ---------- */
+.ref-group-title{font-size:1rem;font-weight:700;color:var(--indigo-dark);margin:22px 0 10px}
+.ref-group-title:first-child{margin-top:0}
+.ref-grid{display:grid;gap:10px}
+.ref-card{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--paper-card);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;
+}
+.ref-card .ti{color:var(--indigo);font-size:1.05rem;margin-top:2px;flex:0 0 auto}
+.ref-card .ref-title{font-size:1rem;color:var(--ink);font-weight:600}
+.ref-card .ref-url{
+  display:block;font-size:1rem;color:var(--ink-faint);word-break:break-all;margin-top:2px;
+}
+
+/* ---------- Footer ---------- */
+.footer{background:var(--indigo-dark);color:#e4e0fb;padding-top:40px;padding-bottom:40px}
+.footer p{margin:0;font-size:1rem;color:#c9c2f2}
+
+/* ---------- Mobile bar ---------- */
+.mobile-bar{
+  display:none;position:sticky;top:0;z-index:50;
+  background:var(--paper-card);border-bottom:1px solid var(--border);
+  padding:10px 14px;align-items:center;justify-content:space-between;
+}
+.mobile-bar .m-title{font-family:"Source Serif 4",serif;font-weight:700;font-size:1rem}
+.mobile-bar button{
+  background:var(--indigo);color:#fff;border:none;border-radius:8px;
+  padding:8px 12px;font-size:1rem;display:flex;align-items:center;gap:6px;
+}
+.sidebar-scrim{display:none}
+
+@media (max-width:980px){
+  .sidebar{
+    transform:translateX(-100%);transition:transform .2s ease;
+    width:82vw;max-width:320px;box-shadow:0 0 40px rgba(0,0,0,.25);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-bar{display:flex}
+  .mobile-bar button{font-size:1rem}
+  .sidebar-scrim.show{
+    display:block;position:fixed;inset:0;background:rgba(36,31,61,.4);z-index:39;
+  }
+  .section, .hero, .footer{padding:36px 20px}
+  .hero h1{font-size:1.7rem}
+  .usecase-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+  .usecase-grid{grid-template-columns:1fr}
+}
+.mermaidTooltip{font-size:1rem!important;}
+</style>
+</head>
+<body>
+<div class="mobile-bar">
+  <div class="m-title">Graph Databases 初学者ガイド</div>
+  <button id="menuBtn" aria-label="メニューを開く"><i class="ti ti-menu-2"></i>メニュー</button>
+</div>
+<div class="sidebar-scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <i class="ti ti-share-3"></i>
+    <div class="brand-title">Graph Databases</div>
+    <div class="brand-sub">初学者ガイド &mdash; Robinson / Webber / Eifrem</div>
+  </div>
+  <nav>
+    <div class="nav-group-label">はじめに</div>
+    <a class="nav-a" href="#about"><i class="ti ti-info-circle"></i>この記事について</a>
+    <a class="nav-a" href="#audience"><i class="ti ti-users"></i>対象読者</a>
+    <a class="nav-a" href="#book-info"><i class="ti ti-book-2"></i>書籍情報</a>
+    <a class="nav-a" href="#toc"><i class="ti ti-list-details"></i>章立て</a>
+    <a class="nav-a" href="#roadmap"><i class="ti ti-route"></i>学習ロードマップ</a>
+    <div class="nav-group-label">ステップで学ぶ</div>
+    <a class="nav-a" href="#step0"><i class="ti ti-share-3"></i>Step0 グラフとは何か</a>
+    <a class="nav-a" href="#step1"><i class="ti ti-question-mark"></i>Step1 なぜグラフDBか</a>
+    <a class="nav-a" href="#step2"><i class="ti ti-hierarchy-3"></i>Step2 プロパティグラフモデル</a>
+    <a class="nav-a" href="#step3"><i class="ti ti-terminal-2"></i>Step3 Cypher入門</a>
+    <a class="nav-a" href="#step4"><i class="ti ti-tool"></i>Step4 アプリケーション構築</a>
+    <a class="nav-a" href="#step5"><i class="ti ti-world"></i>Step5 実世界の活用事例</a>
+    <a class="nav-a" href="#step6"><i class="ti ti-cpu"></i>Step6 内部構造</a>
+    <a class="nav-a" href="#step7"><i class="ti ti-chart-dots-3"></i>Step7 グラフ理論と予測分析</a>
+    <div class="nav-group-label">発展</div>
+    <a class="nav-a" href="#appendix"><i class="ti ti-stack-2"></i>付録 NoSQL全体像</a>
+    <a class="nav-a" href="#update2026"><i class="ti ti-trending-up"></i>2026年アップデート</a>
+    <a class="nav-a" href="#comparison"><i class="ti ti-scale"></i>主要グラフDB比較</a>
+    <a class="nav-a" href="#glossary"><i class="ti ti-alphabet-latin"></i>用語集</a>
+    <div class="nav-group-label">まとめ</div>
+    <a class="nav-a" href="#critique"><i class="ti ti-alert-triangle"></i>批判的に読む</a>
+    <a class="nav-a" href="#checklist"><i class="ti ti-checklist"></i>学習チェックリスト</a>
+    <a class="nav-a" href="#summary"><i class="ti ti-flag-2"></i>まとめ</a>
+    <a class="nav-a" href="#references"><i class="ti ti-link"></i>参考文献</a>
+  </nav>
+</aside>
+<div class="main">
+<header class="hero">
+  <span class="eyebrow"><i class="ti ti-share-3"></i>Graph Database 入門ガイド</span>
+  <h1>Graph Databases: New Opportunities for Connected Data 初学者ガイド</h1>
+  <p class="lede">Ian Robinson、Jim Webber、Emil Eifrem 著『Graph Databases, 2nd Edition』(O&rsquo;Reilly Media)をベースに、グラフデータベースの考え方をゼロからステップバイステップで学ぶための解説記事です。</p>
+  <div class="quote">本書の文章をそのまま引用するのではなく、内容を要約・再構成し、2026年9月時点の最新動向(GQL標準化、GraphRAGなど)も補足しています。</div>
+  <div class="src-line"><i class="ti ti-link"></i> 原著参照元: <a href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/" target="_blank" rel="noopener">oreilly.com/library/view/graph-databases-2nd</a></div>
+</header>
+
+<section class="section" id="about">
+  <div class="section-eyebrow"><i class="ti ti-info-circle"></i>Introduction</div>
+  <h2>この記事について</h2>
+  <ul>
+    <li><strong>原著</strong>: <em>Graph Databases: New Opportunities for Connected Data</em>, 2nd Edition</li>
+    <li><strong>著者</strong>: Ian Robinson, Jim Webber, Emil Eifrem(3人ともNeo4j創業メンバーもしくは元エンジニア)</li>
+    <li><strong>参照元URL</strong>: <a href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/" target="_blank" rel="noopener">https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/</a></li>
+    <li><strong>この記事の目的</strong>: プログラミング経験はあるがグラフデータベースは初めて、という読者が「グラフとは何か」から「実務でどう使うか」まで一気通貫で理解できるようにする</li>
+  </ul>
+</section>
+
+<section class="section" id="audience">
+  <div class="section-eyebrow"><i class="ti ti-users"></i>Who is this for</div>
+  <h2>対象読者</h2>
+  <ul class="audience-list">
+    <li><i class="ti ti-database"></i><span>リレーショナルデータベース(RDB)は知っているが、グラフデータベースは触ったことがない開発者</span></li>
+    <li><i class="ti ti-affiliate"></i><span>ソーシャルグラフ、レコメンデーション、不正検知、ナレッジグラフなど「つながり」を扱うシステムに興味がある人</span></li>
+    <li><i class="ti ti-robot"></i><span>最近話題のGraphRAG(グラフを使ったRAG)の前提知識を固めたい人</span></li>
+  </ul>
+</section>
+
+<section class="section" id="book-info">
+  <div class="section-eyebrow"><i class="ti ti-book-2"></i>Book Info</div>
+  <h2>書籍情報</h2>
+  <div class="table-wrap">
+  <table class="kv-table">
+    <tbody>
+      <tr><th>原題</th><td>Graph Databases: New Opportunities for Connected Data</td></tr>
+      <tr><th>版</th><td>第2版(2015年6月)</td></tr>
+      <tr><th>著者</th><td>Ian Robinson, Jim Webber, Emil Eifrem</td></tr>
+      <tr><th>出版社</th><td>O&rsquo;Reilly Media, Inc.</td></tr>
+      <tr><th>ページ数</th><td>236ページ(第2版。224ページは2013年刊行の第1版の表記のため、第2版を扱う本ガイドでは採用しない)</td></tr>
+      <tr><th>難易度</th><td>中級から上級(ただし基礎から説明されている)</td></tr>
+      <tr><th>主に扱うグラフDB</th><td>Neo4j(クエリ言語はCypher)</td></tr>
+      <tr><th>無料配布</th><td>Neo4j公式サイトから今もPDF / iBooks / Kindle形式で無料配布中</td></tr>
+      <tr><th>参照URL</th><td><a href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/" target="_blank" rel="noopener">oreilly.com/library/view/graph-databases-2nd/9781491930885</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>O&rsquo;Reillyの書籍ページによると、本書は高度に接続されたデータを管理・検索するためのグラフデータベースの実践的な設計・実装方法を学べる一冊で、第2版では最新のCypher構文に合わせてコード例と図版が刷新されています。データモデリングやクエリ、コード例を通じて、組織がグラフデータベースをどう活用して競合より優位に立っているかを学べる構成になっています。</p>
+  <p>なお本書は今でもNeo4j社の公式サイトから無料でダウンロードできます(PDF / Kindle / iBooks形式)。</p>
+</section>
+
+<section class="section" id="toc">
+  <div class="section-eyebrow"><i class="ti ti-list-details"></i>Table of Contents</div>
+  <h2>章立て(原著の目次)</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>章</th><th>タイトル</th><th>主なトピック</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Introduction</td><td>グラフとは何か、グラフの空間全体像、グラフDBとグラフ計算エンジンの違い、性能・柔軟性・俊敏性という3つの強み</td></tr>
+      <tr><td>2</td><td>Options for Storing Connected Data</td><td>リレーショナルDBとNoSQLがなぜ「関係」を扱うのが苦手か、グラフDBがどう関係を第一級市民にするか</td></tr>
+      <tr><td>3</td><td>Data Modeling with Graphs</td><td>ラベル付きプロパティグラフモデル、Cypher入門、リレーショナルモデリングとの比較、よくあるモデリングの落とし穴</td></tr>
+      <tr><td>4</td><td>Building a Graph Database Application</td><td>クエリ駆動のデータモデリング、アプリケーションアーキテクチャ、テスト駆動でのモデル開発、キャパシティプランニング、データインポート</td></tr>
+      <tr><td>5</td><td>Graphs in the Real World</td><td>組織がグラフDBを選ぶ理由、代表的なユースケース、実際の導入事例</td></tr>
+      <tr><td>6</td><td>Graph Database Internals</td><td>ネイティブグラフ処理とネイティブグラフストレージ、プログラマティックAPI、トランザクション・可用性・スケールなどの非機能特性</td></tr>
+      <tr><td>7</td><td>Predictive Analysis with Graph Theory</td><td>幅優先探索・深さ優先探索、Dijkstra法、A*アルゴリズム、三者閉包・構造的均衡・ローカルブリッジ</td></tr>
+      <tr><td>付録A</td><td>NOSQL Overview</td><td>NoSQLが生まれた背景、ACIDとBASE、NoSQLの4象限(Key-Value/Document/Column-family/Graph)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:var(--ink-faint)">出典:O&rsquo;Reilly書籍ページの目次。</p>
+</section>
+
+<section class="section" id="roadmap">
+  <div class="section-eyebrow"><i class="ti ti-route"></i>Roadmap</div>
+  <h2>学習ロードマップ</h2>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-01">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図1: この記事全体の学習ロードマップ</p>
+  </div>
+  <div class="roadmap-note"><i class="ti ti-bulb"></i><span>Step0からStep7まで順番に読み進めると、グラフの基礎からグラフ理論の応用まで一気通貫で理解できるように構成しています。</span></div>
+</section>
+<section class="section" id="step0">
+  <div class="section-eyebrow"><i class="ti ti-share-3"></i>Step 0</div>
+  <h2>グラフとは何か</h2>
+  <p>数学的には、グラフ G は「頂点(ノード)の集合 V」と「辺(リレーションシップ)の集合 E」の組 G = (V, E) として定義されます。ノードは「モノ」、リレーションシップは「モノとモノのつながり」を表します。</p>
+  <p>グラフデータベースの世界で最もよく使われるのが<strong>ラベル付きプロパティグラフ(Labeled Property Graph, LPG)モデル</strong>です。ポイントは次の4つです。</p>
+  <ul>
+    <li><strong>ノード</strong>: 人・会社・商品などの「モノ」。<strong>ラベル</strong>(種類)は0個以上持てる</li>
+    <li><strong>リレーションシップ</strong>: ノード同士のつながり。必ず<strong>向き</strong>と<strong>種類</strong>を持つ(例: <code>WORKS_AT</code>)</li>
+    <li><strong>プロパティ</strong>: ノードやリレーションシップに付けられるキー・バリューの属性(例: <code>名前 = 田中</code>)</li>
+    <li><strong>ラベル</strong>: ノードをグループ分けするためのタグ(例: <code>Person</code>、<code>Company</code>)</li>
+  </ul>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-02">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図2: プロパティグラフの最小構成例(ノード・リレーションシップ・プロパティ・ラベル)</p>
+  </div>
+  <p>重要なのは、<strong>リレーションシップ自体が一級のデータ構造</strong>として保存される点です。リレーショナルDBでは「関係」は外部キーという間接的な形でしか表現できませんが、グラフDBではリレーションシップそのものに向き・種類・プロパティを持たせられます。</p>
+  <p>本書ではさらに「グラフデータベース」と「グラフ計算エンジン」を区別しています。前者はOLTP的なトランザクション処理に向いたデータベースそのものであり、後者はPageRankのような大規模グラフ分析(バッチ処理)に向いたエンジンを指します。本書が主に扱うのは前者です。</p>
+</section>
+
+<section class="section" id="step1">
+  <div class="section-eyebrow"><i class="ti ti-question-mark"></i>Step 1</div>
+  <h2>なぜグラフデータベースなのか</h2>
+
+  <h3>リレーショナルDBが苦手にしやすい領域</h3>
+  <p>リレーショナルDBでも、外部キーや中間テーブルを使えば関係そのものを明示的にモデル化できます。苦手になりやすいのは、その関係を<strong>たどる</strong>クエリのほうです。関係は行と行の対応として表現され、たどるたびにJOINで再構築するため、多段の関係(友達の友達の友達、など)をたどるクエリでは、結合の段数とデータ量に応じてコストが増えやすくなります。またスキーマ変更にマイグレーションコストがかかり、ドメインの進化に追従しにくいという課題もあります。いずれも一般的な傾向であり、実際のコストは結合アルゴリズム・インデックス・データ分布に左右されます。</p>
+
+  <h3>NoSQL集約指向DBの弱点</h3>
+  <p>Key-Value・Document・Column-familyといった「集約指向(aggregate-oriented)」なNoSQLデータベースは、1つのまとまり(集約)の中のデータには強い一方、集約をまたぐ関係の扱いは相対的に手薄になりがちです。ただしこれも絶対的な制約ではなく、ドキュメント間の参照を持たせたり、製品が備えるクエリ機能(MongoDBの<code>$lookup</code>など)やマテリアライズドビューを使って集約間の関係を扱える場合もあります。</p>
+  <p>グラフDBとの違いは、関係を「集約に付随する情報」としてではなく、<strong>独立した辺そのものとして第一級に扱う</strong>点にあります。関係が複雑になるほど、集約指向側では表現とクエリ、そして運用のコストが増えていくのに対し、グラフDBはその複雑さを直接モデルへ載せられる、というトレードオフとして理解するのが実態に近いです。</p>
+  <p>Martin FowlerとPramod Sadalageの共著『NoSQL Distilled』でも、グラフDBは「集約指向」の3タイプ(Key-Value、Document、Column-family)とは異なる第4のカテゴリとして明確に区別されており、リレーショナルDBでは扱いにくい関係を横断的にたどれる点がグラフDBの強みだと説明されています。</p>
+
+  <h3>グラフDBの強み</h3>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-03">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図3: リレーショナルDB・NoSQL・グラフDBの位置づけ比較</p>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>観点</th><th>リレーショナルDB</th><th>NoSQL集約指向DB</th><th>グラフDB</th></tr></thead>
+    <tbody>
+      <tr><td>リレーションの表現</td><td>外部キー(暗黙的)</td><td>基本的に表現しない</td><td>リレーションシップとして明示的に保存</td></tr>
+      <tr><td>多段の関係をたどるコスト</td><td>結合アルゴリズム・インデックス・データ分布に依存する</td><td>アプリ側の追加実装が必要</td><td>ホップ数・分岐数・結果件数・キャッシュ状態に依存する</td></tr>
+      <tr><td>スキーマ</td><td>事前に固定</td><td>緩い、または無し</td><td>ラベルとプロパティで柔軟に進化</td></tr>
+      <tr><td>得意な処理</td><td>集計・レポーティング</td><td>大量データの高速な読み書き</td><td>多段の関係をたどる探索クエリ</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>本書ch1で説明される「グラフデータベースの力」は、<strong>性能(Performance)</strong>・<strong>柔軟性(Flexibility)</strong>・<strong>俊敏性(Agility)</strong> の3つに整理されています。関係をたどる性能が(グラフ全体の件数よりも)探索して実際に触れた部分の大きさに左右されやすいこと、スキーマレスに近い形でドメインを進化させやすいこと、開発初期から反復的にモデルを育てやすいことが強みとして挙げられています。</p>
+</section>
+
+<section class="section" id="step2">
+  <div class="section-eyebrow"><i class="ti ti-hierarchy-3"></i>Step 2</div>
+  <h2>ラベル付きプロパティグラフモデル</h2>
+  <p>グラフDBでのデータモデリングは、「まず正規化されたテーブルを作る」というリレーショナルDB的な発想ではなく、<strong>「どんな質問に答えたいか」からモデルを作る(クエリ駆動のモデリング)</strong> という発想で進めます。</p>
+  <p>本書ch3では、シェイクスピアの戯曲・劇団・上演場所などをまたいだ「クロスドメイングラフ」を例に、複数の異なる領域のデータを1つのグラフに統合するデモンストレーションを行っています(具体的なコードはここでは引用せず、考え方のみ紹介します)。</p>
+
+  <h3>よくあるモデリングの落とし穴(アンチパターン)</h3>
+  <ul>
+    <li><strong>リレーションシップを何でも同じ種類にしてしまう</strong>: <code>RELATED_TO</code> のような汎用的すぎるリレーションシップ種別は、後からクエリで絞り込みにくくなる</li>
+    <li><strong>プロパティにすべきものをノードにしすぎる、または逆</strong>: 複雑な値(期間、金額の履歴など)はノードとしてモデル化した方が扱いやすいことが多い</li>
+    <li><strong>時間の扱いを後回しにする</strong>: 「いつからいつまで有効な関係か」を最初から設計に組み込まないと、後で大きな手戻りになる</li>
+    <li><strong>スーパーノード(次数が極端に大きいノード)への配慮不足</strong>: 数百万件のリレーションシップが1つのノードに集中すると、そのノード周辺のクエリだけ極端に遅くなることがある</li>
+  </ul>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-04">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図4: クエリ駆動のグラフデータモデリングのサイクル</p>
+  </div>
+</section>
+
+<section class="section" id="step3">
+  <div class="section-eyebrow"><i class="ti ti-terminal-2"></i>Step 3</div>
+  <h2>Cypherクエリ言語入門</h2>
+  <p>Cypherは、Neo4jのために作られた「人間にとって読みやすい」宣言的なグラフクエリ言語です。パターン(どんな形のノード・リレーションシップを探すか)を、そのまま矢印付きの記法で書けるのが最大の特徴です。</p>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-05">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図5: 基本的なCypherクエリの組み立て方</p>
+  </div>
+  <p>以下は、本書の例そのものではなく、社員と会社のつながりを題材にした独自のサンプルです。</p>
+  <div class="code-block">
+    <div class="code-label"><i class="ti ti-terminal-2"></i> Cypher</div>
+    <pre><code class="language-plaintext" id="cypher-code"></code></pre>
+  </div>
+  <script type="text/plain" id="cypher-src">
+    // 田中さんが働いている会社を探す
+    MATCH (p:Person {name: "田中太郎"})-[:WORKS_AT]->(c:Company)
+    RETURN c.name
+
+    // 田中さんの知人のうち、田中さんと同じ会社で働いている人を探す
+    MATCH (p:Person {name: "田中太郎"})-[:KNOWS]->(friend:Person)
+    MATCH (p)-[:WORKS_AT]->(c:Company)<-[:WORKS_AT]-(friend)
+    RETURN friend.name, c.name
+
+    // 新しいノードとリレーションシップを作る
+    CREATE (p:Person {name: "佐藤次郎"})-[:WORKS_AT {since: 2024}]->(c:Company {name: "灯台商事"})
+  </script>
+  <p>ポイントは、<code>(ノード)-[:関係種別]->(ノード)</code> という書き方が、そのままグラフの図と対応していることです。JOINを何段も書く必要がなく、たどりたい経路をそのままクエリとして表現できます。</p>
+
+  <h3>CypherからGQLへ</h3>
+  <p>2024年4月、Cypherのクエリ構成のセマンティクスを多く取り込んだ<strong>GQL(Graph Query Language)</strong>がISO/IEC 39075として国際標準になりました。1987年のSQL制定以来、ISOが新しく制定したデータベース問い合わせ言語としては初めてのものです。TigerGraphのCEOであるMingxi Wu氏は、自社ブログで「GQLはグラフDB業界が(リレーショナルDB、Key-Valueストアに続く)3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事だ」と位置づけ、GQLがパターンマッチング構文を使い、SQLとCypherの両方の記法をサポートしていると解説しています。詳細はStep7の後の「2026年時点のアップデート」で扱います。</p>
+</section>
+<section class="section" id="step4">
+  <div class="section-eyebrow"><i class="ti ti-tool"></i>Step 4</div>
+  <h2>グラフデータベースアプリケーションの構築</h2>
+  <p>本書ch4では、実際にグラフDBを使ったアプリケーションを作る際の実務的な観点がまとめられています。</p>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-06">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図6: グラフデータベースアプリケーション開発の反復サイクル</p>
+  </div>
+
+  <h3>データモデリング(実装レベル)</h3>
+  <ul>
+    <li>アプリケーションが実際に必要とする質問からモデルを描く</li>
+    <li>「モノ」はノードに、「構造(つながり方)」はリレーションシップに対応させる</li>
+    <li>粒度の細かすぎる/粗すぎるリレーションシップを避ける</li>
+    <li>複雑な値(履歴、期間など)はノードとして表現する</li>
+  </ul>
+
+  <h3>アプリケーションアーキテクチャ</h3>
+  <ul>
+    <li>組み込み(embedded)モードとサーバーモードのどちらでデータベースを動かすか</li>
+    <li>クラスタリングとロードバランシングの設計</li>
+    <li>テスト駆動でデータモデル自体を検証する(モデルの妥当性をユニットテストで担保する)</li>
+  </ul>
+
+  <h3>キャパシティプランニング</h3>
+  <ul>
+    <li>性能(パフォーマンス)、冗長性(可用性)、負荷(スループット)という3つの最適化基準</li>
+    <li>想定される読み書きの量、ノード・リレーションシップの総数から必要なリソースを見積もる</li>
+  </ul>
+
+  <h3>データのインポート</h3>
+  <ul>
+    <li>初期インポート(一括ロード)とバッチインポート(継続的な取り込み)の2パターンがある</li>
+    <li>大量データを初めて投入するときは、インデックス構築のタイミングなどに注意が必要</li>
+  </ul>
+</section>
+
+<section class="section" id="step5">
+  <div class="section-eyebrow"><i class="ti ti-world"></i>Step 5</div>
+  <h2>実世界におけるグラフの活用事例</h2>
+  <p>本書ch5では、組織がなぜグラフDBを選ぶのか、そして代表的なユースケースが紹介されています。</p>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-07">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図7: 本書で紹介される代表的なユースケース</p>
+  </div>
+  <div class="usecase-grid">
+    <div class="usecase-card"><i class="ti ti-affiliate"></i><h4>ソーシャル</h4><p>「友達の友達」は誰か、影響力の大きい人は誰か &mdash; SNS、プロフェッショナル向けネットワーク</p></div>
+    <div class="usecase-card"><i class="ti ti-shopping-cart"></i><h4>レコメンデーション</h4><p>この人が興味を持ちそうな商品やコンテンツは何か &mdash; ECサイト、動画・音楽配信</p></div>
+    <div class="usecase-card"><i class="ti ti-map-2"></i><h4>ジオ(地理空間)</h4><p>近くにある拠点、最適な配送ルートは何か &mdash; 物流、ロジスティクス</p></div>
+    <div class="usecase-card"><i class="ti ti-building-store"></i><h4>マスターデータ管理</h4><p>このデータはどのマスタと紐づくべきか &mdash; 顧客データ統合、商品データ統合</p></div>
+    <div class="usecase-card"><i class="ti ti-server-2"></i><h4>ネットワークとデータセンター管理</h4><p>この機器が故障したら何が影響を受けるか &mdash; 通信キャリア、ITインフラ運用</p></div>
+    <div class="usecase-card"><i class="ti ti-shield-lock"></i><h4>認可とアクセス制御</h4><p>このユーザはこのリソースにアクセスできるか &mdash; 権限管理、コンプライアンス</p></div>
+  </div>
+  <p>これらのユースケースに共通するのは、「単発のデータ」ではなく「データ同士のつながりを何段もたどる」ことで初めて価値が出る、という点です。本書はプロフェッショナル向けソーシャルネットワークでのレコメンデーション、認可・アクセス制御、地理空間・物流の3つを実例として詳しく掘り下げています。</p>
+</section>
+
+<section class="section" id="step6">
+  <div class="section-eyebrow"><i class="ti ti-cpu"></i>Step 6</div>
+  <h2>グラフデータベースの内部構造</h2>
+  <p>「なぜグラフDBは関係をたどるのが速いのか」を理解する鍵が、<strong>ネイティブグラフ処理(native graph processing)</strong> と <strong>インデックスフリー隣接(index-free adjacency)</strong> という概念です。</p>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-08">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図8: ネイティブグラフ処理と非ネイティブなグラフ処理の違い</p>
+  </div>
+  <p>分かりやすい例え話として、コンサルタントのDan McCreary氏はブログで「index-free adjacencyは、隣人の家に手紙を届けるのに住所録を調べる(インデックス参照)必要がなく、隣にいることを直接知っているから歩いて渡せる、という感覚に近い」と説明しています。技術的には、リレーショナルDBでのJOINはインデックス参照を伴うため計算量が O(log n) 程度で増加しがちなのに対し、ネイティブグラフDBでの1ホップの走査は、たどるノードに接続されたリレーションシップの数だけに依存し、グラフ全体のサイズには依存しません。</p>
+  <p>Neo4jのGraphAcademyの教材でも、3階層の親子関係をたどるSQLクエリと、Cypherの同等クエリを比較し、SQLでは複数回のインデックス参照とプランニングが必要になる一方、ネイティブグラフではノードとリレーションシップがポインタで直接つながっているため参照コストが小さいことが示されています。</p>
+
+  <h3>プログラマティックAPI</h3>
+  <p>本書ではNeo4j固有の実装として、Kernel API(最下層の低レベルAPI)、Core API(一般的なプログラマティックAPI)、Traversal Framework(探索の仕方を宣言的に指定できるAPI)の3層構成が紹介されています。</p>
+
+  <h3>非機能特性</h3>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-09">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図9: グラフデータベース内部構造の全体像</p>
+  </div>
+  <p>グラフDBの多くはACIDトランザクションをサポートし、書き込みの一貫性を保証します。一方で、グラフはリレーションシップという「横断的なつながり」を持つデータ構造であるため、リレーショナルDBのように単純にシャーディング(水平分割)するのが難しく、スケールアウトの設計は独自の工夫が必要になる点が本書でも課題として挙げられています。</p>
+</section>
+
+<section class="section" id="step7">
+  <div class="section-eyebrow"><i class="ti ti-chart-dots-3"></i>Step 7</div>
+  <h2>グラフ理論による予測分析</h2>
+  <p>本書ch7では、グラフを「探索」するアルゴリズムと、グラフの構造から未来の変化を予測する古典的な社会ネットワーク分析の理論が紹介されています。</p>
+
+  <h3>幅優先探索と深さ優先探索</h3>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-10">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図10: 幅優先探索と深さ優先探索の違い</p>
+  </div>
+
+  <h3>Dijkstra法とA*アルゴリズム</h3>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-11">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図11: Dijkstra法の処理の流れ</p>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-12">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図12: A*アルゴリズムがDijkstra法を拡張する考え方</p>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>アルゴリズム</th><th>目的</th><th>重みを考慮した最短路への対応</th><th>代表的な用途</th></tr></thead>
+    <tbody>
+      <tr><td>BFS</td><td>最短ホップ数を求める</td><td>非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)</td><td>SNSでの最短ホップ数、到達可能性判定</td></tr>
+      <tr><td>DFS</td><td>経路を網羅的にたどる</td><td>非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)</td><td>循環検出、連結成分の抽出</td></tr>
+      <tr><td>Dijkstra法</td><td>重み付きグラフの最短距離を求める</td><td>対応(非負の重みのみ)</td><td>カーナビ、経路探索エンジン</td></tr>
+      <tr><td>A*</td><td>ヒューリスティック付きの最短距離を求める</td><td>対応(非負の重みが前提。木探索ではヒューリスティックが admissible(真の残りコストを過大評価しない)であること、クローズ済みノードを再オープンしないグラフ探索では consistent(一貫性: h(n) &le; c(n,n&prime;) + h(n&prime;))であることが必要。より良い経路発見時にノードを再オープンするグラフ探索なら admissible で足りる)</td><td>ゲームAIの経路探索、地図アプリ</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>三者閉包・構造的均衡・ローカルブリッジ</h3>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-13">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図13: 三者閉包とローカルブリッジの考え方</p>
+  </div>
+  <p>本書のこの章は、社会ネットワーク分析の古典であるDavid Easley氏(コーネル大学)とJon Kleinberg氏(同大学)の共著『Networks, Crowds, and Markets』の考え方を土台にしています。三者閉包(triadic closure)は「共通の友人を持つ2人は将来友人になりやすい」という経験則、構造的均衡(structural balance)は「友人関係・敵対関係が入り混じった三者関係のうち、心理的に安定しやすい組み合わせがある」という理論、ローカルブリッジ(local bridge)は「共通の知人を持たない関係は、削除すると両端の距離が大きく広がる橋渡し役になっている」という考え方です。これらは、レコメンデーションの精度向上や、不正検知における「怪しい孤立したつながり」の発見などに応用されています。</p>
+</section>
+<section class="section" id="appendix">
+  <div class="section-eyebrow"><i class="ti ti-stack-2"></i>Appendix A</div>
+  <h2>付録: NoSQL全体像の中でのグラフDB</h2>
+  <p>本書の付録Aでは、グラフDBを含むNoSQLデータベース全体の見取り図が整理されています。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>タイプ</th><th>データモデル</th><th>代表的な実装例(2026年時点)</th><th>得意なこと</th></tr></thead>
+    <tbody>
+      <tr><td>Key-Value</td><td>キーと値の単純な対応</td><td>Redis, Amazon DynamoDB</td><td>高速な読み書き、キャッシュ</td></tr>
+      <tr><td>Document</td><td>JSONのようなドキュメント単位</td><td>MongoDB, Couchbase</td><td>半構造化データの柔軟な保存</td></tr>
+      <tr><td>Column-family</td><td>列指向の広いテーブル</td><td>Apache Cassandra, HBase</td><td>大量データの書き込みスループット</td></tr>
+      <tr><td>Graph</td><td>ノードとリレーションシップ</td><td>Neo4j, TigerGraph, ArangoDB</td><td>多段の関係を横断する探索</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>ACID(Atomicity, Consistency, Isolation, Durability)は個々のトランザクションが満たす特性の集合であり、BASE(Basically Available, Soft state, Eventually consistent)は可用性と結果整合性を優先する分散システムの設計方針を指す標語です。粒度の異なるこの2つの対比、そしてプロパティグラフ・ハイパーグラフ・トリプル(RDF)という3つのグラフ表現方式の違いも本書付録で扱われています。RDF/トリプルストアはセマンティックウェブの標準技術であるSPARQLで問い合わせるのに対し、本書が中心的に扱うプロパティグラフモデルはCypher(および後述のGQL)で問い合わせる点が大きな違いです。</p>
+</section>
+
+<section class="section" id="update2026">
+  <div class="section-eyebrow"><i class="ti ti-trending-up"></i>2026 Update</div>
+  <h2>2026年時点のアップデート: GQL標準化とGraphRAG</h2>
+  <p>本書の初版は2013年、第2版は2015年に出版されており、原著が書かれた時点では存在しなかった重要な動きが2024年以降に2つ起きています。</p>
+  <div class="diagram-card">
+    <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-14">図を準備しています&hellip;</div></div>
+    <p class="diagram-caption">図14: CypherからGQL、GraphRAGへの流れ</p>
+  </div>
+
+  <h3>1. GQLの国際標準化(2024年)</h3>
+  <p>2024年4月、ISO/IEC合同技術委員会がGQL(Graph Query Language)を国際標準として制定しました。1987年にSQLが標準化されて以来、ISOが新たに制定したデータベース問い合わせ言語としては初めてのものです。GQL標準はCypherを強く参考にした設計になっており、Neo4jは独自のCypherを段階的にGQL準拠へ進化させる方針を明らかにしています。TigerGraphのCEOであるMingxi Wu氏は自社ブログで「グラフDBがリレーショナルDB・Key-Valueストアに次ぐ3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事」と評しており、TheNewStack誌の取材に対してNeo4jのCTOであるPhilip Rathle氏も「SQLと同じ組織から出た国際標準であることが、グラフDBの主流化に大きな説得力を持つ」と述べています。</p>
+
+  <h3>2. GraphRAG: LLMとナレッジグラフの融合</h3>
+  <p>2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented Generation)がベクトル検索やキーワード検索(BM25など)、それらを組み合わせたハイブリッド検索で関連文書を集めるのに対し、GraphRAGはさらにナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。</p>
+  <p>Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends 2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する<code>neo4j-graphrag</code>パッケージ(PyPIの配布名。公式リポジトリ名は<code>neo4j-graphrag-python</code>)、LlamaIndexの<code>PropertyGraphIndex</code>、LangChainの<code>LLMGraphTransformer</code>など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。</p>
+</section>
+
+<section class="section" id="comparison">
+  <div class="section-eyebrow"><i class="ti ti-scale"></i>Landscape 2026</div>
+  <h2>主要グラフデータベースの比較(2026年時点)</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>製品</th><th>データモデル</th><th>クエリ言語</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td>Neo4j</td><td>プロパティグラフ</td><td>Cypher(GQLへ段階的に対応中)</td><td>最大手。公式のGQL準拠ドキュメントによれば必須機能の多くと任意機能の相当部分に対応済みだが、未対応の必須機能が残っており実装が進行中。GraphAcademyなど学習コンテンツが充実、GraphRAG関連ツールも自社提供</td></tr>
+      <tr><td>TigerGraph</td><td>プロパティグラフ</td><td>GSQL(GQL標準化に参画・対応を推進中)</td><td>GSQLは独自言語で、GQLへ全面準拠しているわけではない。並列処理を活かした大規模グラフ分析に強み</td></tr>
+      <tr><td>ArangoDB</td><td>マルチモデル(ドキュメント+グラフ)</td><td>AQL</td><td>ドキュメントDBとグラフDBを1つのエンジンに統合</td></tr>
+      <tr><td>Amazon Neptune</td><td>プロパティグラフ、RDF両対応</td><td>openCypher, Gremlin, SPARQL</td><td>AWSのフルマネージドサービス、複数クエリ言語に対応</td></tr>
+      <tr><td>JanusGraph</td><td>プロパティグラフ</td><td>Gremlin</td><td>OSS。分散ストレージ(Cassandra等)の上に構築可能</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>2026年時点の一部の解説記事では、GQL標準化とAIツーリングの成熟によって、新規のグラフDBプロジェクトがGremlinよりもCypher(あるいはGQL)を選ぶ傾向にあること、GraphRAGが「不正検知・レコメンデーション以外で初めて主流化したグラフDBのユースケース」だと位置づけられています。いずれも個別記事の見立てであり、市場全体の統計として裏づけられたものではない点に注意してください。</p>
+</section>
+
+<section class="section" id="glossary">
+  <div class="section-eyebrow"><i class="ti ti-alphabet-latin"></i>Glossary</div>
+  <h2>用語集</h2>
+  <div class="table-wrap">
+  <table class="kv-table">
+    <tbody>
+      <tr><th>ノード(Node)</th><td>グラフにおける「モノ」を表すデータ単位。ラベルとプロパティを持てる</td></tr>
+      <tr><th>リレーションシップ(Relationship)</th><td>ノード同士のつながり。必ず向きと種類を持つ、一級のデータ構造</td></tr>
+      <tr><th>ラベル(Label)</th><td>ノードの種類を表すタグ(例: <code>Person</code>、<code>Company</code>)</td></tr>
+      <tr><th>プロパティ(Property)</th><td>ノードやリレーションシップに付けられるキー・バリューの属性</td></tr>
+      <tr><th>Cypher</th><td>Neo4j向けに設計された宣言的なグラフクエリ言語</td></tr>
+      <tr><th>GQL</th><td>Cypherのクエリ構成のセマンティクスを多く取り込み、2024年にISO/IEC 39075として国際標準化されたグラフクエリ言語</td></tr>
+      <tr><th>インデックスフリー隣接(index-free adjacency)</th><td>各ノードが隣接ノードへの直接ポインタを保持し、走査コストがグラフ全体の件数に依存しない性質</td></tr>
+      <tr><th>ネイティブグラフ処理</th><td>グラフ専用に設計されたストレージ・実行エンジンでの処理方式</td></tr>
+      <tr><th>三者閉包(triadic closure)</th><td>共通の友人を持つ2人が将来友人になりやすいという経験則</td></tr>
+      <tr><th>ローカルブリッジ(local bridge)</th><td>共通の知人を持たない関係で、削除すると両端の距離が大きく広がるもの</td></tr>
+      <tr><th>GraphRAG</th><td>ナレッジグラフとベクトル検索を組み合わせてLLMの回答精度を高める手法</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+<section class="section" id="critique">
+  <div class="section-eyebrow"><i class="ti ti-alert-triangle"></i>Read Critically</div>
+  <h2>批判的に読む</h2>
+  <p>世界クラスのエンジニアとして本書を鵜呑みにせず、以下の観点も押さえておくと理解が立体的になります。</p>
+  <div class="critique-card"><ul class="critique-list">
+    <li><i class="ti ti-users"></i><span><strong>著者全員がNeo4j(旧Neo Technology)の関係者</strong>であるため、本書は「グラフデータベース全般」というタイトルながら、実質的にはNeo4jとCypherを中心に据えた内容になっています。RDF/トリプルストア(SPARQLで問い合わせる系統)やTigerGraph・JanusGraphのような他のグラフDBアーキテクチャへの言及は限定的です。</span></li>
+    <li><i class="ti ti-gift"></i><span><strong>無料配布そのものがNeo4j社のリード獲得(マーケティング)施策</strong>でもあります。内容の質自体は独立系レビュアーからも一定の評価を得ていますが、この文脈は踏まえておく価値があります。</span></li>
+    <li><i class="ti ti-clock"></i><span><strong>出版は2015年</strong>で、Cypherの構文はその後何度も更新されており(2024年のGQL標準化への追従を含む)、本書に載っているコード例をそのまま最新のNeo4jで実行すると動かない、あるいは非推奨の書き方になっている場合があります。学習の際は必ず公式ドキュメントで最新構文を確認してください。</span></li>
+    <li><i class="ti ti-chart-dots-3"></i><span><strong>ch7の「グラフ理論」は応用寄りの軽い紹介</strong>にとどまっており、三者閉包やローカルブリッジといった概念を数学的にきちんと理解したい場合は、コーネル大学のDavid Easley氏・Jon Kleinberg氏による『Networks, Crowds, and Markets』(無料で読める草稿版あり)を併読することをおすすめします。</span></li>
+    <li><i class="ti ti-robot"></i><span><strong>GraphRAGやグラフニューラルネットワークなど、2020年代後半のAI関連の応用はカバーされていません</strong>。本書は「トランザクショナルなグラフDBの基礎」を固めるための一冊として読み、最新のAI活用トレンドは本記事の「2026年時点のアップデート」や各社の公式ブログで補うのが実務的です。</span></li>
+    <li><i class="ti ti-message-circle"></i><span>独立系のレビュアーからは、印刷版のボリュームがやや薄く感じられ、レビュー当時のNeo4jの最新機能(2.0系)に必ずしも追従しきれていなかったという指摘もありました。技術書全般に言えることですが、公式ドキュメントとの併読が安全です。</span></li>
+  </ul></div>
+</section>
+
+<section class="section" id="checklist">
+  <div class="section-eyebrow"><i class="ti ti-checklist"></i>Checklist</div>
+  <h2>学習チェックリスト</h2>
+  <div class="checklist-progress">
+    <span class="ti ti-flag-2" style="color:var(--forest)"></span>
+    <div class="bar"><div class="bar-fill" id="cl-bar"></div></div>
+    <div class="count" id="cl-count">0 / 11 完了</div>
+  </div>
+  <ul class="checklist" id="checklist-list">
+    <li><label><input type="checkbox"><span class="txt">グラフの基本要素(ノード・リレーションシップ・プロパティ・ラベル)を説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">リレーショナルDB・NoSQL集約指向DB・グラフDBの違いを説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">ラベル付きプロパティグラフモデルで簡単なドメインをモデリングできる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">Cypherの基本文法(MATCH / WHERE / RETURN / CREATE)を読み書きできる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">クエリ駆動のデータモデリング(質問からモデルを作る)を説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">よくあるモデリングのアンチパターンを2つ以上挙げられる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">インデックスフリー隣接の意味と、なぜ性能上有利なのかを説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">グラフDBが向いているユースケースを5つ以上挙げられる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">BFS・DFS・Dijkstra法・A*アルゴリズムの違いと用途を説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">三者閉包やローカルブリッジなど社会ネットワーク分析の基本概念を説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="txt">GQL標準化とGraphRAGなど、2024年以降の主要な動向を把握している</span></label></li>
+  </ul>
+</section>
+
+<section class="section" id="summary">
+  <div class="section-eyebrow"><i class="ti ti-flag-2"></i>Summary</div>
+  <h2>まとめ</h2>
+  <p>グラフデータベースは「関係」を第一級のデータとして扱うことで、リレーショナルDBやNoSQLでは苦労しがちな「多段のつながりをたどるクエリ」を高速かつ表現力豊かに書けるようにする技術です。本書はその考え方を、ラベル付きプロパティグラフモデル・Cypher・アプリケーション構築の実務・内部構造・グラフ理論という5つの切り口から一貫して説明しており、出版から10年以上経った今でも基礎を学ぶ教材として通用します。一方で、GQLの国際標準化やGraphRAGの台頭など、2024年以降の動きは本書に含まれていないため、最新の一次情報と組み合わせて学習することをおすすめします。</p>
+</section>
+
+<section class="section" id="references">
+  <div class="section-eyebrow"><i class="ti ti-link"></i>References</div>
+  <h2>参考文献</h2>
+
+  <div class="ref-group-title">公式情報源</div>
+  <div class="ref-grid">
+    <div class="ref-card"><i class="ti ti-book"></i><div><div class="ref-title">O&rsquo;Reilly Media &mdash; <em>Graph Databases, 2nd Edition</em> 書籍ページ(目次・概要)</div><a class="ref-url" href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/" target="_blank" rel="noopener">https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/</a></div></div>
+    <div class="ref-card"><i class="ti ti-download"></i><div><div class="ref-title">Neo4j &mdash; 無料eBookダウンロードページ</div><a class="ref-url" href="https://neo4j.com/lp/book-graph-databases/" target="_blank" rel="noopener">https://neo4j.com/lp/book-graph-databases/</a></div></div>
+    <div class="ref-card"><i class="ti ti-building-store"></i><div><div class="ref-title">Neo4j &mdash; O&rsquo;Reilly『Graph Databases』公式紹介ページ</div><a class="ref-url" href="https://neo4j.com/graph-databases-book-sx/" target="_blank" rel="noopener">https://neo4j.com/graph-databases-book-sx/</a></div></div>
+    <div class="ref-card"><i class="ti ti-school"></i><div><div class="ref-title">Neo4j &mdash; GraphAcademy「Neo4j Fundamentals」コース(グラフの基礎概念を扱う無料コース)</div><a class="ref-url" href="https://graphacademy.neo4j.com/courses/neo4j-fundamentals" target="_blank" rel="noopener">https://graphacademy.neo4j.com/courses/neo4j-fundamentals</a></div></div>
+    <div class="ref-card"><i class="ti ti-git-compare"></i><div><div class="ref-title">Neo4j Blog &mdash; Native vs. Non-Native Graph Database</div><a class="ref-url" href="https://neo4j.com/blog/native-vs-non-native-graph-technology/" target="_blank" rel="noopener">https://neo4j.com/blog/native-vs-non-native-graph-technology/</a></div></div>
+    <div class="ref-card"><i class="ti ti-question-mark"></i><div><div class="ref-title">Neo4j Blog &mdash; Will It Graph? Identifying a Good Fit for Graph Databases, Part 1</div><a class="ref-url" href="https://neo4j.com/blog/developer/will-it-graph-identifying-a-good-fit-for-graph-databases-part-1" target="_blank" rel="noopener">https://neo4j.com/blog/developer/will-it-graph-identifying-a-good-fit-for-graph-databases-part-1</a></div></div>
+    <div class="ref-card"><i class="ti ti-certificate"></i><div><div class="ref-title">Neo4j &mdash; GQL国際標準化プレスリリース(2024年4月)</div><a class="ref-url" href="https://neo4j.com/press-releases/gql-standard/" target="_blank" rel="noopener">https://neo4j.com/press-releases/gql-standard/</a></div></div>
+  </div>
+
+  <div class="ref-group-title">国際的な開発者・著名人による解説と書評</div>
+  <div class="ref-grid">
+    <div class="ref-card"><i class="ti ti-message-circle"></i><div><div class="ref-title">InfoQ &mdash; <em>Graph Databases</em> Book Review and Interview(著者Ian Robinson・Jim Webberへのインタビュー)</div><a class="ref-url" href="https://www.infoq.com/articles/graph-databases-book-review" target="_blank" rel="noopener">https://www.infoq.com/articles/graph-databases-book-review</a></div></div>
+    <div class="ref-card"><i class="ti ti-star"></i><div><div class="ref-title">i-programmer.info &mdash; Kay Ewbank氏による書評</div><a class="ref-url" href="https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html" target="_blank" rel="noopener">https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html</a></div></div>
+    <div class="ref-card"><i class="ti ti-star"></i><div><div class="ref-title">datawookie.dev &mdash; 独立系開発者による書評</div><a class="ref-url" href="https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/" target="_blank" rel="noopener">https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/</a></div></div>
+    <div class="ref-card"><i class="ti ti-route"></i><div><div class="ref-title">Dan McCreary &mdash; &ldquo;The Neighborhood Walk Story&rdquo;(Medium)</div><a class="ref-url" href="https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a" target="_blank" rel="noopener">https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a</a></div></div>
+    <div class="ref-card"><i class="ti ti-certificate"></i><div><div class="ref-title">Mingxi Wu(TigerGraph CEO)&mdash; &ldquo;The Rise of GQL: A New ISO Standard in Graph Query Language&rdquo;(TigerGraph公式ブログ)</div><a class="ref-url" href="https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language" target="_blank" rel="noopener">https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language</a></div></div>
+    <div class="ref-card"><i class="ti ti-news"></i><div><div class="ref-title">TheNewStack &mdash; &ldquo;GQL: A New ISO Standard for Querying Graph Databases&rdquo;</div><a class="ref-url" href="https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/" target="_blank" rel="noopener">https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/</a></div></div>
+    <div class="ref-card"><i class="ti ti-trending-up"></i><div><div class="ref-title">Michael Hunger(Neo4j VP of Product Innovation)&mdash; &ldquo;Graph and AI Trends 2026: Why Is AI Running but Not Yet Delivering?&rdquo;</div><a class="ref-url" href="https://www.wearedevelopers.com/magazine/680-graph-and-ai-trends-2026-why-is-ai-running-but-not-yet-delivering" target="_blank" rel="noopener">https://www.wearedevelopers.com/magazine/680-graph-and-ai-trends-2026-why-is-ai-running-but-not-yet-delivering</a></div></div>
+    <div class="ref-card"><i class="ti ti-pencil"></i><div><div class="ref-title">Daniel Wertheim &mdash; 開発者個人ブログでの紹介記事</div><a class="ref-url" href="https://danielwertheim.se/do-not-miss-the-free-e-book-graph-databases/" target="_blank" rel="noopener">https://danielwertheim.se/do-not-miss-the-free-e-book-graph-databases/</a></div></div>
+  </div>
+
+  <div class="ref-group-title">学術・関連分野の一次資料</div>
+  <div class="ref-grid">
+    <div class="ref-card"><i class="ti ti-school"></i><div><div class="ref-title">David Easley &amp; Jon Kleinberg(コーネル大学)&mdash; <em>Networks, Crowds, and Markets: Reasoning About a Highly Connected World</em>(草稿版無料公開)</div><a class="ref-url" href="http://www.cs.cornell.edu/home/kleinber/networks-book/" target="_blank" rel="noopener">http://www.cs.cornell.edu/home/kleinber/networks-book/</a></div></div>
+    <div class="ref-card"><i class="ti ti-book"></i><div><div class="ref-title">Martin Fowler &amp; Pramod Sadalage &mdash; <em>NoSQL Distilled</em> 書籍情報(グラフDBを含むNoSQL全体の分類)</div><a class="ref-url" href="https://pearson.com/store/p/nosql-distilled-a-brief-guide-to-the-emerging-world-of-polyglot-persistence/P200000009587/9780321826626" target="_blank" rel="noopener">https://pearson.com/store/p/nosql-distilled-a-brief-guide.../9780321826626</a></div></div>
+    <div class="ref-card"><i class="ti ti-microphone"></i><div><div class="ref-title">ThoughtWorks &mdash; Martin Fowlerによる「Rise of NoSQL」ポッドキャスト</div><a class="ref-url" href="https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql" target="_blank" rel="noopener">https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql</a></div></div>
+  </div>
+
+  <div class="ref-group-title">2025〜2026年のGraphRAG・グラフDB動向</div>
+  <div class="ref-grid">
+    <div class="ref-card"><i class="ti ti-robot"></i><div><div class="ref-title">Atlan &mdash; &ldquo;Neo4j GraphRAG vs. LlamaIndex vs. LangChain Graph Transformer&rdquo;</div><a class="ref-url" href="https://atlan.com/know/ai-agent/knowledge-graph/neo4j-graphrag-vs-llamaindex-vs-langchain/" target="_blank" rel="noopener">https://atlan.com/know/ai-agent/knowledge-graph/neo4j-graphrag-vs-llamaindex-vs-langchain/</a></div></div>
+    <div class="ref-card"><i class="ti ti-trending-up"></i><div><div class="ref-title">&ldquo;Graph Databases in 2026: Neo4j, ArangoDB, TigerGraph and the GraphRAG Moment&rdquo;</div><a class="ref-url" href="https://pdpspectra.com/blog/neo4j-vs-arangodb-2026" target="_blank" rel="noopener">https://pdpspectra.com/blog/neo4j-vs-arangodb-2026</a></div></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>Graph Databases: New Opportunities for Connected Data 初学者ガイド &mdash; 本ページは同書の要約・再構成であり、原文の引用ではありません。最新情報は各参照元をご確認ください。</p>
+</footer>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.min.js" integrity="sha384-1CMXl090wj8Dd6YfnzSQUOgWbE6suWCaenYG7pox5AX7apTpY3PmJMeS2oPql4Gk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.12.0/build/highlight.min.js" integrity="sha384-wjfDDhOPPdjtva8vWBhWeVprSpmxisEu5aYT3q1JyACqXpdKpo3PWZTMVq24MBix" crossorigin="anonymous"></script>
+<script>
+function dedent(str){
+  const lines = str.replace(/^\n/, "").replace(/\s+$/, "").split("\n");
+  let minIndent = Infinity;
+  for (const line of lines){
+    if (line.trim().length === 0) continue;
+    const m = line.match(/^\s*/);
+    minIndent = Math.min(minIndent, m[0].length);
+  }
+  if (!isFinite(minIndent)) minIndent = 0;
+  return lines.map(l => l.slice(minIndent)).join("\n");
+}
+
+const DIAGRAMS = {
+  "diag-01": `flowchart TD
+    S0["Step0 グラフとは何か"] --> S1["Step1 なぜグラフデータベースか"]
+    S1 --> S2["Step2 プロパティグラフモデル"]
+    S2 --> S3["Step3 Cypher入門"]
+    S3 --> S4["Step4 アプリケーション構築"]
+    S4 --> S5["Step5 実世界の活用事例"]
+    S5 --> S6["Step6 内部構造"]
+    S6 --> S7["Step7 グラフ理論と予測分析"]
+    S7 --> SA["付録 NoSQL全体像"]
+    SA --> S26["2026年アップデート"]
+    classDef hub fill:#c9c4ef,color:#221f52
+    classDef done fill:#bfe4d2,color:#123722
+    class S0 hub
+    class S26 done`,
+  "diag-02": `flowchart LR
+    P1["Person 田中太郎"] -->|"WORKS_AT since 2019"| C1["Company 灯台商事"]
+    P1 -->|"KNOWS since 2018"| P2["Person 鈴木花子"]
+    P2 -->|"WORKS_AT since 2020"| C1`,
+  "diag-03": `flowchart LR
+    Q["接続されたデータをどう保存するか"] --> A["リレーショナルDB"]
+    Q --> B["NoSQL集約指向DB"]
+    Q --> C["グラフDB"]
+    A --> A1["JOINはクエリ時に計算コストが増大"]
+    A --> A2["スキーマ変更が高コスト"]
+    B --> B1["KeyValue Document Column系"]
+    B --> B2["集約をまたぐ関係はアプリ側で処理"]
+    C --> C1["リレーションシップが第一級のデータ"]
+    C --> C2["接続をたどる性能がグラフ全体の件数に依存しにくい"]
+    classDef hub fill:#c9c4ef,color:#221f52
+    classDef done fill:#bfe4d2,color:#123722
+    class Q hub
+    class C1 done
+    class C2 done`,
+  "diag-04": `flowchart TD
+    Q1["聞きたい質問を洗い出す"] --> Q2["質問からモデルを描く"]
+    Q2 --> Q3["ラベルとリレーションシップ種別を決める"]
+    Q3 --> Q4["プロパティを配置する"]
+    Q4 --> Q5["テストデータで質問に答えられるか検証する"]
+    Q5 --> Q6["反復的に改善する"]
+    Q6 --> Q1`,
+  "diag-05": `flowchart TD
+    C1["MATCH でパターンを宣言する"] --> C2["WHERE で条件を絞り込む"]
+    C2 --> C3["RETURN で結果を取り出す"]
+    C3 --> C4["ORDER BY LIMIT などで整形する"]`,
+  "diag-06": `flowchart TD
+    D1["データモデリング"] --> D2["アプリケーションアーキテクチャ設計"]
+    D2 --> D3["テスト駆動でモデルを検証"]
+    D3 --> D4["キャパシティプランニング"]
+    D4 --> D5["インポートと一括ロード"]
+    D5 --> D1`,
+  "diag-07": `flowchart LR
+    H["組織がグラフDBを選ぶ理由"] --> U1["ソーシャル"]
+    H --> U2["レコメンデーション"]
+    H --> U3["ジオ 地理空間"]
+    H --> U4["マスターデータ管理"]
+    H --> U5["ネットワークとデータセンター管理"]
+    H --> U6["認可とアクセス制御"]
+    classDef hub fill:#c9c4ef,color:#221f52
+    class H hub`,
+  "diag-08": `flowchart TD
+    N0["ネイティブグラフ処理"] --> N1["各ノードが隣接ノードへの直接ポインタを保持"]
+    N1 --> N2["走査コストはグラフ全体の件数に依存しない"]
+    M0["非ネイティブなグラフ処理"] --> M1["リレーショナルやKVストアの上にグラフ層を実装"]
+    M1 --> M2["1ホップたどるたびにインデックス参照が発生"]
+    N2 -.->|"対比"| M2
+    classDef hub fill:#c9c4ef,color:#221f52
+    class N0 hub
+    class M0 hub`,
+  "diag-09": `flowchart TD
+    I["グラフDBの内部構造"] --> I1["ネイティブグラフストレージ"]
+    I --> I2["プログラマティックAPI"]
+    I --> I3["非機能特性"]
+    I3 --> I3a["トランザクション ACID"]
+    I3 --> I3b["可用性 クラスタリング"]
+    I3 --> I3c["スケール"]
+    classDef hub fill:#c9c4ef,color:#221f52
+    class I hub`,
+  "diag-10": `flowchart TD
+    B0["幅優先探索 BFS"] --> B1["開始ノードから近い順に探索する"]
+    B1 --> B2["キューを使う"]
+    B2 --> B3["最短ホップ数を見つけやすい"]
+    D0["深さ優先探索 DFS"] --> D1["1本の経路を深く進む"]
+    D1 --> D2["スタックや再帰を使う"]
+    D2 --> D3["経路の網羅探索や循環検出に向く"]
+    B0 -.->|"対比"| D0
+    classDef hub fill:#c9c4ef,color:#221f52
+    class B0 hub
+    class D0 hub`,
+  "diag-11": `flowchart TD
+    G1["開始ノードの距離を0 他をすべて無限大に初期化"] --> G2["未確定ノードの中から最小距離のノードを選ぶ"]
+    G2 --> G3["隣接ノードの距離を更新できるか確認する"]
+    G3 --> G4["更新できれば距離を上書きする"]
+    G4 --> G5["選んだノードを確定済みにする"]
+    G5 --> G6{"距離が判明した未確定ノードが残っているか"}
+    G6 -->|"はい"| G2
+    G6 -->|"いいえ"| G7["開始ノードから到達可能なノードの最短距離が確定"]
+    classDef done fill:#bfe4d2,color:#123722
+    class G7 done`,
+  "diag-12": `flowchart TD
+    A1["Dijkstra法 実コストのみで優先度を決める"] --> A2["A* 実コストに加えゴールまでの推定コスト ヒューリスティックを加える"]
+    A2 --> A3["有望な方向を優先的に探索できる"]
+    A3 --> A4["適切なヒューリスティックなら最短性を保ったまま探索を高速化"]`,
+  "diag-13": `flowchart TD
+    T1["AとBが友人 かつ BとCが友人"] --> T2["ACの間に新しい関係が生まれやすくなる"]
+    T2 --> T3["三者閉包 トライアド"]
+    T4["互いに共通の知人を持たない関係"] --> T5["ローカルブリッジ"]
+    T5 --> T6["削除すると両端の距離が大きく広がる橋渡し役"]`,
+  "diag-14": `flowchart TD
+    U1["Cypher 2011年よりNeo4jのクエリ言語として普及"] --> U2["2024年4月 GQLがISO IEC 39075として国際標準化"]
+    U2 --> U3["Neo4j含む各社が段階的なGQL対応を進行中"]
+    U3 --> U4["ベクター検索とグラフを組み合わせたGraphRAGが台頭"]
+    U4 --> U5["LLMの回答をグラフの関係性で裏付ける取り組みが広がる"]
+    classDef hub fill:#c9c4ef,color:#221f52
+    classDef done fill:#bfe4d2,color:#123722
+    class U1 hub
+    class U5 done`
+};
+
+let mermaidReady = false;
+try{
+  if (window.mermaid){
+    mermaid.initialize({
+      startOnLoad:false,
+      theme:"base",
+      themeVariables:{
+        background:"#fffdf8",
+        primaryColor:"#fffdf8",
+        primaryTextColor:"#241f3d",
+        primaryBorderColor:"#c8bfe0",
+        lineColor:"#8c84b8",
+        fontFamily:"Zen Kaku Gothic New, sans-serif",
+        fontSize:"16px",
+        edgeLabelBackground:"#f7f3ea"
+      },
+      flowchart:{ useMaxWidth:false, htmlLabels:true }
+    });
+    mermaidReady = true;
+  }
+}catch(e){ console.error("mermaid init failed", e); }
+
+async function renderDiagram(id){
+  const holder = document.querySelector(`[data-diagram="${id}"]`);
+  if (!holder) return;
+  const src = DIAGRAMS[id];
+  if (!src) { holder.textContent = "図の読み込みに失敗しました"; return; }
+  if (!mermaidReady){ holder.textContent = "図の読み込みに失敗しました(スクリプトを読み込めませんでした)"; return; }
+  try{
+    const { svg } = await mermaid.render(id + "-svg", dedent(src));
+    holder.outerHTML = `<div class="diagram-render" id="${id}-holder"></div>`;
+    const target = document.getElementById(id + "-holder");
+    target.innerHTML = svg;
+    const svgEl = target.querySelector("svg");
+    if (svgEl){
+      svgEl.removeAttribute("width");
+      svgEl.removeAttribute("height");
+      const vb = svgEl.getAttribute("viewBox");
+      if (vb){
+        const parts = vb.split(/\s+/).map(Number);
+        svgEl.style.width = parts[2] + "px";
+      }
+      svgEl.style.maxWidth = "none";
+      svgEl.style.height = "auto";
+      svgEl.style.overflow = "visible";
+      svgEl.style.flexShrink = "0";
+    }
+  }catch(e){
+    holder.textContent = "図の描画中にエラーが発生しました";
+    console.error("mermaid render error", id, e);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  Object.keys(DIAGRAMS).forEach(renderDiagram);
+
+  // Code block injection
+  const cypherSrc = document.getElementById("cypher-src");
+  const cypherCode = document.getElementById("cypher-code");
+  if (cypherSrc && cypherCode){
+    cypherCode.textContent = dedent(cypherSrc.textContent);
+    if (window.hljs) hljs.highlightElement(cypherCode);
+  }
+
+  // Sidebar mobile toggle
+  const sidebar = document.getElementById("sidebar");
+  const scrim = document.getElementById("scrim");
+  const menuBtn = document.getElementById("menuBtn");
+  function openMenu(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
+  function closeMenu(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+  if (menuBtn) menuBtn.addEventListener("click", () => {
+    sidebar.classList.contains("open") ? closeMenu() : openMenu();
+  });
+  if (scrim) scrim.addEventListener("click", closeMenu);
+  document.querySelectorAll(".sidebar a.nav-a").forEach(a => {
+    a.addEventListener("click", closeMenu);
+  });
+
+  // Scroll-position based active nav highlighting
+  const navLinks = Array.from(document.querySelectorAll(".sidebar a.nav-a"));
+  const navTargets = navLinks.map(a => {
+    const id = a.getAttribute("href").slice(1);
+    return { link: a, el: document.getElementById(id) };
+  }).filter(t => t.el);
+
+  let ticking = false;
+  function updateActive(){
+    ticking = false;
+    const threshold = window.innerHeight * 0.25;
+    let active = navTargets[0];
+    for (const t of navTargets){
+      const rect = t.el.getBoundingClientRect();
+      if (rect.top <= threshold) active = t;
+    }
+    navTargets.forEach(t => t.link.classList.toggle("active", t === active));
+  }
+  window.addEventListener("scroll", () => {
+    if (!ticking){
+      window.requestAnimationFrame(updateActive);
+      ticking = true;
+    }
+  });
+  updateActive();
+
+  // Checklist
+  const items = Array.from(document.querySelectorAll("#checklist-list li"));
+  const bar = document.getElementById("cl-bar");
+  const count = document.getElementById("cl-count");
+  function updateChecklist(){
+    const done = items.filter(li => li.querySelector("input").checked).length;
+    items.forEach(li => li.classList.toggle("done", li.querySelector("input").checked));
+    bar.style.width = (done / items.length * 100) + "%";
+    count.textContent = `${done} / ${items.length} 完了`;
+  }
+  items.forEach(li => {
+    li.querySelector("input").addEventListener("change", updateChecklist);
+  });
+  updateChecklist();
+});
+</script>
+</body>
+</html>
