@@ -361,11 +361,21 @@ ul.tick li::before{
 .checklist-progress .count{font-size:1rem;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
 .checklist{list-style:none;padding:0;margin:0;}
 .checklist li{
-  display:flex;align-items:flex-start;gap:.75rem;
-  padding:.75rem .9rem;
   border-radius:var(--radius-sm);
-  cursor:pointer;
   transition:background .15s ease;
+}
+.checklist li label{
+  position:relative;display:flex;align-items:flex-start;gap:.75rem;
+  padding:.75rem .9rem;
+  cursor:pointer;
+}
+/* 視覚的に隠すがフォーカス・支援技術からは到達可能 */
+.checklist li input[type="checkbox"]{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+.checklist li input[type="checkbox"]:focus-visible + .box{
+  outline:2px solid var(--forest);outline-offset:2px;
 }
 .checklist li:hover{background:var(--card-2);}
 .checklist li .box{
@@ -470,7 +480,7 @@ footer.page-footer{
 </head>
 <body>
 
-<button class="menu-toggle" id="menuToggle" aria-label="メニューを開く"><i class="ti ti-menu-2"></i></button>
+<button type="button" class="menu-toggle" id="menuToggle" aria-label="メニューを開く" aria-controls="sidebar" aria-expanded="false"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
 <div class="scrim" id="scrim"></div>
 
 <nav class="sidebar" id="sidebar">
@@ -1225,15 +1235,15 @@ thread_cache_size = 100</script>
     <div class="bar"><div class="bar-fill" id="checklistBar"></div></div>
   </div>
   <ul class="checklist" id="checklistItems">
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">自分のサービスにとっての「SLO」を、可用性・レイテンシ・エラー率の観点で言語化できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label"><code>EXPLAIN</code>の出力を読み、フルスキャンが起きているかどうかを判断できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">複合インデックスの列順を、等価条件・範囲条件・ソートの観点で設計できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">InnoDBバッファプールのサイジングを、物理メモリと接続数から見積もれる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">論理バックアップと物理バックアップの使い分けを説明できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">レプリケーション遅延の主な原因を3つ以上挙げられる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">読み取りスケーリングと書き込みシャーディングのどちらを先に検討すべきか説明できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">自社のコンプライアンス要件（GDPR、PCI DSSなど）とデータベース設計の関係を意識できる</span></li>
-    <li><span class="box"><i class="ti ti-check"></i></span><span class="label">利用中のMySQLバージョンの公式リリースノートを確認する習慣がある</span></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">自分のサービスにとっての「SLO」を、可用性・レイテンシ・エラー率の観点で言語化できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label"><code>EXPLAIN</code>の出力を読み、フルスキャンが起きているかどうかを判断できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">複合インデックスの列順を、等価条件・範囲条件・ソートの観点で設計できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">InnoDBバッファプールのサイジングを、物理メモリと接続数から見積もれる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">論理バックアップと物理バックアップの使い分けを説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">レプリケーション遅延の主な原因を3つ以上挙げられる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">読み取りスケーリングと書き込みシャーディングのどちらを先に検討すべきか説明できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">自社のコンプライアンス要件（GDPR、PCI DSSなど）とデータベース設計の関係を意識できる</span></label></li>
+    <li><label><input type="checkbox"><span class="box" aria-hidden="true"><i class="ti ti-check"></i></span><span class="label">利用中のMySQLバージョンの公式リリースノートを確認する習慣がある</span></label></li>
   </ul>
 </section>
 
@@ -1443,11 +1453,13 @@ const DIAGRAMS = {
     sidebar.classList.add('open');
     scrim.classList.add('show');
     menuToggle.setAttribute('aria-label','メニューを閉じる');
+    menuToggle.setAttribute('aria-expanded','true');
   }
   function closeMenu(){
     sidebar.classList.remove('open');
     scrim.classList.remove('show');
     menuToggle.setAttribute('aria-label','メニューを開く');
+    menuToggle.setAttribute('aria-expanded','false');
   }
   menuToggle.addEventListener('click', function(){
     if(sidebar.classList.contains('open')){ closeMenu(); } else { openMenu(); }
@@ -1515,8 +1527,10 @@ const DIAGRAMS = {
     checklistBar.style.width = (total ? (done / total * 100) : 0) + '%';
   }
   checklistItems.querySelectorAll('li').forEach(function(li){
-    li.addEventListener('click', function(){
-      li.classList.toggle('done');
+    var input = li.querySelector('input[type="checkbox"]');
+    if(!input){ return; }
+    input.addEventListener('change', function(){
+      li.classList.toggle('done', input.checked);
       updateChecklistProgress();
     });
   });
