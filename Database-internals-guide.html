@@ -13,26 +13,28 @@
 <style>
 
 :root{
-  --paper:#f7f3ea;
+  --paper:#ede1c8;
+  --paper-deep:#e4d4b0;
   --card:#ffffff;
+  --stripe:rgba(58,46,20,.05);
   --ink:#2a2318;
   --ink-soft:#5c5241;
   --ink-faint:#8a7f6c;
-  --border:#e4d9c2;
-  --border-soft:#efe7d5;
+  --border:#d3bf94;
+  --border-soft:#e2d3ab;
   --indigo:#4a54c4;
   --indigo-dark:#343d94;
   --indigo-soft:#e8e9fa;
   --gold:#ad7f26;
   --gold-dark:#7d5c17;
-  --gold-soft:#faf0da;
+  --gold-soft:#f7e6ba;
   --forest:#3c7a55;
   --forest-dark:#285739;
   --forest-soft:#e5f2e9;
   --plum:#8a4a78;
   --plum-dark:#642f57;
   --plum-soft:#f6e9f2;
-  --shadow:0 1px 2px rgba(42,35,24,.06), 0 4px 16px rgba(42,35,24,.06);
+  --shadow:0 1px 2px rgba(42,35,24,.08), 0 6px 20px rgba(42,35,24,.09);
   --radius:14px;
   --sidebar-w:290px;
 }
@@ -123,29 +125,40 @@ img,svg{max-width:100%;}
 .prose h4{font-size:1.08rem;color:var(--ink-soft);margin-top:1.3rem;}
 
 /* ---------- kv-table (book info) ---------- */
-.book-panel{display:flex;gap:1.8rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.4rem;}
+.book-panel{display:flex;gap:1.8rem;flex-wrap:wrap;align-items:stretch;margin-top:1.4rem;}
 .book-cover{
   flex:0 0 200px;min-height:280px;border-radius:var(--radius);
   background:linear-gradient(155deg,var(--indigo) 0%,var(--indigo-dark) 62%,var(--plum-dark) 100%);
   color:#fff;padding:1.6rem 1.3rem;display:flex;flex-direction:column;justify-content:space-between;
   box-shadow:var(--shadow);
 }
+
 .book-cover-kicker{font-size:1rem;letter-spacing:.08em;text-transform:uppercase;opacity:.75;}
 .book-cover-title{font-family:"Source Serif 4",serif;font-weight:700;font-size:1.28rem;line-height:1.35;margin:.8rem 0;}
 .book-cover-sub{font-size:1rem;opacity:.85;line-height:1.5;}
 .book-cover-author{font-size:1rem;opacity:.9;border-top:1px solid rgba(255,255,255,.3);padding-top:.7rem;margin-top:.7rem;}
 .book-info-wrap{flex:1;min-width:280px;}
 
-.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);margin:1rem 0 1.4rem 0;min-width:0;}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);margin:1rem 0 1.4rem 0;min-width:0;box-shadow:var(--shadow);}
 table{border-collapse:collapse;width:100%;min-width:480px;font-size:1rem;}
 .kv-table{min-width:0;}
-th,td{padding:.65rem .9rem;text-align:left;border-bottom:1px solid var(--border-soft);vertical-align:top;}
-thead th{background:transparent;color:var(--ink-faint);font-size:1rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid var(--border);}
-.kv-table th{width:9.5em;color:var(--ink-soft);font-weight:700;background:transparent;}
+th,td{padding:.7rem .9rem;text-align:left;border-bottom:1px solid var(--border-soft);vertical-align:top;}
+thead th{background:var(--indigo-soft);color:var(--indigo-dark);font-size:1rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid var(--indigo);}
+.kv-table th{width:9.5em;color:var(--ink-soft);font-weight:700;background:var(--paper-deep);}
 tbody tr:last-child td{border-bottom:none;}
-table tbody tr:nth-child(even){background:var(--paper);}
+table tbody tr:nth-child(even){background:var(--stripe);}
 .kv-table tbody tr:nth-child(even){background:transparent;}
 .table-wrap table{margin:0;}
+td.part-cell{
+  background:var(--indigo-soft);color:var(--indigo-dark);font-weight:700;
+  text-align:center;vertical-align:middle;border-right:3px solid var(--indigo);
+  letter-spacing:.02em;
+}
+td.part-cell.plum{background:var(--plum-soft);color:var(--plum-dark);border-right-color:var(--plum);}
+td.part-cell.gold{background:var(--gold-soft);color:var(--gold-dark);border-right-color:var(--gold);}
+td.chapter-num{
+  text-align:center;font-weight:700;color:var(--ink-soft);width:3em;background:transparent;
+}
 
 /* ---------- callouts ---------- */
 .callout{
@@ -229,19 +242,19 @@ table tbody tr:nth-child(even){background:var(--paper);}
 .checklist-count{font-size:1rem;color:var(--ink-soft);font-weight:700;white-space:nowrap;}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:.5rem;}
 .check-item{
-  display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .7rem;border-radius:10px;cursor:pointer;
+  display:flex;gap:.7rem;align-items:center;padding:.6rem .7rem;border-radius:10px;cursor:pointer;
   border:1px solid transparent;
 }
 .check-item:hover{background:var(--paper);}
 .check-box{
   flex-shrink:0;width:1.25rem;height:1.25rem;border-radius:6px;border:2px solid var(--border);
-  margin-top:.1rem;display:flex;align-items:center;justify-content:center;background:var(--card);
+  display:flex;align-items:center;justify-content:center;background:var(--card);
 }
-.check-box .ti{font-size:1rem;color:#fff;display:none;}
+.check-box .ti{font-size:.9rem;line-height:1;color:#fff;display:none;}
 .check-item.done .check-box{background:var(--forest);border-color:var(--forest);}
 .check-item.done .check-box .ti{display:block;}
 .check-item.done .check-label{color:var(--ink-faint);text-decoration:line-through;}
-.check-label{font-size:1rem;color:var(--ink);}
+.check-label{font-size:1rem;line-height:1.4;color:var(--ink);}
 
 /* ---------- footer ---------- */
 .footer{background:var(--card);border-top:1px solid var(--border);text-align:center;}
@@ -344,7 +357,7 @@ table tbody tr:nth-child(even){background:var(--paper);}
 <header class="hero">
   <span class="hero-eyebrow"><i class="ti ti-database"></i> 分散データシステム 初学者向け完全ガイド</span>
   <h1 class="hero-title">Database Internals 完全ガイド<br>分散データシステムの内部をステップバイステップで理解する</h1>
-  <p class="hero-lead">原著 <em>Database Internals: A Deep Dive into How Distributed Data Systems Work</em>（Alex Petrov 著、O'Reilly Media、2019年）の構成を尊重しつつ、初めてデータベース内部構造や分散システム理論に触れる読者でも理解できるよう、独自の言葉で噛み砕いて再構成した学習用ドキュメントです。全14章を18のSTEPに整理し、具体例を添えて解説します。</p>
+  <p class="hero-lead">原著 <em>Database Internals: A Deep Dive into How Distributed Data Systems Work</em>（Alex Petrov 著、O'Reilly Media、2019年）の構成を尊重しつつ、初めてデータベース内部構造や分散システム理論に触れる読者でも理解できるよう、独自の言葉で噛み砕いて再構成した学習用ドキュメントです。全14章を18のSTEPに整理し、Mermaid図と具体例を添えて解説します。</p>
   <p class="hero-note">最終確認日 2026年9月21日時点の情報にもとづき作成。参考文献は本ページ末尾に一覧で掲載しています。</p>
 </header>
 
@@ -872,23 +885,23 @@ table tbody tr:nth-child(even){background:var(--paper);}
   <div class="prose">
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Part</th><th>章</th><th>章タイトル（原題）</th><th>主な内容</th></tr></thead>
+        <thead><tr><th style="width:6em;">Part</th><th style="width:3.5em;">章</th><th style="width:15em;">章タイトル（原題）</th><th>主な内容</th></tr></thead>
         <tbody>
-          <tr><td rowspan="7">I<br>ストレージ<br>エンジン</td><td>1</td><td>Introduction and Overview</td><td>DBMSアーキテクチャ、メモリ型/ディスク型、行指向/列指向、データファイルとインデックスファイル</td></tr>
-          <tr><td>2</td><td>B-Tree Basics</td><td>二分探索木からB-Treeへ、ディスク向け構造、階層と探索アルゴリズム</td></tr>
-          <tr><td>3</td><td>File Formats</td><td>バイナリエンコーディング、スロットページ、可変長データの管理、チェックサム</td></tr>
-          <tr><td>4</td><td>Implementing B-Trees</td><td>ページヘッダ、オーバーフローページ、バイナリサーチ、リバランス、圧縮、デフラグ</td></tr>
-          <tr><td>5</td><td>Transaction Processing and Recovery</td><td>バッファ管理、WAL、ARIES、分離レベル、OCC/PCC/MVCC</td></tr>
-          <tr><td>6</td><td>B-Tree Variants</td><td>Copy-on-Write（LMDB）、WiredTiger、FD-Tree、Bw-Tree、Cache-Oblivious B-Tree</td></tr>
-          <tr><td>7</td><td>Log-Structured Storage</td><td>LSM-Tree、SSTable、Bloom Filter、コンパクション、Bitcask、WiscKey</td></tr>
-          <tr><td rowspan="7">II<br>分散<br>システム</td><td>8</td><td>Introduction and Overview</td><td>分散システムの難しさ、Two Generals Problem、FLP不可能性、障害モデル</td></tr>
-          <tr><td>9</td><td>Failure Detection</td><td>ハートビート、Φ Accrual障害検出器、ゴシップベースの障害検出</td></tr>
-          <tr><td>10</td><td>Leader Election</td><td>Bullyアルゴリズム、招待アルゴリズム、リングアルゴリズム</td></tr>
-          <tr><td>11</td><td>Replication and Consistency</td><td>CAP定理、線形化可能性、逐次/因果一貫性、結果整合性、CRDT</td></tr>
-          <tr><td>12</td><td>Anti-Entropy and Dissemination</td><td>Read Repair、Merkle Tree、Hinted Handoff、Gossipプロトコル</td></tr>
-          <tr><td>13</td><td>Distributed Transactions</td><td>2PC、3PC、Calvin、Spanner、Percolator、一貫性ハッシュ法</td></tr>
-          <tr><td>14</td><td>Consensus</td><td>Paxos系（Multi/Fast/Egalitarian/Flexible）、Raft、ビザンチン合意（PBFT）</td></tr>
-          <tr><td>付録</td><td>A</td><td>Bibliography</td><td>100本以上の論文と10冊以上の書籍を中心に、OSS実装などの参考資料も含む参考文献一覧</td></tr>
+          <tr><td class="part-cell" rowspan="7">I<br>ストレージ<br>エンジン</td><td class="chapter-num">1</td><td>Introduction and Overview</td><td>DBMSアーキテクチャ、メモリ型/ディスク型、行指向/列指向、データファイルとインデックスファイル</td></tr>
+          <tr><td class="chapter-num">2</td><td>B-Tree Basics</td><td>二分探索木からB-Treeへ、ディスク向け構造、階層と探索アルゴリズム</td></tr>
+          <tr><td class="chapter-num">3</td><td>File Formats</td><td>バイナリエンコーディング、スロットページ、可変長データの管理、チェックサム</td></tr>
+          <tr><td class="chapter-num">4</td><td>Implementing B-Trees</td><td>ページヘッダ、オーバーフローページ、バイナリサーチ、リバランス、圧縮、デフラグ</td></tr>
+          <tr><td class="chapter-num">5</td><td>Transaction Processing and Recovery</td><td>バッファ管理、WAL、ARIES、分離レベル、OCC/PCC/MVCC</td></tr>
+          <tr><td class="chapter-num">6</td><td>B-Tree Variants</td><td>Copy-on-Write（LMDB）、WiredTiger、FD-Tree、Bw-Tree、Cache-Oblivious B-Tree</td></tr>
+          <tr><td class="chapter-num">7</td><td>Log-Structured Storage</td><td>LSM-Tree、SSTable、Bloom Filter、コンパクション、Bitcask、WiscKey</td></tr>
+          <tr><td class="part-cell plum" rowspan="7">II<br>分散<br>システム</td><td class="chapter-num">8</td><td>Introduction and Overview</td><td>分散システムの難しさ、Two Generals Problem、FLP不可能性、障害モデル</td></tr>
+          <tr><td class="chapter-num">9</td><td>Failure Detection</td><td>ハートビート、Φ Accrual障害検出器、ゴシップベースの障害検出</td></tr>
+          <tr><td class="chapter-num">10</td><td>Leader Election</td><td>Bullyアルゴリズム、招待アルゴリズム、リングアルゴリズム</td></tr>
+          <tr><td class="chapter-num">11</td><td>Replication and Consistency</td><td>CAP定理、線形化可能性、逐次/因果一貫性、結果整合性、CRDT</td></tr>
+          <tr><td class="chapter-num">12</td><td>Anti-Entropy and Dissemination</td><td>Read Repair、Merkle Tree、Hinted Handoff、Gossipプロトコル</td></tr>
+          <tr><td class="chapter-num">13</td><td>Distributed Transactions</td><td>2PC、3PC、Calvin、Spanner、Percolator、一貫性ハッシュ法</td></tr>
+          <tr><td class="chapter-num">14</td><td>Consensus</td><td>Paxos系（Multi/Fast/Egalitarian/Flexible）、Raft、ビザンチン合意（PBFT）</td></tr>
+          <tr><td class="part-cell gold">付録</td><td class="chapter-num">A</td><td>Bibliography</td><td>100本以上の論文と10冊以上の書籍を中心に、OSS実装などの参考資料も含む参考文献一覧</td></tr>
         </tbody>
       </table>
     </div>
@@ -1047,11 +1060,11 @@ mermaid.initialize({
     tertiaryColor:'#ffffff',
     background:'#ffffff',
     mainBkg:'#ffffff',
-    nodeBorder:'#c9bfa4',
-    clusterBkg:'#f7f3ea',
-    clusterBorder:'#e4d9c2',
+    nodeBorder:'#a99a6f',
+    clusterBkg:'#ede1c8',
+    clusterBorder:'#d3bf94',
     titleColor:'#2a2318',
-    edgeLabelBackground:'#f7f3ea',
+    edgeLabelBackground:'#f7e6ba',
     actorBkg:'#e8e9fa',
     actorBorder:'#4a54c4',
     actorTextColor:'#2a2318',
@@ -1061,12 +1074,12 @@ mermaid.initialize({
   flowchart:{htmlLabels:true,curve:'basis'}
 });
 
-var DIAGRAM_SOURCES = {"d1": "flowchart TB\n    A[\"Database Internals 全14章\"] --> B[\"Part I ストレージエンジン 第1章から第7章\"]\n    A --> C[\"Part II 分散システム 第8章から第14章\"]\n    B --> B1[\"1台のマシンの中でデータをどう保存し高速に読み書きするか\"]\n    C --> C1[\"複数台のマシンで整合性を保ちながらデータを共有し続けるには\"]\n    class A hub\n    class B1,C1 done", "d2": "flowchart TB\n    Client[\"クライアント アプリケーション\"] --> Transport[\"トランスポート層 クライアント接続の管理\"]\n    Transport --> Query[\"クエリプロセッサ パーサーとオプティマイザ\"]\n    Query --> Exec[\"実行エンジン\"]\n    Exec --> Txn[\"トランザクションマネージャ\"]\n    Exec --> Lock[\"ロックマネージャ\"]\n    Txn --> Storage[\"ストレージエンジン\"]\n    Lock --> Storage\n    Storage --> Buffer[\"バッファマネージャ ページキャッシュ\"]\n    Storage --> Recovery[\"リカバリマネージャ WAL\"]\n    Buffer --> Disk[\"データファイルとインデックスファイル ディスク上\"]\n    Recovery --> Disk\n    class Client hub\n    class Disk done", "d3": "flowchart TB\n    Root[\"ルートノード セパレータキーの集合\"] --> N1[\"内部ノードA\"]\n    Root --> N2[\"内部ノードB\"]\n    N1 --> L1[\"リーフノード1 実際のキーと値\"]\n    N1 --> L2[\"リーフノード2 実際のキーと値\"]\n    N2 --> L3[\"リーフノード3 実際のキーと値\"]\n    N2 --> L4[\"リーフノード4 実際のキーと値\"]\n    class Root hub\n    class L1,L2,L3,L4 done", "d4": "flowchart TD\n    Start[\"ルートノードから探索を開始\"] --> Cmp[\"ノード内のセパレータキーと探索キーを比較\"]\n    Cmp --> IsLeaf{\"リーフノードか\"}\n    IsLeaf -- いいえ --> Child[\"該当する範囲の子ポインタへ移動\"]\n    Child --> Cmp\n    IsLeaf -- はい --> BinSearch[\"リーフノード内でバイナリサーチ\"]\n    BinSearch --> Found{\"キーが見つかったか\"}\n    Found -- はい --> Return[\"対応する値を返す\"]\n    Found -- いいえ --> NotFound[\"該当なしを返す\"]\n    class Start hub\n    class Return,NotFound done", "d5": "flowchart TB\n    Full[\"容量いっぱいのノードに\"] --> Insert[\"新しいキーを挿入しようとする\"]\n    Insert --> Overflow{\"ページサイズを超えるか\"}\n    Overflow -- いいえ --> Complete[\"そのまま挿入して完了\"]\n    Overflow -- はい --> Split[\"ノードを2つに分割する\"]\n    Split --> Left[\"左ノード 前半のキー群\"]\n    Split --> Right[\"右ノード 後半のキー群\"]\n    Split --> Promote[\"境界となったキーを親ノードへ昇格\"]\n    class Full hub\n    class Complete done", "d6": "flowchart TB\n    Crash[\"クラッシュ発生と再起動\"] --> Analysis[\"1 Analysisフェーズ ログを読みトランザクションテーブルとダーティページテーブルを再構築\"]\n    Analysis --> Redo[\"2 Redoフェーズ 未反映の更新を再適用 未コミット分も含む\"]\n    Redo --> Undo[\"3 Undoフェーズ 未コミットだった変更を取り消す\"]\n    Undo --> Recovered[\"整合性のとれた状態への復旧完了\"]\n    class Crash hub\n    class Recovered done", "d7": "flowchart TB\n    CC[\"同時実行制御の方式\"] --> Pess[\"悲観的 Pessimistic\"]\n    CC --> Opt[\"楽観的 Optimistic\"]\n    CC --> MVCC[\"マルチバージョン MVCC\"]\n    Pess --> Lock[\"ロックベース 2相ロッキングなどで事前に競合を防ぐ\"]\n    Opt --> Validate[\"まず処理しコミット前の検証フェーズで競合をチェックする\"]\n    MVCC --> Snapshot[\"書き込みと並行して読み取りは過去のスナップショットを参照する\"]\n    class CC hub", "d8": "flowchart TB\n    Write[\"書き込みリクエスト\"] --> Memtable[\"Memtable メモリ上のソート済み構造\"]\n    Write --> WALog[\"WALへの書き込み 有効時のみ\"]\n    Memtable -- 一定サイズに到達 --> Flush[\"ディスクへフラッシュ\"]\n    Flush --> SSTable0[\"SSTable 新しいレベル\"]\n    SSTable0 --> Compaction[\"バックグラウンドでのコンパクション処理\"]\n    Compaction --> SSTable1[\"マージ済みSSTable 統合されたレベル\"]\n    class Write hub\n    class SSTable1 done", "d9": "flowchart TB\n    Fault[\"障害モデルの分類\"] --> Crash[\"クラッシュ障害 単に停止するだけ\"]\n    Fault --> Omission[\"欠落障害 メッセージの送受信が一部欠落する\"]\n    Fault --> Byzantine[\"ビザンチン障害 任意の異常な振る舞い\"]\n    Crash --> Easy[\"比較的対処しやすい\"]\n    Omission --> Medium[\"中程度の難しさ\"]\n    Byzantine --> Hard[\"対処が最も難しくPBFTなど専用アルゴリズムが必要\"]\n    class Fault hub\n    class Byzantine,Hard box", "d10": "flowchart TB\n    Node[\"監視対象ノード\"] -- 定期的にハートビートを送信 --> Monitor[\"監視ノード\"]\n    Monitor --> Check{\"一定時間ハートビートが届いていないか\"}\n    Check -- いいえ --> Continue[\"正常とみなして監視を継続\"]\n    Check -- はい --> Phi[\"Φ Accrual 疑わしさスコアを計算する\"]\n    Phi --> Threshold{\"スコアが閾値を超えたか\"}\n    Threshold -- はい --> Suspect[\"障害ノードとして扱う\"]\n    Threshold -- いいえ --> Continue\n    class Node hub\n    class Suspect box", "d11": "flowchart TB\n    A[\"線形化可能性 Linearizability\"] -- 保証が弱くなる --> B[\"逐次一貫性 Sequential Consistency\"]\n    B -- 保証が弱くなる --> C[\"因果一貫性 Causal Consistency\"]\n    C -- 保証が弱くなる --> D[\"結果整合性 Eventual Consistency\"]\n    class A hub\n    class D done", "d12": "sequenceDiagram\n    participant C as コーディネーター\n    participant P1 as 参加者ノード1\n    participant P2 as 参加者ノード2\n    C->>P1: Prepare 準備はできているか\n    C->>P2: Prepare 準備はできているか\n    P1-->>C: Yes 準備完了\n    P2-->>C: Yes 準備完了\n    C->>P1: Commit コミットせよ\n    C->>P2: Commit コミットせよ\n    P1-->>C: Ack 完了\n    P2-->>C: Ack 完了", "d13": "flowchart TB\n    Diff[\"レプリカ間のデータ差分を検出したい\"] --> Merkle[\"各レプリカでMerkle Treeを構築\"]\n    Merkle --> Compare[\"ルートハッシュから比較を開始\"]\n    Compare --> Match{\"ハッシュは一致するか\"}\n    Match -- はい --> NoDiff[\"その配下は差分なしと確定\"]\n    Match -- いいえ --> Descend[\"不一致の枝だけをさらに下位で比較\"]\n    Descend --> Compare\n    class Diff hub\n    class NoDiff done", "d14": "flowchart TB\n    Follower[\"フォロワー\"] -- 選挙タイムアウトが発生 --> Candidate[\"候補者\"]\n    Candidate -- 過半数の票を獲得 --> Leader[\"リーダー\"]\n    Candidate -- 他ノードが先にリーダーになった --> Follower\n    Leader -- より新しい任期のリーダーを検知 --> Follower\n    Leader -- クライアントから書き込みを受信 --> Replicate[\"ログエントリをフォロワーへ複製\"]\n    Replicate -- 現在の任期のエントリが過半数へ複製された --> Commit[\"エントリをコミットしてステートマシンへ適用\"]\n    class Follower hub\n    class Commit done", "d15": "flowchart TB\n    Beginner[\"初級 DBMS全体像とB-Treeの基本を理解する STEP1から5\"] --> Inter[\"中級 ファイル実装とトランザクションとLSM-Treeを学ぶ STEP6から11\"]\n    Inter --> Adv[\"上級 分散一貫性モデルとコンセンサスアルゴリズムを学ぶ STEP12から18\"]\n    Adv --> Practice[\"実践 PostgreSQLやCassandraやetcdなど実際のOSSコードを読んでみる\"]\n    class Beginner hub\n    class Practice done"};
+var DIAGRAM_SOURCES = {"d1": "flowchart TB\n    A[\"Database Internals 全14章\"] --> B[\"Part I ストレージエンジン 第1章から第7章\"]\n    A --> C[\"Part II 分散システム 第8章から第14章\"]\n    B --> B1[\"1台のマシンの中でデータをどう保存し高速に読み書きするか\"]\n    C --> C1[\"複数台のマシンで整合性を保ちながらデータを共有し続けるには\"]\n    class A hub\n    class B1,C1 done", "d2": "flowchart TB\n    Client[\"クライアント アプリケーション\"] --> Transport[\"トランスポート層 クライアント接続の管理\"]\n    Transport --> Query[\"クエリプロセッサ パーサーとオプティマイザ\"]\n    Query --> Exec[\"実行エンジン\"]\n    Exec --> Txn[\"トランザクションマネージャ\"]\n    Exec --> Lock[\"ロックマネージャ\"]\n    Txn --> Storage[\"ストレージエンジン\"]\n    Lock --> Storage\n    Storage --> Buffer[\"バッファマネージャ ページキャッシュ\"]\n    Storage --> Recovery[\"リカバリマネージャ WAL\"]\n    Buffer --> Disk[\"データファイルとインデックスファイル ディスク上\"]\n    Recovery --> Disk\n    class Client hub\n    class Disk done", "d3": "flowchart TB\n    Root[\"ルートノード セパレータキーの集合\"] --> N1[\"内部ノードA\"]\n    Root --> N2[\"内部ノードB\"]\n    N1 --> L1[\"リーフノード1 実際のキーと値\"]\n    N1 --> L2[\"リーフノード2 実際のキーと値\"]\n    N2 --> L3[\"リーフノード3 実際のキーと値\"]\n    N2 --> L4[\"リーフノード4 実際のキーと値\"]\n    class Root hub\n    class L1,L2,L3,L4 done", "d4": "flowchart TD\n    Start[\"ルートノードから探索を開始\"] --> Cmp[\"ノード内のセパレータキーと探索キーを比較\"]\n    Cmp --> IsLeaf{\"リーフノードか\"}\n    IsLeaf -- いいえ --> Child[\"該当する範囲の子ポインタへ移動\"]\n    Child --> Cmp\n    IsLeaf -- はい --> BinSearch[\"リーフノード内でバイナリサーチ\"]\n    BinSearch --> Found{\"キーが見つかったか\"}\n    Found -- はい --> Return[\"対応する値を返す\"]\n    Found -- いいえ --> NotFound[\"該当なしを返す\"]\n    class Start hub\n    class Return,NotFound done", "d5": "flowchart TB\n    Full[\"容量いっぱいのノードに\"] --> Insert[\"新しいキーを挿入しようとする\"]\n    Insert --> Overflow{\"ページサイズを超えるか\"}\n    Overflow -- いいえ --> Complete[\"そのまま挿入して完了\"]\n    Overflow -- はい --> Split[\"ノードを2つに分割する\"]\n    Split --> Left[\"左ノード 前半のキー群\"]\n    Split --> Right[\"右ノード 後半のキー群\"]\n    Split --> Promote[\"境界となったキーを親ノードへ昇格\"]\n    class Full hub\n    class Complete done", "d6": "flowchart TB\n    Crash[\"クラッシュ発生と再起動\"] --> Analysis[\"1 Analysisフェーズ ログを読みトランザクションテーブルとダーティページテーブルを再構築\"]\n    Analysis --> Redo[\"2 Redoフェーズ 未反映の更新を再適用 未コミット分も含む\"]\n    Redo --> Undo[\"3 Undoフェーズ 未コミットだった変更を取り消す\"]\n    Undo --> Recovered[\"整合性のとれた状態への復旧完了\"]\n    class Crash hub\n    class Recovered done", "d7": "flowchart TB\n    CC[\"同時実行制御の方式\"] --> Pess[\"悲観的 Pessimistic\"]\n    CC --> Opt[\"楽観的 Optimistic\"]\n    CC --> MVCC[\"マルチバージョン MVCC\"]\n    Pess --> Lock[\"ロックベース 2相ロッキングなどで事前に競合を防ぐ\"]\n    Opt --> Validate[\"まず処理しコミット前の検証フェーズで競合をチェックする\"]\n    MVCC --> Snapshot[\"書き込みと並行して読み取りは過去のスナップショットを参照する\"]\n    class CC hub", "d8": "flowchart TB\n    Write[\"書き込みリクエスト\"] --> Memtable[\"Memtable メモリ上のソート済み構造\"]\n    Write --> WALog[\"WALへの書き込み 有効時のみ\"]\n    Memtable -- 一定サイズに到達 --> Flush[\"ディスクへフラッシュ\"]\n    Flush --> SSTable0[\"SSTable 新しいレベル\"]\n    SSTable0 --> Compaction[\"バックグラウンドでのコンパクション処理\"]\n    Compaction --> SSTable1[\"マージ済みSSTable 統合されたレベル\"]\n    class Write hub\n    class SSTable1 done", "d9": "flowchart TB\n    Fault[\"障害モデルの分類\"] --> Crash[\"クラッシュ障害 単に停止するだけ\"]\n    Fault --> Omission[\"欠落障害 メッセージの送受信が一部欠落する\"]\n    Fault --> Byzantine[\"ビザンチン障害 任意の異常な振る舞い\"]\n    Crash --> Easy[\"比較的対処しやすい\"]\n    Omission --> Medium[\"中程度の難しさ\"]\n    Byzantine --> Hard[\"対処が最も難しくPBFTなど専用アルゴリズムが必要\"]\n    class Fault hub\n    class Byzantine,Hard box", "d10": "flowchart TB\n    Node[\"監視対象ノード\"] -- 定期的にハートビートを送信 --> Monitor[\"監視ノード\"]\n    Monitor --> Check{\"一定時間ハートビートが届いていないか\"}\n    Check -- いいえ --> Continue[\"正常とみなして監視を継続\"]\n    Check -- はい --> Phi[\"Φ Accrual 疑わしさスコアを計算する\"]\n    Phi --> Threshold{\"スコアが閾値を超えたか\"}\n    Threshold -- はい --> Suspect[\"障害ノードとして扱う\"]\n    Threshold -- いいえ --> Continue\n    class Node hub\n    class Suspect box", "d11": "flowchart TB\n    A[\"線形化可能性 Linearizability\"] -- 保証が弱くなる --> B[\"逐次一貫性 Sequential Consistency\"]\n    B -- 保証が弱くなる --> C[\"因果一貫性 Causal Consistency\"]\n    C -- 保証が弱くなる --> D[\"結果整合性 Eventual Consistency\"]\n    class A hub\n    class D done", "d12": "sequenceDiagram\n    participant C as コーディネーター\n    participant P1 as 参加者ノード1\n    participant P2 as 参加者ノード2\n    C->>P1: Prepare 準備はできているか\n    C->>P2: Prepare 準備はできているか\n    P1-->>C: Yes 準備完了\n    P2-->>C: Yes 準備完了\n    C->>P1: Commit コミットせよ\n    C->>P2: Commit コミットせよ\n    P1-->>C: Ack 完了\n    P2-->>C: Ack 完了", "d13": "flowchart TB\n    Diff[\"レプリカ間のデータ差分を検出したい\"] --> Merkle[\"各レプリカでMerkle Treeを構築\"]\n    Merkle --> Compare[\"ルートハッシュから比較を開始\"]\n    Compare --> Match{\"ハッシュは一致するか\"}\n    Match -- はい --> NoDiff[\"その配下は差分なしと確定\"]\n    Match -- いいえ --> Descend[\"不一致の枝だけをさらに下位で比較\"]\n    Descend --> Compare\n    class Diff hub\n    class NoDiff done", "d14": "flowchart TB\n    Follower[\"フォロワー\"] -- 選挙タイムアウト --> Candidate[\"候補者\"]\n    Candidate -- 過半数の票を獲得 --> Leader[\"リーダー\"]\n    Candidate -. 対立候補が当選 .-> Follower\n    Leader -. 新しい任期を検知 .-> Follower\n    Leader -- 書き込みを受信 --> Replicate[\"ログエントリをフォロワーへ複製\"]\n    Replicate -- 過半数へ複製完了 --> Commit[\"コミットしてステートマシンへ適用\"]\n    class Follower hub\n    class Commit done", "d15": "flowchart TB\n    Beginner[\"初級 DBMS全体像とB-Treeの基本を理解する STEP1から5\"] --> Inter[\"中級 ファイル実装とトランザクションとLSM-Treeを学ぶ STEP6から11\"]\n    Inter --> Adv[\"上級 分散一貫性モデルとコンセンサスアルゴリズムを学ぶ STEP12から18\"]\n    Adv --> Practice[\"実践 PostgreSQLやCassandraやetcdなど実際のOSSコードを読んでみる\"]\n    class Beginner hub\n    class Practice done"};
 
 function classDefBlock(){
   return "\nclassDef hub fill:#e8e9fa,stroke:#4a54c4,stroke-width:2px,color:#2a2318;" +
          "\nclassDef done fill:#e5f2e9,stroke:#3c7a55,stroke-width:2px,color:#2a2318;" +
-         "\nclassDef box fill:#faf0da,stroke:#ad7f26,stroke-width:2px,color:#2a2318;\n";
+         "\nclassDef box fill:#f7e6ba,stroke:#ad7f26,stroke-width:2px,color:#2a2318;\n";
 }
 
 async function renderDiagrams(){
