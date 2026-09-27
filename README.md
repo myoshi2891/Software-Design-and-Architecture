@@ -141,6 +141,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/design-principles/object-oriented-programming-comprehensive-guide`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx)
     — オブジェクト指向プログラミング完全ガイドを移植（14 セクション・Mermaid 26 図・table 8・コードブロック 26）。
     固定サイドバー・進捗バー・scroll-spy を [`OopSidebar.tsx`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/OopSidebar.tsx) でクライアント描画
+  - [`/development-methodologies/test-driven-development-comprehensive-guide`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx)
+    — テスト駆動開発 (TDD) 完全ガイドを移植（18 セクション・Mermaid 12 図・table 4・コードブロック 10）。
+    固定サイドバー・進捗バー・scroll-spy を [`TddSidebar.tsx`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/TddSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、

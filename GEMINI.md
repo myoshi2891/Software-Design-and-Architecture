@@ -173,6 +173,9 @@ flowchart TD
   - `app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx`
     （URL `/design-principles/object-oriented-programming-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`OopSidebar.tsx`）に分離。
+  - `app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx`
+    （URL `/development-methodologies/test-driven-development-comprehensive-guide`）。固定サイドバー +
+    進捗バー + scroll-spy をクライアントコンポーネント（`TddSidebar.tsx`）に分離。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
   `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
   索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
