@@ -89,8 +89,7 @@ describe("domain-driven-design-comprehensive-guide page", () => {
     );
     expect(cssContent).toContain(".domain-driven-design-comprehensive-guide");
 
-    const mainStyleRegex =
-      /\.main\s*\{\s*flex:\s*1;\s*max-width:\s*calc\(100%\s*-\s*260px\);/;
+    const mainStyleRegex = /\.main\s*\{\s*flex:\s*1;\s*max-width:\s*calc\(100%\s*-\s*260px\);/;
     expect(mainStyleRegex.test(dddSection)).toBe(true);
   });
 });

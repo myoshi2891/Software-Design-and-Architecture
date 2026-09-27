@@ -99,7 +99,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "ドメイン駆動設計 (DDD)",
         href: "/design-principles/domain-driven-design-comprehensive-guide",
         summary: "業務の言葉をそのままコードの構造にする",
-        status: "planned",
+        status: "published",
       },
       {
         name: "オブジェクト指向プログラミング",
