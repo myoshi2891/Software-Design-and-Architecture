@@ -99,13 +99,13 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "ドメイン駆動設計 (DDD)",
         href: "/design-principles/domain-driven-design-comprehensive-guide",
         summary: "業務の言葉をそのままコードの構造にする",
-        status: "planned",
+        status: "published",
       },
       {
         name: "オブジェクト指向プログラミング",
         href: "/design-principles/object-oriented-programming-comprehensive-guide",
         summary: "カプセル化・継承・多態でモデルを表現する",
-        status: "planned",
+        status: "published",
       },
       {
         name: "マルチエージェントシステムの設計",
@@ -142,7 +142,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "テスト駆動開発 (TDD)",
         href: "/development-methodologies/test-driven-development-comprehensive-guide",
         summary: "失敗するテストから書き、設計を引き出す",
-        status: "planned",
+        status: "published",
       },
     ],
   },
@@ -229,6 +229,13 @@ export const guideCatalog: readonly GuideCategory[] = [
         href: "/recommended-books/building-applications-with-ai-agents-guide",
         summary:
           "Michael Albada著『Building Applications with AI Agents』を起点にエージェント開発を学ぶ",
+        status: "published",
+      },
+      {
+        name: "SQLアンチパターン 第2版",
+        href: "/recommended-books/sql-antipatterns-guide",
+        summary:
+          "Bill Karwin著『SQL Antipatterns』日本語版第2版を起点に全27章のアンチパターンを学ぶ",
         status: "published",
       },
     ],

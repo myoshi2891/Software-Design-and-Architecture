@@ -412,7 +412,7 @@ flowchart TD
 9. [Hacker News: "This is the book I recommend to everyone who is shy about DBs"](https://news.ycombinator.com/item?id=18807653) ― 国際的な開発者コミュニティ Hacker News での推薦コメント
 10. [Hacker News: "Buy the book Database Design for Mere Mortals"](https://news.ycombinator.com/item?id=40193125) ― SQL初学者への定番推薦としての言及
 11. [Hacker News: "Huge +1 to Database Design for Mere Mortals"](https://news.ycombinator.com/item?id=28748545) ― 経験者による詳細なレビューコメント（C. J. Dateの著作との比較にも言及）
-12. [Database Design for Mere Mortals: 25th Anniversary Edition - 全目次（DOKUMEN.PUB）](https://dokumen.pub/database-design-for-mere-mortals-25th-anniversary-edition-9780136788041-0136788041.html) ― 第4版の全付録一覧を含む詳細目次
+12. [Database Design for Mere Mortals: 25th Anniversary Edition - 目次・サンプルページ（Pearson 公式 PDF）](https://ptgmedia.pearsoncmg.com/images/9780136788041/samplepages/9780136788041_Sample.pdf) ― 出版元 Pearson 公開の第4版目次（付録 A〜G の一覧を含む）
 13. [Database Design for Mere Mortals: 25th Anniversary Edition, 4th edition - Pearson+](https://www.pearson.com/en-us/pearsonplus/p/9780137459667) ― 出版元 Pearson の公式販売ページ
 14. [Database Design for Mere Mortals - Amazon.com（第3版）](https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493) ― 著者略歴（Microsoft Visual Studio グループでのプログラムマネージャー経験など）を掲載
 15. [Normalization in Database Design: 1NF, 2NF, 3NF Explained with Examples - relationaldbdesign.com](https://www.relationaldbdesign.com/database-analysis/module3/intro-normal-forms.php) ― 本書と併読できる正規化理論の補足教材

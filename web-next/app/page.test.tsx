@@ -55,7 +55,7 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const hrefs = [...container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
     const planned = guideCatalog.flatMap((c) => c.entries).filter((e) => e.status === "planned");
-    expect(planned.length).toBe(8);
+    expect(planned.length).toBe(5);
     for (const entry of planned) {
       expect(hrefs).not.toContain(entry.href);
     }
@@ -63,7 +63,7 @@ describe("HomePage (guide index)", () => {
 
   it("marks planned rows with a visible status note", () => {
     const container = renderIndex();
-    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(8);
+    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(5);
     for (const row of container.querySelectorAll(".guide-row.is-planned")) {
       expect(row.textContent).toContain("準備中");
     }
@@ -80,9 +80,9 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
-    expect(text).toContain("28");
-    expect(text).toContain("20");
-    expect(text).toContain("8");
+    expect(text).toContain("29");
+    expect(text).toContain("24");
+    expect(text).toContain("5");
   });
 
   it("normalizes full-width search input and searches summaries", () => {
@@ -103,7 +103,7 @@ describe("HomePage (guide index)", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 本");
     fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
-    expect(container.querySelectorAll(".guide-row")).toHaveLength(28);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(29);
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
   });

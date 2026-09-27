@@ -60,7 +60,11 @@
         "app/recommended-books/building-llm-powered-applications-guide/page.tsx",
         "app/recommended-books/architecting-generative-ai-applications-guide/page.tsx",
         "app/recommended-books/building-applications-with-ai-agents-guide/page.tsx",
-        "app/design-principles/designing-multi-agent-systems-guide/page.tsx"
+        "app/design-principles/designing-multi-agent-systems-guide/page.tsx",
+        "app/design-principles/domain-driven-design-comprehensive-guide/page.tsx",
+        "app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx",
+        "app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx",
+        "app/recommended-books/sql-antipatterns-guide/page.tsx"
       ],
       "linter": {
         "rules": {

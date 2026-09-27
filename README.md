@@ -55,6 +55,7 @@
 - Architecting Generative AI Applications
 - Generative AI Design Patterns
 - Building Applications with AI Agents
+- SQLアンチパターン 第2版
 
 ### 7. 資格試験 (`certification-exams/`)
 
@@ -67,7 +68,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 28 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 29 本を
 一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -131,6 +132,18 @@ Testing Library（契約テスト）を採用しています。
   - [`/certification-exams/ai-native-value-architect-guide`](web-next/app/certification-exams/ai-native-value-architect-guide/page.tsx)
     — AI-Native Value Architect Certification 学習ガイドを移植（11 セクション・Mermaid 7 図・table 14・チェックリスト 9 項目）。
     固定サイドバー・進捗バー・scroll-spy を [`AiNativeValueArchitectSidebar.tsx`](web-next/app/certification-exams/ai-native-value-architect-guide/AiNativeValueArchitectSidebar.tsx)、学習チェックリストを [`AiNativeChecklist.tsx`](web-next/app/certification-exams/ai-native-value-architect-guide/AiNativeChecklist.tsx) でクライアント描画
+  - [`/recommended-books/sql-antipatterns-guide`](web-next/app/recommended-books/sql-antipatterns-guide/page.tsx)
+    — SQLアンチパターン第2版解説ガイドを移植（20 セクション・Mermaid 12 図・table 5・コードブロック 5・チェックリスト 25 項目）。
+    固定サイドバー・scroll-spy を [`SqlAntipatternsSidebar.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsSidebar.tsx)、点検チェックリストを [`SqlAntipatternsChecklist.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsChecklist.tsx) でクライアント描画
+  - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
+    — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
+    固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
+  - [`/design-principles/object-oriented-programming-comprehensive-guide`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx)
+    — オブジェクト指向プログラミング完全ガイドを移植（14 セクション・Mermaid 26 図・table 8・コードブロック 26）。
+    固定サイドバー・進捗バー・scroll-spy を [`OopSidebar.tsx`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/OopSidebar.tsx) でクライアント描画
+  - [`/development-methodologies/test-driven-development-comprehensive-guide`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx)
+    — テスト駆動開発 (TDD) 完全ガイドを移植（18 セクション・Mermaid 12 図・table 4・コードブロック 10）。
+    固定サイドバー・進捗バー・scroll-spy を [`TddSidebar.tsx`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/TddSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
