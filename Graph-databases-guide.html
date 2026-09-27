@@ -466,7 +466,7 @@ table tbody tr:hover{background:var(--paper-alt)}
   <table>
     <thead><tr><th>観点</th><th>リレーショナルDB</th><th>NoSQL集約指向DB</th><th>グラフDB</th></tr></thead>
     <tbody>
-      <tr><td>リレーションの表現</td><td>外部キー(暗黙的)</td><td>基本的に表現しない</td><td>リレーションシップとして明示的に保存</td></tr>
+      <tr><td>リレーションの表現</td><td>外部キーで関係を保存(たどる際はJOINで再構築)</td><td>ドキュメント間参照や<code>$lookup</code>などのクエリ機能で表現・たどる</td><td>リレーションシップとして明示的に保存</td></tr>
       <tr><td>多段の関係をたどるコスト</td><td>結合アルゴリズム・インデックス・データ分布に依存する</td><td>アプリ側の追加実装が必要</td><td>ホップ数・分岐数・結果件数・キャッシュ状態に依存する</td></tr>
       <tr><td>スキーマ</td><td>事前に固定</td><td>緩い、または無し</td><td>ラベルとプロパティで柔軟に進化</td></tr>
       <tr><td>得意な処理</td><td>集計・レポーティング</td><td>大量データの高速な読み書き</td><td>多段の関係をたどる探索クエリ</td></tr>
