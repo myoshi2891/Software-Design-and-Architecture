@@ -251,9 +251,7 @@ export default function SqlAntipatternsGuidePage() {
             </h1>
             <p className="hero-lead">
               原著{" "}
-              <em>
-                SQL Antipatterns, Volume 1: Avoiding the Pitfalls of Database Programming
-              </em>
+              <em>SQL Antipatterns, Volume 1: Avoiding the Pitfalls of Database Programming</em>
               （Bill Karwin著、Pragmatic Bookshelf）/ 日本語版『SQLアンチパターン
               第2版』(オライリー・ジャパン、2025年7月刊)を題材に、データベース設計とSQLを学び始めたばかりの人に向けて、全27章の内容を噛み砕いて解説します。
             </p>
@@ -370,7 +368,8 @@ export default function SqlAntipatternsGuidePage() {
               <p>
                 「アンチパターン」とは、一見うまくいきそうに見えるのに、実際には後々まで開発者を苦しめる「悪い設計パターン」のことです。本書は、著者のBill
                 Karwinが長年SQLに関する質問に答え続けてきた経験から、開発者が繰り返しハマる失敗を26個（本文24章
-                + ボーナス2章）選び出し、それぞれに名前を付けて「見分け方」と「治し方」を示した一冊です。
+                +
+                ボーナス2章）選び出し、それぞれに名前を付けて「見分け方」と「治し方」を示した一冊です。
               </p>
               <p>
                 日本語版監訳者であり、テスト駆動開発の普及やSQLアンチパターン初版（2013年）の企画を持ち込んだことでも知られる和田卓人氏は、2025年7月に開催されたイベント「t-wadaさんに聞く！SQLアンチパターン第2版」で、本書の意義を次のように語っています。AIエージェントに自然言語で指示してコードを書かせる「バイブコーディング」が広がる中で、UIなどは作り直しがきいても、いったんデータベースに入ったデータは後戻りできない、だからこそ他人の失敗から学び、落とし穴に名前を付けて回避することに価値がある、という趣旨の説明です。
@@ -746,13 +745,13 @@ export default function SqlAntipatternsGuidePage() {
                     </tr>
                     <tr>
                       <th>アンチパターン</th>
-                      <td>account_ids列に &quot;12,34,56&quot; のようなカンマ区切り文字列を保存する</td>
+                      <td>
+                        account_ids列に &quot;12,34,56&quot; のようなカンマ区切り文字列を保存する
+                      </td>
                     </tr>
                     <tr>
                       <th>見分け方</th>
-                      <td>
-                        クエリの中に LIKE &apos;%,34,%&apos; のような部分一致検索が現れる
-                      </td>
+                      <td>クエリの中に LIKE &apos;%,34,%&apos; のような部分一致検索が現れる</td>
                     </tr>
                     <tr>
                       <th>使ってもよい場合</th>
@@ -851,8 +850,8 @@ export default function SqlAntipatternsGuidePage() {
                   ORMのようなツールが単一列の主キーを前提としている場合など、規約を一律に適用した方が開発効率が上がるケースもあります。
                 </li>
                 <li>
-                  <strong>解決策</strong> :
-                  主キーの規約はテーブルごとの性質に合わせて選ぶ（Tailored to
+                  <strong>解決策</strong> : 主キーの規約はテーブルごとの性質に合わせて選ぶ（Tailored
+                  to
                   Fit）。交差テーブルには複合主キーを、それ以外のエンティティには用途に応じた代理キーを使う、という判断を意識的に行います。
                 </li>
               </ul>
@@ -876,7 +875,8 @@ export default function SqlAntipatternsGuidePage() {
                 </li>
                 <li>
                   <strong>解決策</strong> : 外部キー制約を宣言する。複数テーブルにまたがる変更（ON
-                  UPDATE CASCADE / ON DELETE CASCADEなど）もサポートされており、心配されるほどのオーバーヘッドにはならないケースが大半です。
+                  UPDATE CASCADE / ON DELETE
+                  CASCADEなど）もサポートされており、心配されるほどのオーバーヘッドにはならないケースが大半です。
                 </li>
               </ul>
 
@@ -911,7 +911,8 @@ export default function SqlAntipatternsGuidePage() {
 
               <h3>7章 ポリモーフィック関連</h3>
               <p>
-                1つの外部キー列（例 : issue_id）で、issue_typeのような種別列と組み合わせて複数の親テーブル（BugsとFeatures）のどちらかを指そうとする設計です。標準SQLの外部キー制約は「1つの列が1つの親テーブルのみを参照する」ことを前提にしているため、この設計では外部キー制約そのものを宣言できません。
+                1つの外部キー列（例 :
+                issue_id）で、issue_typeのような種別列と組み合わせて複数の親テーブル（BugsとFeatures）のどちらかを指そうとする設計です。標準SQLの外部キー制約は「1つの列が1つの親テーブルのみを参照する」ことを前提にしているため、この設計では外部キー制約そのものを宣言できません。
               </p>
               <ul>
                 <li>
@@ -930,9 +931,9 @@ export default function SqlAntipatternsGuidePage() {
               </p>
               <ul>
                 <li>
-                  <strong>見分け方</strong> : 似た名前の列が連番で複数存在する。特定の値を検索するクエリが
-                  WHERE phone1 = ? OR phone2 = ? OR phone3 = ?
-                  のようにOR条件で列挙されている。列の上限（例 :
+                  <strong>見分け方</strong> :
+                  似た名前の列が連番で複数存在する。特定の値を検索するクエリが WHERE phone1 = ? OR
+                  phone2 = ? OR phone3 = ? のようにOR条件で列挙されている。列の上限（例 :
                   電話番号は3つまで）が業務要件ではなくテーブル設計の都合で決まっている。
                 </li>
                 <li>
@@ -973,7 +974,9 @@ export default function SqlAntipatternsGuidePage() {
               </div>
             </div>
             <div className="prose">
-              <p>物理設計は、データ型やインデックスなど「どう格納し、どう最適化するか」を扱います。</p>
+              <p>
+                物理設計は、データ型やインデックスなど「どう格納し、どう最適化するか」を扱います。
+              </p>
 
               <h3>10章 ラウンディングエラー（丸め誤差）</h3>
               <p>
@@ -985,9 +988,8 @@ export default function SqlAntipatternsGuidePage() {
               </div>
               <ul>
                 <li>
-                  <strong>見分け方</strong> :
-                  SUM()した合計金額が期待値と数円〜数十円ずれる。WHERE balance = 100.00
-                  のような等価比較が意図通りに動かない。
+                  <strong>見分け方</strong> : SUM()した合計金額が期待値と数円〜数十円ずれる。WHERE
+                  balance = 100.00 のような等価比較が意図通りに動かない。
                 </li>
                 <li>
                   <strong>使ってもよい場合</strong> :
@@ -1000,7 +1002,8 @@ export default function SqlAntipatternsGuidePage() {
 
               <h3>11章 サーティワンフレーバー（31のフレーバー）</h3>
               <p>
-                列に入りうる値の一覧を、CHECK (status IN (&apos;open&apos;,&apos;closed&apos;,&apos;pending&apos;))
+                列に入りうる値の一覧を、CHECK (status IN
+                (&apos;open&apos;,&apos;closed&apos;,&apos;pending&apos;))
                 のように列定義やCHECK制約の中に直接書き込む設計です。名前は「31種類のアイスクリームフレーバー」を扱うチェーン店の喩えから来ています。
               </p>
               <ul>
@@ -1074,7 +1077,8 @@ export default function SqlAntipatternsGuidePage() {
               <p>
                 <strong>使ってもよい場合</strong> :
                 小規模で読み取りが少ないテーブルなど、インデックスの費用対効果自体が低い場合はインデックスを増やさない判断も正しい。
-                <strong>解決策</strong> : 勘や思いつきではなく、MENTORの手順に沿ってインデックスを設計する。
+                <strong>解決策</strong> :
+                勘や思いつきではなく、MENTORの手順に沿ってインデックスを設計する。
               </p>
             </div>
           </section>
@@ -1117,8 +1121,8 @@ export default function SqlAntipatternsGuidePage() {
 
               <h3>15章 アンビギュアスグループ（曖昧なグループ）</h3>
               <p>
-                GROUP
-                BYを使ったクエリで、集約関数にもGROUP BY句にも含まれない列をSELECTしてしまい、「どの行の値が返るか不定」な曖昧なクエリになってしまうアンチパターンです。
+                GROUP BYを使ったクエリで、集約関数にもGROUP
+                BY句にも含まれない列をSELECTしてしまい、「どの行の値が返るか不定」な曖昧なクエリになってしまうアンチパターンです。
               </p>
               <ul>
                 <li>
@@ -1231,8 +1235,8 @@ export default function SqlAntipatternsGuidePage() {
                 </li>
                 <li>
                   <strong>解決策</strong> : ソルト付きハッシュ（salted
-                  hash）を保存する。ハッシュ文字列を保存するデータ型についての「Storing Hash
-                  Strings in VARCHAR」というミニアンチパターンも収録されています。
+                  hash）を保存する。ハッシュ文字列を保存するデータ型についての「Storing Hash Strings
+                  in VARCHAR」というミニアンチパターンも収録されています。
                 </li>
               </ul>
 
@@ -1308,7 +1312,9 @@ export default function SqlAntipatternsGuidePage() {
                 <div className="diagram-fig">
                   <MermaidDiagram chart={DIAGRAM_SOP} />
                 </div>
-                <p className="diagram-cap">図7 : かつての標準的アプローチから現代的な構成への移行</p>
+                <p className="diagram-cap">
+                  図7 : かつての標準的アプローチから現代的な構成への移行
+                </p>
               </div>
               <ul>
                 <li>
@@ -1351,7 +1357,8 @@ export default function SqlAntipatternsGuidePage() {
               <h3>26章 標準SQLにおける外部キーの誤った使い方</h3>
               <p>
                 参照の方向を逆にしてしまう、まだ作成されていないテーブルを参照しようとしてエラーになる、親テーブルの主キーやユニークキーではない列を参照してしまう、複合キーに対して列ごとに別々の制約を作ってしまう、列の順序を取り違える、データ型や文字コード・照合順序が一致していない、孤立データを生んでしまう、NOT
-                NULL列にSET NULLオプションを指定してしまう、重複した制約名を作ってしまう、互換性のないテーブルタイプ同士を参照させてしまう、といった標準SQLレベルでの典型的なミスが列挙されます。
+                NULL列にSET
+                NULLオプションを指定してしまう、重複した制約名を作ってしまう、互換性のないテーブルタイプ同士を参照させてしまう、といった標準SQLレベルでの典型的なミスが列挙されます。
               </p>
 
               <h3>27章 MySQLにおける外部キーの誤った使い方</h3>
@@ -1675,7 +1682,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">1</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      オライリー・ジャパン公式サイト「SQLアンチパターン 第2版」書籍紹介・目次立ち読み
+                      オライリー・ジャパン公式サイト「SQLアンチパターン
+                      第2版」書籍紹介・目次立ち読み
                     </div>
                     <Ext href="https://www.oreilly.co.jp/books/9784814400744/" className="ref-url">
                       https://www.oreilly.co.jp/books/9784814400744/
@@ -1711,7 +1719,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">4</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Pragmatic Bookshelf公式サイト「SQL Antipatterns, Volume 1」（原著第2版・全27章の詳細目次）
+                      Pragmatic Bookshelf公式サイト「SQL Antipatterns, Volume
+                      1」（原著第2版・全27章の詳細目次）
                     </div>
                     <Ext
                       href="https://pragprog.com/titles/bksap1/sql-antipatterns-volume-1/"
@@ -1739,7 +1748,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">6</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Findy Media「t-wadaさんに聞く！『SQLアンチパターン第2版』全27章まとめて紹介」（監訳者・和田卓人氏によるイベント解説）
+                      Findy
+                      Media「t-wadaさんに聞く！『SQLアンチパターン第2版』全27章まとめて紹介」（監訳者・和田卓人氏によるイベント解説）
                     </div>
                     <Ext
                       href="https://findy-code.io/media/articles/event-sql-antipatterns-250728"
@@ -1753,7 +1763,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">7</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Bill Karwin氏自身のブログ「EAV FAIL - Keeping It Simple」（EAVアンチパターンについての著者本人の解説）
+                      Bill Karwin氏自身のブログ「EAV FAIL - Keeping It
+                      Simple」（EAVアンチパターンについての著者本人の解説）
                     </div>
                     <Ext
                       href="https://web.archive.org/web/20251117070854/https://karwin.com/blog/index.php/2009/05/21/eav-fail/"
@@ -1767,7 +1778,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">8</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Bill Karwin氏によるカンファレンス発表資料「MENTOR Your Indexes」（Independent Oracle Users Group、2010年）
+                      Bill Karwin氏によるカンファレンス発表資料「MENTOR Your Indexes」（Independent
+                      Oracle Users Group、2010年）
                     </div>
                     <Ext
                       href="https://www.slideshare.net/billkarwin/mentor-your-indexes"
@@ -1806,9 +1818,13 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">11</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Tyler Hillery氏の個人ブログ「SQL Antipatterns: Avoiding the Pitfalls of Database Programming」書評
+                      Tyler Hillery氏の個人ブログ「SQL Antipatterns: Avoiding the Pitfalls of
+                      Database Programming」書評
                     </div>
-                    <Ext href="https://tylerhillery.com/notes/sql-antipatterns/" className="ref-url">
+                    <Ext
+                      href="https://tylerhillery.com/notes/sql-antipatterns/"
+                      className="ref-url"
+                    >
                       https://tylerhillery.com/notes/sql-antipatterns/
                     </Ext>
                   </div>
@@ -1831,7 +1847,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">13</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      Amazon.co.jp「SQLアンチパターン 第2版」商品ページ（全27章の日本語章タイトル一覧）
+                      Amazon.co.jp「SQLアンチパターン
+                      第2版」商品ページ（全27章の日本語章タイトル一覧）
                     </div>
                     <Ext href="https://www.amazon.co.jp/dp/4814400748" className="ref-url">
                       https://www.amazon.co.jp/dp/4814400748
@@ -1870,7 +1887,8 @@ export default function SqlAntipatternsGuidePage() {
                   <span className="ref-num">16</span>
                   <div className="ref-body">
                     <div className="ref-title">
-                      幡ヶ谷亭直吉ブログ「『SQLアンチパターン 第2版』を読んで」（日本語読者による読書メモ、2025年10月）
+                      幡ヶ谷亭直吉ブログ「『SQLアンチパターン
+                      第2版』を読んで」（日本語読者による読書メモ、2025年10月）
                     </div>
                     <Ext
                       href="https://hiliteeternal.hatenablog.com/entry/2025/10/17/211849"
