@@ -51,6 +51,24 @@ describe("sql-antipatterns-guide page contract", () => {
     ]);
   });
 
+  it("サイドバーのリンクがセクション id と同順のフラグメントリンクである", () => {
+    const { container } = render(<Page />);
+    const ids = Array.from(container.querySelectorAll("section[id]")).map((s) => s.id);
+    const hrefs = Array.from(container.querySelectorAll("#sidebar a")).map((a) =>
+      a.getAttribute("href")
+    );
+    expect(hrefs).toEqual(ids.map((id) => `#${id}`));
+  });
+
+  it("サイドバーとモバイルバーのアイコンは支援技術から隠されている", () => {
+    const { container } = render(<Page />);
+    const icons = container.querySelectorAll("#sidebar svg, .mobile-bar svg");
+    expect(icons.length).toBeGreaterThan(0);
+    for (const svg of icons) {
+      expect(svg.getAttribute("aria-hidden")).toBe("true");
+    }
+  });
+
   it("外部リンクすべてに target=_blank と rel=noopener noreferrer が付く", () => {
     const { container } = render(<Page />);
     const external = Array.from(container.querySelectorAll("a")).filter((a) =>
