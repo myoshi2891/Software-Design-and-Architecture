@@ -22,10 +22,10 @@ describe("guideCatalog structure", () => {
     expect(allEntries().length).toBe(29);
   });
 
-  it("splits into 21 published and 8 planned guides", () => {
+  it("splits into 22 published and 7 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(21);
-    expect(entries.filter((e) => e.status === "planned").length).toBe(8);
+    expect(entries.filter((e) => e.status === "published").length).toBe(22);
+    expect(entries.filter((e) => e.status === "planned").length).toBe(7);
   });
 
   it("uses only the two known status values", () => {
