@@ -142,7 +142,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "テスト駆動開発 (TDD)",
         href: "/development-methodologies/test-driven-development-comprehensive-guide",
         summary: "失敗するテストから書き、設計を引き出す",
-        status: "planned",
+        status: "published",
       },
     ],
   },
