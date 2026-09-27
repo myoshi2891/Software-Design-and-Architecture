@@ -1018,13 +1018,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.getElementById("sidebar");
   const scrim = document.getElementById("scrim");
   const menuBtn = document.getElementById("menuBtn");
+  const mainEl = document.querySelector(".main");
+  // メニュー表示中は背景本文を inert にし、フォーカス・支援技術が背後へ抜けないようにする
   function openMenu(){
     sidebar.classList.add("open"); scrim.classList.add("show");
     if (menuBtn) menuBtn.setAttribute("aria-expanded", "true");
+    if (mainEl) mainEl.inert = true;
   }
   function closeMenu(){
     sidebar.classList.remove("open"); scrim.classList.remove("show");
     if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
+    if (mainEl) mainEl.inert = false;
   }
   if (menuBtn) menuBtn.addEventListener("click", () => {
     sidebar.classList.contains("open") ? closeMenu() : openMenu();
