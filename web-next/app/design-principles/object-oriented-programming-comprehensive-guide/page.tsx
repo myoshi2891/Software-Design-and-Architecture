@@ -98,9 +98,11 @@ export default function ObjectOrientedProgrammingPage() {
             </div>
 
             <p>
-              <strong>Object-Oriented Programming（オブジェクト指向プログラミング）</strong>は、プログラムを
-              「データ（状態）」と「振る舞い（操作）」を持つ<strong>オブジェクト</strong>の集まりとして設計する考え方です。
-              1960年代の Simula 言語から始まり、Smalltalk・C++・Java・Python など現代のあらゆる言語に影響を与えています。
+              <strong>Object-Oriented Programming（オブジェクト指向プログラミング）</strong>
+              は、プログラムを 「データ（状態）」と「振る舞い（操作）」を持つ
+              <strong>オブジェクト</strong>の集まりとして設計する考え方です。 1960年代の Simula
+              言語から始まり、Smalltalk・C++・Java・Python
+              など現代のあらゆる言語に影響を与えています。
             </p>
 
             <div className="callout callout-tip">
@@ -112,7 +114,9 @@ export default function ObjectOrientedProgrammingPage() {
             </div>
 
             <h3>なぜ OOP が重要なのか？</h3>
-            <p>手続き型プログラミングと OOP を比較すると、大規模開発における優位性が明確になります。</p>
+            <p>
+              手続き型プログラミングと OOP を比較すると、大規模開発における優位性が明確になります。
+            </p>
 
             <div className="mermaid-wrapper fade-in">
               <MermaidDiagram
@@ -147,7 +151,8 @@ export default function ObjectOrientedProgrammingPage() {
 
             <h3>OOP の全体マップ</h3>
             <p>
-              OOP は単なる「クラスを書く技術」ではありません。原則・設計パターン・アーキテクチャが有機的に連携したエコシステムです。
+              OOP
+              は単なる「クラスを書く技術」ではありません。原則・設計パターン・アーキテクチャが有機的に連携したエコシステムです。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -279,7 +284,8 @@ print(acc.balance)   <span class="cm"># 12000</span>
             </div>
 
             <p>
-              OOP には4つの根幹をなす原則があります。これらは互いに補完し合い、保守性・拡張性の高いコードを実現します。
+              OOP
+              には4つの根幹をなす原則があります。これらは互いに補完し合い、保守性・拡張性の高いコードを実現します。
             </p>
 
             <div className="card-grid-4">
@@ -341,7 +347,9 @@ print(acc.balance)   <span class="cm"># 12000</span>
   style PRIV fill:#7f1d1d,color:#fca5a5
   style CLIENT fill:#1e3a5f,color:#93c5fd`}
               />
-              <p className="mermaid-caption">図4. カプセル化のイメージ：外部は公開 API のみアクセス可</p>
+              <p className="mermaid-caption">
+                図4. カプセル化のイメージ：外部は公開 API のみアクセス可
+              </p>
             </div>
 
             <div className="code-block">
@@ -411,14 +419,16 @@ print(account.balance)        <span class="cm"># ✅ 12000</span>
                     <td>1</td>
                     <td>最小公開の原則</td>
                     <td>
-                      必要なものだけ <code>public</code> にする。迷ったら <code>private</code> から始める
+                      必要なものだけ <code>public</code> にする。迷ったら <code>private</code>{" "}
+                      から始める
                     </td>
                   </tr>
                   <tr>
                     <td>2</td>
                     <td>setter より意図を表すメソッド</td>
                     <td>
-                      <code>set_status(&quot;active&quot;)</code> より <code>activate()</code> の方が意図が明確
+                      <code>set_status(&quot;active&quot;)</code> より <code>activate()</code>{" "}
+                      の方が意図が明確
                     </td>
                   </tr>
                   <tr>
@@ -637,7 +647,9 @@ shapes: list[Shape] = [Circle(<span class="nu">5</span>), Rectangle(<span class=
   style MID fill:#78350f,color:#fcd34d
   style LOW fill:#7f1d1d,color:#fca5a5`}
               />
-              <p className="mermaid-caption">図7. 抽象化の層：ドライバーは高レベル API のみ知ればよい</p>
+              <p className="mermaid-caption">
+                図7. 抽象化の層：ドライバーは高レベル API のみ知ればよい
+              </p>
             </div>
 
             <div className="code-block">
@@ -701,8 +713,8 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
             </div>
 
             <p>
-              SOLID は OOP 設計の5つの黄金律です。
-              Robert C. Martin（Uncle Bob）が提唱した、変更に強く・テストしやすい設計のための原則群です。
+              SOLID は OOP 設計の5つの黄金律です。 Robert C. Martin（Uncle
+              Bob）が提唱した、変更に強く・テストしやすい設計のための原則群です。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -834,7 +846,8 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
                 </div>
               </div>
               <p>
-                新しい機能を追加するとき、既存のコードを変更せず<strong>新しいクラスを追加するだけ</strong>で済むように設計します。
+                新しい機能を追加するとき、既存のコードを変更せず
+                <strong>新しいクラスを追加するだけ</strong>で済むように設計します。
               </p>
               <div className="mermaid-wrapper fade-in">
                 <MermaidDiagram
@@ -851,7 +864,9 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
   style PAYPAL fill:#14532d,color:#86efac
   style CRYPTO fill:#14532d,color:#86efac`}
                 />
-                <p className="mermaid-caption">図10. OCP — 新しい支払い方法を既存コード修正なしで追加</p>
+                <p className="mermaid-caption">
+                  図10. OCP — 新しい支払い方法を既存コード修正なしで追加
+                </p>
               </div>
               <div className="code-block">
                 <div className="code-header">
@@ -1063,7 +1078,8 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
                 </div>
               </div>
               <p>
-                上位の業務ロジック（<code>OrderService</code>）が、下位の技術的詳細（<code>MySQLDatabase</code>）に直接依存すると、
+                上位の業務ロジック（<code>OrderService</code>）が、下位の技術的詳細（
+                <code>MySQLDatabase</code>）に直接依存すると、
                 DBを変えるたびにビジネスロジックを修正することになります。抽象（インターフェース）を介することで疎結合を実現します。
               </p>
               <div className="mermaid-wrapper fade-in">
@@ -1088,7 +1104,9 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
   style MYSQL fill:#14532d,color:#86efac
   style POSTGRES fill:#14532d,color:#86efac`}
                 />
-                <p className="mermaid-caption">図13. DIP — 上位は抽象に依存、具体実装は差し替え可能</p>
+                <p className="mermaid-caption">
+                  図13. DIP — 上位は抽象に依存、具体実装は差し替え可能
+                </p>
               </div>
               <div className="code-block">
                 <div className="code-header">
@@ -1204,7 +1222,8 @@ test_service = OrderService(InMemoryOrderRepository())`,
                 <div className="step-content">
                   <div className="step-title">意図を名前で表現する</div>
                   <div className="step-desc">
-                    <code>UserAuthenticator</code>（認証）、<code>OrderValidator</code>（検証）など、クラス名だけで役割がわかるように命名する。動詞＋名詞のパターンが有効。
+                    <code>UserAuthenticator</code>（認証）、<code>OrderValidator</code>
+                    （検証）など、クラス名だけで役割がわかるように命名する。動詞＋名詞のパターンが有効。
                   </div>
                 </div>
               </div>
@@ -1222,7 +1241,9 @@ test_service = OrderService(InMemoryOrderRepository())`,
                 <div className="step-content">
                   <div className="step-title">コンストラクタで整合性を保証する</div>
                   <div className="step-desc">
-                    不正な状態のオブジェクトを作らせない。バリデーションロジックを <code>__init__</code> または <code>__post_init__</code> に集約する（フェイルファスト設計）。
+                    不正な状態のオブジェクトを作らせない。バリデーションロジックを{" "}
+                    <code>__init__</code> または <code>__post_init__</code>{" "}
+                    に集約する（フェイルファスト設計）。
                   </div>
                 </div>
               </div>
@@ -1312,7 +1333,9 @@ test_service = OrderService(InMemoryOrderRepository())`,
                 <div className="step-content">
                   <div className="step-title">適切な可視性を設定する</div>
                   <div className="step-desc">
-                    Python では <code>__name</code>（private）→ <code>_name</code>（protected）→ <code>name</code>（public）の順に。迷ったら private から始めて必要に応じて公開する。
+                    Python では <code>__name</code>（private）→ <code>_name</code>（protected）→{" "}
+                    <code>name</code>（public）の順に。迷ったら private
+                    から始めて必要に応じて公開する。
                   </div>
                 </div>
               </div>
@@ -1320,7 +1343,9 @@ test_service = OrderService(InMemoryOrderRepository())`,
 
             <h3>値オブジェクト（Value Object）パターン</h3>
             <p>
-              値オブジェクトは、<strong>ID を持たず・値の等価性で判断される・イミュータブルなオブジェクト</strong>です。
+              値オブジェクトは、
+              <strong>ID を持たず・値の等価性で判断される・イミュータブルなオブジェクト</strong>
+              です。
               金額・日付範囲・住所・メールアドレスなど、単なる文字列や数値ではなくドメイン概念として表現するのがベストプラクティスです。
             </p>
 
@@ -1328,7 +1353,8 @@ test_service = OrderService(InMemoryOrderRepository())`,
               <span className="callout-icon">✅</span>
               <div className="callout-body">
                 <strong>いつ値オブジェクトを使うか？</strong>
-                「この値に対してバリデーションが必要か？」「この値で計算や比較を行うか？」どちらかが Yes なら値オブジェクトにする。
+                「この値に対してバリデーションが必要か？」「この値で計算や比較を行うか？」どちらかが
+                Yes なら値オブジェクトにする。
               </div>
             </div>
 
@@ -1649,7 +1675,9 @@ print(car.play_music(<span class="st">"JPop"</span>))  <span class="cm"># Pionee
               <h2>インターフェースと抽象クラス</h2>
             </div>
 
-            <p>インターフェースと抽象クラスはどちらも「実装を強制する仕組み」ですが、用途が異なります。</p>
+            <p>
+              インターフェースと抽象クラスはどちらも「実装を強制する仕組み」ですが、用途が異なります。
+            </p>
 
             <div className="mermaid-wrapper fade-in">
               <MermaidDiagram
@@ -1669,7 +1697,9 @@ print(car.play_music(<span class="st">"JPop"</span>))  <span class="cm"># Pionee
   style ABSTRACT fill:#1e3a5f,color:#93c5fd
   style CONCRETE fill:#14532d,color:#86efac`}
               />
-              <p className="mermaid-caption">図17. インターフェース・抽象クラス・具体クラスの関係</p>
+              <p className="mermaid-caption">
+                図17. インターフェース・抽象クラス・具体クラスの関係
+              </p>
             </div>
 
             <div className="table-wrap">
@@ -1742,7 +1772,9 @@ print(car.play_music(<span class="st">"JPop"</span>))  <span class="cm"># Pionee
             <div className="code-block">
               <div className="code-header">
                 <span className="code-lang">PYTHON</span>
-                <span className="code-label">テンプレートメソッドパターン — データエクスポート</span>
+                <span className="code-label">
+                  テンプレートメソッドパターン — データエクスポート
+                </span>
               </div>
               <pre
                 dangerouslySetInnerHTML={{
@@ -1803,7 +1835,8 @@ JSONExporter().export(data)  <span class="cm"># JSON に書き込み: [1, 2, 3, 
 
             <h3>Protocol（構造的部分型）— Python 3.8+</h3>
             <p>
-              Python の <code>Protocol</code> を使うと、ABC を継承しなくても「インターフェースを満たす」と見なせます。
+              Python の <code>Protocol</code> を使うと、ABC
+              を継承しなくても「インターフェースを満たす」と見なせます。
               既存クラスに手を加えずにダックタイピングを型安全に行えます。
             </p>
             <div className="code-block">
@@ -1848,7 +1881,8 @@ render(Circle())  <span class="cm"># ✅ 動作する</span>`,
             </div>
 
             <p>
-              GoF（Gang of Four）が提唱した23のデザインパターンは、OOP における「設計の共通語彙」です。
+              GoF（Gang of Four）が提唱した23のデザインパターンは、OOP
+              における「設計の共通語彙」です。
               問題の種類に応じて適切なパターンを選択することで、保守性の高いコードを効率的に実現できます。
             </p>
 
@@ -1880,7 +1914,8 @@ render(Circle())  <span class="cm"># ✅ 動作する</span>`,
                 <span className="pattern-tag ptag-creational">生成パターン</span>
                 <div className="p-name">🏭 Factory Method</div>
                 <div className="p-desc">
-                  オブジェクトの生成をサブクラスに委譲。生成ロジックを本体から分離し、OCP を実現する。
+                  オブジェクトの生成をサブクラスに委譲。生成ロジックを本体から分離し、OCP
+                  を実現する。
                 </div>
               </div>
               <div className="pattern-card">
@@ -1929,7 +1964,8 @@ render(Circle())  <span class="cm"># ✅ 動作する</span>`,
                 <span className="pattern-tag ptag-behavioral">振る舞いパターン</span>
                 <div className="p-name">♟️ Strategy</div>
                 <div className="p-desc">
-                  アルゴリズムを交換可能にする。if/elif の連鎖を排除し、OCP を美しく実現する最頻出パターン。
+                  アルゴリズムを交換可能にする。if/elif の連鎖を排除し、OCP
+                  を美しく実現する最頻出パターン。
                 </div>
               </div>
               <div className="pattern-card">
@@ -1942,7 +1978,9 @@ render(Circle())  <span class="cm"># ✅ 動作する</span>`,
             </div>
 
             <h3>Strategy パターン（最重要・最頻出）</h3>
-            <p>if/elif の連鎖を排除し、アルゴリズムを交換可能にします。OCP の最も美しい実現例です。</p>
+            <p>
+              if/elif の連鎖を排除し、アルゴリズムを交換可能にします。OCP の最も美しい実現例です。
+            </p>
             <div className="code-block">
               <div className="code-header">
                 <span className="code-lang">PYTHON</span>
@@ -2146,7 +2184,7 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
               <div className="callout-body">
                 <strong>参考：Refactoring Guru — デザインパターン図解</strong>
                 全23パターンをインタラクティブな図解で学べる最良のリソース:{" "}
-                <Ext href="https://refactoring.guru/design-patterns" style={{ color: "var(--accent)" }}>
+                <Ext href="https://refactoring.guru/design-patterns">
                   https://refactoring.guru/design-patterns
                 </Ext>
               </div>
@@ -2161,8 +2199,9 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
             </div>
 
             <p>
-              OOP の原則は、クリーンアーキテクチャや DDD（ドメイン駆動設計）といった上位の設計思想と深く連携しています。
-              SOLID 原則を守った OOP は、そのままクリーンアーキテクチャの各層に対応します。
+              OOP の原則は、クリーンアーキテクチャや
+              DDD（ドメイン駆動設計）といった上位の設計思想と深く連携しています。 SOLID 原則を守った
+              OOP は、そのままクリーンアーキテクチャの各層に対応します。
             </p>
 
             <h3>クリーンアーキテクチャ × OOP</h3>
@@ -2206,7 +2245,8 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
                 <div className="pc-title">アプリケーション層</div>
                 <div className="pc-sub">ユースケースのオーケストレーション</div>
                 <div className="pc-desc">
-                  UseCase クラスがドメインオブジェクトを協調させる。Repository インターフェース（抽象）を定義し DIP を適用。
+                  UseCase クラスがドメインオブジェクトを協調させる。Repository
+                  インターフェース（抽象）を定義し DIP を適用。
                 </div>
               </div>
               <div className="principle-card pc-blue">
@@ -2214,7 +2254,8 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
                 <div className="pc-title">インフラ層（最外周）</div>
                 <div className="pc-sub">技術的詳細の実装</div>
                 <div className="pc-desc">
-                  Repository の具体実装（MySQL・PostgreSQL）。フレームワーク・DB・外部APIと接触する唯一の層。
+                  Repository
+                  の具体実装（MySQL・PostgreSQL）。フレームワーク・DB・外部APIと接触する唯一の層。
                 </div>
               </div>
             </div>
@@ -2297,10 +2338,7 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
               <div className="callout-body">
                 <strong>参考：Clean Architecture（Uncle Bob ブログ原文）</strong>
                 <br />
-                <Ext
-                  href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
-                  style={{ color: "var(--accent)" }}
-                >
+                <Ext href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
                   https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
                 </Ext>
               </div>
@@ -2315,8 +2353,10 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
             </div>
 
             <p>
-              良い OOP 設計はテストが書きやすいです。逆に言えば、<strong>テストが書きにくいコードは設計に問題がある</strong>サインです。
-              DI（依存性注入）とインターフェースを使った OOP は、ユニットテストを自然に引き寄せます。
+              良い OOP 設計はテストが書きやすいです。逆に言えば、
+              <strong>テストが書きにくいコードは設計に問題がある</strong>サインです。
+              DI（依存性注入）とインターフェースを使った OOP
+              は、ユニットテストを自然に引き寄せます。
             </p>
 
             <h3>OOP クラスのテスト戦略</h3>
@@ -2477,10 +2517,7 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
               <div className="callout-body">
                 <strong>参考：Martin Fowler — Mocks Aren&apos;t Stubs</strong>
                 <br />
-                <Ext
-                  href="https://martinfowler.com/articles/mocksArentStubs.html"
-                  style={{ color: "var(--accent)" }}
-                >
+                <Ext href="https://martinfowler.com/articles/mocksArentStubs.html">
                   https://martinfowler.com/articles/mocksArentStubs.html
                 </Ext>
               </div>
@@ -2495,7 +2532,8 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
             </div>
 
             <p>
-              リファクタリングとは、<strong>外部から見た振る舞いを変えずに、コードの内部構造を改善すること</strong>です。
+              リファクタリングとは、
+              <strong>外部から見た振る舞いを変えずに、コードの内部構造を改善すること</strong>です。
               OOP 設計の問題（コードの匂い）を発見し、段階的に改善していく技術です。
             </p>
 
@@ -2703,12 +2741,11 @@ order.print_receipt()`,
             <div className="callout callout-tip">
               <span className="callout-icon">📖</span>
               <div className="callout-body">
-                <strong>参考：Refactoring.com — リファクタリング技法カタログ（Martin Fowler）</strong>
+                <strong>
+                  参考：Refactoring.com — リファクタリング技法カタログ（Martin Fowler）
+                </strong>
                 <br />
-                <Ext
-                  href="https://martinfowler.com/books/refactoring.html"
-                  style={{ color: "var(--accent)" }}
-                >
+                <Ext href="https://martinfowler.com/books/refactoring.html">
                   https://martinfowler.com/books/refactoring.html
                 </Ext>
               </div>
@@ -3015,7 +3052,8 @@ order.print_receipt()`,
             </div>
 
             <p>
-              良い設計を学ぶと同様に、<strong>陥りやすい悪い設計パターン（アンチパターン）</strong>を知ることも重要です。
+              良い設計を学ぶと同様に、<strong>陥りやすい悪い設計パターン（アンチパターン）</strong>
+              を知ることも重要です。
               これらを知っておくことで、コードレビューや設計判断の精度が大きく上がります。
             </p>
 
@@ -3156,12 +3194,9 @@ order.print_receipt()`,
               <span className="callout-icon">⚠️</span>
               <div className="callout-body">
                 <strong>貧血ドメインモデルの見分け方</strong>
-                クラスのメソッドが getter/setter ばかりで、ビジネスロジックをすべて「Service」クラスが持っていたら要注意です。
-                参考：
-                <Ext
-                  href="https://martinfowler.com/bliki/AnemicDomainModel.html"
-                  style={{ color: "var(--accent)" }}
-                >
+                クラスのメソッドが getter/setter
+                ばかりで、ビジネスロジックをすべて「Service」クラスが持っていたら要注意です。 参考：
+                <Ext href="https://martinfowler.com/bliki/AnemicDomainModel.html">
                   Martin Fowler — Anemic Domain Model
                 </Ext>
               </div>
@@ -3175,7 +3210,9 @@ order.print_receipt()`,
               <h2>ベストプラクティス総まとめ</h2>
             </div>
 
-            <p>本ガイドで学んだすべての知識を、実際の開発で即座に使えるチートシートとして整理します。</p>
+            <p>
+              本ガイドで学んだすべての知識を、実際の開発で即座に使えるチートシートとして整理します。
+            </p>
 
             <h3>OOP 成熟度モデル（Level 0 → Level 5）</h3>
             <div className="level-bar">
@@ -3207,7 +3244,9 @@ order.print_receipt()`,
                   Lv.1
                 </span>
                 <span className="level-name">基本的な OOP</span>
-                <span className="level-desc">クラス・メソッドを正しく使い、カプセル化を意識している。</span>
+                <span className="level-desc">
+                  クラス・メソッドを正しく使い、カプセル化を意識している。
+                </span>
               </div>
               <div className="level-item">
                 <span
@@ -3343,10 +3382,24 @@ order.print_receipt()`,
             <h3>設計の黄金ルール チェックリスト</h3>
             <div className="card-grid">
               <div className="card">
-                <h4 style={{ color: "var(--accent)", fontFamily: "var(--font-head)", fontSize: 14, marginBottom: 12 }}>
+                <h4
+                  style={{
+                    color: "var(--accent)",
+                    fontFamily: "var(--font-head)",
+                    fontSize: 14,
+                    marginBottom: 12,
+                  }}
+                >
                   🔒 カプセル化
                 </h4>
-                <ul style={{ color: "var(--text-sub)", fontSize: "13.5px", lineHeight: 2, paddingLeft: 16 }}>
+                <ul
+                  style={{
+                    color: "var(--text-sub)",
+                    fontSize: "13.5px",
+                    lineHeight: 2,
+                    paddingLeft: 16,
+                  }}
+                >
                   <li>
                     デフォルトは <code>private</code>（<code>__</code>）から始める
                   </li>
@@ -3356,10 +3409,24 @@ order.print_receipt()`,
                 </ul>
               </div>
               <div className="card">
-                <h4 style={{ color: "var(--accent3)", fontFamily: "var(--font-head)", fontSize: 14, marginBottom: 12 }}>
+                <h4
+                  style={{
+                    color: "var(--accent3)",
+                    fontFamily: "var(--font-head)",
+                    fontSize: 14,
+                    marginBottom: 12,
+                  }}
+                >
                   🧬 継承・コンポジション
                 </h4>
-                <ul style={{ color: "var(--text-sub)", fontSize: "13.5px", lineHeight: 2, paddingLeft: 16 }}>
+                <ul
+                  style={{
+                    color: "var(--text-sub)",
+                    fontSize: "13.5px",
+                    lineHeight: 2,
+                    paddingLeft: 16,
+                  }}
+                >
                   <li>is-a 関係にのみ継承を使う</li>
                   <li>継承の深さは3階層以下を目安に</li>
                   <li>has-a 関係はコンポジションを使う</li>
@@ -3367,10 +3434,24 @@ order.print_receipt()`,
                 </ul>
               </div>
               <div className="card">
-                <h4 style={{ color: "var(--accent2)", fontFamily: "var(--font-head)", fontSize: 14, marginBottom: 12 }}>
+                <h4
+                  style={{
+                    color: "var(--accent2)",
+                    fontFamily: "var(--font-head)",
+                    fontSize: 14,
+                    marginBottom: 12,
+                  }}
+                >
                   🎯 SOLID
                 </h4>
-                <ul style={{ color: "var(--text-sub)", fontSize: "13.5px", lineHeight: 2, paddingLeft: 16 }}>
+                <ul
+                  style={{
+                    color: "var(--text-sub)",
+                    fontSize: "13.5px",
+                    lineHeight: 2,
+                    paddingLeft: 16,
+                  }}
+                >
                   <li>1クラスの変更理由は1つだけ（SRP）</li>
                   <li>新機能はクラス追加で対応（OCP）</li>
                   <li>サブクラスは親クラスを代替できる（LSP）</li>
@@ -3379,10 +3460,24 @@ order.print_receipt()`,
                 </ul>
               </div>
               <div className="card">
-                <h4 style={{ color: "var(--warning)", fontFamily: "var(--font-head)", fontSize: 14, marginBottom: 12 }}>
+                <h4
+                  style={{
+                    color: "var(--warning)",
+                    fontFamily: "var(--font-head)",
+                    fontSize: 14,
+                    marginBottom: 12,
+                  }}
+                >
                   🧪 テスタビリティ
                 </h4>
-                <ul style={{ color: "var(--text-sub)", fontSize: "13.5px", lineHeight: 2, paddingLeft: 16 }}>
+                <ul
+                  style={{
+                    color: "var(--text-sub)",
+                    fontSize: "13.5px",
+                    lineHeight: 2,
+                    paddingLeft: 16,
+                  }}
+                >
                   <li>依存性注入（DI）を基本にする</li>
                   <li>副作用を最小化・明示化する</li>
                   <li>振る舞い（結果）をテストする</li>
@@ -3456,18 +3551,28 @@ order.print_receipt()`,
             <div className="ref-group">
               <div className="ref-group-title">🏛️ SOLID 原則・設計原則</div>
               <div className="ref-list">
-                <Ext className="ref-item" href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html">
+                <Ext
+                  className="ref-item"
+                  href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">SOLID 原則（Robert C. Martin 公式ブログ）</span>
-                    <span className="ref-url">blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html</span>
+                    <span className="ref-url">
+                      blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html
+                    </span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://www.oodesign.com/single-responsibility-principle">
+                <Ext
+                  className="ref-item"
+                  href="https://www.oodesign.com/single-responsibility-principle"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Single Responsibility Principle — OODesign.com</span>
-                    <span className="ref-url">www.oodesign.com/single-responsibility-principle</span>
+                    <span className="ref-url">
+                      www.oodesign.com/single-responsibility-principle
+                    </span>
                   </div>
                 </Ext>
                 <Ext className="ref-item" href="https://www.oodesign.com/open-close-principle">
@@ -3477,14 +3582,22 @@ order.print_receipt()`,
                     <span className="ref-url">www.oodesign.com/open-close-principle</span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://www.oodesign.com/liskov-s-substitution-principle">
+                <Ext
+                  className="ref-item"
+                  href="https://www.oodesign.com/liskov-s-substitution-principle"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Liskov Substitution Principle — OODesign.com</span>
-                    <span className="ref-url">www.oodesign.com/liskov-s-substitution-principle</span>
+                    <span className="ref-url">
+                      www.oodesign.com/liskov-s-substitution-principle
+                    </span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://www.oodesign.com/dependency-inversion-principle">
+                <Ext
+                  className="ref-item"
+                  href="https://www.oodesign.com/dependency-inversion-principle"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Dependency Inversion Principle — OODesign.com</span>
@@ -3545,18 +3658,28 @@ order.print_receipt()`,
                     <span className="ref-url">docs.python.org/ja/3/library/abc.html</span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://docs.python.org/ja/3/library/dataclasses.html">
+                <Ext
+                  className="ref-item"
+                  href="https://docs.python.org/ja/3/library/dataclasses.html"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
-                    <span className="ref-name">Python 公式 — dataclasses（値オブジェクトに活用）</span>
+                    <span className="ref-name">
+                      Python 公式 — dataclasses（値オブジェクトに活用）
+                    </span>
                     <span className="ref-url">docs.python.org/ja/3/library/dataclasses.html</span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://realpython.com/python3-object-oriented-programming/">
+                <Ext
+                  className="ref-item"
+                  href="https://realpython.com/python3-object-oriented-programming/"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Real Python — OOP in Python 3 完全ガイド</span>
-                    <span className="ref-url">realpython.com/python3-object-oriented-programming</span>
+                    <span className="ref-url">
+                      realpython.com/python3-object-oriented-programming
+                    </span>
                   </div>
                 </Ext>
               </div>
@@ -3565,17 +3688,27 @@ order.print_receipt()`,
             <div className="ref-group">
               <div className="ref-group-title">🏗️ アーキテクチャ・DDD</div>
               <div className="ref-list">
-                <Ext className="ref-item" href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">
+                <Ext
+                  className="ref-item"
+                  href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Clean Architecture — Uncle Bob ブログ原文</span>
-                    <span className="ref-url">blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</span>
+                    <span className="ref-url">
+                      blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+                    </span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://martinfowler.com/bliki/AnemicDomainModel.html">
+                <Ext
+                  className="ref-item"
+                  href="https://martinfowler.com/bliki/AnemicDomainModel.html"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
-                    <span className="ref-name">Martin Fowler — Anemic Domain Model（アンチパターン解説）</span>
+                    <span className="ref-name">
+                      Martin Fowler — Anemic Domain Model（アンチパターン解説）
+                    </span>
                     <span className="ref-url">martinfowler.com/bliki/AnemicDomainModel.html</span>
                   </div>
                 </Ext>
@@ -3589,7 +3722,9 @@ order.print_receipt()`,
                 <Ext className="ref-item" href="https://github.com/cosmicpython/book">
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
-                    <span className="ref-name">Cosmic Python — Python × DDD + OOP 実践書（GitHub）</span>
+                    <span className="ref-name">
+                      Cosmic Python — Python × DDD + OOP 実践書（GitHub）
+                    </span>
                     <span className="ref-url">github.com/cosmicpython/book</span>
                   </div>
                 </Ext>
@@ -3613,7 +3748,10 @@ order.print_receipt()`,
                     <span className="ref-url">docs.pytest.org</span>
                   </div>
                 </Ext>
-                <Ext className="ref-item" href="https://martinfowler.com/articles/mocksArentStubs.html">
+                <Ext
+                  className="ref-item"
+                  href="https://martinfowler.com/articles/mocksArentStubs.html"
+                >
                   <span className="ref-icon">🔗</span>
                   <div className="ref-content">
                     <span className="ref-name">Martin Fowler — Mocks Aren&apos;t Stubs</span>
@@ -3631,7 +3769,14 @@ order.print_receipt()`,
             </div>
 
             <div className="divider" />
-            <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 12, padding: "8px 0 0" }}>
+            <div
+              style={{
+                textAlign: "center",
+                color: "var(--text-muted)",
+                fontSize: 12,
+                padding: "8px 0 0",
+              }}
+            >
               📅 本ドキュメントは2025年時点の情報を基に作成しています。
               <br />
               各リンク・ツールの仕様は変更される場合があります。

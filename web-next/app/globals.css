@@ -14190,6 +14190,8 @@ body.has-common-header .domain-driven-design-comprehensive-guide #sidebar {
     font-size: 12px;
     color: var(--text-muted);
   }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
   .footer a { color: var(--accent); text-decoration: none; }
 
   :not(pre) > code {
