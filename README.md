@@ -55,7 +55,7 @@
 - Architecting Generative AI Applications
 - Generative AI Design Patterns
 - Building Applications with AI Agents
-- SQL Antipatterns (2nd Edition)
+- SQLアンチパターン 第2版
 
 ### 7. 資格試験 (`certification-exams/`)
 
