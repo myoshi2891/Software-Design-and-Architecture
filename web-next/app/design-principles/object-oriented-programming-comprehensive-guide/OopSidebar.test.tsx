@@ -109,4 +109,17 @@ describe("OopSidebar", () => {
     expect(active).toHaveLength(1);
     expect(active[0]?.getAttribute("href")).toBe("#sec3");
   });
+
+  it("active な nav 項目だけに aria-current=location が付く", () => {
+    const { container } = render(<OopSidebar groups={GROUPS} />);
+    expect(container.querySelector("[aria-current='location']")?.getAttribute("href")).toBe(
+      "#sec1"
+    );
+
+    intersect("sec3");
+
+    const current = container.querySelectorAll("[aria-current='location']");
+    expect(current).toHaveLength(1);
+    expect(current[0]?.getAttribute("href")).toBe("#sec3");
+  });
 });

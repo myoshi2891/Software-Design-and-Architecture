@@ -26,4 +26,10 @@ describe("SqlAntipatternsChecklist", () => {
     expect(counter?.textContent).toContain("1 / 25 完了");
     expect(fill?.getAttribute("style")).toContain("width: 4%");
   });
+
+  it("完了件数カウンターが role=status でスクリーンリーダーに通知される", () => {
+    const { container } = render(<SqlAntipatternsChecklist />);
+    const counter = container.querySelector("#checklistCounter");
+    expect(counter?.getAttribute("role")).toBe("status");
+  });
 });

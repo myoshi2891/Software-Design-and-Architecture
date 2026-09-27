@@ -25,4 +25,22 @@ describe("SqlAntipatternsSidebar", () => {
     if (toggleBtn) fireEvent.click(toggleBtn);
     expect(sidebar?.classList.contains("open")).toBe(false);
   });
+
+  it("Escape でメニューを閉じ、フォーカスをトグルボタンへ戻す", () => {
+    const { container } = render(<SqlAntipatternsSidebar />);
+    const toggleBtn = container.querySelector<HTMLButtonElement>("#menuToggle");
+    const sidebar = container.querySelector("#sidebar");
+    const firstLink = container.querySelector<HTMLAnchorElement>(".nav-item a");
+    if (!toggleBtn || !firstLink) throw new Error("toggle or link not found");
+
+    fireEvent.click(toggleBtn);
+    firstLink.focus();
+    expect(document.activeElement).toBe(firstLink);
+
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(sidebar?.classList.contains("open")).toBe(false);
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(toggleBtn);
+  });
 });

@@ -95,6 +95,24 @@ describe("TddSidebar", () => {
     expect(prevActive?.classList.contains("active")).toBe(false);
   });
 
+  it("モバイル用索引に 5 グループ・18 項目のリンクを描画する", () => {
+    const { container } = render(<TddSidebar />);
+    const mobileToc = container.querySelector("nav.mobile-toc");
+    expect(mobileToc).not.toBeNull();
+    expect(mobileToc?.getAttribute("aria-label")).toBeTruthy();
+
+    const groupTitles = Array.from(
+      mobileToc?.querySelectorAll(".mobile-toc-group-label") ?? []
+    ).map((el) => el.textContent);
+    expect(groupTitles).toEqual(DEFAULT_GROUPS.map((g) => g.label));
+    expect(groupTitles).toHaveLength(5);
+
+    const expectedHrefs = DEFAULT_GROUPS.flatMap((g) => g.items.map((item) => `#${item.id}`));
+    const links = Array.from(mobileToc?.querySelectorAll("a") ?? []);
+    expect(links.map((a) => a.getAttribute("href"))).toEqual(expectedHrefs);
+    expect(links).toHaveLength(18);
+  });
+
   it("スクロール量に応じて進捗バーの scaleX を更新する", () => {
     Object.defineProperty(document.documentElement, "scrollHeight", {
       configurable: true,

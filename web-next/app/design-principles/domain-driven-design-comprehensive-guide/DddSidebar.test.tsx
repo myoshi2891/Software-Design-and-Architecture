@@ -20,20 +20,30 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
+const SECTION_IDS = GROUPS.flatMap((g) => g.items.map((item) => item.id));
+
 type IOCallback = (entries: IntersectionObserverEntry[]) => void;
 let ioCallback: IOCallback | null = null;
+let ioInstance: CapturingIO | null = null;
 
 class CapturingIO implements IntersectionObserver {
   readonly root = null;
   readonly rootMargin = "";
   readonly thresholds: ReadonlyArray<number> = [];
-  observe = vi.fn();
+  observe = vi.fn<(target: Element) => void>();
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn(() => []);
   constructor(cb: IOCallback) {
     ioCallback = cb;
+    ioInstance = this;
   }
+}
+
+// コールバック発火前に、フィクスチャの全 section が observe 済みであることを検証する
+function expectAllSectionsObserved(): void {
+  const observedIds = ioInstance?.observe.mock.calls.map(([target]) => target.id) ?? [];
+  expect(observedIds).toEqual(SECTION_IDS);
 }
 
 function intersect(id: string): void {
@@ -51,6 +61,7 @@ describe("DddSidebar", () => {
 
   beforeEach(() => {
     ioCallback = null;
+    ioInstance = null;
     originalIntersectionObserver = globalThis.IntersectionObserver;
     globalThis.IntersectionObserver = CapturingIO as unknown as typeof IntersectionObserver;
     document.body.insertAdjacentHTML(
@@ -103,6 +114,7 @@ describe("DddSidebar", () => {
     expect(activeInitial[0]?.getAttribute("href")).toBe("#intro");
 
     // domain が交差する
+    expectAllSectionsObserved();
     intersect("domain");
 
     // 新しいアクティブ項目が #domain であることを確認
@@ -113,6 +125,23 @@ describe("DddSidebar", () => {
     // 以前のアクティブ項目 (#intro) がアクティブクラスを失っていることを検証
     const prevActive = container.querySelector(".nav-item[href='#intro']");
     expect(prevActive?.classList.contains("active")).toBe(false);
+  });
+
+  it("active な nav 項目だけに aria-current=location が付く", () => {
+    const { container } = render(<DddSidebar groups={GROUPS} />);
+    expect(
+      Array.from(container.querySelectorAll("[aria-current='location']")).map((a) =>
+        a.getAttribute("href")
+      )
+    ).toEqual(["#intro"]);
+
+    expectAllSectionsObserved();
+    intersect("ubiquitous");
+
+    const current = container.querySelectorAll("[aria-current='location']");
+    expect(current).toHaveLength(1);
+    expect(current[0]?.getAttribute("href")).toBe("#ubiquitous");
+    expect(current[0]?.classList.contains("active")).toBe(true);
   });
 
   it("スクロール量に応じて進捗バーの scaleX を更新する", () => {
