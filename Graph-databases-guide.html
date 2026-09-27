@@ -467,7 +467,7 @@ table tbody tr:hover{background:var(--paper-alt)}
     <thead><tr><th>観点</th><th>リレーショナルDB</th><th>NoSQL集約指向DB</th><th>グラフDB</th></tr></thead>
     <tbody>
       <tr><td>リレーションの表現</td><td>外部キーで関係を保存(たどる際はJOINで再構築)</td><td>ドキュメント間参照や<code>$lookup</code>などのクエリ機能で表現・たどる</td><td>リレーションシップとして明示的に保存</td></tr>
-      <tr><td>多段の関係をたどるコスト</td><td>結合アルゴリズム・インデックス・データ分布に依存する</td><td>アプリ側の追加実装が必要</td><td>ホップ数・分岐数・結果件数・キャッシュ状態に依存する</td></tr>
+      <tr><td>多段の関係をたどるコスト</td><td>結合アルゴリズム・インデックス・データ分布に依存する</td><td>製品のクエリ機能とデータモデルに依存する(不足分はアプリ側で補う)</td><td>ホップ数・分岐数・結果件数・キャッシュ状態に依存する</td></tr>
       <tr><td>スキーマ</td><td>事前に固定</td><td>緩い、または無し</td><td>ラベルとプロパティで柔軟に進化</td></tr>
       <tr><td>得意な処理</td><td>集計・レポーティング</td><td>大量データの高速な読み書き</td><td>多段の関係をたどる探索クエリ</td></tr>
     </tbody>
@@ -847,7 +847,7 @@ const DIAGRAMS = {
     A --> A1["JOINはクエリ時に計算コストが増大"]
     A --> A2["スキーマ変更が高コスト"]
     B --> B1["KeyValue Document Column系"]
-    B --> B2["集約をまたぐ関係はアプリ側で処理"]
+    B --> B2["集約をまたぐ関係の探索は製品のクエリ機能とデータモデルに依存"]
     C --> C1["リレーションシップが第一級のデータ"]
     C --> C2["接続をたどる性能がグラフ全体の件数に依存しにくい"]
     classDef hub fill:#c9c4ef,color:#221f52
@@ -1042,6 +1042,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.querySelectorAll(".sidebar a.nav-a").forEach(a => {
     a.addEventListener("click", closeMenu);
+  });
+  // ブレークポイント(980px)を超えて広がったら開いたメニューを閉じ、.main の inert を解除する
+  window.addEventListener("resize", () => {
+    if (window.innerWidth <= 980 || !sidebar.classList.contains("open")) return;
+    closeMenu();
   });
 
   // Scroll-position based active nav highlighting
