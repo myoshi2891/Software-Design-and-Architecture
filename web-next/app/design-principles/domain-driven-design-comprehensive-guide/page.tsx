@@ -44,6 +44,586 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+const CODE_BLOCKS: Record<string, string> = {
+  code1: `<span class="kw">from</span> dataclasses <span class="kw">import</span> <span class="fn">dataclass</span>, <span class="fn">field</span>
+<span class="kw">from</span> <span class="fn">datetime</span> <span class="kw">import</span> <span class="fn">datetime</span>
+<span class="kw">from</span> uuid <span class="kw">import</span> <span class="fn">uuid4</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">CustomerId</span>:
+    <span class="st">"""顧客IDの値オブジェクト — IDを型で守る"""</span>
+    value: <span class="fn">str</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.value:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"顧客IDは空にできません"</span>)
+
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">cls</span>) -&gt; <span class="st">"CustomerId"</span>:
+        <span class="kw">return</span> <span class="kw">cls</span>(value=<span class="fn">str</span>(<span class="fn">uuid4</span>()))
+
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">Customer</span>:
+    <span class="st">"""</span>
+<span class="st">    顧客エンティティ（Entity）</span>
+<span class="st">    ベストプラクティス:</span>
+<span class="st">      - IDで同一性を判断（属性ではない）</span>
+<span class="st">      - ビジネスルールをメソッドとして持つ</span>
+<span class="st">      - セッターを公開しない</span>
+<span class="st">    """</span>
+    id: CustomerId
+    name: <span class="fn">str</span>
+    email: <span class="fn">str</span>
+    is_active: <span class="fn">bool</span> = <span class="kw">True</span>
+    created_at: <span class="fn">datetime</span> = <span class="fn">field</span>(default_factory=<span class="fn">datetime</span>.now)
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other: object) -&gt; <span class="fn">bool</span>:
+        <span class="st">"""IDで同一性を判断 — 属性が変わっても同じ顧客"""</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">isinstance</span>(other, Customer):
+            <span class="kw">return</span> <span class="kw">False</span>
+        <span class="kw">return</span> <span class="kw">self</span>.id == other.id
+
+    <span class="kw">def</span> <span class="fn">__hash__</span>(<span class="kw">self</span>) -&gt; <span class="fn">int</span>:
+        <span class="kw">return</span> <span class="fn">hash</span>(<span class="kw">self</span>.id)
+
+    <span class="cm"># ── ドメインロジック（ビジネスルール） ──────────────────</span>
+
+    <span class="kw">def</span> <span class="fn">change_email</span>(<span class="kw">self</span>, new_email: <span class="fn">str</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""メールアドレス変更：バリデーションをEntityが責任を持つ"""</span>
+        <span class="kw">if</span> <span class="kw">not</span> new_email <span class="kw">or</span> <span class="st">"@"</span> <span class="kw">not</span> <span class="kw">in</span> new_email:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"有効なメールアドレスを入力してください"</span>)
+        <span class="kw">self</span>.email = new_email
+
+    <span class="kw">def</span> <span class="fn">deactivate</span>(<span class="kw">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""退会処理：すでに退会済みなら例外を出す"""</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.is_active:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"すでに退会済みの顧客です"</span>)
+        <span class="kw">self</span>.is_active = <span class="kw">False</span>
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">is_valid_for_order</span>(<span class="kw">self</span>) -&gt; <span class="fn">bool</span>:
+        <span class="st">"""注文可能かどうかのビジネスルール"""</span>
+        <span class="kw">return</span> <span class="kw">self</span>.is_active`,
+  code2: `<span class="kw">from</span> dataclasses <span class="kw">import</span> <span class="fn">dataclass</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="fn">Literal</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)  <span class="cm"># frozen=True でイミュータブルにする</span>
+<span class="kw">class</span> <span class="fn">Money</span>:
+    <span class="st">"""</span>
+<span class="st">    金額の値オブジェクト</span>
+<span class="st">    ベストプラクティス:</span>
+<span class="st">      - frozen=True で変更不可にする</span>
+<span class="st">      - バリデーションを __post_init__ に集める</span>
+<span class="st">      - 計算は新しいオブジェクトを返す</span>
+<span class="st">    """</span>
+    amount: <span class="fn">int</span>
+    currency: <span class="fn">Literal</span>[<span class="st">"JPY"</span>, <span class="st">"USD"</span>, <span class="st">"EUR"</span>]
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.amount &lt; <span class="nu">0</span>:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"金額は0以上でなければなりません"</span>)
+        <span class="kw">if</span> <span class="kw">self</span>.currency <span class="kw">not</span> <span class="kw">in</span> (<span class="st">"JPY"</span>, <span class="st">"USD"</span>, <span class="st">"EUR"</span>):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(f<span class="st">"未対応の通貨です: {self.currency}"</span>)
+
+    <span class="kw">def</span> <span class="fn">add</span>(<span class="kw">self</span>, other: <span class="st">"Money"</span>) -&gt; <span class="st">"Money"</span>:
+        <span class="st">"""加算: 新しい Money を返す（自分は変更しない）"""</span>
+        <span class="kw">self</span>.<span class="fn">_assert_same_currency</span>(other)
+        <span class="kw">return</span> <span class="fn">Money</span>(<span class="kw">self</span>.amount + other.amount, <span class="kw">self</span>.currency)
+
+    <span class="kw">def</span> <span class="fn">subtract</span>(<span class="kw">self</span>, other: <span class="st">"Money"</span>) -&gt; <span class="st">"Money"</span>:
+        <span class="st">"""減算"""</span>
+        <span class="kw">self</span>.<span class="fn">_assert_same_currency</span>(other)
+        <span class="kw">if</span> <span class="kw">self</span>.amount &lt; other.amount:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"差し引く金額が残高を超えています"</span>)
+        <span class="kw">return</span> <span class="fn">Money</span>(<span class="kw">self</span>.amount - other.amount, <span class="kw">self</span>.currency)
+
+    <span class="kw">def</span> <span class="fn">multiply</span>(<span class="kw">self</span>, factor: <span class="fn">int</span>) -&gt; <span class="st">"Money"</span>:
+        <span class="st">"""乗算（個数×単価など）"""</span>
+        <span class="kw">return</span> <span class="fn">Money</span>(<span class="kw">self</span>.amount * factor, <span class="kw">self</span>.currency)
+
+    <span class="kw">def</span> <span class="fn">_assert_same_currency</span>(<span class="kw">self</span>, other: <span class="st">"Money"</span>) -&gt; <span class="kw">None</span>:
+        <span class="kw">if</span> <span class="kw">self</span>.currency != other.currency:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(
+                f<span class="st">"通貨が一致しません: {self.currency} vs {other.currency}"</span>
+            )
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>) -&gt; <span class="fn">str</span>:
+        <span class="kw">return</span> f<span class="st">"{self.amount:,} {self.currency}"</span>
+
+
+<span class="cm"># 使い方</span>
+price = <span class="fn">Money</span>(<span class="nu">1000</span>, <span class="st">"JPY"</span>)
+tax   = <span class="fn">Money</span>(<span class="nu">100</span>, <span class="st">"JPY"</span>)
+total = price.<span class="fn">add</span>(tax)          <span class="cm"># Money(1100, "JPY") — 新しいオブジェクト</span>
+
+p1 = <span class="fn">Money</span>(<span class="nu">1000</span>, <span class="st">"JPY"</span>)
+p2 = <span class="fn">Money</span>(<span class="nu">1000</span>, <span class="st">"JPY"</span>)
+<span class="fn">print</span>(p1 == p2)                 <span class="cm"># True — 値が同じなら等しい</span>
+<span class="fn">print</span>(p1 <span class="kw">is</span> p2)                 <span class="cm"># False — インスタンスは別物</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">Address</span>:
+    <span class="st">"""住所の値オブジェクト"""</span>
+    postal_code: <span class="fn">str</span>
+    prefecture: <span class="fn">str</span>
+    city: <span class="fn">str</span>
+    street: <span class="fn">str</span>
+    building: <span class="fn">str</span> = <span class="st">""</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.postal_code <span class="kw">or</span> <span class="kw">not</span> <span class="kw">self</span>.prefecture:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"郵便番号と都道府県は必須です"</span>)
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">full_address</span>(<span class="kw">self</span>) -&gt; <span class="fn">str</span>:
+        base = f<span class="st">"{self.prefecture}{self.city}{self.street}"</span>
+        <span class="kw">return</span> f<span class="st">"{base} {self.building}"</span>.<span class="fn">strip</span>()`,
+  code3: `<span class="kw">from</span> dataclasses <span class="kw">import</span> <span class="fn">dataclass</span>, <span class="fn">field</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="fn">Optional</span>
+<span class="kw">from</span> enum <span class="kw">import</span> <span class="fn">Enum</span>
+
+
+<span class="kw">class</span> <span class="fn">OrderStatus</span>(<span class="fn">Enum</span>):
+    PENDING   = <span class="st">"pending"</span>     <span class="cm"># 注文保留中</span>
+    CONFIRMED = <span class="st">"confirmed"</span>   <span class="cm"># 注文確定</span>
+    SHIPPED   = <span class="st">"shipped"</span>     <span class="cm"># 発送済み</span>
+    CANCELLED = <span class="st">"cancelled"</span>   <span class="cm"># キャンセル</span>
+
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">OrderLine</span>:
+    <span class="st">"""注文明細 — Aggregate内部のオブジェクト（外部から直接変更不可）"""</span>
+    product_id: <span class="fn">str</span>       <span class="cm"># 他のAggregateへはIDで参照</span>
+    product_name: <span class="fn">str</span>
+    unit_price: <span class="st">"Money"</span>
+    quantity: <span class="fn">int</span>
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">subtotal</span>(<span class="kw">self</span>) -&gt; <span class="st">"Money"</span>:
+        <span class="kw">return</span> <span class="kw">self</span>.unit_price.<span class="fn">multiply</span>(<span class="kw">self</span>.quantity)
+
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">Order</span>:
+    <span class="st">"""</span>
+<span class="st">    注文集約ルート（Aggregate Root）</span>
+<span class="st">    ベストプラクティス:</span>
+<span class="st">      - 全変更はここを通じて行う</span>
+<span class="st">      - lines プロパティは tuple で返す（外部変更不可）</span>
+<span class="st">      - ドメインイベントをここで生成する</span>
+<span class="st">    """</span>
+    id: <span class="fn">str</span>
+    customer_id: <span class="fn">str</span>             <span class="cm"># 顧客AggregateへはIDで参照</span>
+    _lines: <span class="fn">list</span> = <span class="fn">field</span>(default_factory=<span class="fn">list</span>, repr=<span class="kw">False</span>)
+    _status: OrderStatus = <span class="fn">field</span>(default=OrderStatus.PENDING, repr=<span class="kw">False</span>)
+    _events: <span class="fn">list</span> = <span class="fn">field</span>(default_factory=<span class="fn">list</span>, repr=<span class="kw">False</span>)
+
+    <span class="cm"># ── 公開インターフェース ─────────────────────────────────</span>
+
+    <span class="kw">def</span> <span class="fn">add_line</span>(<span class="kw">self</span>, product_id: <span class="fn">str</span>, product_name: <span class="fn">str</span>,
+                 unit_price: <span class="st">"Money"</span>, quantity: <span class="fn">int</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""注文明細の追加：不変条件を守りながら変更する"""</span>
+        <span class="kw">self</span>.<span class="fn">_assert_can_modify</span>()
+        <span class="kw">if</span> quantity &lt;= <span class="nu">0</span>:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"数量は1以上でなければなりません"</span>)
+        existing = <span class="kw">self</span>.<span class="fn">_find_line</span>(product_id)
+        <span class="kw">if</span> existing:
+            existing.quantity += quantity
+        <span class="kw">else</span>:
+            <span class="kw">self</span>._lines.<span class="fn">append</span>(
+                <span class="fn">OrderLine</span>(product_id, product_name, unit_price, quantity)
+            )
+
+    <span class="kw">def</span> <span class="fn">confirm</span>(<span class="kw">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""注文確定：状態遷移のビジネスルールを集約が保証"""</span>
+        <span class="kw">if</span> <span class="kw">self</span>._status != OrderStatus.PENDING:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"保留中の注文のみ確定できます"</span>)
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>._lines:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"注文明細がありません"</span>)
+        <span class="kw">self</span>._status = OrderStatus.CONFIRMED
+        <span class="kw">self</span>._events.<span class="fn">append</span>(
+            <span class="fn">OrderConfirmedEvent</span>(order_id=<span class="kw">self</span>.id,
+                                total_amount=<span class="kw">self</span>.total_amount.amount)
+        )
+
+    <span class="kw">def</span> <span class="fn">cancel</span>(<span class="kw">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""注文キャンセル：発送済み以降はキャンセル不可"""</span>
+        <span class="kw">if</span> <span class="kw">self</span>._status == OrderStatus.SHIPPED:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"発送済みの注文はキャンセルできません"</span>)
+        <span class="kw">self</span>._status = OrderStatus.CANCELLED
+
+    <span class="cm"># ── プロパティ（読み取り専用） ───────────────────────────</span>
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">lines</span>(<span class="kw">self</span>) -&gt; <span class="fn">tuple</span>:
+        <span class="st">"""外部には tuple で返す — 直接変更させない"""</span>
+        <span class="kw">return</span> <span class="fn">tuple</span>(<span class="kw">self</span>._lines)
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">status</span>(<span class="kw">self</span>) -&gt; OrderStatus:
+        <span class="kw">return</span> <span class="kw">self</span>._status
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">total_amount</span>(<span class="kw">self</span>) -&gt; <span class="st">"Money"</span>:
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>._lines:
+            <span class="kw">return</span> <span class="fn">Money</span>(<span class="nu">0</span>, <span class="st">"JPY"</span>)
+        totals = [line.subtotal <span class="kw">for</span> line <span class="kw">in</span> <span class="kw">self</span>._lines]
+        <span class="kw">return</span> <span class="fn">sum</span>(totals[<span class="nu">1</span>:], totals[<span class="nu">0</span>])
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">domain_events</span>(<span class="kw">self</span>) -&gt; <span class="fn">list</span>:
+        <span class="kw">return</span> <span class="fn">list</span>(<span class="kw">self</span>._events)
+
+    <span class="kw">def</span> <span class="fn">clear_events</span>(<span class="kw">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="kw">self</span>._events.<span class="fn">clear</span>()
+
+    <span class="cm"># ── プライベートメソッド ────────────────────────────────</span>
+
+    <span class="kw">def</span> <span class="fn">_assert_can_modify</span>(<span class="kw">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="kw">if</span> <span class="kw">self</span>._status != OrderStatus.PENDING:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"確定済みの注文は変更できません"</span>)
+
+    <span class="kw">def</span> <span class="fn">_find_line</span>(<span class="kw">self</span>, product_id: <span class="fn">str</span>) -&gt; <span class="fn">Optional</span>[OrderLine]:
+        <span class="kw">return</span> <span class="fn">next</span>((l <span class="kw">for</span> l <span class="kw">in</span> <span class="kw">self</span>._lines
+                     <span class="kw">if</span> l.product_id == product_id), <span class="kw">None</span>)`,
+  code4: `<span class="kw">from</span> dataclasses <span class="kw">import</span> <span class="fn">dataclass</span>, <span class="fn">field</span>
+<span class="kw">from</span> <span class="fn">datetime</span> <span class="kw">import</span> <span class="fn">datetime</span>
+<span class="kw">from</span> uuid <span class="kw">import</span> <span class="fn">uuid4</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">DomainEvent</span>:
+    <span class="st">"""すべてのドメインイベントの基底クラス"""</span>
+    event_id: <span class="fn">str</span> = <span class="fn">field</span>(default_factory=<span class="kw">lambda</span>: <span class="fn">str</span>(<span class="fn">uuid4</span>()))
+    occurred_at: <span class="fn">datetime</span> = <span class="fn">field</span>(default_factory=<span class="fn">datetime</span>.now)
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">OrderConfirmedEvent</span>(DomainEvent):
+    <span class="st">"""</span>
+<span class="st">    注文が確定した</span>
+<span class="st">    命名ベストプラクティス: 必ず過去形（OrderConfirmed）</span>
+<span class="st">    設計ベストプラクティス: 受信者がDBを引かなくてもよい情報を含む</span>
+<span class="st">    """</span>
+    order_id: <span class="fn">str</span> = <span class="st">""</span>
+    customer_id: <span class="fn">str</span> = <span class="st">""</span>
+    total_amount: <span class="fn">int</span> = <span class="nu">0</span>
+    currency: <span class="fn">str</span> = <span class="st">"JPY"</span>
+    item_count: <span class="fn">int</span> = <span class="nu">0</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">OrderCancelledEvent</span>(DomainEvent):
+    <span class="st">"""注文がキャンセルされた"""</span>
+    order_id: <span class="fn">str</span> = <span class="st">""</span>
+    reason: <span class="fn">str</span> = <span class="st">""</span>
+
+
+@<span class="fn">dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="fn">ProductOutOfStockEvent</span>(DomainEvent):
+    <span class="st">"""商品が在庫切れになった"""</span>
+    product_id: <span class="fn">str</span> = <span class="st">""</span>
+    product_name: <span class="fn">str</span> = <span class="st">""</span>
+
+
+<span class="cm"># ── イベントハンドラー（購読者）────────────────────────────</span>
+
+<span class="kw">class</span> <span class="fn">InventoryEventHandler</span>:
+    <span class="kw">def</span> <span class="fn">handle_order_confirmed</span>(<span class="kw">self</span>, event: OrderConfirmedEvent) -&gt; <span class="kw">None</span>:
+        <span class="st">"""注文確定時に在庫を引き当てる"""</span>
+        <span class="fn">print</span>(f<span class="st">"在庫引き当て: 注文ID {event.order_id}"</span>)
+
+<span class="kw">class</span> <span class="fn">NotificationEventHandler</span>:
+    <span class="kw">def</span> <span class="fn">handle_order_confirmed</span>(<span class="kw">self</span>, event: OrderConfirmedEvent) -&gt; <span class="kw">None</span>:
+        <span class="st">"""注文確定メールを送信する"""</span>
+        <span class="fn">print</span>(f<span class="st">"確認メール送信: 顧客ID {event.customer_id}"</span>)`,
+  code5: `<span class="kw">from</span> abc <span class="kw">import</span> <span class="fn">ABC</span>, <span class="fn">abstractmethod</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="fn">Optional</span>
+
+
+<span class="cm"># ── インターフェース（ドメイン層に置く）─────────────────────</span>
+
+<span class="kw">class</span> <span class="fn">OrderRepository</span>(<span class="fn">ABC</span>):
+    <span class="st">"""</span>
+<span class="st">    注文リポジトリのインターフェース</span>
+<span class="st">    ベストプラクティス:</span>
+<span class="st">      - ドメイン層はこれにのみ依存する</span>
+<span class="st">      - 具体的なDB実装を知らない</span>
+<span class="st">      - メソッドはドメイン用語で命名する</span>
+<span class="st">    """</span>
+
+    @<span class="fn">abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">find_by_id</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="fn">Optional</span>[Order]:
+        ...
+
+    @<span class="fn">abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">find_by_customer_id</span>(<span class="kw">self</span>, customer_id: <span class="fn">str</span>) -&gt; <span class="fn">list</span>[Order]:
+        ...
+
+    @<span class="fn">abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, order: Order) -&gt; <span class="kw">None</span>:
+        <span class="st">"""新規・更新どちらも同じメソッドで扱う（Upsert）"""</span>
+        ...
+
+    @<span class="fn">abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">delete</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="kw">None</span>:
+        ...
+
+
+<span class="cm"># ── テスト用のインメモリ実装（インフラ層）──────────────────</span>
+
+<span class="kw">class</span> <span class="fn">InMemoryOrderRepository</span>(OrderRepository):
+    <span class="st">"""</span>
+<span class="st">    DBなしでドメインロジックをテストできる</span>
+<span class="st">    Unit TestではこちらのImplementationを使う</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>._store: <span class="fn">dict</span>[<span class="fn">str</span>, Order] = {}
+
+    <span class="kw">def</span> <span class="fn">find_by_id</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="fn">Optional</span>[Order]:
+        <span class="kw">return</span> <span class="kw">self</span>._store.<span class="fn">get</span>(order_id)
+
+    <span class="kw">def</span> <span class="fn">find_by_customer_id</span>(<span class="kw">self</span>, customer_id: <span class="fn">str</span>) -&gt; <span class="fn">list</span>[Order]:
+        <span class="kw">return</span> [o <span class="kw">for</span> o <span class="kw">in</span> <span class="kw">self</span>._store.<span class="fn">values</span>()
+                <span class="kw">if</span> o.customer_id == customer_id]
+
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, order: Order) -&gt; <span class="kw">None</span>:
+        <span class="kw">self</span>._store[order.id] = order
+
+    <span class="kw">def</span> <span class="fn">delete</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="kw">None</span>:
+        <span class="kw">self</span>._store.<span class="fn">pop</span>(order_id, <span class="kw">None</span>)
+
+
+<span class="cm"># ── 本番用のSQLAlchemy実装（インフラ層）─────────────────────</span>
+
+<span class="kw">class</span> <span class="fn">SQLAlchemyOrderRepository</span>(OrderRepository):
+    <span class="st">"""</span>
+<span class="st">    ドメインオブジェクト ←→ DBモデルの変換を担う</span>
+<span class="st">    変換ロジックをここに集中させる</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, session):
+        <span class="kw">self</span>._session = session
+
+    <span class="kw">def</span> <span class="fn">find_by_id</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="fn">Optional</span>[Order]:
+        record = (<span class="kw">self</span>._session.<span class="fn">query</span>(OrderModel)
+                  .<span class="fn">filter_by</span>(id=order_id).<span class="fn">first</span>())
+        <span class="kw">return</span> <span class="kw">self</span>.<span class="fn">_to_domain</span>(record) <span class="kw">if</span> record <span class="kw">else</span> <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, order: Order) -&gt; <span class="kw">None</span>:
+        record = <span class="kw">self</span>.<span class="fn">_to_model</span>(order)
+        <span class="kw">self</span>._session.<span class="fn">merge</span>(record)
+        <span class="kw">self</span>._session.<span class="fn">flush</span>()
+
+    <span class="kw">def</span> <span class="fn">_to_domain</span>(<span class="kw">self</span>, record: <span class="st">"OrderModel"</span>) -&gt; Order:
+        <span class="st">"""DBモデル → ドメインオブジェクトへの変換"""</span>
+        <span class="cm"># ... 変換ロジック</span>
+        <span class="kw">return</span> <span class="fn">Order</span>(id=record.id, customer_id=record.customer_id)
+
+    <span class="kw">def</span> <span class="fn">_to_model</span>(<span class="kw">self</span>, order: Order) -&gt; <span class="st">"OrderModel"</span>:
+        <span class="st">"""ドメインオブジェクト → DBモデルへの変換"""</span>
+        <span class="kw">return</span> <span class="fn">OrderModel</span>(id=order.id,
+                          customer_id=order.customer_id,
+                          status=order.status.value)
+
+    <span class="kw">def</span> <span class="fn">find_by_customer_id</span>(<span class="kw">self</span>, customer_id: <span class="fn">str</span>) -&gt; <span class="fn">list</span>[Order]:
+        records = (<span class="kw">self</span>._session.<span class="fn">query</span>(OrderModel)
+                   .<span class="fn">filter_by</span>(customer_id=customer_id).<span class="fn">all</span>())
+        <span class="kw">return</span> [<span class="kw">self</span>.<span class="fn">_to_domain</span>(r) <span class="kw">for</span> r <span class="kw">in</span> records]
+
+    <span class="kw">def</span> <span class="fn">delete</span>(<span class="kw">self</span>, order_id: <span class="fn">str</span>) -&gt; <span class="kw">None</span>:
+        (<span class="kw">self</span>._session.<span class="fn">query</span>(OrderModel)
+         .<span class="fn">filter_by</span>(id=order_id).<span class="fn">delete</span>())`,
+  code6: `<span class="kw">class</span> <span class="fn">PricingDomainService</span>:
+    <span class="st">"""</span>
+<span class="st">    価格計算ドメインサービス</span>
+<span class="st">    適用理由: Customer・Order・Promotion の3集約にまたがるため</span>
+<span class="st">              どのEntityにも属さない → Domain Serviceに置く</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">calculate_discounted_price</span>(
+        <span class="kw">self</span>,
+        order: Order,
+        customer: Customer,
+        promotions: <span class="fn">list</span>[<span class="st">"Promotion"</span>],
+    ) -&gt; Money:
+        <span class="st">"""顧客等級とプロモーションを考慮した割引後価格を計算する"""</span>
+        base_total = order.total_amount
+
+        <span class="cm"># VIP顧客は10%割引、GOLD会員は5%割引</span>
+        discount_rates = {<span class="st">"VIP"</span>: <span class="nu">0.10</span>, <span class="st">"GOLD"</span>: <span class="nu">0.05</span>}
+        discount_rate = discount_rates.<span class="fn">get</span>(customer.membership_tier, <span class="nu">0.0</span>)
+
+        <span class="cm"># プロモーション割引の適用</span>
+        promo_discount = <span class="fn">Money</span>(<span class="nu">0</span>, base_total.currency)
+        <span class="kw">for</span> promo <span class="kw">in</span> promotions:
+            <span class="kw">if</span> promo.<span class="fn">is_applicable</span>(order, customer):
+                promo_discount = promo_discount.<span class="fn">add</span>(
+                    promo.<span class="fn">calculate_discount</span>(base_total)
+                )
+
+        member_discount = <span class="fn">Money</span>(
+            <span class="fn">int</span>(base_total.amount * discount_rate),
+            base_total.currency
+        )
+
+        total_discount = member_discount.<span class="fn">add</span>(promo_discount)
+        <span class="cm"># 割引が合計を超えないよう min をとる</span>
+        actual_discount = (total_discount
+                           <span class="kw">if</span> <span class="kw">not</span> total_discount.<span class="fn">is_greater_than</span>(base_total)
+                           <span class="kw">else</span> base_total)
+        <span class="kw">return</span> base_total.<span class="fn">subtract</span>(actual_discount)
+
+
+<span class="kw">class</span> <span class="fn">TransferDomainService</span>:
+    <span class="st">"""</span>
+<span class="st">    口座振替ドメインサービス</span>
+<span class="st">    適用理由: 2つのBankAccountをまたぐ操作のため</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">transfer</span>(<span class="kw">self</span>,
+                 source: <span class="st">"BankAccount"</span>,
+                 destination: <span class="st">"BankAccount"</span>,
+                 amount: Money) -&gt; <span class="kw">None</span>:
+        <span class="st">"""送金: 残高チェックと両口座の更新"""</span>
+        <span class="kw">if</span> <span class="kw">not</span> source.<span class="fn">has_sufficient_funds</span>(amount):
+            <span class="kw">raise</span> <span class="fn">InsufficientFundsError</span>(
+                f<span class="st">"残高不足: 必要={amount}, 残高={source.balance}"</span>
+            )
+        source.<span class="fn">withdraw</span>(amount)
+        destination.<span class="fn">deposit</span>(amount)`,
+  code7: `<span class="kw">class</span> <span class="fn">OrderFactory</span>:
+    <span class="st">"""</span>
+<span class="st">    注文集約のファクトリ</span>
+<span class="st">    適用理由:</span>
+<span class="st">      - 顧客・商品の存在確認が必要（リポジトリへの依存）</span>
+<span class="st">      - 注文可否チェック（ビジネスルール）</span>
+<span class="st">      - これらをコンストラクタに入れるとOrderが肥大化する</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        <span class="kw">self</span>,
+        customer_repository: CustomerRepository,
+        product_repository: ProductRepository,
+    ):
+        <span class="kw">self</span>._customer_repo = customer_repository
+        <span class="kw">self</span>._product_repo = product_repository
+
+    <span class="kw">def</span> <span class="fn">create_order</span>(<span class="kw">self</span>, customer_id: <span class="fn">str</span>,
+                     items: <span class="fn">list</span>[<span class="fn">dict</span>]) -&gt; Order:
+        <span class="st">"""</span>
+<span class="st">        注文の生成: ビジネスルールを検証しながらOrderを作る</span>
+<span class="st">        """</span>
+        <span class="cm"># 顧客の存在確認と注文可否チェック</span>
+        customer = <span class="kw">self</span>._customer_repo.<span class="fn">find_by_id</span>(customer_id)
+        <span class="kw">if</span> <span class="kw">not</span> customer:
+            <span class="kw">raise</span> <span class="fn">CustomerNotFoundError</span>(
+                f<span class="st">"顧客が見つかりません: {customer_id}"</span>
+            )
+        <span class="kw">if</span> <span class="kw">not</span> customer.is_valid_for_order:
+            <span class="kw">raise</span> <span class="fn">CustomerNotEligibleError</span>(<span class="st">"この顧客は注文できません"</span>)
+
+        order = <span class="fn">Order</span>(id=<span class="fn">str</span>(<span class="fn">uuid4</span>()), customer_id=customer_id)
+
+        <span class="cm"># 各商品の存在確認と在庫チェック付き追加</span>
+        <span class="kw">for</span> item <span class="kw">in</span> items:
+            product = <span class="kw">self</span>._product_repo.<span class="fn">find_by_id</span>(item[<span class="st">"product_id"</span>])
+            <span class="kw">if</span> <span class="kw">not</span> product:
+                <span class="kw">raise</span> <span class="fn">ProductNotFoundError</span>(
+                    f<span class="st">"商品が見つかりません: {item['product_id']}"</span>
+                )
+            <span class="kw">if</span> <span class="kw">not</span> product.<span class="fn">is_available</span>(item[<span class="st">"quantity"</span>]):
+                <span class="kw">raise</span> <span class="fn">OutOfStockError</span>(
+                    f<span class="st">"在庫が不足しています: {product.name}"</span>
+                )
+            order.<span class="fn">add_line</span>(
+                product_id=product.id,
+                product_name=product.name,
+                unit_price=product.price,
+                quantity=item[<span class="st">"quantity"</span>],
+            )
+
+        <span class="kw">return</span> order
+
+    <span class="kw">def</span> <span class="fn">reconstruct_from_snapshot</span>(<span class="kw">self</span>, snapshot: <span class="fn">dict</span>) -&gt; Order:
+        <span class="st">"""DBのスナップショットから注文を再構成する"""</span>
+        order = <span class="fn">Order</span>(id=snapshot[<span class="st">"id"</span>],
+                      customer_id=snapshot[<span class="st">"customer_id"</span>])
+        <span class="cm"># ... 再構成ロジック</span>
+        <span class="kw">return</span> order`,
+  code8: `@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">PlaceOrderCommand</span>:
+    <span class="st">"""コマンドオブジェクト — ユースケースへの入力"""</span>
+    customer_id: <span class="fn">str</span>
+    items: <span class="fn">list</span>[<span class="fn">dict</span>]  <span class="cm"># [{product_id, quantity}, ...]</span>
+
+
+@<span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="fn">PlaceOrderResult</span>:
+    <span class="st">"""ユースケースの出力"""</span>
+    order_id: <span class="fn">str</span>
+    total_amount: <span class="fn">int</span>
+    status: <span class="fn">str</span>
+
+
+<span class="kw">class</span> <span class="fn">PlaceOrderUseCase</span>:
+    <span class="st">"""</span>
+<span class="st">    注文ユースケース（Application Service）</span>
+<span class="st">    ベストプラクティス:</span>
+<span class="st">      - ドメインロジックを持たない（調整役に徹する）</span>
+<span class="st">      - Transaction境界を管理する</span>
+<span class="st">      - Domain Eventを発行する</span>
+<span class="st">    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        <span class="kw">self</span>,
+        order_factory: OrderFactory,
+        order_repository: OrderRepository,
+        customer_repository: CustomerRepository,
+        pricing_service: PricingDomainService,
+        event_bus: EventBus,
+    ):
+        <span class="kw">self</span>._factory = order_factory
+        <span class="kw">self</span>._order_repo = order_repository
+        <span class="kw">self</span>._customer_repo = customer_repository
+        <span class="kw">self</span>._pricing_service = pricing_service
+        <span class="kw">self</span>._event_bus = event_bus
+
+    <span class="kw">def</span> <span class="fn">execute</span>(<span class="kw">self</span>, command: PlaceOrderCommand) -&gt; PlaceOrderResult:
+        <span class="cm"># 1. Aggregateの生成（Factoryに委ねる）</span>
+        order = <span class="kw">self</span>._factory.<span class="fn">create_order</span>(
+            command.customer_id, command.items
+        )
+
+        <span class="cm"># 2. 価格計算（Domain Serviceに委ねる）</span>
+        customer = <span class="kw">self</span>._customer_repo.<span class="fn">find_by_id</span>(command.customer_id)
+        discounted_total = <span class="kw">self</span>._pricing_service.<span class="fn">calculate_discounted_price</span>(
+            order, customer, promotions=[]
+        )
+
+        <span class="cm"># 3. 注文確定（AggregateのロジックはAggregateに委ねる）</span>
+        order.<span class="fn">confirm</span>()
+
+        <span class="cm"># 4. 永続化（Repositoryに委ねる）</span>
+        <span class="kw">self</span>._order_repo.<span class="fn">save</span>(order)
+
+        <span class="cm"># 5. Domain Eventの発行</span>
+        <span class="kw">for</span> event <span class="kw">in</span> order.domain_events:
+            <span class="kw">self</span>._event_bus.<span class="fn">publish</span>(event)
+        order.<span class="fn">clear_events</span>()
+
+        <span class="kw">return</span> <span class="fn">PlaceOrderResult</span>(
+            order_id=order.id,
+            total_amount=discounted_total.amount,
+            status=order.status.value,
+        )`,
+};
+
 export default function DomainDrivenDesignPage() {
   return (
     <div className="domain-driven-design-comprehensive-guide">
@@ -824,71 +1404,7 @@ export default function DomainDrivenDesignPage() {
           </div>
 
           <h3>Entity実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">from</span> dataclasses <span className="kw">import</span> dataclass, field
-<span className="kw">from</span> datetime <span className="kw">import</span> datetime
-<span className="kw">from</span> uuid <span className="kw">import</span> uuid4
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">CustomerId</span>:
-    <span className="st">"""顧客IDの値オブジェクト — IDを型で守る"""</span>
-    value: str
-
-    <span className="kw">def</span> <span className="fn">__post_init__</span>(<span className="kw">self</span>):
-        <span className="kw">if</span> <span className="kw">not</span> <span className="kw">self</span>.value:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"顧客IDは空にできません"</span>)
-
-    @classmethod
-    <span className="kw">def</span> <span className="fn">generate</span>(<span className="kw">cls</span>) -&gt; <span className="st">"CustomerId"</span>:
-        <span className="kw">return</span> <span className="kw">cls</span>(value=<span className="fn">str</span>(<span className="fn">uuid4</span>()))
-
-
-@dataclass
-<span className="kw">class</span> <span className="fn">Customer</span>:
-    <span className="st">""</span>"
-    顧客エンティティ（Entity）
-    ベストプラクティス:
-      - IDで同一性を判断（属性ではない）
-      - ビジネスルールをメソッドとして持つ
-      - セッターを公開しない
-    <span className="st">""</span>"
-    id: CustomerId
-    name: str
-    email: str
-    is_active: bool = <span className="kw">True</span>
-    created_at: datetime = <span className="fn">field</span>(default_factory=datetime.now)
-
-    <span className="kw">def</span> <span className="fn">__eq__</span>(<span className="kw">self</span>, other: object) -&gt; bool:
-        <span className="st">"""IDで同一性を判断 — 属性が変わっても同じ顧客"""</span>
-        <span className="kw">if</span> <span className="kw">not</span> <span className="fn">isinstance</span>(other, Customer):
-            <span className="kw">return</span> <span className="kw">False</span>
-        <span className="kw">return</span> <span className="kw">self</span>.id == other.id
-
-    <span className="kw">def</span> <span className="fn">__hash__</span>(<span className="kw">self</span>) -&gt; int:
-        <span className="kw">return</span> <span className="fn">hash</span>(<span className="kw">self</span>.id)
-
-    <span className="cm"># ── ドメインロジック（ビジネスルール） ──────────────────</span>
-
-    <span className="kw">def</span> <span className="fn">change_email</span>(<span className="kw">self</span>, new_email: str) -&gt; <span className="kw">None</span>:
-        <span className="st">"""メールアドレス変更：バリデーションをEntityが責任を持つ"""</span>
-        <span className="kw">if</span> <span className="kw">not</span> new_email <span className="kw">or</span> <span className="st">"@"</span> <span className="kw">not</span> <span className="kw">in</span> new_email:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"有効なメールアドレスを入力してください"</span>)
-        <span className="kw">self</span>.email = new_email
-
-    <span className="kw">def</span> <span className="fn">deactivate</span>(<span className="kw">self</span>) -&gt; <span className="kw">None</span>:
-        <span className="st">"""退会処理：すでに退会済みなら例外を出す"""</span>
-        <span className="kw">if</span> <span className="kw">not</span> <span className="kw">self</span>.is_active:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"すでに退会済みの顧客です"</span>)
-        <span className="kw">self</span>.is_active = <span className="kw">False</span>
-
-    @property
-    <span className="kw">def</span> <span className="fn">is_valid_for_order</span>(<span className="kw">self</span>) -&gt; bool:
-        <span className="st">"""注文可能かどうかのビジネスルール"""</span>
-        <span className="kw">return</span> <span className="kw">self</span>.is_active`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code1 }} />
 
           <h3>Entityのベストプラクティス</h3>
           <ul className="bp-list">
@@ -977,86 +1493,7 @@ export default function DomainDrivenDesignPage() {
           </div>
 
           <h3>Value Object実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">from</span> dataclasses <span className="kw">import</span> dataclass
-<span className="kw">from</span> typing <span className="kw">import</span> Literal
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)  <span className="cm"># frozen=True でイミュータブルにする</span>
-<span className="kw">class</span> <span className="fn">Money</span>:
-    <span className="st">""</span>"
-    金額の値オブジェクト
-    ベストプラクティス:
-      - frozen=<span className="kw">True</span> で変更不可にする
-      - バリデーションを __post_init__ に集める
-      - 計算は新しいオブジェクトを返す
-    <span className="st">""</span>"
-    amount: int
-    currency: Literal[<span className="st">"JPY"</span>, <span className="st">"USD"</span>, <span className="st">"EUR"</span>]
-
-    <span className="kw">def</span> <span className="fn">__post_init__</span>(<span className="kw">self</span>):
-        <span className="kw">if</span> <span className="kw">self</span>.amount &lt; <span className="nu">0</span>:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"金額は0以上でなければなりません"</span>)
-        <span className="kw">if</span> <span className="kw">self</span>.currency <span className="kw">not</span> <span className="kw">in</span> (<span className="st">"JPY"</span>, <span className="st">"USD"</span>, <span className="st">"EUR"</span>):
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"未対応の通貨です: {self.currency}"</span>)
-
-    <span className="kw">def</span> <span className="fn">add</span>(<span className="kw">self</span>, other: <span className="st">"Money"</span>) -&gt; <span className="st">"Money"</span>:
-        <span className="st">"""加算: 新しい Money を返す（自分は変更しない）"""</span>
-        <span className="kw">self</span>.<span className="fn">_assert_same_currency</span>(other)
-        <span className="kw">return</span> <span className="fn">Money</span>(<span className="kw">self</span>.amount + other.amount, <span className="kw">self</span>.currency)
-
-    <span className="kw">def</span> <span className="fn">subtract</span>(<span className="kw">self</span>, other: <span className="st">"Money"</span>) -&gt; <span className="st">"Money"</span>:
-        <span className="st">"""減算"""</span>
-        <span className="kw">self</span>.<span className="fn">_assert_same_currency</span>(other)
-        <span className="kw">if</span> <span className="kw">self</span>.amount &lt; other.amount:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"差し引く金額が残高を超えています"</span>)
-        <span className="kw">return</span> <span className="fn">Money</span>(<span className="kw">self</span>.amount - other.amount, <span className="kw">self</span>.currency)
-
-    <span className="kw">def</span> <span className="fn">multiply</span>(<span className="kw">self</span>, factor: int) -&gt; <span className="st">"Money"</span>:
-        <span className="st">"""乗算（個数×単価など）"""</span>
-        <span className="kw">return</span> <span className="fn">Money</span>(<span className="kw">self</span>.amount * factor, <span className="kw">self</span>.currency)
-
-    <span className="kw">def</span> <span className="fn">_assert_same_currency</span>(<span className="kw">self</span>, other: <span className="st">"Money"</span>) -&gt; <span className="kw">None</span>:
-        <span className="kw">if</span> <span className="kw">self</span>.currency != other.currency:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(
-                <span className="st">"通貨が一致しません: {self.currency} vs {other.currency}"</span>
-            )
-
-    <span className="kw">def</span> <span className="fn">__str__</span>(<span className="kw">self</span>) -&gt; str:
-        <span className="kw">return</span> <span className="st">"{self.amount:,} {self.currency}"</span>
-
-
-<span className="cm"># 使い方</span>
-price = <span className="fn">Money</span>(<span className="nu">1000</span>, <span className="st">"JPY"</span>)
-tax   = <span className="fn">Money</span>(<span className="nu">100</span>, <span className="st">"JPY"</span>)
-total = price.<span className="fn">add</span>(tax)          <span className="cm"># Money(1100, "JPY") — 新しいオブジェクト</span>
-
-p1 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span className="st">"JPY"</span>)
-p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span className="st">"JPY"</span>)
-<span className="fn">print</span>(p1 == p2)                 <span className="cm"># True — 値が同じなら等しい</span>
-<span className="fn">print</span>(p1 <span className="kw">is</span> p2)                 <span className="cm"># False — インスタンスは別物</span>
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">Address</span>:
-    <span className="st">"""住所の値オブジェクト"""</span>
-    postal_code: str
-    prefecture: str
-    city: str
-    street: str
-    building: str = <span className="st">""</span>
-
-    <span className="kw">def</span> <span className="fn">__post_init__</span>(<span className="kw">self</span>):
-        <span className="kw">if</span> <span className="kw">not</span> <span className="kw">self</span>.postal_code <span className="kw">or</span> <span className="kw">not</span> <span className="kw">self</span>.prefecture:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"郵便番号と都道府県は必須です"</span>)
-
-    @property
-    <span className="kw">def</span> <span className="fn">full_address</span>(<span className="kw">self</span>) -&gt; str:
-        base = <span className="st">"{self.prefecture}{self.city}{self.street}"</span>
-        <span className="kw">return</span> <span className="st">"{base} {self.building}"</span>.<span className="fn">strip</span>()`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code2 }} />
 
           <h3>Value Objectのベストプラクティス</h3>
           <ul className="bp-list">
@@ -1140,118 +1577,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </div>
 
           <h3>Aggregate実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">from</span> dataclasses <span className="kw">import</span> dataclass, field
-<span className="kw">from</span> typing <span className="kw">import</span> Optional
-<span className="kw">from</span> enum <span className="kw">import</span> Enum
-
-
-<span className="kw">class</span> <span className="fn">OrderStatus</span>(Enum):
-    PENDING   = <span className="st">"pending"</span>     <span className="cm"># 注文保留中</span>
-    CONFIRMED = <span className="st">"confirmed"</span>   <span className="cm"># 注文確定</span>
-    SHIPPED   = <span className="st">"shipped"</span>     <span className="cm"># 発送済み</span>
-    CANCELLED = <span className="st">"cancelled"</span>   <span className="cm"># キャンセル</span>
-
-
-@dataclass
-<span className="kw">class</span> <span className="fn">OrderLine</span>:
-    <span className="st">"""注文明細 — Aggregate内部のオブジェクト（外部から直接変更不可）"""</span>
-    product_id: str       <span className="cm"># 他のAggregateへはIDで参照</span>
-    product_name: str
-    unit_price: <span className="st">"Money"</span>
-    quantity: int
-
-    @property
-    <span className="kw">def</span> <span className="fn">subtotal</span>(<span className="kw">self</span>) -&gt; <span className="st">"Money"</span>:
-        <span className="kw">return</span> <span className="kw">self</span>.unit_price.<span className="fn">multiply</span>(<span className="kw">self</span>.quantity)
-
-
-@dataclass
-<span className="kw">class</span> <span className="fn">Order</span>:
-    <span className="st">""</span>"
-    注文集約ルート（Aggregate Root）
-    ベストプラクティス:
-      - 全変更はここを通じて行う
-      - lines プロパティは tuple で返す（外部変更不可）
-      - ドメインイベントをここで生成する
-    <span className="st">""</span>"
-    id: str
-    customer_id: str             <span className="cm"># 顧客AggregateへはIDで参照</span>
-    _lines: list = <span className="fn">field</span>(default_factory=list, repr=<span className="kw">False</span>)
-    _status: OrderStatus = <span className="fn">field</span>(default=OrderStatus.PENDING, repr=<span className="kw">False</span>)
-    _events: list = <span className="fn">field</span>(default_factory=list, repr=<span className="kw">False</span>)
-
-    <span className="cm"># ── 公開インターフェース ─────────────────────────────────</span>
-
-    <span className="kw">def</span> <span className="fn">add_line</span>(<span className="kw">self</span>, product_id: str, product_name: str,
-                 unit_price: <span className="st">"Money"</span>, quantity: int) -&gt; <span className="kw">None</span>:
-        <span className="st">"""注文明細の追加：不変条件を守りながら変更する"""</span>
-        <span className="kw">self</span>.<span className="fn">_assert_can_modify</span>()
-        <span className="kw">if</span> quantity &lt;= <span className="nu">0</span>:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"数量は1以上でなければなりません"</span>)
-        existing = <span className="kw">self</span>.<span className="fn">_find_line</span>(product_id)
-        <span className="kw">if</span> existing:
-            existing.quantity += quantity
-        <span className="kw">else</span>:
-            <span className="kw">self</span>._lines.<span className="fn">append</span>(
-                <span className="fn">OrderLine</span>(product_id, product_name, unit_price, quantity)
-            )
-
-    <span className="kw">def</span> <span className="fn">confirm</span>(<span className="kw">self</span>) -&gt; <span className="kw">None</span>:
-        <span className="st">"""注文確定：状態遷移のビジネスルールを集約が保証"""</span>
-        <span className="kw">if</span> <span className="kw">self</span>._status != OrderStatus.PENDING:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"保留中の注文のみ確定できます"</span>)
-        <span className="kw">if</span> <span className="kw">not</span> <span className="kw">self</span>._lines:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"注文明細がありません"</span>)
-        <span className="kw">self</span>._status = OrderStatus.CONFIRMED
-        <span className="kw">self</span>._events.<span className="fn">append</span>(
-            <span className="fn">OrderConfirmedEvent</span>(order_id=<span className="kw">self</span>.id,
-                                total_amount=<span className="kw">self</span>.total_amount.amount)
-        )
-
-    <span className="kw">def</span> <span className="fn">cancel</span>(<span className="kw">self</span>) -&gt; <span className="kw">None</span>:
-        <span className="st">"""注文キャンセル：発送済み以降はキャンセル不可"""</span>
-        <span className="kw">if</span> <span className="kw">self</span>._status == OrderStatus.SHIPPED:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"発送済みの注文はキャンセルできません"</span>)
-        <span className="kw">self</span>._status = OrderStatus.CANCELLED
-
-    <span className="cm"># ── プロパティ（読み取り専用） ───────────────────────────</span>
-
-    @property
-    <span className="kw">def</span> <span className="fn">lines</span>(<span className="kw">self</span>) -&gt; tuple:
-        <span className="st">"""外部には tuple で返す — 直接変更させない"""</span>
-        <span className="kw">return</span> <span className="fn">tuple</span>(<span className="kw">self</span>._lines)
-
-    @property
-    <span className="kw">def</span> <span className="fn">status</span>(<span className="kw">self</span>) -&gt; OrderStatus:
-        <span className="kw">return</span> <span className="kw">self</span>._status
-
-    @property
-    <span className="kw">def</span> <span className="fn">total_amount</span>(<span className="kw">self</span>) -&gt; <span className="st">"Money"</span>:
-        <span className="kw">if</span> <span className="kw">not</span> <span className="kw">self</span>._lines:
-            <span className="kw">return</span> <span className="fn">Money</span>(<span className="nu">0</span>, <span className="st">"JPY"</span>)
-        totals = [line.subtotal <span className="kw">for</span> line <span className="kw">in</span> <span className="kw">self</span>._lines]
-        <span className="kw">return</span> <span className="fn">sum</span>(totals[<span className="nu">1</span>:], totals[<span className="nu">0</span>])
-
-    @property
-    <span className="kw">def</span> <span className="fn">domain_events</span>(<span className="kw">self</span>) -&gt; list:
-        <span className="kw">return</span> <span className="fn">list</span>(<span className="kw">self</span>._events)
-
-    <span className="kw">def</span> <span className="fn">clear_events</span>(<span className="kw">self</span>) -&gt; <span className="kw">None</span>:
-        <span className="kw">self</span>._events.<span className="fn">clear</span>()
-
-    <span className="cm"># ── プライベートメソッド ────────────────────────────────</span>
-
-    <span className="kw">def</span> <span className="fn">_assert_can_modify</span>(<span className="kw">self</span>) -&gt; <span className="kw">None</span>:
-        <span className="kw">if</span> <span className="kw">self</span>._status != OrderStatus.PENDING:
-            <span className="kw">raise</span> <span className="fn">ValueError</span>(<span className="st">"確定済みの注文は変更できません"</span>)
-
-    <span className="kw">def</span> <span className="fn">_find_line</span>(<span className="kw">self</span>, product_id: str) -&gt; Optional[OrderLine]:
-        <span className="kw">return</span> <span className="fn">next</span>((l <span className="kw">for</span> l <span className="kw">in</span> <span className="kw">self</span>._lines
-                     <span className="kw">if</span> l.product_id == product_id), <span className="kw">None</span>)`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code3 }} />
 
           <ul className="bp-list">
             <li>
@@ -1315,61 +1641,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </div>
 
           <h3>Domain Event実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">from</span> dataclasses <span className="kw">import</span> dataclass, field
-<span className="kw">from</span> datetime <span className="kw">import</span> datetime
-<span className="kw">from</span> uuid <span className="kw">import</span> uuid4
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">DomainEvent</span>:
-    <span className="st">"""すべてのドメインイベントの基底クラス"""</span>
-    event_id: str = <span className="fn">field</span>(default_factory=<span className="kw">lambda</span>: <span className="fn">str</span>(<span className="fn">uuid4</span>()))
-    occurred_at: datetime = <span className="fn">field</span>(default_factory=datetime.now)
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">OrderConfirmedEvent</span>(DomainEvent):
-    <span className="st">""</span>"
-    注文が確定した
-    命名ベストプラクティス: 必ず過去形（OrderConfirmed）
-    設計ベストプラクティス: 受信者がDBを引かなくてもよい情報を含む
-    <span className="st">""</span>"
-    order_id: str = <span className="st">""</span>
-    customer_id: str = <span className="st">""</span>
-    total_amount: int = <span className="nu">0</span>
-    currency: str = <span className="st">"JPY"</span>
-    item_count: int = <span className="nu">0</span>
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">OrderCancelledEvent</span>(DomainEvent):
-    <span className="st">"""注文がキャンセルされた"""</span>
-    order_id: str = <span className="st">""</span>
-    reason: str = <span className="st">""</span>
-
-
-@<span className="fn">dataclass</span>(frozen=<span className="kw">True</span>)
-<span className="kw">class</span> <span className="fn">ProductOutOfStockEvent</span>(DomainEvent):
-    <span className="st">"""商品が在庫切れになった"""</span>
-    product_id: str = <span className="st">""</span>
-    product_name: str = <span className="st">""</span>
-
-
-<span className="cm"># ── イベントハンドラー（購読者）────────────────────────────</span>
-
-<span className="kw">class</span> <span className="fn">InventoryEventHandler</span>:
-    <span className="kw">def</span> <span className="fn">handle_order_confirmed</span>(<span className="kw">self</span>, event: OrderConfirmedEvent) -&gt; <span className="kw">None</span>:
-        <span className="st">"""注文確定時に在庫を引き当てる"""</span>
-        <span className="fn">print</span>(<span className="st">"在庫引き当て: 注文ID {event.order_id}"</span>)
-
-<span className="kw">class</span> <span className="fn">NotificationEventHandler</span>:
-    <span className="kw">def</span> <span className="fn">handle_order_confirmed</span>(<span className="kw">self</span>, event: OrderConfirmedEvent) -&gt; <span className="kw">None</span>:
-        <span className="st">"""注文確定メールを送信する"""</span>
-        <span className="fn">print</span>(<span className="st">"確認メール送信: 顧客ID {event.customer_id}"</span>)`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code4 }} />
 
           <h3>Domain Eventのベストプラクティス</h3>
           <div className="do-dont">
@@ -1458,108 +1730,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </div>
 
           <h3>Repository実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">from</span> abc <span className="kw">import</span> ABC, abstractmethod
-<span className="kw">from</span> typing <span className="kw">import</span> Optional
-
-
-<span className="cm"># ── インターフェース（ドメイン層に置く）─────────────────────</span>
-
-<span className="kw">class</span> <span className="fn">OrderRepository</span>(ABC):
-    <span className="st">""</span>"
-    注文リポジトリのインターフェース
-    ベストプラクティス:
-      - ドメイン層はこれにのみ依存する
-      - 具体的なDB実装を知らない
-      - メソッドはドメイン用語で命名する
-    <span className="st">""</span>"
-
-    @abstractmethod
-    <span className="kw">def</span> <span className="fn">find_by_id</span>(<span className="kw">self</span>, order_id: str) -&gt; Optional[Order]:
-        ...
-
-    @abstractmethod
-    <span className="kw">def</span> <span className="fn">find_by_customer_id</span>(<span className="kw">self</span>, customer_id: str) -&gt; list[Order]:
-        ...
-
-    @abstractmethod
-    <span className="kw">def</span> <span className="fn">save</span>(<span className="kw">self</span>, order: Order) -&gt; <span className="kw">None</span>:
-        <span className="st">"""新規・更新どちらも同じメソッドで扱う（Upsert）"""</span>
-        ...
-
-    @abstractmethod
-    <span className="kw">def</span> <span className="fn">delete</span>(<span className="kw">self</span>, order_id: str) -&gt; <span className="kw">None</span>:
-        ...
-
-
-<span className="cm"># ── テスト用のインメモリ実装（インフラ層）──────────────────</span>
-
-<span className="kw">class</span> <span className="fn">InMemoryOrderRepository</span>(OrderRepository):
-    <span className="st">""</span>"
-    DBなしでドメインロジックをテストできる
-    Unit TestではこちらのImplementationを使う
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">__init__</span>(<span className="kw">self</span>):
-        <span className="kw">self</span>._store: dict[str, Order] = {}
-
-    <span className="kw">def</span> <span className="fn">find_by_id</span>(<span className="kw">self</span>, order_id: str) -&gt; Optional[Order]:
-        <span className="kw">return</span> <span className="kw">self</span>._store.<span className="fn">get</span>(order_id)
-
-    <span className="kw">def</span> <span className="fn">find_by_customer_id</span>(<span className="kw">self</span>, customer_id: str) -&gt; list[Order]:
-        <span className="kw">return</span> [o <span className="kw">for</span> o <span className="kw">in</span> <span className="kw">self</span>._store.<span className="fn">values</span>()
-                <span className="kw">if</span> o.customer_id == customer_id]
-
-    <span className="kw">def</span> <span className="fn">save</span>(<span className="kw">self</span>, order: Order) -&gt; <span className="kw">None</span>:
-        <span className="kw">self</span>._store[order.id] = order
-
-    <span className="kw">def</span> <span className="fn">delete</span>(<span className="kw">self</span>, order_id: str) -&gt; <span className="kw">None</span>:
-        <span className="kw">self</span>._store.<span className="fn">pop</span>(order_id, <span className="kw">None</span>)
-
-
-<span className="cm"># ── 本番用のSQLAlchemy実装（インフラ層）─────────────────────</span>
-
-<span className="kw">class</span> <span className="fn">SQLAlchemyOrderRepository</span>(OrderRepository):
-    <span className="st">""</span>"
-    ドメインオブジェクト ←→ DBモデルの変換を担う
-    変換ロジックをここに集中させる
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">__init__</span>(<span className="kw">self</span>, session):
-        <span className="kw">self</span>._session = session
-
-    <span className="kw">def</span> <span className="fn">find_by_id</span>(<span className="kw">self</span>, order_id: str) -&gt; Optional[Order]:
-        record = (<span className="kw">self</span>._session.<span className="fn">query</span>(OrderModel)
-                  .<span className="fn">filter_by</span>(id=order_id).<span className="fn">first</span>())
-        <span className="kw">return</span> <span className="kw">self</span>.<span className="fn">_to_domain</span>(record) <span className="kw">if</span> record <span className="kw">else</span> <span className="kw">None</span>
-
-    <span className="kw">def</span> <span className="fn">save</span>(<span className="kw">self</span>, order: Order) -&gt; <span className="kw">None</span>:
-        record = <span className="kw">self</span>.<span className="fn">_to_model</span>(order)
-        <span className="kw">self</span>._session.<span className="fn">merge</span>(record)
-        <span className="kw">self</span>._session.<span className="fn">flush</span>()
-
-    <span className="kw">def</span> <span className="fn">_to_domain</span>(<span className="kw">self</span>, record: <span className="st">"OrderModel"</span>) -&gt; Order:
-        <span className="st">"""DBモデル → ドメインオブジェクトへの変換"""</span>
-        <span className="cm"># ... 変換ロジック</span>
-        <span className="kw">return</span> <span className="fn">Order</span>(id=record.id, customer_id=record.customer_id)
-
-    <span className="kw">def</span> <span className="fn">_to_model</span>(<span className="kw">self</span>, order: Order) -&gt; <span className="st">"OrderModel"</span>:
-        <span className="st">"""ドメインオブジェクト → DBモデルへの変換"""</span>
-        <span className="kw">return</span> <span className="fn">OrderModel</span>(id=order.id,
-                          customer_id=order.customer_id,
-                          status=order.status.value)
-
-    <span className="kw">def</span> <span className="fn">find_by_customer_id</span>(<span className="kw">self</span>, customer_id: str) -&gt; list[Order]:
-        records = (<span className="kw">self</span>._session.<span className="fn">query</span>(OrderModel)
-                   .<span className="fn">filter_by</span>(customer_id=customer_id).<span className="fn">all</span>())
-        <span className="kw">return</span> [<span className="kw">self</span>.<span className="fn">_to_domain</span>(r) <span className="kw">for</span> r <span className="kw">in</span> records]
-
-    <span className="kw">def</span> <span className="fn">delete</span>(<span className="kw">self</span>, order_id: str) -&gt; <span className="kw">None</span>:
-        (<span className="kw">self</span>._session.<span className="fn">query</span>(OrderModel)
-         .<span className="fn">filter_by</span>(id=order_id).<span className="fn">delete</span>())`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code5 }} />
 
           <ul className="bp-list">
             <li>
@@ -1633,68 +1804,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </table>
 
           <h3>Domain Service実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">class</span> <span className="fn">PricingDomainService</span>:
-    <span className="st">""</span>"
-    価格計算ドメインサービス
-    適用理由: Customer・Order・Promotion の<span className="nu">3</span>集約にまたがるため
-              どのEntityにも属さない → Domain Serviceに置く
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">calculate_discounted_price</span>(
-        <span className="kw">self</span>,
-        order: Order,
-        customer: Customer,
-        promotions: list[<span className="st">"Promotion"</span>],
-    ) -&gt; Money:
-        <span className="st">"""顧客等級とプロモーションを考慮した割引後価格を計算する"""</span>
-        base_total = order.total_amount
-
-        <span className="cm"># VIP顧客は10%割引、GOLD会員は5%割引</span>
-        discount_rates = {<span className="st">"VIP"</span>: <span className="nu">0</span>.<span className="nu">10</span>, <span className="st">"GOLD"</span>: <span className="nu">0</span>.<span className="nu">05</span>}
-        discount_rate = discount_rates.<span className="fn">get</span>(customer.membership_tier, <span className="nu">0</span>.<span className="nu">0</span>)
-
-        <span className="cm"># プロモーション割引の適用</span>
-        promo_discount = <span className="fn">Money</span>(<span className="nu">0</span>, base_total.currency)
-        <span className="kw">for</span> promo <span className="kw">in</span> promotions:
-            <span className="kw">if</span> promo.<span className="fn">is_applicable</span>(order, customer):
-                promo_discount = promo_discount.<span className="fn">add</span>(
-                    promo.<span className="fn">calculate_discount</span>(base_total)
-                )
-
-        member_discount = <span className="fn">Money</span>(
-            <span className="fn">int</span>(base_total.amount * discount_rate),
-            base_total.currency
-        )
-
-        total_discount = member_discount.<span className="fn">add</span>(promo_discount)
-        <span className="cm"># 割引が合計を超えないよう min をとる</span>
-        actual_discount = (total_discount
-                           <span className="kw">if</span> <span className="kw">not</span> total_discount.<span className="fn">is_greater_than</span>(base_total)
-                           <span className="kw">else</span> base_total)
-        <span className="kw">return</span> base_total.<span className="fn">subtract</span>(actual_discount)
-
-
-<span className="kw">class</span> <span className="fn">TransferDomainService</span>:
-    <span className="st">""</span>"
-    口座振替ドメインサービス
-    適用理由: <span className="nu">2</span>つのBankAccountをまたぐ操作のため
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">transfer</span>(<span className="kw">self</span>,
-                 source: <span className="st">"BankAccount"</span>,
-                 destination: <span className="st">"BankAccount"</span>,
-                 amount: Money) -&gt; <span className="kw">None</span>:
-        <span className="st">"""送金: 残高チェックと両口座の更新"""</span>
-        <span className="kw">if</span> <span className="kw">not</span> source.<span className="fn">has_sufficient_funds</span>(amount):
-            <span className="kw">raise</span> <span className="fn">InsufficientFundsError</span>(
-                <span className="st">"残高不足: 必要={amount}, 残高={source.balance}"</span>
-            )
-        source.<span className="fn">withdraw</span>(amount)
-        destination.<span className="fn">deposit</span>(amount)`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code6 }} />
 
           <ul className="bp-list">
             <li>
@@ -1746,69 +1856,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </div>
 
           <h3>Factory実装例（Python）</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `<span className="kw">class</span> <span className="fn">OrderFactory</span>:
-    <span className="st">""</span>"
-    注文集約のファクトリ
-    適用理由:
-      - 顧客・商品の存在確認が必要（リポジトリへの依存）
-      - 注文可否チェック（ビジネスルール）
-      - これらをコンストラクタに入れるとOrderが肥大化する
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">__init__</span>(
-        <span className="kw">self</span>,
-        customer_repository: CustomerRepository,
-        product_repository: ProductRepository,
-    ):
-        <span className="kw">self</span>._customer_repo = customer_repository
-        <span className="kw">self</span>._product_repo = product_repository
-
-    <span className="kw">def</span> <span className="fn">create_order</span>(<span className="kw">self</span>, customer_id: str,
-                     items: list[dict]) -&gt; Order:
-        <span className="st">""</span>"
-        注文の生成: ビジネスルールを検証しながらOrderを作る
-        <span className="st">""</span>"
-        <span className="cm"># 顧客の存在確認と注文可否チェック</span>
-        customer = <span className="kw">self</span>._customer_repo.<span className="fn">find_by_id</span>(customer_id)
-        <span className="kw">if</span> <span className="kw">not</span> customer:
-            <span className="kw">raise</span> <span className="fn">CustomerNotFoundError</span>(
-                <span className="st">"顧客が見つかりません: {customer_id}"</span>
-            )
-        <span className="kw">if</span> <span className="kw">not</span> customer.is_valid_for_order:
-            <span className="kw">raise</span> <span className="fn">CustomerNotEligibleError</span>(<span className="st">"この顧客は注文できません"</span>)
-
-        order = <span className="fn">Order</span>(id=<span className="fn">str</span>(<span className="fn">uuid4</span>()), customer_id=customer_id)
-
-        <span className="cm"># 各商品の存在確認と在庫チェック付き追加</span>
-        <span className="kw">for</span> item <span className="kw">in</span> items:
-            product = <span className="kw">self</span>._product_repo.<span className="fn">find_by_id</span>(item[<span className="st">"product_id"</span>])
-            <span className="kw">if</span> <span className="kw">not</span> product:
-                <span className="kw">raise</span> <span className="fn">ProductNotFoundError</span>(
-                    <span className="st">"商品が見つかりません: {item['product_id']}"</span>
-                )
-            <span className="kw">if</span> <span className="kw">not</span> product.<span className="fn">is_available</span>(item[<span className="st">"quantity"</span>]):
-                <span className="kw">raise</span> <span className="fn">OutOfStockError</span>(
-                    <span className="st">"在庫が不足しています: {product.name}"</span>
-                )
-            order.<span className="fn">add_line</span>(
-                product_id=product.id,
-                product_name=product.name,
-                unit_price=product.price,
-                quantity=item[<span className="st">"quantity"</span>],
-            )
-
-        <span className="kw">return</span> order
-
-    <span className="kw">def</span> <span className="fn">reconstruct_from_snapshot</span>(<span className="kw">self</span>, snapshot: dict) -&gt; Order:
-        <span className="st">"""DBのスナップショットから注文を再構成する"""</span>
-        order = <span className="fn">Order</span>(id=snapshot[<span className="st">"id"</span>],
-                      customer_id=snapshot[<span className="st">"customer_id"</span>])
-        <span className="cm"># ... 再構成ロジック</span>
-        <span className="kw">return</span> order`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code7 }} />
 
           <ul className="bp-list">
             <li>
@@ -2140,76 +2188,7 @@ p2 = <span className="fn">Money</span>(<span className="nu">1000</span>, <span c
           </div>
 
           <h3>Application Serviceの実装例</h3>
-          <pre
-            dangerouslySetInnerHTML={{
-              __html: `@dataclass
-<span className="kw">class</span> <span className="fn">PlaceOrderCommand</span>:
-    <span className="st">"""コマンドオブジェクト — ユースケースへの入力"""</span>
-    customer_id: str
-    items: list[dict]  <span className="cm"># [{product_id, quantity}, ...]</span>
-
-
-@dataclass
-<span className="kw">class</span> <span className="fn">PlaceOrderResult</span>:
-    <span className="st">"""ユースケースの出力"""</span>
-    order_id: str
-    total_amount: int
-    status: str
-
-
-<span className="kw">class</span> <span className="fn">PlaceOrderUseCase</span>:
-    <span className="st">""</span>"
-    注文ユースケース（Application Service）
-    ベストプラクティス:
-      - ドメインロジックを持たない（調整役に徹する）
-      - Transaction境界を管理する
-      - Domain Eventを発行する
-    <span className="st">""</span>"
-
-    <span className="kw">def</span> <span className="fn">__init__</span>(
-        <span className="kw">self</span>,
-        order_factory: OrderFactory,
-        order_repository: OrderRepository,
-        customer_repository: CustomerRepository,
-        pricing_service: PricingDomainService,
-        event_bus: EventBus,
-    ):
-        <span className="kw">self</span>._factory = order_factory
-        <span className="kw">self</span>._order_repo = order_repository
-        <span className="kw">self</span>._customer_repo = customer_repository
-        <span className="kw">self</span>._pricing_service = pricing_service
-        <span className="kw">self</span>._event_bus = event_bus
-
-    <span className="kw">def</span> <span className="fn">execute</span>(<span className="kw">self</span>, command: PlaceOrderCommand) -&gt; PlaceOrderResult:
-        <span className="cm"># 1. Aggregateの生成（Factoryに委ねる）</span>
-        order = <span className="kw">self</span>._factory.<span className="fn">create_order</span>(
-            command.customer_id, command.items
-        )
-
-        <span className="cm"># 2. 価格計算（Domain Serviceに委ねる）</span>
-        customer = <span className="kw">self</span>._customer_repo.<span className="fn">find_by_id</span>(command.customer_id)
-        discounted_total = <span className="kw">self</span>._pricing_service.<span className="fn">calculate_discounted_price</span>(
-            order, customer, promotions=[]
-        )
-
-        <span className="cm"># 3. 注文確定（AggregateのロジックはAggregateに委ねる）</span>
-        order.<span className="fn">confirm</span>()
-
-        <span className="cm"># 4. 永続化（Repositoryに委ねる）</span>
-        <span className="kw">self</span>._order_repo.<span className="fn">save</span>(order)
-
-        <span className="cm"># 5. Domain Eventの発行</span>
-        <span className="kw">for</span> event <span className="kw">in</span> order.domain_events:
-            <span className="kw">self</span>._event_bus.<span className="fn">publish</span>(event)
-        order.<span className="fn">clear_events</span>()
-
-        <span className="kw">return</span> <span className="fn">PlaceOrderResult</span>(
-            order_id=order.id,
-            total_amount=discounted_total.amount,
-            status=order.status.value,
-        )`,
-            }}
-          />
+          <pre dangerouslySetInnerHTML={{ __html: CODE_BLOCKS.code8 }} />
 
           <div className="source-list">
             <div className="source-item">
