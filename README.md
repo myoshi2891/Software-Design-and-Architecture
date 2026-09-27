@@ -135,6 +135,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/sql-antipatterns-guide`](web-next/app/recommended-books/sql-antipatterns-guide/page.tsx)
     — SQLアンチパターン第2版解説ガイドを移植（20 セクション・Mermaid 12 図・table 5・コードブロック 5・チェックリスト 25 項目）。
     固定サイドバー・scroll-spy を [`SqlAntipatternsSidebar.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsSidebar.tsx)、点検チェックリストを [`SqlAntipatternsChecklist.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsChecklist.tsx) でクライアント描画
+  - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
+    — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
+    固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
