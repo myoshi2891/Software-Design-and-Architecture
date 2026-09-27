@@ -153,6 +153,10 @@ export const navLinks: readonly NavLink[] = [
         name: "AIエージェントアプリ構築ガイド",
         href: "/recommended-books/building-applications-with-ai-agents-guide",
       },
+      {
+        name: "SQLアンチパターン 第2版",
+        href: "/recommended-books/sql-antipatterns-guide",
+      },
     ],
   },
   {

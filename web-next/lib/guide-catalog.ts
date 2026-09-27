@@ -231,6 +231,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Michael Albada著『Building Applications with AI Agents』を起点にエージェント開発を学ぶ",
         status: "published",
       },
+      {
+        name: "SQLアンチパターン 第2版",
+        href: "/recommended-books/sql-antipatterns-guide",
+        summary:
+          "Bill Karwin著『SQL Antipatterns』日本語版第2版を起点に全27章のアンチパターンを学ぶ",
+        status: "published",
+      },
     ],
   },
   {
