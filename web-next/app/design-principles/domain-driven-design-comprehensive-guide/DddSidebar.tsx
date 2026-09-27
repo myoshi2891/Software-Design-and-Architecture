@@ -40,6 +40,7 @@ export default function DddSidebar({ groups }: Props) {
                   key={item.id}
                   href={`#${item.id}`}
                   className={`nav-item ${activeId === item.id ? "active" : ""}`}
+                  aria-current={activeId === item.id ? "location" : undefined}
                 >
                   {item.label}
                 </a>

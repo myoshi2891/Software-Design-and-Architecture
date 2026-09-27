@@ -134,7 +134,7 @@ export default function SqlAntipatternsChecklist() {
   return (
     <div>
       <div className="checklist-progress">
-        <span id="checklistCounter">
+        <span id="checklistCounter" role="status">
           {doneCount} / {CHECKLIST_ITEMS.length} 完了
         </span>
         <div className="progress-bar">

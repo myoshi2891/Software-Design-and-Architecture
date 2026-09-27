@@ -95,7 +95,10 @@ export default function SqlAntipatternsSidebar() {
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMenu();
+      if (e.key !== "Escape") return;
+      closeMenu();
+      // メニューを閉じたらフォーカスをトグルへ戻し、キーボード操作の起点を失わないようにする
+      toggleRef.current?.focus();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);

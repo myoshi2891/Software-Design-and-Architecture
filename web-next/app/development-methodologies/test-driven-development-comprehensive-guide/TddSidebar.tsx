@@ -144,6 +144,29 @@ export default function TddSidebar({ groups = DEFAULT_GROUPS }: Props) {
           </div>
         ))}
       </nav>
+      {/* 900px 以下で .sidebar が非表示になるため、代替の折りたたみ索引を表示する */}
+      <nav className="mobile-toc" aria-label="セクション索引（モバイル）">
+        <details>
+          <summary>目次（{groups.reduce((n, g) => n + g.items.length, 0)} セクション）</summary>
+          {groups.map((group) => (
+            <div className="mobile-toc-group" key={group.label}>
+              <div className="mobile-toc-group-label">{group.label}</div>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={`#${item.id}`}
+                      aria-current={activeId === item.id ? "location" : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </details>
+      </nav>
     </>
   );
 }
