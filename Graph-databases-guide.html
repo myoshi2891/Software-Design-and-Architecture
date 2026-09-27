@@ -590,7 +590,7 @@ table tbody tr:hover{background:var(--paper-alt)}
     <div class="diagram-wrap"><div class="diagram-loading" data-diagram="diag-08">図を準備しています&hellip;</div></div>
     <p class="diagram-caption">図8: ネイティブグラフ処理と非ネイティブなグラフ処理の違い</p>
   </div>
-  <p>分かりやすい例え話として、コンサルタントのDan McCreary氏はブログで「index-free adjacencyは、隣人の家に手紙を届けるのに住所録を調べる(インデックス参照)必要がなく、隣にいることを直接知っているから歩いて渡せる、という感覚に近い」と説明しています。技術的には、リレーショナルDBでのJOINはインデックス参照を伴うため計算量が O(log n) 程度で増加しがちなのに対し、ネイティブグラフDBでの1ホップの走査は、たどるノードに接続されたリレーションシップの数だけに依存し、グラフ全体のサイズには依存しません。</p>
+  <p>分かりやすい例え話として、コンサルタントのDan McCreary氏はブログで「index-free adjacencyは、隣人の家に手紙を届けるのに住所録を調べる(インデックス参照)必要がなく、隣にいることを直接知っているから歩いて渡せる、という感覚に近い」と説明しています。技術的には、リレーショナルDBでのJOINのコストは実行方式(ネステッドループ・ハッシュ・マージなど)、入力件数、利用できるインデックスによって変わり、テーブルが大きくなるほど増加しがちです。これに対し、ネイティブグラフDBでの1ホップの走査は、たどるノードに接続されたリレーションシップの数だけに依存し、グラフ全体のサイズには依存しません。</p>
   <p>Neo4jのGraphAcademyの教材でも、3階層の親子関係をたどるSQLクエリと、Cypherの同等クエリを比較し、SQLでは複数回のインデックス参照とプランニングが必要になる一方、ネイティブグラフではノードとリレーションシップがポインタで直接つながっているため参照コストが小さいことが示されています。</p>
 
   <h3>プログラマティックAPI</h3>
@@ -789,7 +789,7 @@ table tbody tr:hover{background:var(--paper-alt)}
 
   <div class="ref-group-title">学術・関連分野の一次資料</div>
   <div class="ref-grid">
-    <div class="ref-card"><i class="ti ti-school"></i><div><div class="ref-title">David Easley &amp; Jon Kleinberg(コーネル大学)&mdash; <em>Networks, Crowds, and Markets: Reasoning About a Highly Connected World</em>(草稿版無料公開)</div><a class="ref-url" href="http://www.cs.cornell.edu/home/kleinber/networks-book/" target="_blank" rel="noopener">http://www.cs.cornell.edu/home/kleinber/networks-book/</a></div></div>
+    <div class="ref-card"><i class="ti ti-school"></i><div><div class="ref-title">David Easley &amp; Jon Kleinberg(コーネル大学)&mdash; <em>Networks, Crowds, and Markets: Reasoning About a Highly Connected World</em>(草稿版無料公開)</div><a class="ref-url" href="https://www.cs.cornell.edu/home/kleinber/networks-book/" target="_blank" rel="noopener">https://www.cs.cornell.edu/home/kleinber/networks-book/</a></div></div>
     <div class="ref-card"><i class="ti ti-book"></i><div><div class="ref-title">Martin Fowler &amp; Pramod Sadalage &mdash; <em>NoSQL Distilled</em> 書籍情報(グラフDBを含むNoSQL全体の分類)</div><a class="ref-url" href="https://pearson.com/store/p/nosql-distilled-a-brief-guide-to-the-emerging-world-of-polyglot-persistence/P200000009587/9780321826626" target="_blank" rel="noopener">https://pearson.com/store/p/nosql-distilled-a-brief-guide.../9780321826626</a></div></div>
     <div class="ref-card"><i class="ti ti-microphone"></i><div><div class="ref-title">ThoughtWorks &mdash; Martin Fowlerによる「Rise of NoSQL」ポッドキャスト</div><a class="ref-url" href="https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql" target="_blank" rel="noopener">https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql</a></div></div>
   </div>
