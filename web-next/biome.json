@@ -62,6 +62,7 @@
         "app/recommended-books/building-applications-with-ai-agents-guide/page.tsx",
         "app/design-principles/designing-multi-agent-systems-guide/page.tsx",
         "app/design-principles/domain-driven-design-comprehensive-guide/page.tsx",
+        "app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx",
         "app/recommended-books/sql-antipatterns-guide/page.tsx"
       ],
       "linter": {

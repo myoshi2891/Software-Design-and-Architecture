@@ -76,7 +76,7 @@ describe("object-oriented-programming-comprehensive-guide page", () => {
   it("globals.css に .object-oriented-programming-comprehensive-guide のレイアウト定義が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../../globals.css");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
     const cssContent = fs.readFileSync(cssPath, "utf-8");
 
     const oopSection = cssContent.slice(

@@ -105,7 +105,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "オブジェクト指向プログラミング",
         href: "/design-principles/object-oriented-programming-comprehensive-guide",
         summary: "カプセル化・継承・多態でモデルを表現する",
-        status: "planned",
+        status: "published",
       },
       {
         name: "マルチエージェントシステムの設計",
