@@ -148,6 +148,8 @@ export default function SqlAntipatternsSidebar() {
           ref={toggleRef}
           type="button"
           aria-label="メニュー"
+          aria-expanded={isOpen}
+          aria-controls="sidebar"
           onClick={toggleMenu}
         >
           <IconMenu2 size={20} className="ti" />
