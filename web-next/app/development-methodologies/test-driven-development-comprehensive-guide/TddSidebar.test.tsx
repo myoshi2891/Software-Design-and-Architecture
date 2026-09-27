@@ -1,53 +1,7 @@
 // @vitest-environment jsdom
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import TddSidebar, { type NavGroup } from "./TddSidebar";
-
-const GROUPS: NavGroup[] = [
-  {
-    label: "基礎",
-    items: [
-      { id: "s1", label: "TDDとは何か" },
-      { id: "s2", label: "Red-Green-Refactor" },
-      { id: "s3", label: "ステップバイステップ実践" },
-      { id: "s4", label: "テストの種類と役割" },
-    ],
-  },
-  {
-    label: "設計",
-    items: [
-      { id: "s5", label: "ユニットテスト設計原則" },
-      { id: "s6", label: "モックとスタブの活用" },
-      { id: "s7", label: "AAAパターン" },
-    ],
-  },
-  {
-    label: "実装例",
-    items: [
-      { id: "s8", label: "ドメインロジック編" },
-      { id: "s9", label: "APIエンドポイント編" },
-      { id: "s10", label: "データベース層編" },
-    ],
-  },
-  {
-    label: "応用",
-    items: [
-      { id: "s11", label: "BDDとの連携" },
-      { id: "s12", label: "テストカバレッジ" },
-      { id: "s13", label: "CI/CDパイプライン" },
-      { id: "s14", label: "障壁と解決策" },
-      { id: "s15", label: "レガシーコード" },
-    ],
-  },
-  {
-    label: "まとめ",
-    items: [
-      { id: "s16", label: "ベストプラクティス" },
-      { id: "s17", label: "アンチパターン" },
-      { id: "s18", label: "参考文献" },
-    ],
-  },
-];
+import TddSidebar, { DEFAULT_GROUPS } from "./TddSidebar";
 
 type IOCallback = (entries: IntersectionObserverEntry[]) => void;
 let ioCallback: IOCallback | null = null;
@@ -101,45 +55,27 @@ describe("TddSidebar", () => {
   });
 
   it("グループ見出しと nav リンクをソース順で描画する", () => {
-    const { container } = render(<TddSidebar groups={GROUPS} />);
+    const { container } = render(<TddSidebar groups={DEFAULT_GROUPS} />);
     const groupTitles = Array.from(container.querySelectorAll(".nav-section-label")).map(
       (el) => el.textContent
     );
-    expect(groupTitles).toEqual(["基礎", "設計", "実装例", "応用", "まとめ"]);
+    expect(groupTitles).toEqual(DEFAULT_GROUPS.map((g) => g.label));
 
+    const expectedHrefs = DEFAULT_GROUPS.flatMap((g) => g.items.map((item) => `#${item.id}`));
     const links = container.querySelectorAll(".nav-item");
-    expect(links).toHaveLength(18);
-    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual([
-      "#s1",
-      "#s2",
-      "#s3",
-      "#s4",
-      "#s5",
-      "#s6",
-      "#s7",
-      "#s8",
-      "#s9",
-      "#s10",
-      "#s11",
-      "#s12",
-      "#s13",
-      "#s14",
-      "#s15",
-      "#s16",
-      "#s17",
-      "#s18",
-    ]);
+    expect(links).toHaveLength(expectedHrefs.length);
+    expect(Array.from(links).map((a) => a.getAttribute("href"))).toEqual(expectedHrefs);
   });
 
   it("初期状態では先頭の nav 項目に active が付く", () => {
-    const { container } = render(<TddSidebar groups={GROUPS} />);
+    const { container } = render(<TddSidebar groups={DEFAULT_GROUPS} />);
     const active = container.querySelectorAll(".nav-item.active");
     expect(active).toHaveLength(1);
     expect(active[0]?.getAttribute("href")).toBe("#s1");
   });
 
   it("section が交差すると対応する nav 項目だけが active になる", () => {
-    const { container } = render(<TddSidebar groups={GROUPS} />);
+    const { container } = render(<TddSidebar groups={DEFAULT_GROUPS} />);
 
     // 初期状態で #s1 がアクティブであることを確認
     const activeInitial = container.querySelectorAll(".nav-item.active");
@@ -168,7 +104,7 @@ describe("TddSidebar", () => {
       configurable: true,
       value: 1000,
     });
-    const { container } = render(<TddSidebar groups={GROUPS} />);
+    const { container } = render(<TddSidebar groups={DEFAULT_GROUPS} />);
     const bar = container.querySelector<HTMLDivElement>(".progress-bar");
     expect(bar).not.toBeNull();
 
