@@ -68,6 +68,7 @@ export default function ObjectOrientedProgrammingPage() {
             <h1>OOP 完全ガイド</h1>
             <p className="hero-desc">
               オブジェクト指向プログラミングの4大原則からSOLID原則・GoFデザインパターン・クリーンアーキテクチャとの統合まで、
+              <br />
               初学者でも迷わないよう Python 実装例とダイアグラムで体系的に解説します。
             </p>
             <div className="hero-stats">
@@ -98,10 +99,11 @@ export default function ObjectOrientedProgrammingPage() {
             </div>
 
             <p>
-              <strong>Object-Oriented Programming（オブジェクト指向プログラミング）</strong>
-              は、プログラムを 「データ（状態）」と「振る舞い（操作）」を持つ
-              <strong>オブジェクト</strong>の集まりとして設計する考え方です。 1960年代の Simula
-              言語から始まり、Smalltalk・C++・Java・Python
+              <strong>Object-Oriented Programming（オブジェクト指向プログラミング）</strong>は、
+              プログラムを「データ（状態）」と「振る舞い（操作）」を持つ
+              <strong>オブジェクト</strong>の集まりとして設計する考え方です。
+              <br />
+              1960年代の Simula 言語から始まり、Smalltalk・C++・Java・Python
               など現代のあらゆる言語に影響を与えています。
             </p>
 
@@ -151,55 +153,84 @@ export default function ObjectOrientedProgrammingPage() {
 
             <h3>OOP の全体マップ</h3>
             <p>
-              OOP
-              は単なる「クラスを書く技術」ではありません。原則・設計パターン・アーキテクチャが有機的に連携したエコシステムです。
+              OOP は単なる「クラスを書く技術」ではありません。
+              <br />
+              4大原則・SOLID原則・デザインパターン・実践的アーキテクチャが有機的に連携したエコシステムです。
             </p>
 
             <div className="mermaid-wrapper fade-in">
               <MermaidDiagram
-                chart={`mindmap
-  root((OOP\\nオブジェクト指向))
-    4大原則
-      カプセル化
-      継承
-      ポリモーフィズム
-      抽象化
-    SOLID原則
-      S 単一責任
-      O 開放閉鎖
-      L リスコフ置換
-      I インターフェース分離
-      D 依存性逆転
-    設計要素
-      クラスとオブジェクト
-      インターフェース
-      抽象クラス
-      コンポジション
-    デザインパターン
-      生成パターン
-      構造パターン
-      振る舞いパターン
-    実践的応用
-      ドメイン駆動設計
-      クリーンアーキテクチャ
-      テスト駆動開発`}
+                chart={`flowchart LR
+  ROOT(["🧱 <b>OOP</b><br/>オブジェクト指向"]):::rootNode
+
+  ROOT --> P["<b>4大原則</b>"]:::pGroup
+  P --> P1["カプセル化"]:::pNode
+  P --> P2["継承"]:::pNode
+  P --> P3["ポリモーフィズム"]:::pNode
+  P --> P4["抽象化"]:::pNode
+
+  ROOT --> S["<b>SOLID 原則</b>"]:::sGroup
+  S --> S1["S: 単一責任"]:::sNode
+  S --> S2["O: 開放閉鎖"]:::sNode
+  S --> S3["L: リスコフ置換"]:::sNode
+  S --> S4["I: インターフェース分離"]:::sNode
+  S --> S5["D: 依存性逆転"]:::sNode
+
+  ROOT --> D["<b>設計要素</b>"]:::dGroup
+  D --> D1["クラスとオブジェクト"]:::dNode
+  D --> D2["インターフェース"]:::dNode
+  D --> D3["抽象クラス"]:::dNode
+  D --> D4["コンポジション"]:::dNode
+
+  ROOT --> G["<b>デザインパターン</b>"]:::gGroup
+  G --> G1["生成パターン (Factory等)"]:::gNode
+  G --> G2["構造パターン (Adapter等)"]:::gNode
+  G --> G3["振る舞いパターン (Strategy等)"]:::gNode
+
+  ROOT --> A["<b>実践的応用</b>"]:::aGroup
+  A --> A1["ドメイン駆動設計 (DDD)"]:::aNode
+  A --> A2["クリーンアーキテクチャ"]:::aNode
+  A --> A3["テスト駆動開発 (TDD)"]:::aNode
+
+  classDef rootNode fill:#0b253a,stroke:#00e5ff,stroke-width:2.5px,color:#00e5ff,font-size:15px;
+  classDef pGroup fill:#1e153b,stroke:#a78bfa,stroke-width:2px,color:#ddd6fe,font-size:14px;
+  classDef pNode fill:#10172e,stroke:#6366f1,stroke-width:1px,color:#e0e7ff;
+  classDef sGroup fill:#082433,stroke:#38bdf8,stroke-width:2px,color:#bae6fd,font-size:14px;
+  classDef sNode fill:#081b26,stroke:#0284c7,stroke-width:1px,color:#e0f2fe;
+  classDef dGroup fill:#04231b,stroke:#34d399,stroke-width:2px,color:#a7f3d0,font-size:14px;
+  classDef dNode fill:#051a14,stroke:#059669,stroke-width:1px,color:#d1fae5;
+  classDef gGroup fill:#2d1406,stroke:#fb923c,stroke-width:2px,color:#fed7aa,font-size:14px;
+  classDef gNode fill:#1f0d04,stroke:#d97706,stroke-width:1px,color:#ffedd5;
+  classDef aGroup fill:#2c0922,stroke:#f472b6,stroke-width:2px,color:#fbcfe8,font-size:14px;
+  classDef aNode fill:#1c0616,stroke:#db2777,stroke-width:1px,color:#fce7f3;`}
               />
               <p className="mermaid-caption">図2. OOP 全体マップ</p>
             </div>
 
             <h3>OOP の歴史</h3>
+            <p>
+              Simula から始まったオブジェクト指向は、Smalltalk で純粋化され、C++ や Java
+              で産業界の標準となりました。
+              <br />
+              現代では関数型プログラミングの要素も取り込み、Kotlin や Swift
+              などより洗練された言語仕様へと進化を続けています。
+            </p>
             <div className="mermaid-wrapper fade-in">
               <MermaidDiagram
-                chart={`timeline
-  title OOP の歴史
-  1967年 : Simula 最初のオブジェクト指向言語
-  1972年 : Smalltalk 純粋なOOP言語
-  1985年 : C++ 手続き型にOOPを追加
-  1995年 : Java プラットフォーム非依存のOOP
-  1995年 : Ruby 完全OOP言語
-  2000年 : C# Microsoft製モダンOOP言語
-  2000年代 : Python マルチパラダイム対応
-  2010年代 : Kotlin Swift 現代的なOOP言語`}
+                chart={`flowchart LR
+  T1["<b>1967年 : Simula</b><br/>最初のOOP言語<br/>クラスと継承の誕生"]
+  --> T2["<b>1972年 : Smalltalk</b><br/>純粋なOOP言語<br/>『すべてはオブジェクト』"]
+  --> T3["<b>1985年 : C++</b><br/>手続き型にOOPを追加<br/>産業界への爆発的普及"]
+  --> T4["<b>1995年 : Java / Ruby</b><br/>マルチプラットフォーム &<br/>完全オブジェクト指向の台頭"]
+  --> T5["<b>2000年〜 : C# / Python</b><br/>モダンOOP &<br/>マルチパラダイム対応"]
+  --> T6["<b>2010年代〜 : Kotlin / Swift</b><br/>Null安全・関数型との融合<br/>現代的な洗練されたOOP"]
+
+  style T1 fill:#092032,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
+  style T2 fill:#181035,stroke:#a78bfa,stroke-width:2px,color:#ede9fe
+  style T3 fill:#082433,stroke:#00e5ff,stroke-width:2px,color:#e0f7fa
+  style T4 fill:#05241d,stroke:#34d399,stroke-width:2px,color:#d1fae5
+  style T5 fill:#2c1305,stroke:#fb923c,stroke-width:2px,color:#ffedd5
+  style T6 fill:#290720,stroke:#f472b6,stroke-width:2px,color:#fce7f3`}
               />
               <p className="mermaid-caption">図3. OOP の歴史的変遷</p>
             </div>
@@ -284,8 +315,9 @@ print(acc.balance)   <span class="cm"># 12000</span>
             </div>
 
             <p>
-              OOP
-              には4つの根幹をなす原則があります。これらは互いに補完し合い、保守性・拡張性の高いコードを実現します。
+              OOP には4つの根幹をなす原則があります。
+              <br />
+              これらは互いに補完し合い、保守性・拡張性の高いコードを実現します。
             </p>
 
             <div className="card-grid-4">
@@ -327,7 +359,8 @@ print(acc.balance)   <span class="cm"># 12000</span>
             <h3>① カプセル化（Encapsulation）</h3>
             <p>
               カプセル化とは、データ（フィールド）と処理（メソッド）を一つのクラスに束ね、
-              外部から直接アクセスさせないようにする原則です。「情報隠蔽」とも呼ばれます。
+              <br />
+              外部から直接アクセスさせないようにする原則です（情報隠蔽とも呼ばれます）。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -548,7 +581,8 @@ print(dog.eat())    <span class="cm"># ポチ がご飯を食べています ←
             <p>
               ポリモーフィズム（多態性）とは、同じインターフェース（メソッド名）に対して、
               オブジェクトの種類によって異なる振る舞いをすることです。
-              呼び出し元のコードは「形の種類」を知る必要がなくなります。
+              <br />
+              呼び出し元のコードは「具体的な型の違い」を意識する必要がなくなります。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -627,6 +661,7 @@ shapes: list[Shape] = [Circle(<span class="nu">5</span>), Rectangle(<span class=
             <h3>④ 抽象化（Abstraction）</h3>
             <p>
               抽象化とは、複雑な実装の詳細を隠し、本質的なインターフェース（何ができるか）だけを公開することです。
+              <br />
               ドライバーはエンジンの内部構造を知らなくても車を運転できます。これが抽象化の本質です。
             </p>
 
@@ -713,8 +748,10 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
             </div>
 
             <p>
-              SOLID は OOP 設計の5つの黄金律です。 Robert C. Martin（Uncle
-              Bob）が提唱した、変更に強く・テストしやすい設計のための原則群です。
+              SOLID は OOP 設計の5つの黄金律です。
+              <br />
+              Robert C. Martin（Uncle
+              Bob）が提唱した、変更に強く・テストしやすいソフトウェアを作るための原則群です。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -1174,6 +1211,7 @@ test_service = OrderService(InMemoryOrderRepository())`,
 
             <p>
               良いクラス設計は、単に機能を動かすだけでなく、変更のコストを最小化し、
+              <br />
               コードを自己文書化（読めばわかる状態）にします。
             </p>
 
@@ -1464,8 +1502,9 @@ print(discounted)          <span class="cm"># 990 JPY</span>`,
 
             <p>
               継承は強力ですが、<strong>誤った使い方が最も多い OOP の機能</strong>でもあります。
-              「コードの再利用」のために継承を使うのは間違いで、
-              <strong>is-a 関係を表現するため</strong>にのみ使うのが原則です。
+              <br />
+              「コードの再利用」のために継承を使うのはアンチパターンであり、
+              <strong>is-a 関係（〜は〜の一種である）を表現するため</strong>にのみ使うのが原則です。
             </p>
 
             <div className="callout callout-warn">
@@ -1473,6 +1512,7 @@ print(discounted)          <span class="cm"># 990 JPY</span>`,
               <div className="callout-body">
                 <strong>継承の落とし穴</strong>
                 継承は親クラスと子クラスを強く結合させます。親クラスの変更が、すべての子クラスに影響します。
+                <br />
                 「has-a（〜を持つ）」関係には必ずコンポジションを使いましょう。
               </div>
             </div>
@@ -1883,6 +1923,7 @@ render(Circle())  <span class="cm"># ✅ 動作する</span>`,
             <p>
               GoF（Gang of Four）が提唱した23のデザインパターンは、OOP
               における「設計の共通語彙」です。
+              <br />
               問題の種類に応じて適切なパターンを選択することで、保守性の高いコードを効率的に実現できます。
             </p>
 
@@ -2200,8 +2241,9 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
 
             <p>
               OOP の原則は、クリーンアーキテクチャや
-              DDD（ドメイン駆動設計）といった上位の設計思想と深く連携しています。 SOLID 原則を守った
-              OOP は、そのままクリーンアーキテクチャの各層に対応します。
+              DDD（ドメイン駆動設計）といった上位の設計思想と深く連携しています。
+              <br />
+              SOLID 原則を守った OOP 設計は、そのままクリーンアーキテクチャの各層に対応します。
             </p>
 
             <h3>クリーンアーキテクチャ × OOP</h3>
@@ -2355,8 +2397,8 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
             <p>
               良い OOP 設計はテストが書きやすいです。逆に言えば、
               <strong>テストが書きにくいコードは設計に問題がある</strong>サインです。
-              DI（依存性注入）とインターフェースを使った OOP
-              は、ユニットテストを自然に引き寄せます。
+              <br />
+              DI（依存性注入）とインターフェースを使った設計は、ユニットテストの作成を大幅に容易にします。
             </p>
 
             <h3>OOP クラスのテスト戦略</h3>
@@ -2534,7 +2576,9 @@ print(processor.process(text))  <span class="cm"># HELLO WORLD!!!</span>`,
             <p>
               リファクタリングとは、
               <strong>外部から見た振る舞いを変えずに、コードの内部構造を改善すること</strong>です。
-              OOP 設計の問題（コードの匂い）を発見し、段階的に改善していく技術です。
+              <br />
+              OOP
+              設計の問題点（コードの匂い）を早期に発見し、段階的に洗練させていく技術を解説します。
             </p>
 
             <h3>コードの匂い（Code Smells）と対処法</h3>
@@ -2761,6 +2805,7 @@ order.print_receipt()`,
 
             <p>
               これまで学んだ OOP の全要素を統合した、実践的な EC サイトのドメインモデルです。
+              <br />
               値オブジェクト・エンティティ・集約・リポジトリ・ユースケースが有機的に連携します。
             </p>
 
@@ -3054,7 +3099,8 @@ order.print_receipt()`,
             <p>
               良い設計を学ぶと同様に、<strong>陥りやすい悪い設計パターン（アンチパターン）</strong>
               を知ることも重要です。
-              これらを知っておくことで、コードレビューや設計判断の精度が大きく上がります。
+              <br />
+              これらを理解しておくことで、コードレビューや設計判断の精度が大きく向上します。
             </p>
 
             <div className="mermaid-wrapper fade-in">
@@ -3211,7 +3257,7 @@ order.print_receipt()`,
             </div>
 
             <p>
-              本ガイドで学んだすべての知識を、実際の開発で即座に使えるチートシートとして整理します。
+              本ガイドで学んだオブジェクト指向の全知識を、実際の設計・開発で即座に参照できるチートシートとして総括します。
             </p>
 
             <h3>OOP 成熟度モデル（Level 0 → Level 5）</h3>

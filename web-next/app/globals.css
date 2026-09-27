@@ -13569,9 +13569,11 @@ body.has-common-header .domain-driven-design-comprehensive-guide #sidebar {
   .hero-desc {
     font-size: 17px;
     color: var(--text-sub);
-    max-width: 640px;
-    line-height: 1.7;
+    max-width: 780px;
+    line-height: 1.8;
     margin-bottom: 36px;
+    text-wrap: pretty;
+    word-break: auto-phrase;
   }
   .hero-stats {
     display: flex;
@@ -13647,7 +13649,11 @@ body.has-common-header .domain-driven-design-comprehensive-guide #sidebar {
   .section p {
     color: var(--text-sub);
     margin-bottom: 16px;
-    max-width: 860px;
+    max-width: 960px;
+    line-height: 1.8;
+    text-wrap: pretty;
+    word-break: auto-phrase;
+    overflow-wrap: break-word;
   }
   .section strong { color: var(--text-primary); font-weight: 600; }
 
@@ -13730,7 +13736,12 @@ body.has-common-header .domain-driven-design-comprehensive-guide #sidebar {
     align-items: flex-start;
   }
   .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .callout-body { flex: 1; }
+  .callout-body {
+    flex: 1;
+    line-height: 1.7;
+    text-wrap: pretty;
+    word-break: auto-phrase;
+  }
   .callout-body strong { display: block; margin-bottom: 4px; font-size: 13px; letter-spacing: 0.04em; }
 
   .callout-info {
