@@ -61,123 +61,136 @@ const MERMAID_CONFIG = `%%{init: {
     "htmlLabels": true,
     "curve": "basis"
   }
-}}%%
+}}%%`;
+
+const CLASS_DEF = `
 classDef hub fill:#eae8fb,stroke:#3a3592,stroke-width:2px,color:#211d5e;
 classDef done fill:#dff0e4,stroke:#1f6b46,stroke-width:2px,color:#123d28;
-classDef box fill:#f6ead0,stroke:#9c6a17,stroke-width:2px,color:#5c3f0e;
-`;
+classDef box fill:#f6ead0,stroke:#9c6a17,stroke-width:2px,color:#5c3f0e;`;
 
-const DIAGRAM_ANATOMY = `${MERMAID_CONFIG}flowchart LR
-    A["目的　何を達成したいか"] --> B["アンチパターン　ありがちな失敗"]
-    B --> C["見分け方　どう気づくか"]
-    C --> D["使ってよい場合　例外的に許容される"]
-    D --> E["解決策　正しい設計"]
-    E -.->|"フィードバック"| A
-    class E done
-    class A hub`;
+const DIAGRAM_ANATOMY = `${MERMAID_CONFIG}
+flowchart LR
+A["目的　何を達成したいか"] --> B["アンチパターン　ありがちな失敗"]
+B --> C["見分け方　どう気づくか"]
+C --> D["使ってよい場合　例外的に許容される"]
+D --> E["解決策　正しい設計"]
+E -.->|"フィードバック"| A
+class E done
+class A hub${CLASS_DEF}`;
 
-const DIAGRAM_OVERVIEW = `${MERMAID_CONFIG}flowchart TB
-    Ch1["1章　アンチパターンとは何か"] --> P1["第Ⅰ部　データベース論理設計　8章"]
-    P1 --> P2["第Ⅱ部　データベース物理設計　4章"]
-    P2 --> P3["第Ⅲ部　クエリ　6章"]
-    P3 --> P4["第Ⅳ部　アプリケーション開発　6章"]
-    P4 --> P5["第Ⅴ部　外部キーのミニアンチパターン　2章"]
-    P5 --> AppA["付録A　正規化のルール"]
-    class Ch1 hub
-    class AppA done`;
+const DIAGRAM_OVERVIEW = `${MERMAID_CONFIG}
+flowchart TB
+Ch1["1章　アンチパターンとは何か"] --> P1["第Ⅰ部　データベース論理設計　8章"]
+P1 --> P2["第Ⅱ部　データベース物理設計　4章"]
+P2 --> P3["第Ⅲ部　クエリ　6章"]
+P3 --> P4["第Ⅳ部　アプリケーション開発　6章"]
+P4 --> P5["第Ⅴ部　外部キーのミニアンチパターン　2章"]
+P5 --> AppA["付録A　正規化のルール"]
+class Ch1 hub
+class AppA done${CLASS_DEF}`;
 
-const DIAGRAM_TREE_MODELS = `${MERMAID_CONFIG}flowchart TB
-    Title["階層構造を表す4つのモデル"] --> M1["隣接リスト　Adjacency List"]
-    Title --> M2["経路列挙　Path Enumeration"]
-    Title --> M3["入れ子集合　Nested Set"]
-    Title --> M4["閉包テーブル　Closure Table"]
-    class Title hub`;
+const DIAGRAM_TREE_MODELS = `${MERMAID_CONFIG}
+flowchart TB
+Title["階層構造を表す4つのモデル"] --> M1["隣接リスト　Adjacency List"]
+Title --> M2["経路列挙　Path Enumeration"]
+Title --> M3["入れ子集合　Nested Set"]
+Title --> M4["閉包テーブル　Closure Table"]
+class Title hub${CLASS_DEF}`;
 
-const DIAGRAM_EAV = `${MERMAID_CONFIG}flowchart TB
-    EAV["EAVパターン　汎用属性テーブル"] --> ISSUES1["Issues"]
-    ISSUES1 --> ATTR["IssueAttributes　属性を行として保存"]
-    EAV -.->|"書き換え"| SUB["解決策　サブタイプのモデル化"]
-    SUB --> ISSUES2["Issues　共通列"]
-    ISSUES2 --> BUG["BugIssues　バグ固有列"]
-    ISSUES2 --> FEAT["FeatureIssues　要望固有列"]
-    class EAV box
-    class SUB done`;
+const DIAGRAM_EAV = `${MERMAID_CONFIG}
+flowchart TB
+EAV["EAVパターン　汎用属性テーブル"] --> ISSUES1["Issues"]
+ISSUES1 --> ATTR["IssueAttributes　属性を行として保存"]
+EAV -.->|"書き換え"| SUB["解決策　サブタイプのモデル化"]
+SUB --> ISSUES2["Issues　共通列"]
+ISSUES2 --> BUG["BugIssues　バグ固有列"]
+ISSUES2 --> FEAT["FeatureIssues　要望固有列"]
+class EAV box
+class SUB done${CLASS_DEF}`;
 
-const DIAGRAM_MENTOR = `${MERMAID_CONFIG}flowchart TB
-    MENTOR["MENTOR　インデックス設計の手順"] --> M["Measure　計測する"]
-    MENTOR --> E["Explain　実行計画を確認する"]
-    MENTOR --> N["Nominate　候補列を選定する"]
-    MENTOR --> T["Test　効果を検証する"]
-    MENTOR --> O["Optimize　キャッシュ効率を最適化する"]
-    MENTOR --> R["Rebuild　定期的に再構築する"]
-    M --> E --> N --> T --> O --> R
-    class MENTOR hub
-    class R done`;
+const DIAGRAM_MENTOR = `${MERMAID_CONFIG}
+flowchart TB
+MENTOR["MENTOR　インデックス設計の手順"] --> M["Measure　計測する"]
+MENTOR --> E["Explain　実行計画を確認する"]
+MENTOR --> N["Nominate　候補列を選定する"]
+MENTOR --> T["Test　効果を検証する"]
+MENTOR --> O["Optimize　キャッシュ効率を最適化する"]
+MENTOR --> R["Rebuild　定期的に再構築する"]
+M --> E --> N --> T --> O --> R
+class MENTOR hub
+class R done${CLASS_DEF}`;
 
-const DIAGRAM_PASSWORD = `${MERMAID_CONFIG}flowchart LR
-    A["ユーザーが登録するパスワード"] --> B{"ソルトを生成"}
-    B --> C["パスワード＋ソルトをハッシュ化"]
-    C --> D["ハッシュ値のみをDBに保存"]
-    D --> E["ログイン時　入力値を同じ方法でハッシュ化して比較"]
-    class E done`;
+const DIAGRAM_PASSWORD = `${MERMAID_CONFIG}
+flowchart LR
+A["ユーザーが登録するパスワード"] --> B{"ソルトを生成"}
+B --> C["パスワード＋ソルトをハッシュ化"]
+C --> D["ハッシュ値のみをDBに保存"]
+D --> E["ログイン時　入力値を同じ方法でハッシュ化して比較"]
+class E done${CLASS_DEF}`;
 
-const DIAGRAM_SOP = `${MERMAID_CONFIG}flowchart TB
-    OLD["かつての標準的アプローチ"] --> O1["ビジネスロジックをストアドプロシージャに集約"]
-    O1 --> O2["手続き型言語でDB内に実装"]
-    O2 --> O3["デプロイのたび手動で更新"]
-    OLD -.->|"用途を見極めて移行"| NEW["現代的なアプリケーション構成"]
-    NEW --> N1["ビジネスロジックはアプリケーション層に実装"]
-    N1 --> N2["モダンな言語とフレームワークを活用"]
-    N2 --> N3["CI/CDでコードと一緒にデプロイ"]
-    class OLD box
-    class NEW done`;
+const DIAGRAM_SOP = `${MERMAID_CONFIG}
+flowchart TB
+OLD["かつての標準的アプローチ"] --> O1["ビジネスロジックをストアドプロシージャに集約"]
+O1 --> O2["手続き型言語でDB内に実装"]
+O2 --> O3["デプロイのたび手動で更新"]
+OLD -.->|"用途を見極めて移行"| NEW["現代的なアプリケーション構成"]
+NEW --> N1["ビジネスロジックはアプリケーション層に実装"]
+N1 --> N2["モダンな言語とフレームワークを活用"]
+N2 --> N3["CI/CDでコードと一緒にデプロイ"]
+class OLD box
+class NEW done${CLASS_DEF}`;
 
-const DIAGRAM_FK = `${MERMAID_CONFIG}flowchart LR
-    FK["外部キーのよくある間違い"] --> a["参照の向きを逆にしてしまう"]
-    FK --> b["まだ存在しないテーブルを参照してしまう"]
-    FK --> c["親テーブルのキーではない列を参照してしまう"]
-    FK --> d["複合キーの列ごとに別々の制約を作ってしまう"]
-    FK --> e["列の順序を間違える"]
-    FK --> f["データ型や照合順序が一致していない"]
-    FK --> g["孤立データ　オーファンを作ってしまう"]
-    FK --> h["NULL不可の列にSET NULLを指定してしまう"]
-    FK --> i["MySQL固有　互換性のないストレージエンジンを使う"]
-    FK --> j["MySQL固有　一意でないインデックスを参照させてしまう"]
-    class FK hub`;
+const DIAGRAM_FK = `${MERMAID_CONFIG}
+flowchart LR
+FK["外部キーのよくある間違い"] --> a["参照の向きを逆にしてしまう"]
+FK --> b["まだ存在しないテーブルを参照してしまう"]
+FK --> c["親テーブルのキーではない列を参照してしまう"]
+FK --> d["複合キーの列ごとに別々の制約を作ってしまう"]
+FK --> e["列の順序を間違える"]
+FK --> f["データ型や照合順序が一致していない"]
+FK --> g["孤立データ　オーファンを作ってしまう"]
+FK --> h["NULL不可の列にSET NULLを指定してしまう"]
+FK --> i["MySQL固有　互換性のないストレージエンジンを使う"]
+FK --> j["MySQL固有　一意でないインデックスを参照させてしまう"]
+class FK hub${CLASS_DEF}`;
 
-const DIAGRAM_NORMALIZATION = `${MERMAID_CONFIG}flowchart TB
-    N1["第1正規形　繰り返し項目を排除"] --> N2["第2正規形　部分関数従属を排除"]
-    N2 --> N3["第3正規形　推移的関数従属を排除"]
-    N3 --> NBC["ボイス・コッド正規形　候補キー以外への従属を排除"]
-    NBC --> N4["第4正規形　多値従属を排除"]
-    N4 --> N5["第5正規形　結合従属を排除"]
-    class N1 hub
-    class N5 done`;
+const DIAGRAM_NORMALIZATION = `${MERMAID_CONFIG}
+flowchart TB
+N1["第1正規形　繰り返し項目を排除"] --> N2["第2正規形　部分関数従属を排除"]
+N2 --> N3["第3正規形　推移的関数従属を排除"]
+N3 --> NBC["ボイス・コッド正規形　候補キー以外への従属を排除"]
+NBC --> N4["第4正規形　多値従属を排除"]
+N4 --> N5["第5正規形　結合従属を排除"]
+class N1 hub
+class N5 done${CLASS_DEF}`;
 
-const DIAGRAM_EDITIONS = `${MERMAID_CONFIG}flowchart TB
-    OLD["初版　全25章相当　コード例はPHP"] -->|"3章を新設"| NEW["第2版　全27章　コード例はPython"]
-    OLD -->|"旧24章を削除"| NEW
-    OLD -->|"3章の内容を刷新"| NEW
-    OLD -->|"ミニアンチパターン15本を追加"| NEW
-    class OLD box
-    class NEW done`;
+const DIAGRAM_EDITIONS = `${MERMAID_CONFIG}
+flowchart TB
+OLD["初版　全25章相当　コード例はPHP"] -->|"3章を新設"| NEW["第2版　全27章　コード例はPython"]
+OLD -->|"旧24章を削除"| NEW
+OLD -->|"3章の内容を刷新"| NEW
+OLD -->|"ミニアンチパターン15本を追加"| NEW
+class OLD box
+class NEW done${CLASS_DEF}`;
 
-const DIAGRAM_ROADMAP = `${MERMAID_CONFIG}flowchart TB
-    Start["SQLの基本文法は書ける"] --> R1["Step1　論理設計　2〜9章を読む"]
-    R1 --> R2["Step2〜3　物理設計とクエリ　10〜19章を読む"]
-    R2 --> R3["Step4　アプリケーション開発　20〜25章を読む"]
-    R3 --> R4["Step5〜6　外部キーと正規化　26〜27章　付録Aで仕上げる"]
-    R4 --> Apply["自分たちのスキーマとクエリをチェックリストで点検する"]
-    class Start hub
-    class Apply done`;
+const DIAGRAM_ROADMAP = `${MERMAID_CONFIG}
+flowchart TB
+Start["SQLの基本文法は書ける"] --> R1["Step1　論理設計　2〜9章を読む"]
+R1 --> R2["Step2〜3　物理設計とクエリ　10〜19章を読む"]
+R2 --> R3["Step4　アプリケーション開発　20〜25章を読む"]
+R3 --> R4["Step5〜6　外部キーと正規化　26〜27章　付録Aで仕上げる"]
+R4 --> Apply["自分たちのスキーマとクエリをチェックリストで点検する"]
+class Start hub
+class Apply done${CLASS_DEF}`;
 
-const DIAGRAM_SUMMARY = `${MERMAID_CONFIG}flowchart TB
-    A["SQLアンチパターン 第2版"] --> B["25個のアンチパターンに名前を付けて可視化する"]
-    B --> C["共通の型で理解する　目的→アンチパターン→見分け方→使ってよい場合→解決策"]
-    C --> D["自分たちのスキーマとクエリをチェックリストで点検する"]
-    D --> E["設計判断の理由をチームで説明できるようになる"]
-    class A hub
-    class E done`;
+const DIAGRAM_SUMMARY = `${MERMAID_CONFIG}
+flowchart TB
+A["SQLアンチパターン 第2版"] --> B["25個のアンチパターンに名前を付けて可視化する"]
+B --> C["共通の型で理解する　目的→アンチパターン→見分け方→使ってよい場合→解決策"]
+C --> D["自分たちのスキーマとクエリをチェックリストで点検する"]
+D --> E["設計判断の理由をチームで説明できるようになる"]
+class A hub
+class E done${CLASS_DEF}`;
 
 const CODE_1 = `<span class="cm">-- アンチパターン：カンマ区切りで複数値を1列に詰め込む</span>
 <span class="kw">CREATE TABLE</span> Products (
