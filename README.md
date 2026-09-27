@@ -138,6 +138,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
+  - [`/design-principles/object-oriented-programming-comprehensive-guide`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx)
+    — オブジェクト指向プログラミング完全ガイドを移植（14 セクション・Mermaid 26 図・table 8・コードブロック 26）。
+    固定サイドバー・進捗バー・scroll-spy を [`OopSidebar.tsx`](web-next/app/design-principles/object-oriented-programming-comprehensive-guide/OopSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
