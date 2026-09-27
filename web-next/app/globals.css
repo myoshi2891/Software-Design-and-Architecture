@@ -14231,14 +14231,54 @@ body.has-common-header .domain-driven-design-comprehensive-guide .progress-bar {
   .cm { color: var(--text-muted); font-style: italic; }
   .nu { color: #fcd34d; }
 
+  /* 本文内目次: サイドバーが隠れる幅でのみ表示 */
+  .toc-grid {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 13px;
+    color: var(--text-sub);
+    transition: all var(--transition);
+  }
+
+  .toc-item:hover {
+    border-color: var(--border-glow);
+    color: var(--text-primary);
+    background: var(--bg-highlight);
+  }
+
+  .toc-item .toc-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 24px;
+  }
+
   @media (max-width: 1024px) {
     .layout { grid-template-columns: 1fr; }
     .sidebar { display: none; }
+    .toc-grid { display: grid; }
     .main { margin-left: 0; }
     .hero, .section { padding: 48px 32px; }
     .compare-grid { grid-template-columns: 1fr; }
     .maturity-track { flex-direction: column; }
     .maturity-track::after { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .toc-grid { grid-template-columns: 1fr; }
   }
 }
 

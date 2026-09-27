@@ -45,6 +45,14 @@ describe("object-oriented-programming-comprehensive-guide page", () => {
     ]);
   });
 
+  it("サイドバー非表示幅でも全 14 章へ到達できる本文内目次がある", () => {
+    const { container } = render(<Page />);
+    const toc = container.querySelector("main nav.toc-grid");
+    expect(toc).not.toBeNull();
+    const hrefs = Array.from(toc?.querySelectorAll("a") ?? []).map((a) => a.getAttribute("href"));
+    expect(hrefs).toEqual(Array.from({ length: 14 }, (_, i) => `#sec${i + 1}`));
+  });
+
   it("外部リンクすべてに target=_blank と rel=noopener noreferrer が付く", () => {
     const { container } = render(<Page />);
     const external = Array.from(container.querySelectorAll("a")).filter((a) =>

@@ -89,6 +89,15 @@ export default function ObjectOrientedProgrammingPage() {
                 <span className="label">GoF パターン</span>
               </div>
             </div>
+            {/* サイドバー非表示幅（≤1024px）で章へ直接到達するための本文内目次 */}
+            <nav className="toc-grid" aria-label="目次">
+              {NAV_GROUPS.flatMap((group) => group.items).map((item) => (
+                <a key={item.id} href={`#${item.id}`} className="toc-item">
+                  <span className="toc-num">{item.num}</span>
+                  {item.label}
+                </a>
+              ))}
+            </nav>
           </section>
 
           {/* ═══════ SECTION 1: OOPとは何か？ ═══════ */}
