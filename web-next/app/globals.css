@@ -16202,3 +16202,7 @@ tbody tr:nth-child(even) td {
 .nu { color: #fcd34d; }
 .mermaid svg foreignObject { overflow: visible; }
 .mermaid svg foreignObject > div, .mermaid svg .nodeLabel, .mermaid svg .edgeLabel { overflow: visible; } }
+
+body.has-common-header .minimum-viable-product-comprehensive-guide .section {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
