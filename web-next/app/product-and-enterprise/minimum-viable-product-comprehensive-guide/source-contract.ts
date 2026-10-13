@@ -1,0 +1,120 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { expect } from "vitest";
+
+const relativeSource =
+  "product-and-enterprise/minimum-viable-product-comprehensive-guide/minimum-viable-product-comprehensive-guide.html";
+const original = resolve(process.cwd(), "..", relativeSource);
+export const sourcePath = existsSync(original)
+  ? original
+  : resolve(process.cwd(), "..", "archive", relativeSource);
+export const source = new DOMParser().parseFromString(
+  readFileSync(sourcePath, "utf8"),
+  "text/html"
+);
+export const css = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+export const compact = (value: string | null) => (value ?? "").replace(/\s+/g, "");
+
+// Restrict canonicalization to documented Mermaid compatibility changes.
+export function normalizeChart(chart: string): string {
+  return chart
+    .trim()
+    .split("\n")
+    .map((line) => {
+      let normalized = line
+        .trim()
+        .replaceAll("（", "(")
+        .replaceAll("）", ")")
+        .replaceAll("：", ":")
+        .replaceAll("〜", "から")
+        .replaceAll("―", "-")
+        .replaceAll("\\n", "<br/>");
+      if (normalized.startsWith("subgraph "))
+        normalized = normalized
+          .replace(/[❌✅]/gu, "")
+          .replace(/[()]/g, "")
+          .replace(/\["\s+/, '["');
+      return normalized;
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function assertFaithful(actual: Element, expected: Element) {
+  const actualText = actual.cloneNode(true) as Element;
+  const expectedText = expected.cloneNode(true) as Element;
+  actualText.querySelectorAll('[data-testid="mermaid-diagram"], svg').forEach((el) => {
+    el.remove();
+  });
+  expectedText.querySelectorAll(".mermaid, i.ti").forEach((el) => {
+    el.remove();
+  });
+  expect(compact(actualText.textContent)).toBe(compact(expectedText.textContent));
+  for (const selector of [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "p",
+    "li",
+    "strong",
+    "em",
+    "th",
+    "td",
+    ".callout",
+    ".card",
+    ".panel",
+    ".rule-item",
+    ".rule-num",
+    ".step-badge",
+    ".stack-item",
+    ".mermaid-caption",
+  ]) {
+    expect(
+      Array.from(actual.querySelectorAll(selector), (el) => compact(el.textContent)),
+      selector
+    ).toEqual(Array.from(expected.querySelectorAll(selector), (el) => compact(el.textContent)));
+  }
+  expect(Array.from(actual.querySelectorAll("pre"), (el) => el.textContent)).toEqual(
+    Array.from(expected.querySelectorAll("pre"), (el) => el.textContent)
+  );
+  for (const selector of [
+    "ul",
+    "ol",
+    "table",
+    "tr",
+    ".sources",
+    ".table-wrap",
+    ".mermaid-wrap",
+    ".check-list",
+  ])
+    expect(actual.querySelectorAll(selector).length, selector).toBe(
+      expected.querySelectorAll(selector).length
+    );
+  expect(
+    Array.from(actual.querySelectorAll("a"), (el) => [
+      el.getAttribute("href"),
+      compact(el.textContent),
+    ])
+  ).toEqual(
+    Array.from(expected.querySelectorAll("a"), (el) => [
+      el.getAttribute("href"),
+      compact(el.textContent),
+    ])
+  );
+  expect(actual.querySelectorAll("svg.tabler-icon").length).toBe(
+    expected.querySelectorAll("i.ti").length
+  );
+  expect(actual.querySelectorAll("i.ti")).toHaveLength(0);
+  const diagrams = Array.from(actual.querySelectorAll('[data-testid="mermaid-diagram"]'));
+  expect(diagrams.map((el) => normalizeChart(el.getAttribute("data-chart") ?? ""))).toEqual(
+    Array.from(expected.querySelectorAll(".mermaid"), (el) => normalizeChart(el.textContent ?? ""))
+  );
+  for (const diagram of diagrams) expect(diagram.getAttribute("data-natural-scale")).toBe("true");
+  for (const link of actual.querySelectorAll("a")) {
+    if (link.getAttribute("href")?.startsWith("http")) {
+      expect(link.getAttribute("target")).toBe("_blank");
+      expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    } else expect(link.getAttribute("href")).not.toContain(".html");
+  }
+}
