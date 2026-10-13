@@ -57,7 +57,8 @@ function shape(element: Element): unknown {
   return {
     tag: element.tagName,
     classes: Array.from(element.classList).filter((value) => value !== "active"),
-    id: element.id,
+    // Ignore heading ids added only to label tables via aria-labelledby.
+    id: element.tagName === "H2" && element.id.startsWith("togaf-table-") ? "" : element.id,
     style: element.getAttribute("style")?.replace(/[\s;]/g, "") ?? "",
     rowSpan: element.getAttribute("rowspan"),
     colSpan: element.getAttribute("colspan"),
@@ -154,9 +155,11 @@ export const SOURCE_DIAGRAMS: Record<string, string> = {};
 const script = Array.from(source.scripts).find((element) =>
   element.textContent?.includes("const DIAGRAMS")
 );
+if (!script?.textContent) throw new Error("Missing DIAGRAMS script in source HTML");
+const scriptText = script.textContent;
 const syntax = ts.createSourceFile(
   "source-diagrams.js",
-  script?.textContent ?? "",
+  scriptText,
   ts.ScriptTarget.Latest,
   true,
   ts.ScriptKind.JS

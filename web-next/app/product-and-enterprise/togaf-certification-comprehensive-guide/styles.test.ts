@@ -82,5 +82,16 @@ it("offsets the sticky desktop sidebar beneath the shared header without capping
     values.push(decl.value);
   });
   expect(values).toEqual(["calc(var(--ch-height) + var(--ch-disclaimer-height, 0px))"]);
-  expect(sourceCss.toString()).toContain("max-width: 100%");
+  const mainMaxWidths = (root: postcss.Root | postcss.Rule) => {
+    const widths: string[] = [];
+    root.walkRules(".main", (mainRule) => {
+      mainRule.walkDecls("max-width", (decl) => {
+        widths.push(decl.value);
+      });
+    });
+    return widths;
+  };
+  expect(mainMaxWidths(sourceCss)).toEqual(["100%"]);
+  if (scoped?.type !== "rule") throw new Error("Missing TOGAF style scope");
+  expect(mainMaxWidths(scoped).every((value) => value === "100%")).toBe(true);
 });

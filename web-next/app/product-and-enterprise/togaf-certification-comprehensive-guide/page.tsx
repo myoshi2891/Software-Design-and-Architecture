@@ -165,9 +165,9 @@ export default function Page() {
               <div className="tl-text">{"認定者数：世界206カ国・10万人以上"}</div>
             </div>
           </div>
-          <h2>{"EA フレームワーク比較"}</h2>
+          <h2 id="togaf-table-1">{"EA フレームワーク比較"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-1">
               <thead>
                 <tr>
                   <th>{"フレームワーク"}</th>
@@ -260,9 +260,9 @@ export default function Page() {
             <MermaidDiagram id="diag-1" chart={DIAGRAMS["diag-1"]} preserveNaturalScale={true} />
             <div className="diagram-label">{"TOGAF 認定資格の 3 経路"}</div>
           </div>
-          <h2>{"試験詳細比較"}</h2>
+          <h2 id="togaf-table-2">{"試験詳細比較"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-2">
               <thead>
                 <tr>
                   <th>{"項目"}</th>
@@ -846,9 +846,9 @@ export default function Page() {
               }
             </div>
           </div>
-          <h2>{"アーキテクチャビューとビューポイント"}</h2>
+          <h2 id="togaf-table-3">{"アーキテクチャビューとビューポイント"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-3">
               <thead>
                 <tr>
                   <th>{"ステークホルダー"}</th>
@@ -905,12 +905,12 @@ export default function Page() {
           <p className="page-subtitle">
             {"ABB と SBB の違い、アーキテクチャ原則の構成要素は Level 1/2 の頻出テーマです。"}
           </p>
-          <h2>{"ABB vs SBB（試験最頻出）"}</h2>
+          <h2 id="togaf-table-4">{"ABB vs SBB（試験最頻出）"}</h2>
           <div className="mermaid-wrap">
             <MermaidDiagram id="diag-11" chart={DIAGRAMS["diag-11"]} preserveNaturalScale={true} />
           </div>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-4">
               <thead>
                 <tr>
                   <th>{"観点"}</th>
@@ -964,9 +964,9 @@ export default function Page() {
               {"。「Description」や「Justification」は TOGAF の正式な用語ではないため注意。"}
             </div>
           </div>
-          <h2>{"原則の例：「データは資産である」"}</h2>
+          <h2 id="togaf-table-5">{"原則の例：「データは資産である」"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-5">
               <thead>
                 <tr>
                   <th>{"構成要素"}</th>
@@ -1038,9 +1038,9 @@ export default function Page() {
           <div className="mermaid-wrap">
             <MermaidDiagram id="diag-13" chart={DIAGRAMS["diag-13"]} preserveNaturalScale={true} />
           </div>
-          <h2>{"アーキテクチャランドスケープの 3 層"}</h2>
+          <h2 id="togaf-table-6">{"アーキテクチャランドスケープの 3 層"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-6">
               <thead>
                 <tr>
                   <th>{"層"}</th>
@@ -1126,9 +1126,9 @@ export default function Page() {
           <p className="page-subtitle">
             {"「誰の関心事（Concerns）に答えるか」が TOGAF のアーキテクチャ設計の出発点です。"}
           </p>
-          <h2>{"ステークホルダー管理マトリクス"}</h2>
+          <h2 id="togaf-table-7">{"ステークホルダー管理マトリクス"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-7">
               <thead>
                 <tr>
                   <th>{"象限"}</th>
@@ -1353,9 +1353,9 @@ export default function Page() {
           <p className="page-subtitle">
             {"Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。"}
           </p>
-          <h2>{"Level 1 出題傾向（目安）"}</h2>
+          <h2 id="togaf-table-8">{"Level 1 出題傾向（目安）"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-8">
               <thead>
                 <tr>
                   <th>{"テーマ"}</th>
@@ -1639,9 +1639,9 @@ export default function Page() {
               </div>
             </div>
           </div>
-          <h2>{"学習リソース優先順位"}</h2>
+          <h2 id="togaf-table-9">{"学習リソース優先順位"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-9">
               <thead>
                 <tr>
                   <th>{"優先度"}</th>
@@ -1840,9 +1840,9 @@ export default function Page() {
               {" Whizlabs — TOGAF 模擬試験\n        "}
             </Ext>
           </div>
-          <h2>{"推薦書籍"}</h2>
+          <h2 id="togaf-table-10">{"推薦書籍"}</h2>
           <div className="table-wrap">
-            <table>
+            <table aria-labelledby="togaf-table-10">
               <thead>
                 <tr>
                   <th>{"タイトル"}</th>
