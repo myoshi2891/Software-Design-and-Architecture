@@ -44,19 +44,26 @@ it("provides scoped fluid typography, responsive spacing and reduced motion", ()
   const root = postcss.parse(css);
   const values: string[] = [];
   root.walkRules(".hero h1", (rule) => {
-    rule.walkDecls("font-size", (decl) => values.push(decl.value));
+    rule.walkDecls("font-size", (decl) => {
+      values.push(decl.value);
+    });
   });
   expect(values).toContain("clamp(2rem, 3.4vw, 3.25rem)");
   const reducedMotion: string[] = [];
   root.walkAtRules("media", (rule) => {
     if (rule.params !== "(prefers-reduced-motion: reduce)") return;
-    rule.walkDecls("transition", (decl) => reducedMotion.push(decl.value));
+    rule.walkDecls("transition", (decl) => {
+      reducedMotion.push(decl.value);
+    });
   });
   expect(reducedMotion).toContain("none");
   const mainWidths: string[] = [];
   root.walkRules("#main", (rule) => {
-    if (rule.parent?.type !== "rule" || rule.parent.selector !== ".design-system-css-fundamentals") return;
-    rule.walkDecls("max-width", (decl) => mainWidths.push(decl.value));
+    if (rule.parent?.type !== "rule" || rule.parent.selector !== ".design-system-css-fundamentals")
+      return;
+    rule.walkDecls("max-width", (decl) => {
+      mainWidths.push(decl.value);
+    });
   });
   expect(mainWidths).toContain("none");
 });

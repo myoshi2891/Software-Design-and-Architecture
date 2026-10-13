@@ -29,7 +29,9 @@ it("renders all twelve separate Mermaid diagrams at natural scale and keeps them
   await waitFor(() =>
     expect(container.querySelectorAll(".mermaid[data-diagram] svg")).toHaveLength(12)
   );
-  for (const element of container.querySelectorAll('.mermaid[data-diagram]:not([data-diagram="learning_path"])')) {
+  for (const element of container.querySelectorAll(
+    '.mermaid[data-diagram]:not([data-diagram="learning_path"])'
+  )) {
     const key = element.getAttribute("data-diagram") ?? "";
     expect(element.textContent).toBe(normalizeChart(SOURCE_DIAGRAMS[key]));
     const svg = element.querySelector("svg") as SVGSVGElement;
