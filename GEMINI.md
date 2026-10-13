@@ -215,6 +215,10 @@ flowchart TD
   `bun run build` の全通過を必須とする。Lint/Format は Biome。
 - スタイルは `app/globals.css` のデザイントークン + ページスコープクラス。アイコンは
   `@tabler/icons-react`、Mermaid はクライアント描画、コードハイライトは手書き span を維持する。
+- `@keyframes` はページのセレクター内にネストせず、ページ固有の名前で定義する。
+  `web-next/tests/globals-css.test.ts` はLightning CSSで全体を変換し、警告と定義の欠落、
+  タイポグラフィページのヒーローのアニメーション参照を検査する。
+  サンドボックスでは `cd web-next` 後に `npm run test -- tests/globals-css.test.ts` で実行できる。
 
 ## 📝 規約
 

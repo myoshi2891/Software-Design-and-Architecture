@@ -96,6 +96,8 @@ Testing Library（契約テスト）を採用しています。
     文言を維持したまま本文の幅制限を撤廃し、全幅レイアウト・追従目次・見出しとカードのデザインを改善。
     原本HTML・Markdownは `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
     移行検証は `cd web-next` 後に `npm run test` / `npm run lint` / `npm run typecheck`。
+    グローバルCSSの変換回帰は `npm run test -- tests/globals-css.test.ts`。
+    Lightning CSSの変換警告が0件で、全キーフレーム定義とヒーローのアニメーション参照が保持されることを確認する。
     今回はビルドを省略し、図解・文字・リストの表示はユーザーが目視確認する。
   - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
     — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
