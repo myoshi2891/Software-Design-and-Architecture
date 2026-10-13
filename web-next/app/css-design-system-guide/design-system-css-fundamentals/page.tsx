@@ -29,6 +29,10 @@ const DIAGRAMS = {
     'graph LR\nBEM["BEM"] --> B["🟦 Block<br/>独立したコンポーネント<br/>.card  .button  .nav"]\nBEM --> E["🟨 Element<br/>Blockを構成する部品<br/>.card__title  .nav__item"]\nBEM --> MOD["🟧 Modifier<br/>状態・バリアント<br/>.card--featured  .button--primary"]\nB -->|"__"| E\nB -->|"--"| MOD\nstyle BEM fill:#6C47FF,color:#fff,stroke:none\nstyle B fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle E fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b\nstyle MOD fill:#1a3328,color:#86efac,stroke:#22c55e',
   smacss_categories:
     'graph TD\nS["SMACSS の5カテゴリ"] --> S1["1️⃣ Base<br/>リセット・デフォルトスタイル<br/>body · p · a · img"]\nS --> S2["2️⃣ Layout<br/>ページ構造<br/>.l-header · .l-sidebar · .l-grid"]\nS --> S3["3️⃣ Module<br/>再利用可能なUI部品<br/>.card · .button · .nav"]\nS --> S4["4️⃣ State<br/>状態変化スタイル<br/>.is-active · .is-hidden · .has-error"]\nS --> S5["5️⃣ Theme<br/>ビジュアルテーマ<br/>.theme-dark · .theme-brand"]\nstyle S fill:#6C47FF,color:#fff,stroke:none\nstyle S1 fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6\nstyle S2 fill:#1a2a0d,color:#86efac,stroke:#22c55e\nstyle S3 fill:#2a1a0d,color:#fcd34d,stroke:#f59e0b\nstyle S4 fill:#2a0d1a,color:#f87171,stroke:#ef4444\nstyle S5 fill:#1a0d2a,color:#c084fc,stroke:#a855f7',
+  css_var_scope:
+    'graph TD\nROOT[":root<br/>グローバルスコープ<br/>--color-primary: #6C47FF"] --> BODY["body<br/>--bg-color を継承"]\nROOT --> CARD[".card<br/>--card-padding: 24px<br/>コンポーネントスコープ"]\nCARD --> COMPACT[".card--compact<br/>--card-padding: 12px<br/>Modifierでスコープ上書き"]\nROOT --> DARK["@media prefers-color-scheme: dark<br/>--bg-base: #07111e<br/>メディアクエリスコープ"]\nCARD --> CHILD[".card__body<br/>--card-padding を継承"]\nstyle ROOT fill:#6C47FF,color:#fff,stroke:none\nstyle CARD fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle COMPACT fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6,stroke-dasharray:4\nstyle DARK fill:#1a1a0d,color:#fcd34d,stroke:#f59e0b\nstyle BODY fill:#0d1b2a,color:#94a3b8,stroke:#475569\nstyle CHILD fill:#0d1b2a,color:#94a3b8,stroke:#475569',
+  layout_comparison:
+    'flowchart LR\nQ{"レイアウトの次元"} -->|"1方向のみ<br/>行 OR 列"| F["Flexbox<br/>display: flex"]\nQ -->|"行と列の両方<br/>2次元"| G["CSS Grid<br/>display: grid"]\nF --> F1["ナビゲーションバー"]\nF --> F2["カードのアイテム整列"]\nF --> F3["フォーム入力グループ"]\nG --> G1["ページ全体の骨格"]\nG --> G2["ダッシュボード"]\nG --> G3["レスポンシブカードグリッド"]\nstyle Q fill:#6C47FF,color:#fff,stroke:none\nstyle F fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle G fill:#1a3328,color:#86efac,stroke:#22c55e',
 } as const;
 
 // Static escaped source examples; no CSS or HTML example is executed.
@@ -67,6 +71,14 @@ const CODE_BLOCKS = {
     '&lt;<span class="kw">button</span> <span class="kw">class</span>=<span class="st">"submit-btn"</span>&gt;送信&lt;/<span class="kw">button</span>&gt;',
   "code-17":
     '&lt;<span class="kw">button</span> <span class="kw">class</span>=<span class="st">"px-4 py-2 bg-purple-600\n  text-white font-medium rounded-md\n  hover:bg-purple-700 focus:outline-none\n  focus:ring-2 focus:ring-purple-500\n  focus:ring-offset-2 transition-colors"</span>&gt;\n  送信\n&lt;/<span class="kw">button</span>&gt;',
+  "code-18":
+    '<span class="cm">/* ===== 1. 定義（:root = グローバルスコープ） ===== */</span>\n:root {\n  <span class="kw">--color-primary</span>: <span class="st">#6C47FF</span>;\n  <span class="kw">--spacing-unit</span>: <span class="nu">4px</span>;\n}\n\n<span class="cm">/* ===== 2. 使用 ===== */</span>\n.component {\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-primary);\n  <span class="kw">padding</span>: <span class="fn">calc</span>(<span class="fn">var</span>(--spacing-unit) * <span class="nu">4</span>); <span class="cm">/* → 16px */</span>\n}\n\n<span class="cm">/* ===== 3. フォールバック値（変数が未定義の場合） ===== */</span>\n.component {\n  <span class="cm">/* 第2引数がフォールバック。ネストも可能。 */</span>\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-primary, <span class="fn">var</span>(--color-accent, <span class="st">#6C47FF</span>));\n}\n\n<span class="cm">/* ===== 4. スコープ（コンポーネントレベルの変数） ===== */</span>\n.card {\n  <span class="cm">/* .card の中でのみ有効。外部に漏れない。 */</span>\n  <span class="kw">--card-padding</span>: <span class="nu">24px</span>;\n  <span class="kw">--card-bg</span>: <span class="fn">var</span>(--color-bg-surface);\n\n  <span class="kw">padding</span>: <span class="fn">var</span>(--card-padding);\n  <span class="kw">background</span>: <span class="fn">var</span>(--card-bg);\n}\n\n<span class="cm">/* スコープ変数をコンポーネント内で上書き */</span>\n.card--compact {\n  <span class="kw">--card-padding</span>: <span class="nu">12px</span>; <span class="cm">/* コンパクト版は狭くする */</span>\n}\n\n<span class="cm">/* ===== 5. calc() と組み合わせる ===== */</span>\n:root {\n  <span class="kw">--base-size</span>: <span class="nu">16px</span>;\n  <span class="kw">--scale-ratio</span>: <span class="nu">1.25</span>;\n}\n\n.text-sm   { <span class="kw">font-size</span>: <span class="fn">calc</span>(<span class="fn">var</span>(--base-size) / <span class="fn">var</span>(--scale-ratio)); }\n.text-base { <span class="kw">font-size</span>: <span class="fn">var</span>(--base-size); }\n.text-lg   { <span class="kw">font-size</span>: <span class="fn">calc</span>(<span class="fn">var</span>(--base-size) * <span class="fn">var</span>(--scale-ratio)); }\n.text-xl   { <span class="kw">font-size</span>: <span class="fn">calc</span>(<span class="fn">var</span>(--base-size) * <span class="fn">var</span>(--scale-ratio) * <span class="fn">var</span>(--scale-ratio)); }\n\n<span class="cm">/* ===== 6. JavaScript との連携 ===== */</span>\n<span class="cm">/* CSS変数はJSから動的に変更できる */</span>\n\n<span class="cm">/* JS:\n   // 読み取り\n   const color = getComputedStyle(document.documentElement)\n     .getPropertyValue(\'--color-primary\');\n\n   // 書き込み（全体に影響）\n   document.documentElement.style\n     .setProperty(\'--color-primary\', \'#ff6b35\');\n\n   // 要素スコープで書き込み\n   element.style.setProperty(\'--card-padding\', \'32px\');\n*/</span>\n',
+  "code-19":
+    '<span class="cm">/* ========================================\n   テーマシステム全体設計\n   ======================================== */</span>\n\n<span class="cm">/* デフォルト（ライトモード） */</span>\n:root {\n  <span class="kw">color-scheme</span>: light;\n\n  <span class="cm">/* 背景 */</span>\n  <span class="kw">--bg-base</span>:    <span class="st">#ffffff</span>;\n  <span class="kw">--bg-surface</span>: <span class="st">#f1f5f9</span>;\n  <span class="kw">--bg-overlay</span>: <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.5</span>);\n\n  <span class="cm">/* テキスト */</span>\n  <span class="kw">--text-primary</span>:   <span class="st">#0f172a</span>;\n  <span class="kw">--text-secondary</span>: <span class="st">#64748b</span>;\n  <span class="kw">--text-disabled</span>:  <span class="st">#94a3b8</span>;\n\n  <span class="cm">/* ボーダー */</span>\n  <span class="kw">--border-default</span>: <span class="st">#e2e8f0</span>;\n  <span class="kw">--border-strong</span>:  <span class="st">#cbd5e1</span>;\n\n  <span class="cm">/* ブランドカラーはモード間で不変 */</span>\n  <span class="kw">--color-primary</span>:        <span class="st">#6C47FF</span>;\n  <span class="kw">--color-primary-hover</span>:  <span class="st">#5a38e0</span>;\n\n  <span class="cm">/* シャドウ */</span>\n  <span class="kw">--shadow-sm</span>: <span class="nu">0</span> <span class="nu">1px</span> <span class="nu">2px</span> <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.08</span>);\n  <span class="kw">--shadow-md</span>: <span class="nu">0</span> <span class="nu">4px</span> <span class="nu">6px</span> <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.1</span>);\n}\n\n<span class="cm">/* ダークモード — OS設定を優先 */</span>\n<span class="kw">@media</span> (<span class="kw">prefers-color-scheme</span>: dark) {\n  :root {\n    <span class="kw">color-scheme</span>: dark;\n    <span class="kw">--bg-base</span>:        <span class="st">#07111e</span>;\n    <span class="kw">--bg-surface</span>:     <span class="st">#0d1b2a</span>;\n    <span class="kw">--bg-overlay</span>:     <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.7</span>);\n    <span class="kw">--text-primary</span>:   <span class="st">#e2e8f0</span>;\n    <span class="kw">--text-secondary</span>: <span class="st">#94a3b8</span>;\n    <span class="kw">--text-disabled</span>:  <span class="st">#475569</span>;\n    <span class="kw">--border-default</span>: <span class="st">#162030</span>;\n    <span class="kw">--border-strong</span>:  <span class="st">#1e3347</span>;\n    <span class="kw">--shadow-sm</span>: <span class="nu">0</span> <span class="nu">1px</span> <span class="nu">2px</span> <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.3</span>);\n    <span class="kw">--shadow-md</span>: <span class="nu">0</span> <span class="nu">4px</span> <span class="nu">6px</span> <span class="fn">rgba</span>(<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">0.4</span>);\n  }\n}\n\n<span class="cm">/* 手動切り替え（ユーザーの明示的な選択） */</span>\n[data-theme=<span class="st">"dark"</span>]  { <span class="cm">/* ↑と同じ変数を定義 */</span> }\n[data-theme=<span class="st">"light"</span>] { <span class="cm">/* ↑ライトモードの値を再定義 */</span> }\n\n<span class="cm">/* ↓ コンポーネントはトークンのみ参照。テーマを意識不要。 */</span>\nbody    { <span class="kw">background</span>: <span class="fn">var</span>(--bg-base); <span class="kw">color</span>: <span class="fn">var</span>(--text-primary); }\n.card   { <span class="kw">background</span>: <span class="fn">var</span>(--bg-surface); <span class="kw">border-color</span>: <span class="fn">var</span>(--border-default); }\n.button { <span class="kw">background</span>: <span class="fn">var</span>(--color-primary); } <span class="cm">/* ブランドカラーは変わらない */</span>\n',
+  "code-20":
+    '<span class="cm">/* ============================================\n   Flexbox コンテナプロパティ\n   ============================================ */</span>\n.flex-container {\n  <span class="kw">display</span>: flex;\n\n  <span class="cm">/* 主軸方向（アイテムの並び方向） */</span>\n  <span class="kw">flex-direction</span>: row;          <span class="cm">/* 横並び（デフォルト） */</span>\n  <span class="cm">/* flex-direction: column; */</span>  <span class="cm">/* 縦並び */</span>\n\n  <span class="cm">/* 主軸方向の揃え */</span>\n  <span class="kw">justify-content</span>: flex-start;   <span class="cm">/* 左揃え */</span>\n  <span class="cm">/* justify-content: center; */</span>   <span class="cm">/* 中央揃え */</span>\n  <span class="cm">/* justify-content: flex-end; */</span> <span class="cm">/* 右揃え */</span>\n  <span class="cm">/* justify-content: space-between; */</span> <span class="cm">/* 両端揃え、均等 */</span>\n  <span class="cm">/* justify-content: space-around; */</span>  <span class="cm">/* 均等スペース */</span>\n\n  <span class="cm">/* 交差軸方向の揃え */</span>\n  <span class="kw">align-items</span>: stretch;    <span class="cm">/* 引き伸ばし（デフォルト） */</span>\n  <span class="cm">/* align-items: center; */</span>  <span class="cm">/* 交差軸中央 */</span>\n  <span class="cm">/* align-items: flex-start; */</span>\n\n  <span class="cm">/* 折り返し */</span>\n  <span class="kw">flex-wrap</span>: nowrap;    <span class="cm">/* 折り返さない（デフォルト） */</span>\n  <span class="cm">/* flex-wrap: wrap; */</span> <span class="cm">/* 折り返す */</span>\n\n  <span class="cm">/* アイテム間スペース */</span>\n  <span class="kw">gap</span>: <span class="nu">16px</span>;            <span class="cm">/* 均等 */</span>\n  <span class="cm">/* gap: 16px 8px; */</span>  <span class="cm">/* 縦 横 */</span>\n}\n\n<span class="cm">/* ============================================\n   Flexbox アイテムプロパティ\n   ============================================ */</span>\n.flex-item {\n  <span class="cm">/* 伸縮比率: grow shrink basis */</span>\n  <span class="kw">flex</span>: <span class="nu">1</span>;           <span class="cm">/* 等幅で伸びる */</span>\n  <span class="cm">/* flex: 0 0 200px; */</span> <span class="cm">/* 固定幅200px */</span>\n  <span class="cm">/* flex: 2; */</span>         <span class="cm">/* 他のアイテムの2倍の幅 */</span>\n\n  <span class="cm">/* 個別の交差軸揃え上書き */</span>\n  <span class="kw">align-self</span>: center;\n}\n\n<span class="cm">/* ============================================\n   実践的なパターン集\n   ============================================ */</span>\n\n<span class="cm">/* パターン1: ナビゲーションバー */</span>\n.navbar {\n  <span class="kw">display</span>: flex;\n  <span class="kw">justify-content</span>: space-between; <span class="cm">/* ロゴ ←→ メニュー */</span>\n  <span class="kw">align-items</span>: center;\n  <span class="kw">padding</span>: <span class="nu">0</span> <span class="fn">var</span>(--space-layout-md);\n  <span class="kw">height</span>: <span class="nu">60px</span>;\n  <span class="kw">background</span>: <span class="fn">var</span>(--bg-surface);\n}\n\n<span class="cm">/* パターン2: 中央揃えのページ全体 */</span>\n.page-centered {\n  <span class="kw">display</span>: flex;\n  <span class="kw">justify-content</span>: center;\n  <span class="kw">align-items</span>: center;\n  <span class="kw">min-height</span>: <span class="nu">100vh</span>;\n}\n\n<span class="cm">/* パターン3: メディアオブジェクト（画像+テキスト） */</span>\n.media-object {\n  <span class="kw">display</span>: flex;\n  <span class="kw">gap</span>: <span class="fn">var</span>(--space-component-md);\n  <span class="kw">align-items</span>: flex-start;\n}\n\n.media-object__image { <span class="kw">flex-shrink</span>: <span class="nu">0</span>; } <span class="cm">/* 画像は縮まない */</span>\n.media-object__body  { <span class="kw">flex</span>: <span class="nu">1</span>; }        <span class="cm">/* テキストは残り幅を取る */</span>\n\n<span class="cm">/* パターン4: フレキシブルフォームフィールド */</span>\n.input-group {\n  <span class="kw">display</span>: flex;\n  <span class="kw">border-radius</span>: <span class="fn">var</span>(--radius-md);\n  <span class="kw">overflow</span>: hidden;\n  <span class="kw">border</span>: <span class="nu">1px</span> solid <span class="fn">var</span>(--border-default);\n}\n\n.input-group input  { <span class="kw">flex</span>: <span class="nu">1</span>; <span class="kw">border</span>: none; <span class="kw">padding</span>: <span class="nu">10px</span> <span class="nu">14px</span>; }\n.input-group button { <span class="kw">flex-shrink</span>: <span class="nu">0</span>; <span class="kw">padding</span>: <span class="nu">10px</span> <span class="nu">20px</span>; }\n\n<span class="cm">/* パターン5: スティッキーフッター */</span>\n.page-layout {\n  <span class="kw">display</span>: flex;\n  <span class="kw">flex-direction</span>: column;\n  <span class="kw">min-height</span>: <span class="nu">100vh</span>;\n}\n.page-layout main   { <span class="kw">flex</span>: <span class="nu">1</span>; } <span class="cm">/* メインが残り高さを全部取る */</span>\n.page-layout footer { <span class="kw">flex-shrink</span>: <span class="nu">0</span>; }\n',
+  "code-21":
+    '<span class="cm">/* ============================================\n   CSS Grid の基本\n   ============================================ */</span>\n.grid-container {\n  <span class="kw">display</span>: grid;\n\n  <span class="cm">/* カラム定義 */</span>\n  <span class="kw">grid-template-columns</span>: <span class="nu">200px</span> 1fr 1fr;     <span class="cm">/* 固定幅 + 可変幅2列 */</span>\n  <span class="kw">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="nu">3</span>, 1fr);     <span class="cm">/* 等幅3列 */</span>\n  <span class="kw">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="nu">12</span>, 1fr);    <span class="cm">/* 12カラムグリッド */</span>\n\n  <span class="cm">/* 行定義（省略可、コンテンツに合わせて自動調整） */</span>\n  <span class="kw">grid-template-rows</span>: auto 1fr auto;  <span class="cm">/* ヘッダー・メイン・フッター */</span>\n\n  <span class="cm">/* アイテム間のスペース */</span>\n  <span class="kw">gap</span>: <span class="nu">24px</span>;           <span class="cm">/* 縦横同じ */</span>\n  <span class="cm">/* gap: 32px 16px; */</span> <span class="cm">/* 縦 横 */</span>\n}\n\n<span class="cm">/* ============================================\n   パターン1: レスポンシブカードグリッド（auto-fill）\n   ============================================ */</span>\n.card-grid {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-template-columns</span>: <span class="fn">repeat</span>(auto-fill, <span class="fn">minmax</span>(<span class="nu">280px</span>, 1fr));\n  <span class="cm">/* auto-fill: 可能な限りカラムを作る\n     minmax(280px, 1fr): 最小280px、最大1fr\n     → 画面幅に応じて自動的にカラム数が変わる */</span>\n  <span class="kw">gap</span>: <span class="fn">var</span>(--space-component-lg);\n}\n\n<span class="cm">/* ============================================\n   パターン2: 聖杯レイアウト（Holy Grail Layout）\n   ============================================ */</span>\n.holy-grail {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-template-areas</span>:\n    <span class="st">"header  header  header"</span>\n    <span class="st">"sidebar main    aside"</span>\n    <span class="st">"footer  footer  footer"</span>;\n  <span class="kw">grid-template-columns</span>: <span class="nu">220px</span> 1fr <span class="nu">220px</span>;\n  <span class="kw">grid-template-rows</span>: auto 1fr auto;\n  <span class="kw">min-height</span>: <span class="nu">100vh</span>;\n  <span class="kw">gap</span>: <span class="nu">0</span>;\n}\n\n.header  { <span class="kw">grid-area</span>: header; }\n.sidebar { <span class="kw">grid-area</span>: sidebar; }\n.main    { <span class="kw">grid-area</span>: main; }\n.aside   { <span class="kw">grid-area</span>: aside; }\n.footer  { <span class="kw">grid-area</span>: footer; }\n\n<span class="cm">/* ============================================\n   パターン3: ダッシュボードグリッド\n   ============================================ */</span>\n.dashboard {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="nu">4</span>, 1fr);\n  <span class="kw">grid-template-rows</span>: auto auto 1fr;\n  <span class="kw">gap</span>: <span class="nu">16px</span>;\n}\n\n<span class="cm">/* 特定アイテムを複数カラム・行にまたがらせる */</span>\n.dashboard__kpi      { <span class="cm">/* デフォルト: 1x1 */</span> }\n.dashboard__chart-main {\n  <span class="kw">grid-column</span>: span <span class="nu">2</span>;  <span class="cm">/* 2カラム幅 */</span>\n  <span class="kw">grid-row</span>: span <span class="nu">2</span>;     <span class="cm">/* 2行分の高さ */</span>\n}\n.dashboard__wide {\n  <span class="kw">grid-column</span>: <span class="nu">1</span> / -<span class="nu">1</span>;  <span class="cm">/* 全カラム幅 */</span>\n}\n\n<span class="cm">/* ============================================\n   パターン4: サブグリッド（CSS Grid Level 2）\n   親グリッドの行列を子に継承させる\n   ============================================ */</span>\n.card-list {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="nu">3</span>, 1fr);\n  <span class="kw">grid-template-rows</span>: masonry; <span class="cm">/* 将来の仕様 */</span>\n}\n\n.card {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-row</span>: span <span class="nu">3</span>; <span class="cm">/* 3行分 */</span>\n  <span class="kw">grid-template-rows</span>: subgrid; <span class="cm">/* 親のグリッドトラックを継承 */</span>\n}\n<span class="cm">/* → すべてのカードのタイトル・本文・フッターが横方向で揃う */</span>\n',
 } as const;
 
 export default function Page() {
@@ -1089,6 +1101,132 @@ export default function Page() {
             <p style={{ fontSize: "1rem", color: "var(--text-muted)" }}>
               {"*ユーティリティ名は Tailwind CSS の命名規則を学習する必要がある"}
             </p>
+          </div>
+          <div className="subsection" id="s2-3">
+            <h3>{"2.3 CSS変数（カスタムプロパティ）"}</h3>
+            <p>
+              {
+                "CSS変数（正式名称：CSSカスタムプロパティ）は、現代のCSS設計の核心です。JavaScriptからも操作でき、動的なテーマ切り替えが可能になります。"
+              }
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="css_var_scope">
+                <MermaidDiagram chart={DIAGRAMS.css_var_scope} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.5 — CSS変数のスコープと継承の仕組み"}</div>
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">
+                  {"CSS変数の基本 — 定義・使用・フォールバック・スコープ"}
+                </span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-18"] }}
+              />
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">
+                  {"実践的なダークモード実装 — CSS変数を活用した完全な例"}
+                </span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-19"] }}
+              />
+            </div>
+            <div className="callout info">
+              <span className="callout-icon">{"🔗"}</span>
+              <div className="callout-body">
+                <h4>{"参考：CSS カスタムプロパティ"}</h4>
+                <p>
+                  <Ext href="https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties">
+                    {"MDN — CSS カスタムプロパティの使用"}
+                  </Ext>
+                  {" | "}
+                  <Ext href="https://web.dev/learn/css/custom-properties">
+                    {"web.dev — CSS 変数"}
+                  </Ext>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="subsection" id="s2-4">
+            <h3>{"2.4 レイアウト設計の基礎"}</h3>
+            <p>
+              {"現代のCSSレイアウトは「"}
+              <strong>{"Flexbox"}</strong>
+              {"（1次元）」と「"}
+              <strong>{"CSS Grid"}</strong>
+              {"（2次元）」を組み合わせて設計します。"}
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="layout_comparison">
+                <MermaidDiagram chart={DIAGRAMS.layout_comparison} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.6 — Flexbox vs CSS Grid の使い分け"}</div>
+            </div>
+            <h4 style={{ color: "var(--sky)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"🔷 Flexbox — 1次元レイアウト"}
+            </h4>
+            <p>
+              {"ナビゲーション・ツールバー・カードのアイテム整列など、"}
+              <strong>{"1方向（行または列）"}</strong>
+              {"のレイアウトに最適です。"}
+            </p>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">{"Flexbox の主要プロパティと典型的パターン"}</span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-20"] }}
+              />
+            </div>
+            <h4 style={{ color: "var(--emerald)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"🔷 CSS Grid — 2次元レイアウト"}
+            </h4>
+            <p>
+              {"ページ全体の骨格・複雑なダッシュボードなど、"}
+              <strong>{"行と列の両方向"}</strong>
+              {"を同時に制御したい場合に使います。"}
+            </p>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">
+                  {"CSS Grid — 主要プロパティと実践的なレイアウトパターン"}
+                </span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-21"] }}
+              />
+            </div>
+            <div className="callout info">
+              <span className="callout-icon">{"🔗"}</span>
+              <div className="callout-body">
+                <h4>{"参考：レイアウトを深く学ぶ"}</h4>
+                <p>
+                  <Ext href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/">
+                    {"CSS-Tricks — A Complete Guide to Flexbox"}
+                  </Ext>
+                  {" |\n          "}
+                  <Ext href="https://css-tricks.com/snippets/css/complete-guide-grid/">
+                    {"CSS-Tricks — A Complete Guide to Grid"}
+                  </Ext>
+                  {" |\n          "}
+                  <Ext href="https://every-layout.dev/">
+                    {"Every Layout（Heydon Pickering & Andy Bell）"}
+                  </Ext>
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </main>
