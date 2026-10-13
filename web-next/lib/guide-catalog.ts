@@ -184,7 +184,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "CSS 基礎",
         href: "/css-design-system-guide/design-system-css-fundamentals",
         summary: "デザインシステムを支える CSS の土台",
-        status: "planned",
+        status: "published",
       },
       {
         name: "Grid / BEM / レスポンシブ / A11y",
