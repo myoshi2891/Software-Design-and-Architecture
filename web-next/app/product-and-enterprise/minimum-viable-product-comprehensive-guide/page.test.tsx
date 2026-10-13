@@ -49,77 +49,43 @@ describe("MVP foundation", () => {
       )
     ).not.toMatch(/^["']use client["']/);
     expect(css).toContain(".minimum-viable-product-comprehensive-guide {");
+    expect(css).toContain(
+      "@media (prefers-reduced-motion: no-preference) {\n  html:has(.minimum-viable-product-comprehensive-guide) { scroll-behavior: smooth; }\n}"
+    );
   });
 });
 
-describe("MVP foundations and lean process", () => {
-  for (const id of ["intro", "lean", "process"]) {
-    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-    });
-    it(`parses every real Mermaid chart in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
+const SECTION_GROUPS = [
+  ["MVP foundations and lean process", ["intro", "lean", "process"]],
+  ["MVP customer validation and design", ["step1", "step2", "step3", "step4"]],
+  ["MVP implementation and learning", ["step5", "step6", "step7"]],
+  ["MVP growth rules and references", ["failures", "scale", "rules", "refs"]],
+] as const;
 
-describe("MVP customer validation and design", () => {
-  for (const id of ["step1", "step2", "step3", "step4"]) {
-    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-    });
-    it(`parses every real Mermaid chart in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("MVP implementation and learning", () => {
-  for (const id of ["step5", "step6", "step7"]) {
-    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-    });
-    it(`parses every real Mermaid chart in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
+for (const [heading, ids] of SECTION_GROUPS) {
+  describe(heading, () => {
+    for (const id of ids) {
+      it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`section#${id}`);
+        expect(actual).not.toBeNull();
+        assertFaithful(actual as Element, source.getElementById(id) as Element);
+      });
+      it(`parses every real Mermaid chart in ${id}`, async () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`section#${id}`);
+        expect(actual).not.toBeNull();
+        const { default: mermaid } = await import("mermaid");
+        mermaid.initialize({ startOnLoad: false, theme: "dark" });
+        for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+          const chart = diagram.getAttribute("data-chart") ?? "";
+          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+          await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+        }
+      });
+    }
+  });
+}
 
 it("preserves YAML whitespace and colors comments keys strings numbers and interpolation", () => {
   const { container } = render(<Page />);
@@ -129,29 +95,6 @@ it("preserves YAML whitespace and colors comments keys strings numbers and inter
   for (const token of ["cm", "kw", "st", "nu", "fn"])
     expect(pre?.querySelector(`span.${token}`), token).not.toBeNull();
   expect(pre?.querySelector("code")).toBeNull();
-});
-
-describe("MVP growth rules and references", () => {
-  for (const id of ["failures", "scale", "rules", "refs"]) {
-    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-    });
-    it(`parses every real Mermaid chart in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
 });
 
 describe("MVP complete inventory", () => {

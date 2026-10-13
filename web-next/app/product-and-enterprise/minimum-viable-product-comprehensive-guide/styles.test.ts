@@ -13,10 +13,15 @@ describe("MVP scoped styles", () => {
     if (scoped?.type !== "rule") throw new Error("Missing MVP style scope");
     sourceCss.walkRules((rule) => {
       if (rule.selector === "html") {
-        const htmlRule = targetCss.nodes.find(
-          (node) => node.type === "rule" && node.selector === `html:has(${scope})`
+        const htmlRules: postcss.Rule[] = [];
+        targetCss.walkRules(`html:has(${scope})`, (candidate) => {
+          htmlRules.push(candidate);
+        });
+        expect(htmlRules[0]?.type).toBe("rule");
+        const parent = htmlRules[0]?.parent;
+        expect(parent?.type === "atrule" ? parent.params : undefined).toBe(
+          "(prefers-reduced-motion: no-preference)"
         );
-        expect(htmlRule?.type).toBe("rule");
         return;
       }
       const selector = rule.selector.replace(/\.ti-/g, ".icon-").replace(/\.ti\b/g, ".mvp-icon");

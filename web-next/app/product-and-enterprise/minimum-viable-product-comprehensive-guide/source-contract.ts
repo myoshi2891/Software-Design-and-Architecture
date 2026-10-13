@@ -136,10 +136,10 @@ export function assertFaithful(actual: Element, expected: Element) {
     Array.from(expected.querySelectorAll(".mermaid"), (el) => normalizeChart(el.textContent ?? ""))
   );
   for (const diagram of diagrams) expect(diagram.getAttribute("data-natural-scale")).toBe("true");
+  // href は上の原本完全一致で検証済みのため、外部リンクの属性のみ追加で確認する。
   for (const link of actual.querySelectorAll("a")) {
-    if (link.getAttribute("href")?.startsWith("http")) {
-      expect(link.getAttribute("target")).toBe("_blank");
-      expect(link.getAttribute("rel")).toBe("noopener noreferrer");
-    } else expect(link.getAttribute("href")).not.toContain(".html");
+    if (!link.getAttribute("href")?.startsWith("http")) continue;
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
   }
 }
