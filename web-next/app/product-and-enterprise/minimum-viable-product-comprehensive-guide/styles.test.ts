@@ -8,7 +8,7 @@ const targetCss = postcss.parse(css);
 const scoped = targetCss.nodes.find((node) => node.type === "rule" && node.selector === scope);
 
 describe("MVP scoped styles", () => {
-  it("preserves every source CSS declaration and media condition", () => {
+  it("retains source baseline declarations beneath page-specific design overrides", () => {
     expect(scoped?.type).toBe("rule");
     if (scoped?.type !== "rule") throw new Error("Missing MVP style scope");
     sourceCss.walkRules((rule) => {
@@ -88,7 +88,7 @@ function designValue(selector: string, property: string, media?: string) {
   let value: string | undefined;
   targetCss.walkRules((rule) => {
     if (rule.selector !== selector) return;
-    let parent = rule.parent;
+    let parent: postcss.Container | postcss.Document | undefined = rule.parent;
     let pageScoped = rule.selector === scope;
     let mediaParams: string | undefined;
     while (parent) {
@@ -124,5 +124,29 @@ describe("MVP fluid layout", () => {
     );
     expect(designValue(".sidebar", "display", "(max-width: 768px)")).toBe("none");
     expect(designValue(".main", "padding", "(max-width: 768px)")).toBe("24px 16px 48px");
+  });
+});
+
+describe("MVP visual refinement", () => {
+  it("improves text contrast and establishes a clear title and section hierarchy", () => {
+    expect(designValue(scope, "--color-text-secondary")).toBe("#b4c0d0");
+    expect(designValue(scope, "--color-text-tertiary")).toBe("#91a2b8");
+    expect(designValue(".page-title", "font-size")).toBe("clamp(28px, 3vw, 44px)");
+    expect(designValue(".page-header", "border-radius")).toBe("24px");
+    expect(designValue(".section", "border-radius")).toBe("20px");
+    expect(designValue("h2", "font-weight")).toBe("700");
+    expect(designValue("h3", "font-size")).toBe("18px");
+  });
+  it("refines cards, tables and diagram framing while preserving reading safeguards", () => {
+    expect(designValue(".cards", "grid-template-columns")).toBe(
+      "repeat(auto-fit, minmax(min(100%, 240px), 1fr))"
+    );
+    expect(designValue(".card", "border-radius")).toBe("16px");
+    expect(designValue("th", "color")).toBe("var(--color-text-primary)");
+    expect(designValue(".mermaid-wrap", "overflow-x")).toBe("auto");
+    expect(designValue(".mermaid", "min-width")).toBe("0");
+    expect(designValue(".section", "padding", "(max-width: 768px)")).toBe("22px 16px");
+    expect(designValue(".card", "transition", "(prefers-reduced-motion: reduce)")).toBe("none");
+    expect(css).not.toMatch(/\.minimum-viable-product-comprehensive-guide[^}]*100vw/s);
   });
 });
