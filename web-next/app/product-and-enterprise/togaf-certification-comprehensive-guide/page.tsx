@@ -4,6 +4,7 @@ import {
   IconCheck,
   IconExternalLink,
   IconInfoCircle,
+  IconMinus,
   IconX,
 } from "@tabler/icons-react";
 import type { Metadata } from "next";
@@ -45,6 +46,12 @@ const DIAGRAMS = {
     'flowchart LR\nP["アーキテクチャ原則"]:::root --> N["名前<br/>Name<br/>短く記憶しやすい名称"]:::n\nP --> S["ステートメント<br/>Statement<br/>原則の1文での表現"]:::s\nP --> R["根拠<br/>Rationale<br/>なぜこの原則が必要か"]:::r\nP --> I["示唆<br/>Implications<br/>この原則を採用した場合の影響"]:::i\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef n fill:#1e3a5f,stroke:#60a5fa,color:#e8eaf0\nclassDef s fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef r fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef i fill:#5c2210,stroke:#ff6b35,color:#e8eaf0',
   "diag-13":
     'flowchart TD\nAR["アーキテクチャリポジトリ<br/>Architecture Repository"]:::root\nAR --> AL["アーキテクチャランドスケープ<br/>Architecture Landscape"]:::node\nAR --> REF["リファレンスライブラリ<br/>Reference Library"]:::node\nAR --> STAN["標準情報ベース<br/>Standards Information Base"]:::node\nAR --> CONT["ガバナンスログ<br/>Governance Log"]:::node\nAR --> CAP["アーキテクチャ能力<br/>Architecture Capability"]:::node\nAR --> SOL["ソリューションランドスケープ<br/>Solution Landscape"]:::node\nAL --> AL1["戦略アーキテクチャ<br/>5-10年 / 組織全体"]\nAL --> AL2["セグメントアーキテクチャ<br/>2-5年 / ビジネスエリア単位"]\nAL --> AL3["能力アーキテクチャ<br/>1-2年 / 個別プロジェクト"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef node fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8',
+  "diag-14":
+    'flowchart LR\nEA["エンタープライズ<br/>アーキテクチャ"]:::root\nsubgraph SGEX["経営層"]\nEX1["コスト削減・ROI"]\nEX2["競争優位性"]\nEX3["リスク管理・規制対応"]\nend\nsubgraph SGIT["IT部門"]\nIT1["技術的負債の解消"]\nIT2["システム信頼性・セキュリティ"]\nIT3["保守性・拡張性"]\nend\nsubgraph SGBZ["ビジネス部門"]\nBZ1["業務効率化"]\nBZ2["データアクセス"]\nBZ3["プロセス改善"]\nend\nsubgraph SGUS["エンドユーザー"]\nUS1["使いやすい UI"]\nUS2["システム速度"]\nUS3["データの正確性"]\nend\nEA --> SGEX\nEA --> SGIT\nEA --> SGBZ\nEA --> SGUS\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0',
+  "diag-15":
+    'flowchart TD\nBOARD["経営委員会・取締役会"]:::top --> IT_GOV["IT投資委員会"]:::mid\nIT_GOV --> ARCH_BOARD["アーキテクチャボード<br/>Architecture Board"]:::key\nARCH_BOARD --> PROJ["プロジェクト・プログラム"]:::low\nsubgraph ROLES["アーキテクチャボードの役割"]\nR1["アーキテクチャ方針の策定・維持"]\nR2["コンプライアンスレビューの実施"]\nR3["例外申請の承認・却下"]\nR4["アーキテクチャ原則の管理"]\nR5["アーキテクチャ成果物の承認"]\nend\nARCH_BOARD --> ROLES\nclassDef top fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8\nclassDef mid fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8\nclassDef key fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef low fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8',
+  "diag-16":
+    'flowchart LR\nARCH["アーキテクチャチーム"]\nIMPL["実装チーム<br/>(プロジェクト)"]\nCONTRACT["アーキテクチャコントラクト<br/>Architecture Contract"]\nsubgraph CONT["コントラクトの主な内容"]\nC1["アーキテクチャ要件・制約"]\nC2["適合性の基準"]\nC3["成果物の承認基準"]\nC4["変更管理プロセス"]\nC5["ガバナンス要件"]\nend\nARCH -->|"発行"| CONTRACT\nCONTRACT -->|"適用"| IMPL\nIMPL --> CONT',
 } as const;
 
 export default function Page() {
@@ -1103,6 +1110,233 @@ export default function Page() {
                 aria-hidden="true"
               />
               {" TOGAF 9.2 — Architecture Repository（公式）\n        "}
+            </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "stakeholder",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Stakeholder Management"}</div>
+          <h1 className="page-title">{"ステークホルダーマネジメント"}</h1>
+          <p className="page-subtitle">
+            {"「誰の関心事（Concerns）に答えるか」が TOGAF のアーキテクチャ設計の出発点です。"}
+          </p>
+          <h2>{"ステークホルダー管理マトリクス"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"象限"}</th>
+                  <th>{"影響力"}</th>
+                  <th>{"関心度"}</th>
+                  <th>{"対応方針"}</th>
+                  <th>{"例"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"密接に管理"}</strong>
+                  </td>
+                  <td>{"高"}</td>
+                  <td>{"高"}</td>
+                  <td>{"継続的な関与と詳細な情報共有"}</td>
+                  <td>{"CEO・CIO"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"継続的な情報提供"}</strong>
+                  </td>
+                  <td>{"低"}</td>
+                  <td>{"高"}</td>
+                  <td>{"定期的なレポートと情報提供"}</td>
+                  <td>{"現場マネージャー・IT運用チーム"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"満足を維持"}</strong>
+                  </td>
+                  <td>{"高"}</td>
+                  <td>{"低"}</td>
+                  <td>{"重要事項のみを報告し関係を維持"}</td>
+                  <td>{"規制当局・株主"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"モニタリング"}</strong>
+                  </td>
+                  <td>{"低"}</td>
+                  <td>{"低"}</td>
+                  <td>{"最小限の情報提供で監視"}</td>
+                  <td>{"ベンダー・エンドユーザー"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h2>{"ステークホルダーの関心事マッピング"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-14" chart={DIAGRAMS["diag-14"]} preserveNaturalScale={true} />
+          </div>
+          <div className="bp-list">
+            <div className="bp-item">
+              <div className="bp-num">{"12"}</div>
+              <div className="bp-text">
+                <strong>{"ビューはステークホルダーの関心事に基づいて設計する"}</strong>
+                <span>
+                  {
+                    "TOGAF では「ビューポイント」はステークホルダーの「Concerns（関心事）」を満たすために存在する。アーキテクトは受け取り手が誰か、何に関心があるかを常に意識してアーキテクチャ成果物を作成する。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"13"}</div>
+              <div className="bp-text">
+                <strong>{"全ステークホルダーを早期に特定する"}</strong>
+                <span>
+                  {
+                    "フェーズ A でステークホルダーを網羅的に特定することが重要。後から新しいステークホルダーが発見されると、要件の追加・変更が発生しアーキテクチャ全体に影響が及ぶ。"
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="source-list">
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap21.html"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 — Stakeholder Management（公式）\n        "}
+            </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "governance",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Governance & Compliance"}</div>
+          <h1 className="page-title">{"ガバナンスとコンプライアンス"}</h1>
+          <p className="page-subtitle">
+            {
+              "TOGAF では「ガバナンスなきアーキテクチャは設計書に過ぎない」。実装との整合性を保つ仕組みが不可欠です。"
+            }
+          </p>
+          <h2>{"アーキテクチャガバナンス組織階層"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-15" chart={DIAGRAMS["diag-15"]} preserveNaturalScale={true} />
+          </div>
+          <h2>{"アーキテクチャコンプライアンスの 4 種類"}</h2>
+          <div className="card-grid">
+            <div className="card" style={{ borderColor: "var(--c-green-800)" }}>
+              <div className="card-icon">
+                <IconCheck
+                  size={22}
+                  className="mvp-icon icon-check"
+                  aria-hidden="true"
+                  style={{ color: "var(--color-text-success)" }}
+                />
+              </div>
+              <div className="card-title" style={{ color: "var(--color-text-success)" }}>
+                {"Conformant（適合）"}
+              </div>
+              <div className="card-desc">{"アーキテクチャに完全準拠。そのまま進行可能。"}</div>
+            </div>
+            <div className="card" style={{ borderColor: "var(--c-amber-800)" }}>
+              <div className="card-icon">
+                <IconAlertTriangle
+                  size={22}
+                  className="mvp-icon icon-alert-triangle"
+                  aria-hidden="true"
+                  style={{ color: "var(--color-text-warning)" }}
+                />
+              </div>
+              <div className="card-title" style={{ color: "var(--color-text-warning)" }}>
+                {"Partially Conformant（部分適合）"}
+              </div>
+              <div className="card-desc">{"一部準拠。改善計画の策定が必要。"}</div>
+            </div>
+            <div className="card" style={{ borderColor: "var(--c-coral-800)" }}>
+              <div className="card-icon">
+                <IconX
+                  size={22}
+                  className="mvp-icon icon-x"
+                  aria-hidden="true"
+                  style={{ color: "var(--color-text-danger)" }}
+                />
+              </div>
+              <div className="card-title" style={{ color: "var(--color-text-danger)" }}>
+                {"Non-Conformant（不適合）"}
+              </div>
+              <div className="card-desc">
+                {"アーキテクチャに準拠していない。例外申請またはアーキテクチャ変更が必要。"}
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon">
+                <IconMinus
+                  size={22}
+                  className="mvp-icon icon-minus"
+                  aria-hidden="true"
+                  style={{ color: "var(--color-text-tertiary)" }}
+                />
+              </div>
+              <div className="card-title" style={{ color: "var(--color-text-tertiary)" }}>
+                {"Irrelevant（対象外）"}
+              </div>
+              <div className="card-desc">
+                {"このアーキテクチャの適用対象外。対象外として記録する。"}
+              </div>
+            </div>
+          </div>
+          <h2>{"アーキテクチャコントラクト"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-16" chart={DIAGRAMS["diag-16"]} preserveNaturalScale={true} />
+          </div>
+          <div className="bp-list">
+            <div className="bp-item">
+              <div className="bp-num">{"14"}</div>
+              <div className="bp-text">
+                <strong>{"アーキテクチャボードは「承認機関」であり「相談機関」でもある"}</strong>
+                <span>
+                  {
+                    "ボードは単に成果物を承認するだけでなく、プロジェクトがアーキテクチャ原則に沿った判断を早期に相談できる場としても機能させることが重要。問題が大きくなる前に介入できる体制を作る。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"15"}</div>
+              <div className="bp-text">
+                <strong>{"例外申請プロセスを明確に定義する"}</strong>
+                <span>
+                  {
+                    "Non-Conformant（不適合）のプロジェクトが発生した場合の例外申請プロセスを事前に定義する。曖昧なプロセスはアーキテクチャの形骸化を招く。期限付きの例外許可と改善計画の提出を義務付けるのが効果的。"
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="source-list">
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap44.html"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 — Architecture Governance（公式）\n        "}
             </Ext>
           </div>
         </>
