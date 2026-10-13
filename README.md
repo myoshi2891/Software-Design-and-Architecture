@@ -79,6 +79,7 @@ Testing Library（契約テスト）を採用しています。
   - [`/product-and-enterprise/minimum-viable-product-comprehensive-guide`](web-next/app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx)
     — MVP 完全ガイドを忠実移植（14章・Mermaid 17図・表15件・リスト69項目・YAMLコード1件）。
     サイドバーの現在地表示をクライアント側に分離し、本文は Server Component を維持。
+    共通ヘッダーを考慮したアンカー余白と、原本の要素構造・クラス・インライン色の照合を追加。
     原本HTML・Markdownは `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
     移行検証は `cd web-next` 後に `npm run test` / `npm run lint` / `npm run typecheck`。
     今回はビルドを省略し、図解・文字・リストの表示はユーザーが目視確認する。

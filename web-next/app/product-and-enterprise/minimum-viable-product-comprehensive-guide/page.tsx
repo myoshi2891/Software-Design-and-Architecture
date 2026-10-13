@@ -43,6 +43,39 @@ export const metadata: Metadata = {
     "初学者から中級エンジニアまでを対象に、MVP開発の思想・プロセス・実装・測定を網羅的に解説します。リーンスタートアップの原則に基づき、無駄なく素早く学ぶためのロードマップを提供します。",
 };
 
+// Static highlighted source. Escape GitHub Actions expressions to preserve their literal text.
+const CI_YAML = `<span class="cm"># .github/workflows/ci.yml</span>
+<span class="kw">name</span>: CI/CD Pipeline
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [main]
+  <span class="kw">pull_request</span>:
+    <span class="kw">branches</span>: [main]
+
+<span class="kw">jobs</span>:
+  <span class="kw">test</span>:
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">uses</span>: actions/setup-node@v4
+        <span class="kw">with</span>:
+          <span class="kw">node-version</span>: <span class="nu">'20'</span>
+      - <span class="kw">run</span>: npm ci
+      - <span class="kw">run</span>: npm run lint        <span class="cm"># ESLintチェック</span>
+      - <span class="kw">run</span>: npm run type-check  <span class="cm"># TypeScript型チェック</span>
+      - <span class="kw">run</span>: npm test            <span class="cm"># ユニットテスト実行</span>
+      - <span class="kw">run</span>: npm run build       <span class="cm"># ビルド確認</span>
+
+  <span class="kw">deploy-preview</span>:
+    <span class="kw">if</span>: github.event_name == <span class="st">'pull_request'</span>
+    <span class="kw">needs</span>: test
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">name</span>: Deploy to Vercel Preview
+        <span class="kw">run</span>: npx vercel --token=<span class="fn">\${{ secrets.VERCEL_TOKEN }}</span>`;
+
 const DIAGRAMS = {
   "lean-1":
     'flowchart TD\nIDEAS["💡 アイデア(仮説)"]\nBUILD["🔨 Build(構築)<br/>仮説を検証するMVPを素早く構築"]\nPRODUCT["📦 プロダクト(MVP)"]\nMEASURE["📊 Measure(測定)<br/>実ユーザーの行動データを定量計測"]\nDATA["📈 データ(指標・メトリクス)"]\nLEARN["🧠 Learn(学習)<br/>何が正しく何が間違っていたかを学ぶ"]\n\nIDEAS --> BUILD --> PRODUCT --> MEASURE --> DATA --> LEARN\nLEARN -->|"仮説を更新"| IDEAS\n\nstyle IDEAS fill:#d97706,color:#fff,stroke:none\nstyle BUILD fill:#dc2626,color:#fff,stroke:none\nstyle PRODUCT fill:#2563eb,color:#fff,stroke:none\nstyle MEASURE fill:#7c3aed,color:#fff,stroke:none\nstyle DATA fill:#0d9488,color:#fff,stroke:none\nstyle LEARN fill:#16a34a,color:#fff,stroke:none',
@@ -1049,8 +1082,7 @@ export default function Page() {
           <pre
             className="language-yaml"
             dangerouslySetInnerHTML={{
-              __html:
-                '<span class="cm"># .github/workflows/ci.yml</span>\n<span class="kw">name</span>: CI/CD Pipeline\n\n<span class="kw">on</span>:\n  <span class="kw">push</span>:\n    <span class="kw">branches</span>: [main]\n  <span class="kw">pull_request</span>:\n    <span class="kw">branches</span>: [main]\n\n<span class="kw">jobs</span>:\n  <span class="kw">test</span>:\n    <span class="kw">runs-on</span>: ubuntu-latest\n    <span class="kw">steps</span>:\n      - <span class="kw">uses</span>: actions/checkout@v4\n      - <span class="kw">uses</span>: actions/setup-node@v4\n        <span class="kw">with</span>:\n          <span class="kw">node-version</span>: <span class="nu">\'20\'</span>\n      - <span class="kw">run</span>: npm ci\n      - <span class="kw">run</span>: npm run lint        <span class="cm"># ESLintチェック</span>\n      - <span class="kw">run</span>: npm run type-check  <span class="cm"># TypeScript型チェック</span>\n      - <span class="kw">run</span>: npm test            <span class="cm"># ユニットテスト実行</span>\n      - <span class="kw">run</span>: npm run build       <span class="cm"># ビルド確認</span>\n\n  <span class="kw">deploy-preview</span>:\n    <span class="kw">if</span>: github.event_name == <span class="st">\'pull_request\'</span>\n    <span class="kw">needs</span>: test\n    <span class="kw">runs-on</span>: ubuntu-latest\n    <span class="kw">steps</span>:\n      - <span class="kw">uses</span>: actions/checkout@v4\n      - <span class="kw">name</span>: Deploy to Vercel Preview\n        <span class="kw">run</span>: npx vercel --token=<span class="fn">${{ secrets.VERCEL_TOKEN }}</span>',
+              __html: CI_YAML,
             }}
           />
           <h3>{"8.3 セキュリティ最低限チェックリスト"}</h3>

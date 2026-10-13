@@ -108,7 +108,8 @@ flowchart TD
     リスト69項目・YAMLコード1件を忠実移植。本文は Server Component、現在地表示は
     `MvpSidebar.tsx` に分離。原本HTML・Markdownは
     `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
-    元HTMLとの全文・構造・CSS宣言の照合、実Mermaid構文、原本SHA-256を契約テストで検証する。
+    元HTMLとの全文・要素構造・クラス・インライン色・CSS宣言の照合、実Mermaid構文、
+    原本SHA-256を契約テストで検証する。章アンカーは共通ヘッダーと免責表示の高さを考慮する。
     今回の移行はユーザー指定により npm を使用し、ビルド省略・目視確認はユーザーが担当する。
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
