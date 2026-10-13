@@ -82,3 +82,47 @@ it("offsets section anchors below the existing fixed common header and disclaime
   });
   expect(values).toEqual(["calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px)"]);
 });
+
+// Resolve the last page-scoped declaration in the requested media context.
+function designValue(selector: string, property: string, media?: string) {
+  let value: string | undefined;
+  targetCss.walkRules((rule) => {
+    if (rule.selector !== selector) return;
+    let parent = rule.parent;
+    let pageScoped = rule.selector === scope;
+    let mediaParams: string | undefined;
+    while (parent) {
+      if (parent.type === "rule" && parent.selector === scope) pageScoped = true;
+      if (parent.type === "atrule" && parent.name === "media") mediaParams = parent.params;
+      parent = parent.parent;
+    }
+    if (pageScoped && mediaParams === media)
+      rule.each((node) => {
+        if (node.type === "decl" && node.prop === property) value = node.value;
+      });
+  });
+  return value;
+}
+
+describe("MVP fluid layout", () => {
+  it("fills the available viewport width without a capped main column", () => {
+    expect(designValue(scope, "display")).toBe("grid");
+    expect(designValue(scope, "grid-template-columns")).toBe("var(--sidebar-width) minmax(0, 1fr)");
+    expect(designValue(".main", "max-width")).toBe("none");
+    expect(designValue(".main", "width")).toBe("100%");
+    expect(designValue(".main", "min-width")).toBe("0");
+    expect(designValue(".page-description", "max-width")).toBe("none");
+  });
+  it("keeps navigation visible below the fixed header and gives mobile the full width", () => {
+    expect(designValue(".sidebar", "position")).toBe("sticky");
+    expect(designValue(".sidebar", "top")).toBe(
+      "calc(var(--ch-height) + var(--ch-disclaimer-height, 0px))"
+    );
+    expect(designValue(".sidebar", "overflow-y")).toBe("auto");
+    expect(designValue(scope, "grid-template-columns", "(max-width: 768px)")).toBe(
+      "minmax(0, 1fr)"
+    );
+    expect(designValue(".sidebar", "display", "(max-width: 768px)")).toBe("none");
+    expect(designValue(".main", "padding", "(max-width: 768px)")).toBe("24px 16px 48px");
+  });
+});
