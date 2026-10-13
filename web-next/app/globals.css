@@ -1,6 +1,6 @@
 /*
  * comprehensive-guide ページのスタイル。
- * 元の general/comprehensive-guide/comprehensive-guide.html の <style> をほぼ忠実に移植。
+ * 元の general/comprehensive-guide/comprehensive-guide.html の \3c style> をほぼ忠実に移植。
  * --font-sans / --font-mono は next/font の CSS 変数を先頭に差し込む。
  * Tailwind の preflight は本ページの独自リセット・リスト表示と競合するため import しない
  * （Tailwind ツールチェーン自体は postcss に配線済みで、将来のページで利用可能）。
@@ -835,7 +835,7 @@ body {
 
 /*
  * event-driven-architecture-comprehensive-guide ページのスタイル。
- * 元 architecture/event-driven-architecture-comprehensive-guide/*.html の <style> を忠実移植。
+ * 元 architecture/event-driven-architecture-comprehensive-guide/*.html の \3c style> を忠実移植。
  * 元ページ独自のシアン系トークン（--ac / --bg / --sf …）はスコープ内ローカル変数として温存し、
  * 既存 --color-* へ強制リマップしない（ページ固有のアイデンティティを維持）。
  * フォントのみ next/font の --font-sans / --font-mono を採用（Inter は <link> で読み込まない）。
@@ -1399,7 +1399,7 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .section {
 
 /*
  * clean-architecture-comprehensive-guide ページのスタイル。
- * 元 architecture/clean-architecture-comprehensive-guide/*.html の <style> を移植。
+ * 元 architecture/clean-architecture-comprehensive-guide/*.html の \3c style> を移植。
  */
 .clean-architecture-comprehensive-guide {
   --bg: #080c14;
@@ -1748,7 +1748,7 @@ body.has-common-header .clean-architecture-comprehensive-guide .section {
 
 /*
  * service-oriented-architecture-comprehensive-guide ページのスタイル。
- * 元 architecture/service-oriented-architecture-comprehensive-guide/*.html の <style> を移植。
+ * 元 architecture/service-oriented-architecture-comprehensive-guide/*.html の \3c style> を移植。
  */
 .service-oriented-architecture-comprehensive-guide {
   --color-background-primary: #0f1117;
@@ -12802,7 +12802,7 @@ body.has-common-header .sql-antipatterns-guide section {
 
 /*
  * domain-driven-design-comprehensive-guide ページのスタイル。
- * 元 design-principles/domain-driven-design-comprehensive-guide/*.html の <style> を移植。
+ * 元 design-principles/domain-driven-design-comprehensive-guide/*.html の \3c style> を移植。
  */
 .domain-driven-design-comprehensive-guide {
   --color-background-primary: #0d0d0f;
@@ -16201,8 +16201,39 @@ tbody tr:nth-child(even) td {
 .cm { color: var(--color-text-secondary); font-style: italic; }
 .nu { color: #fcd34d; }
 .mermaid svg foreignObject { overflow: visible; }
-.mermaid svg foreignObject > div, .mermaid svg .nodeLabel, .mermaid svg .edgeLabel { overflow: visible; } }
+.mermaid svg foreignObject > div, .mermaid svg .nodeLabel, .mermaid svg .edgeLabel { overflow: visible; }/* Fluid layout: the main column uses all space beside the navigation. */
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+.main {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: 40px clamp(24px, 3vw, 56px) 72px;
+}
+.page-description { max-width: none; }
+.sidebar {
+  position: sticky;
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  align-self: start;
+  height: calc(100dvh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+  min-height: 0;
+  overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 16px 48px; }
+} }
 
 body.has-common-header .minimum-viable-product-comprehensive-guide .section {
   scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
+
+@media (max-width: 1024px) {
+  .minimum-viable-product-comprehensive-guide { --sidebar-width: 208px; }
+}
+
+@media (max-width: 768px) {
+  .minimum-viable-product-comprehensive-guide { grid-template-columns: minmax(0, 1fr); }
 }
