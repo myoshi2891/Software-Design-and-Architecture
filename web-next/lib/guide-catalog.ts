@@ -160,7 +160,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "TOGAF 認定",
         href: "/product-and-enterprise/togaf-certification-comprehensive-guide",
         summary: "エンタープライズアーキテクチャの資格対策",
-        status: "planned",
+        status: "published",
       },
     ],
   },
