@@ -1,8 +1,8 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import MvpSidebar from "./MvpSidebar";
+import MvpSidebar, { type MvpNavItem } from "./MvpSidebar";
 
-const items = [
+const items: MvpNavItem[] = [
   { id: "intro", label: "MVPとは何か", icon: "bulb" },
   { id: "lean", label: "リーンスタートアップ", icon: "recycle" },
 ];

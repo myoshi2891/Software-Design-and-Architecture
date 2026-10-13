@@ -32,14 +32,15 @@ const ICONS = {
   "trending-up": IconTrendingUp,
   award: IconAward,
   books: IconBooks,
-};
-export type MvpNavItem = { id: string; label: string; icon: string };
+} as const;
+export type MvpNavItem = { id: string; label: string; icon: keyof typeof ICONS };
 export default function MvpSidebar({ items }: { items: MvpNavItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) if (entry.isIntersecting) setActiveId(entry.target.id);
+        const visible = entries.find((entry) => entry.isIntersecting);
+        if (visible) setActiveId(visible.target.id);
       },
       { rootMargin: "-20% 0px -70% 0px" }
     );
@@ -55,7 +56,7 @@ export default function MvpSidebar({ items }: { items: MvpNavItem[] }) {
       <div className="sidebar-section">
         <nav aria-label="MVPガイドの目次">
           {items.map((item) => {
-            const Icon = ICONS[item.icon as keyof typeof ICONS];
+            const Icon = ICONS[item.icon];
             return (
               <a
                 key={item.id}
