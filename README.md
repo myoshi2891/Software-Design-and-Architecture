@@ -77,9 +77,11 @@ Testing Library（契約テスト）を採用しています。
 
 - 移行済みページ:
   - [`/css-design-system-guide/design-system-css-fundamentals`](web-next/app/css-design-system-guide/design-system-css-fundamentals/page.tsx)
-    — CSS 基礎ガイドを忠実移植（3章・12小節・Mermaid 13図・表5件・CSS/HTMLコード30件）。
+    — CSS 基礎ガイドを忠実移植（3章・12小節・Mermaid 12図・学習ロードマップ・表5件・CSS/HTMLコード30件）。
     本文は Server Component、15項目の目次・読書進捗・先頭ボタンは `Navigation` に分離。
     Inter・Space Groteskはルート専用の next/font 設定、コードは静的ハイライトで表示。
+    文言を維持して見出し・配色・余白を調整。学習ロードマップは元の6分野・24項目を
+    Server Componentのカードで表示し、画面幅に応じて3列・2列・1列に切り替える。
     原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
     npmでテスト・lint・型チェックを実施。ルート生成型は `npm exec -- next typegen` で更新し、
     今回はビルド省略・目視確認をユーザーが担当する。
