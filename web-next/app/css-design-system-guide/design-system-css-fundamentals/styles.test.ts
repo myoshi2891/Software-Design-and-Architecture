@@ -33,11 +33,11 @@ describe("CSS fundamentals scoped styling", () => {
     if (scoped?.type !== "rule") throw new Error("Missing CSS fundamentals scope");
     sourceCss.walkRules((rule) => {
       if (rule.selector === "html") {
-        expect(
-          targetCss.nodes.some(
-            (node) => node.type === "rule" && node.selector === `html:has(${scope})`
-          )
-        ).toBe(true);
+        const htmlRules: postcss.Rule[] = [];
+        targetCss.walkRules(`html:has(${scope})`, (candidate) => {
+          htmlRules.push(candidate);
+        });
+        expect(htmlRules.length).toBeGreaterThan(0);
         return;
       }
       const selector = mappedSelector(rule.selector);
@@ -105,4 +105,15 @@ it("fits the fixed sidebar and anchors beneath the existing shared header", () =
   expect(value(".section, .subsection[id]", "scroll-margin-top")).toBe(
     "calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px)"
   );
+});
+
+it("enables smooth scrolling only when reduced motion is not requested", () => {
+  const smooth: string[] = [];
+  targetCss.walkRules("html:has(.design-system-css-fundamentals)", (rule) => {
+    rule.walkDecls("scroll-behavior", (declaration) => {
+      const parent = rule.parent;
+      smooth.push(`${parent?.type === "atrule" ? parent.params : "root"}|${declaration.value}`);
+    });
+  });
+  expect(smooth).toEqual(["(prefers-reduced-motion: no-preference)|smooth"]);
 });

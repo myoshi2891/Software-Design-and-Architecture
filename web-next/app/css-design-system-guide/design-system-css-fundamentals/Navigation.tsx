@@ -5,6 +5,10 @@ export type NavGroup = {
   items: { id: string; num: string; label: string; sub: boolean }[];
 };
 
+// 視差効果を減らす設定ではスムーズスクロールを無効化する。
+const scrollBehavior = (): ScrollBehavior =>
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
 export default function Navigation({ groups }: { groups: NavGroup[] }) {
   const sidebar = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -31,7 +35,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
           setActiveId(id);
           sidebar.current
             ?.querySelector<HTMLElement>(`a[href="#${id}"]`)
-            ?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+            ?.scrollIntoView?.({ block: "nearest", behavior: scrollBehavior() });
         }
       },
       { rootMargin: "-20% 0px -60% 0px" }
@@ -50,7 +54,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
         title="先頭へ戻る"
         aria-label="先頭へ戻る"
         className={showTop ? "visible" : undefined}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={() => window.scrollTo({ top: 0, behavior: scrollBehavior() })}
       >
         ⇧
       </button>
@@ -71,7 +75,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
             読書進捗: {progress}%
           </div>
         </div>
-        <nav className="sb-nav">
+        <nav className="sb-nav" aria-label="章とセクション">
           {groups.map((group) => (
             <div className="sb-group" key={group.label}>
               <div className="sb-group-label">{group.label}</div>

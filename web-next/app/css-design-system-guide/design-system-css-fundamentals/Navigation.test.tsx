@@ -106,4 +106,19 @@ describe("CSS fundamentals navigation", () => {
     fireEvent.scroll(window);
     expect(button).not.toHaveClass("visible");
   });
+  it("scrolls instantly when the user prefers reduced motion", () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query === "(prefers-reduced-motion: reduce)",
+    }));
+    const scroll = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+    const { getByTitle } = render(<Navigation groups={groups} />);
+    fireEvent.click(getByTitle("先頭へ戻る"));
+    expect(scroll).toHaveBeenCalledWith({ top: 0, behavior: "auto" });
+  });
+  it("gives the inner chapter list a name distinct from the outer table of contents", () => {
+    const { getByRole } = render(<Navigation groups={groups} />);
+    expect(getByRole("navigation", { name: "目次" })).toContainElement(
+      getByRole("navigation", { name: "章とセクション" })
+    );
+  });
 });

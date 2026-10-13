@@ -48,191 +48,47 @@ describe("CSS fundamentals foundation", () => {
   });
 });
 
-describe("CSS fundamentals design system concepts", () => {
-  for (const id of ["s1-1", "s1-2", "s1-3"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
+const SECTION_GROUPS = [
+  ["CSS fundamentals design system concepts", ["s1-1", "s1-2", "s1-3"]],
+  ["CSS fundamentals adoption and best practices", ["s1-4", "s1-5", "s1-6"]],
+  ["CSS fundamentals cascade specificity and methodologies", ["s2-1", "s2-2"]],
+  ["CSS fundamentals custom properties and layout", ["s2-3", "s2-4"]],
+  ["CSS fundamentals responsive design and best practices", ["s2-5", "s2-6"]],
+  ["CSS fundamentals summary and resources", ["s3"]],
+] as const;
 
-describe("CSS fundamentals adoption and best practices", () => {
-  for (const id of ["s1-4", "s1-5", "s1-6"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("CSS fundamentals cascade specificity and methodologies", () => {
-  for (const id of ["s2-1", "s2-2"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("CSS fundamentals custom properties and layout", () => {
-  for (const id of ["s2-3", "s2-4"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("CSS fundamentals responsive design and best practices", () => {
-  for (const id of ["s2-5", "s2-6"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("CSS fundamentals summary and resources", () => {
-  for (const id of ["s3"]) {
-    it(`preserves every text code table style and diagram in ${id}`, () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      for (const pre of actual?.querySelectorAll("pre") ?? []) {
-        expect(pre.querySelector("code")).toBeNull();
-        expect(
-          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
-        ).toBeGreaterThan(0);
-        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
-      }
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = render(<Page />);
-      const actual = container.querySelector(`#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = element.getAttribute("data-chart") ?? "";
-        if (!chart.startsWith("mindmap"))
-          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
+for (const [heading, ids] of SECTION_GROUPS) {
+  describe(heading, () => {
+    for (const id of ids) {
+      it(`preserves every text code table style and diagram in ${id}`, () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`#${id}`);
+        expect(actual).not.toBeNull();
+        assertFaithful(actual as Element, source.getElementById(id) as Element);
+        for (const pre of actual?.querySelectorAll("pre") ?? []) {
+          expect(pre.querySelector("code")).toBeNull();
+          expect(
+            pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
+          ).toBeGreaterThan(0);
+          expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
+        }
+      });
+      it(`parses all real Mermaid diagrams in ${id}`, async () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`#${id}`);
+        expect(actual).not.toBeNull();
+        const { default: mermaid } = await import("mermaid");
+        mermaid.initialize({ startOnLoad: false, theme: "dark" });
+        for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+          const chart = element.getAttribute("data-chart") ?? "";
+          if (!chart.startsWith("mindmap"))
+            expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+          await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+        }
+      });
+    }
+  });
+}
 
 it("preserves the complete source inventory and every navigation target", () => {
   const { container } = render(<Page />);
