@@ -15519,7 +15519,9 @@ body.has-common-header .test-driven-development-comprehensive-guide .section {
 /* MVP guide: faithful source styles, confined to this page. */
 
 
-html:has(.minimum-viable-product-comprehensive-guide) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.minimum-viable-product-comprehensive-guide) { scroll-behavior: smooth; }
+}
 
 .minimum-viable-product-comprehensive-guide {
   --color-background-primary: #0f1117;
@@ -17209,7 +17211,9 @@ body.has-common-header .togaf-certification-comprehensive-guide .sidebar {
 
 /* CSS fundamentals: source styles scoped to the migrated page. */
 
-html:has(.design-system-css-fundamentals) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.design-system-css-fundamentals) { scroll-behavior: smooth; }
+}
 .design-system-css-fundamentals {
 /* ===== CSS CUSTOM PROPERTIES ===== */
   --bg-base:        #07111e;
