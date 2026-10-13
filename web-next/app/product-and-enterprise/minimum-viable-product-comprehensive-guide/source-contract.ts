@@ -40,7 +40,32 @@ export function normalizeChart(chart: string): string {
     .join("\n");
 }
 
+// Compare element hierarchy and styling hooks, excluding renderer-generated SVG internals.
+function shape(element: Element): unknown {
+  if (element.matches("i.ti, svg.tabler-icon")) {
+    const classes = Array.from(element.classList).filter(
+      (value) => value.startsWith("ti-") || value.startsWith("icon-")
+    );
+    return {
+      icon: classes.map((value) => value.replace(/^ti-/, "icon-")),
+      style: element.getAttribute("style")?.replace(/[\s;]/g, "") ?? "",
+    };
+  }
+  if (element.matches('.mermaid, [data-testid="mermaid-diagram"]')) return { diagram: true };
+  if (element.tagName === "PRE") return { code: element.textContent };
+  return {
+    tag: element.tagName,
+    classes: Array.from(element.classList),
+    id: element.id,
+    style: element.getAttribute("style")?.replace(/[\s;]/g, "") ?? "",
+    rowSpan: element.getAttribute("rowspan"),
+    colSpan: element.getAttribute("colspan"),
+    children: Array.from(element.children, shape),
+  };
+}
+
 export function assertFaithful(actual: Element, expected: Element) {
+  expect(shape(actual)).toEqual(shape(expected));
   const actualText = actual.cloneNode(true) as Element;
   const expectedText = expected.cloneNode(true) as Element;
   actualText.querySelectorAll('[data-testid="mermaid-diagram"], svg').forEach((el) => {

@@ -70,3 +70,15 @@ describe("MVP scoped styles", () => {
     expect(declaration(".mermaid svg foreignObject", "overflow")).toBe("visible");
   });
 });
+
+it("offsets section anchors below the existing fixed common header and disclaimer", () => {
+  const selector = `body.has-common-header ${scope} .section`;
+  const rule = targetCss.nodes.find((node) => node.type === "rule" && node.selector === selector);
+  expect(rule?.type).toBe("rule");
+  if (rule?.type !== "rule") throw new Error("Missing common header integration");
+  const values: string[] = [];
+  rule.walkDecls("scroll-margin-top", (decl) => {
+    values.push(decl.value);
+  });
+  expect(values).toEqual(["calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px)"]);
+});

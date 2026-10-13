@@ -125,7 +125,7 @@ it("preserves YAML whitespace and colors comments keys strings numbers and inter
   const { container } = render(<Page />);
   const pre = container.querySelector("#step5 pre");
   expect(pre?.textContent).toBe(source.querySelector("#step5 pre")?.textContent);
-  expect(pre?.textContent).toContain("${{ secrets.VERCEL_TOKEN }}");
+  expect(pre?.textContent).toContain(`\${{ secrets.VERCEL_TOKEN }}`);
   for (const token of ["cm", "kw", "st", "nu", "fn"])
     expect(pre?.querySelector(`span.${token}`), token).not.toBeNull();
   expect(pre?.querySelector("code")).toBeNull();
