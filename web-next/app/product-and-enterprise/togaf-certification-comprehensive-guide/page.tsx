@@ -52,6 +52,8 @@ const DIAGRAMS = {
     'flowchart TD\nBOARD["経営委員会・取締役会"]:::top --> IT_GOV["IT投資委員会"]:::mid\nIT_GOV --> ARCH_BOARD["アーキテクチャボード<br/>Architecture Board"]:::key\nARCH_BOARD --> PROJ["プロジェクト・プログラム"]:::low\nsubgraph ROLES["アーキテクチャボードの役割"]\nR1["アーキテクチャ方針の策定・維持"]\nR2["コンプライアンスレビューの実施"]\nR3["例外申請の承認・却下"]\nR4["アーキテクチャ原則の管理"]\nR5["アーキテクチャ成果物の承認"]\nend\nARCH_BOARD --> ROLES\nclassDef top fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8\nclassDef mid fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8\nclassDef key fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef low fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8',
   "diag-16":
     'flowchart LR\nARCH["アーキテクチャチーム"]\nIMPL["実装チーム<br/>(プロジェクト)"]\nCONTRACT["アーキテクチャコントラクト<br/>Architecture Contract"]\nsubgraph CONT["コントラクトの主な内容"]\nC1["アーキテクチャ要件・制約"]\nC2["適合性の基準"]\nC3["成果物の承認基準"]\nC4["変更管理プロセス"]\nC5["ガバナンス要件"]\nend\nARCH -->|"発行"| CONTRACT\nCONTRACT -->|"適用"| IMPL\nIMPL --> CONT',
+  "diag-17":
+    'flowchart TD\nQ["問題文を読む"] --> S["シナリオの状況を把握<br/>何の組織か？<br/>何の問題か？<br/>現在のフェーズはどこか？"]\nS --> R["TOGAFのどの概念が<br/>適用されるか特定する"]\nR --> C["各選択肢を評価<br/>TOGAFのBPに合致するか？<br/>ADMの順序を守っているか？<br/>ガバナンスを尊重しているか？"]\nC --> A["最適な選択肢を選ぶ<br/>(公式ドキュメントで確認)"]\nsubgraph TRAP["陥りやすい罠"]\nT1["直感に頼りすぎる"]\nT2["ADM フェーズの順序を無視"]\nT3["ステークホルダー関与を軽視"]\nT4["ガバナンスをスキップする答えを選ぶ"]\nend\nA -.->|"要注意"| TRAP',
 } as const;
 
 export default function Page() {
@@ -1338,6 +1340,549 @@ export default function Page() {
               />
               {" TOGAF 9.2 — Architecture Governance（公式）\n        "}
             </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "strategy",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Exam Strategy"}</div>
+          <h1 className="page-title">{"合格戦略とベストプラクティス"}</h1>
+          <p className="page-subtitle">
+            {"Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。"}
+          </p>
+          <h2>{"Level 1 出題傾向（目安）"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"テーマ"}</th>
+                  <th>{"比率目安"}</th>
+                  <th>{"重点ポイント"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"ADM の各フェーズ理解"}</td>
+                  <td>
+                    <strong>{"35%"}</strong>
+                  </td>
+                  <td>{"フェーズの目的・順序・入出力"}</td>
+                </tr>
+                <tr>
+                  <td>{"アーキテクチャドメイン BDAT"}</td>
+                  <td>
+                    <strong>{"20%"}</strong>
+                  </td>
+                  <td>{"各ドメインの定義と依存関係"}</td>
+                </tr>
+                <tr>
+                  <td>{"TOGAF の基本概念・用語"}</td>
+                  <td>
+                    <strong>{"20%"}</strong>
+                  </td>
+                  <td>{"ABB/SBB、原則の4構成要素"}</td>
+                </tr>
+                <tr>
+                  <td>{"アーキテクチャリポジトリ"}</td>
+                  <td>
+                    <strong>{"10%"}</strong>
+                  </td>
+                  <td>{"6つの構成要素・3層ランドスケープ"}</td>
+                </tr>
+                <tr>
+                  <td>{"ガバナンス・コンプライアンス"}</td>
+                  <td>
+                    <strong>{"10%"}</strong>
+                  </td>
+                  <td>{"コンプライアンス4種・ボードの役割"}</td>
+                </tr>
+                <tr>
+                  <td>{"ステークホルダーマネジメント"}</td>
+                  <td>
+                    <strong>{"5%"}</strong>
+                  </td>
+                  <td>{"Concerns・ビュー・ビューポイント"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h2>{"Level 2 問題の解き方フレームワーク"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-17" chart={DIAGRAMS["diag-17"]} preserveNaturalScale={true} />
+          </div>
+          <h2>{"合格のための 10 箇条"}</h2>
+          <div className="bp-list">
+            <div className="bp-item">
+              <div className="bp-num">{"01"}</div>
+              <div className="bp-text">
+                <strong>{"ADM のフローを完全暗記する"}</strong>
+                <span>
+                  {
+                    "準備フェーズ → A → B → C → D → E → F → G → H → A（反復）。この順序と各フェーズの目的を体で覚えること。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"02"}</div>
+              <div className="bp-text">
+                <strong>{"各フェーズの入出力を理解する"}</strong>
+                <span>
+                  {
+                    "どのフェーズで何を作成し、何を次のフェーズに渡すか。SoAW・アーキテクチャビジョン・ギャップ分析・ロードマップなどの成果物の流れを把握する。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"03"}</div>
+              <div className="bp-text">
+                <strong>{"BDAT の依存関係を体系的に理解する"}</strong>
+                <span>
+                  {
+                    "B → D/A → T の依存方向を常に意識する。ビジネス要件が未確定な状態でテクノロジーを決定することは TOGAF の原則違反。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"04"}</div>
+              <div className="bp-text">
+                <strong>{"ギャップ分析の手法をマスターする"}</strong>
+                <span>
+                  {
+                    "AS-IS と TO-BE の差分特定は最頻出テーマ。「廃止・新規・維持・改善」の 4 分類を即座に判断できるようにする。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"05"}</div>
+              <div className="bp-text">
+                <strong>{"ABB と SBB の違いを完全理解する"}</strong>
+                <span>
+                  {
+                    "「抽象（ABB）vs 具体（SBB）」「設計フェーズ vs 実装フェーズ」という対比を試験問題のコンテキストで即座に判別できるようにする。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"06"}</div>
+              <div className="bp-text">
+                <strong>{"ガバナンスプロセスを重視する"}</strong>
+                <span>
+                  {
+                    "TOGAF は必ずガバナンス（Architecture Board 経由）を通すことを前提とする。「直接実装する」「ガバナンスをスキップする」選択肢は基本的に不正解。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"07"}</div>
+              <div className="bp-text">
+                <strong>{"Level 2 の公式ドキュメントを事前整理する"}</strong>
+                <span>
+                  {
+                    "タブインデックスを貼り、ADM フェーズ・コンプライアンス定義・ガバナンス構造を素早く参照できるようにする。持込可でも検索時間は 1〜2 分が限界。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"08"}</div>
+              <div className="bp-text">
+                <strong>{"模擬試験を最低 200 問解く"}</strong>
+                <span>
+                  {
+                    "問題のパターンと罠を把握するためには実践量が不可欠。Whizlabs・ExamTopics 等の模擬試験で間違えた問題を徹底的に復習する。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"09"}</div>
+              <div className="bp-text">
+                <strong>{"ステークホルダー視点で考える"}</strong>
+                <span>
+                  {
+                    "誰の Concerns（関心事）に答えているかを常に考える。「このビューは誰のためのものか」という問いが解答の手がかりになる。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"10"}</div>
+              <div className="bp-text">
+                <strong>{"TOGAF の「考え方」を内在化する"}</strong>
+                <span>
+                  {
+                    "暗記でなく、「なぜそうするのか」の論理を理解する。TOGAF は「体系的・反復的・ガバナンス重視」という思想を一貫して持っている。"
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "roadmap",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Study Plan"}</div>
+          <h1 className="page-title">{"7 週間学習ロードマップ"}</h1>
+          <p className="page-subtitle">
+            {"効率的に合格を目指すための週次学習目標とリソース優先順位を示します。"}
+          </p>
+          <h2>{"週次学習計画"}</h2>
+          <div className="week-grid">
+            <div className="week-item">
+              <div className="week-num">{"Week 1"}</div>
+              <div>
+                <div className="week-title">{"TOGAF 概要・BDAT ドメイン"}</div>
+                <div className="week-detail">
+                  {
+                    "TOGAF とは何か・歴史・普及背景。4 つのアーキテクチャドメイン（B/D/A/T）の定義と依存関係を理解する。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-teal">{"基礎"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 2"}</div>
+              <div>
+                <div className="week-title">{"ADM 前半（準備〜フェーズ D）"}</div>
+                <div className="week-detail">
+                  {
+                    "準備フェーズ・A・B・C・D の目的、入出力、主要成果物を各フェーズのベストプラクティスとともに習得する。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-teal">{"ADM"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 3"}</div>
+              <div>
+                <div className="week-title">{"ADM 後半（フェーズ E〜H・要求管理）"}</div>
+                <div className="week-detail">
+                  {
+                    "実装計画・ガバナンス・変更管理の各フェーズ。要求管理が全フェーズを横断する理由を理解する。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-teal">{"ADM"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 4"}</div>
+              <div>
+                <div className="week-title">{"成果物・リポジトリ・原則"}</div>
+                <div className="week-detail">
+                  {
+                    "ABB/SBB の違い、アーキテクチャリポジトリの 6 構成要素と 3 層ランドスケープ、アーキテクチャ原則の 4 要素を習得する。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-amber">{"中級"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 5"}</div>
+              <div>
+                <div className="week-title">{"ガバナンス・ステークホルダー"}</div>
+                <div className="week-detail">
+                  {
+                    "Architecture Board の役割、コンプライアンス 4 種（Conformant/Partially/Non/Irrelevant）、アーキテクチャコントラクト、ステークホルダー管理マトリクスを習得する。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-amber">{"中級"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 6"}</div>
+              <div>
+                <div className="week-title">{"模擬試験① + 弱点分析"}</div>
+                <div className="week-detail">
+                  {
+                    "100 問以上の模擬試験を実施。間違えた問題の根拠を必ず確認し、弱点分野の再学習を行う。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-coral">{"実践"}</span>
+              </div>
+            </div>
+            <div className="week-item">
+              <div className="week-num">{"Week 7"}</div>
+              <div>
+                <div className="week-title">{"模擬試験② + 直前対策"}</div>
+                <div className="week-detail">
+                  {
+                    "150 問以上の模擬試験。キーワード・用語の最終確認。Level 2 受験者はドキュメントのタブ整理を完成させる。"
+                  }
+                </div>
+              </div>
+              <div className="week-tag">
+                <span className="tag tag-coral">{"仕上げ"}</span>
+              </div>
+            </div>
+          </div>
+          <h2>{"学習リソース優先順位"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"優先度"}</th>
+                  <th>{"リソース"}</th>
+                  <th>{"用途"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-danger)" }}>{"Must"}</strong>
+                  </td>
+                  <td>{"TOGAF Standard Version 10（公式）"}</td>
+                  <td>{"Level 2 持込用・根拠確認"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-danger)" }}>{"Must"}</strong>
+                  </td>
+                  <td>{"公式サンプル試験問題（The Open Group）"}</td>
+                  <td>{"問題形式・難易度の把握"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-danger)" }}>{"Must"}</strong>
+                  </td>
+                  <td>{"認定トレーニングプログラム（ATC）"}</td>
+                  <td>{"体系的な知識習得"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-warning)" }}>{"Should"}</strong>
+                  </td>
+                  <td>{"Whizlabs / ExamTopics 模擬試験"}</td>
+                  <td>{"問題パターンと弱点把握"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-warning)" }}>{"Should"}</strong>
+                  </td>
+                  <td>{"Udemy / Coursera 動画コース"}</td>
+                  <td>{"視覚的な理解補助"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style={{ color: "var(--color-text-success)" }}>{"Nice"}</strong>
+                  </td>
+                  <td>{"TOGAF Wiki・コミュニティ"}</td>
+                  <td>{"実践者の経験談・補足情報"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "references",
+      content: (
+        <>
+          <div className="section-eyebrow">{"References"}</div>
+          <h1 className="page-title">{"参考文献・公式 URL"}</h1>
+          <p className="page-subtitle">
+            {"本ガイドで参照した公式ソースと学習リソースの一覧です。"}
+          </p>
+          <h2>{"TOGAF 公式"}</h2>
+          <div className="source-list">
+            <Ext className="source-item" href="https://www.opengroup.org/togaf">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 公式サイト（The Open Group）\n        "}
+            </Ext>
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 公式ドキュメント（ADM全フェーズ）\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://www.opengroup.org/certifications/togaf">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 認定資格プログラム（試験詳細・サンプル問題）\n        "}
+            </Ext>
+            <Ext
+              className="source-item"
+              href="https://www.opengroup.org/certifications/professional-register"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 認定者検索（Professional Register）\n        "}
+            </Ext>
+          </div>
+          <h2>{"EA フレームワーク関連"}</h2>
+          <div className="source-list">
+            <Ext className="source-item" href="https://www.opengroup.org/architecture">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" The Open Group Architecture Forum\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://www.zachman.com/about-the-zachman-framework">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" Zachman Framework 公式\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://cio.gov/">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" FEAF（米国連邦政府 EA）\n        "}
+            </Ext>
+          </div>
+          <h2>{"試験申込・受験"}</h2>
+          <div className="source-list">
+            <Ext className="source-item" href="https://home.pearsonvue.com/opengroup">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" Pearson VUE — 試験申込ポータル\n        "}
+            </Ext>
+            <Ext
+              className="source-item"
+              href="https://home.pearsonvue.com/Test-takers/Find-a-test-center.aspx"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" 試験センター検索（日本）\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://home.pearsonvue.com/opengroup/onvue">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" オンライン受験（OnVUE）\n        "}
+            </Ext>
+          </div>
+          <h2>{"学習プラットフォーム"}</h2>
+          <div className="source-list">
+            <Ext className="source-item" href="https://www.udemy.com/topic/togaf/">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" Udemy — TOGAF 試験対策コース\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://www.coursera.org/">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" Coursera — Enterprise Architecture\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://www.linkedin.com/learning/topics/togaf">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" LinkedIn Learning — TOGAF\n        "}
+            </Ext>
+            <Ext className="source-item" href="https://www.whizlabs.com/togaf/">
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" Whizlabs — TOGAF 模擬試験\n        "}
+            </Ext>
+          </div>
+          <h2>{"推薦書籍"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"タイトル"}</th>
+                  <th>{"著者"}</th>
+                  <th>{"用途"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"TOGAF Standard, Version 10"}</strong>
+                  </td>
+                  <td>{"The Open Group"}</td>
+                  <td>{"最新公式テキスト（Level 2 持込）"}</td>
+                </tr>
+                <tr>
+                  <td>{"TOGAF Version 9.1 Pocket Guide"}</td>
+                  <td>{"Andrew Josey"}</td>
+                  <td>{"試験直前の要点整理"}</td>
+                </tr>
+                <tr>
+                  <td>{"Enterprise Architecture As Strategy"}</td>
+                  <td>{"Ross, Weill, Robertson"}</td>
+                  <td>{"EA の戦略的価値を理解する背景学習"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="callout warning">
+            <IconAlertTriangle
+              size={18}
+              className="mvp-icon icon-alert-triangle"
+              aria-hidden="true"
+            />
+            <div>
+              <strong>{"免責事項："}</strong>
+              {
+                "TOGAF® は The Open Group の登録商標です。本ドキュメントは The Open Group の公式資料ではありません。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（opengroup.org/togaf）でご確認ください。"
+              }
+            </div>
           </div>
         </>
       ),
