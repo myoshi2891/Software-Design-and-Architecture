@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import Navigation from "./Navigation";
+import LearningRoadmap from "./LearningRoadmap";
 import { NAV_GROUPS } from "./navigation-data";
 
 export const metadata: Metadata = {
@@ -1410,7 +1411,7 @@ export default function Page() {
             <p>{"本ガイドで学んだ内容の全体像と、次に進むべき学習パスを俯瞰しましょう。"}</p>
             <div className="mermaid-wrap">
               <div className="mermaid" data-diagram="learning_path">
-                <MermaidDiagram chart={DIAGRAMS.learning_path} preserveNaturalScale={true} />
+                <LearningRoadmap chart={DIAGRAMS.learning_path} />
               </div>
               <div className="mermaid-label">
                 {"図3.1 — CSS設計・デザインシステムの学習ロードマップ"}
