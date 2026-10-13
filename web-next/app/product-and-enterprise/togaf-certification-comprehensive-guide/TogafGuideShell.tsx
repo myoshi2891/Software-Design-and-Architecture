@@ -52,33 +52,45 @@ export default function TogafGuideShell({
           <div className="badge">TOGAF v10</div>
           <h1>完全解説ガイド</h1>
         </div>
-        {groups.map((group) => (
-          <div className="nav-section" key={group.label}>
-            <div className="nav-label">{group.label}</div>
-            {group.items.map((item) => {
-              const Icon = ICONS[item.icon];
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`nav-item${activeId === item.id ? " active" : ""}`}
-                  aria-pressed={activeId === item.id}
-                  onClick={() => {
-                    setActiveId(item.id);
-                    window.scrollTo({ top: 0 });
-                  }}
-                >
-                  <Icon size={15} className={`mvp-icon icon-${item.icon}`} aria-hidden="true" />
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
-        ))}
+        <div role="tablist" aria-label="章" aria-orientation="vertical">
+          {groups.map((group) => (
+            <div className="nav-section" key={group.label}>
+              <div className="nav-label">{group.label}</div>
+              {group.items.map((item) => {
+                const Icon = ICONS[item.icon];
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    id={`tab-${item.id}`}
+                    role="tab"
+                    className={`nav-item${activeId === item.id ? " active" : ""}`}
+                    aria-selected={activeId === item.id}
+                    aria-controls={item.id}
+                    tabIndex={activeId === item.id ? 0 : -1}
+                    onClick={() => {
+                      setActiveId(item.id);
+                      window.scrollTo({ top: 0 });
+                    }}
+                  >
+                    <Icon size={15} className={`mvp-icon icon-${item.icon}`} aria-hidden="true" />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </nav>
       <main className="main">
         {panel && (
-          <div key={panel.id} className="section active" id={panel.id}>
+          <div
+            key={panel.id}
+            className="section active"
+            id={panel.id}
+            role="tabpanel"
+            aria-labelledby={`tab-${panel.id}`}
+          >
             {panel.content}
           </div>
         )}

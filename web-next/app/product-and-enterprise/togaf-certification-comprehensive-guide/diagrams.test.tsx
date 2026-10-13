@@ -22,7 +22,7 @@ it("renders only selected diagrams, keeps each chart separate and survives rapid
   expect(container.querySelectorAll(".mermaid")).toHaveLength(0);
   expect(renderDiagram).not.toHaveBeenCalled();
 
-  fireEvent.click(getByRole("button", { name: "試験概要" }));
+  fireEvent.click(getByRole("tab", { name: "試験概要" }));
   await waitFor(() => expect(container.querySelectorAll(".mermaid svg")).toHaveLength(2));
   const first = container.querySelector("#diag-1") as Element;
   const second = container.querySelector("#diag-2") as Element;
@@ -38,11 +38,11 @@ it("renders only selected diagrams, keeps each chart separate and survives rapid
     expect(svg.getAttribute("viewBox")).toBe("0 0 480 215");
   }
 
-  fireEvent.click(getByRole("button", { name: "ADM サイクル" }));
-  fireEvent.click(getByRole("button", { name: "各フェーズ詳解" }));
-  fireEvent.click(getByRole("button", { name: "TOGAFとは" }));
+  fireEvent.click(getByRole("tab", { name: "ADM サイクル" }));
+  fireEvent.click(getByRole("tab", { name: "各フェーズ詳解" }));
+  fireEvent.click(getByRole("tab", { name: "TOGAFとは" }));
   expect(container.querySelectorAll(".mermaid")).toHaveLength(0);
-  fireEvent.click(getByRole("button", { name: "試験概要" }));
+  fireEvent.click(getByRole("tab", { name: "試験概要" }));
   await waitFor(() => expect(container.querySelectorAll(".mermaid svg")).toHaveLength(2));
   expect(container.querySelector("#diag-1")?.textContent).toContain("TOGAF 認定資格体系");
   expect(container.querySelector("#diag-2")?.textContent).toContain("シナリオ問題");

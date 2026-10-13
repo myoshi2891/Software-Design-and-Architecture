@@ -73,7 +73,7 @@ function selectChapter(id: string) {
   );
   if (!original) throw new Error(`Missing source navigation: ${id}`);
   fireEvent.click(
-    result.getByRole("button", { name: (original.textContent ?? "").trim().replace(/\s+/g, " ") })
+    result.getByRole("tab", { name: (original.textContent ?? "").trim().replace(/\s+/g, " ") })
   );
   return result;
 }
@@ -225,7 +225,7 @@ it("preserves the complete inventory across all twelve selectable chapters", () 
   const diagramIds: string[] = [];
   for (const button of source.querySelectorAll("button.nav-item")) {
     const label = (button.textContent ?? "").trim().replace(/\s+/g, " ");
-    fireEvent.click(getByRole("button", { name: label }));
+    fireEvent.click(getByRole("tab", { name: label }));
     const selected = container.querySelector("main .section") as Element;
     expect(selected).not.toBeNull();
     expect(selected.id).toBe(button.getAttribute("onclick")?.match(/show\('([^']+)'/)?.[1]);
