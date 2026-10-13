@@ -1,6 +1,9 @@
 import {
+  IconAlertTriangle,
   IconArrowsShuffle,
+  IconAward,
   IconBan,
+  IconBooks,
   IconBrandGoogle,
   IconBuildingArch,
   IconBulb,
@@ -69,6 +72,12 @@ const DIAGRAMS = {
     'flowchart LR\nD["1️⃣ 測定する指標を<br/>事前に決める<br/>KPIを数値で定義<br/>「良い状態」の閾値を設定"]\nI["2️⃣ 計測コードを<br/>組み込む<br/>イベントトラッキング<br/>ファネル分析の設計"]\nB["3️⃣ ダッシュボードを<br/>作成する<br/>毎日見る習慣をつける<br/>自動レポートを設定"]\nR["4️⃣ 定期レビュー<br/>週次で指標を確認<br/>異常値をすぐに検知"]\n\nD --> I --> B --> R\n\nstyle D fill:#2563eb,color:#fff,stroke:none\nstyle I fill:#16a34a,color:#fff,stroke:none\nstyle B fill:#d97706,color:#fff,stroke:none\nstyle R fill:#7c3aed,color:#fff,stroke:none',
   "step7-1":
     'flowchart TD\nR["📊 定期レビュー(週次/月次)<br/>指標データを確認する"]\nC1{"北極星指標は<br/>目標値を達成しているか？"}\nC2{"ユーザーが<br/>本当の問題を解決できているか？"}\nC3{"ビジネスとして<br/>持続可能か？"}\nPE["✅ 継続(Persevere)<br/>現在の戦略を続ける<br/>機能を深化させる<br/>拡大に集中する"]\nPV["🔄 ピボット(Pivot)<br/>戦略を変える<br/>前提を見直す<br/>何かを根本的に変える"]\nST["🛑 停止<br/>市場がない・解決策がない<br/>リソースを他に向ける"]\n\nR --> C1\nC1 -->|"Yes"| C2\nC1 -->|"No(でも伸びている)"| PE\nC1 -->|"No(止まっている)"| PV\nC2 -->|"Yes"| C3\nC2 -->|"No"| PV\nC3 -->|"Yes"| PE\nC3 -->|"No"| PV\nPV -->|"方向性が見えない"| ST\n\nstyle PE fill:#16a34a,color:#fff,stroke:none\nstyle PV fill:#d97706,color:#fff,stroke:none\nstyle ST fill:#dc2626,color:#fff,stroke:none',
+  "failures-1":
+    'graph LR\nsubgraph FAIL["失敗パターン"]\nF1["Too Big MVP<br/>「最小限」なのに多機能<br/>→ リリースが遅れ学習も遅れる"]\nF2["Problem-Solution Fit なし<br/>顧客検証なしに作り始める<br/>→ 誰も使わないものができる"]\nF3["間違った指標を追う<br/>バニティメトリクスに集中<br/>→ 本質的な学習ができない"]\nF4["フィードバックを聞かない<br/>批判的意見を無視する<br/>→ 確証バイアスに陥る"]\nF5["技術負債の過剰蓄積<br/>MVPで妥協しすぎる<br/>→ 第2バージョンが作れない"]\nF6["過剰設計<br/>MVPでマイクロサービスを作る<br/>→ 機能より技術に時間をかける"]\nend\n\nsubgraph SOL["対策"]\nS1["機能リストを3回絞り込む<br/>「本当に必要か？」を繰り返す"]\nS2["先にインタビュー20件<br/>コードを書く前に検証する"]\nS3["North Star Metricを1つ決める<br/>Actionable Metricsを使う"]\nS4["毎週ユーザーと話す<br/>批判は宝として扱う"]\nS5["意図的な負債を文書化<br/>期限付きで管理する"]\nS6["モノリスから始める<br/>必要になってから分割する"]\nend\n\nF1 --> S1\nF2 --> S2\nF3 --> S3\nF4 --> S4\nF5 --> S5\nF6 --> S6\n\nstyle F1 fill:#dc2626,color:#fff,stroke:none\nstyle F2 fill:#dc2626,color:#fff,stroke:none\nstyle F3 fill:#dc2626,color:#fff,stroke:none\nstyle F4 fill:#dc2626,color:#fff,stroke:none\nstyle F5 fill:#dc2626,color:#fff,stroke:none\nstyle F6 fill:#dc2626,color:#fff,stroke:none\nstyle S1 fill:#16a34a,color:#fff,stroke:none\nstyle S2 fill:#16a34a,color:#fff,stroke:none\nstyle S3 fill:#16a34a,color:#fff,stroke:none\nstyle S4 fill:#16a34a,color:#fff,stroke:none\nstyle S5 fill:#16a34a,color:#fff,stroke:none\nstyle S6 fill:#16a34a,color:#fff,stroke:none',
+  "scale-1":
+    'graph LR\nsubgraph MVP["🚀 MVPフェーズ"]\nM1["モノリシックアプリ<br/>(単一サーバー)"]\nM2[("PostgreSQL<br/>(単一DB)")]\nM1 --> M2\nend\nsubgraph GROWTH["📈 成長フェーズ"]\nG1["ロードバランサー"]\nG2["App Server 1"]\nG3["App Server 2"]\nG4["Redis<br/>キャッシュ"]\nG5[("DB Primary")]\nG6[("DB Replica")]\nG1 --> G2 & G3\nG2 & G3 --> G4\nG2 & G3 --> G5\nG5 --> G6\nend\nsubgraph SCALE["🏢 スケールフェーズ"]\nS1["CDN"]\nS2["API Gateway"]\nS3["サービスA"]\nS4["サービスB"]\nS5["メッセージキュー"]\nS1 --> S2\nS2 --> S3 & S4\nS3 --> S5 --> S4\nend\n\nMVP -->|"PMF達成後"| GROWTH\nGROWTH -->|"さらなる成長後"| SCALE',
+  "rules-1":
+    'flowchart TD\nCH["MVP 健全性チェック"]\nQ1{"顧客インタビューを<br/>最低20件実施したか？"}\nQ2{"MVP機能を<br/>3回以上削減したか？"}\nQ3{"North Star Metricが<br/>1つ定義されているか？"}\nQ4{"2から3ヶ月以内に<br/>リリースできるか？"}\nQ5{"実ユーザーへの<br/>提供ができているか？"}\nQ6{"毎週データを<br/>確認しているか？"}\nOK["✅ 健全なMVP開発<br/>学習のサイクルが回っている"]\n\nF1["まず問題の検証を<br/>コードを書くのを止める"]\nF2["スコープを削る<br/>Must Haveのみに絞る"]\nF3["指標を決める<br/>何を目標にするか合意する"]\nF4["さらに機能を削る<br/>段階的リリースを計画"]\nF5["実ユーザーに届ける<br/>内部テストを超える"]\nF6["ダッシュボードを設定<br/>自動レポートを作る"]\n\nCH --> Q1\nQ1 -->|"No"| F1\nQ1 -->|"Yes"| Q2\nQ2 -->|"No"| F2\nQ2 -->|"Yes"| Q3\nQ3 -->|"No"| F3\nQ3 -->|"Yes"| Q4\nQ4 -->|"No"| F4\nQ4 -->|"Yes"| Q5\nQ5 -->|"No"| F5\nQ5 -->|"Yes"| Q6\nQ6 -->|"No"| F6\nQ6 -->|"Yes"| OK\n\nstyle OK fill:#16a34a,color:#fff,stroke:none\nstyle F1 fill:#dc2626,color:#fff,stroke:none\nstyle F2 fill:#dc2626,color:#fff,stroke:none\nstyle F3 fill:#dc2626,color:#fff,stroke:none\nstyle F4 fill:#dc2626,color:#fff,stroke:none\nstyle F5 fill:#dc2626,color:#fff,stroke:none\nstyle F6 fill:#dc2626,color:#fff,stroke:none',
 } as const;
 
 export default function Page() {
@@ -1499,6 +1508,611 @@ export default function Page() {
             <p>
               {
                 "ピボットは「失敗」ではありません。間違いに気づいたら素早く方向転換することが、MVPの目的そのものです。多くの成功したスタートアップ（Slack, Instagram, YouTube）はピボットによって生まれました。"
+              }
+            </p>
+          </div>
+        </section>
+        <section className="section" id="failures">
+          <h2>
+            <IconAlertTriangle
+              size={18}
+              className="mvp-icon icon-alert-triangle"
+              aria-hidden="true"
+            />
+            {"11. よくある失敗パターンと対策"}
+          </h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["failures-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"失敗パターン6種と対策：左の失敗を右の対策で防ぐ"}
+            </div>
+          </div>
+          <h3>{"11.2 「スモークテスト」でMVP前に需要を確認する"}</h3>
+          <p>{"実際にコードを書く前に、需要があるかを確認する手法です。"}</p>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"手法"}</th>
+                  <th>{"内容"}</th>
+                  <th>{"有名な事例"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"ランディングページ"}</strong>
+                  </td>
+                  <td>{"機能説明ページ＋メール登録。登録率で需要を測定。"}</td>
+                  <td>{"事前登録100件で開発開始"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"動画デモ"}</strong>
+                  </td>
+                  <td>{"プロダクトなしで動画だけで需要確認。"}</td>
+                  <td>{"Dropboxは動画だけで75,000人がサインアップ"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Concierge MVP"}</strong>
+                  </td>
+                  <td>{"ツールなしで手動でサービスを提供する。"}</td>
+                  <td>{"Airbnbは最初手動で写真撮影"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Wizard of Oz MVP"}</strong>
+                  </td>
+                  <td>{"自動に見えるが裏側は人間が手動で処理する。"}</td>
+                  <td>{"技術的検証より価値検証に集中できる"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"フェイクドア"}</strong>
+                  </td>
+                  <td>{"存在しない機能のボタンを置き、クリック率で関心度を測定。"}</td>
+                  <td>{"倫理的に使用すること（後でフォローアップする）"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="sources">
+            <div className="sources-title">
+              <IconLink size={16} className="mvp-icon icon-link" aria-hidden="true" />
+              {"ソース・参考URL"}
+            </div>
+            <ul>
+              <li>
+                {"Paul Graham — Do Things That Don't Scale: "}
+                <Ext href="https://paulgraham.com/ds.html">{"https://paulgraham.com/ds.html"}</Ext>
+              </li>
+              <li>
+                {"Dropbox MVP動画: "}
+                <Ext href="https://www.youtube.com/watch?v=7QmCUDHpNzE">
+                  {"https://www.youtube.com/watch?v=7QmCUDHpNzE"}
+                </Ext>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <section className="section" id="scale">
+          <h2>
+            <IconTrendingUp size={18} className="mvp-icon icon-trending-up" aria-hidden="true" />
+            {"12. MVPから本番プロダクトへの移行"}
+          </h2>
+          <h3>{"12.1 PMF（Product-Market Fit）の確認指標"}</h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"指標"}</th>
+                  <th>{"PMF達成の目安"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"Sean Ellisテスト"}</strong>
+                  </td>
+                  <td>
+                    {"「このプロダクトが使えなくなったら？」→「非常に残念」が"}
+                    <strong style={{ color: "var(--c-teal-200)" }}>{"40%以上"}</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Net Promoter Score（NPS）"}</strong>
+                  </td>
+                  <td>
+                    <strong style={{ color: "var(--c-teal-200)" }}>{"NPS 50以上"}</strong>
+                    {"が目安。顧客が積極的に勧めている状態。"}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"有機的な成長"}</strong>
+                  </td>
+                  <td>{"広告なしで口コミだけでユーザーが増えている。"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"月次チャーン率"}</strong>
+                  </td>
+                  <td>
+                    <strong style={{ color: "var(--c-teal-200)" }}>{"月次1〜3%以下"}</strong>
+                    {"。ユーザーが離れていかない状態。"}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"顧客からの要求"}</strong>
+                  </td>
+                  <td>{"「もっと使いたい」「早く次の機能を」という声が来る。"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>{"12.2 アーキテクチャの段階的移行"}</h3>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["scale-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"アーキテクチャの段階的移行：PMF達成後に必要に応じてスケールさせる"}
+            </div>
+          </div>
+          <div className="sources">
+            <div className="sources-title">
+              <IconLink size={16} className="mvp-icon icon-link" aria-hidden="true" />
+              {"ソース・参考URL"}
+            </div>
+            <ul>
+              <li>
+                {"a16z — Product-Market Fit: "}
+                <Ext href="https://a16z.com/12-things-about-product-market-fit/">
+                  {"https://a16z.com/12-things-about-product-market-fit/"}
+                </Ext>
+              </li>
+              <li>
+                {"Martin Fowler — Strangler Fig Application: "}
+                <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">
+                  {"https://martinfowler.com/bliki/StranglerFigApplication.html"}
+                </Ext>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <section className="section" id="rules">
+          <h2>
+            <IconAward size={18} className="mvp-icon icon-award" aria-hidden="true" />
+            {"13. MVP開発の黄金律 10箇条"}
+          </h2>
+          <div className="rule-list">
+            <div className="rule-item">
+              <div className="rule-num">{"1"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"コードを書く前に検証する"}</div>
+                <div className="rule-desc">
+                  {
+                    "仮説を立てて→インタビューで確認。問題を確認してからソリューションを作る。コードより対話を先に。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"2"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"機能は3回絞り込む"}</div>
+                <div className="rule-desc">
+                  {
+                    "リストを作る→半分にする→さらに半分。本当に必要なものだけが残る。削ることで開発速度が上がる。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"3"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"完璧より速さを優先する"}</div>
+                <div className="rule-desc">
+                  {
+                    "完成度80%でリリース。残り20%はユーザーが教えてくれる。完璧を目指すとリリースできない。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"4"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"実ユーザーに早く届ける"}</div>
+                <div className="rule-desc">
+                  {"内部デモは学習にならない。本物のユーザーの反応だけが真実を語る。"}
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"5"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"測定できるものだけを作る"}</div>
+                <div className="rule-desc">
+                  {"何を測るかを先に決める。測れない機能は後回し。データのない改善は勘に過ぎない。"}
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"6"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"外部サービスを最大活用する"}</div>
+                <div className="rule-desc">
+                  {"認証・決済・メールは自分で作らない。差別化ポイントになるコア部分だけを作る。"}
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"7"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"モノリスから始める"}</div>
+                <div className="rule-desc">
+                  {
+                    "必要になってから分割する。過剰設計はMVPの最大の敵。シンプルな構成が学習を速める。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"8"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"毎週ユーザーと話す"}</div>
+                <div className="rule-desc">
+                  {
+                    "定性フィードバックは定量と同じく重要。顧客の言葉がプロダクトを正しい方向に導く。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"9"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"ピボットを恐れない"}</div>
+                <div className="rule-desc">
+                  {
+                    "間違いに気づいたら素早く方向転換。失敗から学ぶのがMVPの目的。ピボットは敗北ではなく進化。"
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="rule-item">
+              <div className="rule-num">{"10"}</div>
+              <div className="rule-content">
+                <div className="rule-title">{"学習を記録する"}</div>
+                <div className="rule-desc">
+                  {
+                    "何を仮説として・何を学んだかをドキュメントに残す。チームの集合知として蓄積する。"
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <h3>{"MVP健全性チェックリスト"}</h3>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["rules-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"MVP健全性チェック：6つのYes/Noで自分のMVP開発の状態を診断する"}
+            </div>
+          </div>
+        </section>
+        <section className="section" id="refs">
+          <h2>
+            <IconBooks size={18} className="mvp-icon icon-books" aria-hidden="true" />
+            {"14. 参考文献・ソース一覧"}
+          </h2>
+          <h3>{"必読書籍"}</h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"タイトル"}</th>
+                  <th>{"著者"}</th>
+                  <th>{"内容"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"The Lean Startup"}</strong>
+                  </td>
+                  <td>{"Eric Ries"}</td>
+                  <td>{"MVP・Build-Measure-Learnの原典"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Running Lean"}</strong>
+                  </td>
+                  <td>{"Ash Maurya"}</td>
+                  <td>{"リーンキャンバスとCustomer Developmentの実践書"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"The Mom Test"}</strong>
+                  </td>
+                  <td>{"Rob Fitzpatrick"}</td>
+                  <td>{"顧客インタビューの方法論"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Inspired"}</strong>
+                  </td>
+                  <td>{"Marty Cagan"}</td>
+                  <td>{"プロダクトマネジメントの実践"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Zero to One"}</strong>
+                  </td>
+                  <td>{"Peter Thiel"}</td>
+                  <td>{"スタートアップ戦略と独自性の構築"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Continuous Discovery Habits"}</strong>
+                  </td>
+                  <td>{"Teresa Torres"}</td>
+                  <td>{"継続的な顧客発見の方法論"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>{"公式ドキュメント・参考URL（カテゴリ別）"}</h3>
+          <h4>{"MVP・リーンスタートアップの基礎概念"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"リソース"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"Eric Ries 公式サイト（Lean Startup）"}</td>
+                  <td>
+                    <Ext href="https://theleanstartup.com/">{"https://theleanstartup.com/"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Lean Startup Wikipedia"}</td>
+                  <td>
+                    <Ext href="https://en.wikipedia.org/wiki/Lean_startup">
+                      {"https://en.wikipedia.org/wiki/Lean_startup"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Lean Canvas（Ash Maurya）"}</td>
+                  <td>
+                    <Ext href="https://leanstack.com/lean-canvas">
+                      {"https://leanstack.com/lean-canvas"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Y Combinator — How to Validate Your Startup Idea"}</td>
+                  <td>
+                    <Ext href="https://www.youtube.com/watch?v=Do3mS7p6G3A">
+                      {"https://www.youtube.com/watch?v=Do3mS7p6G3A"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Paul Graham — Do Things That Don't Scale"}</td>
+                  <td>
+                    <Ext href="https://paulgraham.com/ds.html">
+                      {"https://paulgraham.com/ds.html"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"a16z — Product-Market Fit"}</td>
+                  <td>
+                    <Ext href="https://a16z.com/12-things-about-product-market-fit/">
+                      {"https://a16z.com/12-things-about-product-market-fit/"}
+                    </Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>{"顧客開発・インタビュー"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"リソース"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"The Mom Test（公式サイト）"}</td>
+                  <td>
+                    <Ext href="https://www.momtestbook.com/">{"https://www.momtestbook.com/"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Steve Blank — Customer Development"}</td>
+                  <td>
+                    <Ext href="https://steveblank.com/category/customer-development/">
+                      {"https://steveblank.com/category/customer-development/"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Superhuman — How to Find PMF"}</td>
+                  <td>
+                    <Ext href="https://review.firstround.com/how-superhuman-built-an-engine-to-find-product-market-fit/">
+                      {"First Round Review"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Sean Ellis — PMF Survey"}</td>
+                  <td>
+                    <Ext href="https://pmfsurvey.com/">{"https://pmfsurvey.com/"}</Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>{"技術的アーキテクチャ"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"リソース"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"Martin Fowler — Monolith First"}</td>
+                  <td>
+                    <Ext href="https://martinfowler.com/bliki/MonolithFirst.html">
+                      {"https://martinfowler.com/bliki/MonolithFirst.html"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Martin Fowler — Strangler Fig Application"}</td>
+                  <td>
+                    <Ext href="https://martinfowler.com/bliki/StranglerFigApplication.html">
+                      {"https://martinfowler.com/bliki/StranglerFigApplication.html"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Twelve-Factor App（SaaS設計原則）"}</td>
+                  <td>
+                    <Ext href="https://12factor.net/ja/">{"https://12factor.net/ja/"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Martin Fowler — Sacrificial Architecture"}</td>
+                  <td>
+                    <Ext href="https://martinfowler.com/bliki/SacrificialArchitecture.html">
+                      {"https://martinfowler.com/bliki/SacrificialArchitecture.html"}
+                    </Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>{"プロダクト指標・アナリティクス"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"リソース"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"Amplitude — North Star Playbook"}</td>
+                  <td>
+                    <Ext href="https://amplitude.com/books/north-star">
+                      {"https://amplitude.com/books/north-star"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"PostHog（オープンソースプロダクト分析）"}</td>
+                  <td>
+                    <Ext href="https://posthog.com/">{"https://posthog.com/"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Mixpanel — Product Analytics Guide"}</td>
+                  <td>
+                    <Ext href="https://mixpanel.com/resources/">
+                      {"https://mixpanel.com/resources/"}
+                    </Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>{"セキュリティ"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"リソース"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"OWASP Top 10（Webセキュリティ）"}</td>
+                  <td>
+                    <Ext href="https://owasp.org/Top10/">{"https://owasp.org/Top10/"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Clerk（認証サービス）"}</td>
+                  <td>
+                    <Ext href="https://clerk.com/docs">{"https://clerk.com/docs"}</Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Stripe（決済SDK公式）"}</td>
+                  <td>
+                    <Ext href="https://stripe.com/docs">{"https://stripe.com/docs"}</Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>{"著名なMVP成功事例"}</h4>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"事例"}</th>
+                  <th>{"URL"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"Dropbox MVP（動画デモで需要検証）"}</td>
+                  <td>
+                    <Ext href="https://www.youtube.com/watch?v=7QmCUDHpNzE">
+                      {"https://www.youtube.com/watch?v=7QmCUDHpNzE"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Airbnb の初期戦略（Paul Graham）"}</td>
+                  <td>
+                    <Ext href="https://paulgraham.com/growth.html">
+                      {"https://paulgraham.com/growth.html"}
+                    </Ext>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{"Twitter の誕生（ピボット事例）"}</td>
+                  <td>
+                    <Ext href="https://en.wikipedia.org/wiki/History_of_Twitter">
+                      {"Wikipedia: History of Twitter"}
+                    </Ext>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="callout info" style={{ marginTop: "40px" }}>
+            <div className="callout-label">{"注記"}</div>
+            <p>
+              {
+                "本ドキュメントは2025年時点の情報を基に作成しています。技術情報は変更される場合があるため、実装前に必ず公式ドキュメントをご確認ください。"
               }
             </p>
           </div>
