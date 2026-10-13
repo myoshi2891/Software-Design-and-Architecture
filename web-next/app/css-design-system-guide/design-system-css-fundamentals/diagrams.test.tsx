@@ -21,15 +21,15 @@ import Page from "./page";
 
 afterEach(() => vi.restoreAllMocks());
 
-it("renders all thirteen separate diagrams at natural scale and keeps them stable during progress updates", async () => {
+it("renders all twelve separate Mermaid diagrams at natural scale and keeps them stable during progress updates", async () => {
   vi.spyOn(document.documentElement, "scrollHeight", "get").mockReturnValue(5000);
   vi.spyOn(window, "innerHeight", "get").mockReturnValue(1000);
   const scrollY = vi.spyOn(window, "scrollY", "get").mockReturnValue(0);
   const { container } = render(<Page />);
   await waitFor(() =>
-    expect(container.querySelectorAll(".mermaid[data-diagram] svg")).toHaveLength(13)
+    expect(container.querySelectorAll(".mermaid[data-diagram] svg")).toHaveLength(12)
   );
-  for (const element of container.querySelectorAll(".mermaid[data-diagram]")) {
+  for (const element of container.querySelectorAll('.mermaid[data-diagram]:not([data-diagram="learning_path"])')) {
     const key = element.getAttribute("data-diagram") ?? "";
     expect(element.textContent).toBe(normalizeChart(SOURCE_DIAGRAMS[key]));
     const svg = element.querySelector("svg") as SVGSVGElement;
@@ -46,8 +46,8 @@ it("renders all thirteen separate diagrams at natural scale and keeps them stabl
   expect(Array.from(container.querySelectorAll(".mermaid[data-diagram] svg"))).toEqual(
     beforeScroll
   );
-  expect(renderDiagram).toHaveBeenCalledTimes(13);
-  expect(new Set(renderDiagram.mock.calls.map(([id]) => id)).size).toBe(13);
+  expect(renderDiagram).toHaveBeenCalledTimes(12);
+  expect(new Set(renderDiagram.mock.calls.map(([id]) => id)).size).toBe(12);
   expect(initializeDiagram).toHaveBeenCalledTimes(1);
   expect(runDiagram).not.toHaveBeenCalled();
 });

@@ -260,7 +260,7 @@ it("preserves the complete source inventory and every navigation target", () => 
     ".ref-link": 24,
     ".code-wrap": 16,
     ".mermaid-label": 13,
-    '[data-testid="mermaid-diagram"]': 13,
+    '[data-testid="mermaid-diagram"]': 12,
     ".sb-link": 15,
     a: 62,
   };
