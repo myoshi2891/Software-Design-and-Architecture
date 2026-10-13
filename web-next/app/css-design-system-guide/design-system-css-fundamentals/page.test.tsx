@@ -78,3 +78,34 @@ describe("CSS fundamentals design system concepts", () => {
     });
   }
 });
+
+describe("CSS fundamentals adoption and best practices", () => {
+  for (const id of ["s1-4", "s1-5", "s1-6"]) {
+    it(`preserves every text code table style and diagram in ${id}`, () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+      for (const pre of actual?.querySelectorAll("pre") ?? []) {
+        expect(pre.querySelector("code")).toBeNull();
+        expect(
+          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
+        ).toBeGreaterThan(0);
+        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
+      }
+    });
+    it(`parses all real Mermaid diagrams in ${id}`, async () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = element.getAttribute("data-chart") ?? "";
+        if (!chart.startsWith("mindmap"))
+          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
