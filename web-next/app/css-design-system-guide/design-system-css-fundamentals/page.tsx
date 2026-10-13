@@ -35,6 +35,8 @@ const DIAGRAMS = {
     'flowchart LR\nQ{"レイアウトの次元"} -->|"1方向のみ<br/>行 OR 列"| F["Flexbox<br/>display: flex"]\nQ -->|"行と列の両方<br/>2次元"| G["CSS Grid<br/>display: grid"]\nF --> F1["ナビゲーションバー"]\nF --> F2["カードのアイテム整列"]\nF --> F3["フォーム入力グループ"]\nG --> G1["ページ全体の骨格"]\nG --> G2["ダッシュボード"]\nG --> G3["レスポンシブカードグリッド"]\nstyle Q fill:#6C47FF,color:#fff,stroke:none\nstyle F fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle G fill:#1a3328,color:#86efac,stroke:#22c55e',
   responsive_design:
     'flowchart LR\nM["📱 モバイル<br/>320pxから767px<br/>1カラム・シンプル"] -->|"min-width: 768px"| T["💻 タブレット<br/>768pxから1023px<br/>2カラム対応"]\nT -->|"min-width: 1024px"| D["🖥️ デスクトップ<br/>1024pxから<br/>3から4カラム"]\nM -->|"デフォルトスタイル"| BASE["モバイルファースト<br/>まずモバイル向けを書く<br/>@media min-width で上書き"]\nstyle M fill:#3a1a0d,color:#fb923c,stroke:#ea580c\nstyle T fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle D fill:#1a3328,color:#86efac,stroke:#22c55e\nstyle BASE fill:#6C47FF,color:#fff,stroke:none',
+  learning_path:
+    "mindmap\n  root((CSS設計の<br/>学習パス))\n    基礎知識\n      ボックスモデル\n      カスケードと詳細度\n      セレクタの種類\n      単位px/rem/em/%/vw\n    レイアウト\n      Flexbox 1次元\n      CSS Grid 2次元\n      レスポンシブ設計\n      コンテナクエリ\n    設計手法\n      BEM命名規則\n      OOCSS構造分離\n      SMACSS5分類\n      Utility-First Tailwind\n    デザインシステム\n      デザイントークン\n      Atomic Design\n      コンポーネント設計\n      ダークモード対応\n    アクセシビリティ\n      WCAG 2.1\n      フォーカス管理\n      コントラスト比\n      reduced-motion\n    発展トピック\n      CSS-in-JS\n      Sass PostCSS\n      CSS Layers\n      Container Queries",
 } as const;
 
 // Static escaped source examples; no CSS or HTML example is executed.
@@ -1395,6 +1397,358 @@ export default function Page() {
                   </Ext>
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+        <section className="section" id="s3">
+          <div className="section-header">
+            <span className="section-num">{"付録"}</span>
+            <h2>{"まとめと参考リソース"}</h2>
+          </div>
+          <div className="subsection">
+            <h3>{"学習ロードマップ"}</h3>
+            <p>{"本ガイドで学んだ内容の全体像と、次に進むべき学習パスを俯瞰しましょう。"}</p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="learning_path">
+                <MermaidDiagram chart={DIAGRAMS.learning_path} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">
+                {"図3.1 — CSS設計・デザインシステムの学習ロードマップ"}
+              </div>
+            </div>
+            <h3 style={{ marginTop: "40px" }}>{"重要ポイントの総復習"}</h3>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{"章"}</th>
+                    <th>{"トピック"}</th>
+                    <th>{"核心のポイント"}</th>
+                    <th>{"難易度"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>{"1.1"}</strong>
+                    </td>
+                    <td>{"デザインシステムの定義"}</td>
+                    <td>{"Single Source of Truth。色・スペース・コンポーネントを一元管理"}</td>
+                    <td>
+                      <span className="badge low">{"入門"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"1.3"}</strong>
+                    </td>
+                    <td>{"Atomic Design"}</td>
+                    <td>{"原子→分子→有機体→テンプレート→ページの5階層でUI部品を分類"}</td>
+                    <td>
+                      <span className="badge low">{"入門"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"1.3"}</strong>
+                    </td>
+                    <td>{"デザイントークン"}</td>
+                    <td>
+                      {"プリミティブ（raw値）→セマンティック（意味付き）→コンポーネントの3層構造"}
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中級"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.1"}</strong>
+                    </td>
+                    <td>{"CSSカスケード"}</td>
+                    <td>{"優先度は「重要度 → 詳細度 → ソース順」。!importantは最終手段"}</td>
+                    <td>
+                      <span className="badge low">{"入門"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.2"}</strong>
+                    </td>
+                    <td>{"BEM記法"}</td>
+                    <td>{"Block__Element--Modifier。詳細度を低く保ちながら構造を表現"}</td>
+                    <td>
+                      <span className="badge low">{"入門"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.3"}</strong>
+                    </td>
+                    <td>{"CSS変数"}</td>
+                    <td>{":rootで定義しvar()で参照。スコープ・フォールバック・JS連携が可能"}</td>
+                    <td>
+                      <span className="badge low">{"入門"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.4"}</strong>
+                    </td>
+                    <td>{"Flexbox vs Grid"}</td>
+                    <td>{"1方向→Flexbox、2方向→Grid。組み合わせて使う"}</td>
+                    <td>
+                      <span className="badge medium">{"中級"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.5"}</strong>
+                    </td>
+                    <td>{"レスポンシブデザイン"}</td>
+                    <td>{"モバイルファースト + min-width メディアクエリ + clamp()"}</td>
+                    <td>
+                      <span className="badge medium">{"中級"}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"2.6"}</strong>
+                    </td>
+                    <td>{"アクセシビリティ"}</td>
+                    <td>{":focus-visible・コントラスト比4.5:1・prefers-reduced-motion"}</td>
+                    <td>
+                      <span className="badge medium">{"中級"}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="subsection">
+            <h3>{"📚 公式ドキュメント・仕様"}</h3>
+            <div className="ref-grid">
+              <Ext href="https://developer.mozilla.org/ja/docs/Web/CSS" className="ref-link">
+                <span className="ref-icon">{"📖"}</span>
+                <div className="ref-text">
+                  <h5>{"MDN Web Docs — CSS"}</h5>
+                  <span>{"developer.mozilla.org"}</span>
+                </div>
+                <span className="ref-tag">{"必読"}</span>
+              </Ext>
+              <Ext
+                href="https://developer.mozilla.org/ja/docs/Web/CSS/Cascade"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"🌊"}</span>
+                <div className="ref-text">
+                  <h5>{"MDN — カスケード・詳細度・継承"}</h5>
+                  <span>{"developer.mozilla.org"}</span>
+                </div>
+                <span className="ref-tag">{"必読"}</span>
+              </Ext>
+              <Ext
+                href="https://developer.mozilla.org/ja/docs/Web/CSS/Using_CSS_custom_properties"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"🎨"}</span>
+                <div className="ref-text">
+                  <h5>{"MDN — CSS カスタムプロパティ"}</h5>
+                  <span>{"developer.mozilla.org"}</span>
+                </div>
+                <span className="ref-tag">{"必読"}</span>
+              </Ext>
+              <Ext href="https://www.w3.org/TR/css-cascade-5/" className="ref-link">
+                <span className="ref-icon">{"📄"}</span>
+                <div className="ref-text">
+                  <h5>{"W3C — CSS Cascade Level 5（@layer仕様）"}</h5>
+                  <span>{"w3.org"}</span>
+                </div>
+                <span className="ref-tag">{"仕様書"}</span>
+              </Ext>
+              <Ext href="https://www.designtokens.org/" className="ref-link">
+                <span className="ref-icon">{"🪙"}</span>
+                <div className="ref-text">
+                  <h5>{"Design Tokens Community Group (W3C)"}</h5>
+                  <span>{"designtokens.org"}</span>
+                </div>
+                <span className="ref-tag">{"仕様書"}</span>
+              </Ext>
+            </div>
+            <h3 style={{ marginTop: "36px" }}>{"🎓 デザインシステム学習"}</h3>
+            <div className="ref-grid">
+              <Ext href="https://atomicdesign.bradfrost.com/" className="ref-link">
+                <span className="ref-icon">{"⚛️"}</span>
+                <div className="ref-text">
+                  <h5>{"Atomic Design by Brad Frost"}</h5>
+                  <span>{"atomicdesign.bradfrost.com"}</span>
+                </div>
+                <span className="ref-tag">{"無料"}</span>
+              </Ext>
+              <Ext href="https://m3.material.io/" className="ref-link">
+                <span className="ref-icon">{"🎭"}</span>
+                <div className="ref-text">
+                  <h5>{"Material Design 3 — Google"}</h5>
+                  <span>{"m3.material.io"}</span>
+                </div>
+                <span className="ref-tag">{"事例"}</span>
+              </Ext>
+              <Ext href="https://carbondesignsystem.com/" className="ref-link">
+                <span className="ref-icon">{"🔲"}</span>
+                <div className="ref-text">
+                  <h5>{"Carbon Design System — IBM"}</h5>
+                  <span>{"carbondesignsystem.com"}</span>
+                </div>
+                <span className="ref-tag">{"事例"}</span>
+              </Ext>
+              <Ext href="https://polaris.shopify.com/" className="ref-link">
+                <span className="ref-icon">{"🛍️"}</span>
+                <div className="ref-text">
+                  <h5>{"Polaris — Shopify"}</h5>
+                  <span>{"polaris.shopify.com"}</span>
+                </div>
+                <span className="ref-tag">{"事例"}</span>
+              </Ext>
+              <Ext href="https://www.designbetter.co/design-systems-handbook" className="ref-link">
+                <span className="ref-icon">{"📘"}</span>
+                <div className="ref-text">
+                  <h5>{"Design Systems Handbook — InVision"}</h5>
+                  <span>{"designbetter.co"}</span>
+                </div>
+                <span className="ref-tag">{"無料"}</span>
+              </Ext>
+              <Ext href="https://storybook.js.org/" className="ref-link">
+                <span className="ref-icon">{"📚"}</span>
+                <div className="ref-text">
+                  <h5>{"Storybook — コンポーネント管理ツール"}</h5>
+                  <span>{"storybook.js.org"}</span>
+                </div>
+                <span className="ref-tag">{"ツール"}</span>
+              </Ext>
+            </div>
+            <h3 style={{ marginTop: "36px" }}>{"🎨 CSS設計手法"}</h3>
+            <div className="ref-grid">
+              <Ext href="https://bem.info/en/methodology/" className="ref-link">
+                <span className="ref-icon">{"🧱"}</span>
+                <div className="ref-text">
+                  <h5>{"BEM 公式サイト"}</h5>
+                  <span>{"bem.info"}</span>
+                </div>
+                <span className="ref-tag">{"手法"}</span>
+              </Ext>
+              <Ext href="https://smacss.com/" className="ref-link">
+                <span className="ref-icon">{"🗂️"}</span>
+                <div className="ref-text">
+                  <h5>{"SMACSS 公式サイト"}</h5>
+                  <span>{"smacss.com"}</span>
+                </div>
+                <span className="ref-tag">{"手法"}</span>
+              </Ext>
+              <Ext href="https://tailwindcss.com/docs" className="ref-link">
+                <span className="ref-icon">{"💨"}</span>
+                <div className="ref-text">
+                  <h5>{"Tailwind CSS ドキュメント"}</h5>
+                  <span>{"tailwindcss.com"}</span>
+                </div>
+                <span className="ref-tag">{"ツール"}</span>
+              </Ext>
+              <Ext
+                href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"📐"}</span>
+                <div className="ref-text">
+                  <h5>{"CSS-Tricks — Complete Guide to Flexbox"}</h5>
+                  <span>{"css-tricks.com"}</span>
+                </div>
+                <span className="ref-tag">{"ガイド"}</span>
+              </Ext>
+              <Ext
+                href="https://css-tricks.com/snippets/css/complete-guide-grid/"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"📊"}</span>
+                <div className="ref-text">
+                  <h5>{"CSS-Tricks — Complete Guide to Grid"}</h5>
+                  <span>{"css-tricks.com"}</span>
+                </div>
+                <span className="ref-tag">{"ガイド"}</span>
+              </Ext>
+              <Ext href="https://every-layout.dev/" className="ref-link">
+                <span className="ref-icon">{"🔧"}</span>
+                <div className="ref-text">
+                  <h5>{"Every Layout — Heydon Pickering & Andy Bell"}</h5>
+                  <span>{"every-layout.dev"}</span>
+                </div>
+                <span className="ref-tag">{"ガイド"}</span>
+              </Ext>
+            </div>
+            <h3 style={{ marginTop: "36px" }}>{"♿ アクセシビリティ"}</h3>
+            <div className="ref-grid">
+              <Ext href="https://waic.jp/translations/WCAG21/" className="ref-link">
+                <span className="ref-icon">{"♿"}</span>
+                <div className="ref-text">
+                  <h5>{"WCAG 2.1 日本語訳"}</h5>
+                  <span>{"waic.jp"}</span>
+                </div>
+                <span className="ref-tag">{"仕様書"}</span>
+              </Ext>
+              <Ext
+                href="https://developer.mozilla.org/ja/docs/Web/Accessibility"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"🦮"}</span>
+                <div className="ref-text">
+                  <h5>{"MDN — アクセシビリティ"}</h5>
+                  <span>{"developer.mozilla.org"}</span>
+                </div>
+                <span className="ref-tag">{"必読"}</span>
+              </Ext>
+              <Ext href="https://webaim.org/resources/contrastchecker/" className="ref-link">
+                <span className="ref-icon">{"🎨"}</span>
+                <div className="ref-text">
+                  <h5>{"WebAIM — コントラストチェッカー"}</h5>
+                  <span>{"webaim.org"}</span>
+                </div>
+                <span className="ref-tag">{"ツール"}</span>
+              </Ext>
+            </div>
+            <h3 style={{ marginTop: "36px" }}>{"🚀 発展学習・プラットフォーム"}</h3>
+            <div className="ref-grid">
+              <Ext href="https://web.dev/learn/css/" className="ref-link">
+                <span className="ref-icon">{"🌐"}</span>
+                <div className="ref-text">
+                  <h5>{"web.dev — Learn CSS (Google)"}</h5>
+                  <span>{"web.dev"}</span>
+                </div>
+                <span className="ref-tag">{"無料"}</span>
+              </Ext>
+              <Ext href="https://css-for-js.dev/" className="ref-link">
+                <span className="ref-icon">{"⚛️"}</span>
+                <div className="ref-text">
+                  <h5>{"CSS for JavaScript Developers — Josh W. Comeau"}</h5>
+                  <span>{"css-for-js.dev"}</span>
+                </div>
+                <span className="ref-tag">{"有料"}</span>
+              </Ext>
+              <Ext
+                href="https://www.joshwcomeau.com/css/interactive-guide-to-flexbox/"
+                className="ref-link"
+              >
+                <span className="ref-icon">{"🎮"}</span>
+                <div className="ref-text">
+                  <h5>{"Interactive Guide to Flexbox — Josh W. Comeau"}</h5>
+                  <span>{"joshwcomeau.com"}</span>
+                </div>
+                <span className="ref-tag">{"無料"}</span>
+              </Ext>
+              <Ext href="https://github.com/amzn/style-dictionary" className="ref-link">
+                <span className="ref-icon">{"🪙"}</span>
+                <div className="ref-text">
+                  <h5>{"Style Dictionary — Amazon（トークン管理ツール）"}</h5>
+                  <span>{"amzn.github.io/style-dictionary"}</span>
+                </div>
+                <span className="ref-tag">{"ツール"}</span>
+              </Ext>
             </div>
           </div>
         </section>
