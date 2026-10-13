@@ -271,7 +271,7 @@
       "pattern": "^https?://(www\\.)?agiledata\\.org(?::\\d+)?(?:[/?#]|$)"
     },
     {
-      "pattern": "^https?://(www\\.)?kimballgroup\\.com(?::\\d+)?(?:[/?#]|$)"
+      "pattern": "^https?://([a-z0-9-]+\\.)*kimballgroup\\.com(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],

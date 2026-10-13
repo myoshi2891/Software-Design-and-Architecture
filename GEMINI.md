@@ -113,7 +113,7 @@ flowchart TD
     6分野・24項目の順序と所属は専用テストで照合し、3列・2列・1列の表示を検証する。
     ページのデザイン調整はスコープ内CSSに限定し、本文・コード例・リンクを維持する。
     原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
-    今回は npm を使用し、`npm exec -- next typegen` でルート生成型を更新。ビルド省略・目視確認はユーザーが担当する。
+    ルート生成型は `npm exec -- next typegen` で更新。`web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx`
     （URL `/product-and-enterprise/togaf-certification-comprehensive-guide`）。12章切替・見出し38件・
     Mermaid 17図・表10件・リスト14項目を忠実移植。本文は Server Component で生成し、
@@ -121,7 +121,7 @@ flowchart TD
     元HTMLとの全文・要素構造・クラス・インライン色・CSS宣言・図定義の照合、実Mermaid構文、
     連続切替・再訪・描画ID・SVG自然幅の統合回帰、原本SHA-256を契約テストで検証する。
     原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
-    今回の移行はユーザー指定により npm を使用し、ビルド省略・目視確認はユーザーが担当する。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx`
     （URL `/product-and-enterprise/minimum-viable-product-comprehensive-guide`）。14章・Mermaid 17図・表15件・
     リスト69項目・YAMLコード1件を忠実移植。本文は Server Component、現在地表示は
@@ -131,7 +131,7 @@ flowchart TD
     原本SHA-256を契約テストで検証する。章アンカーは共通ヘッダーと免責表示の高さを考慮する。
     デザイン改善後も本文・図データ・原本は無変更。本文は幅上限なしの可変Grid配置とし、
     追従目次・モバイル全幅・見出し階層・読みやすい表とカードのCSS契約を追加。
-    今回の移行はユーザー指定により npm を使用し、ビルド省略・目視確認はユーザーが担当する。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +

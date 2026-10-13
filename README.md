@@ -83,14 +83,14 @@ Testing Library（契約テスト）を採用しています。
     文言を維持して見出し・配色・余白を調整。学習ロードマップは元の6分野・24項目を
     Server Componentのカードで表示し、画面幅に応じて3列・2列・1列に切り替える。
     原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
-    npmでテスト・lint・型チェックを実施。ルート生成型は `npm exec -- next typegen` で更新し、
-    今回はビルド省略・目視確認をユーザーが担当する。
+    ルート生成型は `npm exec -- next typegen` で更新。`bun run lint` / `typecheck` / `test` / `build` の
+    全通過を確認済みで、目視確認はユーザーが担当する。
   - [`/product-and-enterprise/togaf-certification-comprehensive-guide`](web-next/app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx)
     — TOGAF 完全解説ガイドを忠実移植（12章切替・見出し38件・Mermaid 17図・表10件・リスト14項目）。
     本文を Server Component で生成し、目次と選択状態だけを `TogafGuideShell` に分離。
     選択中の章だけをマウントして図を自然幅で描画し、モバイルでは目次を上部へ配置。
     原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
-    今回は npm でテスト・lint・型チェックを実施し、ビルド省略・目視確認はユーザーが担当。
+    `bun run lint` / `typecheck` / `test` / `build` の全通過を確認済みで、目視確認はユーザーが担当。
   - [`/product-and-enterprise/minimum-viable-product-comprehensive-guide`](web-next/app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx)
     — MVP 完全ガイドを忠実移植（14章・Mermaid 17図・表15件・リスト69項目・YAMLコード1件）。
     サイドバーの現在地表示をクライアント側に分離し、本文は Server Component を維持。
@@ -100,7 +100,7 @@ Testing Library（契約テスト）を採用しています。
     移行検証は `cd web-next` 後に `npm run test` / `npm run lint` / `npm run typecheck`。
     グローバルCSSの変換回帰は `npm run test -- tests/globals-css.test.ts`。
     Lightning CSSの変換警告が0件で、全キーフレーム定義とヒーローのアニメーション参照が保持されることを確認する。
-    今回はビルドを省略し、図解・文字・リストの表示はユーザーが目視確認する。
+    `bun run lint` / `typecheck` / `test` / `build` の全通過を確認済みで、図解・文字・リストの表示はユーザーが目視確認する。
   - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
     — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
     Mermaid 図・コードハイライト・国際資格ガイド）
