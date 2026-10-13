@@ -103,6 +103,14 @@ flowchart TD
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/css-design-system-guide/design-system-css-fundamentals/page.tsx`
+    （URL `/css-design-system-guide/design-system-css-fundamentals`）。3章・12小節・Mermaid 13図・
+    表5件・コード30件を忠実移植。本文は Server Component、目次・現在地・読書進捗・先頭ボタンは
+    `Navigation` に分離。Inter・Space Groteskはルート専用の next/font 設定で読み込む。
+    元HTMLとの全文・要素構造・インライン色・CSS宣言・図定義・コード改行の照合、実Mermaid構文、
+    SVG自然幅とスクロール時の安定性、原本SHA-256を契約テストで検証する。
+    原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
+    今回は npm を使用し、`npm exec -- next typegen` でルート生成型を更新。ビルド省略・目視確認はユーザーが担当する。
   - `app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx`
     （URL `/product-and-enterprise/togaf-certification-comprehensive-guide`）。12章切替・見出し38件・
     Mermaid 17図・表10件・リスト14項目を忠実移植。本文は Server Component で生成し、

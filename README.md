@@ -76,6 +76,13 @@ Testing Library（契約テスト）を採用しています。
 ページ集合の一致は契約テストで保証しています。
 
 - 移行済みページ:
+  - [`/css-design-system-guide/design-system-css-fundamentals`](web-next/app/css-design-system-guide/design-system-css-fundamentals/page.tsx)
+    — CSS 基礎ガイドを忠実移植（3章・12小節・Mermaid 13図・表5件・CSS/HTMLコード30件）。
+    本文は Server Component、15項目の目次・読書進捗・先頭ボタンは `Navigation` に分離。
+    Inter・Space Groteskはルート専用の next/font 設定、コードは静的ハイライトで表示。
+    原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
+    npmでテスト・lint・型チェックを実施。ルート生成型は `npm exec -- next typegen` で更新し、
+    今回はビルド省略・目視確認をユーザーが担当する。
   - [`/product-and-enterprise/togaf-certification-comprehensive-guide`](web-next/app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx)
     — TOGAF 完全解説ガイドを忠実移植（12章切替・見出し38件・Mermaid 17図・表10件・リスト14項目）。
     本文を Server Component で生成し、目次と選択状態だけを `TogafGuideShell` に分離。
