@@ -130,3 +130,62 @@ it("preserves YAML whitespace and colors comments keys strings numbers and inter
     expect(pre?.querySelector(`span.${token}`), token).not.toBeNull();
   expect(pre?.querySelector("code")).toBeNull();
 });
+
+describe("MVP growth rules and references", () => {
+  for (const id of ["failures", "scale", "rules", "refs"]) {
+    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`section#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+    });
+    it(`parses every real Mermaid chart in ${id}`, async () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`section#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = diagram.getAttribute("data-chart") ?? "";
+        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
+
+describe("MVP complete inventory", () => {
+  it("matches the entire main content including the closing note", () => {
+    const { container } = render(<Page />);
+    assertFaithful(
+      container.querySelector("main") as Element,
+      source.querySelector("main") as Element
+    );
+    const selectors = {
+      "section.section": 14,
+      h2: 14,
+      h3: 35,
+      h4: 10,
+      table: 15,
+      pre: 1,
+      ul: 19,
+      ol: 0,
+      li: 69,
+      ".callout": 6,
+      ".card": 11,
+      ".rule-item": 14,
+      ".mermaid-caption": 17,
+      '[data-testid="mermaid-diagram"]': 17,
+      "svg.tabler-icon": 102,
+    };
+    for (const [selector, count] of Object.entries(selectors))
+      expect(container.querySelectorAll(selector), selector).toHaveLength(count);
+    expect(Array.from(container.querySelectorAll("section.section"), (el) => el.id)).toEqual(
+      Array.from(source.querySelectorAll("section.section"), (el) => el.id)
+    );
+    expect(
+      Array.from(container.querySelectorAll("#rules .rule-num"), (el) => el.textContent)
+    ).toEqual(Array.from({ length: 10 }, (_, i) => String(i + 1)));
+    expect(container.querySelectorAll("script, link, i.ti")).toHaveLength(0);
+  });
+});
