@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
-import Navigation from "./Navigation";
 import LearningRoadmap from "./LearningRoadmap";
+import Navigation from "./Navigation";
 import { NAV_GROUPS } from "./navigation-data";
 
 export const metadata: Metadata = {
