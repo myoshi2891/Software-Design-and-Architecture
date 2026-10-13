@@ -202,3 +202,76 @@ describe("CSS fundamentals responsive design and best practices", () => {
     });
   }
 });
+
+describe("CSS fundamentals summary and resources", () => {
+  for (const id of ["s3"]) {
+    it(`preserves every text code table style and diagram in ${id}`, () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+      for (const pre of actual?.querySelectorAll("pre") ?? []) {
+        expect(pre.querySelector("code")).toBeNull();
+        expect(
+          pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
+        ).toBeGreaterThan(0);
+        expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
+      }
+    });
+    it(`parses all real Mermaid diagrams in ${id}`, async () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = element.getAttribute("data-chart") ?? "";
+        if (!chart.startsWith("mindmap"))
+          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
+
+it("preserves the complete source inventory and every navigation target", () => {
+  const { container } = render(<Page />);
+  assertFaithful(
+    container.querySelector("#main") as Element,
+    source.querySelector("#main") as Element
+  );
+  const inventory = {
+    "section.section": 3,
+    h1: 2,
+    h2: 3,
+    h3: 19,
+    h4: 42,
+    table: 5,
+    pre: 30,
+    ul: 0,
+    ol: 0,
+    li: 0,
+    ".callout": 11,
+    ".card": 6,
+    ".step-item": 7,
+    ".step-num": 7,
+    ".comp-card": 14,
+    ".spec-box": 20,
+    ".ref-link": 24,
+    ".code-wrap": 16,
+    ".mermaid-label": 13,
+    '[data-testid="mermaid-diagram"]': 13,
+    ".sb-link": 15,
+    a: 62,
+  };
+  for (const [selector, count] of Object.entries(inventory))
+    expect(container.querySelectorAll(selector), selector).toHaveLength(count);
+  expect(container.querySelectorAll("pre.language-css")).toHaveLength(26);
+  expect(container.querySelectorAll("pre.language-html")).toHaveLength(4);
+  expect(
+    Array.from(container.querySelectorAll(".step-num"), (element) => element.textContent)
+  ).toEqual(Array.from({ length: 7 }, (_, index) => String(index + 1)));
+  for (const link of container.querySelectorAll(".sb-link"))
+    expect(container.querySelector(link.getAttribute("href") ?? "")).not.toBeNull();
+  expect(container.querySelectorAll("script, link, iframe, style, [onclick]")).toHaveLength(0);
+});
