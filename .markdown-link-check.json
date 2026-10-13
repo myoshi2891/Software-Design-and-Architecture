@@ -269,6 +269,9 @@
     },
     {
       "pattern": "^https?://(www\\.)?agiledata\\.org(?::\\d+)?(?:[/?#]|$)"
+    },
+    {
+      "pattern": "^https?://(www\\.)?kimballgroup\\.com(?::\\d+)?(?:[/?#]|$)"
     }
   ],
   "replacementPatterns": [],
