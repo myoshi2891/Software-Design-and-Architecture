@@ -51,3 +51,26 @@ describe("MVP foundation", () => {
     expect(css).toContain(".minimum-viable-product-comprehensive-guide {");
   });
 });
+
+describe("MVP foundations and lean process", () => {
+  for (const id of ["intro", "lean", "process"]) {
+    it(`preserves every text, list, table, icon and diagram in ${id}`, () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`section#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+    });
+    it(`parses every real Mermaid chart in ${id}`, async () => {
+      const { container } = render(<Page />);
+      const actual = container.querySelector(`section#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = diagram.getAttribute("data-chart") ?? "";
+        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
