@@ -76,6 +76,12 @@ Testing Library（契約テスト）を採用しています。
 ページ集合の一致は契約テストで保証しています。
 
 - 移行済みページ:
+  - [`/product-and-enterprise/togaf-certification-comprehensive-guide`](web-next/app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx)
+    — TOGAF 完全解説ガイドを忠実移植（12章切替・見出し38件・Mermaid 17図・表10件・リスト14項目）。
+    本文を Server Component で生成し、目次と選択状態だけを `TogafGuideShell` に分離。
+    選択中の章だけをマウントして図を自然幅で描画し、モバイルでは目次を上部へ配置。
+    原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
+    今回は npm でテスト・lint・型チェックを実施し、ビルド省略・目視確認はユーザーが担当。
   - [`/product-and-enterprise/minimum-viable-product-comprehensive-guide`](web-next/app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx)
     — MVP 完全ガイドを忠実移植（14章・Mermaid 17図・表15件・リスト69項目・YAMLコード1件）。
     サイドバーの現在地表示をクライアント側に分離し、本文は Server Component を維持。

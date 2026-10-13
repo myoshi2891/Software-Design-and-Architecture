@@ -103,6 +103,14 @@ flowchart TD
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx`
+    （URL `/product-and-enterprise/togaf-certification-comprehensive-guide`）。12章切替・見出し38件・
+    Mermaid 17図・表10件・リスト14項目を忠実移植。本文は Server Component で生成し、
+    `TogafGuideShell` が目次と選択状態を管理する。非表示領域で図を採寸せず、選択中の章だけをマウントする。
+    元HTMLとの全文・要素構造・クラス・インライン色・CSS宣言・図定義の照合、実Mermaid構文、
+    連続切替・再訪・描画ID・SVG自然幅の統合回帰、原本SHA-256を契約テストで検証する。
+    原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
+    今回の移行はユーザー指定により npm を使用し、ビルド省略・目視確認はユーザーが担当する。
   - `app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx`
     （URL `/product-and-enterprise/minimum-viable-product-comprehensive-guide`）。14章・Mermaid 17図・表15件・
     リスト69項目・YAMLコード1件を忠実移植。本文は Server Component、現在地表示は
