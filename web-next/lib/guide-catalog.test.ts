@@ -22,10 +22,10 @@ describe("guideCatalog structure", () => {
     expect(allEntries().length).toBe(29);
   });
 
-  it("splits into 26 published and 3 planned guides", () => {
+  it("splits into 27 published and 2 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(26);
-    expect(entries.filter((e) => e.status === "planned").length).toBe(3);
+    expect(entries.filter((e) => e.status === "published").length).toBe(27);
+    expect(entries.filter((e) => e.status === "planned").length).toBe(2);
   });
 
   it("uses only the two known status values", () => {
@@ -80,6 +80,15 @@ it("publishes the TOGAF guide under product-and-enterprise", () => {
   expect(
     category?.entries.find(
       (entry) => entry.href === "/product-and-enterprise/togaf-certification-comprehensive-guide"
+    )?.status
+  ).toBe("published");
+});
+
+it("publishes CSS fundamentals under CSS design systems", () => {
+  const category = guideCatalog.find((entry) => entry.id === "css-design-system-guide");
+  expect(
+    category?.entries.find(
+      (entry) => entry.href === "/css-design-system-guide/design-system-css-fundamentals"
     )?.status
   ).toBe("published");
 });

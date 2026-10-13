@@ -55,7 +55,7 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const hrefs = [...container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
     const planned = guideCatalog.flatMap((c) => c.entries).filter((e) => e.status === "planned");
-    expect(planned.length).toBe(3);
+    expect(planned.length).toBe(2);
     for (const entry of planned) {
       expect(hrefs).not.toContain(entry.href);
     }
@@ -63,7 +63,7 @@ describe("HomePage (guide index)", () => {
 
   it("marks planned rows with a visible status note", () => {
     const container = renderIndex();
-    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(3);
+    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(2);
     for (const row of container.querySelectorAll(".guide-row.is-planned")) {
       expect(row.textContent).toContain("準備中");
     }
@@ -81,8 +81,8 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
     expect(text).toContain("29");
-    expect(text).toContain("26");
-    expect(text).toContain("3");
+    expect(text).toContain("27");
+    expect(text).toContain("2");
   });
 
   it("normalizes full-width search input and searches summaries", () => {
@@ -133,4 +133,11 @@ it("links the published TOGAF guide from the index", () => {
       'a[href="/product-and-enterprise/togaf-certification-comprehensive-guide"]'
     )
   ).toHaveTextContent("TOGAF");
+});
+
+it("links the published CSS fundamentals guide from the index", () => {
+  const container = renderIndex();
+  expect(
+    container.querySelector('a[href="/css-design-system-guide/design-system-css-fundamentals"]')
+  ).toHaveTextContent("CSS 基礎");
 });
