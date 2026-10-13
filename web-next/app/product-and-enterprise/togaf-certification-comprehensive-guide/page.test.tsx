@@ -149,3 +149,27 @@ describe("TOGAF architecture structure", () => {
     });
   }
 });
+
+describe("TOGAF stakeholders and governance", () => {
+  for (const id of ["stakeholder", "governance"]) {
+    it(`preserves all wording structure icons and links in ${id}`, () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+      expect(container.querySelectorAll(".section")).toHaveLength(1);
+    });
+    it(`parses all real Mermaid diagrams in ${id}`, async () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = diagram.getAttribute("data-chart") ?? "";
+        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
