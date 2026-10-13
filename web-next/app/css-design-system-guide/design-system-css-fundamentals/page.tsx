@@ -21,6 +21,14 @@ const DIAGRAMS = {
     'graph LR\nsubgraph L1["Layer 1: プリミティブトークンraw値"]\nP1["--purple-500: #6C47FF"]\nP2["--space-4: 16px"]\nP3["--text-base: 1rem"]\nend\nsubgraph L2["Layer 2: セマンティックトークン意味付き"]\nS1["--color-primary"]\nS2["--space-component-md"]\nS3["--text-body"]\nend\nsubgraph L3["Layer 3: コンポーネントトークン"]\nC1[".button → --btn-bg"]\nC2[".card → --card-padding"]\nend\nP1 --> S1\nP2 --> S2\nP3 --> S3\nS1 --> C1\nS2 --> C2\nstyle L1 fill:#0d1b2a,stroke:#3b82f6,color:#93c5fd\nstyle L2 fill:#0d2a1a,stroke:#22c55e,color:#86efac\nstyle L3 fill:#1a0d2a,stroke:#a855f7,color:#c084fc',
   ds_build_steps:
     'flowchart TD\nS1["Step 1 🔍<br/>既存UIの棚卸し<br/>現状の色・フォント・コンポーネントを洗い出す"] --> S2\nS2["Step 2 🧭<br/>デザイン原則の言語化<br/>どんな価値観でデザインするかを明文化"] --> S3\nS3["Step 3 🪙<br/>デザイントークンの設定<br/>色・スペース・タイポグラフィを変数化"] --> S4\nS4["Step 4 ⚡<br/>基本コンポーネントの作成<br/>Button · Input · Icon などの原子を定義"] --> S5\nS5["Step 5 🔗<br/>複合コンポーネントの構築<br/>分子・有機体レベルを組み合わせる"] --> S6\nS6["Step 6 📚<br/>ドキュメントの整備<br/>Storybookなどで使い方・禁止事項を記録"] --> S7\nS7["Step 7 🔄<br/>継続的なメンテナンス<br/>フィードバックを収集して継続改善"]\nstyle S1 fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6\nstyle S2 fill:#0d1b2a,color:#fcd34d,stroke:#f59e0b\nstyle S3 fill:#0d1b2a,color:#c084fc,stroke:#a855f7\nstyle S4 fill:#0d1b2a,color:#86efac,stroke:#22c55e\nstyle S5 fill:#0d1b2a,color:#f97316,stroke:#ea580c\nstyle S6 fill:#0d1b2a,color:#fb923c,stroke:#f97316\nstyle S7 fill:#6C47FF,color:#fff,stroke:none',
+  css_cascade:
+    'graph TD\nA["スタイルの衝突が発生"] --> B{"優先度ステップ1<br/>重要度チェック"}\nB -->|"!important あり"| WIN1["!important スタイルが勝つ"]\nB -->|"通常スタイル"| C{"優先度ステップ2<br/>詳細度(Specificity)比較"}\nC -->|"詳細度が高い"| WIN2["詳細度の高いセレクタが勝つ"]\nC -->|"詳細度が同じ"| D{"優先度ステップ3<br/>ソース順(記述順)"}\nD -->|"後に書かれている"| WIN3["後のスタイルが勝つ"]\nWIN1 --> APPLY["✅ そのスタイルを適用"]\nWIN2 --> APPLY\nWIN3 --> APPLY\nstyle A fill:#1a0d2a,color:#c084fc,stroke:#a855f7\nstyle WIN1 fill:#3a1515,color:#f87171,stroke:#ef4444\nstyle WIN2 fill:#152a3a,color:#93c5fd,stroke:#3b82f6\nstyle WIN3 fill:#153a25,color:#86efac,stroke:#22c55e\nstyle APPLY fill:#6C47FF,color:#fff,stroke:none',
+  css_methodologies:
+    'graph LR\nM["CSS設計手法"] --> BEM["BEM<br/>Block__Element--Modifier<br/>命名規則ベース"]\nM --> OOCSS["OOCSS<br/>構造とスキンの分離<br/>再利用性重視"]\nM --> SMACSS["SMACSS<br/>5カテゴリ分類<br/>Base/Layout/Module/State/Theme"]\nM --> UTIL["Utility-First<br/>Tailwind CSS的<br/>単機能クラスの組み合わせ"]\nM --> CSSM["CSS Modules<br/>ローカルスコープ<br/>React/Vueコンポーネント向け"]\nstyle M fill:#6C47FF,color:#fff,stroke:none\nstyle BEM fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle OOCSS fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b\nstyle SMACSS fill:#1a3328,color:#86efac,stroke:#22c55e\nstyle UTIL fill:#2a1a3a,color:#c084fc,stroke:#a855f7\nstyle CSSM fill:#1a1a2a,color:#94a3b8,stroke:#64748b',
+  bem_structure:
+    'graph LR\nBEM["BEM"] --> B["🟦 Block<br/>独立したコンポーネント<br/>.card  .button  .nav"]\nBEM --> E["🟨 Element<br/>Blockを構成する部品<br/>.card__title  .nav__item"]\nBEM --> MOD["🟧 Modifier<br/>状態・バリアント<br/>.card--featured  .button--primary"]\nB -->|"__"| E\nB -->|"--"| MOD\nstyle BEM fill:#6C47FF,color:#fff,stroke:none\nstyle B fill:#1a2a44,color:#93c5fd,stroke:#3b82f6\nstyle E fill:#3a2a1a,color:#fcd34d,stroke:#f59e0b\nstyle MOD fill:#1a3328,color:#86efac,stroke:#22c55e',
+  smacss_categories:
+    'graph TD\nS["SMACSS の5カテゴリ"] --> S1["1️⃣ Base<br/>リセット・デフォルトスタイル<br/>body · p · a · img"]\nS --> S2["2️⃣ Layout<br/>ページ構造<br/>.l-header · .l-sidebar · .l-grid"]\nS --> S3["3️⃣ Module<br/>再利用可能なUI部品<br/>.card · .button · .nav"]\nS --> S4["4️⃣ State<br/>状態変化スタイル<br/>.is-active · .is-hidden · .has-error"]\nS --> S5["5️⃣ Theme<br/>ビジュアルテーマ<br/>.theme-dark · .theme-brand"]\nstyle S fill:#6C47FF,color:#fff,stroke:none\nstyle S1 fill:#0d1b2a,color:#93c5fd,stroke:#3b82f6\nstyle S2 fill:#1a2a0d,color:#86efac,stroke:#22c55e\nstyle S3 fill:#2a1a0d,color:#fcd34d,stroke:#f59e0b\nstyle S4 fill:#2a0d1a,color:#f87171,stroke:#ef4444\nstyle S5 fill:#1a0d2a,color:#c084fc,stroke:#a855f7',
 } as const;
 
 // Static escaped source examples; no CSS or HTML example is executed.
@@ -41,6 +49,24 @@ const CODE_BLOCKS = {
     '<span class="cm">/* === ベーススタイル（共通） === */</span>\n.button {\n  <span class="kw">display</span>: inline-flex;\n  <span class="kw">align-items</span>: center;\n  <span class="kw">justify-content</span>: center;\n  <span class="kw">gap</span>: <span class="fn">var</span>(--space-component-xs);\n  <span class="kw">padding</span>: <span class="fn">var</span>(--btn-padding-v, <span class="nu">8px</span>) <span class="fn">var</span>(--btn-padding-h, <span class="nu">16px</span>);\n  <span class="kw">font-family</span>: inherit;\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-body-sm);\n  <span class="kw">font-weight</span>: <span class="nu">500</span>;\n  <span class="kw">border-radius</span>: <span class="fn">var</span>(--radius-md);\n  <span class="kw">border</span>: <span class="nu">1px</span> solid transparent;\n  <span class="kw">cursor</span>: pointer;\n  <span class="kw">transition</span>: background <span class="nu">0.15s</span>, opacity <span class="nu">0.15s</span>, transform <span class="nu">0.1s</span>;\n}\n\n.<span class="kw">button</span>:active   { <span class="kw">transform</span>: <span class="fn">scale</span>(<span class="nu">0.97</span>); }\n.<span class="kw">button</span>:disabled { <span class="kw">opacity</span>: <span class="nu">0.4</span>; <span class="kw">cursor</span>: not-allowed; }\n.<span class="kw">button</span>:focus-visible {\n  <span class="kw">outline</span>: <span class="nu">2px</span> solid <span class="fn">var</span>(--color-primary);\n  <span class="kw">outline-offset</span>: <span class="nu">2px</span>;\n}\n\n<span class="cm">/* === カラーバリアント（スキン） === */</span>\n.button--primary {\n  <span class="kw">background</span>: <span class="fn">var</span>(--color-primary);\n  <span class="kw">color</span>: white;\n}\n.<span class="kw">button--primary</span>:<span class="kw">hover</span>:<span class="fn">not</span>(:disabled) {\n  <span class="kw">background</span>: <span class="fn">var</span>(--color-primary-hover);\n}\n\n.button--secondary {\n  <span class="kw">background</span>: transparent;\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-primary);\n  <span class="kw">border-color</span>: <span class="fn">var</span>(--color-primary);\n}\n.<span class="kw">button--secondary</span>:<span class="kw">hover</span>:<span class="fn">not</span>(:disabled) {\n  <span class="kw">background</span>: <span class="fn">rgba</span>(<span class="nu">108</span>,<span class="nu">71</span>,<span class="nu">255</span>,<span class="nu">0.08</span>);\n}\n\n.button--danger {\n  <span class="kw">background</span>: <span class="fn">var</span>(--color-danger);\n  <span class="kw">color</span>: white;\n}\n\n<span class="cm">/* === サイズバリアント === */</span>\n.button--sm {\n  <span class="kw">--btn-padding-v</span>: <span class="nu">4px</span>;\n  <span class="kw">--btn-padding-h</span>: <span class="nu">12px</span>;\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-label);\n}\n\n.button--lg {\n  <span class="kw">--btn-padding-v</span>: <span class="nu">12px</span>;\n  <span class="kw">--btn-padding-h</span>: <span class="nu">24px</span>;\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-body);\n}\n',
   "code-8":
     '<span class="cm">/* ライトモード（デフォルト） */</span>\n:root {\n  <span class="kw">--color-bg-base</span>:        <span class="st">#ffffff</span>;\n  <span class="kw">--color-bg-surface</span>:     <span class="st">#f1f5f9</span>;\n  <span class="kw">--color-text-primary</span>:   <span class="st">#0f172a</span>;\n  <span class="kw">--color-text-secondary</span>: <span class="st">#64748b</span>;\n  <span class="kw">--color-border</span>:         <span class="st">#e2e8f0</span>;\n}\n\n<span class="cm">/* ダークモード（OS設定に自動対応） */</span>\n<span class="kw">@media</span> (<span class="kw">prefers-color-scheme</span>: dark) {\n  :root {\n    <span class="kw">--color-bg-base</span>:        <span class="st">#07111e</span>;\n    <span class="kw">--color-bg-surface</span>:     <span class="st">#0d1b2a</span>;\n    <span class="kw">--color-text-primary</span>:   <span class="st">#e2e8f0</span>;\n    <span class="kw">--color-text-secondary</span>: <span class="st">#94a3b8</span>;\n    <span class="kw">--color-border</span>:         <span class="st">#162030</span>;\n  }\n}\n\n<span class="cm">/* data属性でユーザーが手動切り替えもできる */</span>\n[data-theme=<span class="st">"dark"</span>] {\n  <span class="kw">--color-bg-base</span>:        <span class="st">#07111e</span>;\n  <span class="cm">/* ... */</span>\n}\n\nbody {\n  <span class="kw">background</span>: <span class="fn">var</span>(--color-bg-base);\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-text-primary);\n  <span class="cm">/* ↑ すべてのコンポーネントがトークンを参照しているので\n     :root の変数を切り替えるだけで全体が変わる */</span>\n}\n',
+  "code-9":
+    '<span class="cm">/* 詳細度: (0,0,0,1) — タグ1個 */</span>\np { <span class="kw">color</span>: black; }\n\n<span class="cm">/* 詳細度: (0,0,1,0) — クラス1個 → 上より勝つ */</span>\n.text { <span class="kw">color</span>: blue; }\n\n<span class="cm">/* 詳細度: (0,1,0,0) — ID1個 → さらに勝つ */</span>\n#content { <span class="kw">color</span>: green; }\n\n<span class="cm">/* 詳細度: (0,1,1,1) — ID+クラス+タグ → 最も強い */</span>\np.text#content { <span class="kw">color</span>: red; }\n\n<span class="cm">/* =========================================\n   複合セレクタの計算練習\n   ========================================= */</span>\n\n<span class="cm">/* (0,0,1,1) — クラス1 + タグ1 */</span>\nnav li { <span class="kw">color</span>: gray; }\n\n<span class="cm">/* (0,0,2,1) — クラス2 + タグ1 */</span>\n.nav .nav-item { <span class="kw">color</span>: blue; }  <span class="cm">/* こちらが勝つ */</span>\n\n<span class="cm">/* (0,0,1,2) — クラス1 + タグ2 */</span>\nul li.active { <span class="kw">color</span>: red; }    <span class="cm">/* (0,0,1,2) vs (0,0,2,1) → (0,0,2,1) が勝つ */</span>\n\n<span class="cm">/* =========================================\n   !important — 最終手段（基本的に使わない）\n   ========================================= */</span>\n\n<span class="cm">/* 詳細度がどれだけ高くても !important が勝つ */</span>\n#very-specific-selector.and-class { <span class="kw">color</span>: purple; }\n.simple-class { <span class="kw">color</span>: orange !important; } <span class="cm">/* これが勝つ */</span>\n',
+  "code-10":
+    '<span class="cm">/* レイヤーの優先順位を宣言（後のレイヤーが強い） */</span>\n<span class="kw">@layer</span> base, tokens, components, utilities;\n\n<span class="kw">@layer</span> base {\n  <span class="cm">/* リセットCSS・デフォルトスタイル */</span>\n  * { <span class="kw">box-sizing</span>: border-box; }\n  p { <span class="kw">margin</span>: <span class="nu">0</span>; }\n}\n\n<span class="kw">@layer</span> tokens {\n  <span class="cm">/* デザイントークン */</span>\n  :root {\n    <span class="kw">--color-primary</span>: <span class="st">#6C47FF</span>;\n  }\n}\n\n<span class="kw">@layer</span> components {\n  <span class="cm">/* コンポーネント（詳細度が高くてもbaseに勝てる） */</span>\n  .button {\n    <span class="kw">background</span>: <span class="fn">var</span>(--color-primary);\n  }\n}\n\n<span class="kw">@layer</span> utilities {\n  <span class="cm">/* ユーティリティクラス — 最強 */</span>\n  .bg-transparent { <span class="kw">background</span>: transparent !important; }\n}\n',
+  "code-11":
+    '<span class="cm">&lt;!-- Block: .card（独立したコンポーネント）\n     Modifier: .card--featured（状態・バリアント）\n     Element: .card__image .card__title などのBlock内要素 --&gt;</span>\n&lt;<span class="kw">article</span> <span class="kw">class</span>=<span class="st">"card card--featured"</span>&gt;\n  &lt;<span class="kw">img</span>     <span class="kw">class</span>=<span class="st">"card__image"</span> <span class="kw">src</span>=<span class="st">"thumbnail.jpg"</span> <span class="kw">alt</span>=<span class="st">"記事のサムネイル"</span>&gt;\n  &lt;<span class="kw">div</span>     <span class="kw">class</span>=<span class="st">"card__body"</span>&gt;\n    &lt;<span class="kw">span</span>  <span class="kw">class</span>=<span class="st">"card__category"</span>&gt;デザイン&lt;/<span class="kw">span</span>&gt;\n    &lt;<span class="kw">h2</span>    <span class="kw">class</span>=<span class="st">"card__title"</span>&gt;デザインシステム入門&lt;/<span class="kw">h2</span>&gt;\n    &lt;<span class="kw">p</span>     <span class="kw">class</span>=<span class="st">"card__description"</span>&gt;UIの一貫性を保つ方法を解説...&lt;/<span class="kw">p</span>&gt;\n    &lt;<span class="kw">div</span>   <span class="kw">class</span>=<span class="st">"card__footer"</span>&gt;\n      &lt;<span class="kw">a</span>   <span class="kw">class</span>=<span class="st">"card__link card__link--primary"</span> <span class="kw">href</span>=<span class="st">"#"</span>&gt;続きを読む →&lt;/<span class="kw">a</span>&gt;\n      &lt;<span class="kw">span</span> <span class="kw">class</span>=<span class="st">"card__meta"</span>&gt;<span class="nu">5</span>分で読める&lt;/<span class="kw">span</span>&gt;\n    &lt;/<span class="kw">div</span>&gt;\n  &lt;/<span class="kw">div</span>&gt;\n&lt;/<span class="kw">article</span>&gt;',
+  "code-12":
+    '<span class="cm">/* Block — 独立したコンポーネントの基本スタイル */</span>\n.card {\n  <span class="kw">background</span>: <span class="fn">var</span>(--color-bg-surface);\n  <span class="kw">border-radius</span>: <span class="fn">var</span>(--radius-lg);\n  <span class="kw">overflow</span>: hidden;\n  <span class="kw">border</span>: <span class="nu">1px</span> solid <span class="fn">var</span>(--color-border);\n  <span class="kw">transition</span>: box-shadow <span class="nu">0.2s</span>, transform <span class="nu">0.2s</span>;\n}\n\n<span class="cm">/* Block Modifier — カードのバリアント */</span>\n.card--featured {\n  <span class="kw">border-color</span>: <span class="fn">var</span>(--color-primary);\n  <span class="kw">box-shadow</span>: <span class="nu">0</span> <span class="nu">0</span> <span class="nu">0</span> <span class="nu">1px</span> <span class="fn">var</span>(--color-primary);\n}\n\n<span class="cm">/* Elements — Block の内部要素 */</span>\n.card__image {\n  <span class="kw">width</span>: <span class="nu">100</span>%;\n  <span class="kw">aspect-ratio</span>: <span class="nu">16</span> / <span class="nu">9</span>;\n  <span class="kw">object-fit</span>: cover;\n}\n\n.card__body {\n  <span class="kw">padding</span>: <span class="fn">var</span>(--space-component-lg);\n}\n\n.card__category {\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-label);\n  <span class="kw">font-weight</span>: <span class="nu">600</span>;\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-primary);\n  <span class="kw">text-transform</span>: uppercase;\n  <span class="kw">letter-spacing</span>: <span class="nu">0.06em</span>;\n}\n\n.card__title {\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-xl);\n  <span class="kw">font-weight</span>: <span class="nu">700</span>;\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-text-primary);\n  <span class="kw">margin</span>: <span class="fn">var</span>(--space-component-xs) <span class="nu">0</span>;\n  <span class="kw">line-height</span>: <span class="nu">1.3</span>;\n}\n\n.card__description {\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-body-sm);\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-text-secondary);\n  <span class="kw">line-height</span>: <span class="nu">1.6</span>;\n}\n\n.card__footer {\n  <span class="kw">display</span>: flex;\n  <span class="kw">align-items</span>: center;\n  <span class="kw">justify-content</span>: space-between;\n  <span class="kw">margin-top</span>: <span class="fn">var</span>(--space-component-md);\n}\n\n.card__link {\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-body-sm);\n  <span class="kw">font-weight</span>: <span class="nu">500</span>;\n  <span class="kw">text-decoration</span>: none;\n}\n\n<span class="cm">/* Element Modifier */</span>\n.card__link--primary { <span class="kw">color</span>: <span class="fn">var</span>(--color-primary); }\n\n.card__meta {\n  <span class="kw">font-size</span>: <span class="fn">var</span>(--text-label);\n  <span class="kw">color</span>: <span class="fn">var</span>(--color-text-secondary);\n}\n',
+  "code-13":
+    '.button-primary {\n  <span class="kw">display</span>: inline-flex;   <span class="cm">/* ← 重複 */</span>\n  <span class="kw">padding</span>: <span class="nu">8px</span> <span class="nu">16px</span>;      <span class="cm">/* ← 重複 */</span>\n  <span class="kw">border-radius</span>: <span class="nu">6px</span>;     <span class="cm">/* ← 重複 */</span>\n  <span class="kw">font-weight</span>: <span class="nu">500</span>;       <span class="cm">/* ← 重複 */</span>\n  <span class="kw">background</span>: <span class="st">#6C47FF</span>;\n  <span class="kw">color</span>: white;\n}\n\n.button-danger {\n  <span class="kw">display</span>: inline-flex;   <span class="cm">/* 同じ */</span>\n  <span class="kw">padding</span>: <span class="nu">8px</span> <span class="nu">16px</span>;      <span class="cm">/* 同じ */</span>\n  <span class="kw">border-radius</span>: <span class="nu">6px</span>;     <span class="cm">/* 同じ */</span>\n  <span class="kw">font-weight</span>: <span class="nu">500</span>;       <span class="cm">/* 同じ */</span>\n  <span class="kw">background</span>: <span class="st">#ef4444</span>;\n  <span class="kw">color</span>: white;\n}\n',
+  "code-14":
+    '<span class="cm">/* 構造クラス（Shape / Structure） */</span>\n.btn {\n  <span class="kw">display</span>: inline-flex;\n  <span class="kw">padding</span>: <span class="nu">8px</span> <span class="nu">16px</span>;\n  <span class="kw">border-radius</span>: <span class="nu">6px</span>;\n  <span class="kw">font-weight</span>: <span class="nu">500</span>;\n}\n\n<span class="cm">/* スキンクラス（Skin） */</span>\n.btn-primary {\n  <span class="kw">background</span>: <span class="st">#6C47FF</span>;\n  <span class="kw">color</span>: white;\n}\n\n.btn-danger {\n  <span class="kw">background</span>: <span class="st">#ef4444</span>;\n  <span class="kw">color</span>: white;\n}\n\n<span class="cm">/* HTML: 組み合わせて使う */</span>\n<span class="cm">/* &lt;button class="btn btn-primary"&gt; */</span>\n<span class="cm">/* &lt;button class="btn btn-danger"&gt; */</span>\n',
+  "code-15":
+    '<span class="cm">/* =======================================\n   1. Base — リセット・デフォルトスタイル\n   ======================================= */</span>\n*, *::before, *::after { <span class="kw">box-sizing</span>: border-box; }\nbody   { <span class="kw">font-family</span>: <span class="fn">var</span>(--font-body); <span class="kw">line-height</span>: <span class="nu">1.7</span>; }\nimg    { <span class="kw">max-width</span>: <span class="nu">100</span>%; <span class="kw">display</span>: block; }\na      { <span class="kw">color</span>: <span class="fn">var</span>(--color-primary); }\n\n<span class="cm">/* =======================================\n   2. Layout — ページレイアウト構造\n   プレフィックス: .l-\n   ======================================= */</span>\n.l-container {\n  <span class="kw">max-width</span>: <span class="nu">1200px</span>;\n  <span class="kw">margin</span>: <span class="nu">0</span> auto;\n  <span class="kw">padding</span>: <span class="nu">0</span> <span class="fn">var</span>(--space-layout-md);\n}\n\n.l-grid {\n  <span class="kw">display</span>: grid;\n  <span class="kw">grid-template-columns</span>: 1fr 3fr;\n  <span class="kw">gap</span>: <span class="fn">var</span>(--space-layout-md);\n}\n\n.l-sidebar  { <span class="kw">grid-column</span>: <span class="nu">1</span>; }\n.l-main     { <span class="kw">grid-column</span>: <span class="nu">2</span>; }\n\n<span class="cm">/* =======================================\n   3. Module — 再利用可能なUI部品\n   BEM記法と組み合わせることが多い\n   ======================================= */</span>\n.card { <span class="cm">/* ... */</span> }\n.card__title { <span class="cm">/* ... */</span> }\n.card--featured { <span class="cm">/* ... */</span> }\n\n.nav { <span class="kw">display</span>: flex; <span class="kw">gap</span>: <span class="nu">0</span>; }\n.nav__item { <span class="cm">/* ... */</span> }\n.nav__link { <span class="cm">/* ... */</span> }\n\n<span class="cm">/* =======================================\n   4. State — 状態変化\n   プレフィックス: .is-  .has-\n   ======================================= */</span>\n.is-active   { <span class="kw">background</span>: <span class="fn">var</span>(--color-primary); }\n.is-hidden   { <span class="kw">display</span>: none !important; }\n.is-loading  { <span class="kw">opacity</span>: <span class="nu">0.5</span>; <span class="kw">pointer-events</span>: none; }\n.is-disabled { <span class="kw">cursor</span>: not-allowed; <span class="kw">opacity</span>: <span class="nu">0.4</span>; }\n.has-error   { <span class="kw">border-color</span>: <span class="fn">var</span>(--color-danger); }\n\n<span class="cm">/* =======================================\n   5. Theme — ビジュアルテーマ切り替え\n   プレフィックス: .theme-\n   ======================================= */</span>\n.theme-dark {\n  <span class="kw">--color-bg-base</span>:      <span class="st">#07111e</span>;\n  <span class="kw">--color-text-primary</span>: <span class="st">#e2e8f0</span>;\n}\n\n.theme-high-contrast {\n  <span class="kw">--color-primary</span>: <span class="st">#0000ff</span>;\n  <span class="kw">--color-text-primary</span>: <span class="st">#000000</span>;\n}\n',
+  "code-16":
+    '&lt;<span class="kw">button</span> <span class="kw">class</span>=<span class="st">"submit-btn"</span>&gt;送信&lt;/<span class="kw">button</span>&gt;',
+  "code-17":
+    '&lt;<span class="kw">button</span> <span class="kw">class</span>=<span class="st">"px-4 py-2 bg-purple-600\n  text-white font-medium rounded-md\n  hover:bg-purple-700 focus:outline-none\n  focus:ring-2 focus:ring-purple-500\n  focus:ring-offset-2 transition-colors"</span>&gt;\n  送信\n&lt;/<span class="kw">button</span>&gt;',
 } as const;
 
 export default function Page() {
@@ -578,6 +604,491 @@ export default function Page() {
                 dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-8"] }}
               />
             </div>
+          </div>
+        </section>
+        <section className="section" id="s2">
+          <div className="section-header">
+            <span className="section-num">{"Ch. 2"}</span>
+            <h2>{"CSS設計の基礎原則"}</h2>
+          </div>
+          <div className="subsection" id="s2-1">
+            <h3>{"2.1 CSSカスケードと詳細度"}</h3>
+            <p>
+              {"CSSで最も重要な概念のひとつが「"}
+              <strong>{"カスケード（Cascade）"}</strong>
+              {
+                "」です。複数のスタイルが同じ要素に適用された場合、どれが優先されるかを3つのルールで決定します。"
+              }
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="css_cascade">
+                <MermaidDiagram chart={DIAGRAMS.css_cascade} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.1 — CSSカスケードの優先度決定ルール"}</div>
+            </div>
+            <h4 style={{ color: "var(--text-primary)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"詳細度（Specificity）の計算方法"}
+            </h4>
+            <p>
+              {"詳細度は "}
+              <strong>{"(a, b, c)"}</strong>
+              {" の3桁で計算します（インラインは特別扱い）。大きい桁が優先されます。"}
+            </p>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{"セレクタの種類"}</th>
+                    <th>{"詳細度"}</th>
+                    <th>{"ビジュアル"}</th>
+                    <th>{"例"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>{"インラインスタイル"}</strong>
+                    </td>
+                    <td>
+                      <code>{"(1,0,0,0)"}</code>
+                    </td>
+                    <td>
+                      <div className="spec-visual">
+                        <div className="spec-box spec-a">{"1"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-b">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-c">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-d">{"0"}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <code>{'style="color:red"'}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"IDセレクタ"}</strong>
+                    </td>
+                    <td>
+                      <code>{"(0,1,0,0)"}</code>
+                    </td>
+                    <td>
+                      <div className="spec-visual">
+                        <div className="spec-box spec-a">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-b">{"1"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-c">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-d">{"0"}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <code>{"#header"}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"クラス・属性・疑似クラス"}</strong>
+                    </td>
+                    <td>
+                      <code>{"(0,0,1,0)"}</code>
+                    </td>
+                    <td>
+                      <div className="spec-visual">
+                        <div className="spec-box spec-a">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-b">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-c">{"1"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-d">{"0"}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <code>{".button"}</code>
+                      {", "}
+                      <code>{'[type="text"]'}</code>
+                      {", "}
+                      <code>{":hover"}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"タグ・疑似要素"}</strong>
+                    </td>
+                    <td>
+                      <code>{"(0,0,0,1)"}</code>
+                    </td>
+                    <td>
+                      <div className="spec-visual">
+                        <div className="spec-box spec-a">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-b">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-c">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-d">{"1"}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <code>{"div"}</code>
+                      {", "}
+                      <code>{"p"}</code>
+                      {", "}
+                      <code>{"::before"}</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"ユニバーサル・継承"}</strong>
+                    </td>
+                    <td>
+                      <code>{"(0,0,0,0)"}</code>
+                    </td>
+                    <td>
+                      <div className="spec-visual">
+                        <div className="spec-box spec-a">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-b">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-c">{"0"}</div>
+                        <span className="spec-sep">{","}</span>
+                        <div className="spec-box spec-d">{"0"}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <code>{"*"}</code>
+                      {", "}
+                      <code>{"inherit"}</code>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">
+                  {"詳細度の計算例 — 数値を比べることで適用順が決まる"}
+                </span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-9"] }}
+              />
+            </div>
+            <div className="callout danger">
+              <span className="callout-icon">{"⚠️"}</span>
+              <div className="callout-body">
+                <h4>{"!important の多用は厳禁"}</h4>
+                <p>
+                  <code>{"!important"}</code>
+                  {
+                    " は「詳細度の戦争」を引き起こし、後からスタイルを変更することが困難になります。"
+                  }
+                  <code>{"!important"}</code>
+                  {
+                    " を使いたくなったら、設計を見直すサインです。CSS設計手法（BEM等）を適切に使えば、ほぼ必要ありません。出典: "
+                  }
+                  <Ext href="https://developer.mozilla.org/ja/docs/Web/CSS/Specificity">
+                    {"MDN — 詳細度"}
+                  </Ext>
+                </p>
+              </div>
+            </div>
+            <h4 style={{ color: "var(--text-primary)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"CSS Cascade Layers（@layer）— 最新の解決策"}
+            </h4>
+            <p>
+              {
+                "CSS Layers を使うと、詳細度に依存せずスタイルの優先順位を明示的に制御できます（2023年以降、全主要ブラウザ対応）。"
+              }
+            </p>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">{"@layer — レイヤーで優先度を明示管理"}</span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-10"] }}
+              />
+            </div>
+            <div className="callout info">
+              <span className="callout-icon">{"🔗"}</span>
+              <div className="callout-body">
+                <h4>{"参考：CSS Cascade について深く学ぶ"}</h4>
+                <p>
+                  <Ext href="https://developer.mozilla.org/ja/docs/Web/CSS/Cascade">
+                    {"MDN — カスケード、詳細度、継承"}
+                  </Ext>
+                  {" | "}
+                  <Ext href="https://web.dev/learn/css/the-cascade">{"web.dev — The Cascade"}</Ext>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="subsection" id="s2-2">
+            <h3>{"2.2 主要なCSS設計手法"}</h3>
+            <p>
+              {
+                "CSS設計には複数のアプローチがあります。それぞれの特徴を理解し、プロジェクトに合ったものを選択しましょう。"
+              }
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="css_methodologies">
+                <MermaidDiagram chart={DIAGRAMS.css_methodologies} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.2 — 主要CSS設計手法の概要"}</div>
+            </div>
+            <h4 style={{ color: "var(--sky)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"🔷 BEM（Block Element Modifier）"}
+            </h4>
+            <p>
+              {"最も広く普及しているCSS命名規則です。"}
+              <strong>{"Block__Element--Modifier"}</strong>
+              {" の形式でクラス名を構成します。"}
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="bem_structure">
+                <MermaidDiagram chart={DIAGRAMS.bem_structure} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.3 — BEM の3要素と命名規則"}</div>
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"HTML + CSS"}</span>
+                <span className="code-desc">{"BEM — カードコンポーネントの完全な例"}</span>
+              </div>
+              <pre
+                className="language-html"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-11"] }}
+              />
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">{"BEM スタイル定義（フラットで詳細度が低い）"}</span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-12"] }}
+              />
+            </div>
+            <div className="divider"></div>
+            <h4 style={{ color: "var(--amber)", margin: "0px 0px 12px", fontSize: "1rem" }}>
+              {"🔶 OOCSS（Object-Oriented CSS）"}
+            </h4>
+            <p>
+              {"「"}
+              <strong>{"構造（Structure）"}</strong>
+              {"」と「"}
+              <strong>{"スキン（Skin）"}</strong>
+              {"」を分離し、再利用性を高めるアプローチです。Nicole Sullivan が提唱しました。"}
+            </p>
+            <div className="comp-grid">
+              <div className="comp-card bad">
+                <div className="comp-head">{"❌ NG — 構造とスキンが混在（重複多数）"}</div>
+                <pre
+                  className="language-css"
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-13"] }}
+                />
+              </div>
+              <div className="comp-card good">
+                <div className="comp-head">{"✅ OK — 構造とスキンを分離"}</div>
+                <pre
+                  className="language-css"
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-14"] }}
+                />
+              </div>
+            </div>
+            <div className="callout info">
+              <span className="callout-icon">{"📚"}</span>
+              <div className="callout-body">
+                <h4>{"参考：OOCSS"}</h4>
+                <p>
+                  {"Nicole Sullivan による OOCSS の原典: "}
+                  <Ext href="https://github.com/stubbornella/oocss/wiki">
+                    {"github.com/stubbornella/oocss"}
+                  </Ext>
+                </p>
+              </div>
+            </div>
+            <div className="divider"></div>
+            <h4 style={{ color: "var(--emerald)", margin: "0px 0px 12px", fontSize: "1rem" }}>
+              {"🔷 SMACSS（Scalable and Modular Architecture for CSS）"}
+            </h4>
+            <p>
+              {"CSSのルールを5つのカテゴリに分類する設計手法です。Jonathan Snook が考案しました。"}
+            </p>
+            <div className="mermaid-wrap">
+              <div className="mermaid" data-diagram="smacss_categories">
+                <MermaidDiagram chart={DIAGRAMS.smacss_categories} preserveNaturalScale={true} />
+              </div>
+              <div className="mermaid-label">{"図2.4 — SMACSS の5カテゴリ分類"}</div>
+            </div>
+            <div className="code-wrap">
+              <div className="code-header">
+                <span className="code-lang">{"CSS"}</span>
+                <span className="code-desc">{"SMACSS — 各カテゴリの実装例"}</span>
+              </div>
+              <pre
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-15"] }}
+              />
+            </div>
+            <div className="divider"></div>
+            <h4 style={{ color: "var(--violet)", margin: "0px 0px 12px", fontSize: "1rem" }}>
+              {"⚡ Utility-First（Tailwind CSS的アプローチ）"}
+            </h4>
+            <p>
+              {
+                "単一の目的を持つ小さなクラス（ユーティリティ）を組み合わせてスタイルを構成します。Tailwind CSS がこのアプローチを普及させました。"
+              }
+            </p>
+            <div className="comp-grid">
+              <div className="comp-card bad">
+                <div className="comp-head">{"従来のアプローチ"}</div>
+                <pre
+                  className="language-html"
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-16"] }}
+                />
+              </div>
+              <div className="comp-card good">
+                <div className="comp-head">{"✅ Utility-First（Tailwind CSS風）"}</div>
+                <pre
+                  className="language-html"
+                  dangerouslySetInnerHTML={{ __html: CODE_BLOCKS["code-17"] }}
+                />
+              </div>
+            </div>
+            <div className="callout warn">
+              <span className="callout-icon">{"⚡"}</span>
+              <div className="callout-body">
+                <h4>{"Utility-First のトレードオフ"}</h4>
+                <p>
+                  {
+                    "クラス名を覚えれば実装が速く、CSSファイルが肥大化しません。一方でHTMLが長くなり、チームで一貫性を保つには規律が必要です。参考: "
+                  }
+                  <Ext href="https://tailwindcss.com/docs">{"Tailwind CSS 公式ドキュメント"}</Ext>
+                </p>
+              </div>
+            </div>
+            <h4 style={{ color: "var(--text-primary)", margin: "28px 0px 12px", fontSize: "1rem" }}>
+              {"各手法の比較"}
+            </h4>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{"手法"}</th>
+                    <th>{"学習コスト"}</th>
+                    <th>{"保守性"}</th>
+                    <th>{"柔軟性"}</th>
+                    <th>{"HTML可読性"}</th>
+                    <th>{"適したプロジェクト"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>{"BEM"}</strong>
+                    </td>
+                    <td>
+                      <span className="badge low">{"低"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>{"中〜大規模、チーム開発"}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"OOCSS"}</strong>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>{"大規模、再利用性重視"}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"SMACSS"}</strong>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>{"大規模、構造化重視"}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"Utility-First"}</strong>
+                    </td>
+                    <td>
+                      <span className="badge low">{"低*"}</span>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge high">{"低"}</span>
+                    </td>
+                    <td>{"小〜大規模、プロトタイプ"}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>{"CSS Modules"}</strong>
+                    </td>
+                    <td>
+                      <span className="badge medium">{"中"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>
+                      <span className="badge low">{"高"}</span>
+                    </td>
+                    <td>{"React/Vue コンポーネント"}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style={{ fontSize: "1rem", color: "var(--text-muted)" }}>
+              {"*ユーティリティ名は Tailwind CSS の命名規則を学習する必要がある"}
+            </p>
           </div>
         </section>
       </main>
