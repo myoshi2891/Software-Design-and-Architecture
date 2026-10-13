@@ -1,5 +1,6 @@
 # Software Architecture Design - Project Instructions
 
+Updated 2026-10-13
 このプロジェクトは、ソフトウェアアーキテクチャおよび設計原則に関する包括的なガイドラインを管理するドキュメントリポジトリです。
 このファイルに記載された指示は、AIエージェントが作業を行う際の**絶対的なルール**として機能します。
 
@@ -102,6 +103,13 @@ flowchart TD
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx`
+    （URL `/product-and-enterprise/minimum-viable-product-comprehensive-guide`）。14章・Mermaid 17図・表15件・
+    リスト69項目・YAMLコード1件を忠実移植。本文は Server Component、現在地表示は
+    `MvpSidebar.tsx` に分離。原本HTML・Markdownは
+    `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
+    元HTMLとの全文・構造・CSS宣言の照合、実Mermaid構文、原本SHA-256を契約テストで検証する。
+    今回の移行はユーザー指定により npm を使用し、ビルド省略・目視確認はユーザーが担当する。
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +

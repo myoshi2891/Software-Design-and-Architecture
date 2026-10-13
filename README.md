@@ -1,5 +1,6 @@
 # Software Architecture Design - Comprehensive Guide
 
+最終更新日: 2026-10-13
 このプロジェクトは、ソフトウェアアーキテクチャ、デザイン原則、開発手法、およびプロダクト/エンタープライズ管理に関する包括的な知識を体系化したガイド集です。
 
 ## プロジェクトの目的
@@ -75,6 +76,12 @@ Testing Library（契約テスト）を採用しています。
 ページ集合の一致は契約テストで保証しています。
 
 - 移行済みページ:
+  - [`/product-and-enterprise/minimum-viable-product-comprehensive-guide`](web-next/app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx)
+    — MVP 完全ガイドを忠実移植（14章・Mermaid 17図・表15件・リスト69項目・YAMLコード1件）。
+    サイドバーの現在地表示をクライアント側に分離し、本文は Server Component を維持。
+    原本HTML・Markdownは `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
+    移行検証は `cd web-next` 後に `npm run test` / `npm run lint` / `npm run typecheck`。
+    今回はビルドを省略し、図解・文字・リストの表示はユーザーが目視確認する。
   - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
     — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
     Mermaid 図・コードハイライト・国際資格ガイド）
