@@ -55,7 +55,7 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const hrefs = [...container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
     const planned = guideCatalog.flatMap((c) => c.entries).filter((e) => e.status === "planned");
-    expect(planned.length).toBe(4);
+    expect(planned.length).toBe(3);
     for (const entry of planned) {
       expect(hrefs).not.toContain(entry.href);
     }
@@ -63,7 +63,7 @@ describe("HomePage (guide index)", () => {
 
   it("marks planned rows with a visible status note", () => {
     const container = renderIndex();
-    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(4);
+    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(3);
     for (const row of container.querySelectorAll(".guide-row.is-planned")) {
       expect(row.textContent).toContain("準備中");
     }
@@ -81,8 +81,8 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const text = container.textContent ?? "";
     expect(text).toContain("29");
-    expect(text).toContain("25");
-    expect(text).toContain("4");
+    expect(text).toContain("26");
+    expect(text).toContain("3");
   });
 
   it("normalizes full-width search input and searches summaries", () => {
@@ -124,4 +124,13 @@ it("links the published MVP guide from the index", () => {
       'a[href="/product-and-enterprise/minimum-viable-product-comprehensive-guide"]'
     )
   ).toHaveTextContent("MVP");
+});
+
+it("links the published TOGAF guide from the index", () => {
+  const container = renderIndex();
+  expect(
+    container.querySelector(
+      'a[href="/product-and-enterprise/togaf-certification-comprehensive-guide"]'
+    )
+  ).toHaveTextContent("TOGAF");
 });

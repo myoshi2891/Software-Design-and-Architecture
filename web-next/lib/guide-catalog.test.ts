@@ -22,10 +22,10 @@ describe("guideCatalog structure", () => {
     expect(allEntries().length).toBe(29);
   });
 
-  it("splits into 25 published and 4 planned guides", () => {
+  it("splits into 26 published and 3 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(25);
-    expect(entries.filter((e) => e.status === "planned").length).toBe(4);
+    expect(entries.filter((e) => e.status === "published").length).toBe(26);
+    expect(entries.filter((e) => e.status === "planned").length).toBe(3);
   });
 
   it("uses only the two known status values", () => {
@@ -71,6 +71,15 @@ it("publishes the MVP guide under product-and-enterprise", () => {
   expect(
     category?.entries.find(
       (entry) => entry.href === "/product-and-enterprise/minimum-viable-product-comprehensive-guide"
+    )?.status
+  ).toBe("published");
+});
+
+it("publishes the TOGAF guide under product-and-enterprise", () => {
+  const category = guideCatalog.find((entry) => entry.id === "product-and-enterprise");
+  expect(
+    category?.entries.find(
+      (entry) => entry.href === "/product-and-enterprise/togaf-certification-comprehensive-guide"
     )?.status
   ).toBe("published");
 });
