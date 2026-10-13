@@ -84,8 +84,11 @@ function shape(element: Element): unknown {
       (value) => value !== "active" && value !== "visible"
     ),
     id: element.id,
+    // Progress width is dynamic and is verified independently by Navigation tests.
     style: Object.fromEntries(
-      Array.from(style ?? [], (property) => [property, style.getPropertyValue(property)])
+      Array.from(style ?? [])
+        .filter((property) => element.id !== "progress-fill" || property !== "width")
+        .map((property) => [property, style.getPropertyValue(property)])
     ),
     rowSpan: element.getAttribute("rowspan"),
     colSpan: element.getAttribute("colspan"),

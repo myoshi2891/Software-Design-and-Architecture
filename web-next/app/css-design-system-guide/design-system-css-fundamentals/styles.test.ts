@@ -82,7 +82,7 @@ describe("CSS fundamentals scoped styling", () => {
   });
   it("keeps number alignment, responsive layout and readable diagram framing", () => {
     expect(value(".step-num", "flex-shrink")).toBe("0");
-    expect(value(".spec-box", "font-family")).toBe("var(--font-mono)");
+    expect(value(".spec-visual", "font-family")).toBe("var(--font-mono)");
     expect(value(".mermaid-wrap", "overflow-x")).toBe("auto");
     expect(value(".mermaid-wrap .mermaid", "justify-content")).toBe("safe center");
     expect(value(".mermaid svg foreignObject", "overflow")).toBe("visible");
