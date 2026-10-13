@@ -173,3 +173,72 @@ describe("TOGAF stakeholders and governance", () => {
     });
   }
 });
+
+describe("TOGAF exam strategy roadmap and references", () => {
+  for (const id of ["strategy", "roadmap", "references"]) {
+    it(`preserves all wording structure icons and links in ${id}`, () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+      expect(container.querySelectorAll(".section")).toHaveLength(1);
+    });
+    it(`parses all real Mermaid diagrams in ${id}`, async () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = diagram.getAttribute("data-chart") ?? "";
+        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
+});
+
+it("preserves the complete inventory across all twelve selectable chapters", () => {
+  const { container, getByRole } = render(<Page />);
+  vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+  const inventory: Record<string, number> = {
+    h1: 12,
+    h2: 38,
+    table: 10,
+    pre: 0,
+    ul: 4,
+    ol: 0,
+    li: 14,
+    ".callout": 7,
+    ".card": 6,
+    ".bp-item": 25,
+    ".phase-item": 9,
+    ".domain-card": 4,
+    ".week-item": 7,
+    ".tl-item": 6,
+    ".source-item": 25,
+    ".diagram-label": 5,
+    '[data-testid="mermaid-diagram"]': 17,
+  };
+  const totals = Object.fromEntries(Object.keys(inventory).map((selector) => [selector, 0]));
+  let iconCount = container.querySelectorAll(".sidebar svg.tabler-icon").length;
+  const diagramIds: string[] = [];
+  for (const button of source.querySelectorAll("button.nav-item")) {
+    const label = (button.textContent ?? "").trim().replace(/\s+/g, " ");
+    fireEvent.click(getByRole("button", { name: label }));
+    const selected = container.querySelector("main .section") as Element;
+    expect(selected).not.toBeNull();
+    expect(selected.id).toBe(button.getAttribute("onclick")?.match(/show\('([^']+)'/)?.[1]);
+    assertFaithful(selected, source.getElementById(selected.id) as Element);
+    for (const selector of Object.keys(inventory))
+      totals[selector] += selected.querySelectorAll(selector).length;
+    iconCount += selected.querySelectorAll("svg.tabler-icon").length;
+    diagramIds.push(
+      ...Array.from(selected.querySelectorAll('[data-testid="mermaid-diagram"]'), (el) => el.id)
+    );
+  }
+  expect(totals).toEqual(inventory);
+  expect(iconCount).toBe(50);
+  expect(diagramIds).toEqual(Array.from({ length: 17 }, (_, index) => `diag-${index + 1}`));
+  expect(container.querySelectorAll("script, link, i.ti, [onclick]")).toHaveLength(0);
+});
