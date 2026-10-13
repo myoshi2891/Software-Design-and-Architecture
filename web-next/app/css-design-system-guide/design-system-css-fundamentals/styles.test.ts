@@ -87,6 +87,8 @@ describe("CSS fundamentals scoped styling", () => {
     expect(value(".mermaid-wrap .mermaid", "justify-content")).toBe("safe center");
     expect(value(".mermaid svg foreignObject", "overflow")).toBe("visible");
     expect(value("#main", "margin-left", "(max-width: 900px)")).toBe("0");
+    // 画面外へ退避したサイドバーのリンクをフォーカス順序から除外する
+    expect(value("#sidebar", "visibility", "(max-width: 900px)")).toBe("hidden");
     expect(value(".comp-grid", "grid-template-columns", "(max-width: 900px)")).toBe("1fr");
   });
 });

@@ -17751,7 +17751,7 @@ td code, th code {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  #sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  #sidebar { transform: translateX(-100%); visibility: hidden; transition: transform 0.3s; }
   #main { margin-left: 0; padding: 0 20px 80px; }
   .comp-grid { grid-template-columns: 1fr; }
 }
