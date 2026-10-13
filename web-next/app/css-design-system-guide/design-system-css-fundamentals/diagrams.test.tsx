@@ -35,9 +35,8 @@ it("renders all twelve separate Mermaid diagrams at natural scale and keeps them
     const key = element.getAttribute("data-diagram") ?? "";
     expect(element.textContent).toBe(normalizeChart(SOURCE_DIAGRAMS[key]));
     const svg = element.querySelector("svg") as SVGSVGElement;
-    const width = key === "learning_path" ? "880px" : "400px";
-    expect(svg.style.width).toBe(width);
-    expect(svg.style.minWidth).toBe(width);
+    expect(svg.style.width).toBe("400px");
+    expect(svg.style.minWidth).toBe("400px");
     expect(svg.hasAttribute("width")).toBe(false);
     expect(svg.hasAttribute("height")).toBe(false);
   }
