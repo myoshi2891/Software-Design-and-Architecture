@@ -1,19 +1,32 @@
 import {
+  IconArrowsShuffle,
+  IconBan,
+  IconBrandGoogle,
   IconBuildingArch,
   IconBulb,
   IconCalendar,
+  IconChartBar,
+  IconChartDots,
+  IconChartLine,
   IconCircleCheck,
   IconCircleX,
   IconClock,
+  IconCode,
+  IconLeaf,
   IconLink,
   IconListCheck,
   IconMap,
+  IconMessageCircle,
   IconMinimize,
+  IconNotes,
   IconPackage,
   IconRecycle,
+  IconRocket,
   IconStack2,
+  IconTrendingUp,
   IconUser,
   IconUsers,
+  IconWaveSawTool,
 } from "@tabler/icons-react";
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
@@ -48,6 +61,14 @@ const DIAGRAMS = {
     'flowchart TD\nS["MVP アーキテクチャを選ぶ"]\nQ1{"チームサイズは？"}\nQ2{"スケールの必要性は<br/>いつ来るか？"}\nMO["✅ モノリシックアーキテクチャ<br/>【MVPに最も推奨】<br/>開発速度が速い・運用シンプル<br/>チーム:1から5人"]\nMM["✅ モジュラーモノリス<br/>【成長段階のMVPに推奨】<br/>将来の分割を見据えた設計<br/>チーム:5から15人"]\nMS["⚠️ マイクロサービス<br/>【MVPには過剰設計になりがち】<br/>必要になってから移行する<br/>チーム:15人以上"]\n\nS --> Q1\nQ1 -->|"1から5人"| MO\nQ1 -->|"5から15人"| Q2\nQ1 -->|"15人以上"| MS\nQ2 -->|"1年以内は不要"| MO\nQ2 -->|"6ヶ月以内に必要"| MM\n\nstyle MO fill:#16a34a,color:#fff,stroke:none\nstyle MM fill:#2563eb,color:#fff,stroke:none\nstyle MS fill:#ea580c,color:#fff,stroke:none',
   "step3-2":
     'graph TD\nsubgraph CLIENT["クライアント層"]\nWEB["Web アプリ(React / Next.js)"]\nMOBILE["モバイルアプリ(React Native)"]\nend\nsubgraph BACKEND["バックエンドモノリス"]\nAPI["REST API 層<br/>ルーティング・認証"]\nBIZ["ビジネスロジック層<br/>コアドメイン"]\nDATA["データアクセス層<br/>ORM / Repository"]\nend\nsubgraph INFRA["インフラ"]\nDB[("PostgreSQL<br/>メインDB")]\nCACHE["Redis<br/>セッション・キャッシュ"]\nSTORAGE["S3<br/>ファイルストレージ"]\nend\nsubgraph EXTERNAL["外部サービス"]\nAUTH_E["Auth0 / Firebase Auth"]\nEMAIL_E["SendGrid<br/>メール送信"]\nPAY_E["Stripe<br/>決済"]\nMON["Sentry + Datadog<br/>監視・エラー追跡"]\nend\n\nWEB & MOBILE --> API\nAPI --> BIZ --> DATA\nDATA --> DB\nAPI --> CACHE\nDATA --> STORAGE\nAPI --> AUTH_E & EMAIL_E & PAY_E\nBACKEND --> MON',
+  "step5-1":
+    'flowchart TD\nCODE["コードを書く"]\nLT["ローカルテスト実行<br/>(jest / pytest)"]\nPUSH["git commit & push"]\nLINT["Lint チェック<br/>(ESLint / Ruff)"]\nTYPE["型チェック<br/>(TypeScript / mypy)"]\nTEST["ユニットテスト"]\nBUILD["ビルド確認"]\nSTG["ステージング自動デプロイ<br/>PRごとにプレビューURL生成"]\nSMOKE["スモークテスト<br/>(基本動作確認)"]\nPROD["本番デプロイ<br/>(mainマージ後)"]\nMON["デプロイ後監視<br/>(エラー率・レイテンシ)"]\n\nCODE --> LT --> PUSH\nPUSH --> LINT --> TYPE --> TEST --> BUILD\nBUILD -->|"PR作成時"| STG --> SMOKE\nSMOKE -->|"PRマージ後"| PROD --> MON\n\nstyle STG fill:#d97706,color:#fff,stroke:none\nstyle PROD fill:#16a34a,color:#fff,stroke:none\nstyle MON fill:#2563eb,color:#fff,stroke:none',
+  "step5-2":
+    'graph TD\nE2E["E2Eテスト(最小限)<br/>重要なユーザーシナリオのみ<br/>Cypress / Playwright<br/>数件程度"]\nINT["統合テスト(中程度)<br/>APIエンドポイントの動作確認<br/>外部サービスとの連携確認"]\nUNIT["ユニットテスト(多め)<br/>ビジネスロジックのコア部分<br/>計算・バリデーション・変換ロジック<br/>MVPで最も価値が高いテスト"]\n\nUNIT --> INT --> E2E\n\nstyle E2E fill:#dc2626,color:#fff,stroke:none\nstyle INT fill:#d97706,color:#fff,stroke:none\nstyle UNIT fill:#16a34a,color:#fff,stroke:none',
+  "step6-1":
+    'flowchart LR\nD["1️⃣ 測定する指標を<br/>事前に決める<br/>KPIを数値で定義<br/>「良い状態」の閾値を設定"]\nI["2️⃣ 計測コードを<br/>組み込む<br/>イベントトラッキング<br/>ファネル分析の設計"]\nB["3️⃣ ダッシュボードを<br/>作成する<br/>毎日見る習慣をつける<br/>自動レポートを設定"]\nR["4️⃣ 定期レビュー<br/>週次で指標を確認<br/>異常値をすぐに検知"]\n\nD --> I --> B --> R\n\nstyle D fill:#2563eb,color:#fff,stroke:none\nstyle I fill:#16a34a,color:#fff,stroke:none\nstyle B fill:#d97706,color:#fff,stroke:none\nstyle R fill:#7c3aed,color:#fff,stroke:none',
+  "step7-1":
+    'flowchart TD\nR["📊 定期レビュー(週次/月次)<br/>指標データを確認する"]\nC1{"北極星指標は<br/>目標値を達成しているか？"}\nC2{"ユーザーが<br/>本当の問題を解決できているか？"}\nC3{"ビジネスとして<br/>持続可能か？"}\nPE["✅ 継続(Persevere)<br/>現在の戦略を続ける<br/>機能を深化させる<br/>拡大に集中する"]\nPV["🔄 ピボット(Pivot)<br/>戦略を変える<br/>前提を見直す<br/>何かを根本的に変える"]\nST["🛑 停止<br/>市場がない・解決策がない<br/>リソースを他に向ける"]\n\nR --> C1\nC1 -->|"Yes"| C2\nC1 -->|"No(でも伸びている)"| PE\nC1 -->|"No(止まっている)"| PV\nC2 -->|"Yes"| C3\nC2 -->|"No"| PV\nC3 -->|"Yes"| PE\nC3 -->|"No"| PV\nPV -->|"方向性が見えない"| ST\n\nstyle PE fill:#16a34a,color:#fff,stroke:none\nstyle PV fill:#d97706,color:#fff,stroke:none\nstyle ST fill:#dc2626,color:#fff,stroke:none',
 } as const;
 
 export default function Page() {
@@ -950,6 +971,536 @@ export default function Page() {
                 <Ext href="https://railway.app/docs">{"https://railway.app/docs"}</Ext>
               </li>
             </ul>
+          </div>
+        </section>
+        <section className="section" id="step5">
+          <div className="step-badge">
+            <span className="step-badge-num">{"5"}</span>
+            <span className="step-badge-text">{"Step 5"}</span>
+          </div>
+          <h2>
+            <IconCode size={18} className="mvp-icon icon-code" aria-hidden="true" />
+            {"8. MVP実装のベストプラクティス"}
+          </h2>
+          <h3>{"8.1 コーディング原則"}</h3>
+          <div className="cards">
+            <div className="card">
+              <div className="card-icon purple">
+                <IconBan size={18} className="mvp-icon icon-ban" aria-hidden="true" />
+              </div>
+              <div className="card-title">{"YAGNI原則"}</div>
+              <div className="card-desc">
+                {
+                  "You Aren't Gonna Need It。今必要でない機能は実装しない。将来の妄想より現在の問題を解く。"
+                }
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon teal">
+                <IconLeaf size={18} className="mvp-icon icon-leaf" aria-hidden="true" />
+              </div>
+              <div className="card-title">{"KISS原則"}</div>
+              <div className="card-desc">
+                {
+                  "Keep It Simple, Stupid。複雑な設計より単純な解決策。シンプルなコードが保守しやすい。"
+                }
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon coral">
+                <IconRocket size={18} className="mvp-icon icon-rocket" aria-hidden="true" />
+              </div>
+              <div className="card-title">{"完璧より完成"}</div>
+              <div className="card-desc">
+                {
+                  "Done is Better than Perfect。完成度80%でリリース。残り20%はユーザーが教えてくれる。"
+                }
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon pink">
+                <IconNotes size={18} className="mvp-icon icon-notes" aria-hidden="true" />
+              </div>
+              <div className="card-title">{"意図的な技術負債"}</div>
+              <div className="card-desc">
+                {
+                  "意識的な技術的負債はOK。ただし文書化し、期限を設けて管理すること。無意識の負債は避ける。"
+                }
+              </div>
+            </div>
+          </div>
+          <h3>{"8.2 CI/CDパイプライン（GitHub Actions例）"}</h3>
+          <p>{"早期にCI/CDを整備することで、迅速なイテレーションが可能になります。"}</p>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["step5-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"CI/CDパイプライン：コードをpushするだけでテスト・デプロイが自動実行される"}
+            </div>
+          </div>
+          <pre
+            className="language-yaml"
+            dangerouslySetInnerHTML={{
+              __html:
+                '<span class="cm"># .github/workflows/ci.yml</span>\n<span class="kw">name</span>: CI/CD Pipeline\n\n<span class="kw">on</span>:\n  <span class="kw">push</span>:\n    <span class="kw">branches</span>: [main]\n  <span class="kw">pull_request</span>:\n    <span class="kw">branches</span>: [main]\n\n<span class="kw">jobs</span>:\n  <span class="kw">test</span>:\n    <span class="kw">runs-on</span>: ubuntu-latest\n    <span class="kw">steps</span>:\n      - <span class="kw">uses</span>: actions/checkout@v4\n      - <span class="kw">uses</span>: actions/setup-node@v4\n        <span class="kw">with</span>:\n          <span class="kw">node-version</span>: <span class="nu">\'20\'</span>\n      - <span class="kw">run</span>: npm ci\n      - <span class="kw">run</span>: npm run lint        <span class="cm"># ESLintチェック</span>\n      - <span class="kw">run</span>: npm run type-check  <span class="cm"># TypeScript型チェック</span>\n      - <span class="kw">run</span>: npm test            <span class="cm"># ユニットテスト実行</span>\n      - <span class="kw">run</span>: npm run build       <span class="cm"># ビルド確認</span>\n\n  <span class="kw">deploy-preview</span>:\n    <span class="kw">if</span>: github.event_name == <span class="st">\'pull_request\'</span>\n    <span class="kw">needs</span>: test\n    <span class="kw">runs-on</span>: ubuntu-latest\n    <span class="kw">steps</span>:\n      - <span class="kw">uses</span>: actions/checkout@v4\n      - <span class="kw">name</span>: Deploy to Vercel Preview\n        <span class="kw">run</span>: npx vercel --token=<span class="fn">${{ secrets.VERCEL_TOKEN }}</span>',
+            }}
+          />
+          <h3>{"8.3 セキュリティ最低限チェックリスト"}</h3>
+          <ul className="check-list">
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>{"HTTPS 必須"}</strong>
+                {" — HTTPは絶対に使わない。Let's Encrypt / CDNで無料化できる。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>
+                  {"環境変数で秘密情報を管理"}
+                </strong>
+                {" — コードにAPIキーを絶対に書かない。"}
+                <code>{".env.local"}</code>
+                {" / secrets managerを使う。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>
+                  {"パスワードハッシュ化"}
+                </strong>
+                {" — bcrypt / argon2を使用する。MD5・SHA1は禁止。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>
+                  {"SQLインジェクション対策"}
+                </strong>
+                {" — ORMを使い、生SQLを避ける。パラメータバインドを徹底する。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>{"CORS設定"}</strong>
+                {" — 許可するオリジンを明示。ワイルドカード（*）は避ける。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>{"レート制限"}</strong>
+                {" — APIエンドポイントに上限を設定。DDoS・ブルートフォース対策。"}
+              </div>
+            </li>
+            <li>
+              <IconCircleCheck
+                size={15}
+                className="mvp-icon icon-circle-check"
+                aria-hidden="true"
+              />
+              <div>
+                <strong style={{ color: "var(--color-text-primary)" }}>
+                  {"依存関係の脆弱性スキャン"}
+                </strong>
+                {" — "}
+                <code>{"npm audit"}</code>
+                {" / pip-audit。GitHub Dependabotを活用。"}
+              </div>
+            </li>
+          </ul>
+          <h3>{"8.4 テスト戦略：MVPでのテスト優先度"}</h3>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["step5-2"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"テストピラミッド：ユニットテストを最も重視し、E2Eテストは最小限に絞る"}
+            </div>
+          </div>
+          <div className="callout info">
+            <div className="callout-label">{"MVPのテスト原則"}</div>
+            <p>
+              {
+                "完全なテストカバレッジは求めない。ビジネスロジックの中核だけをカバーし、リグレッション（意図しないバグの再発生）を防ぐための最小限のテストを書くことが目標です。"
+              }
+            </p>
+          </div>
+          <div className="sources">
+            <div className="sources-title">
+              <IconLink size={16} className="mvp-icon icon-link" aria-hidden="true" />
+              {"ソース・参考URL"}
+            </div>
+            <ul>
+              <li>
+                {"OWASP Top 10（Webセキュリティ）— "}
+                <Ext href="https://owasp.org/Top10/">{"https://owasp.org/Top10/"}</Ext>
+              </li>
+              <li>
+                {"Stripe 決済SDK公式 — "}
+                <Ext href="https://stripe.com/docs">{"https://stripe.com/docs"}</Ext>
+              </li>
+              <li>
+                {"Clerk 認証サービス — "}
+                <Ext href="https://clerk.com/docs">{"https://clerk.com/docs"}</Ext>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <section className="section" id="step6">
+          <div className="step-badge">
+            <span className="step-badge-num">{"6"}</span>
+            <span className="step-badge-text">{"Step 6"}</span>
+          </div>
+          <h2>
+            <IconChartBar size={18} className="mvp-icon icon-chart-bar" aria-hidden="true" />
+            {"9. 測定・学習（Measure & Learn）"}
+          </h2>
+          <h3>{"9.1 アナリティクス設計の4ステップ"}</h3>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["step6-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"アナリティクス設計：「何を測るか」を先に決めることが最重要"}
+            </div>
+          </div>
+          <h3>{"9.2 定量指標 vs 定性フィードバック"}</h3>
+          <div className="two-col">
+            <div className="panel">
+              <div className="panel-title" style={{ color: "var(--c-teal-200)" }}>
+                <IconChartLine size={16} className="mvp-icon icon-chart-line" aria-hidden="true" />
+                {"定量指標（What）"}
+              </div>
+              <div
+                style={{
+                  fontSize: "13px",
+                  color: "var(--color-text-tertiary)",
+                  marginBottom: "12px",
+                }}
+              >
+                {"何が起きているかを教えてくれる"}
+              </div>
+              <ul className="check-list">
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"コンバージョン率"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"リテンション率"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"機能使用率"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"エラー発生率"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"平均セッション時間"}
+                </li>
+              </ul>
+            </div>
+            <div className="panel">
+              <div className="panel-title" style={{ color: "var(--c-purple-200)" }}>
+                <IconMessageCircle
+                  size={16}
+                  className="mvp-icon icon-message-circle"
+                  aria-hidden="true"
+                />
+                {"定性フィードバック（Why）"}
+              </div>
+              <div
+                style={{
+                  fontSize: "13px",
+                  color: "var(--color-text-tertiary)",
+                  marginBottom: "12px",
+                }}
+              >
+                {"なぜそれが起きているかを教えてくれる"}
+              </div>
+              <ul className="check-list">
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"ユーザーインタビュー"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"サポートチケット分析"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"NPS自由記述欄"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"セッションリプレイ（Hotjar / FullStory）"}
+                </li>
+                <li>
+                  <IconCircleCheck
+                    size={15}
+                    className="mvp-icon icon-circle-check"
+                    aria-hidden="true"
+                  />
+                  {"ユーザビリティテスト"}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <h3>{"9.3 North Star Metric（北極星指標）"}</h3>
+          <p>
+            {"プロダクトの長期的な成功を最もよく表す、"}
+            <span className="hl-coral">{"たった1つの指標"}</span>
+            {"を設定します。チーム全員がこの指標に向かって動くことで、優先順位の議論を減らせます。"}
+          </p>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"プロダクト"}</th>
+                  <th>{"North Star Metric"}</th>
+                  <th>{"その理由"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"Slack"}</td>
+                  <td>{"DAU（日次アクティブユーザー）"}</td>
+                  <td>{"毎日使われることがプロダクト価値の本質"}</td>
+                </tr>
+                <tr>
+                  <td>{"Airbnb"}</td>
+                  <td>{"予約された宿泊日数"}</td>
+                  <td>{"ホスト・ゲスト双方への価値を1指標で表現"}</td>
+                </tr>
+                <tr>
+                  <td>{"Spotify"}</td>
+                  <td>{"1日あたりの楽曲再生時間"}</td>
+                  <td>{"継続的なエンゲージメントを測る"}</td>
+                </tr>
+                <tr>
+                  <td>{"あなたのMVP"}</td>
+                  <td>{"コア価値が生まれた回数"}</td>
+                  <td>{"プロダクトがユーザーにとって本質的な価値を届けた瞬間を数える"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>{"9.4 推奨アナリティクスツール"}</h3>
+          <div className="cards">
+            <div className="card">
+              <div className="card-icon teal">
+                <IconChartDots size={18} className="mvp-icon icon-chart-dots" aria-hidden="true" />
+              </div>
+              <div className="card-title">{"PostHog"}</div>
+              <div className="card-desc">
+                {
+                  "オープンソース・プロダクト分析。セルフホスト可能。プライバシー重視のチームに最適。"
+                }
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon purple">
+                <IconTrendingUp
+                  size={18}
+                  className="mvp-icon icon-trending-up"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="card-title">{"Mixpanel"}</div>
+              <div className="card-desc">
+                {"イベント分析に特化。無料ティアが充実。ファネル分析とコホート分析が強力。"}
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon coral">
+                <IconWaveSawTool
+                  size={18}
+                  className="mvp-icon icon-wave-saw-tool"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="card-title">{"Amplitude"}</div>
+              <div className="card-desc">
+                {"行動分析・コホート分析。スタートアップ向け無料プランあり。"}
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-icon pink">
+                <IconBrandGoogle
+                  size={18}
+                  className="mvp-icon icon-brand-google"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="card-title">{"Google Analytics 4"}</div>
+              <div className="card-desc">
+                {"基本的なWebアナリティクス。完全無料。最初の入り口として最適。"}
+              </div>
+            </div>
+          </div>
+          <div className="sources">
+            <div className="sources-title">
+              <IconLink size={16} className="mvp-icon icon-link" aria-hidden="true" />
+              {"ソース・参考URL"}
+            </div>
+            <ul>
+              <li>
+                {"PostHog（オープンソースプロダクト分析）— "}
+                <Ext href="https://posthog.com/">{"https://posthog.com/"}</Ext>
+              </li>
+              <li>
+                {"Mixpanel リソース — "}
+                <Ext href="https://mixpanel.com/resources/">
+                  {"https://mixpanel.com/resources/"}
+                </Ext>
+              </li>
+              <li>
+                {"Amplitude North Star Playbook — "}
+                <Ext href="https://amplitude.com/books/north-star">
+                  {"https://amplitude.com/books/north-star"}
+                </Ext>
+              </li>
+              <li>
+                {"Sean Ellis PMF Survey — "}
+                <Ext href="https://pmfsurvey.com/">{"https://pmfsurvey.com/"}</Ext>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <section className="section" id="step7">
+          <div className="step-badge">
+            <span className="step-badge-num">{"7"}</span>
+            <span className="step-badge-text">{"Step 7"}</span>
+          </div>
+          <h2>
+            <IconArrowsShuffle
+              size={18}
+              className="mvp-icon icon-arrows-shuffle"
+              aria-hidden="true"
+            />
+            {"10. ピボットか継続かの判断"}
+          </h2>
+          <h3>{"10.1 判断フレームワーク"}</h3>
+          <div className="mermaid-wrap">
+            <MermaidDiagram chart={DIAGRAMS["step7-1"]} preserveNaturalScale={true} />
+            <div className="mermaid-caption">
+              {"ピボット判断フレームワーク：3つの問いに答えて「継続・ピボット・停止」を決める"}
+            </div>
+          </div>
+          <h3>{"10.2 ピボットの主要な種類"}</h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"種類"}</th>
+                  <th>{"説明"}</th>
+                  <th>{"有名な事例"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"ズームイン・ピボット"}</td>
+                  <td>{"1機能が製品全体になる"}</td>
+                  <td>{"Twitterは元々Odeoというポッドキャスト会社の一機能だった"}</td>
+                </tr>
+                <tr>
+                  <td>{"ズームアウト・ピボット"}</td>
+                  <td>{"1製品が1機能になる"}</td>
+                  <td>{"他の大きな製品の一部として組み込まれる"}</td>
+                </tr>
+                <tr>
+                  <td>{"顧客セグメント・ピボット"}</td>
+                  <td>{"同じ問題を抱える別の顧客層へ"}</td>
+                  <td>{"解決策はそのままに対象ユーザーを変える"}</td>
+                </tr>
+                <tr>
+                  <td>{"顧客ニーズ・ピボット"}</td>
+                  <td>{"同じ顧客の別の問題を解く"}</td>
+                  <td>{"深く知った顧客から別のニーズを発見する"}</td>
+                </tr>
+                <tr>
+                  <td>{"プラットフォーム・ピボット"}</td>
+                  <td>{"アプリ↔プラットフォームの転換"}</td>
+                  <td>{"サービスをAPIとして提供する形に変える"}</td>
+                </tr>
+                <tr>
+                  <td>{"ビジネスモデル・ピボット"}</td>
+                  <td>{"収益化の方法を変える"}</td>
+                  <td>{"無料→有料 / B2C→B2B への転換"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="callout">
+            <div className="callout-label">{"ピボットの心得"}</div>
+            <p>
+              {
+                "ピボットは「失敗」ではありません。間違いに気づいたら素早く方向転換することが、MVPの目的そのものです。多くの成功したスタートアップ（Slack, Instagram, YouTube）はピボットによって生まれました。"
+              }
+            </p>
           </div>
         </section>
       </main>
