@@ -37,6 +37,14 @@ const DIAGRAMS = {
     'flowchart LR\nsubgraph E["フェーズ E:機会とソリューション"]\nE1["実装プロジェクトの特定"]\nE2["移行アーキテクチャの検討"]\nE3["ワークパッケージの定義"]\nE4["Architecture Roadmap 作成"]\nE1 --> E2 --> E3 --> E4\nend\nsubgraph F["フェーズ F:移行計画"]\nF1["実装移行計画の策定"]\nF2["優先順位付け"]\nF3["コスト・ベネフィット分析"]\nF4["Transition Architecture 定義"]\nF1 --> F2 --> F3 --> F4\nend\nE --> F',
   "diag-9":
     'flowchart LR\nsubgraph G["フェーズ G:実装ガバナンス"]\nG1["実装プロジェクトのモニタリング"]\nG2["アーキテクチャコンプライアンス確認"]\nG3["Architecture Compliance Review"]\nG4["変更リクエスト対応"]\nend\nsubgraph H["フェーズ H:変更管理"]\nH1["変更ドライバーの監視"]\nH2["アーキテクチャへの影響評価"]\nH3["フォーマル変更管理プロセス"]\nH4["次の ADM サイクルへ引き継ぎ"]\nend\nG --> H --> NEXT["フェーズ A へ戻る<br/>(次のサイクル開始)"]',
+  "diag-10":
+    'flowchart TD\nB["ビジネスアーキテクチャ<br/>ビジネスニーズ・プロセス・組織"]\nD["データアーキテクチャ<br/>どんなデータが必要か"]\nAP["アプリケーションアーキテクチャ<br/>どんなシステムが必要か"]\nT["テクノロジーアーキテクチャ<br/>どんな技術基盤が必要か"]\nB -->|"ビジネス要件を定義"| D\nB -->|"機能要件を定義"| AP\nD -->|"データストレージ要件"| T\nAP -->|"システム稼働要件"| T',
+  "diag-11":
+    'flowchart LR\nsubgraph ABB["アーキテクチャビルディングブロック"]\nA1["抽象的・技術中立<br/>例:認証サービス<br/>例:データウェアハウス<br/>例:API Gateway"]\nend\nsubgraph SBB["ソリューションビルディングブロック"]\nS1["具体的・製品/技術指定<br/>例:AWS Cognito<br/>例:Snowflake<br/>例:Kong Gateway"]\nend\nABB -->|"具体化・実装"| SBB',
+  "diag-12":
+    'flowchart LR\nP["アーキテクチャ原則"]:::root --> N["名前<br/>Name<br/>短く記憶しやすい名称"]:::n\nP --> S["ステートメント<br/>Statement<br/>原則の1文での表現"]:::s\nP --> R["根拠<br/>Rationale<br/>なぜこの原則が必要か"]:::r\nP --> I["示唆<br/>Implications<br/>この原則を採用した場合の影響"]:::i\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef n fill:#1e3a5f,stroke:#60a5fa,color:#e8eaf0\nclassDef s fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef r fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef i fill:#5c2210,stroke:#ff6b35,color:#e8eaf0',
+  "diag-13":
+    'flowchart TD\nAR["アーキテクチャリポジトリ<br/>Architecture Repository"]:::root\nAR --> AL["アーキテクチャランドスケープ<br/>Architecture Landscape"]:::node\nAR --> REF["リファレンスライブラリ<br/>Reference Library"]:::node\nAR --> STAN["標準情報ベース<br/>Standards Information Base"]:::node\nAR --> CONT["ガバナンスログ<br/>Governance Log"]:::node\nAR --> CAP["アーキテクチャ能力<br/>Architecture Capability"]:::node\nAR --> SOL["ソリューションランドスケープ<br/>Solution Landscape"]:::node\nAL --> AL1["戦略アーキテクチャ<br/>5-10年 / 組織全体"]\nAL --> AL2["セグメントアーキテクチャ<br/>2-5年 / ビジネスエリア単位"]\nAL --> AL3["能力アーキテクチャ<br/>1-2年 / 個別プロジェクト"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef node fill:#1a1e2a,stroke:#2a2f42,color:#9ba3b8',
 } as const;
 
 export default function Page() {
@@ -742,6 +750,359 @@ export default function Page() {
                 aria-hidden="true"
               />
               {" TOGAF 9.2 公式ドキュメント（全フェーズ）\n        "}
+            </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "bdat",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Architecture Domains"}</div>
+          <h1 className="page-title">{"BDAT アーキテクチャドメイン"}</h1>
+          <p className="page-subtitle">
+            {
+              "ビジネス・データ・アプリケーション・テクノロジーの 4 ドメインがエンタープライズアーキテクチャの柱です。"
+            }
+          </p>
+          <h2>{"4 つのドメイン概要"}</h2>
+          <div className="domain-grid">
+            <div className="domain-card" style={{ borderColor: "var(--c-blue-800)" }}>
+              <div className="domain-letter" style={{ color: "var(--c-blue-400)" }}>
+                {"B"}
+              </div>
+              <div className="domain-name">{"Business Architecture"}</div>
+              <div className="domain-jp">{"ビジネスアーキテクチャ"}</div>
+              <ul>
+                <li>{"ビジネスプロセス"}</li>
+                <li>{"組織構造"}</li>
+                <li>{"ビジネス機能・サービス"}</li>
+                <li>{"ビジネスルール・ポリシー"}</li>
+              </ul>
+            </div>
+            <div className="domain-card" style={{ borderColor: "var(--c-teal-800)" }}>
+              <div className="domain-letter" style={{ color: "var(--c-teal-500)" }}>
+                {"D"}
+              </div>
+              <div className="domain-name">{"Data Architecture"}</div>
+              <div className="domain-jp">{"データアーキテクチャ"}</div>
+              <ul>
+                <li>{"データエンティティ"}</li>
+                <li>{"データモデル"}</li>
+                <li>{"データ管理・ガバナンス"}</li>
+                <li>{"データフロー"}</li>
+              </ul>
+            </div>
+            <div className="domain-card" style={{ borderColor: "var(--c-coral-800)" }}>
+              <div className="domain-letter" style={{ color: "var(--c-coral-500)" }}>
+                {"A"}
+              </div>
+              <div className="domain-name">{"Application Architecture"}</div>
+              <div className="domain-jp">{"アプリケーションアーキテクチャ"}</div>
+              <ul>
+                <li>{"アプリケーションコンポーネント"}</li>
+                <li>{"アプリケーション間インタラクション"}</li>
+                <li>{"アプリケーションポートフォリオ"}</li>
+              </ul>
+            </div>
+            <div className="domain-card" style={{ borderColor: "var(--c-amber-800)" }}>
+              <div className="domain-letter" style={{ color: "var(--c-amber-500)" }}>
+                {"T"}
+              </div>
+              <div className="domain-name">{"Technology Architecture"}</div>
+              <div className="domain-jp">{"テクノロジーアーキテクチャ"}</div>
+              <ul>
+                <li>{"技術プラットフォーム"}</li>
+                <li>{"ネットワーク・インフラ"}</li>
+                <li>{"クラウド・物理基盤"}</li>
+              </ul>
+            </div>
+          </div>
+          <h2>{"BDAT の依存関係"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-10" chart={DIAGRAMS["diag-10"]} preserveNaturalScale={true} />
+            <div className="diagram-label">
+              {"B が最上位。ビジネス要件が D と A を規定し、D/A が T を規定する"}
+            </div>
+          </div>
+          <div className="callout success">
+            <IconCheck size={18} className="mvp-icon icon-check" aria-hidden="true" />
+            <div>
+              <strong>{"試験頻出ポイント："}</strong>
+              {"「どのドメインから始めるか？」という問いに対する答えは常に "}
+              <strong>{"B（ビジネス）"}</strong>
+              {
+                "から。ビジネス要件が未定のまま技術設計を開始することは TOGAF のアンチパターンです。"
+              }
+            </div>
+          </div>
+          <h2>{"アーキテクチャビューとビューポイント"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"ステークホルダー"}</th>
+                  <th>{"ビュー名"}</th>
+                  <th>{"主要な成果物例"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"CEO・役員"}</td>
+                  <td>{"ビジネスビュー"}</td>
+                  <td>{"ビジネスプロセスモデル、組織構造図"}</td>
+                </tr>
+                <tr>
+                  <td>{"CIO・IT部門長"}</td>
+                  <td>{"アプリケーションビュー"}</td>
+                  <td>{"アプリケーションカタログ、統合マップ"}</td>
+                </tr>
+                <tr>
+                  <td>{"CDO・データ部門"}</td>
+                  <td>{"データビュー"}</td>
+                  <td>{"データモデル、データフロー図"}</td>
+                </tr>
+                <tr>
+                  <td>{"CTO・インフラ部門"}</td>
+                  <td>{"テクノロジービュー"}</td>
+                  <td>{"インフラカタログ、ネットワーク図"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="source-list">
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap03.html"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 — Architecture Domains（公式）\n        "}
+            </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "artifacts",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Building Blocks & Principles"}</div>
+          <h1 className="page-title">{"成果物・ビルディングブロック"}</h1>
+          <p className="page-subtitle">
+            {"ABB と SBB の違い、アーキテクチャ原則の構成要素は Level 1/2 の頻出テーマです。"}
+          </p>
+          <h2>{"ABB vs SBB（試験最頻出）"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-11" chart={DIAGRAMS["diag-11"]} preserveNaturalScale={true} />
+          </div>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"観点"}</th>
+                  <th>{"ABB（Architecture BB）"}</th>
+                  <th>{"SBB（Solution BB）"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{"抽象度"}</td>
+                  <td>{"高い（ベンダー非依存）"}</td>
+                  <td>{"低い（具体的製品・技術）"}</td>
+                </tr>
+                <tr>
+                  <td>{"使用フェーズ"}</td>
+                  <td>{"B/C/D（アーキテクチャ設計）"}</td>
+                  <td>{"E/F/G（実装・移行フェーズ）"}</td>
+                </tr>
+                <tr>
+                  <td>{"例"}</td>
+                  <td>{"「認証サービス」"}</td>
+                  <td>{"「AWS Cognito」"}</td>
+                </tr>
+                <tr>
+                  <td>{"目的"}</td>
+                  <td>{"要件定義・設計の共通言語"}</td>
+                  <td>{"具体的実装の選定後に使用"}</td>
+                </tr>
+                <tr>
+                  <td>{"再利用性"}</td>
+                  <td>{"高い（組織横断で再利用可）"}</td>
+                  <td>{"低い（特定技術に依存）"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h2>{"アーキテクチャ原則の 4 構成要素"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-12" chart={DIAGRAMS["diag-12"]} preserveNaturalScale={true} />
+          </div>
+          <div className="callout warning">
+            <IconAlertTriangle
+              size={18}
+              className="mvp-icon icon-alert-triangle"
+              aria-hidden="true"
+            />
+            <div>
+              <strong>{"試験頻出："}</strong>
+              {"「アーキテクチャ原則には何が含まれるか」という問いへの答えは "}
+              <strong>{"Name・Statement・Rationale・Implications の 4 つ"}</strong>
+              {"。「Description」や「Justification」は TOGAF の正式な用語ではないため注意。"}
+            </div>
+          </div>
+          <h2>{"原則の例：「データは資産である」"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"構成要素"}</th>
+                  <th>{"内容"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"Name"}</strong>
+                  </td>
+                  <td>{"データは資産である（Data Is an Asset）"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Statement"}</strong>
+                  </td>
+                  <td>{"データは、適切に管理・活用される重要な企業資産である"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Rationale"}</strong>
+                  </td>
+                  <td>
+                    {
+                      "データに対して財務・物的資産と同様の意識を持つことで、より適切な意思決定が可能になる"
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"Implications"}</strong>
+                  </td>
+                  <td>
+                    {
+                      "データ管理への投資が必要になる。データオーナーを明確に定義する組織設計が必要となる"
+                    }
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="source-list">
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap20.html"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 — Architecture Principles（公式）\n        "}
+            </Ext>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "repository",
+      content: (
+        <>
+          <div className="section-eyebrow">{"Architecture Repository"}</div>
+          <h1 className="page-title">{"アーキテクチャリポジトリ"}</h1>
+          <p className="page-subtitle">
+            {"組織のアーキテクチャ成果物を一元管理するための構造化されたデータストアです。"}
+          </p>
+          <h2>{"リポジトリの全体構造"}</h2>
+          <div className="mermaid-wrap">
+            <MermaidDiagram id="diag-13" chart={DIAGRAMS["diag-13"]} preserveNaturalScale={true} />
+          </div>
+          <h2>{"アーキテクチャランドスケープの 3 層"}</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{"層"}</th>
+                  <th>{"時間軸"}</th>
+                  <th>{"粒度"}</th>
+                  <th>{"説明"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>{"戦略アーキテクチャ"}</strong>
+                  </td>
+                  <td>{"5〜10年"}</td>
+                  <td>{"組織全体"}</td>
+                  <td>{"変化の少ない大方針・長期ビジョン。経営層が参照する。"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"セグメントアーキテクチャ"}</strong>
+                  </td>
+                  <td>{"2〜5年"}</td>
+                  <td>{"事業単位・部門"}</td>
+                  <td>{"事業部門横断の整合性を保つ中間層。部門長クラスが参照する。"}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{"能力アーキテクチャ"}</strong>
+                  </td>
+                  <td>{"1〜2年"}</td>
+                  <td>{"個別プロジェクト"}</td>
+                  <td>{"具体的な実装・変更を対象とする最下層。プロジェクトチームが参照する。"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="bp-list">
+            <div className="bp-item">
+              <div className="bp-num">{"10"}</div>
+              <div className="bp-text">
+                <strong>{"ガバナンスログはすべての決定を記録する"}</strong>
+                <span>
+                  {
+                    "Architecture Board の決定、コンプライアンスレビュー結果、例外申請の承認・却下などをすべてガバナンスログに記録する。これが組織のアーキテクチャ意思決定の「歴史書」となる。"
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="bp-item">
+              <div className="bp-num">{"11"}</div>
+              <div className="bp-text">
+                <strong>{"リポジトリはアーキテクチャの「シングルソースオブトゥルース」"}</strong>
+                <span>
+                  {
+                    "組織内で複数の「アーキテクチャ資料」が存在すると矛盾が生じる。リポジトリを唯一の信頼できる情報源として位置付け、すべての成果物をここから参照する文化を構築する。"
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="source-list">
+            <Ext
+              className="source-item"
+              href="https://pubs.opengroup.org/architecture/togaf9-doc/arch/chap41.html"
+            >
+              <IconExternalLink
+                size={14}
+                className="mvp-icon icon-external-link"
+                aria-hidden="true"
+              />
+              {" TOGAF 9.2 — Architecture Repository（公式）\n        "}
             </Ext>
           </div>
         </>
