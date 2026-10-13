@@ -161,8 +161,9 @@ export function assertFaithful(actual: Element, expected: Element) {
   expect(
     diagrams.map((element) => normalizeChart(element.getAttribute("data-chart") ?? ""))
   ).toEqual(
-    Array.from(expected.querySelectorAll('.mermaid[data-diagram]:not([data-diagram="learning_path"])'), (element) =>
-      normalizeChart(SOURCE_DIAGRAMS[element.getAttribute("data-diagram") ?? ""] ?? "")
+    Array.from(
+      expected.querySelectorAll('.mermaid[data-diagram]:not([data-diagram="learning_path"])'),
+      (element) => normalizeChart(SOURCE_DIAGRAMS[element.getAttribute("data-diagram") ?? ""] ?? "")
     )
   );
   for (const diagram of diagrams) expect(diagram.getAttribute("data-natural-scale")).toBe("true");
