@@ -154,7 +154,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "MVP (実用最小限の製品)",
         href: "/product-and-enterprise/minimum-viable-product-comprehensive-guide",
         summary: "最小限の機能で仮説を早く確かめる",
-        status: "planned",
+        status: "published",
       },
       {
         name: "TOGAF 認定",
