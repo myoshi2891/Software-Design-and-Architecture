@@ -88,7 +88,8 @@ function designValue(selector: string, property: string, media?: string) {
   let value: string | undefined;
   targetCss.walkRules((rule) => {
     if (rule.selector !== selector) return;
-    let parent: postcss.Container | postcss.Document | undefined = rule.parent;
+    let parent: postcss.Rule | postcss.AtRule | postcss.Root | postcss.Document | undefined =
+      rule.parent;
     let pageScoped = rule.selector === scope;
     let mediaParams: string | undefined;
     while (parent) {
