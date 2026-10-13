@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { compact, source } from "./source-contract";
+import { assertFaithful, compact, source } from "./source-contract";
 
 vi.mock("@/components/MermaidDiagram", () => ({
   default: ({
@@ -63,4 +63,41 @@ describe("TOGAF foundation", () => {
     ).not.toMatch(/^["']use client["']/);
     expect(container.querySelectorAll("script, link, i.ti, [onclick]")).toHaveLength(0);
   });
+});
+
+function selectChapter(id: string) {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+  const result = render(<Page />);
+  const original = Array.from(source.querySelectorAll<HTMLButtonElement>(".nav-item")).find(
+    (button) => button.getAttribute("onclick")?.startsWith(`show('${id}'`)
+  );
+  if (!original) throw new Error(`Missing source navigation: ${id}`);
+  fireEvent.click(
+    result.getByRole("button", { name: (original.textContent ?? "").trim().replace(/\s+/g, " ") })
+  );
+  return result;
+}
+
+describe("TOGAF foundations and examinations", () => {
+  for (const id of ["overview", "exam"]) {
+    it(`preserves all wording structure icons and links in ${id}`, () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.getElementById(id) as Element);
+      expect(container.querySelectorAll(".section")).toHaveLength(1);
+    });
+    it(`parses all real Mermaid diagrams in ${id}`, async () => {
+      const { container } = selectChapter(id);
+      const actual = container.querySelector(`.section#${id}`);
+      expect(actual).not.toBeNull();
+      const { default: mermaid } = await import("mermaid");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+        const chart = diagram.getAttribute("data-chart") ?? "";
+        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+      }
+    });
+  }
 });
