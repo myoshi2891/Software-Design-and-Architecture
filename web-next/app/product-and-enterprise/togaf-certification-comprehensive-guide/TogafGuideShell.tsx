@@ -13,7 +13,7 @@ import {
   IconTarget,
   IconUsers,
 } from "@tabler/icons-react";
-import { type ReactNode, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useState } from "react";
 
 const ICONS = {
   "building-arch": IconBuildingArch,
@@ -45,6 +45,29 @@ export default function TogafGuideShell({
 }) {
   const [activeId, setActiveId] = useState("overview");
   const panel = panels.find((item) => item.id === activeId);
+  const order = groups.flatMap((group) => group.items.map((item) => item.id));
+  const select = (id: string) => {
+    setActiveId(id);
+    window.scrollTo({ top: 0 });
+  };
+  // 縦方向タブリストのキーボード操作（上下は循環、Home/End は両端）
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, id: string) => {
+    const index = order.indexOf(id);
+    const last = order.length - 1;
+    const targets: Record<string, number> = {
+      ArrowDown: index === last ? 0 : index + 1,
+      ArrowUp: index === 0 ? last : index - 1,
+      Home: 0,
+      End: last,
+    };
+    const target = targets[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    const nextId = order[target];
+    if (nextId === undefined) return;
+    select(nextId);
+    document.getElementById(`tab-${nextId}`)?.focus();
+  };
   return (
     <div className="shell">
       <nav className="sidebar" aria-label="TOGAFガイドの目次">
@@ -68,10 +91,8 @@ export default function TogafGuideShell({
                     aria-selected={activeId === item.id}
                     aria-controls={item.id}
                     tabIndex={activeId === item.id ? 0 : -1}
-                    onClick={() => {
-                      setActiveId(item.id);
-                      window.scrollTo({ top: 0 });
-                    }}
+                    onClick={() => select(item.id)}
+                    onKeyDown={(event) => handleKeyDown(event, item.id)}
                   >
                     <Icon size={15} className={`mvp-icon icon-${item.icon}`} aria-hidden="true" />
                     {item.label}

@@ -42,4 +42,50 @@ describe("TOGAF chapter switching", () => {
     expect(container.querySelectorAll(".section.active")).toHaveLength(1);
     expect(container.querySelector("#exam")).not.toBeNull();
   });
+
+  it("moves selection and focus with ArrowUp/ArrowDown (wrapping) and Home/End", () => {
+    // Arrange
+    vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+    const keyboardGroups: TogafNavGroup[] = [
+      ...groups,
+      { label: "ADM", items: [{ id: "adm", label: "ADMサイクル", icon: "refresh" }] },
+    ];
+    const keyboardPanels = [...panels, { id: "adm", content: <h1>ADM の全体像</h1> }];
+    const { getByRole } = render(
+      <TogafGuideShell groups={keyboardGroups} panels={keyboardPanels} />
+    );
+    const tab = (name: string) => getByRole("tab", { name });
+    const expectActive = (name: string) => {
+      expect(tab(name)).toHaveAttribute("aria-selected", "true");
+      expect(tab(name)).toHaveAttribute("tabindex", "0");
+      expect(tab(name)).toHaveFocus();
+    };
+
+    // Act & Assert: グループを跨いで移動し、両端で循環する
+    fireEvent.keyDown(tab("TOGAFとは"), { key: "ArrowDown" });
+    expectActive("試験概要");
+    fireEvent.keyDown(tab("試験概要"), { key: "ArrowDown" });
+    expectActive("ADMサイクル");
+    fireEvent.keyDown(tab("ADMサイクル"), { key: "ArrowDown" });
+    expectActive("TOGAFとは");
+    fireEvent.keyDown(tab("TOGAFとは"), { key: "ArrowUp" });
+    expectActive("ADMサイクル");
+    fireEvent.keyDown(tab("ADMサイクル"), { key: "Home" });
+    expectActive("TOGAFとは");
+    fireEvent.keyDown(tab("TOGAFとは"), { key: "End" });
+    expectActive("ADMサイクル");
+    expect(getByRole("tabpanel", { name: "ADMサイクル" })).toHaveTextContent("ADM の全体像");
+  });
+
+  it("ignores unrelated keys", () => {
+    // Arrange
+    const { getByRole } = render(<TogafGuideShell groups={groups} panels={panels} />);
+    const overview = getByRole("tab", { name: "TOGAFとは" });
+
+    // Act
+    fireEvent.keyDown(overview, { key: "ArrowRight" });
+
+    // Assert
+    expect(overview).toHaveAttribute("aria-selected", "true");
+  });
 });
