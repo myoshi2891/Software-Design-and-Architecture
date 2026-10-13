@@ -7409,6 +7409,7 @@ body.has-common-header .component-oriented-development-comprehensive-guide secti
   .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:480px;height:480px;background:radial-gradient(circle,var(--acc-glo) 0%,transparent 70%);pointer-events:none}
   .hero-ew{display:inline-flex;align-items:center;gap:8px;background:rgba(108,71,255,.1);border:1px solid rgba(108,71,255,.3);border-radius:99px;padding:4px 14px;font-family:var(--f-mono);font-size:.72rem;color:var(--acc-hi);margin-bottom:22px}
   .hero-ew-dot{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:css-color-typography-pulse 2s infinite}
+  @media(prefers-reduced-motion:reduce){.hero-ew-dot{animation:none}}
   .hero h1{font-family:var(--f-head);font-size:clamp(1.8rem,3.5vw,2.9rem);font-weight:700;line-height:1.15;color:var(--txt-hi);margin-bottom:18px;max-width:720px}
   .hero h1 em{color:var(--acc-hi);font-style:normal}
   .hero-desc{font-size:1rem;color:var(--txt-md);line-height:1.75;max-width:580px;margin-bottom:36px}

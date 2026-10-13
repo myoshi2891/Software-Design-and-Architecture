@@ -40,13 +40,23 @@ describe("global CSS transformation", () => {
         frames.push(frame.selector);
       });
     });
+    const reducedMotion: string[] = [];
+    const insideMedia = (node: postcss.Node) => {
+      for (let parent = node.parent; parent; parent = parent.parent)
+        if (parent.type === "atrule" && (parent as postcss.AtRule).name === "media") return parent;
+      return undefined;
+    };
     transformed.walkRules((rule) => {
       if (!rule.selector.includes(".hero-ew-dot")) return;
+      const media = insideMedia(rule);
       rule.walkDecls("animation", (declaration) => {
-        animations.push(declaration.value);
+        if (!media) animations.push(declaration.value);
+        else if ((media as postcss.AtRule).params.includes("prefers-reduced-motion: reduce"))
+          reducedMotion.push(declaration.value);
       });
     });
     expect(frames).toEqual(["0%, 100%", "50%"]);
     expect(animations).toEqual(["2s infinite css-color-typography-pulse"]);
+    expect(reducedMotion).toEqual(["none"]);
   });
 });
