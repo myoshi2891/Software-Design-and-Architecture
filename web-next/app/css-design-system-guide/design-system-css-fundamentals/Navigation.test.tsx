@@ -93,6 +93,57 @@ describe("CSS fundamentals navigation", () => {
     expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
     HTMLElement.prototype.scrollIntoView = originalScroll;
   });
+  it("activates a clicked chapter link and keeps it until the scroll ends", () => {
+    // Arrange
+    let callback: IntersectionObserverCallback | undefined;
+    vi.stubGlobal(
+      "IntersectionObserver",
+      vi.fn(function (this: object, cb: IntersectionObserverCallback) {
+        callback = cb;
+        Object.assign(this, { observe: vi.fn(), disconnect: vi.fn() });
+      })
+    );
+    const { container } = render(
+      <div className="design-system-css-fundamentals">
+        <Navigation groups={groups} />
+        <main>
+          <section id="s1" className="section">
+            <div id="s1-1" className="subsection" />
+          </section>
+        </main>
+      </div>
+    );
+    const chapter = container.querySelector('a[href="#s1"]') as HTMLElement;
+    const sub = container.querySelector('a[href="#s1-1"]') as HTMLElement;
+    const intersect = () =>
+      act(() =>
+        callback?.(
+          [
+            {
+              isIntersecting: true,
+              target: container.querySelector("#s1-1") as Element,
+            } as IntersectionObserverEntry,
+          ],
+          {} as IntersectionObserver
+        )
+      );
+    intersect();
+
+    // Act: 章見出しへ移動するスムーズスクロール中に小節が判定帯を通過する
+    fireEvent.click(chapter);
+    intersect();
+
+    // Assert
+    expect(chapter).toHaveClass("active");
+    expect(chapter).toHaveAttribute("aria-current", "location");
+    expect(sub).not.toHaveClass("active");
+
+    // スクロール終了後は通常の追従に戻る
+    fireEvent(window, new Event("scrollend"));
+    intersect();
+    expect(sub).toHaveClass("active");
+    expect(chapter).not.toHaveClass("active");
+  });
   it("shows rounded 0 50 and 100 percent progress and handles a non-scrolling page", () => {
     dimensions(0);
     const { container } = render(<Navigation groups={groups} />);

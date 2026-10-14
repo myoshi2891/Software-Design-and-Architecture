@@ -29,6 +29,9 @@ function revealInSidebar(nav: HTMLElement | null, id: string) {
 export default function Navigation({ groups }: { groups: NavGroup[] }) {
   const sidebar = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  // クリックで選んだ ID。章 section は小節を内包し交差中のまま通知されないうえ、
+  // 移動中に小節が判定帯を通過するため、スクロール終了まで監視による上書きを止める。
+  const clickedId = useRef<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (clickedId.current) return;
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
@@ -59,7 +63,14 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
       const target = document.querySelector(`.design-system-css-fundamentals [id="${item.id}"]`);
       if (target) observer.observe(target);
     }
-    return () => observer.disconnect();
+    const release = () => {
+      clickedId.current = null;
+    };
+    window.addEventListener("scrollend", release);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scrollend", release);
+    };
   }, [groups]);
   return (
     <>
@@ -100,6 +111,10 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
                   key={item.id}
                   className={`sb-link${item.sub ? " sub" : ""}${activeId === item.id ? " active" : ""}`}
                   aria-current={activeId === item.id ? "location" : undefined}
+                  onClick={() => {
+                    clickedId.current = item.id;
+                    setActiveId(item.id);
+                  }}
                 >
                   <span className="num">{item.num}</span>
                   {item.label}
