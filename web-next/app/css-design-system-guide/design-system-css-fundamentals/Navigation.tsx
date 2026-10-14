@@ -9,6 +9,23 @@ export type NavGroup = {
 const scrollBehavior = (): ScrollBehavior =>
   window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
+// scrollIntoView は祖先（ページ）までスクロールし本文のスムーズスクロールを中断するため、
+// 表示範囲外のときだけサイドバー自身をスクロールしてリンクを見せる。
+function revealInSidebar(nav: HTMLElement | null, id: string) {
+  const link = nav?.querySelector<HTMLElement>(`a[href="#${id}"]`);
+  if (!nav || !link) return;
+  const view = nav.getBoundingClientRect();
+  const target = link.getBoundingClientRect();
+  const offset =
+    target.top < view.top
+      ? target.top - view.top
+      : target.bottom > view.bottom
+        ? target.bottom - view.bottom
+        : 0;
+  if (offset === 0) return;
+  nav.scrollTo?.({ top: nav.scrollTop + offset, behavior: scrollBehavior() });
+}
+
 export default function Navigation({ groups }: { groups: NavGroup[] }) {
   const sidebar = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -33,9 +50,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
           setActiveId(id);
-          sidebar.current
-            ?.querySelector<HTMLElement>(`a[href="#${id}"]`)
-            ?.scrollIntoView?.({ block: "nearest", behavior: scrollBehavior() });
+          revealInSidebar(sidebar.current, id);
         }
       },
       { rootMargin: "-20% 0px -60% 0px" }

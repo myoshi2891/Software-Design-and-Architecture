@@ -40,6 +40,7 @@ describe("CSS fundamentals navigation", () => {
     vi.stubGlobal("HTMLElement", globalThis.HTMLElement);
     const originalScroll = HTMLElement.prototype.scrollIntoView;
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    const windowScroll = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
     const remove = vi.spyOn(window, "removeEventListener");
     const { container, unmount } = render(
       <div className="design-system-css-fundamentals">
@@ -53,6 +54,21 @@ describe("CSS fundamentals navigation", () => {
     );
     expect(observe).toHaveBeenCalledTimes(2);
     expect(Observer.mock.calls[0]?.[1]).toEqual({ rootMargin: "-20% 0px -60% 0px" });
+    // サイドバー（表示域 100〜500px）の下端より外にリンク（560〜590px）がある状況を再現する。
+    const sidebar = container.querySelector("#sidebar") as HTMLElement;
+    sidebar.scrollTop = 40;
+    const sidebarScroll = vi.fn(({ top }: ScrollToOptions) => {
+      sidebar.scrollTop = top ?? sidebar.scrollTop;
+    });
+    Object.assign(sidebar, { scrollTo: sidebarScroll });
+    vi.spyOn(sidebar, "getBoundingClientRect").mockReturnValue({
+      top: 100,
+      bottom: 500,
+    } as DOMRect);
+    vi.spyOn(
+      container.querySelector('a[href="#s1-1"]') as HTMLElement,
+      "getBoundingClientRect"
+    ).mockReturnValue({ top: 560, bottom: 590 } as DOMRect);
     act(() =>
       callback?.(
         [
@@ -67,7 +83,11 @@ describe("CSS fundamentals navigation", () => {
     const link = container.querySelector('a[href="#s1-1"]');
     expect(link).toHaveClass("active");
     expect(link).toHaveAttribute("aria-current", "location");
-    expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
+    // 祖先（ページ）を巻き込まず、サイドバー自身だけを不足分（590 - 500 = 90px）スクロールする。
+    expect(sidebarScroll).toHaveBeenCalledWith({ top: 130, behavior: "smooth" });
+    expect(sidebar.scrollTop).toBe(130);
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    expect(windowScroll).not.toHaveBeenCalled();
     unmount();
     expect(disconnect).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
