@@ -17891,7 +17891,7 @@ body.has-common-header .design-system-css-fundamentals #sidebar {
     #top-btn { right: 18px; bottom: 18px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { transition: none; scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
     .card:hover, #top-btn:hover { transform: none; }
   }
 }
