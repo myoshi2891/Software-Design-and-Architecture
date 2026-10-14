@@ -205,6 +205,10 @@ const TEXT_ERRATA: readonly (readonly [string, string])[] = [
     "試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成（ADM フェーズ・コンプライアンス定義・ガバナンス構造）を事前に把握し、素早く辿れるようにする。参照可でも",
   ],
   ["Level 2 持込用・根拠確認", "Level 2 の REFERENCE 参照対策・根拠確認"],
+  [
+    "Level 2 受験者はドキュメントのタブ整理を完成させる。",
+    "Level 2 受験者は試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成を事前に把握しておく。",
+  ],
   ["最新公式テキスト（Level 2 持込）", "最新公式テキスト（Level 2 は試験画面で参照）"],
 ];
 const DIAGRAM_ERRATA: Readonly<Record<string, readonly (readonly [string, string])[]>> = {

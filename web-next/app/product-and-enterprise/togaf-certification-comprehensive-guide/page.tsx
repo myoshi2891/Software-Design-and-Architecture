@@ -1630,7 +1630,7 @@ export default function Page() {
                 <div className="week-title">{"模擬試験② + 直前対策"}</div>
                 <div className="week-detail">
                   {
-                    "150 問以上の模擬試験。キーワード・用語の最終確認。Level 2 受験者はドキュメントのタブ整理を完成させる。"
+                    "150 問以上の模擬試験。キーワード・用語の最終確認。Level 2 受験者は試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成を事前に把握しておく。"
                   }
                 </div>
               </div>

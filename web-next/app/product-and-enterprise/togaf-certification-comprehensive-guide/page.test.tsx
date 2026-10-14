@@ -138,7 +138,7 @@ describe("TOGAF exam facts corrected from the archived original", () => {
     );
 
     // Act & Assert
-    for (const phrase of ["持込", "持ち込", "タブインデックス", "-1点", "55%"])
+    for (const phrase of ["持込", "持ち込", "タブインデックス", "タブ整理", "-1点", "55%"])
       expect(page, phrase).not.toContain(phrase);
   });
 });
