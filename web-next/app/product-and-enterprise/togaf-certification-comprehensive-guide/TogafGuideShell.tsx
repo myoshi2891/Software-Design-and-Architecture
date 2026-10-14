@@ -104,16 +104,21 @@ export default function TogafGuideShell({
         </div>
       </nav>
       <main className="main">
-        {panel && (
-          <div
-            key={panel.id}
-            className="section active"
-            id={panel.id}
-            role="tabpanel"
-            aria-labelledby={`tab-${panel.id}`}
-          >
-            {panel.content}
-          </div>
+        {/* 本文は選択中の章だけマウントし、非選択章は aria-controls の参照先となる空パネルを置く */}
+        {order.map((id) =>
+          id === panel?.id ? (
+            <div
+              key={id}
+              className="section active"
+              id={id}
+              role="tabpanel"
+              aria-labelledby={`tab-${id}`}
+            >
+              {panel.content}
+            </div>
+          ) : (
+            <div key={id} id={id} role="tabpanel" aria-labelledby={`tab-${id}`} hidden />
+          )
         )}
       </main>
     </div>

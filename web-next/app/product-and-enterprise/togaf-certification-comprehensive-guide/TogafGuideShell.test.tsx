@@ -23,7 +23,13 @@ describe("TOGAF chapter switching", () => {
     const { container, getByRole } = render(<TogafGuideShell groups={groups} panels={panels} />);
     expect(container.querySelectorAll(".section")).toHaveLength(1);
     expect(container.querySelector("#overview")).toHaveClass("active");
-    expect(container.querySelector("#exam")).toBeNull();
+    // 非選択章は本文を遅延マウントしつつ、aria-controls の参照先となる空の tabpanel を持つ。
+    const hiddenExam = container.querySelector("#exam");
+    expect(hiddenExam).toHaveAttribute("role", "tabpanel");
+    expect(hiddenExam).toHaveAttribute("aria-labelledby", "tab-exam");
+    expect(hiddenExam).toHaveAttribute("hidden");
+    expect(hiddenExam).toBeEmptyDOMElement();
+    expect(hiddenExam).not.toHaveClass("section");
     const exam = getByRole("tab", { name: "試験概要" });
     fireEvent.click(exam);
     expect(scroll).toHaveBeenLastCalledWith({ top: 0 });
@@ -33,7 +39,8 @@ describe("TOGAF chapter switching", () => {
     expect(getByRole("tablist", { name: "章" })).toContainElement(exam);
     expect(exam).toHaveAttribute("aria-controls", "exam");
     expect(getByRole("tabpanel", { name: "試験概要" })).toBe(container.querySelector("#exam"));
-    expect(container.querySelector("#overview")).toBeNull();
+    expect(container.querySelector("#overview")).toBeEmptyDOMElement();
+    expect(container.querySelector("#overview")).toHaveAttribute("hidden");
     fireEvent.click(getByRole("tab", { name: "TOGAFとは" }));
     expect(container.querySelector("#overview")).toHaveTextContent("TOGAF とは何か");
     expect(exam).not.toHaveClass("active");
