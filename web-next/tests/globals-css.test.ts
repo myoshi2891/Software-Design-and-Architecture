@@ -26,6 +26,26 @@ describe("global CSS transformation", () => {
       transformedNames.push(rule.params);
     });
     expect(transformedNames.sort()).toEqual(originalNames.sort());
+
+    // 通常ルールも保持されていること（keyframes を使う 3 ガイドの代表ルールのみ確認）
+    const retained: string[] = [];
+    transformed.walkDecls("animation", (declaration) => {
+      const selectors: string[] = [];
+      for (
+        let parent = declaration.parent;
+        parent && parent.type !== "root";
+        parent = parent.parent
+      )
+        if (parent.type === "rule") selectors.unshift((parent as postcss.Rule).selector);
+      retained.push(`${selectors.join(" > ")} { animation: ${declaration.value} }`);
+    });
+    expect(retained).toEqual(
+      expect.arrayContaining([
+        ".clean-architecture-comprehensive-guide > & .r-fw { animation: 3.6s ease-in-out infinite p-fw }",
+        ".microservices-architecture-comprehensive-guide > & .hdot { animation: 2.2s ease-in-out infinite pulse-ms }",
+        ".css-color-typography-spacing-systems > & .hero-ew-dot { animation: 2s infinite css-color-typography-pulse }",
+      ])
+    );
   });
 
   it("retains the typography hero pulse and its matching animation reference", () => {
