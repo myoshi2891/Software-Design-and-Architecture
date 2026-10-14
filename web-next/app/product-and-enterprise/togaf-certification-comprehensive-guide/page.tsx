@@ -352,7 +352,7 @@ export default function Page() {
           <div className="mermaid-wrap">
             <MermaidDiagram id="diag-2" chart={DIAGRAMS["diag-2"]} preserveNaturalScale={true} />
             <div className="diagram-label">
-              {"1問あたり最大 5点・最低 0点（減点なし）。8問合計 40点満点で 60点相当（換算後）"}
+              {"1問あたり最大 5点・最低 0点（減点なし）。8問合計 40点満点で、合格は 24点（60%）"}
             </div>
           </div>
           <div className="source-list">
