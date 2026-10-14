@@ -184,3 +184,62 @@ function collectDiagrams(node: ts.Node) {
   ts.forEachChild(node, collectDiagrams);
 }
 collectDiagrams(syntax);
+
+// 原本はバイト固定（archive.test.ts）のため、事実誤りの訂正は正誤表として原本の解析結果へ適用する。
+// OGEA-101 の合格基準は 60%（24/40問）、OGEA-102 は 4 択・5/3/1/0 点の段階採点で、
+// 資料は持参せず試験画面の REFERENCE ボタンから参照する。各訂正は原本にちょうど 1 回だけ一致する。
+const TEXT_ERRATA: readonly (readonly [string, string])[] = [
+  ["55%（22/40問）", "60%（24/40問）"],
+  ["公式ドキュメント持込可", "試験画面の REFERENCE ボタンで参照可"],
+  ["ドキュメント持込", "公式ドキュメント参照"],
+  ["Level 2 の持込可について：", "Level 2 の資料参照について："],
+  [
+    "公式 TOGAF ドキュメントの持込みは可能ですが、試験時間",
+    "受験者が文書を持参することはできず、公式 TOGAF ドキュメントは試験画面の REFERENCE ボタンから参照します。ただし試験時間",
+  ],
+  ["最低 -1点", "最低 0点（減点なし）"],
+  ["Level 2 の公式ドキュメントを事前整理する", "Level 2 の REFERENCE 参照に備えて構成を把握する"],
+  [
+    "タブインデックスを貼り、ADM フェーズ・コンプライアンス定義・ガバナンス構造を素早く参照できるようにする。持込可でも",
+    "試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成（ADM フェーズ・コンプライアンス定義・ガバナンス構造）を事前に把握し、素早く辿れるようにする。参照可でも",
+  ],
+  ["Level 2 持込用・根拠確認", "Level 2 の REFERENCE 参照対策・根拠確認"],
+  ["最新公式テキスト（Level 2 持込）", "最新公式テキスト（Level 2 は試験画面で参照）"],
+];
+const DIAGRAM_ERRATA: Readonly<Record<string, readonly (readonly [string, string])[]>> = {
+  "diag-1": [["合格55%", "合格60%"]],
+  "diag-2": [
+    ["5つの選択肢\\n(A-E)", "4つの選択肢\\n(A-D)"],
+    [
+      'OPT --> A4["不適切な回答 0点"]:::s0\nOPT --> A5["最も不適切 -1点"]:::sm1',
+      'OPT --> A4["最も不適切 0点"]:::s0',
+    ],
+    ["\nclassDef sm1 fill:#1f1015,stroke:#f87171,color:#e8eaf0", ""],
+  ],
+};
+
+function replaceOnce(text: string, before: string, after: string, label: string): string {
+  const count = text.split(before).length - 1;
+  if (count !== 1)
+    throw new Error(`Erratum must match exactly once in ${label}: ${before} (${count})`);
+  return text.replace(before, after);
+}
+
+for (const [before, after] of TEXT_ERRATA) {
+  const walker = source.createTreeWalker(source.body, NodeFilter.SHOW_TEXT);
+  const matches: Text[] = [];
+  for (let node = walker.nextNode(); node; node = walker.nextNode())
+    if (node.nodeValue?.includes(before)) matches.push(node as Text);
+  const [match] = matches;
+  if (matches.length !== 1 || !match)
+    throw new Error(`Erratum must match exactly one text node: ${before} (${matches.length})`);
+  match.nodeValue = replaceOnce(match.nodeValue ?? "", before, after, "source text");
+}
+for (const [id, errata] of Object.entries(DIAGRAM_ERRATA)) {
+  const chart = SOURCE_DIAGRAMS[id];
+  if (chart === undefined) throw new Error(`Missing source diagram for erratum: ${id}`);
+  SOURCE_DIAGRAMS[id] = errata.reduce(
+    (text, [before, after]) => replaceOnce(text, before, after, id),
+    chart
+  );
+}

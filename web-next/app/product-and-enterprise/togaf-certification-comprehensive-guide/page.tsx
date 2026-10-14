@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 
 const DIAGRAMS = {
   "diag-1":
-    'flowchart TD\nA["TOGAF 認定資格体系"]:::root --> B["Level 1<br/>TOGAF Foundation"]:::l1\nA --> C["Level 2<br/>TOGAF Practitioner"]:::l2\nA --> D["Combined<br/>Level 1 + Level 2"]:::comb\nB --> E["40問 / 60分 / 合格55%<br/>知識・理解を証明"]\nC --> F["8問複合選択 / 90分 / 合格60%<br/>実践・適用能力を証明"]\nD --> G["両レベルを1回で取得<br/>最も効率的な取得方法"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef l1 fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef l2 fill:#5c2210,stroke:#ff6b35,color:#e8eaf0\nclassDef comb fill:#451a03,stroke:#f59e0b,color:#e8eaf0',
+    'flowchart TD\nA["TOGAF 認定資格体系"]:::root --> B["Level 1<br/>TOGAF Foundation"]:::l1\nA --> C["Level 2<br/>TOGAF Practitioner"]:::l2\nA --> D["Combined<br/>Level 1 + Level 2"]:::comb\nB --> E["40問 / 60分 / 合格60%<br/>知識・理解を証明"]\nC --> F["8問複合選択 / 90分 / 合格60%<br/>実践・適用能力を証明"]\nD --> G["両レベルを1回で取得<br/>最も効率的な取得方法"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef l1 fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef l2 fill:#5c2210,stroke:#ff6b35,color:#e8eaf0\nclassDef comb fill:#451a03,stroke:#f59e0b,color:#e8eaf0',
   "diag-2":
-    'flowchart LR\nQ["シナリオ問題<br/>(現実の状況設定)"] --> OPT["5つの選択肢<br/>(A-E)"]\nOPT --> A1["最も適切な回答 +5点"]:::s5\nOPT --> A2["2番目に適切 +3点"]:::s3\nOPT --> A3["3番目に適切 +1点"]:::s1\nOPT --> A4["不適切な回答 0点"]:::s0\nOPT --> A5["最も不適切 -1点"]:::sm1\nclassDef s5  fill:#14532d,stroke:#4ade80,color:#e8eaf0\nclassDef s3  fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef s1  fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef s0  fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8\nclassDef sm1 fill:#1f1015,stroke:#f87171,color:#e8eaf0',
+    'flowchart LR\nQ["シナリオ問題<br/>(現実の状況設定)"] --> OPT["4つの選択肢<br/>(A-D)"]\nOPT --> A1["最も適切な回答 +5点"]:::s5\nOPT --> A2["2番目に適切 +3点"]:::s3\nOPT --> A3["3番目に適切 +1点"]:::s1\nOPT --> A4["最も不適切 0点"]:::s0\nclassDef s5  fill:#14532d,stroke:#4ade80,color:#e8eaf0\nclassDef s3  fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef s1  fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef s0  fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8',
   "diag-3":
     'flowchart LR\nPRELIM["準備フェーズ<br/>Preliminary Phase<br/>アーキテクチャ能力の確立"]:::prelim\nA["フェーズA<br/>Architecture Vision"]:::phA\nB["フェーズB<br/>Business Architecture"]:::phB\nC["フェーズC<br/>Info Systems Architecture"]:::phB\nD["フェーズD<br/>Technology Architecture"]:::phB\nE["フェーズE<br/>Opportunities and Solutions"]:::phE\nF["フェーズF<br/>Migration Planning"]:::phE\nG["フェーズG<br/>Implementation Governance"]:::phG\nH["フェーズH<br/>Change Management"]:::phG\nREQ["要求管理<br/>Requirements Management"]:::req\nPRELIM --> A --> B --> C --> D --> E --> F --> G --> H\nH -->|"次サイクル"| A\nREQ -.-> A\nREQ -.-> B\nREQ -.-> C\nREQ -.-> D\nREQ -.-> E\nREQ -.-> F\nREQ -.-> G\nREQ -.-> H\nclassDef prelim fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef phA    fill:#1e3a5f,stroke:#60a5fa,color:#e8eaf0\nclassDef phB    fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef phE    fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef phG    fill:#5c2210,stroke:#ff6b35,color:#e8eaf0\nclassDef req    fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8',
   "diag-4":
@@ -299,7 +299,7 @@ export default function Page() {
                 <tr>
                   <td>{"合格基準"}</td>
                   <td>
-                    <strong>{"55%（22/40問）"}</strong>
+                    <strong>{"60%（24/40問）"}</strong>
                   </td>
                   <td>
                     <strong>{"60%（60/100点）"}</strong>
@@ -319,10 +319,10 @@ export default function Page() {
                   <td>{"無期限"}</td>
                 </tr>
                 <tr>
-                  <td>{"ドキュメント持込"}</td>
+                  <td>{"公式ドキュメント参照"}</td>
                   <td>{"不可"}</td>
                   <td>
-                    <strong>{"公式ドキュメント持込可"}</strong>
+                    <strong>{"試験画面の REFERENCE ボタンで参照可"}</strong>
                   </td>
                   <td>{"混合"}</td>
                 </tr>
@@ -342,9 +342,9 @@ export default function Page() {
               aria-hidden="true"
             />
             <div>
-              <strong>{"Level 2 の持込可について："}</strong>
+              <strong>{"Level 2 の資料参照について："}</strong>
               {
-                "公式 TOGAF ドキュメントの持込みは可能ですが、試験時間（90分・8問）は非常に短いため、ドキュメントを頼りすぎると時間切れになります。知識の内在化が必須です。"
+                "受験者が文書を持参することはできず、公式 TOGAF ドキュメントは試験画面の REFERENCE ボタンから参照します。ただし試験時間（90分・8問）は非常に短いため、ドキュメントを頼りすぎると時間切れになります。知識の内在化が必須です。"
               }
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function Page() {
           <div className="mermaid-wrap">
             <MermaidDiagram id="diag-2" chart={DIAGRAMS["diag-2"]} preserveNaturalScale={true} />
             <div className="diagram-label">
-              {"1問あたり最大 5点・最低 -1点。8問合計 40点満点で 60点相当（換算後）"}
+              {"1問あたり最大 5点・最低 0点（減点なし）。8問合計 40点満点で 60点相当（換算後）"}
             </div>
           </div>
           <div className="source-list">
@@ -1484,10 +1484,10 @@ export default function Page() {
             <div className="bp-item">
               <div className="bp-num">{"07"}</div>
               <div className="bp-text">
-                <strong>{"Level 2 の公式ドキュメントを事前整理する"}</strong>
+                <strong>{"Level 2 の REFERENCE 参照に備えて構成を把握する"}</strong>
                 <span>
                   {
-                    "タブインデックスを貼り、ADM フェーズ・コンプライアンス定義・ガバナンス構造を素早く参照できるようにする。持込可でも検索時間は 1〜2 分が限界。"
+                    "試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成（ADM フェーズ・コンプライアンス定義・ガバナンス構造）を事前に把握し、素早く辿れるようにする。参照可でも検索時間は 1〜2 分が限界。"
                   }
                 </span>
               </div>
@@ -1655,7 +1655,7 @@ export default function Page() {
                     <strong style={{ color: "var(--color-text-danger)" }}>{"Must"}</strong>
                   </td>
                   <td>{"TOGAF Standard Version 10（公式）"}</td>
-                  <td>{"Level 2 持込用・根拠確認"}</td>
+                  <td>{"Level 2 の REFERENCE 参照対策・根拠確認"}</td>
                 </tr>
                 <tr>
                   <td>
@@ -1856,7 +1856,7 @@ export default function Page() {
                     <strong>{"TOGAF Standard, Version 10"}</strong>
                   </td>
                   <td>{"The Open Group"}</td>
-                  <td>{"最新公式テキスト（Level 2 持込）"}</td>
+                  <td>{"最新公式テキスト（Level 2 は試験画面で参照）"}</td>
                 </tr>
                 <tr>
                   <td>{"TOGAF Version 9.1 Pocket Guide"}</td>

@@ -102,6 +102,47 @@ describe("TOGAF foundations and examinations", () => {
   }
 });
 
+describe("TOGAF exam facts corrected from the archived original", () => {
+  it("states the OGEA-101 pass mark, OGEA-102 gradient scoring and on-screen reference", () => {
+    // Arrange
+    const { container } = selectChapter("exam");
+    const exam = container.querySelector(".section#exam") as Element;
+    const chart = (id: string) =>
+      exam.querySelector(`[data-testid="mermaid-diagram"]#${id}`)?.getAttribute("data-chart") ?? "";
+
+    // Act
+    const text = exam.textContent ?? "";
+
+    // Assert
+    expect(text).toContain("60%（24/40問）");
+    expect(text).not.toContain("55%");
+    expect(chart("diag-1")).toContain("合格60%");
+    expect(chart("diag-1")).not.toContain("55%");
+    expect(chart("diag-2")).toContain("4つの選択肢<br/>(A-D)");
+    expect(chart("diag-2")).toMatch(/\+5点[\s\S]*\+3点[\s\S]*\+1点[\s\S]*最も不適切 0点/);
+    expect(chart("diag-2")).not.toContain("-1点");
+    expect(text).toContain("最低 0点");
+    expect(text).toContain("REFERENCE ボタン");
+  });
+  it("never advises bringing documents or tabbing them in any chapter", () => {
+    // Arrange
+    const page = readFileSync(
+      resolve(
+        process.cwd(),
+        "app",
+        "product-and-enterprise",
+        "togaf-certification-comprehensive-guide",
+        "page.tsx"
+      ),
+      "utf8"
+    );
+
+    // Act & Assert
+    for (const phrase of ["持込", "持ち込", "タブインデックス", "-1点", "55%"])
+      expect(page, phrase).not.toContain(phrase);
+  });
+});
+
 describe("TOGAF ADM cycle and phases", () => {
   for (const id of ["adm", "phases"]) {
     it(`preserves all wording structure icons and links in ${id}`, () => {
