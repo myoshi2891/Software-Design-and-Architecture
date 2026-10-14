@@ -124,6 +124,30 @@ describe("TOGAF exam facts corrected from the archived original", () => {
     expect(text).toContain("最低 0点");
     expect(text).toContain("REFERENCE ボタン");
   });
+  it("states the combined exam awards only Practitioner and shows current exam fees", () => {
+    // Arrange
+    const { container } = selectChapter("exam");
+    const exam = container.querySelector(".section#exam") as Element;
+    const chart =
+      exam.querySelector('[data-testid="mermaid-diagram"]#diag-1')?.getAttribute("data-chart") ??
+      "";
+    const row = (label: string) =>
+      [...exam.querySelectorAll("tr")]
+        .find((tr) => tr.firstElementChild?.textContent === label)
+        ?.textContent?.slice(label.length) ?? "";
+
+    // Act
+    const text = exam.textContent ?? "";
+
+    // Assert
+    expect(text).toContain("授与されるのは Practitioner のみ");
+    expect(text).not.toContain("両方を一度に取得");
+    expect(row("目的")).toContain("両範囲を受験（Practitioner のみ授与）");
+    expect(row("目的")).not.toContain("両レベル同時取得");
+    expect(chart).toContain("授与は Practitioner のみ");
+    expect(chart).not.toContain("両レベルを1回で取得");
+    expect(row("受験料")).toBe("約 $395 USD約 $395 USD約 $595 USD");
+  });
   it("never advises bringing documents or tabbing them in any chapter", () => {
     // Arrange
     const page = readFileSync(

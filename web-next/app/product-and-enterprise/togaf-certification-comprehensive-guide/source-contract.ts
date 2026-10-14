@@ -187,8 +187,10 @@ collectDiagrams(syntax);
 
 // 原本はバイト固定（archive.test.ts）のため、事実誤りの訂正は正誤表として原本の解析結果へ適用する。
 // OGEA-101 の合格基準は 60%（24/40問）、OGEA-102 は 4 択・5/3/1/0 点の段階採点で、
-// 資料は持参せず試験画面の REFERENCE ボタンから参照する。各訂正は原本にちょうど 1 回だけ一致する。
-const TEXT_ERRATA: readonly (readonly [string, string])[] = [
+// 資料は持参せず試験画面の REFERENCE ボタンから参照する。Combined（OGEA-103）は両範囲を受験し Practitioner のみ授与、
+// 受験料は Pearson VUE 予約価格（Part 1/2 各 $395、Combined $595）。
+// 各訂正は原本の指定件数（省略時 1）のテキストノードにちょうど 1 回ずつ一致する。
+const TEXT_ERRATA: readonly (readonly [before: string, after: string, nodes?: number])[] = [
   ["55%（22/40問）", "60%（24/40問）"],
   ["公式ドキュメント持込可", "試験画面の REFERENCE ボタンで参照可"],
   ["ドキュメント持込", "公式ドキュメント参照"],
@@ -210,9 +212,20 @@ const TEXT_ERRATA: readonly (readonly [string, string])[] = [
     "Level 2 受験者は試験画面の REFERENCE ボタンで参照する公式ドキュメントの章構成を事前に把握しておく。",
   ],
   ["最新公式テキスト（Level 2 持込）", "最新公式テキスト（Level 2 は試験画面で参照）"],
+  [
+    "Combined 試験で両方を一度に取得することも可能です。",
+    "Combined 試験では Level 1・Level 2 の両範囲を 1 回で受験できますが、合格時に授与されるのは Practitioner のみです。",
+  ],
+  ["両レベル同時取得", "両範囲を受験（Practitioner のみ授与）"],
+  ["約 $320 USD", "約 $395 USD", 2],
+  ["約 $495 USD", "約 $595 USD"],
 ];
 const DIAGRAM_ERRATA: Readonly<Record<string, readonly (readonly [string, string])[]>> = {
-  "diag-1": [["合格55%", "合格60%"]],
+  "diag-1": [
+    ["合格55%", "合格60%"],
+    ["Combined\\nLevel 1 + Level 2", "Combined\\nLevel 1 + Level 2 の範囲"],
+    ["両レベルを1回で取得\\n最も効率的な取得方法", "両範囲を1回で受験\\n授与は Practitioner のみ"],
+  ],
   "diag-2": [
     ["5つの選択肢\\n(A-E)", "4つの選択肢\\n(A-D)"],
     [
@@ -230,15 +243,15 @@ function replaceOnce(text: string, before: string, after: string, label: string)
   return text.replace(before, after);
 }
 
-for (const [before, after] of TEXT_ERRATA) {
+for (const [before, after, nodes = 1] of TEXT_ERRATA) {
   const walker = source.createTreeWalker(source.body, NodeFilter.SHOW_TEXT);
   const matches: Text[] = [];
   for (let node = walker.nextNode(); node; node = walker.nextNode())
     if (node.nodeValue?.includes(before)) matches.push(node as Text);
-  const [match] = matches;
-  if (matches.length !== 1 || !match)
-    throw new Error(`Erratum must match exactly one text node: ${before} (${matches.length})`);
-  match.nodeValue = replaceOnce(match.nodeValue ?? "", before, after, "source text");
+  if (matches.length !== nodes)
+    throw new Error(`Erratum must match ${nodes} text node(s): ${before} (${matches.length})`);
+  for (const match of matches)
+    match.nodeValue = replaceOnce(match.nodeValue ?? "", before, after, "source text");
 }
 for (const [id, errata] of Object.entries(DIAGRAM_ERRATA)) {
   const chart = SOURCE_DIAGRAMS[id];

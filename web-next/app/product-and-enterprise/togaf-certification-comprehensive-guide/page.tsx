@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 const DIAGRAMS = {
   "diag-1":
-    'flowchart TD\nA["TOGAF 認定資格体系"]:::root --> B["Level 1<br/>TOGAF Foundation"]:::l1\nA --> C["Level 2<br/>TOGAF Practitioner"]:::l2\nA --> D["Combined<br/>Level 1 + Level 2"]:::comb\nB --> E["40問 / 60分 / 合格60%<br/>知識・理解を証明"]\nC --> F["8問複合選択 / 90分 / 合格60%<br/>実践・適用能力を証明"]\nD --> G["両レベルを1回で取得<br/>最も効率的な取得方法"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef l1 fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef l2 fill:#5c2210,stroke:#ff6b35,color:#e8eaf0\nclassDef comb fill:#451a03,stroke:#f59e0b,color:#e8eaf0',
+    'flowchart TD\nA["TOGAF 認定資格体系"]:::root --> B["Level 1<br/>TOGAF Foundation"]:::l1\nA --> C["Level 2<br/>TOGAF Practitioner"]:::l2\nA --> D["Combined<br/>Level 1 + Level 2 の範囲"]:::comb\nB --> E["40問 / 60分 / 合格60%<br/>知識・理解を証明"]\nC --> F["8問複合選択 / 90分 / 合格60%<br/>実践・適用能力を証明"]\nD --> G["両範囲を1回で受験<br/>授与は Practitioner のみ"]\nclassDef root fill:#2d1b5e,stroke:#7c4dff,color:#e8eaf0\nclassDef l1 fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef l2 fill:#5c2210,stroke:#ff6b35,color:#e8eaf0\nclassDef comb fill:#451a03,stroke:#f59e0b,color:#e8eaf0',
   "diag-2":
     'flowchart LR\nQ["シナリオ問題<br/>(現実の状況設定)"] --> OPT["4つの選択肢<br/>(A-D)"]\nOPT --> A1["最も適切な回答 +5点"]:::s5\nOPT --> A2["2番目に適切 +3点"]:::s3\nOPT --> A3["3番目に適切 +1点"]:::s1\nOPT --> A4["最も不適切 0点"]:::s0\nclassDef s5  fill:#14532d,stroke:#4ade80,color:#e8eaf0\nclassDef s3  fill:#134e4a,stroke:#14b8a6,color:#e8eaf0\nclassDef s1  fill:#451a03,stroke:#f59e0b,color:#e8eaf0\nclassDef s0  fill:#1a1e2a,stroke:#6b7494,color:#9ba3b8',
   "diag-3":
@@ -252,7 +252,7 @@ export default function Page() {
           <h1 className="page-title">{"試験の種類と概要"}</h1>
           <p className="page-subtitle">
             {
-              "TOGAF 認定資格は Level 1 と Level 2 の 2 段階構成。Combined 試験で両方を一度に取得することも可能です。"
+              "TOGAF 認定資格は Level 1 と Level 2 の 2 段階構成。Combined 試験では Level 1・Level 2 の両範囲を 1 回で受験できますが、合格時に授与されるのは Practitioner のみです。"
             }
           </p>
           <h2>{"試験レベル構造"}</h2>
@@ -276,7 +276,7 @@ export default function Page() {
                   <td>{"目的"}</td>
                   <td>{"知識・理解の証明"}</td>
                   <td>{"実践・適用能力の証明"}</td>
-                  <td>{"両レベル同時取得"}</td>
+                  <td>{"両範囲を受験（Practitioner のみ授与）"}</td>
                 </tr>
                 <tr>
                   <td>{"問題形式"}</td>
@@ -308,9 +308,9 @@ export default function Page() {
                 </tr>
                 <tr>
                   <td>{"受験料"}</td>
-                  <td>{"約 $320 USD"}</td>
-                  <td>{"約 $320 USD"}</td>
-                  <td>{"約 $495 USD"}</td>
+                  <td>{"約 $395 USD"}</td>
+                  <td>{"約 $395 USD"}</td>
+                  <td>{"約 $595 USD"}</td>
                 </tr>
                 <tr>
                   <td>{"有効期限"}</td>
