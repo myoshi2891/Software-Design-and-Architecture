@@ -49,14 +49,18 @@ it("provides scoped fluid typography, responsive spacing and reduced motion", ()
     });
   });
   expect(values).toContain("clamp(2rem, 3.4vw, 3.25rem)");
-  const reducedMotion: string[] = [];
+  const reducedMotion: Array<[string, string, boolean]> = [];
   root.walkAtRules("media", (rule) => {
     if (rule.params !== "(prefers-reduced-motion: reduce)") return;
-    rule.walkDecls("transition", (decl) => {
-      reducedMotion.push(decl.value);
+    if (rule.parent?.type !== "rule" || rule.parent.selector !== ".design-system-css-fundamentals")
+      return;
+    rule.walkDecls(/^(transition|scroll-behavior)$/, (decl) => {
+      reducedMotion.push([decl.prop, decl.value, decl.important === true]);
     });
   });
-  expect(reducedMotion).toContain("none");
+  // 詳細度の高い既存の transition 指定に負けないよう !important を要求する
+  expect(reducedMotion).toContainEqual(["transition", "none", true]);
+  expect(reducedMotion).toContainEqual(["scroll-behavior", "auto", true]);
   const mainWidths: string[] = [];
   root.walkRules("#main", (rule) => {
     if (rule.parent?.type !== "rule" || rule.parent.selector !== ".design-system-css-fundamentals")
