@@ -13,7 +13,8 @@ export const source = new DOMParser().parseFromString(
   "text/html"
 );
 export const css = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
-export const compact = (value: string | null) => (value ?? "").replace(/\s+/g, "");
+// 単語間の区切りを保つため、空白は削除せず連続分を 1 つに正規化する。
+export const compact = (value: string | null) => (value ?? "").replace(/\s+/g, " ").trim();
 
 // Restrict canonicalization to documented Mermaid compatibility changes.
 export function normalizeChart(chart: string): string {
@@ -52,7 +53,16 @@ function shape(element: Element): unknown {
     };
   }
   if (element.matches('.mermaid, [data-testid="mermaid-diagram"]')) return { diagram: true };
-  if (element.tagName === "PRE") return { code: element.textContent };
+  // コードブロックの表示クラスも照合する。原本は <pre><code class>、移植版は code ラッパーなしの
+  // <pre class> のため、pre 自身と直下 code のクラスを合わせて比較する。
+  if (element.tagName === "PRE")
+    return {
+      code: element.textContent,
+      classes: [
+        ...Array.from(element.classList),
+        ...Array.from(element.querySelector(":scope > code")?.classList ?? []),
+      ],
+    };
   return {
     tag: element.tagName,
     classes: Array.from(element.classList),
@@ -74,7 +84,16 @@ export function assertFaithful(actual: Element, expected: Element) {
   expectedText.querySelectorAll(".mermaid, i.ti").forEach((el) => {
     el.remove();
   });
-  expect(compact(actualText.textContent)).toBe(compact(expectedText.textContent));
+  // 原本 HTML のブロック要素間の整形用改行は JSX に存在しないため、全体照合のみ空白を除いて比較し、
+  // 単語間の区切りは下の要素単位（compact）の照合で検証する。
+  const stripped = (value: string | null) => (value ?? "").replace(/\s+/g, "");
+  expect(stripped(actualText.textContent)).toBe(stripped(expectedText.textContent));
+  // 複数のブロック子要素を持つコンテナも同じ理由で空白を除いて比較する。
+  for (const selector of [".callout", ".card", ".panel", ".rule-item", ".stack-item"])
+    expect(
+      Array.from(actual.querySelectorAll(selector), (el) => stripped(el.textContent)),
+      selector
+    ).toEqual(Array.from(expected.querySelectorAll(selector), (el) => stripped(el.textContent)));
   for (const selector of [
     "h1",
     "h2",
@@ -86,13 +105,8 @@ export function assertFaithful(actual: Element, expected: Element) {
     "em",
     "th",
     "td",
-    ".callout",
-    ".card",
-    ".panel",
-    ".rule-item",
     ".rule-num",
     ".step-badge",
-    ".stack-item",
     ".mermaid-caption",
   ]) {
     expect(
