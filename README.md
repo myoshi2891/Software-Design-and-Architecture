@@ -1,6 +1,6 @@
 # Software Architecture Design - Comprehensive Guide
 
-最終更新日: 2026-10-13
+最終更新日: 2026-10-15
 このプロジェクトは、ソフトウェアアーキテクチャ、デザイン原則、開発手法、およびプロダクト/エンタープライズ管理に関する包括的な知識を体系化したガイド集です。
 
 ## プロジェクトの目的
@@ -76,6 +76,14 @@ Testing Library（契約テスト）を採用しています。
 ページ集合の一致は契約テストで保証しています。
 
 - 移行済みページ:
+  - [`/css-design-system-guide/grid-bem-responsive-a11y-systems`](web-next/app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx)
+    — 第7〜10章・まとめ・参考資料を忠実移植（主要6セクション・25小節・Mermaid16図・コード37件・表4件）。
+    本文は Server Component、31項目の目次と現在地表示は `Navigation` に分離。
+    原本とのDOM・全文・コード改行・CSS宣言・リスト装飾・図ソースの比較テストを実装。
+    Inter・Space Groteskはルート専用の next/font 設定。状態遷移図は表示名を保持して予約語の内部IDを修正。
+    原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存し、SHA-256で検証。
+    検証には `web-next/` で `npm run test` / `npm run typecheck` / `npm run lint` を使用する。
+    今回はビルドを実施せず、ブラウザでの目視確認はユーザーが担当する。
   - [`/css-design-system-guide/design-system-css-fundamentals`](web-next/app/css-design-system-guide/design-system-css-fundamentals/page.tsx)
     — CSS 基礎ガイドを忠実移植（3章・12小節・Mermaid 12図・学習ロードマップ・表5件・CSS/HTMLコード30件）。
     本文は Server Component、15項目の目次・読書進捗・先頭ボタンは `Navigation` に分離。

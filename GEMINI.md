@@ -1,6 +1,6 @@
 # Software Architecture Design - Project Instructions
 
-Updated 2026-10-13
+Updated 2026-10-15
 このプロジェクトは、ソフトウェアアーキテクチャおよび設計原則に関する包括的なガイドラインを管理するドキュメントリポジトリです。
 このファイルに記載された指示は、AIエージェントが作業を行う際の**絶対的なルール**として機能します。
 
@@ -103,6 +103,15 @@ flowchart TD
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx`
+    （URL `/css-design-system-guide/grid-bem-responsive-a11y-systems`）。主要6セクション・25小節・
+    Mermaid16図・コード37件・表4件・callout7件・ベストプラクティス16項目を原本比較テストで保持。
+    本文は Server Component、31項目の目次・小節のscroll-spyは `Navigation` に分離。
+    ページ専用CSSとnext/font設定を使用し、コードは静的spanハイライトで表示。
+    図は共通 `MermaidDiagram` の自然幅表示を使用。状態名「Default」は保持し、予約語を内部IDから除外。
+    原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存。
+    検証は `web-next/` の `npm run test` / `npm run typecheck` / `npm run lint`。
+    今回はビルド不要、目視確認はユーザーが担当する。
   - `app/css-design-system-guide/design-system-css-fundamentals/page.tsx`
     （URL `/css-design-system-guide/design-system-css-fundamentals`）。3章・12小節・Mermaid 12図・学習ロードマップ・
     表5件・コード30件を忠実移植。本文は Server Component、目次・現在地・読書進捗・先頭ボタンは
