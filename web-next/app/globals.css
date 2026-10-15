@@ -18092,7 +18092,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         /* mermaid-center (apply_render_pipeline.ts): 図を中央寄せ */
         .mbox > .mermaid {
             display: flex;
-            justify-content: center;
+            justify-content: safe center;
         }
         .mbox > .mermaid svg {
             display: block;
@@ -18108,7 +18108,9 @@ ol.prose {list-style-type:decimal}
 .st {color:#6ee7b7}
 .fn {color:#7ab3f0}
 .cm {color:var(--tx3);font-style:italic}
-.nu {color:#fcd34d}}
+.nu {color:#fcd34d}
+ .mbox svg foreignObject {overflow:visible}
+ .mbox svg foreignObject > div, .mbox svg .nodeLabel, .mbox svg .edgeLabel, .mbox svg text, .mbox svg tspan {overflow:visible}}
 html:has(.grid-bem-responsive-a11y-systems){scroll-behavior:smooth}
 @media(prefers-reduced-motion:reduce){
   html:has(.grid-bem-responsive-a11y-systems){scroll-behavior:auto}

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import MermaidDiagram from "@/components/MermaidDiagram";
+import { DIAGRAMS } from "./diagrams";
 export const metadata: Metadata = {
   title: "CSS グリッド・コンポーネント・レスポンシブ・アクセシビリティ 完全設計ガイド",
   description:
@@ -283,7 +285,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 7.1 — レイアウトの3スケールとツールの対応関係"}</div>
-              <div className="mermaid" id="d-layout-overview"></div>
+              <MermaidDiagram
+                id="d-layout-overview"
+                chart={DIAGRAMS["d-layout-overview"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="co info">
               <span className="icon">{"💡"}</span>
@@ -311,7 +317,11 @@ export default function Page() {
             <h4>{"主軸と交差軸の概念"}</h4>
             <div className="mbox">
               <div className="mbox-t">{"図 7.2 — 主軸（Main Axis）と交差軸（Cross Axis）"}</div>
-              <div className="mermaid" id="d-flex-axis"></div>
+              <MermaidDiagram
+                id="d-flex-axis"
+                chart={DIAGRAMS["d-flex-axis"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <h4>{"コンテナプロパティ（親要素）"}</h4>
             <div className="cb">
@@ -381,7 +391,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 7.3 — CSS Grid の重要用語"}</div>
-              <div className="mermaid" id="d-grid-concepts"></div>
+              <MermaidDiagram
+                id="d-grid-concepts"
+                chart={DIAGRAMS["d-grid-concepts"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <h4>{"コンテナプロパティ"}</h4>
             <div className="cb">
@@ -452,7 +466,11 @@ export default function Page() {
             <p>{"「どちらを使うか？」という迷いは、以下のフローチャートで解消できます。"}</p>
             <div className="mbox">
               <div className="mbox-t">{"図 7.5 — Flexbox vs CSS Grid 判断フローチャート"}</div>
-              <div className="mermaid" id="d-flex-vs-grid"></div>
+              <MermaidDiagram
+                id="d-flex-vs-grid"
+                chart={DIAGRAMS["d-flex-vs-grid"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="tw">
               <table>
@@ -616,7 +634,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 8.1 — コンポーネント設計の5原則"}</div>
-              <div className="mermaid" id="d-comp-principles"></div>
+              <MermaidDiagram
+                id="d-comp-principles"
+                chart={DIAGRAMS["d-comp-principles"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="co tip">
               <span className="icon">{"💜"}</span>
@@ -639,7 +661,7 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 8.2 — BEMの3層構造（Block / Element / Modifier）"}</div>
-              <div className="mermaid" id="d-bem"></div>
+              <MermaidDiagram id="d-bem" chart={DIAGRAMS["d-bem"]} preserveNaturalScale={true} />
             </div>
             <h4>{"BEM の構文"}</h4>
             <div className="cb">
@@ -753,7 +775,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 8.4 — Buttonコンポーネントの3軸設計"}</div>
-              <div className="mermaid" id="d-btn-variants"></div>
+              <MermaidDiagram
+                id="d-btn-variants"
+                chart={DIAGRAMS["d-btn-variants"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="cb">
               <div className="cb-h">
@@ -780,7 +806,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 8.5 — ボタンの状態遷移図（State Machine）"}</div>
-              <div className="mermaid" id="d-state-machine"></div>
+              <MermaidDiagram
+                id="d-state-machine"
+                chart={DIAGRAMS["d-state-machine"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="cb">
               <div className="cb-h">
@@ -883,7 +913,11 @@ export default function Page() {
               <div className="mbox-t">
                 {"図 9.1 — モバイルファースト vs デスクトップファーストの比較"}
               </div>
-              <div className="mermaid" id="d-mobile-first"></div>
+              <MermaidDiagram
+                id="d-mobile-first"
+                chart={DIAGRAMS["d-mobile-first"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="co ok">
               <span className="icon">{"✅"}</span>
@@ -929,7 +963,11 @@ export default function Page() {
               <div className="mbox-t">
                 {"図 9.3 — メディアクエリ（従来）vs コンテナクエリ（新機能）"}
               </div>
-              <div className="mermaid" id="d-container-query"></div>
+              <MermaidDiagram
+                id="d-container-query"
+                chart={DIAGRAMS["d-container-query"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="cb">
               <div className="cb-h">
@@ -1113,7 +1151,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 10.1 — アクセシビリティが対象とするユーザー"}</div>
-              <div className="mermaid" id="d-a11y-targets"></div>
+              <MermaidDiagram
+                id="d-a11y-targets"
+                chart={DIAGRAMS["d-a11y-targets"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="co tip">
               <span className="icon">{"💡"}</span>
@@ -1136,7 +1178,7 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 10.2 — WCAG 2.2 の4原則（POUR）と適合レベル"}</div>
-              <div className="mermaid" id="d-wcag"></div>
+              <MermaidDiagram id="d-wcag" chart={DIAGRAMS["d-wcag"]} preserveNaturalScale={true} />
             </div>
             <div className="tw">
               <table>
@@ -1191,7 +1233,11 @@ export default function Page() {
               <div className="mbox-t">
                 {"図 10.3 — 非セマンティック vs セマンティックHTMLの恩恵"}
               </div>
-              <div className="mermaid" id="d-semantic"></div>
+              <MermaidDiagram
+                id="d-semantic"
+                chart={DIAGRAMS["d-semantic"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="sl">
               <div className="sl-item ng">
@@ -1300,7 +1346,11 @@ export default function Page() {
             </p>
             <div className="mbox">
               <div className="mbox-t">{"図 10.4 — キーボード操作の基本ショートカット"}</div>
-              <div className="mermaid" id="d-keyboard"></div>
+              <MermaidDiagram
+                id="d-keyboard"
+                chart={DIAGRAMS["d-keyboard"]}
+                preserveNaturalScale={true}
+              />
             </div>
             <div className="cb">
               <div className="cb-h">
@@ -1356,7 +1406,7 @@ export default function Page() {
               <div className="mbox-t">
                 {"図 10.5 — WAI-ARIAの3カテゴリ（roles / properties / states）"}
               </div>
-              <div className="mermaid" id="d-aria"></div>
+              <MermaidDiagram id="d-aria" chart={DIAGRAMS["d-aria"]} preserveNaturalScale={true} />
             </div>
             <div className="sl">
               <div className="sl-item ng">
@@ -1568,7 +1618,11 @@ export default function Page() {
           </p>
           <div className="mbox">
             <div className="mbox-t">{"図 〆 — 優れたデザインシステムを構成する4つの柱"}</div>
-            <div className="mermaid" id="d-summary"></div>
+            <MermaidDiagram
+              id="d-summary"
+              chart={DIAGRAMS["d-summary"]}
+              preserveNaturalScale={true}
+            />
           </div>
           <div className="sg">
             <div className="sc c1">

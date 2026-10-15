@@ -107,9 +107,9 @@ it("keeps diagram labels readable without forced scaling, clipping or font overr
   expect(value(".mbox > .mermaid", "justify-content")).toBe("safe center");
   expect(value(".mbox", "overflow-x")).toBe("auto");
   expect(value(".mbox svg foreignObject", "overflow")).toBe("visible");
-  pageScope().walkRules(rule => {
+  pageScope().walkRules((rule) => {
     if (!rule.selector.includes("svg")) return;
-    rule.walkDecls(decl => {
+    rule.walkDecls((decl) => {
       expect(["min-width", "max-height", "font-size"], rule.selector).not.toContain(decl.prop);
     });
   });
