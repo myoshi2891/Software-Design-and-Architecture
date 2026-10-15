@@ -39,7 +39,16 @@ export default function Navigation({ children }: { children: ReactNode }) {
       if (bar) bar.style.width = pct + "%";
       if (label) label.textContent = pct + "%";
     };
-    window.addEventListener("scroll", updateProgress, { passive: true });
+    // scroll ごとの DOM 更新を描画フレーム単位にまとめ、予約中は重複予約しない
+    let frame: number | null = null;
+    const onScroll = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        updateProgress();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     updateProgress();
     let fade: IntersectionObserver | undefined;
     const targets = [...root.querySelectorAll(".sub,.diagram-card,.bp-box")];
@@ -62,7 +71,8 @@ export default function Navigation({ children }: { children: ReactNode }) {
     return () => {
       observer.disconnect();
       fade?.disconnect();
-      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("scroll", onScroll);
+      if (frame !== null) window.cancelAnimationFrame(frame);
       for (const target of targets) target.classList.remove("fade-in", "is-visible");
     };
   }, []);
