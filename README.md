@@ -99,14 +99,14 @@ Testing Library（契約テスト）を採用しています。
     文言を維持して見出し・配色・余白を調整。学習ロードマップは元の6分野・24項目を
     Server Componentのカードで表示し、画面幅に応じて3列・2列・1列に切り替える。
     原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
-    ルート生成型は `npm exec -- next typegen` で更新。`bun run lint` / `typecheck` / `test` / `build` の
+    ルート生成型は `npm exec -- next typegen` で更新。`web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の
     全通過を確認済みで、目視確認はユーザーが担当する。
   - [`/product-and-enterprise/togaf-certification-comprehensive-guide`](web-next/app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx)
     — TOGAF 完全解説ガイドを忠実移植（12章切替・見出し38件・Mermaid 17図・表10件・リスト14項目）。
     本文を Server Component で生成し、目次と選択状態だけを `TogafGuideShell` に分離。
     選択中の章だけをマウントして図を自然幅で描画し、モバイルでは目次を上部へ配置。
     原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
-    `bun run lint` / `typecheck` / `test` / `build` の全通過を確認済みで、目視確認はユーザーが担当。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済みで、目視確認はユーザーが担当。
   - [`/product-and-enterprise/minimum-viable-product-comprehensive-guide`](web-next/app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx)
     — MVP 完全ガイドを忠実移植（14章・Mermaid 17図・表15件・リスト69項目・YAMLコード1件）。
     サイドバーの現在地表示をクライアント側に分離し、本文は Server Component を維持。
@@ -114,8 +114,6 @@ Testing Library（契約テスト）を採用しています。
     文言を維持したまま本文の幅制限を撤廃し、全幅レイアウト・追従目次・見出しとカードのデザインを改善。
     原本HTML・Markdownは `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
     移行検証は `cd web-next` 後に `npm run test` / `npm run lint` / `npm run typecheck`。
-    グローバルCSSの変換回帰は `npm run test -- tests/globals-css.test.ts`。
-    Lightning CSSの変換警告が0件で、全キーフレーム定義とヒーローのアニメーション参照が保持されることを確認する。
     `bun run lint` / `typecheck` / `test` / `build` の全通過を確認済みで、図解・文字・リストの表示はユーザーが目視確認する。
   - [`/general/comprehensive-guide`](web-next/app/general/comprehensive-guide/page.tsx)
     — `general/comprehensive-guide/comprehensive-guide.html` を忠実移植（12 セクション・
@@ -186,6 +184,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/development-methodologies/test-driven-development-comprehensive-guide`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx)
     — テスト駆動開発 (TDD) 完全ガイドを移植（18 セクション・Mermaid 12 図・table 4・コードブロック 10）。
     固定サイドバー・進捗バー・scroll-spy を [`TddSidebar.tsx`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/TddSidebar.tsx) でクライアント描画
+- 共通スタイル（[`app/globals.css`](web-next/app/globals.css)）の変換回帰は `web-next/` で
+  `bun run test -- tests/globals-css.test.ts` により検証する。
+  Lightning CSSの変換警告が0件で、全キーフレーム定義とヒーローのアニメーション参照が保持されることを確認する。
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
   全カテゴリ・全ガイド（すべて公開済み）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
