@@ -1,4 +1,5 @@
 import { act, fireEvent, render } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import Navigation from "./Navigation";
 
@@ -8,7 +9,7 @@ let observers: {
   unobserve: ReturnType<typeof vi.fn>;
   disconnect: ReturnType<typeof vi.fn>;
 }[] = [];
-function setup(reduced = false) {
+function setup(reduced = false, extraLinks?: ReactNode) {
   observers = [];
   vi.stubGlobal(
     "matchMedia",
@@ -33,6 +34,7 @@ function setup(reduced = false) {
   return render(
     <div className="normal-animation-architecture-tokens-performance-tools">
       <Navigation>
+        {extraLinks}
         <a href="#top" className="toc-link" data-toc="">
           導入
         </a>
@@ -123,4 +125,17 @@ it("keeps reduced-motion content visible and skips fade observation", () => {
   const { container } = setup(true);
   expect(container.querySelector(".sub")).not.toHaveClass("fade-in");
   expect(observers).toHaveLength(1);
+});
+it("skips links whose hash is not a valid selector and keeps observing the rest", () => {
+  // Arrange & Act: 数字始まりの ID は CSS セレクタとして不正（querySelector なら DOMException）
+  setup(
+    false,
+    <a href="https://example.com/#1bad" data-toc="">
+      外部
+    </a>
+  );
+
+  // Assert: 後続の正規リンクの監視とスクロール購読が中断されない
+  expect(observers[0].observe).toHaveBeenCalledTimes(2);
+  expect(observers).toHaveLength(2);
 });
