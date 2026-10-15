@@ -13,6 +13,11 @@ vi.mock("mermaid", () => ({ default: { initialize: vi.fn(), render: draw, run } 
 
 import Page from "./page";
 
+// 原本の B2 はランドマーク移動とキーボード操作を混同しているため、移植側で訂正する。
+const SEMANTIC_B2_SOURCE = 'B2["キーボードナビゲーションが<br/>自動で機能する"]';
+const SEMANTIC_B2_CORRECTED =
+  'B2["header・nav・main・footer の<br/>ランドマークで支援技術が<br/>領域間を直接移動できる<br/>(キーボード操作は button・a 等の<br/>ネイティブ操作要素が担う)"]';
+
 describe("all sixteen guide diagrams", () => {
   it("keeps every diagram matched to its source ID, normalized labels and connections", () => {
     const ids = Array.from(source.querySelectorAll(".mermaid"), (e) => e.id);
@@ -24,8 +29,16 @@ describe("all sixteen guide diagrams", () => {
               .replace('state "Default" as DefaultState\n', "")
               .replaceAll("DefaultState", "Default")
           : DIAGRAMS[id];
-      expect(chart).toBe(normalizeChart(SOURCE_DIAGRAMS[id]));
+      const expected = normalizeChart(SOURCE_DIAGRAMS[id]);
+      expect(chart).toBe(
+        id === "d-semantic" ? expected.replace(SEMANTIC_B2_SOURCE, SEMANTIC_B2_CORRECTED) : expected
+      );
     }
+  });
+  it("separates landmark navigation from native keyboard operation in the semantic diagram", () => {
+    expect(normalizeChart(SOURCE_DIAGRAMS["d-semantic"])).toContain(SEMANTIC_B2_SOURCE);
+    expect(DIAGRAMS["d-semantic"]).toContain(SEMANTIC_B2_CORRECTED);
+    expect(DIAGRAMS["d-semantic"]).not.toContain("自動で機能する");
   });
   it("renders sixteen independent SVGs with natural scale, unique IDs and no run API", async () => {
     const { container, rerender } = render(<Page />);
