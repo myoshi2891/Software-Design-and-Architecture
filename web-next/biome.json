@@ -52,6 +52,7 @@
   "overrides": [
     {
       "includes": [
+        "app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx",
         "app/css-design-system-guide/css-design-system-guide/page.tsx",
         "app/css-design-system-guide/css-color-typography-spacing-systems/page.tsx",
         "app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx",
@@ -64,12 +65,28 @@
         "app/design-principles/domain-driven-design-comprehensive-guide/page.tsx",
         "app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx",
         "app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx",
-        "app/recommended-books/sql-antipatterns-guide/page.tsx"
+        "app/recommended-books/sql-antipatterns-guide/page.tsx",
+        "app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx",
+        "app/css-design-system-guide/design-system-css-fundamentals/page.tsx",
+        "app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx"
       ],
       "linter": {
         "rules": {
           "security": {
             "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noRedundantRoles": "off"
+          },
+          "suspicious": {
+            "noTemplateCurlyInString": "off"
           }
         }
       }

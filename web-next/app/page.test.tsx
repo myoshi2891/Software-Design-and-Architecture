@@ -55,7 +55,7 @@ describe("HomePage (guide index)", () => {
     const container = renderIndex();
     const hrefs = [...container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
     const planned = guideCatalog.flatMap((c) => c.entries).filter((e) => e.status === "planned");
-    expect(planned.length).toBe(5);
+    expect(planned.length).toBe(0);
     for (const entry of planned) {
       expect(hrefs).not.toContain(entry.href);
     }
@@ -63,7 +63,7 @@ describe("HomePage (guide index)", () => {
 
   it("marks planned rows with a visible status note", () => {
     const container = renderIndex();
-    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(5);
+    expect(container.querySelectorAll(".guide-row.is-planned").length).toBe(0);
     for (const row of container.querySelectorAll(".guide-row.is-planned")) {
       expect(row.textContent).toContain("準備中");
     }
@@ -79,10 +79,18 @@ describe("HomePage (guide index)", () => {
 
   it("shows the guide counts", () => {
     const container = renderIndex();
-    const text = container.textContent ?? "";
-    expect(text).toContain("29");
-    expect(text).toContain("24");
-    expect(text).toContain("5");
+    expect(container.querySelector(".overview-planned")).toHaveTextContent(
+      /^公開中 29 本 \/ 準備中 0 本$/
+    );
+    const stats = [...container.querySelectorAll(".index-stats > div")].map((item) => [
+      item.querySelector("dt")?.textContent,
+      item.querySelector("dd")?.textContent,
+    ]);
+    expect(stats).toEqual([
+      ["収録ガイド", "29本"],
+      ["公開中", "29"],
+      ["カテゴリ", String(guideCatalog.length).padStart(2, "0")],
+    ]);
   });
 
   it("normalizes full-width search input and searches summaries", () => {
@@ -115,4 +123,29 @@ describe("HomePage (guide index)", () => {
     fireEvent.click(screen.getByRole("button", { name: "アニメーションを再生" }));
     expect(container.querySelector(".architecture-visual")).toHaveAttribute("data-paused", "false");
   });
+});
+
+it("links the published MVP guide from the index", () => {
+  const container = renderIndex();
+  expect(
+    container.querySelector(
+      'a[href="/product-and-enterprise/minimum-viable-product-comprehensive-guide"]'
+    )
+  ).toHaveTextContent(/^MVP \(実用最小限の製品\)最小限の機能で仮説を早く確かめる$/);
+});
+
+it("links the published TOGAF guide from the index", () => {
+  const container = renderIndex();
+  expect(
+    container.querySelector(
+      'a[href="/product-and-enterprise/togaf-certification-comprehensive-guide"]'
+    )
+  ).toHaveTextContent(/^TOGAF 認定エンタープライズアーキテクチャの資格対策$/);
+});
+
+it("links the published CSS fundamentals guide from the index", () => {
+  const container = renderIndex();
+  expect(
+    container.querySelector('a[href="/css-design-system-guide/design-system-css-fundamentals"]')
+  ).toHaveTextContent(/^CSS 基礎デザインシステムを支える CSS の土台$/);
 });

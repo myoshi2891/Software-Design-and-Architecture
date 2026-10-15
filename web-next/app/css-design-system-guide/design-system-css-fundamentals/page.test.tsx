@@ -1,0 +1,133 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { assertFaithful, compact, source } from "./source-contract";
+
+vi.mock("@/components/MermaidDiagram", () => ({
+  default: ({ chart, preserveNaturalScale }: { chart: string; preserveNaturalScale?: boolean }) => (
+    <div
+      data-testid="mermaid-diagram"
+      data-chart={chart}
+      data-natural-scale={String(preserveNaturalScale)}
+    />
+  ),
+}));
+
+import Page, { metadata } from "./page";
+
+describe("CSS fundamentals foundation", () => {
+  it("preserves the complete hero, sidebar wording and all 15 links", () => {
+    const { container } = render(<Page />);
+    for (const selector of [".hero", "#sidebar"]) {
+      const actual = container.querySelector(selector);
+      expect(actual).not.toBeNull();
+      assertFaithful(actual as Element, source.querySelector(selector) as Element);
+    }
+    expect(container.querySelectorAll(".sb-link")).toHaveLength(15);
+    expect(container.querySelector("#top-btn")).toHaveAttribute("title", "先頭へ戻る");
+    expect(container.querySelector("#top-btn")).toHaveTextContent("⇧");
+  });
+  it("provides metadata and keeps the main content on the server", () => {
+    expect(metadata.title).toBe(source.title);
+    expect(compact(metadata.description as string)).toBe(
+      compact(source.querySelector(".hero p")?.textContent ?? "")
+    );
+    const { container } = render(<Page />);
+    expect(container.querySelector(".design-system-css-fundamentals > main#main")).not.toBeNull();
+    expect(
+      readFileSync(
+        resolve(
+          process.cwd(),
+          "app/css-design-system-guide/design-system-css-fundamentals/page.tsx"
+        ),
+        "utf8"
+      )
+    ).not.toMatch(/^["']use client["']/);
+    expect(container.querySelectorAll("script, link, [onclick]")).toHaveLength(0);
+  });
+});
+
+const SECTION_GROUPS = [
+  ["CSS fundamentals design system concepts", ["s1-1", "s1-2", "s1-3"]],
+  ["CSS fundamentals adoption and best practices", ["s1-4", "s1-5", "s1-6"]],
+  ["CSS fundamentals cascade specificity and methodologies", ["s2-1", "s2-2"]],
+  ["CSS fundamentals custom properties and layout", ["s2-3", "s2-4"]],
+  ["CSS fundamentals responsive design and best practices", ["s2-5", "s2-6"]],
+  ["CSS fundamentals summary and resources", ["s3"]],
+] as const;
+
+for (const [heading, ids] of SECTION_GROUPS) {
+  describe(heading, () => {
+    for (const id of ids) {
+      it(`preserves every text code table style and diagram in ${id}`, () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`#${id}`);
+        expect(actual).not.toBeNull();
+        assertFaithful(actual as Element, source.getElementById(id) as Element);
+        for (const pre of actual?.querySelectorAll("pre") ?? []) {
+          expect(pre.querySelector("code")).toBeNull();
+          expect(
+            pre.querySelectorAll("span.kw, span.st, span.fn, span.cm, span.nu").length
+          ).toBeGreaterThan(0);
+          expect(pre.querySelectorAll("style, script, button")).toHaveLength(0);
+        }
+      });
+      it(`parses all real Mermaid diagrams in ${id}`, async () => {
+        const { container } = render(<Page />);
+        const actual = container.querySelector(`#${id}`);
+        expect(actual).not.toBeNull();
+        const { default: mermaid } = await import("mermaid");
+        mermaid.initialize({ startOnLoad: false, theme: "dark" });
+        for (const element of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+          const chart = element.getAttribute("data-chart") ?? "";
+          if (!chart.startsWith("mindmap"))
+            expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+          await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+        }
+      });
+    }
+  });
+}
+
+it("preserves the complete source inventory and every navigation target", () => {
+  const { container } = render(<Page />);
+  assertFaithful(
+    container.querySelector("#main") as Element,
+    source.querySelector("#main") as Element
+  );
+  const inventory = {
+    "section.section": 3,
+    h1: 2,
+    h2: 3,
+    h3: 19,
+    h4: 42,
+    table: 5,
+    pre: 30,
+    ul: 0,
+    ol: 0,
+    li: 0,
+    ".callout": 11,
+    ".card": 6,
+    ".step-item": 7,
+    ".step-num": 7,
+    ".comp-card": 14,
+    ".spec-box": 20,
+    ".ref-link": 24,
+    ".code-wrap": 16,
+    ".mermaid-label": 13,
+    '[data-testid="mermaid-diagram"]': 12,
+    ".sb-link": 15,
+    a: 62,
+  };
+  for (const [selector, count] of Object.entries(inventory))
+    expect(container.querySelectorAll(selector), selector).toHaveLength(count);
+  expect(container.querySelectorAll("pre.language-css")).toHaveLength(26);
+  expect(container.querySelectorAll("pre.language-html")).toHaveLength(4);
+  expect(
+    Array.from(container.querySelectorAll(".step-num"), (element) => element.textContent)
+  ).toEqual(Array.from({ length: 7 }, (_, index) => String(index + 1)));
+  for (const link of container.querySelectorAll(".sb-link"))
+    expect(container.querySelector(link.getAttribute("href") ?? "")).not.toBeNull();
+  expect(container.querySelectorAll("script, link, iframe, style, [onclick]")).toHaveLength(0);
+});

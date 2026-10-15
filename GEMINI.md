@@ -1,5 +1,6 @@
 # Software Architecture Design - Project Instructions
 
+Updated 2026-10-15
 このプロジェクトは、ソフトウェアアーキテクチャおよび設計原則に関する包括的なガイドラインを管理するドキュメントリポジトリです。
 このファイルに記載された指示は、AIエージェントが作業を行う際の**絶対的なルール**として機能します。
 
@@ -98,10 +99,57 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 29 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カテゴリ別に全 29 本を一覧する。全 29 本が公開済み（`status: "published"`）でリンクから閲覧でき、
+  未移行（`status: "planned"`）のページは 0 件。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx`
+    （URL `/css-design-system-guide/normal-animation-architecture-tokens-performance-tools`）。Vol.4の8セクション・31小節・
+    Mermaid19図・コード36件・表7件・リスト115項目を原本比較テストで保持。
+    ページ専用CSS・next/font設定を使用。本文はServer Component、現在地表示・読了率・フェードインはNavigationに分離。
+    図定義は実Mermaidパーサーで検証し、共通コンポーネントの自然幅表示を使用。
+    原本HTML・Markdownは `archive/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx`
+    （URL `/css-design-system-guide/grid-bem-responsive-a11y-systems`）。主要6セクション・25小節・
+    Mermaid16図・コード37件・表4件・callout7件・ベストプラクティス16項目を原本比較テストで保持。
+    本文は Server Component、31項目の目次・小節のscroll-spyは `Navigation` に分離。
+    ページ専用CSSとnext/font設定を使用し、コードは静的spanハイライトで表示。
+    図は共通 `MermaidDiagram` の自然幅表示を使用。状態名「Default」は保持し、予約語を内部IDから除外。
+    セマンティックHTML図のB2は、ランドマーク移動とネイティブ操作要素のキーボード操作を区別する記述へ訂正（原本は無変更）。
+    flex軸図のラベル区切りを補い、モバイルファースト図はスタイルを「ロード」でなく「適用」しない記述へ訂正。
+    原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/css-design-system-guide/design-system-css-fundamentals/page.tsx`
+    （URL `/css-design-system-guide/design-system-css-fundamentals`）。3章・12小節・Mermaid 12図・学習ロードマップ・
+    表5件・コード30件を忠実移植。本文は Server Component、目次・現在地・読書進捗・先頭ボタンは
+    `Navigation` に分離。Inter・Space Groteskはルート専用の next/font 設定で読み込む。
+    元HTMLとの全文・要素構造・インライン色・CSS宣言・図定義・コード改行の照合、実Mermaid構文、
+    SVG自然幅とスクロール時の安定性、原本SHA-256を契約テストで検証する。
+    ロードマップは `LearningRoadmap` が原本のmindmap定義から文言・階層を変えずに6枚のカードを生成。
+    6分野・24項目の順序と所属は専用テストで照合し、3列・2列・1列の表示を検証する。
+    ページのデザイン調整はスコープ内CSSに限定し、本文・コード例・リンクを維持する。
+    原本HTML・Markdownは `archive/css-design-system-guide/design-system-css-fundamentals/` に無変更で保存。
+    ルート生成型は `npm exec -- next typegen` で更新。`web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/product-and-enterprise/togaf-certification-comprehensive-guide/page.tsx`
+    （URL `/product-and-enterprise/togaf-certification-comprehensive-guide`）。12章切替・見出し38件・
+    Mermaid 17図・表10件・リスト14項目を忠実移植。本文は Server Component で生成し、
+    `TogafGuideShell` が目次と選択状態を管理する。非表示領域で図を採寸せず、選択中の章だけをマウントする。
+    元HTMLとの全文・要素構造・クラス・インライン色・CSS宣言・図定義の照合、実Mermaid構文、
+    連続切替・再訪・描画ID・SVG自然幅の統合回帰、原本SHA-256を契約テストで検証する。
+    原本HTML・Markdownは `archive/product-and-enterprise/togaf-certification-comprehensive-guide/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx`
+    （URL `/product-and-enterprise/minimum-viable-product-comprehensive-guide`）。14章・Mermaid 17図・表15件・
+    リスト69項目・YAMLコード1件を忠実移植。本文は Server Component、現在地表示は
+    `MvpSidebar.tsx` に分離。原本HTML・Markdownは
+    `archive/product-and-enterprise/minimum-viable-product-comprehensive-guide/` に無変更で保存。
+    元HTMLとの全文・要素構造・クラス・インライン色・CSS宣言の照合、実Mermaid構文、
+    原本SHA-256を契約テストで検証する。章アンカーは共通ヘッダーと免責表示の高さを考慮する。
+    デザイン改善後も本文・図データ・原本は無変更。本文は幅上限なしの可変Grid配置とし、
+    追従目次・モバイル全幅・見出し階層・読みやすい表とカードのCSS契約を追加。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/general/comprehensive-guide/page.tsx`（URL `/general/comprehensive-guide`）。
   - `app/architecture/event-driven-architecture-comprehensive-guide/page.tsx`
     （URL `/architecture/event-driven-architecture-comprehensive-guide`）。固定サイドバー +
@@ -176,10 +224,10 @@ flowchart TD
   - `app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx`
     （URL `/development-methodologies/test-driven-development-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`TddSidebar.tsx`）に分離。
+    開発手法の全4ガイドの原本 HTML・Markdown は `archive/development-methodologies/` に保存済み。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
-  `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
-  索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
-  「準備中」の非リンク表示とする）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型。全ガイドが公開済みで、
+  索引 (`app/page.tsx`) と同じく全項目がリンクとして機能する）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
   スタイルは `globals.css` の `ch-*` クラス。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は
@@ -188,6 +236,10 @@ flowchart TD
   `bun run build` の全通過を必須とする。Lint/Format は Biome。
 - スタイルは `app/globals.css` のデザイントークン + ページスコープクラス。アイコンは
   `@tabler/icons-react`、Mermaid はクライアント描画、コードハイライトは手書き span を維持する。
+- `@keyframes` はページのセレクター内にネストせず、ページ固有の名前で定義する。
+  `web-next/tests/globals-css.test.ts` はLightning CSSで全体を変換し、警告と定義の欠落、
+  タイポグラフィページのヒーローのアニメーション参照を検査する。
+  サンドボックスでは `cd web-next` 後に `npm run test -- tests/globals-css.test.ts` で実行できる。
 
 ## 📝 規約
 

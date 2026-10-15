@@ -22,10 +22,10 @@ describe("guideCatalog structure", () => {
     expect(allEntries().length).toBe(29);
   });
 
-  it("splits into 24 published and 5 planned guides", () => {
+  it("splits into 29 published and 0 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(24);
-    expect(entries.filter((e) => e.status === "planned").length).toBe(5);
+    expect(entries.filter((e) => e.status === "published").length).toBe(29);
+    expect(entries.filter((e) => e.status === "planned").length).toBe(0);
   });
 
   it("uses only the two known status values", () => {
@@ -64,4 +64,31 @@ describe("guideCatalog structure", () => {
     expect(architecture).toBeDefined();
     expect(architecture?.entries.map((e) => e.href)).toContain("/general/comprehensive-guide");
   });
+});
+
+it("publishes the MVP guide under product-and-enterprise", () => {
+  const category = guideCatalog.find((entry) => entry.id === "product-and-enterprise");
+  expect(
+    category?.entries.find(
+      (entry) => entry.href === "/product-and-enterprise/minimum-viable-product-comprehensive-guide"
+    )?.status
+  ).toBe("published");
+});
+
+it("publishes the TOGAF guide under product-and-enterprise", () => {
+  const category = guideCatalog.find((entry) => entry.id === "product-and-enterprise");
+  expect(
+    category?.entries.find(
+      (entry) => entry.href === "/product-and-enterprise/togaf-certification-comprehensive-guide"
+    )?.status
+  ).toBe("published");
+});
+
+it("publishes CSS fundamentals under CSS design systems", () => {
+  const category = guideCatalog.find((entry) => entry.id === "css-design-system-guide");
+  expect(
+    category?.entries.find(
+      (entry) => entry.href === "/css-design-system-guide/design-system-css-fundamentals"
+    )?.status
+  ).toBe("published");
 });

@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import {
   buildCurlArgs,
   isRetryableStatus,
@@ -200,5 +201,32 @@ describe('retryDelaySeconds', () => {
   test('試行回数に応じて待機時間を線形に伸ばす', () => {
     expect(retryDelaySeconds(1, 10)).toBe(10);
     expect(retryDelaySeconds(2, 10)).toBe(20);
+  });
+});
+
+describe('.markdown-link-check.json ignorePatterns', () => {
+  // verify-links.ts と同じく new RegExp(pattern) で照合する（JSON ではフラグを指定できない）
+  const config: unknown = JSON.parse(
+    readFileSync(new URL('../.markdown-link-check.json', import.meta.url), 'utf8'),
+  );
+  const patterns =
+    typeof config === 'object' && config !== null && 'ignorePatterns' in config && Array.isArray(config.ignorePatterns)
+      ? config.ignorePatterns.flatMap((item: unknown) =>
+          typeof item === 'object' && item !== null && 'pattern' in item && typeof item.pattern === 'string'
+            ? [new RegExp(item.pattern)]
+            : [],
+        )
+      : [];
+  const isIgnored = (url: string) => patterns.some((regex) => regex.test(url));
+
+  test('kimballgroup.com は大文字小文字を問わず除外する', () => {
+    expect(isIgnored('https://www.kimballgroup.com/data-warehouse/')).toBe(true);
+    expect(isIgnored('https://DOCS.KIMBALLGROUP.COM/')).toBe(true);
+    expect(isIgnored('HTTPS://KimballGroup.com:8443/?q=1')).toBe(true);
+  });
+
+  test('kimballgroup.com を含む別ドメインは除外しない', () => {
+    expect(isIgnored('https://kimballgroup.com.evil.test/')).toBe(false);
+    expect(isIgnored('https://notkimballgroup.com/')).toBe(false);
   });
 });
