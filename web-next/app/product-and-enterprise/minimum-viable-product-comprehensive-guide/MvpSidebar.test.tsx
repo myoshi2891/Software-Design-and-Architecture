@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import MvpSidebar, { type MvpNavItem } from "./MvpSidebar";
 
@@ -44,5 +44,30 @@ describe("MVP sidebar", () => {
     expect(container.querySelector('a[href="#intro"]')).not.toHaveClass("active");
     unmount();
     expect(disconnect).toHaveBeenCalledTimes(1);
+  });
+  it("opens the chapter list with a toggle button and closes it after choosing a chapter", () => {
+    // Arrange
+    vi.stubGlobal(
+      "IntersectionObserver",
+      vi.fn(function (this: object) {
+        Object.assign(this, { observe: vi.fn(), disconnect: vi.fn() });
+      })
+    );
+    const { container } = render(<MvpSidebar items={items} />);
+    const toggle = screen.getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector(".sidebar") as HTMLElement;
+    expect(toggle).toHaveAttribute("aria-controls", sidebar.id);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    // Act
+    fireEvent.click(toggle);
+
+    // Assert
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAccessibleName("目次を閉じる");
+    expect(sidebar).toHaveClass("open");
+    fireEvent.click(container.querySelector('a[href="#lean"]') as Element);
+    expect(sidebar).not.toHaveClass("open");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
   });
 });

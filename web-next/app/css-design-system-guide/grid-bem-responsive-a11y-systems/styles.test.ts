@@ -83,6 +83,11 @@ describe("Grid BEM complete CSS fidelity", () => {
       expect(value(`.${token}`, "color")).toBeDefined();
     expect(value(".sidebar", "display", "(max-width:860px)")).toBe("none");
     expect(value(".sl", "grid-template-columns", "(max-width:860px)")).toBe("1fr");
+    // 狭い画面では目次ボタンで開いたときだけサイドバーを重ねて表示する
+    expect(value(".toc-toggle", "display")).toBe("none");
+    expect(value(".toc-toggle", "display", "(max-width:860px)")).toBe("flex");
+    expect(value(".sidebar.open", "display", "(max-width:860px)")).toBe("block");
+    expect(value(".sidebar.open", "position", "(max-width:860px)")).toBe("fixed");
     expect(value(".skip:focus", "top")).toBe("16px");
   });
   it("offsets sticky sidebar and all anchors beneath the shared header", () => {

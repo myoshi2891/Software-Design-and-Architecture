@@ -144,6 +144,80 @@ describe("CSS fundamentals navigation", () => {
     expect(sub).toHaveClass("active");
     expect(chapter).not.toHaveClass("active");
   });
+  it("releases a clicked link after a timeout when scrollend never fires, without clearing a newer click", () => {
+    // Arrange
+    vi.useFakeTimers();
+    let callback: IntersectionObserverCallback | undefined;
+    vi.stubGlobal(
+      "IntersectionObserver",
+      vi.fn(function (this: object, cb: IntersectionObserverCallback) {
+        callback = cb;
+        Object.assign(this, { observe: vi.fn(), disconnect: vi.fn() });
+      })
+    );
+    const { container, unmount } = render(
+      <div className="design-system-css-fundamentals">
+        <Navigation groups={groups} />
+        <main>
+          <section id="s1" className="section">
+            <div id="s1-1" className="subsection" />
+          </section>
+        </main>
+      </div>
+    );
+    const chapter = container.querySelector('a[href="#s1"]') as HTMLElement;
+    const sub = container.querySelector('a[href="#s1-1"]') as HTMLElement;
+    const intersect = (id: string) =>
+      act(() =>
+        callback?.(
+          [
+            {
+              isIntersecting: true,
+              target: container.querySelector(`#${id}`) as Element,
+            } as IntersectionObserverEntry,
+          ],
+          {} as IntersectionObserver
+        )
+      );
+
+    // Act: 章をクリック後、別リンクを選び直してから先のタイムアウトが経過する
+    fireEvent.click(chapter);
+    act(() => vi.advanceTimersByTime(600));
+    fireEvent.click(sub);
+    act(() => vi.advanceTimersByTime(500));
+    intersect("s1");
+
+    // Assert: 先のクリックのタイムアウトは新しい選択を解除しない
+    expect(sub).toHaveClass("active");
+    expect(chapter).not.toHaveClass("active");
+
+    // scrollend が来なくても新しい選択のタイムアウト後は追従を再開する
+    act(() => vi.advanceTimersByTime(600));
+    intersect("s1");
+    expect(chapter).toHaveClass("active");
+    unmount();
+    vi.useRealTimers();
+  });
+  it("opens the table of contents with a toggle button and closes it after choosing a link", () => {
+    // Arrange
+    const { container, getByRole } = render(<Navigation groups={groups} />);
+    const toggle = getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector("#sidebar") as HTMLElement;
+    expect(toggle).toHaveAttribute("aria-controls", "sidebar");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(sidebar).not.toHaveClass("open");
+
+    // Act
+    fireEvent.click(toggle);
+
+    // Assert
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAccessibleName("目次を閉じる");
+    expect(sidebar).toHaveClass("open");
+    fireEvent.click(container.querySelector('a[href="#s1-1"]') as HTMLElement);
+    expect(sidebar).not.toHaveClass("open");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
   it("shows rounded 0 50 and 100 percent progress and handles a non-scrolling page", () => {
     dimensions(0);
     const { container } = render(<Navigation groups={groups} />);

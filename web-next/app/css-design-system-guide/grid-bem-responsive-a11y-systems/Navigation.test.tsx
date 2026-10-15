@@ -65,6 +65,25 @@ describe("guide table of contents", () => {
     unmount();
     expect(remove).toHaveBeenCalledWith("scrollend", expect.any(Function));
   });
+  it("opens the table of contents with a toggle button and closes it after choosing a link", () => {
+    // Arrange
+    const { container, getByRole } = render(<Page />);
+    const toggle = getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector("nav.sidebar") as HTMLElement;
+    expect(toggle).toHaveAttribute("aria-controls", sidebar.id);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    // Act
+    fireEvent.click(toggle);
+
+    // Assert
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAccessibleName("目次を閉じる");
+    expect(sidebar).toHaveClass("open");
+    fireEvent.click(sidebar.querySelector('a[href="#s8-4"]') as Element);
+    expect(sidebar).not.toHaveClass("open");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
   it("keeps every anchor valid and main focusable for the skip link", () => {
     const { container } = render(<Page />);
     expect(container.querySelector("#main")).toHaveAttribute("tabindex", "-1");

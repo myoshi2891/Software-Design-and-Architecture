@@ -155,4 +155,10 @@ describe("MVP visual refinement", () => {
     expect(designValue(".card", "transition", "(prefers-reduced-motion: reduce)")).toBe("none");
     expect(css).not.toMatch(/\.minimum-viable-product-comprehensive-guide[^}]*100vw/s);
   });
+  it("lets narrow screens reach every chapter through a toggled sidebar overlay", () => {
+    expect(designValue(".toc-toggle", "display")).toBe("none");
+    expect(designValue(".toc-toggle", "display", "(max-width: 768px)")).toBe("flex");
+    expect(designValue(".sidebar.open", "display", "(max-width: 768px)")).toBe("block");
+    expect(designValue(".sidebar.open", "position", "(max-width: 768px)")).toBe("fixed");
+  });
 });

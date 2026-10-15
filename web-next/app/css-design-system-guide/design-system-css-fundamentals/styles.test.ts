@@ -91,6 +91,12 @@ describe("CSS fundamentals scoped styling", () => {
     expect(value("#sidebar", "visibility", "(max-width: 900px)")).toBe("hidden");
     expect(value(".comp-grid", "grid-template-columns", "(max-width: 900px)")).toBe("1fr");
   });
+  it("reveals the sidebar on narrow screens only through the table of contents toggle", () => {
+    expect(value(".toc-toggle", "display")).toBe("none");
+    expect(value(".toc-toggle", "display", "(max-width: 900px)")).toBe("flex");
+    expect(value("#sidebar.open", "transform", "(max-width: 900px)")).toBe("none");
+    expect(value("#sidebar.open", "visibility", "(max-width: 900px)")).toBe("visible");
+  });
 });
 
 it("fits the fixed sidebar and anchors beneath the existing shared header", () => {
