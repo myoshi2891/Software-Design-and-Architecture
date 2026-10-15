@@ -76,6 +76,12 @@ Testing Library（契約テスト）を採用しています。
 ページ集合の一致は契約テストで保証しています。
 
 - 移行済みページ:
+  - [`/css-design-system-guide/normal-animation-architecture-tokens-performance-tools`](web-next/app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx)
+    — Vol.4の第11〜16章・成熟度モデル・参考文献を忠実移植（8セクション・31小節・Mermaid19図・コード36件・表7件）。
+    本文・リスト115項目・図定義・コード全文・CSS宣言を原本との比較テストで検証。
+    目次の現在地・読了率・reduced-motion対応のフェードインは専用Client Componentで実装。
+    原本HTML・Markdownは `archive/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/` に無変更で保存し、SHA-256で検証。
+    検証は `web-next/` でnpmを使用。ビルドは省略し、目視確認はユーザーが担当。
   - [`/css-design-system-guide/grid-bem-responsive-a11y-systems`](web-next/app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx)
     — 第7〜10章・まとめ・参考資料を忠実移植（主要6セクション・25小節・Mermaid16図・コード37件・表4件）。
     本文は Server Component、31項目の目次と現在地表示は `Navigation` に分離。

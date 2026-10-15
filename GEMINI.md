@@ -103,6 +103,13 @@ flowchart TD
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
+  - `app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx`
+    （URL `/css-design-system-guide/normal-animation-architecture-tokens-performance-tools`）。Vol.4の8セクション・31小節・
+    Mermaid19図・コード36件・表7件・リスト115項目を原本比較テストで保持。
+    ページ専用CSS・next/font設定を使用。本文はServer Component、現在地表示・読了率・フェードインはNavigationに分離。
+    図定義は実Mermaidパーサーで検証し、共通コンポーネントの自然幅表示を使用。
+    原本HTML・Markdownは `archive/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/` に無変更で保存。
+    検証は `web-next/` でnpmを使用し、ビルドは省略、目視確認はユーザーが担当。
   - `app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx`
     （URL `/css-design-system-guide/grid-bem-responsive-a11y-systems`）。主要6セクション・25小節・
     Mermaid16図・コード37件・表4件・callout7件・ベストプラクティス16項目を原本比較テストで保持。
