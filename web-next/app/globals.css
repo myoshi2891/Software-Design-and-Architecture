@@ -18572,6 +18572,25 @@ td code, p code, li code{
 /* スクロールアニメーション（控えめ） */
 .fade-in{ opacity:0; transform: translateY(10px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
 .fade-in.is-visible{ opacity:1; transform:none; }ul {list-style-type:disc;} ol {list-style-type:decimal;} .code-card pre {font-family:var(--font-mono);font-size:13px;line-height:1.7;white-space:pre;background:transparent;} .kw{color:#c4b5fd;} .st{color:#6ee7b7;} .fn{color:#7ab3f0;} .cm{color:var(--text-muted);font-style:italic;} .nu{color:#fcd34d;} .mermaid{width:100%;} .mermaid svg foreignObject{overflow:visible;} .mermaid svg .nodeLabel, .mermaid svg .edgeLabel{overflow:visible;} .layout > .main{min-width:0;} @media(prefers-reduced-motion:reduce){.fade-in{opacity:1;transform:none;}}
+
+/* Directory trees: one cell per connector and one shared comment column. */
+.code-card pre.directory-tree {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow-x: auto;
+}
+.directory-tree .tree-path {
+  display: inline-block;
+  width: var(--tree-path-width);
+}
+.directory-tree .tree-cell {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+}
+.directory-tree .tree-comment { font-style: normal; }
 }
 html:has(.normal-animation-architecture-tokens-performance-tools){ scroll-behavior: smooth; }
 body.has-common-header .normal-animation-architecture-tokens-performance-tools .sidebar{top:calc(var(--ch-height) + var(--ch-disclaimer-height));height:calc(100vh - var(--ch-height) - var(--ch-disclaimer-height));}
