@@ -9,8 +9,28 @@ let observers: {
   unobserve: ReturnType<typeof vi.fn>;
   disconnect: ReturnType<typeof vi.fn>;
 }[] = [];
+let frames = new Map<number, FrameRequestCallback>();
+let nextFrame = 0;
+const cancelFrame = vi.fn((id: number) => frames.delete(id));
+// 予約済みフレームを描画タイミング相当として一括実行する
+function flushFrames() {
+  const pending = [...frames.values()];
+  frames = new Map();
+  for (const callback of pending) callback(0);
+}
 function setup(reduced = false, extraLinks?: ReactNode) {
   observers = [];
+  frames = new Map();
+  cancelFrame.mockClear();
+  vi.stubGlobal(
+    "requestAnimationFrame",
+    vi.fn((callback: FrameRequestCallback) => {
+      nextFrame += 1;
+      frames.set(nextFrame, callback);
+      return nextFrame;
+    })
+  );
+  vi.stubGlobal("cancelAnimationFrame", cancelFrame);
   vi.stubGlobal(
     "matchMedia",
     vi.fn(() => ({ matches: reduced }))
@@ -92,17 +112,44 @@ it("updates bounded percentage and bar, including short documents", () => {
   vi.stubGlobal("innerHeight", 1000);
   vi.stubGlobal("scrollY", 500);
   fireEvent.scroll(window);
+  flushFrames();
   expect(container.querySelector("#progressPct")).toHaveTextContent("50%");
   expect(container.querySelector("#progressBar")).toHaveStyle({ width: "50%" });
   vi.stubGlobal("scrollY", -100);
   fireEvent.scroll(window);
+  flushFrames();
   expect(container.querySelector("#progressPct")).toHaveTextContent("0%");
   vi.stubGlobal("scrollY", 5000);
   fireEvent.scroll(window);
+  flushFrames();
   expect(container.querySelector("#progressPct")).toHaveTextContent("100%");
   vi.spyOn(document.documentElement, "scrollHeight", "get").mockReturnValue(500);
   fireEvent.scroll(window);
+  flushFrames();
   expect(container.querySelector("#progressPct")).toHaveTextContent("0%");
+});
+it("batches scroll updates into one animation frame and cancels it on unmount", () => {
+  // Arrange
+  const { container, unmount } = setup();
+  vi.spyOn(document.documentElement, "scrollHeight", "get").mockReturnValue(2000);
+  vi.stubGlobal("innerHeight", 1000);
+  vi.stubGlobal("scrollY", 500);
+
+  // Act: 同一フレーム内の連続スクロール
+  fireEvent.scroll(window);
+  fireEvent.scroll(window);
+
+  // Assert: 予約は 1 件のみで、描画前は DOM を更新しない
+  expect(window.requestAnimationFrame).toHaveBeenCalledOnce();
+  expect(container.querySelector("#progressPct")).toHaveTextContent("0%");
+  flushFrames();
+  expect(container.querySelector("#progressPct")).toHaveTextContent("50%");
+
+  // Act & Assert: 予約中にアンマウントするとフレームを取り消す
+  fireEvent.scroll(window);
+  const pendingId = [...frames.keys()][0];
+  unmount();
+  expect(cancelFrame).toHaveBeenCalledWith(pendingId);
 });
 it("reveals once and cleans up observers and scroll listener", () => {
   const remove = vi.spyOn(window, "removeEventListener");
