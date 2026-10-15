@@ -32,6 +32,12 @@ describe("Animation architecture complete source contract", () => {
       expected.querySelectorAll("script").forEach((e) => {
         e.remove();
       });
+      // Formatting whitespace is not valid React content in table structure.
+      for (const element of expected.querySelectorAll("table, thead, tbody, tfoot, tr, colgroup")) {
+        for (const node of [...element.childNodes]) {
+          if (node.nodeType === Node.TEXT_NODE && !node.textContent?.trim()) node.remove();
+        }
+      }
       expect(actual).not.toBeNull();
       expect(shape(actual)).toEqual(shape(expected));
       expect(compact(actual.textContent)).toBe(compact(expected.textContent));
@@ -94,4 +100,15 @@ it("highlights CSS functions and hex colors as syntax rather than comments", () 
   const colorCode = blocks.find((pre) => pre.textContent?.includes("--color-primary"));
   expect(colorCode).toBeDefined();
   expect(colorCode?.querySelector(".nu")).not.toBeNull();
+});
+
+it("has no text nodes beneath table structural elements in all seven tables", () => {
+  const { container } = render(<Page />);
+  expect(container.querySelectorAll("table")).toHaveLength(7);
+  for (const element of container.querySelectorAll("table, thead, tbody, tfoot, tr, colgroup")) {
+    expect(
+      [...element.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE),
+      `${element.tagName} in ${element.closest("section")?.id}`
+    ).toHaveLength(0);
+  }
 });
