@@ -14300,6 +14300,13 @@ body.has-common-header .object-oriented-programming-comprehensive-guide .progres
    Test-Driven Development Comprehensive Guide
    ========================================================================== */
 .test-driven-development-comprehensive-guide {
+  &,
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   --bg-primary: #0f0f10;
   --bg-secondary: #18181b;
   --bg-tertiary: #1e1e22;
@@ -14544,6 +14551,7 @@ body.has-common-header .object-oriented-programming-comprehensive-guide .progres
     flex: 1;
     max-width: calc(100% - 260px);
     margin-left: 256px;
+    min-width: 0;
     padding: 64px 56px;
   }
 
@@ -15085,6 +15093,8 @@ body.has-common-header .object-oriented-programming-comprehensive-guide .progres
   }
   .col-card {
     background: var(--bg-card);
+    min-width: 0;
+    overflow-wrap: anywhere;
     border: 0.5px solid;
     border-radius: var(--radius-lg);
     padding: 20px;
@@ -15433,6 +15443,10 @@ body.has-common-header .object-oriented-programming-comprehensive-guide .progres
   }
 
   @media (max-width: 900px) {
+    & {
+      flex-direction: column;
+    }
+
     .sidebar {
       display: none;
     }
