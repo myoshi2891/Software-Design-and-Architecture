@@ -88,6 +88,7 @@ Testing Library（契約テスト）を採用しています。
     本文は Server Component、31項目の目次と現在地表示は `Navigation` に分離。
     原本とのDOM・全文・コード改行・CSS宣言・リスト装飾・図ソースの比較テストを実装。
     Inter・Space Groteskはルート専用の next/font 設定。状態遷移図は表示名を保持して予約語の内部IDを修正。
+    セマンティックHTML図のB2は、ランドマーク移動とキーボード操作を区別する記述へ訂正（原本は無変更）。
     原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存し、SHA-256で検証。
     検証には `web-next/` で `npm run test` / `npm run typecheck` / `npm run lint` を使用する。
     今回はビルドを実施せず、ブラウザでの目視確認はユーザーが担当する。

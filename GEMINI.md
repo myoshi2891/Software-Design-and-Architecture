@@ -117,6 +117,7 @@ flowchart TD
     本文は Server Component、31項目の目次・小節のscroll-spyは `Navigation` に分離。
     ページ専用CSSとnext/font設定を使用し、コードは静的spanハイライトで表示。
     図は共通 `MermaidDiagram` の自然幅表示を使用。状態名「Default」は保持し、予約語を内部IDから除外。
+    セマンティックHTML図のB2は、ランドマーク移動とネイティブ操作要素のキーボード操作を区別する記述へ訂正（原本は無変更）。
     原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存。
     検証は `web-next/` の `npm run test` / `npm run typecheck` / `npm run lint`。
     今回はビルド不要、目視確認はユーザーが担当する。
