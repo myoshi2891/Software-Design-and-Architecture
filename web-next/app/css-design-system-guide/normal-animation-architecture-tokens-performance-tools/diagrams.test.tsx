@@ -1,0 +1,10 @@
+import {render} from '@testing-library/react';
+import mermaid from 'mermaid';
+import {expect,it,vi} from 'vitest';
+import {source,normalize} from './source-contract';
+import {DIAGRAMS} from './diagrams';
+vi.mock('@/components/MermaidDiagram',()=>({default:({chart,preserveNaturalScale}:{chart:string;preserveNaturalScale:boolean})=><div data-testid="mermaid-diagram" data-chart={chart} data-natural={String(preserveNaturalScale)}/> }));
+import Page from './page';
+mermaid.initialize({startOnLoad:false,theme:'dark'});
+it('preserves every graph definition and parses all nineteen real charts',async()=>{const sources=[...source.querySelectorAll('script.mermaid-src')];expect(DIAGRAMS).toHaveLength(19);for(const [i,chart]of DIAGRAMS.entries()){expect(chart).toBe(normalize(sources[i].textContent??''));await expect(mermaid.parse(chart)).resolves.toBeTruthy();}},15000);
+it('renders distinct charts at natural size with all original accessible labels',()=>{const {container}=render(<Page/>);const actual=[...container.querySelectorAll('.mermaid[role="img"]')];const original=[...source.querySelectorAll('.mermaid')];expect(actual).toHaveLength(19);actual.forEach((e,i)=>{expect(e.getAttribute('aria-label')).toBe(original[i].getAttribute('aria-label'));expect(e.querySelector('[data-chart]')).toHaveAttribute('data-chart',DIAGRAMS[i]);expect(e.querySelector('[data-natural]')).toHaveAttribute('data-natural','true');});});
