@@ -102,6 +102,14 @@ it("highlights CSS functions and hex colors as syntax rather than comments", () 
   expect(colorCode?.querySelector(".nu")).not.toBeNull();
 });
 
+it("anchors #top on the hero, not on the main element that contains every chapter", () => {
+  const { container } = render(<Page />);
+  const top = container.querySelector("#top");
+  expect(top).toHaveClass("hero");
+  expect(top?.querySelector("section.chapter")).toBeNull();
+  expect(container.querySelector("main")).not.toHaveAttribute("id");
+});
+
 it("has no text nodes beneath table structural elements in all seven tables", () => {
   const { container } = render(<Page />);
   expect(container.querySelectorAll("table")).toHaveLength(7);
