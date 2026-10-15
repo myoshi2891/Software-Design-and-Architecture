@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
+
 for (const file of ["README.md", "GEMINI.md"]) {
   it(`documents route and archive in ${file}`, () => {
     const text = readFileSync(resolve(process.cwd(), "..", file), "utf8");

@@ -15,7 +15,7 @@ export default function Page() {
         {"メインコンテンツへスキップ"}
       </a>
       <Navigation groups={NAV_GROUPS} />
-      <main className="main" id="main" tabIndex="-1">
+      <main className="main" id="main" tabIndex={-1}>
         <div className="hero">
           <div className="h-badge">{"🎨 CSS Design System · Ch.7–10"}</div>
           <h1>
