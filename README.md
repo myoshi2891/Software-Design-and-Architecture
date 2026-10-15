@@ -71,7 +71,7 @@ Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vite
 Testing Library（契約テスト）を採用しています。
 
 ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 29 本を
-一覧し、移行済みのページはリンク、未移行のページは「準備中」として非リンク表示します。
+一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
 ページ集合の一致は契約テストで保証しています。
@@ -186,7 +186,7 @@ Testing Library（契約テスト）を採用しています。
     — テスト駆動開発 (TDD) 完全ガイドを移植（18 セクション・Mermaid 12 図・table 4・コードブロック 10）。
     固定サイドバー・進捗バー・scroll-spy を [`TddSidebar.tsx`](web-next/app/development-methodologies/test-driven-development-comprehensive-guide/TddSidebar.tsx) でクライアント描画
 - 全ページ共通のグローバルナビ + ディスクレーマーを [`layout.tsx`](web-next/app/layout.tsx) に常設。
-  全カテゴリ・全ガイド（未移行ページ含む。現状アクセスすると 404）を
+  全カテゴリ・全ガイド（すべて公開済み）を
   [`components/site/nav-links.ts`](web-next/components/site/nav-links.ts) で定義し、
   [`SiteHeader.tsx`](web-next/components/site/SiteHeader.tsx) /
   [`SiteHeaderClient.tsx`](web-next/components/site/SiteHeaderClient.tsx)（ハンバーガー・ドロップダウン開閉）と

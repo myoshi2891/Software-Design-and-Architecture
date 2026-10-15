@@ -99,7 +99,8 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 29 本を一覧する。未移行ページは「準備中」として非リンク表示し 404 へ飛ばさない。
+  カテゴリ別に全 29 本を一覧する。全 29 本が公開済み（`status: "published"`）でリンクから閲覧でき、
+  未移行（`status: "planned"`）のページは 0 件。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
 - 移行済み:
@@ -224,9 +225,8 @@ flowchart TD
     進捗バー + scroll-spy をクライアントコンポーネント（`TddSidebar.tsx`）に分離。
     開発手法の全4ガイドの原本 HTML・Markdown は `archive/development-methodologies/` に保存済み。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
-  `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
-  索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い
-  「準備中」の非リンク表示とする）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
+  `components/site/nav-links.ts`（zod 不使用の判別共用体型。全ガイドが公開済みで、
+  索引 (`app/page.tsx`) と同じく全項目がリンクとして機能する）。描画は `SiteHeader.tsx` / `SiteHeaderClient.tsx` / `DisclaimerBanner.tsx`、
   スタイルは `globals.css` の `ch-*` クラス。
 - 移行は **TDD**（`.claude/rules/tdd-commit-workflow.md`）に従い、契約テスト（Vitest +
   Testing Library）を Red→Green→Refactor で進める。詳細手順は
