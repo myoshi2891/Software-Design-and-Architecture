@@ -84,10 +84,14 @@ describe("Animation architecture complete source contract", () => {
 });
 
 it("highlights CSS functions and hex colors as syntax rather than comments", () => {
-  const {container}=render(<Page/>);
-  const blocks=[...container.querySelectorAll('pre')];
-  expect(blocks.some(pre=>[...pre.querySelectorAll('.fn')].some(span=>span.textContent==='cubic-bezier'))).toBe(true);
-  const colorCode=blocks.find(pre=>pre.textContent?.includes('--color-brand-500'));
+  const { container } = render(<Page />);
+  const blocks = [...container.querySelectorAll("pre")];
+  expect(
+    blocks.some((pre) =>
+      [...pre.querySelectorAll(".fn")].some((span) => span.textContent === "cubic-bezier")
+    )
+  ).toBe(true);
+  const colorCode = blocks.find((pre) => pre.textContent?.includes("--color-primary"));
   expect(colorCode).toBeDefined();
-  expect(colorCode?.querySelector('.nu')).not.toBeNull();
+  expect(colorCode?.querySelector(".nu")).not.toBeNull();
 });
