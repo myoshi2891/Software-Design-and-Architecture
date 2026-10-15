@@ -102,3 +102,15 @@ describe("Grid BEM complete CSS fidelity", () => {
     }
   });
 });
+
+it("keeps diagram labels readable without forced scaling, clipping or font overrides", () => {
+  expect(value(".mbox > .mermaid", "justify-content")).toBe("safe center");
+  expect(value(".mbox", "overflow-x")).toBe("auto");
+  expect(value(".mbox svg foreignObject", "overflow")).toBe("visible");
+  pageScope().walkRules(rule => {
+    if (!rule.selector.includes("svg")) return;
+    rule.walkDecls(decl => {
+      expect(["min-width", "max-height", "font-size"], rule.selector).not.toContain(decl.prop);
+    });
+  });
+});
