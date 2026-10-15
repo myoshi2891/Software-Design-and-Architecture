@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 export type NavGroup = { label: string; items: { id: string; num: string; label: string }[] };
 export default function Navigation({ groups }: { groups: NavGroup[] }) {
   const nav = useRef<HTMLElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const clickedId = useRef<string | null>(null);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -35,6 +36,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
   return (
     <>
       <button
+        ref={toggle}
         type="button"
         className="toc-toggle"
         aria-label={open ? "目次を閉じる" : "目次を開く"}
@@ -49,6 +51,19 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
         className={`sidebar${open ? " open" : ""}`}
         aria-label="ガイド目次"
         ref={nav}
+        // 目次外へフォーカスが出たら閉じる。トグルへの移動は直後のクリックで再度開くため除外する。
+        onBlur={(event) => {
+          const next = event.relatedTarget;
+          if (next instanceof Node && (nav.current?.contains(next) || toggle.current === next))
+            return;
+          setOpen(false);
+        }}
+        onKeyDown={(event) => {
+          // open になるのはトグル表示中（狭い画面）のみなので、広い画面の動作は変わらない。
+          if (event.key !== "Escape" || !open) return;
+          setOpen(false);
+          toggle.current?.focus();
+        }}
       >
         <div className="sb-logo">
           <div className="t">CSS Design System</div>
