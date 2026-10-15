@@ -73,3 +73,18 @@ describe("guide table of contents", () => {
     expect(container.querySelectorAll('nav ul[role="list"]')).toHaveLength(5);
   });
 });
+
+it("resumes observing even if clicking an already visible anchor produces no scrollend", () => {
+  vi.useFakeTimers();
+  try {
+    const { container, unmount } = render(<Page />);
+    fireEvent.click(container.querySelector('nav a[href="#s7"]') as Element);
+    act(() => vi.advanceTimersByTime(1500));
+    intersect(container.querySelector("#s7-2") as Element);
+    expect(container.querySelector("nav a.active")).toHaveAttribute("href", "#s7-2");
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    vi.useRealTimers();
+  }
+});
