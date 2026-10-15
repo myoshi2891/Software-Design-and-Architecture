@@ -78,9 +78,9 @@ function shape(element: Element): unknown {
   if (element.tagName === "PRE") return { code: element.textContent };
   return {
     tag: element.tagName,
-    classes: Array.from(element.classList).filter(value => value !== "active"),
+    classes: Array.from(element.classList).filter((value) => value !== "active"),
     id: element.id,
-    style: element.getAttribute("style")?.replace(/\s/g, "").replace(/;$/, "") ?? "",
+    style: (element as HTMLElement).style.cssText.replace(/\s/g, "").replace(/;$/, ""),
     rowSpan: element.getAttribute("rowspan"),
     colSpan: element.getAttribute("colspan"),
     children: Array.from(element.children, shape),
@@ -90,12 +90,41 @@ export function assertFaithful(actual: Element, expected: Element) {
   expect(actual).not.toBeNull();
   expect(shape(actual)).toEqual(shape(expected));
   expect(compact(actual.textContent)).toBe(compact(expected.textContent));
-  for (const selector of ["h1", "h2", "h3", "h4", "p", "strong", "em", "td", "th", ".co", ".bp-item", ".mk", ".n", ".sc", ".mbox-t", "li"]) {
-    expect(Array.from(actual.querySelectorAll(selector), e => compact(e.textContent)), selector)
-      .toEqual(Array.from(expected.querySelectorAll(selector), e => compact(e.textContent)));
+  for (const selector of [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "p",
+    "strong",
+    "em",
+    "td",
+    "th",
+    ".co",
+    ".bp-item",
+    ".mk",
+    ".n",
+    ".sc",
+    ".mbox-t",
+    "li",
+  ]) {
+    expect(
+      Array.from(actual.querySelectorAll(selector), (e) => compact(e.textContent)),
+      selector
+    ).toEqual(Array.from(expected.querySelectorAll(selector), (e) => compact(e.textContent)));
   }
-  expect(Array.from(actual.querySelectorAll("pre"), e => e.textContent))
-    .toEqual(Array.from(expected.querySelectorAll("pre"), e => e.textContent));
-  expect(Array.from(actual.querySelectorAll("a"), e => [e.getAttribute("href"), compact(e.textContent)]))
-    .toEqual(Array.from(expected.querySelectorAll("a"), e => [e.getAttribute("href"), compact(e.textContent)]));
+  expect(Array.from(actual.querySelectorAll("pre"), (e) => e.textContent)).toEqual(
+    Array.from(expected.querySelectorAll("pre"), (e) => e.textContent)
+  );
+  expect(
+    Array.from(actual.querySelectorAll("a"), (e) => [
+      e.getAttribute("href"),
+      compact(e.textContent),
+    ])
+  ).toEqual(
+    Array.from(expected.querySelectorAll("a"), (e) => [
+      e.getAttribute("href"),
+      compact(e.textContent),
+    ])
+  );
 }
