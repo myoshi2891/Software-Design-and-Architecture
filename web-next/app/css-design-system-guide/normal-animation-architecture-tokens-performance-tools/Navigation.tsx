@@ -24,8 +24,9 @@ export default function Navigation({ children }: { children: ReactNode }) {
       { rootMargin: "-15% 0px -70% 0px", threshold: 0 }
     );
     for (const link of links) {
-      const target = root.querySelector(link.hash);
-      if (target) observer.observe(target);
+      // ハッシュをセレクタとして解釈すると不正な ID で DOMException になるため ID で直接引く
+      const target = link.hash ? document.getElementById(link.hash.slice(1)) : null;
+      if (target && root.contains(target)) observer.observe(target);
     }
     const updateProgress = () => {
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
