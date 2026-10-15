@@ -25,8 +25,14 @@ it("preserves every CSS declaration, selector and media condition", () => {
     if ([":root", "body"].includes(rule.selector)) candidates.push(page);
     for (const d of rule.nodes) {
       // The requested full-width prose intentionally replaces source character limits.
-      if (d.type === "decl" && d.prop === "max-width" &&
-          [".hero__title", ".hero__lead", ".chapter__intro", ".sub p", ".sub ul, .sub ol"].includes(rule.selector)) continue;
+      if (
+        d.type === "decl" &&
+        d.prop === "max-width" &&
+        [".hero__title", ".hero__lead", ".chapter__intro", ".sub p", ".sub ul, .sub ol"].includes(
+          rule.selector
+        )
+      )
+        continue;
       if (
         d.type !== "decl" ||
         ["--font-display", "--font-body", "--font-mono", "justify-content"].includes(d.prop)
@@ -106,13 +112,20 @@ it("disables document smooth scrolling for reduced motion", () => {
   expect(found).toBe(true);
 });
 
-
 it("lets headings, prose and lists use the full available main-content width", () => {
   const page = scope();
-  for (const selector of [".hero__title", ".hero__lead", ".chapter__intro", ".sub p", ".sub ul, .sub ol"]) {
+  for (const selector of [
+    ".hero__title",
+    ".hero__lead",
+    ".chapter__intro",
+    ".sub p",
+    ".sub ul, .sub ol",
+  ]) {
     let maximum: string | undefined;
     page.walkRules(selector, (rule) => {
-      rule.walkDecls("max-width", (decl) => { maximum = decl.value; });
+      rule.walkDecls("max-width", (decl) => {
+        maximum = decl.value;
+      });
     });
     expect(maximum, selector).toBe("none");
   }

@@ -18328,7 +18328,7 @@ img{ max-width:100%; display:block; }
   font-weight:800;
   line-height:1.18;
   letter-spacing:-0.01em;
-  max-width: 16ch;
+  max-width: none;
   margin-bottom: var(--sp-5);
   position:relative;
 }
@@ -18338,7 +18338,7 @@ img{ max-width:100%; display:block; }
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .hero__lead{
-  font-size:17px; color: var(--text-secondary); max-width:62ch; line-height:1.85;
+  font-size:17px; color: var(--text-secondary); max-width: none; line-height:1.85;
   position:relative; margin-bottom: var(--sp-8);
 }
 .hero__meta{ display:flex; flex-wrap:wrap; gap: var(--sp-3); position:relative; }
@@ -18377,7 +18377,7 @@ img{ max-width:100%; display:block; }
 .chapter__intro{
   font-size:15.5px; color: var(--text-secondary); line-height:1.9;
   margin-bottom: var(--sp-8);
-  max-width: 68ch;
+  max-width: none;
 }
 .chapter__intro strong{ color: var(--text-primary); }
 
@@ -18399,9 +18399,9 @@ img{ max-width:100%; display:block; }
   margin: var(--sp-6) 0 var(--sp-2);
   color: var(--text-primary);
 }
-.sub p{ color: var(--text-secondary); margin-bottom: var(--sp-4); max-width:68ch; }
+.sub p{ color: var(--text-secondary); margin-bottom: var(--sp-4); max-width: none; }
 .sub p strong{ color: var(--text-primary); }
-.sub ul, .sub ol{ color: var(--text-secondary); margin: 0 0 var(--sp-4) var(--sp-5); max-width:66ch; }
+.sub ul, .sub ol{ color: var(--text-secondary); margin: 0 0 var(--sp-4) var(--sp-5); max-width: none; }
 .sub li{ margin-bottom:6px; }
 .sub li::marker{ color: var(--accent-2); }
 
