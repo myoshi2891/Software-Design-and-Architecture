@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import { DIAGRAMS } from "./diagrams";
+import Navigation from "./Navigation";
 export const metadata: Metadata = {
   title: "アニメーション・CSSアーキテクチャ・デザイントークン完全ガイド | Vol.4",
   description:
@@ -12,7 +13,7 @@ export default function Page() {
       <div className={"layout"}>
         {"\n\n  "}
         {"\n  "}
-        <nav className={"sidebar"} aria-label={"目次"}>
+        <Navigation>
           {"\n    "}
           <div className={"sidebar__brand"}>
             {"\n      "}
@@ -101,7 +102,7 @@ export default function Page() {
             {"\n    "}
           </div>
           {"\n  "}
-        </nav>
+        </Navigation>
         {"\n\n  "}
         {"\n  "}
         <main className={"main"} id={"top"}>

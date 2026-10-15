@@ -12,7 +12,7 @@ function scope() {
   return n;
 }
 function media(n: postcss.ChildNode) {
-  return n.parent?.type === "atrule" ? n.parent.params : undefined;
+  return n.parent?.type === "atrule" ? (n.parent as postcss.AtRule).params : undefined;
 }
 it("preserves every CSS declaration, selector and media condition", () => {
   const page = scope();
