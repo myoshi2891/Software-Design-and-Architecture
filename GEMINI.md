@@ -222,6 +222,7 @@ flowchart TD
   - `app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx`
     （URL `/development-methodologies/test-driven-development-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`TddSidebar.tsx`）に分離。
+    開発手法の全4ガイドの原本 HTML・Markdown は `archive/development-methodologies/` に保存済み。
 - 全ページ共通のグローバルナビ + ディスクレーマーを `app/layout.tsx` に常設。ナビ定義は
   `components/site/nav-links.ts`（zod 不使用の判別共用体型。未移行ページも href を持つが、
   索引 (`app/page.tsx`) では `lib/guide-catalog.ts` の `status: "planned"` に従い

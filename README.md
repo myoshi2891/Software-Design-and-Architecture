@@ -30,9 +30,10 @@
 - Object-Oriented Programming (OOP)
 - Designing Multi-Agent Systems
 
-### 3. 開発手法 (`development-methodologies/`)
+### 3. 開発手法 (`web-next/app/development-methodologies/`)
 
 チームが価値を届けるためのプロセスのガイドです。
+全4ガイドは Next.js へ移行済みです。原本 HTML・Markdown は `archive/development-methodologies/` に保存しています。
 - Behavior-Driven Development (BDD)
 - Extreme Programming (XP)
 - Feature-Driven Development (FDD)
