@@ -18,6 +18,23 @@ const SEMANTIC_B2_SOURCE = 'B2["キーボードナビゲーションが<br/>自�
 const SEMANTIC_B2_CORRECTED =
   'B2["header・nav・main・footer の<br/>ランドマークで支援技術が<br/>領域間を直接移動できる<br/>(キーボード操作は button・a 等の<br/>ネイティブ操作要素が担う)"]';
 
+// 原本の subgraph ラベルは括弧除去で連結されるため、移植側で <br/> 区切りを補う。
+const FLEX_AXIS_LABELS = [
+  ['CONTAINER["flex コンテナdisplay: flex"]', 'CONTAINER["flex コンテナ<br/>display: flex"]'],
+  [
+    'MAIN["→ 主軸 Main Axisjustify-content で制御"]',
+    'MAIN["→ 主軸 Main Axis<br/>justify-content で制御"]',
+  ],
+] as const;
+// 原本の「ロードしない」はダウンロード抑止と誤読されるため、適用の抑止として訂正する。
+const MOBILE_FIRST_SOURCE = 'R1["軽量なCSS<br/>モバイルで余計な<br/>スタイルをロードしない"]';
+const MOBILE_FIRST_CORRECTED = 'R1["軽量なCSS<br/>モバイルでは大画面用の<br/>スタイルを適用しない"]';
+const CORRECTIONS: Record<string, ReadonlyArray<readonly [string, string]>> = {
+  "d-flex-axis": FLEX_AXIS_LABELS,
+  "d-mobile-first": [[MOBILE_FIRST_SOURCE, MOBILE_FIRST_CORRECTED]],
+  "d-semantic": [[SEMANTIC_B2_SOURCE, SEMANTIC_B2_CORRECTED]],
+};
+
 describe("all sixteen guide diagrams", () => {
   it("keeps every diagram matched to its source ID, normalized labels and connections", () => {
     const ids = Array.from(source.querySelectorAll(".mermaid"), (e) => e.id);
@@ -29,16 +46,28 @@ describe("all sixteen guide diagrams", () => {
               .replace('state "Default" as DefaultState\n', "")
               .replaceAll("DefaultState", "Default")
           : DIAGRAMS[id];
-      const expected = normalizeChart(SOURCE_DIAGRAMS[id]);
-      expect(chart).toBe(
-        id === "d-semantic" ? expected.replace(SEMANTIC_B2_SOURCE, SEMANTIC_B2_CORRECTED) : expected
+      const expected = (CORRECTIONS[id] ?? []).reduce(
+        (acc, [from, to]) => acc.replace(from, to),
+        normalizeChart(SOURCE_DIAGRAMS[id])
       );
+      expect(chart).toBe(expected);
     }
   });
   it("separates landmark navigation from native keyboard operation in the semantic diagram", () => {
     expect(normalizeChart(SOURCE_DIAGRAMS["d-semantic"])).toContain(SEMANTIC_B2_SOURCE);
     expect(DIAGRAMS["d-semantic"]).toContain(SEMANTIC_B2_CORRECTED);
     expect(DIAGRAMS["d-semantic"]).not.toContain("自動で機能する");
+  });
+  it("separates the flex container and main axis labels with line breaks", () => {
+    for (const [source, corrected] of FLEX_AXIS_LABELS) {
+      expect(normalizeChart(SOURCE_DIAGRAMS["d-flex-axis"])).toContain(source);
+      expect(DIAGRAMS["d-flex-axis"]).toContain(corrected);
+    }
+  });
+  it("describes mobile-first as not applying desktop styles rather than not loading them", () => {
+    expect(normalizeChart(SOURCE_DIAGRAMS["d-mobile-first"])).toContain(MOBILE_FIRST_SOURCE);
+    expect(DIAGRAMS["d-mobile-first"]).toContain(MOBILE_FIRST_CORRECTED);
+    expect(DIAGRAMS["d-mobile-first"]).not.toContain("ロードしない");
   });
   it("renders sixteen independent SVGs with natural scale, unique IDs and no run API", async () => {
     const { container, rerender } = render(<Page />);
