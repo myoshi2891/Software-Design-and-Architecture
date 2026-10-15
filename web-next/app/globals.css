@@ -18577,3 +18577,9 @@ html:has(.normal-animation-architecture-tokens-performance-tools){ scroll-behavi
 body.has-common-header .normal-animation-architecture-tokens-performance-tools .sidebar{top:calc(var(--ch-height) + var(--ch-disclaimer-height));height:calc(100vh - var(--ch-height) - var(--ch-disclaimer-height));}
 body.has-common-header .normal-animation-architecture-tokens-performance-tools :is(.chapter,#top){scroll-margin-top:calc(var(--ch-height) + var(--ch-disclaimer-height) + 16px);}
 @media(max-width:980px){body.has-common-header .normal-animation-architecture-tokens-performance-tools .sidebar{position:static;height:auto;}}
+/* The scrolling element is html, outside the page's descendant reset. */
+@media (prefers-reduced-motion: reduce) {
+  html:has(.normal-animation-architecture-tokens-performance-tools) {
+    scroll-behavior: auto;
+  }
+}
