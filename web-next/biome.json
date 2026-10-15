@@ -52,6 +52,7 @@
   "overrides": [
     {
       "includes": [
+        "app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx",
         "app/css-design-system-guide/css-design-system-guide/page.tsx",
         "app/css-design-system-guide/css-color-typography-spacing-systems/page.tsx",
         "app/development-methodologies/behavior-driven-development-comprehensive-guide/page.tsx",
