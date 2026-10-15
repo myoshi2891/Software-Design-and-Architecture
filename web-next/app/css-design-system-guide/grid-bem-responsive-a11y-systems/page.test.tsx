@@ -22,11 +22,12 @@ describe("Grid BEM responsive a11y source fidelity", () => {
   }
   it("preserves hero, sidebar, inventory and semantic landmarks", () => {
     const { container } = render(<Page />);
-    for (const selector of [".hero", ".sidebar"])
-      assertFaithful(
-        container.querySelector(selector) as Element,
-        source.querySelector(selector) as Element
-      );
+    for (const selector of [".hero", ".sidebar"]) {
+      // 目次ボタンの aria-controls 参照用に付与した id だけを除いて原本と照合する。
+      const faithful = container.querySelector(selector)?.cloneNode(true) as Element;
+      faithful.removeAttribute("id");
+      assertFaithful(faithful, source.querySelector(selector) as Element);
+    }
     for (const [selector, count] of Object.entries({
       "section.section": 6,
       ".sub": 25,

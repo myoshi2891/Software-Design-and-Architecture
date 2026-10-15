@@ -31,7 +31,10 @@ describe("MVP foundation", () => {
     const { container } = render(<Page />);
     const sidebar = container.querySelector(".sidebar");
     expect(sidebar).not.toBeNull();
-    assertFaithful(sidebar as Element, source.querySelector(".sidebar") as Element);
+    // 目次ボタンの aria-controls 参照用に付与した id だけを除いて原本と照合する。
+    const faithful = sidebar?.cloneNode(true) as Element;
+    faithful.removeAttribute("id");
+    assertFaithful(faithful, source.querySelector(".sidebar") as Element);
     expect(sidebar?.querySelectorAll("a")).toHaveLength(14);
   });
   it("keeps the body on the server and styles scoped", () => {

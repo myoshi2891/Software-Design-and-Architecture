@@ -32,6 +32,9 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
   // クリックで選んだ ID。章 section は小節を内包し交差中のまま通知されないうえ、
   // 移動中に小節が判定帯を通過するため、スクロール終了まで監視による上書きを止める。
   const clickedId = useRef<string | null>(null);
+  // 移動不要でスクロールしない場合は scrollend が発火しないため、時間経過でも解除する。
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
@@ -70,6 +73,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
     return () => {
       observer.disconnect();
       window.removeEventListener("scrollend", release);
+      if (clickTimer.current !== null) clearTimeout(clickTimer.current);
     };
   }, [groups]);
   return (
@@ -84,7 +88,17 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
       >
         ⇧
       </button>
-      <nav id="sidebar" ref={sidebar} aria-label="目次">
+      <button
+        type="button"
+        className="toc-toggle"
+        aria-label={open ? "目次を閉じる" : "目次を開く"}
+        aria-expanded={open}
+        aria-controls="sidebar"
+        onClick={() => setOpen((value) => !value)}
+      >
+        ☰
+      </button>
+      <nav id="sidebar" ref={sidebar} aria-label="目次" className={open ? "open" : undefined}>
         <div className="sb-logo">
           <h1>🎨 フロントエンド入門</h1>
           <p>デザインシステムとCSS設計の基礎</p>
@@ -114,6 +128,13 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
                   onClick={() => {
                     clickedId.current = item.id;
                     setActiveId(item.id);
+                    setOpen(false);
+                    if (clickTimer.current !== null) clearTimeout(clickTimer.current);
+                    clickTimer.current = setTimeout(() => {
+                      // 後から別リンクが選ばれていればその選択は保持する。
+                      if (clickedId.current === item.id) clickedId.current = null;
+                      clickTimer.current = null;
+                    }, 1000);
                   }}
                 >
                   <span className="num">{item.num}</span>
