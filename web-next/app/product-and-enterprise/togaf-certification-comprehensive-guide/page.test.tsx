@@ -78,29 +78,39 @@ function selectChapter(id: string) {
   return result;
 }
 
-describe("TOGAF foundations and examinations", () => {
-  for (const id of ["overview", "exam"]) {
-    it(`preserves all wording structure icons and links in ${id}`, () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      expect(container.querySelectorAll(".section")).toHaveLength(1);
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
+const CHAPTER_GROUPS = [
+  ["TOGAF foundations and examinations", ["overview", "exam"]],
+  ["TOGAF ADM cycle and phases", ["adm", "phases"]],
+  ["TOGAF architecture structure", ["bdat", "artifacts", "repository"]],
+  ["TOGAF stakeholders and governance", ["stakeholder", "governance"]],
+  ["TOGAF exam strategy roadmap and references", ["strategy", "roadmap", "references"]],
+] as const;
+
+for (const [name, ids] of CHAPTER_GROUPS) {
+  describe(name, () => {
+    for (const id of ids) {
+      it(`preserves all wording structure icons and links in ${id}`, () => {
+        const { container } = selectChapter(id);
+        const actual = container.querySelector(`.section#${id}`);
+        expect(actual).not.toBeNull();
+        assertFaithful(actual as Element, source.getElementById(id) as Element);
+        expect(container.querySelectorAll(".section")).toHaveLength(1);
+      });
+      it(`parses all real Mermaid diagrams in ${id}`, async () => {
+        const { container } = selectChapter(id);
+        const actual = container.querySelector(`.section#${id}`);
+        expect(actual).not.toBeNull();
+        const { default: mermaid } = await import("mermaid");
+        mermaid.initialize({ startOnLoad: false, theme: "dark" });
+        for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
+          const chart = diagram.getAttribute("data-chart") ?? "";
+          expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
+          await expect(mermaid.parse(chart)).resolves.toBeTruthy();
+        }
+      });
+    }
+  });
+}
 
 describe("TOGAF exam facts corrected from the archived original", () => {
   it("states the OGEA-101 pass mark, OGEA-102 gradient scoring and on-screen reference", () => {
@@ -165,102 +175,6 @@ describe("TOGAF exam facts corrected from the archived original", () => {
     for (const phrase of ["持込", "持ち込", "タブインデックス", "タブ整理", "-1点", "55%"])
       expect(page, phrase).not.toContain(phrase);
   });
-});
-
-describe("TOGAF ADM cycle and phases", () => {
-  for (const id of ["adm", "phases"]) {
-    it(`preserves all wording structure icons and links in ${id}`, () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      expect(container.querySelectorAll(".section")).toHaveLength(1);
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("TOGAF architecture structure", () => {
-  for (const id of ["bdat", "artifacts", "repository"]) {
-    it(`preserves all wording structure icons and links in ${id}`, () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      expect(container.querySelectorAll(".section")).toHaveLength(1);
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("TOGAF stakeholders and governance", () => {
-  for (const id of ["stakeholder", "governance"]) {
-    it(`preserves all wording structure icons and links in ${id}`, () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      expect(container.querySelectorAll(".section")).toHaveLength(1);
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
-});
-
-describe("TOGAF exam strategy roadmap and references", () => {
-  for (const id of ["strategy", "roadmap", "references"]) {
-    it(`preserves all wording structure icons and links in ${id}`, () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      assertFaithful(actual as Element, source.getElementById(id) as Element);
-      expect(container.querySelectorAll(".section")).toHaveLength(1);
-    });
-    it(`parses all real Mermaid diagrams in ${id}`, async () => {
-      const { container } = selectChapter(id);
-      const actual = container.querySelector(`.section#${id}`);
-      expect(actual).not.toBeNull();
-      const { default: mermaid } = await import("mermaid");
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
-      for (const diagram of actual?.querySelectorAll('[data-testid="mermaid-diagram"]') ?? []) {
-        const chart = diagram.getAttribute("data-chart") ?? "";
-        expect(chart.split("\n").every((line) => line === line.trim())).toBe(true);
-        await expect(mermaid.parse(chart)).resolves.toBeTruthy();
-      }
-    });
-  }
 });
 
 it("preserves the complete inventory across all twelve selectable chapters", () => {
