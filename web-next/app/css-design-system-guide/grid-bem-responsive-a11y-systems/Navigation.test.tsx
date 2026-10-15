@@ -84,6 +84,65 @@ describe("guide table of contents", () => {
     expect(sidebar).not.toHaveClass("open");
     expect(toggle).toHaveAttribute("aria-expanded", "false");
   });
+  it("closes the open table of contents when focus leaves it", () => {
+    // Arrange
+    const { container, getByRole } = render(<Page />);
+    const toggle = getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector("nav.sidebar") as HTMLElement;
+    const links = sidebar.querySelectorAll("a");
+    fireEvent.click(toggle);
+
+    // Act: 目次内の移動では開いたまま、目次外へ出たら閉じる。
+    fireEvent.blur(links[0], { relatedTarget: links[1] });
+    const afterInnerMove = sidebar.classList.contains("open");
+    fireEvent.blur(links[1], { relatedTarget: container.querySelector("main") });
+
+    // Assert
+    expect(afterInnerMove).toBe(true);
+    expect(sidebar).not.toHaveClass("open");
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+  it("keeps the table of contents open when focus moves to its toggle button", () => {
+    // Arrange: トグルへのフォーカス移動で閉じると、直後のクリックで再び開いてしまう。
+    const { container, getByRole } = render(<Page />);
+    const toggle = getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector("nav.sidebar") as HTMLElement;
+    fireEvent.click(toggle);
+
+    // Act
+    fireEvent.blur(sidebar.querySelector("a") as Element, { relatedTarget: toggle });
+
+    // Assert
+    expect(sidebar).toHaveClass("open");
+  });
+  it("closes the open table of contents on Escape and returns focus to the toggle", () => {
+    // Arrange
+    const { container, getByRole } = render(<Page />);
+    const toggle = getByRole("button", { name: "目次を開く" });
+    const sidebar = container.querySelector("nav.sidebar") as HTMLElement;
+    fireEvent.click(toggle);
+    const link = sidebar.querySelector("a") as HTMLElement;
+    link.focus();
+
+    // Act
+    fireEvent.keyDown(link, { key: "Escape" });
+
+    // Assert
+    expect(sidebar).not.toHaveClass("open");
+    expect(toggle).toHaveFocus();
+  });
+  it("leaves focus in place on Escape while the table of contents is not toggled open", () => {
+    // Arrange: 860px 超では目次は常時表示で open にならないため、既存動作を変えない。
+    const { container } = render(<Page />);
+    const link = container.querySelector("nav.sidebar a") as HTMLElement;
+    link.focus();
+
+    // Act
+    fireEvent.keyDown(link, { key: "Escape" });
+
+    // Assert
+    expect(link).toHaveFocus();
+  });
   it("keeps every anchor valid and main focusable for the skip link", () => {
     const { container } = render(<Page />);
     expect(container.querySelector("#main")).toHaveAttribute("tabindex", "-1");
