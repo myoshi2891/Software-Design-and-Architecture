@@ -88,3 +88,9 @@ it("loads source font families through a route layout and offsets shared chrome"
   });
   expect(offset).toBe(true);
 });
+
+it('disables document smooth scrolling for reduced motion',()=>{
+ let found=false;
+ css.walkRules(`html:has(.${slug})`,r=>{if(r.parent?.type==='atrule'&&(r.parent as postcss.AtRule).params.includes('prefers-reduced-motion: reduce'))r.walkDecls('scroll-behavior',d=>{found=d.value==='auto';});});
+ expect(found).toBe(true);
+});
