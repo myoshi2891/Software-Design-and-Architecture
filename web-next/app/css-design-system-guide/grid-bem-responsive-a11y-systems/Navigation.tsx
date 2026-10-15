@@ -5,6 +5,7 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
   const nav = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const clickedId = useRef<string | null>(null);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     const root = nav.current?.closest(".grid-bem-responsive-a11y-systems");
     const observer = new IntersectionObserver(
@@ -19,10 +20,13 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
     for (const target of root?.querySelectorAll(".section, .sub") ?? []) observer.observe(target);
     const release = () => {
       clickedId.current = null;
+      if (clickTimer.current !== null) clearTimeout(clickTimer.current);
+      clickTimer.current = null;
     };
     window.addEventListener("scrollend", release);
     return () => {
       observer.disconnect();
+      release();
       window.removeEventListener("scrollend", release);
     };
   }, []);
@@ -47,6 +51,12 @@ export default function Navigation({ groups }: { groups: NavGroup[] }) {
                   onClick={() => {
                     clickedId.current = item.id;
                     setActiveId(item.id);
+                    // No scrollend fires when the selected anchor is already in place.
+                    if (clickTimer.current !== null) clearTimeout(clickTimer.current);
+                    clickTimer.current = setTimeout(() => {
+                      clickedId.current = null;
+                      clickTimer.current = null;
+                    }, 1000);
                   }}
                 >
                   <span className="n">{item.num}</span>
