@@ -190,7 +190,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "Grid / BEM / レスポンシブ / A11y",
         href: "/css-design-system-guide/grid-bem-responsive-a11y-systems",
         summary: "レイアウトと命名規則、アクセシビリティ",
-        status: "planned",
+        status: "published",
       },
       {
         name: "アニメーション / 設計 / トークン",

@@ -1,17 +1,22 @@
 import { render } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
-import { guideCatalog } from "@/lib/guide-catalog";
 import { navLinks } from "@/components/site/nav-links";
-vi.mock("@/components/MermaidDiagram", () => ({default: () => <div />}));
+import { guideCatalog } from "@/lib/guide-catalog";
+
+vi.mock("@/components/MermaidDiagram", () => ({ default: () => <div /> }));
+
 import Page from "./page";
+
 const href = "/css-design-system-guide/grid-bem-responsive-a11y-systems";
 it("publishes this guide in the catalog with the existing navigation destination", () => {
-  const entry = guideCatalog.flatMap(category => category.entries).find(entry => entry.href === href);
+  const entry = guideCatalog
+    .flatMap((category) => category.entries)
+    .find((entry) => entry.href === href);
   expect(entry?.status).toBe("published");
   expect(JSON.stringify(navLinks)).toContain(href);
 });
 it("preserves all twenty-five external destinations with safe attributes and valid internal anchors", () => {
-  const {container} = render(<Page />);
+  const { container } = render(<Page />);
   const external = container.querySelectorAll('a[href^="http"]');
   expect(external).toHaveLength(25);
   for (const a of external) {
