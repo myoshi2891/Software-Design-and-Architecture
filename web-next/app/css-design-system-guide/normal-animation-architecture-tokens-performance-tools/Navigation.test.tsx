@@ -42,7 +42,8 @@ function setup(reduced = false) {
         <span id="progressPct">0%</span>
         <div id="progressBar" />
       </Navigation>
-      <main id="top">
+      <header id="top" className="hero" />
+      <main>
         <section id="ch11" className="chapter">
           <div className="sub">本文</div>
         </section>

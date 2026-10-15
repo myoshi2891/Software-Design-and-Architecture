@@ -105,9 +105,9 @@ export default function Page() {
         </Navigation>
         {"\n\n  "}
         {"\n  "}
-        <main className={"main"} id={"top"}>
+        <main className={"main"}>
           {"\n\n    "}
-          <header className={"hero"}>
+          <header className={"hero"} id={"top"}>
             {"\n      "}
             <span className={"hero__eyebrow"}>
               {"🔴 上級編 ・ 6 Chapters ・ 最終更新 2026-05-27"}
