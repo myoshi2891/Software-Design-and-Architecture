@@ -29,7 +29,9 @@ describe("Animation architecture complete source contract", () => {
       const { container } = render(<Page />);
       const actual = container.querySelector("#" + id)!;
       const expected = source.querySelector("#" + id)!.cloneNode(true) as Element;
-      expected.querySelectorAll("script").forEach((e) => { e.remove(); });
+      expected.querySelectorAll("script").forEach((e) => {
+        e.remove();
+      });
       expect(actual).not.toBeNull();
       expect(shape(actual)).toEqual(shape(expected));
       expect(compact(actual.textContent)).toBe(compact(expected.textContent));
@@ -79,4 +81,13 @@ describe("Animation architecture complete source contract", () => {
       expect(pre.querySelector("span")).not.toBeNull();
     }
   });
+});
+
+it("highlights CSS functions and hex colors as syntax rather than comments", () => {
+  const {container}=render(<Page/>);
+  const blocks=[...container.querySelectorAll('pre')];
+  expect(blocks.some(pre=>[...pre.querySelectorAll('.fn')].some(span=>span.textContent==='cubic-bezier'))).toBe(true);
+  const colorCode=blocks.find(pre=>pre.textContent?.includes('--color-brand-500'));
+  expect(colorCode).toBeDefined();
+  expect(colorCode?.querySelector('.nu')).not.toBeNull();
 });
