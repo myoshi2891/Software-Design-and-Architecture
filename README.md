@@ -82,16 +82,16 @@ Testing Library（契約テスト）を採用しています。
     本文・リスト115項目・図定義・コード全文・CSS宣言を原本との比較テストで検証。
     目次の現在地・読了率・reduced-motion対応のフェードインは専用Client Componentで実装。
     原本HTML・Markdownは `archive/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/` に無変更で保存し、SHA-256で検証。
-    検証は `web-next/` でnpmを使用。ビルドは省略し、目視確認はユーザーが担当。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - [`/css-design-system-guide/grid-bem-responsive-a11y-systems`](web-next/app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx)
     — 第7〜10章・まとめ・参考資料を忠実移植（主要6セクション・25小節・Mermaid16図・コード37件・表4件）。
     本文は Server Component、31項目の目次と現在地表示は `Navigation` に分離。
     原本とのDOM・全文・コード改行・CSS宣言・リスト装飾・図ソースの比較テストを実装。
     Inter・Space Groteskはルート専用の next/font 設定。状態遷移図は表示名を保持して予約語の内部IDを修正。
     セマンティックHTML図のB2は、ランドマーク移動とキーボード操作を区別する記述へ訂正（原本は無変更）。
+    flex軸図のラベル区切りを補い、モバイルファースト図はスタイルを「ロード」でなく「適用」しない記述へ訂正。
     原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存し、SHA-256で検証。
-    検証には `web-next/` で `npm run test` / `npm run typecheck` / `npm run lint` を使用する。
-    今回はビルドを実施せず、ブラウザでの目視確認はユーザーが担当する。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - [`/css-design-system-guide/design-system-css-fundamentals`](web-next/app/css-design-system-guide/design-system-css-fundamentals/page.tsx)
     — CSS 基礎ガイドを忠実移植（3章・12小節・Mermaid 12図・学習ロードマップ・表5件・CSS/HTMLコード30件）。
     本文は Server Component、15項目の目次・読書進捗・先頭ボタンは `Navigation` に分離。

@@ -110,7 +110,7 @@ flowchart TD
     ページ専用CSS・next/font設定を使用。本文はServer Component、現在地表示・読了率・フェードインはNavigationに分離。
     図定義は実Mermaidパーサーで検証し、共通コンポーネントの自然幅表示を使用。
     原本HTML・Markdownは `archive/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/` に無変更で保存。
-    検証は `web-next/` でnpmを使用し、ビルドは省略、目視確認はユーザーが担当。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx`
     （URL `/css-design-system-guide/grid-bem-responsive-a11y-systems`）。主要6セクション・25小節・
     Mermaid16図・コード37件・表4件・callout7件・ベストプラクティス16項目を原本比較テストで保持。
@@ -118,9 +118,9 @@ flowchart TD
     ページ専用CSSとnext/font設定を使用し、コードは静的spanハイライトで表示。
     図は共通 `MermaidDiagram` の自然幅表示を使用。状態名「Default」は保持し、予約語を内部IDから除外。
     セマンティックHTML図のB2は、ランドマーク移動とネイティブ操作要素のキーボード操作を区別する記述へ訂正（原本は無変更）。
+    flex軸図のラベル区切りを補い、モバイルファースト図はスタイルを「ロード」でなく「適用」しない記述へ訂正。
     原本HTML・Markdownは `archive/css-design-system-guide/grid-bem-responsive-a11y-systems/` に無変更で保存。
-    検証は `web-next/` の `npm run test` / `npm run typecheck` / `npm run lint`。
-    今回はビルド不要、目視確認はユーザーが担当する。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/css-design-system-guide/design-system-css-fundamentals/page.tsx`
     （URL `/css-design-system-guide/design-system-css-fundamentals`）。3章・12小節・Mermaid 12図・学習ロードマップ・
     表5件・コード30件を忠実移植。本文は Server Component、目次・現在地・読書進捗・先頭ボタンは
