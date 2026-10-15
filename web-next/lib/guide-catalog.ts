@@ -196,7 +196,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         name: "アニメーション / 設計 / トークン",
         href: "/css-design-system-guide/normal-animation-architecture-tokens-performance-tools",
         summary: "動きとトークン設計、性能とツール選び",
-        status: "planned",
+        status: "published",
       },
     ],
   },
