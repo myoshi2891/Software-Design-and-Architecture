@@ -28,7 +28,8 @@ const FLEX_AXIS_LABELS = [
 ] as const;
 // 原本の「ロードしない」はダウンロード抑止と誤読されるため、適用の抑止として訂正する。
 const MOBILE_FIRST_SOURCE = 'R1["軽量なCSS<br/>モバイルで余計な<br/>スタイルをロードしない"]';
-const MOBILE_FIRST_CORRECTED = 'R1["軽量なCSS<br/>モバイルでは大画面用の<br/>スタイルを適用しない"]';
+const MOBILE_FIRST_CORRECTED =
+  'R1["軽量なCSS<br/>モバイルでは大画面用の<br/>スタイルを適用しない"]';
 const CORRECTIONS: Record<string, ReadonlyArray<readonly [string, string]>> = {
   "d-flex-axis": FLEX_AXIS_LABELS,
   "d-mobile-first": [[MOBILE_FIRST_SOURCE, MOBILE_FIRST_CORRECTED]],
