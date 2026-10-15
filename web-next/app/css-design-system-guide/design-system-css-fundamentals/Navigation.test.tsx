@@ -12,6 +12,7 @@ const groups: NavGroup[] = [
   },
 ];
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -196,7 +197,6 @@ describe("CSS fundamentals navigation", () => {
     intersect("s1");
     expect(chapter).toHaveClass("active");
     unmount();
-    vi.useRealTimers();
   });
   it("opens the table of contents with a toggle button and closes it after choosing a link", () => {
     // Arrange
