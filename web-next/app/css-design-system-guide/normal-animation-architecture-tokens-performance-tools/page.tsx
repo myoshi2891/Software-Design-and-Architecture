@@ -446,7 +446,6 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"プロパティ種別"}</th>
@@ -455,9 +454,8 @@ export default function Page() {
                       <th>{"推奨度"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>{"合成（Composite）のみ"}</td>
                       <td>
@@ -472,7 +470,7 @@ export default function Page() {
                       <td>{"低（GPU処理）"}</td>
                       <td>{"✅ 推奨"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"ペイントが発生"}</td>
                       <td>
@@ -485,7 +483,7 @@ export default function Page() {
                       <td>{"中"}</td>
                       <td>{"△ 許容範囲"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"レイアウトが再計算"}</td>
                       <td>
@@ -504,9 +502,7 @@ export default function Page() {
                       <td>{"高（リフロー発生）"}</td>
                       <td>{"❌ 非推奨"}</td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -576,7 +572,6 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"サブプロパティ"}</th>
@@ -584,9 +579,8 @@ export default function Page() {
                       <th>{"主な値"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>
                         <code>{"animation-iteration-count"}</code>
@@ -600,7 +594,7 @@ export default function Page() {
                         <code>{"infinite"}</code>
                       </td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"animation-direction"}</code>
@@ -614,7 +608,7 @@ export default function Page() {
                         <code>{"alternate"}</code>
                       </td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"animation-fill-mode"}</code>
@@ -628,7 +622,7 @@ export default function Page() {
                         <code>{"both"}</code>
                       </td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"animation-play-state"}</code>
@@ -640,9 +634,7 @@ export default function Page() {
                         <code>{"paused"}</code>
                       </td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -1334,7 +1326,6 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"アーキテクチャ"}</th>
@@ -1343,46 +1334,43 @@ export default function Page() {
                       <th>{"強み"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>{"ITCSS"}</td>
                       <td>{"中〜高"}</td>
                       <td>{"大規模（10人以上）"}</td>
                       <td>{"厳格な詳細度管理、長期保守性"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"CUBE CSS"}</td>
                       <td>{"低〜中"}</td>
                       <td>{"中規模"}</td>
                       <td>{"バランスの良さ、習得の速さ"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"Utility-First（Tailwind）"}</td>
                       <td>{"低"}</td>
                       <td>{"小〜大規模"}</td>
                       <td>{"圧倒的な開発速度"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"CSS Modules"}</td>
                       <td>{"低"}</td>
                       <td>{"React/Vue/Svelte全般"}</td>
                       <td>{"コンポーネント単位のスコープ分離"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"CSS-in-JS"}</td>
                       <td>{"中"}</td>
                       <td>{"JS駆動の動的UIが多いチーム"}</td>
                       <td>{"状態に応じた動的スタイリング"}</td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -2079,44 +2067,42 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"ARIA属性"}</th>
                       <th>{"意味"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>
                         <code>{'role="dialog"'}</code>
                       </td>
                       <td>{"この要素がダイアログであることをスクリーンリーダーに伝える"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{'aria-modal="true"'}</code>
                       </td>
                       <td>{"背後のコンテンツが操作不可能であることを伝える"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"aria-labelledby"}</code>
                       </td>
                       <td>{"ダイアログのタイトルとなる要素のIDを指定"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"aria-describedby"}</code>
                       </td>
                       <td>{"ダイアログの説明文となる要素のIDを指定"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"aria-label"}</code>
@@ -2124,9 +2110,7 @@ export default function Page() {
                       </td>
                       <td>{"アイコンのみのボタンに音声で読み上げる代替テキストを与える"}</td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -2564,30 +2548,28 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"用語"}</th>
                       <th>{"意味"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>{"FOUT (Flash of Unstyled Text)"}</td>
                       <td>
                         {"フォント読み込み中は代替フォントで表示し、読み込み完了後に切り替わる現象"}
                       </td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"FOIT (Flash of Invisible Text)"}</td>
                       <td>
                         {"フォント読み込みが完了するまでテキストが非表示になる現象（避けるべき）"}
                       </td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>
                         <code>{"font-display: swap"}</code>
@@ -2596,9 +2578,7 @@ export default function Page() {
                         {"FOITを避け、即座に代替フォントで表示してから本番フォントへ差し替える設定"}
                       </td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -3289,7 +3269,6 @@ export default function Page() {
               <div className={"table-wrap"}>
                 {"\n          "}
                 <table>
-                  {"\n            "}
                   <thead>
                     <tr>
                       <th>{"カテゴリ"}</th>
@@ -3297,41 +3276,38 @@ export default function Page() {
                       <th>{"主な役割"}</th>
                     </tr>
                   </thead>
-                  {"\n            "}
+
                   <tbody>
-                    {"\n              "}
                     <tr>
                       <td>{"デザイン連携"}</td>
                       <td>{"Figma / Tokens Studio / Figma to Code"}</td>
                       <td>{"デザインとコードのトークン同期"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"ビルド"}</td>
                       <td>{"Vite / Turbopack / Lightning CSS / PostCSS"}</td>
                       <td>{"変換・圧縮・バンドル"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"コンポーネント開発"}</td>
                       <td>{"Storybook / Ladle / Histoire"}</td>
                       <td>{"独立した環境でのUI構築・確認"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"テスト"}</td>
                       <td>{"Playwright / axe-core / Chromatic"}</td>
                       <td>{"機能・アクセシビリティ・見た目の検証"}</td>
                     </tr>
-                    {"\n              "}
+
                     <tr>
                       <td>{"品質管理"}</td>
                       <td>{"Stylelint / Prettier / ESLint"}</td>
                       <td>{"コードスタイルと規約の自動チェック"}</td>
                     </tr>
-                    {"\n            "}
                   </tbody>
-                  {"\n          "}
                 </table>
                 {"\n        "}
               </div>
@@ -3517,7 +3493,6 @@ export default function Page() {
             <div className={"table-wrap"}>
               {"\n        "}
               <table>
-                {"\n          "}
                 <thead>
                   <tr>
                     <th>{"レベル"}</th>
@@ -3525,9 +3500,8 @@ export default function Page() {
                     <th>{"到達目安"}</th>
                   </tr>
                 </thead>
-                {"\n          "}
+
                 <tbody>
-                  {"\n            "}
                   <tr>
                     <td>{"Level 4：上級"}</td>
                     <td>
@@ -3535,21 +3509,19 @@ export default function Page() {
                     </td>
                     <td>{"一貫した動きの言語と、崩れない設計の仕組みを持つ"}</td>
                   </tr>
-                  {"\n            "}
+
                   <tr>
                     <td>{"Level 4→5の橋渡し"}</td>
                     <td>{"第14章（実践：Modal実装）"}</td>
                     <td>{"学んだ概念を1つのコンポーネントに統合して実装できる"}</td>
                   </tr>
-                  {"\n            "}
+
                   <tr>
                     <td>{"Level 5：エキスパート"}</td>
                     <td>{"第15章（パフォーマンス）・第16章（ツール）"}</td>
                     <td>{"数値で計測し、自動化されたプロセスで品質を維持する"}</td>
                   </tr>
-                  {"\n          "}
                 </tbody>
-                {"\n        "}
               </table>
               {"\n      "}
             </div>
