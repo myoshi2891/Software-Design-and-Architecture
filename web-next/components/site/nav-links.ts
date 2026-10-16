@@ -169,6 +169,10 @@ export const navLinks: readonly NavLink[] = [
         name: "Database Internals",
         href: "/recommended-books/database-internals-guide",
       },
+      {
+        name: "Graph Databases",
+        href: "/recommended-books/graph-databases-guide",
+      },
     ],
   },
   {

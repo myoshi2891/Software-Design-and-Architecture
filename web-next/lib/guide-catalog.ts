@@ -259,6 +259,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Alex Petrov著『Database Internals』を起点にストレージエンジンと分散システムの内部構造を学ぶ",
         status: "published",
       },
+      {
+        name: "Graph Databases",
+        href: "/recommended-books/graph-databases-guide",
+        summary:
+          "Ian Robinsonら著『Graph Databases』を起点に接続されたデータのモデリングと活用を学ぶ",
+        status: "published",
+      },
     ],
   },
   {
