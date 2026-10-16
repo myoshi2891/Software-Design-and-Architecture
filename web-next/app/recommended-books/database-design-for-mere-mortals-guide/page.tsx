@@ -1284,7 +1284,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                     https://ptgmedia.pearsoncmg.com/images/9780136788041/samplepages/9780136788041_Sample.pdf
                   </Ext>
                   <div className="ref-note">
-                    出版元 Pearson 公開の第4版目次(付録 A〜G の一覧を含む)
+                    出版元 Pearson 公開の第4版目次(付録 A〜H の一覧を含む)
                   </div>
                 </div>
               </div>
