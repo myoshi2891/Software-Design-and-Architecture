@@ -238,6 +238,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Bill Karwin著『SQL Antipatterns』日本語版第2版を起点に全27章のアンチパターンを学ぶ",
         status: "published",
       },
+      {
+        name: "The Data Warehouse Toolkit",
+        href: "/recommended-books/data-warehouse-toolkit-guide",
+        summary:
+          "Ralph Kimball & Margy Ross著『The Data Warehouse Toolkit』を起点にディメンショナルモデリングを学ぶ",
+        status: "published",
+      },
     ],
   },
   {

@@ -157,6 +157,10 @@ export const navLinks: readonly NavLink[] = [
         name: "SQLアンチパターン 第2版",
         href: "/recommended-books/sql-antipatterns-guide",
       },
+      {
+        name: "The Data Warehouse Toolkit",
+        href: "/recommended-books/data-warehouse-toolkit-guide",
+      },
     ],
   },
   {
