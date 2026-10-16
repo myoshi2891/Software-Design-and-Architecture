@@ -99,7 +99,7 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 33 本を一覧する。全 33 本が公開済み（`status: "published"`）でリンクから閲覧でき、
+  カテゴリ別に全 34 本を一覧する。全 34 本が公開済み（`status: "published"`）でリンクから閲覧でき、
   未移行（`status: "planned"`）のページは 0 件。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
@@ -246,6 +246,14 @@ flowchart TD
     本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`GraphDatabasesSidebar.tsx`）に分離、
     学習チェックリスト（11項目）をクライアントコンポーネント（`GraphDatabasesChecklist.tsx`）に分離。
     原本 HTML・Markdown は `archive/recommended-books/graph-databases-guide/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/recommended-books/high-performance-mysql-guide/page.tsx`
+    （URL `/recommended-books/high-performance-mysql-guide`）。Silvia Botros, Jeremy Tinley著
+    『High Performance MySQL 第4版』を起点に大規模運用の実践知を学ぶガイド。
+    全27セクション、Mermaid 13図、表16件、コード1件（手書きspan my.cnf）、チェックリスト9項目を忠実移植。
+    本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`HighPerformanceMysqlSidebar.tsx`）に分離、
+    学習チェックリスト（9項目）をクライアントコンポーネント（`HighPerformanceMysqlChecklist.tsx`）に分離。
+    原本 HTML・Markdown は `archive/recommended-books/high-performance-mysql-guide/` に無変更で保存。
     `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/design-principles/domain-driven-design-comprehensive-guide/page.tsx`
     （URL `/design-principles/domain-driven-design-comprehensive-guide`）。固定サイドバー +

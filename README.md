@@ -74,7 +74,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 33 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 34 本を
 一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -195,6 +195,10 @@ Testing Library（契約テスト）を採用しています。
     — Graph Databases: New Opportunities for Connected Data 初学者ガイドを移植（21 セクション・Mermaid 14 図・table 7・コードブロック 1・チェックリスト 11 項目）。
     固定サイドバー・scroll-spy を [`GraphDatabasesSidebar.tsx`](web-next/app/recommended-books/graph-databases-guide/GraphDatabasesSidebar.tsx)、学習チェックリストを [`GraphDatabasesChecklist.tsx`](web-next/app/recommended-books/graph-databases-guide/GraphDatabasesChecklist.tsx) でクライアント描画。
     原本 HTML・Markdown は `archive/recommended-books/graph-databases-guide/` に無変更で保存。
+  - [`/recommended-books/high-performance-mysql-guide`](web-next/app/recommended-books/high-performance-mysql-guide/page.tsx)
+    — High Performance MySQL 第4版 徹底解説ガイドを移植（27 セクション・Mermaid 13 図・table 16・コードブロック 1・チェックリスト 9 項目）。
+    固定サイドバー・scroll-spy を [`HighPerformanceMysqlSidebar.tsx`](web-next/app/recommended-books/high-performance-mysql-guide/HighPerformanceMysqlSidebar.tsx)、学習チェックリストを [`HighPerformanceMysqlChecklist.tsx`](web-next/app/recommended-books/high-performance-mysql-guide/HighPerformanceMysqlChecklist.tsx) でクライアント描画。
+    原本 HTML・Markdown は `archive/recommended-books/high-performance-mysql-guide/` に無変更で保存。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
