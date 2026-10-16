@@ -1,6 +1,3 @@
-import type { Metadata } from "next";
-import { Ext } from "@/components/Ext";
-import MermaidDiagram from "@/components/MermaidDiagram";
 import {
   IconAbc,
   IconAdjustments,
@@ -37,6 +34,9 @@ import {
   IconTarget,
   IconUsers,
 } from "@tabler/icons-react";
+import type { Metadata } from "next";
+import { Ext } from "@/components/Ext";
+import MermaidDiagram from "@/components/MermaidDiagram";
 import DatabaseDesignChecklist from "./DatabaseDesignChecklist";
 import DatabaseDesignSidebar from "./DatabaseDesignSidebar";
 
@@ -247,7 +247,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               『Database Design for Mere Mortals』徹底解説
             </h1>
             <p className="hero-lead">
-              Michael J. Hernandez による、リレーショナルデータベース設計の定番入門書をステップバイステップで読み解きます。正規化理論ではなく独自の実践的メソッドを採る、その立ち位置まで丁寧に扱います。
+              Michael J. Hernandez
+              による、リレーショナルデータベース設計の定番入門書をステップバイステップで読み解きます。正規化理論ではなく独自の実践的メソッドを採る、その立ち位置まで丁寧に扱います。
             </p>
             <p className="hero-note">
               <IconCalendar className="ti" size={16} /> 2026年9月時点の情報をもとに作成しました。
@@ -261,10 +262,15 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>この記事について</h2>
             <p>
-              『Database Design for Mere Mortals: A Hands-On Guide to Relational Database Design』(邦題は未訳、直訳すると「普通の人のためのデータベース設計」)は、Michael J. Hernandez による、リレーショナルデータベース設計の入門書です。1996年の初版以来、特定のDBMS製品やSQLの知識を前提とせず、業務要件からテーブル構造を組み立てる「設計プロセス」そのものを平易な言葉で解説してきた点が特徴で、30年近く版を重ねながら読み継がれています。
+              『Database Design for Mere Mortals: A Hands-On Guide to Relational Database
+              Design』(邦題は未訳、直訳すると「普通の人のためのデータベース設計」)は、Michael J.
+              Hernandez
+              による、リレーショナルデータベース設計の入門書です。1996年の初版以来、特定のDBMS製品やSQLの知識を前提とせず、業務要件からテーブル構造を組み立てる「設計プロセス」そのものを平易な言葉で解説してきた点が特徴で、30年近く版を重ねながら読み継がれています。
             </p>
             <p>
-              このガイドは、本書の最新版である第4版<span className="pill">25th Anniversary Edition, 2020年</span>の構成に沿って、各章の要点をステップ形式でかみ砕いて解説するものです。原著を読む前の地図として、あるいは読後の振り返り資料として活用してください。なお、本書は正規化理論(第1正規形から第5正規形)を主軸に据えない独自の設計手法を採っている点が特徴的であり、このガイドでもその立ち位置を丁寧に扱います。
+              このガイドは、本書の最新版である第4版
+              <span className="pill">25th Anniversary Edition, 2020年</span>
+              の構成に沿って、各章の要点をステップ形式でかみ砕いて解説するものです。原著を読む前の地図として、あるいは読後の振り返り資料として活用してください。なお、本書は正規化理論(第1正規形から第5正規形)を主軸に据えない独自の設計手法を採っている点が特徴的であり、このガイドでもその立ち位置を丁寧に扱います。
             </p>
           </section>
 
@@ -290,7 +296,10 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                     <tbody>
                       <tr>
                         <th>原題</th>
-                        <td>Database Design for Mere Mortals: A Hands-On Guide to Relational Database Design</td>
+                        <td>
+                          Database Design for Mere Mortals: A Hands-On Guide to Relational Database
+                          Design
+                        </td>
                       </tr>
                       <tr>
                         <th>著者</th>
@@ -302,7 +311,10 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                       </tr>
                       <tr>
                         <th>最新版</th>
-                        <td>第4版「25th Anniversary Edition」(2020年12月刊行、Addison-Wesley Professional)</td>
+                        <td>
+                          第4版「25th Anniversary Edition」(2020年12月刊行、Addison-Wesley
+                          Professional)
+                        </td>
                       </tr>
                       <tr>
                         <th>ページ数</th>
@@ -326,7 +338,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                       </tr>
                       <tr>
                         <th>特徴</th>
-                        <td>特定のDBMS製品やSQL構文に依存しない、プラットフォーム非依存の設計手法書</td>
+                        <td>
+                          特定のDBMS製品やSQL構文に依存しない、プラットフォーム非依存の設計手法書
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -342,12 +356,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>想定読者・このガイドの使い方</h2>
             <ul>
-              <li>業務でデータベースやテーブルを設計する必要があるが、体系的に学んだことがないエンジニア・アナリスト</li>
-              <li>独学でSQLは書けるようになったが、テーブル構造そのものの「正しい設計の仕方」に自信が持てない人</li>
+              <li>
+                業務でデータベースやテーブルを設計する必要があるが、体系的に学んだことがないエンジニア・アナリスト
+              </li>
+              <li>
+                独学でSQLは書けるようになったが、テーブル構造そのものの「正しい設計の仕方」に自信が持てない人
+              </li>
               <li>正規化理論を学んだものの、実務でどう使えばよいか掴めていない人</li>
               <li>原著(英語)を読む前に全体像を掴んでおきたい人</li>
             </ul>
-            <p>各ステップは原著の章立てにほぼ対応しています。まずは目次代わりに全体構成を俯瞰しましょう。</p>
+            <p>
+              各ステップは原著の章立てにほぼ対応しています。まずは目次代わりに全体構成を俯瞰しましょう。
+            </p>
           </section>
 
           <section className="section" id="structure">
@@ -364,7 +384,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <div className="prose">
               <p>
-                Part Iで基礎知識と用語を固め、Part II(本書の中核、10章分)で実際の設計プロセスを順を追って実践し、Part IIIで応用的な注意点を扱う、という構成になっています。
+                Part Iで基礎知識と用語を固め、Part
+                II(本書の中核、10章分)で実際の設計プロセスを順を追って実践し、Part
+                IIIで応用的な注意点を扱う、という構成になっています。
               </p>
             </div>
           </section>
@@ -377,13 +399,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             <h2>この本の設計思想: 正規化理論ではなく「独自メソッド」</h2>
             <div className="prose">
               <p>
-                多くのデータベース教科書は第1正規形(1NF)から第5正規形(5NF)までを段階的に検証する「正規化」を設計の中心に据えます。しかし本書は違うアプローチを取ります。Hernandezは、関数従属性や非キー属性といった形式的な用語は初学者には難解すぎると考え、代わりに「理想的フィールド(ideal field)」「理想的テーブル(ideal table)」という独自の基準でテーブル構造を検証する、より実践的な手法を提示しています。正規化については第2章に「Normalization」の説明があり、付録Gでも補足的に扱われますが、通常の正規化手順そのものは本編の設計プロセスには組み込まれていません。</p>
+                多くのデータベース教科書は第1正規形(1NF)から第5正規形(5NF)までを段階的に検証する「正規化」を設計の中心に据えます。しかし本書は違うアプローチを取ります。Hernandezは、関数従属性や非キー属性といった形式的な用語は初学者には難解すぎると考え、代わりに「理想的フィールド(ideal
+                field)」「理想的テーブル(ideal
+                table)」という独自の基準でテーブル構造を検証する、より実践的な手法を提示しています。正規化については第2章に「Normalization」の説明があり、付録Gでも補足的に扱われますが、通常の正規化手順そのものは本編の設計プロセスには組み込まれていません。
+              </p>
             </div>
             <div className="diagram-wrap">
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_1} />
               </div>
-              <div className="diagram-caption">学術的な正規化アプローチと、本書の実践的アプローチの対比</div>
+              <div className="diagram-caption">
+                学術的な正規化アプローチと、本書の実践的アプローチの対比
+              </div>
             </div>
             <div className="callout gold">
               <IconAlertTriangle className="ti" size={22} />
@@ -406,7 +433,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_2} />
               </div>
-              <div className="diagram-caption">Step0からStep16、そして次のステップへの学習の流れ</div>
+              <div className="diagram-caption">
+                Step0からStep16、そして次のステップへの学習の流れ
+              </div>
             </div>
           </section>
 
@@ -456,7 +485,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <tbody>
                   <tr>
                     <td>組み込みの多層整合性</td>
-                    <td>フィールドレベル・テーブルレベル・リレーションシップレベルでデータの正確性を保証できる</td>
+                    <td>
+                      フィールドレベル・テーブルレベル・リレーションシップレベルでデータの正確性を保証できる
+                    </td>
                   </tr>
                   <tr>
                     <td>データの一元管理</td>
@@ -474,7 +505,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               </table>
             </div>
             <p>
-              章の終盤では、リレーショナルデータベース管理システム(RDBMS)がこうした構造をどのように実現しているかが概観され、Part II以降で扱う「設計」というテーマへの橋渡しがなされます。
+              章の終盤では、リレーショナルデータベース管理システム(RDBMS)がこうした構造をどのように実現しているかが概観され、Part
+              II以降で扱う「設計」というテーマへの橋渡しがなされます。
             </p>
           </section>
 
@@ -558,13 +590,16 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>Part II: 設計プロセス(第4章から第13章)</h2>
             <p>
-              Part IIは本書の中核です。著者が提唱する設計プロセスは、大きく7つのフェーズから構成されています。ただしフェーズと章は必ずしも1対1で対応せず、第4章はこの7フェーズ全体を概観する導入章であり、3つ目のフェーズ「データ構造の作成」は第7章から第9章の3章にわたって詳述されます。
+              Part
+              IIは本書の中核です。著者が提唱する設計プロセスは、大きく7つのフェーズから構成されています。ただしフェーズと章は必ずしも1対1で対応せず、第4章はこの7フェーズ全体を概観する導入章であり、3つ目のフェーズ「データ構造の作成」は第7章から第9章の3章にわたって詳述されます。
             </p>
             <div className="diagram-wrap">
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_4} />
               </div>
-              <div className="diagram-caption">設計プロセスの7フェーズ - ミッションステートメントから整合性の見直しまで</div>
+              <div className="diagram-caption">
+                設計プロセスの7フェーズ - ミッションステートメントから整合性の見直しまで
+              </div>
             </div>
             <p>
               このプロセスは一度きりの直線的な作業ではなく、見直しのたびにミッションステートメントへ立ち返ることが想定された反復的な流れである点に注意してください。
@@ -595,7 +630,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_5} />
               </div>
-              <div className="diagram-caption">インタビューからミッションステートメント・ミッションオブジェクティブ作成までの流れ</div>
+              <div className="diagram-caption">
+                インタビューからミッションステートメント・ミッションオブジェクティブ作成までの流れ
+              </div>
             </div>
             <p>
               ミッションステートメントは、データベースを作る「目的」を一文または数文で言語化したものです。曖昧な目的からは曖昧な設計しか生まれないため、本章では「良いミッションステートメント」の条件(具体的であること、データベースの対象領域を明確にすることなど)が丁寧に説明されています。ミッションステートメントをさらに具体的な達成項目に分解したものが「ミッションオブジェクティブ」であり、これが後の章でテーブルやフィールドを洗い出す際の判断基準として機能します。
@@ -615,7 +652,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_6} />
               </div>
-              <div className="diagram-caption">現行データベースの把握からレビューまでの分析プロセス</div>
+              <div className="diagram-caption">
+                現行データベースの把握からレビューまでの分析プロセス
+              </div>
             </div>
             <p>
               ここで作成される「暫定フィールドリスト」は、集めた情報のすべての項目を洗い出したものであり、次章以降でテーブル構造を組み立てる際の素材になります。合計金額のように他のフィールドから計算できる項目は「計算フィールドリスト」として別扱いにする点も実務上重要なポイントです。
@@ -635,10 +674,14 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_7} />
               </div>
-              <div className="diagram-caption">主題対象の洗い出しからサブセットテーブルの分離までの流れ</div>
+              <div className="diagram-caption">
+                主題対象の洗い出しからサブセットテーブルの分離までの流れ
+              </div>
             </div>
             <p>
-              ここで登場する「理想的フィールド(ideal field)」とは、他のフィールドから計算・導出できず、複数の値や意味を持たない、単一の事実を表すフィールドのことです。同様に「理想的テーブル(ideal table)」とは、単一の主題(人・物・出来事など)だけを表し、重複するデータを持たないテーブルを指します。この2つの基準を満たすようにテーブルとフィールドを繰り返し見直していく作業こそが、本書における正規化理論の代替手段にあたります。
+              ここで登場する「理想的フィールド(ideal
+              field)」とは、他のフィールドから計算・導出できず、複数の値や意味を持たない、単一の事実を表すフィールドのことです。同様に「理想的テーブル(ideal
+              table)」とは、単一の主題(人・物・出来事など)だけを表し、重複するデータを持たないテーブルを指します。この2つの基準を満たすようにテーブルとフィールドを繰り返し見直していく作業こそが、本書における正規化理論の代替手段にあたります。
             </p>
             <p>よくある問題とその対処も整理されています。</p>
             <div className="table-wrap">
@@ -677,7 +720,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               第8章
             </div>
             <h2>Step8: キー</h2>
-            <p>各レコードを一意に識別する仕組みが「キー」です。第8章では、キーの分類と選定基準が扱われます。</p>
+            <p>
+              各レコードを一意に識別する仕組みが「キー」です。第8章では、キーの分類と選定基準が扱われます。
+            </p>
             <div className="diagram-wrap">
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_8} />
@@ -745,10 +790,13 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="diagram-canvas">
                 <MermaidDiagram chart={DIAG_11} />
               </div>
-              <div className="diagram-caption">フィールド固有のルールとリレーションシップ固有のルール</div>
+              <div className="diagram-caption">
+                フィールド固有のルールとリレーションシップ固有のルール
+              </div>
             </div>
             <p>
-              ビジネスルールの多くは、データベースそのものだけでなく、業務プロセスや運用にも関わってきます。そのため、利用者やマネジメントとの合意形成がとりわけ重要であることが繰り返し述べられています。あわせて、決められた値の集合の中からしか入力を許可しない「検証テーブル(validation table)」の活用法も紹介されます。
+              ビジネスルールの多くは、データベースそのものだけでなく、業務プロセスや運用にも関わってきます。そのため、利用者やマネジメントとの合意形成がとりわけ重要であることが繰り返し述べられています。あわせて、決められた値の集合の中からしか入力を許可しない「検証テーブル(validation
+              table)」の活用法も紹介されます。
             </p>
           </section>
 
@@ -814,7 +862,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               </table>
             </div>
             <p>
-              このレビューを経て、設計ドキュメント一式(テーブル一覧、フィールド仕様、リレーションシップ図など)を取りまとめれば、Part IIで示された設計プロセスは完了です。
+              このレビューを経て、設計ドキュメント一式(テーブル一覧、フィールド仕様、リレーションシップ図など)を取りまとめれば、Part
+              IIで示された設計プロセスは完了です。
             </p>
           </section>
 
@@ -862,7 +911,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>Step16: 結び</h2>
             <p>
-              最終章は短い総括です。良いデータベース設計は特別な才能ではなく、一貫した手順と常識的な判断力があれば誰にでも実践できる、という本書全体を貫くメッセージが改めて述べられ、Part IVの付録(設計プロセスの図解、用語集、推奨読書リストなど)へと読者を導きます。
+              最終章は短い総括です。良いデータベース設計は特別な才能ではなく、一貫した手順と常識的な判断力があれば誰にでも実践できる、という本書全体を貫くメッセージが改めて述べられ、Part
+              IVの付録(設計プロセスの図解、用語集、推奨読書リストなど)へと読者を導きます。
             </p>
           </section>
 
@@ -877,7 +927,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </p>
             <ol>
               <li>
-                正規化理論を正しく解説しようとすると、関数従属性のような形式的な概念の説明が不可欠になり、「Mere Mortals(普通の人)」向けという本書の趣旨から外れてしまう
+                正規化理論を正しく解説しようとすると、関数従属性のような形式的な概念の説明が不可欠になり、「Mere
+                Mortals(普通の人)」向けという本書の趣旨から外れてしまう
               </li>
               <li>
                 本書が提示する「理想的フィールド」「理想的テーブル」という基準に沿って設計を進めれば、正規化理論を意識しなくても、実務上おおむね同等の結果(多くの場合、第3正規形相当の構造)に到達できる
@@ -937,7 +988,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="callout-body">
                 <span className="callout-title">正規化理論への深入りは避けられている</span>
                 <p>
-                  前述の通り、本書は正規化理論を体系的には扱いません。学術的な裏付けまで理解したい場合は、C. J. Date の著作などを併読する必要があります。
+                  前述の通り、本書は正規化理論を体系的には扱いません。学術的な裏付けまで理解したい場合は、C.
+                  J. Date の著作などを併読する必要があります。
                 </p>
               </div>
             </div>
@@ -946,7 +998,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="callout-body">
                 <span className="callout-title">SQLはスコープ外</span>
                 <p>
-                  本書はテーブル構造の「設計」に特化しており、SQLの書き方そのものは扱いません。実装段階に進む際は、姉妹書『SQL Queries for Mere Mortals』などを参照する必要があります。
+                  本書はテーブル構造の「設計」に特化しており、SQLの書き方そのものは扱いません。実装段階に進む際は、姉妹書『SQL
+                  Queries for Mere Mortals』などを参照する必要があります。
                 </p>
               </div>
             </div>
@@ -987,23 +1040,33 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <tbody>
                   <tr>
                     <td>『SQL Queries for Mere Mortals』(John L. Viescas との共著)</td>
-                    <td>本書で設計したテーブルに対して、実際にSQLでどう問い合わせるかを学ぶ姉妹書</td>
+                    <td>
+                      本書で設計したテーブルに対して、実際にSQLでどう問い合わせるかを学ぶ姉妹書
+                    </td>
                   </tr>
                   <tr>
                     <td>C. J. Date『An Introduction to Database Systems』</td>
-                    <td>正規化理論を含む、よりアカデミックなリレーショナルデータベース理論を学びたい場合の定番書。本書の付録Hでも推奨読書として挙げられている</td>
+                    <td>
+                      正規化理論を含む、よりアカデミックなリレーショナルデータベース理論を学びたい場合の定番書。本書の付録Hでも推奨読書として挙げられている
+                    </td>
                   </tr>
                   <tr>
                     <td>E. F. Codd『The Relational Model for Database Management: Version 2』</td>
-                    <td>リレーショナルモデルの提唱者自身による原典。付録Hの推奨読書リストの筆頭に挙げられている</td>
+                    <td>
+                      リレーショナルモデルの提唱者自身による原典。付録Hの推奨読書リストの筆頭に挙げられている
+                    </td>
                   </tr>
                   <tr>
                     <td>relationaldbdesign.com の正規化解説ページ</td>
-                    <td>1NF・2NF・3NFを具体例つきで学び直せるオンライン教材。本書の内容とあわせて参照すると理解が深まる</td>
+                    <td>
+                      1NF・2NF・3NFを具体例つきで学び直せるオンライン教材。本書の内容とあわせて参照すると理解が深まる
+                    </td>
                   </tr>
                   <tr>
                     <td>Martin Kleppmann『Designing Data-Intensive Applications』</td>
-                    <td>設計を終えた後、分散システムやスケーラビリティの観点からデータベースをより深く理解したい読者向け</td>
+                    <td>
+                      設計を終えた後、分散システムやスケーラビリティの観点からデータベースをより深く理解したい読者向け
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -1026,7 +1089,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>まとめ</h2>
             <p>
-              『Database Design for Mere Mortals』は、正規化理論という「正攻法」とは異なる角度から、リレーショナルデータベース設計を平易に学べる稀有な一冊です。ミッションステートメントの策定から始まり、テーブル構造の確立、キーの選定、リレーションシップとビジネスルールの定義、ビューの設計、そして最終的な整合性レビューに至る一連のプロセスは、特定の製品やSQL方言に依存しないため、どのようなデータベース環境で働くエンジニアにとっても長く通用する基礎体力になります。一方で、正規化理論そのものやSQLの実装知識は本書の対象外であるため、実務ではぜひ他の資料と組み合わせて活用してください。
+              『Database Design for Mere
+              Mortals』は、正規化理論という「正攻法」とは異なる角度から、リレーショナルデータベース設計を平易に学べる稀有な一冊です。ミッションステートメントの策定から始まり、テーブル構造の確立、キーの選定、リレーションシップとビジネスルールの定義、ビューの設計、そして最終的な整合性レビューに至る一連のプロセスは、特定の製品やSQL方言に依存しないため、どのようなデータベース環境で働くエンジニアにとっても長く通用する基礎体力になります。一方で、正規化理論そのものやSQLの実装知識は本書の対象外であるため、実務ではぜひ他の資料と組み合わせて活用してください。
             </p>
           </section>
 
@@ -1041,7 +1105,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">01</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition - Google Books
+                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition - Google
+                    Books
                   </div>
                   <Ext
                     className="ref-url"
@@ -1056,14 +1121,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">02</div>
                 <div className="ref-body">
-                  <div className="ref-title">Database Design for Mere Mortals, 4th Edition | InformIT</div>
+                  <div className="ref-title">
+                    Database Design for Mere Mortals, 4th Edition | InformIT
+                  </div>
                   <Ext
                     className="ref-url"
                     href="https://www.informit.com/store/database-design-for-mere-mortals-9780136788096"
                   >
                     https://www.informit.com/store/database-design-for-mere-mortals-9780136788096
                   </Ext>
-                  <div className="ref-note">出版元 Pearson/InformIT による公式な目次・概要ページ</div>
+                  <div className="ref-note">
+                    出版元 Pearson/InformIT による公式な目次・概要ページ
+                  </div>
                 </div>
               </div>
 
@@ -1071,7 +1140,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">03</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition - O'Reilly
+                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition -
+                    O'Reilly
                   </div>
                   <Ext
                     className="ref-url"
@@ -1093,7 +1163,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                   >
                     https://www.oreilly.com/library/view/database-design-for/9780136788133/appg.xhtml
                   </Ext>
-                  <div className="ref-note">著者自身による、正規化理論を主軸にしなかった理由の解説(付録G)</div>
+                  <div className="ref-note">
+                    著者自身による、正規化理論を主軸にしなかった理由の解説(付録G)
+                  </div>
                 </div>
               </div>
 
@@ -1142,7 +1214,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">08</div>
                 <div className="ref-body">
-                  <div className="ref-title">Database Design for Mere Mortals - Editions - Goodreads</div>
+                  <div className="ref-title">
+                    Database Design for Mere Mortals - Editions - Goodreads
+                  </div>
                   <Ext
                     className="ref-url"
                     href="https://www.goodreads.com/work/editions/144832-database-design-for-mere-mortals-a-hands-on-guide-to-relational-databas?page=1"
@@ -1162,14 +1236,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=18807653">
                     https://news.ycombinator.com/item?id=18807653
                   </Ext>
-                  <div className="ref-note">国際的な開発者コミュニティ Hacker News での推薦コメント</div>
+                  <div className="ref-note">
+                    国際的な開発者コミュニティ Hacker News での推薦コメント
+                  </div>
                 </div>
               </div>
 
               <div className="ref-card">
                 <div className="ref-num">10</div>
                 <div className="ref-body">
-                  <div className="ref-title">Hacker News: "Buy the book Database Design for Mere Mortals"</div>
+                  <div className="ref-title">
+                    Hacker News: "Buy the book Database Design for Mere Mortals"
+                  </div>
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=40193125">
                     https://news.ycombinator.com/item?id=40193125
                   </Ext>
@@ -1180,11 +1258,15 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">11</div>
                 <div className="ref-body">
-                  <div className="ref-title">Hacker News: "Huge +1 to Database Design for Mere Mortals"</div>
+                  <div className="ref-title">
+                    Hacker News: "Huge +1 to Database Design for Mere Mortals"
+                  </div>
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=28748545">
                     https://news.ycombinator.com/item?id=28748545
                   </Ext>
-                  <div className="ref-note">経験者による詳細なレビューコメント(C. J. Dateの著作との比較にも言及)</div>
+                  <div className="ref-note">
+                    経験者による詳細なレビューコメント(C. J. Dateの著作との比較にも言及)
+                  </div>
                 </div>
               </div>
 
@@ -1192,7 +1274,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">12</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Database Design for Mere Mortals: 25th Anniversary Edition - 目次・サンプルページ(Pearson 公式 PDF)
+                    Database Design for Mere Mortals: 25th Anniversary Edition -
+                    目次・サンプルページ(Pearson 公式 PDF)
                   </div>
                   <Ext
                     className="ref-url"
@@ -1200,7 +1283,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                   >
                     https://ptgmedia.pearsoncmg.com/images/9780136788041/samplepages/9780136788041_Sample.pdf
                   </Ext>
-                  <div className="ref-note">出版元 Pearson 公開の第4版目次(付録 A〜G の一覧を含む)</div>
+                  <div className="ref-note">
+                    出版元 Pearson 公開の第4版目次(付録 A〜G の一覧を含む)
+                  </div>
                 </div>
               </div>
 
@@ -1208,9 +1293,13 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">13</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th edition - Pearson+
+                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th edition -
+                    Pearson+
                   </div>
-                  <Ext className="ref-url" href="https://www.pearson.com/en-us/pearsonplus/p/9780137459667">
+                  <Ext
+                    className="ref-url"
+                    href="https://www.pearson.com/en-us/pearsonplus/p/9780137459667"
+                  >
                     https://www.pearson.com/en-us/pearsonplus/p/9780137459667
                   </Ext>
                   <div className="ref-note">出版元 Pearson の公式販売ページ</div>
@@ -1220,12 +1309,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">14</div>
                 <div className="ref-body">
-                  <div className="ref-title">Database Design for Mere Mortals - Amazon.com(第3版)</div>
-                  <Ext className="ref-url" href="https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493">
+                  <div className="ref-title">
+                    Database Design for Mere Mortals - Amazon.com(第3版)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493"
+                  >
                     https://www.amazon.com/Database-Design-Mere-Mortals-Hands/dp/0321884493
                   </Ext>
                   <div className="ref-note">
-                    著者略歴(Microsoft Visual Studio グループでのプログラムマネージャー経験など)を掲載
+                    著者略歴(Microsoft Visual Studio
+                    グループでのプログラムマネージャー経験など)を掲載
                   </div>
                 </div>
               </div>
@@ -1234,7 +1329,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">15</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Normalization in Database Design: 1NF, 2NF, 3NF Explained with Examples - relationaldbdesign.com
+                    Normalization in Database Design: 1NF, 2NF, 3NF Explained with Examples -
+                    relationaldbdesign.com
                   </div>
                   <Ext
                     className="ref-url"
@@ -1249,14 +1345,18 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">16</div>
                 <div className="ref-body">
-                  <div className="ref-title">Database Design for Mere Mortals - Summary excerpt(flylib.com)</div>
+                  <div className="ref-title">
+                    Database Design for Mere Mortals - Summary excerpt(flylib.com)
+                  </div>
                   <Ext
                     className="ref-url"
                     href="https://web.archive.org/web/20171121234330/http://flylib.com/books/en/1.199.1.38/1/"
                   >
                     https://web.archive.org/web/20171121234330/http://flylib.com/books/en/1.199.1.38/1/
                   </Ext>
-                  <div className="ref-note">著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋</div>
+                  <div className="ref-note">
+                    著者が正規形の形式的定義をあえて採用しなかった理由に関する抜粋
+                  </div>
                 </div>
               </div>
 
@@ -1282,7 +1382,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
 
           <footer className="footer">
             <p>
-              本ガイドは公開情報をもとに作成した解説資料です。原著の正確な内容については、出版元またはO'Reilly Online Learning等の一次情報を参照してください。
+              本ガイドは公開情報をもとに作成した解説資料です。原著の正確な内容については、出版元またはO'Reilly
+              Online Learning等の一次情報を参照してください。
             </p>
           </footer>
         </main>

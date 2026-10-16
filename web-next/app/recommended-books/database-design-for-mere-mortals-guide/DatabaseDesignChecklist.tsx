@@ -36,12 +36,7 @@ export default function DatabaseDesignChecklist() {
   return (
     <div className="checklist-box">
       <div className="checklist-progress">
-        <span
-          id="checklistCounter"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        <span id="checklistCounter" role="status" aria-live="polite" aria-atomic="true">
           {doneCount} / {totalCount} 完了
         </span>
         <div className="checklist-bar">
