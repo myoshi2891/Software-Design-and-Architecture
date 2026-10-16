@@ -92,7 +92,13 @@ export default function DataWarehouseToolkitSidebar() {
     setIsOpen((prev) => !prev);
   }, []);
 
+  // リンク選択時: 閉じるだけ（遷移先セクションからフォーカスを奪わない）
   const closeMenu = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  // Escape 時: 閉じてトグルボタンへフォーカスを戻す
+  const closeMenuAndRestoreFocus = useCallback(() => {
     setIsOpen(false);
     toggleBtnRef.current?.focus();
   }, []);
@@ -134,12 +140,12 @@ export default function DataWarehouseToolkitSidebar() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
-        closeMenu();
+        closeMenuAndRestoreFocus();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeMenu]);
+  }, [isOpen, closeMenuAndRestoreFocus]);
 
   // モバイルメニュー外クリックで閉じる
   useEffect(() => {

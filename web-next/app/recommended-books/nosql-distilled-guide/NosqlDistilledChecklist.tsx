@@ -43,21 +43,13 @@ export default function NosqlDistilledChecklist() {
         {CHECKLIST_ITEMS.map((item, index) => {
           const isDone = checkedState[index];
           return (
-            <li
-              key={item}
-              className={isDone ? "done" : ""}
-              onClick={() => handleToggle(index)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleToggle(index);
-                }
-              }}
-            >
-              <span className="box" aria-hidden="true">
-                <IconCheck size={14} />
-              </span>
-              <span className="txt">{item}</span>
+            <li key={item} className={isDone ? "done" : ""}>
+              <button type="button" aria-pressed={isDone} onClick={() => handleToggle(index)}>
+                <span className="box" aria-hidden="true">
+                  <IconCheck size={14} />
+                </span>
+                <span className="txt">{item}</span>
+              </button>
             </li>
           );
         })}

@@ -22279,16 +22279,26 @@ body.has-common-header .high-performance-mysql-guide section {
   }
   .checklist { list-style: none; padding: 0; margin: 0; }
   .checklist li {
-    display: flex; align-items: flex-start; gap: 0.8rem;
-    padding: 0.85rem 1rem;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 10px;
     margin-bottom: 0.6rem;
-    cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
     font-size: 1rem;
   }
+  .checklist li > button {
+    display: flex; align-items: flex-start; gap: 0.8rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: none;
+    border: 0;
+    border-radius: inherit;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .checklist li > button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
   .checklist li:hover { border-color: var(--indigo); }
   .checklist li.done { background: var(--forest-soft-bg); border-color: rgba(31, 109, 71, 0.35); }
   .checklist .box {
