@@ -76,7 +76,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 35 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 36 本を
 一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -205,6 +205,10 @@ Testing Library（契約テスト）を採用しています。
     — NoSQL Distilled 完全解説ガイドを移植（26 セクション・Mermaid 16 図・table 9・チェックリスト 12 項目）。
     固定サイドバー・scroll-spy を [`NosqlDistilledSidebar.tsx`](web-next/app/recommended-books/nosql-distilled-guide/NosqlDistilledSidebar.tsx)、学習チェックリストを [`NosqlDistilledChecklist.tsx`](web-next/app/recommended-books/nosql-distilled-guide/NosqlDistilledChecklist.tsx) でクライアント描画。
     原本 HTML・Markdown は `archive/recommended-books/nosql-distilled-guide/` に無変更で保存。
+  - [`/recommended-books/refactoring-databases-guide`](web-next/app/recommended-books/refactoring-databases-guide/page.tsx)
+    — Refactoring Databases 完全解説ガイドを移植（26 セクション・Mermaid 13 図・table 10・コードブロック 3・チェックリスト 8 項目）。
+    固定サイドバー・scroll-spy を [`RefactoringDatabasesSidebar.tsx`](web-next/app/recommended-books/refactoring-databases-guide/RefactoringDatabasesSidebar.tsx)、学習チェックリストを [`RefactoringDatabasesChecklist.tsx`](web-next/app/recommended-books/refactoring-databases-guide/RefactoringDatabasesChecklist.tsx) でクライアント描画。
+    原本 HTML・Markdown は `archive/recommended-books/refactoring-databases-guide/` に無変更で保存。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
