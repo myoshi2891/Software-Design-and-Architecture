@@ -1,5 +1,3 @@
-import { Ext } from "@/components/Ext";
-import MermaidDiagram from "@/components/MermaidDiagram";
 import {
   IconAffiliate,
   IconBook,
@@ -28,6 +26,8 @@ import {
   IconTrendingUp,
 } from "@tabler/icons-react";
 import type { Metadata } from "next";
+import { Ext } from "@/components/Ext";
+import MermaidDiagram from "@/components/MermaidDiagram";
 import GraphDatabasesChecklist from "./GraphDatabasesChecklist";
 import GraphDatabasesSidebar from "./GraphDatabasesSidebar";
 
@@ -206,7 +206,9 @@ export default function Page() {
             </span>
             <h1>Graph Databases: New Opportunities for Connected Data 初学者ガイド</h1>
             <p className="lede">
-              Ian Robinson、Jim Webber、Emil Eifrem 著『Graph Databases, 2nd Edition』(O&rsquo;Reilly Media)をベースに、グラフデータベースの考え方をゼロからステップバイステップで学ぶための解説記事です。
+              Ian Robinson、Jim Webber、Emil Eifrem 著『Graph Databases, 2nd
+              Edition』(O&rsquo;Reilly
+              Media)をベースに、グラフデータベースの考え方をゼロからステップバイステップで学ぶための解説記事です。
             </p>
             <div className="quote">
               本書の文章をそのまま引用するのではなく、内容を要約・再構成し、2026年9月時点の最新動向(GQL標準化、GraphRAGなど)も補足しています。
@@ -227,10 +229,12 @@ export default function Page() {
             <h2>この記事について</h2>
             <ul>
               <li>
-                <strong>原著</strong>: <em>Graph Databases: New Opportunities for Connected Data</em>, 2nd Edition
+                <strong>原著</strong>:{" "}
+                <em>Graph Databases: New Opportunities for Connected Data</em>, 2nd Edition
               </li>
               <li>
-                <strong>著者</strong>: Ian Robinson, Jim Webber, Emil Eifrem(3人ともNeo4j創業メンバーもしくは元エンジニア)
+                <strong>著者</strong>: Ian Robinson, Jim Webber, Emil
+                Eifrem(3人ともNeo4j創業メンバーもしくは元エンジニア)
               </li>
               <li>
                 <strong>参照元URL</strong>:{" "}
@@ -239,7 +243,8 @@ export default function Page() {
                 </Ext>
               </li>
               <li>
-                <strong>この記事の目的</strong>: プログラミング経験はあるがグラフデータベースは初めて、という読者が「グラフとは何か」から「実務でどう使うか」まで一気通貫で理解できるようにする
+                <strong>この記事の目的</strong>:
+                プログラミング経験はあるがグラフデータベースは初めて、という読者が「グラフとは何か」から「実務でどう使うか」まで一気通貫で理解できるようにする
               </li>
             </ul>
           </section>
@@ -253,11 +258,15 @@ export default function Page() {
             <ul className="audience-list">
               <li>
                 <IconDatabase size={20} />
-                <span>リレーショナルデータベース(RDB)は知っているが、グラフデータベースは触ったことがない開発者</span>
+                <span>
+                  リレーショナルデータベース(RDB)は知っているが、グラフデータベースは触ったことがない開発者
+                </span>
               </li>
               <li>
                 <IconAffiliate size={20} />
-                <span>ソーシャルグラフ、レコメンデーション、不正検知、ナレッジグラフなど「つながり」を扱うシステムに興味がある人</span>
+                <span>
+                  ソーシャルグラフ、レコメンデーション、不正検知、ナレッジグラフなど「つながり」を扱うシステムに興味がある人
+                </span>
               </li>
               <li>
                 <IconRobot size={20} />
@@ -323,7 +332,10 @@ export default function Page() {
             <p>
               O&rsquo;Reillyの書籍ページによると、本書は高度に接続されたデータを管理・検索するためのグラフデータベースの実践的な設計・実装方法を学べる一冊で、第2版では最新のCypher構文に合わせてコード例と図版が刷新されています。データモデリングやクエリ、コード例を通じて、組織がグラフデータベースをどう活用して競合より優位に立っているかを学べる構成になっています。
             </p>
-            <p>なお本書は今でもNeo4j社の公式サイトから無料でダウンロードできます(PDF / Kindle / iBooks形式)。</p>
+            <p>
+              なお本書は今でもNeo4j社の公式サイトから無料でダウンロードできます(PDF / Kindle /
+              iBooks形式)。
+            </p>
           </section>
 
           <section className="section" id="toc">
@@ -429,33 +441,45 @@ export default function Page() {
             </div>
             <h2>グラフとは何か</h2>
             <p>
-              数学的には、グラフ G は「頂点(ノード)の集合 V」と「辺(リレーションシップ)の集合 E」の組 G = (V, E) として定義されます。ノードは「モノ」、リレーションシップは「モノとモノのつながり」を表します。
+              数学的には、グラフ G は「頂点(ノード)の集合 V」と「辺(リレーションシップ)の集合
+              E」の組 G = (V, E)
+              として定義されます。ノードは「モノ」、リレーションシップは「モノとモノのつながり」を表します。
             </p>
             <p>
-              グラフデータベースの世界で最もよく使われるのが<strong>ラベル付きプロパティグラフ(Labeled Property Graph, LPG)モデル</strong>です。ポイントは次の4つです。
+              グラフデータベースの世界で最もよく使われるのが
+              <strong>ラベル付きプロパティグラフ(Labeled Property Graph, LPG)モデル</strong>
+              です。ポイントは次の4つです。
             </p>
             <ul>
               <li>
-                <strong>ノード</strong>: 人・会社・商品などの「モノ」。<strong>ラベル</strong>(種類)は0個以上持てる
+                <strong>ノード</strong>: 人・会社・商品などの「モノ」。<strong>ラベル</strong>
+                (種類)は0個以上持てる
               </li>
               <li>
-                <strong>リレーションシップ</strong>: ノード同士のつながり。必ず<strong>向き</strong>と<strong>種類</strong>を持つ(例: <code>WORKS_AT</code>)
+                <strong>リレーションシップ</strong>: ノード同士のつながり。必ず<strong>向き</strong>
+                と<strong>種類</strong>を持つ(例: <code>WORKS_AT</code>)
               </li>
               <li>
-                <strong>プロパティ</strong>: ノードやリレーションシップに付けられるキー・バリューの属性(例: <code>名前 = 田中</code>)
+                <strong>プロパティ</strong>:
+                ノードやリレーションシップに付けられるキー・バリューの属性(例:{" "}
+                <code>名前 = 田中</code>)
               </li>
               <li>
-                <strong>ラベル</strong>: ノードをグループ分けするためのタグ(例: <code>Person</code>、<code>Company</code>)
+                <strong>ラベル</strong>: ノードをグループ分けするためのタグ(例: <code>Person</code>
+                、<code>Company</code>)
               </li>
             </ul>
             <div className="diagram-card">
               <div className="diagram-wrap">
                 <MermaidDiagram chart={DIAGRAM_2} />
               </div>
-              <p className="diagram-caption">図2: プロパティグラフの最小構成例(ノード・リレーションシップ・プロパティ・ラベル)</p>
+              <p className="diagram-caption">
+                図2: プロパティグラフの最小構成例(ノード・リレーションシップ・プロパティ・ラベル)
+              </p>
             </div>
             <p>
-              重要なのは、<strong>リレーションシップ自体が一級のデータ構造</strong>として保存される点です。リレーショナルDBでは「関係」は外部キーという間接的な形でしか表現できませんが、グラフDBではリレーションシップそのものに向き・種類・プロパティを持たせられます。
+              重要なのは、<strong>リレーションシップ自体が一級のデータ構造</strong>
+              として保存される点です。リレーショナルDBでは「関係」は外部キーという間接的な形でしか表現できませんが、グラフDBではリレーションシップそのものに向き・種類・プロパティを持たせられます。
             </p>
             <p>
               本書ではさらに「グラフデータベース」と「グラフ計算エンジン」を区別しています。前者はOLTP的なトランザクション処理に向いたデータベースそのものであり、後者はPageRankのような大規模グラフ分析(バッチ処理)に向いたエンジンを指します。本書が主に扱うのは前者です。
@@ -471,18 +495,25 @@ export default function Page() {
 
             <h3>リレーショナルDBが苦手にしやすい領域</h3>
             <p>
-              リレーショナルDBでも、外部キーや中間テーブルを使えば関係そのものを明示的にモデル化できます。苦手になりやすいのは、その関係を<strong>たどる</strong>クエリのほうです。関係は行と行の対応として表現され、たどるたびにJOINで再構築するため、多段の関係(友達の友達の友達、など)をたどるクエリでは、結合の段数とデータ量に応じてコストが増えやすくなります。またスキーマ変更にマイグレーションコストがかかり、ドメインの進化に追従しにくいという課題もあります。いずれも一般的な傾向であり、実際のコストは結合アルゴリズム・インデックス・データ分布に左右されます。
+              リレーショナルDBでも、外部キーや中間テーブルを使えば関係そのものを明示的にモデル化できます。苦手になりやすいのは、その関係を
+              <strong>たどる</strong>
+              クエリのほうです。関係は行と行の対応として表現され、たどるたびにJOINで再構築するため、多段の関係(友達の友達の友達、など)をたどるクエリでは、結合の段数とデータ量に応じてコストが増えやすくなります。またスキーマ変更にマイグレーションコストがかかり、ドメインの進化に追従しにくいという課題もあります。いずれも一般的な傾向であり、実際のコストは結合アルゴリズム・インデックス・データ分布に左右されます。
             </p>
 
             <h3>NoSQL集約指向DBの弱点</h3>
             <p>
-              Key-Value・Document・Column-familyといった「集約指向(aggregate-oriented)」なNoSQLデータベースは、1つのまとまり(集約)の中のデータには強い一方、集約をまたぐ関係の扱いは相対的に手薄になりがちです。ただしこれも絶対的な制約ではなく、ドキュメント間の参照を持たせたり、製品が備えるクエリ機能(MongoDBの<code>$lookup</code>など)やマテリアライズドビューを使って集約間の関係を扱える場合もあります。
+              Key-Value・Document・Column-familyといった「集約指向(aggregate-oriented)」なNoSQLデータベースは、1つのまとまり(集約)の中のデータには強い一方、集約をまたぐ関係の扱いは相対的に手薄になりがちです。ただしこれも絶対的な制約ではなく、ドキュメント間の参照を持たせたり、製品が備えるクエリ機能(MongoDBの
+              <code>$lookup</code>
+              など)やマテリアライズドビューを使って集約間の関係を扱える場合もあります。
             </p>
             <p>
-              グラフDBとの違いは、関係を「集約に付随する情報」としてではなく、<strong>独立した辺そのものとして第一級に扱う</strong>点にあります。関係が複雑になるほど、集約指向側では表現とクエリ、そして運用のコストが増えていくのに対し、グラフDBはその複雑さを直接モデルへ載せられる、というトレードオフとして理解するのが実態に近いです。
+              グラフDBとの違いは、関係を「集約に付随する情報」としてではなく、
+              <strong>独立した辺そのものとして第一級に扱う</strong>
+              点にあります。関係が複雑になるほど、集約指向側では表現とクエリ、そして運用のコストが増えていくのに対し、グラフDBはその複雑さを直接モデルへ載せられる、というトレードオフとして理解するのが実態に近いです。
             </p>
             <p>
-              Martin FowlerとPramod Sadalageの共著『NoSQL Distilled』でも、グラフDBは「集約指向」の3タイプ(Key-Value、Document、Column-family)とは異なる第4のカテゴリとして明確に区別されており、リレーショナルDBでは扱いにくい関係を横断的にたどれる点がグラフDBの強みだと説明されています。
+              Martin FowlerとPramod Sadalageの共著『NoSQL
+              Distilled』でも、グラフDBは「集約指向」の3タイプ(Key-Value、Document、Column-family)とは異なる第4のカテゴリとして明確に区別されており、リレーショナルDBでは扱いにくい関係を横断的にたどれる点がグラフDBの強みだと説明されています。
             </p>
 
             <h3>グラフDBの強み</h3>
@@ -490,7 +521,9 @@ export default function Page() {
               <div className="diagram-wrap">
                 <MermaidDiagram chart={DIAGRAM_3} />
               </div>
-              <p className="diagram-caption">図3: リレーショナルDB・NoSQL・グラフDBの位置づけ比較</p>
+              <p className="diagram-caption">
+                図3: リレーショナルDB・NoSQL・グラフDBの位置づけ比較
+              </p>
             </div>
             <div className="table-wrap">
               <table>
@@ -506,7 +539,9 @@ export default function Page() {
                   <tr>
                     <td>リレーションの表現</td>
                     <td>外部キーで関係を保存(たどる際はJOINで再構築)</td>
-                    <td>ドキュメント間参照や<code>$lookup</code>などのクエリ機能で表現・たどる</td>
+                    <td>
+                      ドキュメント間参照や<code>$lookup</code>などのクエリ機能で表現・たどる
+                    </td>
                     <td>リレーションシップとして明示的に保存</td>
                   </tr>
                   <tr>
@@ -531,7 +566,9 @@ export default function Page() {
               </table>
             </div>
             <p>
-              本書ch1で説明される「グラフデータベースの力」は、<strong>性能(Performance)</strong>・<strong>柔軟性(Flexibility)</strong>・<strong>俊敏性(Agility)</strong> の3つに整理されています。関係をたどる性能が(グラフ全体の件数よりも)探索して実際に触れた部分の大きさに左右されやすいこと、スキーマレスに近い形でドメインを進化させやすいこと、開発初期から反復的にモデルを育てやすいことが強みとして挙げられています。
+              本書ch1で説明される「グラフデータベースの力」は、<strong>性能(Performance)</strong>・
+              <strong>柔軟性(Flexibility)</strong>・<strong>俊敏性(Agility)</strong>{" "}
+              の3つに整理されています。関係をたどる性能が(グラフ全体の件数よりも)探索して実際に触れた部分の大きさに左右されやすいこと、スキーマレスに近い形でドメインを進化させやすいこと、開発初期から反復的にモデルを育てやすいことが強みとして挙げられています。
             </p>
           </section>
 
@@ -542,7 +579,9 @@ export default function Page() {
             </div>
             <h2>ラベル付きプロパティグラフモデル</h2>
             <p>
-              グラフDBでのデータモデリングは、「まず正規化されたテーブルを作る」というリレーショナルDB的な発想ではなく、<strong>「どんな質問に答えたいか」からモデルを作る(クエリ駆動のモデリング)</strong> という発想で進めます。
+              グラフDBでのデータモデリングは、「まず正規化されたテーブルを作る」というリレーショナルDB的な発想ではなく、
+              <strong>「どんな質問に答えたいか」からモデルを作る(クエリ駆動のモデリング)</strong>{" "}
+              という発想で進めます。
             </p>
             <p>
               本書ch3では、シェイクスピアの戯曲・劇団・上演場所などをまたいだ「クロスドメイングラフ」を例に、複数の異なる領域のデータを1つのグラフに統合するデモンストレーションを行っています(具体的なコードはここでは引用せず、考え方のみ紹介します)。
@@ -551,16 +590,21 @@ export default function Page() {
             <h3>よくあるモデリングの落とし穴(アンチパターン)</h3>
             <ul>
               <li>
-                <strong>リレーションシップを何でも同じ種類にしてしまう</strong>: <code>RELATED_TO</code> のような汎用的すぎるリレーションシップ種別は、後からクエリで絞り込みにくくなる
+                <strong>リレーションシップを何でも同じ種類にしてしまう</strong>:{" "}
+                <code>RELATED_TO</code>{" "}
+                のような汎用的すぎるリレーションシップ種別は、後からクエリで絞り込みにくくなる
               </li>
               <li>
-                <strong>プロパティにすべきものをノードにしすぎる、または逆</strong>: 複雑な値(期間、金額の履歴など)はノードとしてモデル化した方が扱いやすいことが多い
+                <strong>プロパティにすべきものをノードにしすぎる、または逆</strong>:
+                複雑な値(期間、金額の履歴など)はノードとしてモデル化した方が扱いやすいことが多い
               </li>
               <li>
-                <strong>時間の扱いを後回しにする</strong>: 「いつからいつまで有効な関係か」を最初から設計に組み込まないと、後で大きな手戻りになる
+                <strong>時間の扱いを後回しにする</strong>:
+                「いつからいつまで有効な関係か」を最初から設計に組み込まないと、後で大きな手戻りになる
               </li>
               <li>
-                <strong>スーパーノード(次数が極端に大きいノード)への配慮不足</strong>: 数百万件のリレーションシップが1つのノードに集中すると、そのノード周辺のクエリだけ極端に遅くなることがある
+                <strong>スーパーノード(次数が極端に大きいノード)への配慮不足</strong>:
+                数百万件のリレーションシップが1つのノードに集中すると、そのノード周辺のクエリだけ極端に遅くなることがある
               </li>
             </ul>
             <div className="diagram-card">
@@ -586,7 +630,9 @@ export default function Page() {
               </div>
               <p className="diagram-caption">図5: 基本的なCypherクエリの組み立て方</p>
             </div>
-            <p>以下は、本書の例そのものではなく、社員と会社のつながりを題材にした独自のサンプルです。</p>
+            <p>
+              以下は、本書の例そのものではなく、社員と会社のつながりを題材にした独自のサンプルです。
+            </p>
             <div className="code-block">
               <div className="code-label">
                 <IconTerminal2 size={16} /> Cypher
@@ -594,12 +640,16 @@ export default function Page() {
               <pre dangerouslySetInnerHTML={{ __html: CYPHER_CODE }} />
             </div>
             <p>
-              ポイントは、<code>(ノード)-[:関係種別]-&gt;(ノード)</code> という書き方が、そのままグラフの図と対応していることです。JOINを何段も書く必要がなく、たどりたい経路をそのままクエリとして表現できます。
+              ポイントは、<code>(ノード)-[:関係種別]-&gt;(ノード)</code>{" "}
+              という書き方が、そのままグラフの図と対応していることです。JOINを何段も書く必要がなく、たどりたい経路をそのままクエリとして表現できます。
             </p>
 
             <h3>CypherからGQLへ</h3>
             <p>
-              2024年4月、Cypherのクエリ構成のセマンティクスを多く取り込んだ<strong>GQL(Graph Query Language)</strong>がISO/IEC 39075として国際標準になりました。1987年のSQL制定以来、ISOが新しく制定したデータベース問い合わせ言語としては初めてのものです。TigerGraphのCEOであるMingxi Wu氏は、自社ブログで「GQLはグラフDB業界が(リレーショナルDB、Key-Valueストアに続く)3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事だ」と位置づけ、GQLがパターンマッチング構文を使い、SQLとCypherの両方の記法をサポートしていると解説しています。詳細はStep7の後の「2026年時点のアップデート」で扱います。
+              2024年4月、Cypherのクエリ構成のセマンティクスを多く取り込んだ
+              <strong>GQL(Graph Query Language)</strong>がISO/IEC
+              39075として国際標準になりました。1987年のSQL制定以来、ISOが新しく制定したデータベース問い合わせ言語としては初めてのものです。TigerGraphのCEOであるMingxi
+              Wu氏は、自社ブログで「GQLはグラフDB業界が(リレーショナルDB、Key-Valueストアに続く)3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事だ」と位置づけ、GQLがパターンマッチング構文を使い、SQLとCypherの両方の記法をサポートしていると解説しています。詳細はStep7の後の「2026年時点のアップデート」で扱います。
             </p>
           </section>
 
@@ -609,12 +659,16 @@ export default function Page() {
               Step 4
             </div>
             <h2>グラフデータベースアプリケーションの構築</h2>
-            <p>本書ch4では、実際にグラフDBを使ったアプリケーションを作る際の実務的な観点がまとめられています。</p>
+            <p>
+              本書ch4では、実際にグラフDBを使ったアプリケーションを作る際の実務的な観点がまとめられています。
+            </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
                 <MermaidDiagram chart={DIAGRAM_6} />
               </div>
-              <p className="diagram-caption">図6: グラフデータベースアプリケーション開発の反復サイクル</p>
+              <p className="diagram-caption">
+                図6: グラフデータベースアプリケーション開発の反復サイクル
+              </p>
             </div>
 
             <h3>データモデリング(実装レベル)</h3>
@@ -629,19 +683,27 @@ export default function Page() {
             <ul>
               <li>組み込み(embedded)モードとサーバーモードのどちらでデータベースを動かすか</li>
               <li>クラスタリングとロードバランシングの設計</li>
-              <li>テスト駆動でデータモデル自体を検証する(モデルの妥当性をユニットテストで担保する)</li>
+              <li>
+                テスト駆動でデータモデル自体を検証する(モデルの妥当性をユニットテストで担保する)
+              </li>
             </ul>
 
             <h3>キャパシティプランニング</h3>
             <ul>
               <li>性能(パフォーマンス)、冗長性(可用性)、負荷(スループット)という3つの最適化基準</li>
-              <li>想定される読み書きの量、ノード・リレーションシップの総数から必要なリソースを見積もる</li>
+              <li>
+                想定される読み書きの量、ノード・リレーションシップの総数から必要なリソースを見積もる
+              </li>
             </ul>
 
             <h3>データのインポート</h3>
             <ul>
-              <li>初期インポート(一括ロード)とバッチインポート(継続的な取り込み)の2パターンがある</li>
-              <li>大量データを初めて投入するときは、インデックス構築のタイミングなどに注意が必要</li>
+              <li>
+                初期インポート(一括ロード)とバッチインポート(継続的な取り込み)の2パターンがある
+              </li>
+              <li>
+                大量データを初めて投入するときは、インデックス構築のタイミングなどに注意が必要
+              </li>
             </ul>
           </section>
 
@@ -651,7 +713,9 @@ export default function Page() {
               Step 5
             </div>
             <h2>実世界におけるグラフの活用事例</h2>
-            <p>本書ch5では、組織がなぜグラフDBを選ぶのか、そして代表的なユースケースが紹介されています。</p>
+            <p>
+              本書ch5では、組織がなぜグラフDBを選ぶのか、そして代表的なユースケースが紹介されています。
+            </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
                 <MermaidDiagram chart={DIAGRAM_7} />
@@ -662,12 +726,17 @@ export default function Page() {
               <div className="usecase-card">
                 <IconAffiliate size={24} />
                 <h4>ソーシャル</h4>
-                <p>「友達の友達」は誰か、影響力の大きい人は誰か &mdash; SNS、プロフェッショナル向けネットワーク</p>
+                <p>
+                  「友達の友達」は誰か、影響力の大きい人は誰か &mdash;
+                  SNS、プロフェッショナル向けネットワーク
+                </p>
               </div>
               <div className="usecase-card">
                 <IconShoppingCart size={24} />
                 <h4>レコメンデーション</h4>
-                <p>この人が興味を持ちそうな商品やコンテンツは何か &mdash; ECサイト、動画・音楽配信</p>
+                <p>
+                  この人が興味を持ちそうな商品やコンテンツは何か &mdash; ECサイト、動画・音楽配信
+                </p>
               </div>
               <div className="usecase-card">
                 <IconMap2 size={24} />
@@ -702,16 +771,21 @@ export default function Page() {
             </div>
             <h2>グラフデータベースの内部構造</h2>
             <p>
-              「なぜグラフDBは関係をたどるのが速いのか」を理解する鍵が、<strong>ネイティブグラフ処理(native graph processing)</strong> と <strong>インデックスフリー隣接(index-free adjacency)</strong> という概念です。
+              「なぜグラフDBは関係をたどるのが速いのか」を理解する鍵が、
+              <strong>ネイティブグラフ処理(native graph processing)</strong> と{" "}
+              <strong>インデックスフリー隣接(index-free adjacency)</strong> という概念です。
             </p>
             <div className="diagram-card">
               <div className="diagram-wrap">
                 <MermaidDiagram chart={DIAGRAM_8} />
               </div>
-              <p className="diagram-caption">図8: ネイティブグラフ処理と非ネイティブなグラフ処理の違い</p>
+              <p className="diagram-caption">
+                図8: ネイティブグラフ処理と非ネイティブなグラフ処理の違い
+              </p>
             </div>
             <p>
-              分かりやすい例え話として、コンサルタントのDan McCreary氏はブログで「index-free adjacencyは、隣人の家に手紙を届けるのに住所録を調べる(インデックス参照)必要がなく、隣にいることを直接知っているから歩いて渡せる、という感覚に近い」と説明しています。技術的には、リレーショナルDBでのJOINのコストは実行方式(ネステッドループ・ハッシュ・マージなど)、入力件数、利用できるインデックスによって変わり、テーブルが大きくなるほど増加しがちです。これに対し、ネイティブグラフDBでの1ホップの走査は、たどるノードに接続されたリレーションシップの数だけに依存し、グラフ全体のサイズには依存しません。
+              分かりやすい例え話として、コンサルタントのDan McCreary氏はブログで「index-free
+              adjacencyは、隣人の家に手紙を届けるのに住所録を調べる(インデックス参照)必要がなく、隣にいることを直接知っているから歩いて渡せる、という感覚に近い」と説明しています。技術的には、リレーショナルDBでのJOINのコストは実行方式(ネステッドループ・ハッシュ・マージなど)、入力件数、利用できるインデックスによって変わり、テーブルが大きくなるほど増加しがちです。これに対し、ネイティブグラフDBでの1ホップの走査は、たどるノードに接続されたリレーションシップの数だけに依存し、グラフ全体のサイズには依存しません。
             </p>
             <p>
               Neo4jのGraphAcademyの教材でも、3階層の親子関係をたどるSQLクエリと、Cypherの同等クエリを比較し、SQLでは複数回のインデックス参照とプランニングが必要になる一方、ネイティブグラフではノードとリレーションシップがポインタで直接つながっているため参照コストが小さいことが示されています。
@@ -719,7 +793,9 @@ export default function Page() {
 
             <h3>プログラマティックAPI</h3>
             <p>
-              本書ではNeo4j固有の実装として、Kernel API(最下層の低レベルAPI)、Core API(一般的なプログラマティックAPI)、Traversal Framework(探索の仕方を宣言的に指定できるAPI)の3層構成が紹介されています。
+              本書ではNeo4j固有の実装として、Kernel API(最下層の低レベルAPI)、Core
+              API(一般的なプログラマティックAPI)、Traversal
+              Framework(探索の仕方を宣言的に指定できるAPI)の3層構成が紹介されています。
             </p>
 
             <h3>非機能特性</h3>
@@ -779,13 +855,17 @@ export default function Page() {
                   <tr>
                     <td>BFS</td>
                     <td>最短ホップ数を求める</td>
-                    <td>非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)</td>
+                    <td>
+                      非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)
+                    </td>
                     <td>SNSでの最短ホップ数、到達可能性判定</td>
                   </tr>
                   <tr>
                     <td>DFS</td>
                     <td>到達可能な頂点を深さ優先で走査する</td>
-                    <td>非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)</td>
+                    <td>
+                      非対応(重み付きグラフを走査することはできるが、重みを考慮した最短路は保証しない)
+                    </td>
                     <td>循環検出、連結成分の抽出</td>
                   </tr>
                   <tr>
@@ -798,7 +878,11 @@ export default function Page() {
                     <td>A*</td>
                     <td>ヒューリスティック付きの最短距離を求める</td>
                     <td>
-                      対応(非負の重みが前提。木探索ではヒューリスティックが admissible(真の残りコストを過大評価しない)であること、クローズ済みノードを再オープンしないグラフ探索では consistent(一貫性: h(n) &le; c(n,n&prime;) + h(n&prime;))であることが必要。より良い経路発見時にノードを再オープンするグラフ探索なら admissible で足りる)
+                      対応(非負の重みが前提。木探索ではヒューリスティックが
+                      admissible(真の残りコストを過大評価しない)であること、クローズ済みノードを再オープンしないグラフ探索では
+                      consistent(一貫性: h(n) &le; c(n,n&prime;) +
+                      h(n&prime;))であることが必要。より良い経路発見時にノードを再オープンするグラフ探索なら
+                      admissible で足りる)
                     </td>
                     <td>ゲームAIの経路探索、地図アプリ</td>
                   </tr>
@@ -814,7 +898,12 @@ export default function Page() {
               <p className="diagram-caption">図13: 三者閉包とローカルブリッジの考え方</p>
             </div>
             <p>
-              本書のこの章は、社会ネットワーク分析の古典であるDavid Easley氏(コーネル大学)とJon Kleinberg氏(同大学)の共著『Networks, Crowds, and Markets』の考え方を土台にしています。三者閉包(triadic closure)は「共通の友人を持つ2人は将来友人になりやすい」という経験則、構造的均衡(structural balance)は「友人関係・敵対関係が入り混じった三者関係のうち、心理的に安定しやすい組み合わせがある」という理論、ローカルブリッジ(local bridge)は「共通の知人を持たない関係は、削除すると両端の距離が大きく広がる橋渡し役になっている」という考え方です。これらは、レコメンデーションの精度向上や、不正検知における「怪しい孤立したつながり」の発見などに応用されています。
+              本書のこの章は、社会ネットワーク分析の古典であるDavid Easley氏(コーネル大学)とJon
+              Kleinberg氏(同大学)の共著『Networks, Crowds, and
+              Markets』の考え方を土台にしています。三者閉包(triadic
+              closure)は「共通の友人を持つ2人は将来友人になりやすい」という経験則、構造的均衡(structural
+              balance)は「友人関係・敵対関係が入り混じった三者関係のうち、心理的に安定しやすい組み合わせがある」という理論、ローカルブリッジ(local
+              bridge)は「共通の知人を持たない関係は、削除すると両端の距離が大きく広がる橋渡し役になっている」という考え方です。これらは、レコメンデーションの精度向上や、不正検知における「怪しい孤立したつながり」の発見などに応用されています。
             </p>
           </section>
 
@@ -824,7 +913,9 @@ export default function Page() {
               Appendix A
             </div>
             <h2>付録: NoSQL全体像の中でのグラフDB</h2>
-            <p>本書の付録Aでは、グラフDBを含むNoSQLデータベース全体の見取り図が整理されています。</p>
+            <p>
+              本書の付録Aでは、グラフDBを含むNoSQLデータベース全体の見取り図が整理されています。
+            </p>
             <div className="table-wrap">
               <table>
                 <thead>
@@ -864,7 +955,10 @@ export default function Page() {
               </table>
             </div>
             <p>
-              ACID(Atomicity, Consistency, Isolation, Durability)は個々のトランザクションが満たす特性の集合であり、BASE(Basically Available, Soft state, Eventually consistent)は可用性と結果整合性を優先する分散システムの設計方針を指す標語です。粒度の異なるこの2つの対比、そしてプロパティグラフ・ハイパーグラフ・トリプル(RDF)という3つのグラフ表現方式の違いも本書付録で扱われています。RDF/トリプルストアはセマンティックウェブの標準技術であるSPARQLで問い合わせるのに対し、本書が中心的に扱うプロパティグラフモデルはCypher(および後述のGQL)で問い合わせる点が大きな違いです。
+              ACID(Atomicity, Consistency, Isolation,
+              Durability)は個々のトランザクションが満たす特性の集合であり、BASE(Basically Available,
+              Soft state, Eventually
+              consistent)は可用性と結果整合性を優先する分散システムの設計方針を指す標語です。粒度の異なるこの2つの対比、そしてプロパティグラフ・ハイパーグラフ・トリプル(RDF)という3つのグラフ表現方式の違いも本書付録で扱われています。RDF/トリプルストアはセマンティックウェブの標準技術であるSPARQLで問い合わせるのに対し、本書が中心的に扱うプロパティグラフモデルはCypher(および後述のGQL)で問い合わせる点が大きな違いです。
             </p>
           </section>
 
@@ -886,15 +980,24 @@ export default function Page() {
 
             <h3>1. GQLの国際標準化(2024年)</h3>
             <p>
-              2024年4月、ISO/IEC合同技術委員会がGQL(Graph Query Language)を国際標準として制定しました。1987年にSQLが標準化されて以来、ISOが新たに制定したデータベース問い合わせ言語としては初めてのものです。GQL標準はCypherを強く参考にした設計になっており、Neo4jは独自のCypherを段階的にGQL準拠へ進化させる方針を明らかにしています。TigerGraphのCEOであるMingxi Wu氏は自社ブログで「グラフDBがリレーショナルDB・Key-Valueストアに次ぐ3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事」と評しており、TheNewStack誌の取材に対してNeo4jのCTOであるPhilip Rathle氏も「SQLと同じ組織から出た国際標準であることが、グラフDBの主流化に大きな説得力を持つ」と述べています。
+              2024年4月、ISO/IEC合同技術委員会がGQL(Graph Query
+              Language)を国際標準として制定しました。1987年にSQLが標準化されて以来、ISOが新たに制定したデータベース問い合わせ言語としては初めてのものです。GQL標準はCypherを強く参考にした設計になっており、Neo4jは独自のCypherを段階的にGQL準拠へ進化させる方針を明らかにしています。TigerGraphのCEOであるMingxi
+              Wu氏は自社ブログで「グラフDBがリレーショナルDB・Key-Valueストアに次ぐ3つ目の代表的なデータベースカテゴリとして確立したことを象徴する出来事」と評しており、TheNewStack誌の取材に対してNeo4jのCTOであるPhilip
+              Rathle氏も「SQLと同じ組織から出た国際標準であることが、グラフDBの主流化に大きな説得力を持つ」と述べています。
             </p>
 
             <h3>2. GraphRAG: LLMとナレッジグラフの融合</h3>
             <p>
-              2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented Generation)がベクトル検索やキーワード検索(BM25など)、それらを組み合わせたハイブリッド検索で関連文書を集めるのに対し、GraphRAGはさらにナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。
+              2025年から2026年にかけて、大規模言語モデル(LLM)の回答精度を高めるためにグラフDBを使う「GraphRAG」が急速に広がっています。従来のRAG(Retrieval-Augmented
+              Generation)がベクトル検索やキーワード検索(BM25など)、それらを組み合わせたハイブリッド検索で関連文書を集めるのに対し、GraphRAGはさらにナレッジグラフの明示的な関係性を組み合わせることで、エンティティ間の関係が複雑なドメイン(規制文書、サプライチェーン、技術サポートなど)での回答精度とハルシネーション(誤った情報生成)の抑制を狙う手法です。
             </p>
             <p>
-              Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends 2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する<code>neo4j-graphrag</code>パッケージ(PyPIの配布名。公式リポジトリ名は<code>neo4j-graphrag-python</code>)、LlamaIndexの<code>PropertyGraphIndex</code>、LangChainの<code>LLMGraphTransformer</code>など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。
+              Neo4jで製品イノベーションを率いるMichael Hunger氏は、2026年の記事「Graph and AI Trends
+              2026」の中で、「AIエージェントは自律的に一連の業務をやり切るところまではまだ到達しておらず、モデル品質も時間とともに劣化しうる」といった率直な課題認識を示しつつ、グラフとAIの組み合わせが次の段階に進むための論点を整理しています。GraphRAGの実装をめぐっては、Neo4j自身が提供する
+              <code>neo4j-graphrag</code>パッケージ(PyPIの配布名。公式リポジトリ名は
+              <code>neo4j-graphrag-python</code>)、LlamaIndexの<code>PropertyGraphIndex</code>
+              、LangChainの<code>LLMGraphTransformer</code>
+              など複数のアプローチが2026年時点で並存しており、用途に応じて使い分けるのが実務上の判断ポイントになっています。
             </p>
           </section>
 
@@ -927,7 +1030,9 @@ export default function Page() {
                     <td>TigerGraph</td>
                     <td>プロパティグラフ</td>
                     <td>GSQL(GQL標準化に参画・対応を推進中)</td>
-                    <td>GSQLは独自言語で、GQLへ全面準拠しているわけではない。並列処理を活かした大規模グラフ分析に強み</td>
+                    <td>
+                      GSQLは独自言語で、GQLへ全面準拠しているわけではない。並列処理を活かした大規模グラフ分析に強み
+                    </td>
                   </tr>
                   <tr>
                     <td>ArangoDB</td>
@@ -974,7 +1079,9 @@ export default function Page() {
                   </tr>
                   <tr>
                     <th>ラベル(Label)</th>
-                    <td>ノードの種類を表すタグ(例: <code>Person</code>、<code>Company</code>)</td>
+                    <td>
+                      ノードの種類を表すタグ(例: <code>Person</code>、<code>Company</code>)
+                    </td>
                   </tr>
                   <tr>
                     <th>プロパティ(Property)</th>
@@ -987,12 +1094,15 @@ export default function Page() {
                   <tr>
                     <th>GQL</th>
                     <td>
-                      Cypherのクエリ構成のセマンティクスを多く取り込み、2024年にISO/IEC 39075として国際標準化されたグラフクエリ言語
+                      Cypherのクエリ構成のセマンティクスを多く取り込み、2024年にISO/IEC
+                      39075として国際標準化されたグラフクエリ言語
                     </td>
                   </tr>
                   <tr>
                     <th>インデックスフリー隣接(index-free adjacency)</th>
-                    <td>各ノードが隣接ノードへの直接ポインタを保持し、走査コストがグラフ全体の件数に依存しない性質</td>
+                    <td>
+                      各ノードが隣接ノードへの直接ポインタを保持し、走査コストがグラフ全体の件数に依存しない性質
+                    </td>
                   </tr>
                   <tr>
                     <th>ネイティブグラフ処理</th>
@@ -1021,37 +1131,48 @@ export default function Page() {
               Read Critically
             </div>
             <h2>批判的に読む</h2>
-            <p>世界クラスのエンジニアとして本書を鵜呑みにせず、以下の観点も押さえておくと理解が立体的になります。</p>
+            <p>
+              世界クラスのエンジニアとして本書を鵜呑みにせず、以下の観点も押さえておくと理解が立体的になります。
+            </p>
             <div className="critique-card">
               <ul className="critique-list">
                 <li>
                   <IconSchool size={20} />
                   <span>
-                    <strong>著者全員がNeo4j(旧Neo Technology)の関係者</strong>であるため、本書は「グラフデータベース全般」というタイトルながら、実質的にはNeo4jとCypherを中心に据えた内容になっています。RDF/トリプルストア(SPARQLで問い合わせる系統)やTigerGraph・JanusGraphのような他のグラフDBアーキテクチャへの言及は限定的です。
+                    <strong>著者全員がNeo4j(旧Neo Technology)の関係者</strong>
+                    であるため、本書は「グラフデータベース全般」というタイトルながら、実質的にはNeo4jとCypherを中心に据えた内容になっています。RDF/トリプルストア(SPARQLで問い合わせる系統)やTigerGraph・JanusGraphのような他のグラフDBアーキテクチャへの言及は限定的です。
                   </span>
                 </li>
                 <li>
                   <IconStar size={20} />
                   <span>
-                    <strong>無料配布そのものがNeo4j社のリード獲得(マーケティング)施策</strong>でもあります。内容の質自体は独立系レビュアーからも一定の評価を得ていますが、この文脈は踏まえておく価値があります。
+                    <strong>無料配布そのものがNeo4j社のリード獲得(マーケティング)施策</strong>
+                    でもあります。内容の質自体は独立系レビュアーからも一定の評価を得ていますが、この文脈は踏まえておく価値があります。
                   </span>
                 </li>
                 <li>
                   <IconTrendingUp size={20} />
                   <span>
-                    <strong>出版は2015年</strong>で、Cypherの構文はその後何度も更新されており(2024年のGQL標準化への追従を含む)、本書に載っているコード例をそのまま最新のNeo4jで実行すると動かない、あるいは非推奨の書き方になっている場合があります。学習の際は必ず公式ドキュメントで最新構文を確認してください。
+                    <strong>出版は2015年</strong>
+                    で、Cypherの構文はその後何度も更新されており(2024年のGQL標準化への追従を含む)、本書に載っているコード例をそのまま最新のNeo4jで実行すると動かない、あるいは非推奨の書き方になっている場合があります。学習の際は必ず公式ドキュメントで最新構文を確認してください。
                   </span>
                 </li>
                 <li>
                   <IconRoute size={20} />
                   <span>
-                    <strong>ch7の「グラフ理論」は応用寄りの軽い紹介</strong>にとどまっており、三者閉包やローカルブリッジといった概念を数学的にきちんと理解したい場合は、コーネル大学のDavid Easley氏・Jon Kleinberg氏による『Networks, Crowds, and Markets』(無料で読める草稿版あり)を併読することをおすすめします。
+                    <strong>ch7の「グラフ理論」は応用寄りの軽い紹介</strong>
+                    にとどまっており、三者閉包やローカルブリッジといった概念を数学的にきちんと理解したい場合は、コーネル大学のDavid
+                    Easley氏・Jon Kleinberg氏による『Networks, Crowds, and
+                    Markets』(無料で読める草稿版あり)を併読することをおすすめします。
                   </span>
                 </li>
                 <li>
                   <IconRobot size={20} />
                   <span>
-                    <strong>GraphRAGやグラフニューラルネットワークなど、2020年代後半のAI関連の応用はカバーされていません</strong>。本書は「トランザクショナルなグラフDBの基礎」を固めるための一冊として読み、最新のAI活用トレンドは本記事の「2026年時点のアップデート」や各社の公式ブログで補うのが実務的です。
+                    <strong>
+                      GraphRAGやグラフニューラルネットワークなど、2020年代後半のAI関連の応用はカバーされていません
+                    </strong>
+                    。本書は「トランザクショナルなグラフDBの基礎」を固めるための一冊として読み、最新のAI活用トレンドは本記事の「2026年時点のアップデート」や各社の公式ブログで補うのが実務的です。
                   </span>
                 </li>
                 <li>
@@ -1096,8 +1217,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconBook size={20} />
                 <div>
-                  <div className="ref-title">O&rsquo;Reilly Media &mdash; <em>Graph Databases, 2nd Edition</em> 書籍ページ(目次・概要)</div>
-                  <Ext className="ref-url" href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/">
+                  <div className="ref-title">
+                    O&rsquo;Reilly Media &mdash; <em>Graph Databases, 2nd Edition</em>{" "}
+                    書籍ページ(目次・概要)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/"
+                  >
                     https://www.oreilly.com/library/view/graph-databases-2nd/9781491930885/
                   </Ext>
                 </div>
@@ -1114,7 +1241,9 @@ export default function Page() {
               <div className="ref-card">
                 <IconBuildingStore size={20} />
                 <div>
-                  <div className="ref-title">Neo4j &mdash; O&rsquo;Reilly『Graph Databases』公式紹介ページ</div>
+                  <div className="ref-title">
+                    Neo4j &mdash; O&rsquo;Reilly『Graph Databases』公式紹介ページ
+                  </div>
                   <Ext className="ref-url" href="https://neo4j.com/graph-databases-book-sx/">
                     https://neo4j.com/graph-databases-book-sx/
                   </Ext>
@@ -1123,8 +1252,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconSchool size={20} />
                 <div>
-                  <div className="ref-title">Neo4j &mdash; GraphAcademy「Neo4j Fundamentals」コース(グラフの基礎概念を扱う無料コース)</div>
-                  <Ext className="ref-url" href="https://graphacademy.neo4j.com/courses/neo4j-fundamentals">
+                  <div className="ref-title">
+                    Neo4j &mdash; GraphAcademy「Neo4j
+                    Fundamentals」コース(グラフの基礎概念を扱う無料コース)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://graphacademy.neo4j.com/courses/neo4j-fundamentals"
+                  >
                     https://graphacademy.neo4j.com/courses/neo4j-fundamentals
                   </Ext>
                 </div>
@@ -1132,8 +1267,13 @@ export default function Page() {
               <div className="ref-card">
                 <IconGitCompare size={20} />
                 <div>
-                  <div className="ref-title">Neo4j Blog &mdash; Native vs. Non-Native Graph Database</div>
-                  <Ext className="ref-url" href="https://neo4j.com/blog/native-vs-non-native-graph-technology/">
+                  <div className="ref-title">
+                    Neo4j Blog &mdash; Native vs. Non-Native Graph Database
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://neo4j.com/blog/native-vs-non-native-graph-technology/"
+                  >
                     https://neo4j.com/blog/native-vs-non-native-graph-technology/
                   </Ext>
                 </div>
@@ -1141,8 +1281,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconQuestionMark size={20} />
                 <div>
-                  <div className="ref-title">Neo4j Blog &mdash; Will It Graph? Identifying a Good Fit for Graph Databases, Part 1</div>
-                  <Ext className="ref-url" href="https://neo4j.com/blog/developer/will-it-graph-identifying-a-good-fit-for-graph-databases-part-1">
+                  <div className="ref-title">
+                    Neo4j Blog &mdash; Will It Graph? Identifying a Good Fit for Graph Databases,
+                    Part 1
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://neo4j.com/blog/developer/will-it-graph-identifying-a-good-fit-for-graph-databases-part-1"
+                  >
                     https://neo4j.com/blog/developer/will-it-graph-identifying-a-good-fit-for-graph-databases-part-1
                   </Ext>
                 </div>
@@ -1150,7 +1296,9 @@ export default function Page() {
               <div className="ref-card">
                 <IconCertificate size={20} />
                 <div>
-                  <div className="ref-title">Neo4j &mdash; GQL国際標準化プレスリリース(2024年4月)</div>
+                  <div className="ref-title">
+                    Neo4j &mdash; GQL国際標準化プレスリリース(2024年4月)
+                  </div>
                   <Ext className="ref-url" href="https://neo4j.com/press-releases/gql-standard/">
                     https://neo4j.com/press-releases/gql-standard/
                   </Ext>
@@ -1163,8 +1311,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconMessageCircle size={20} />
                 <div>
-                  <div className="ref-title">InfoQ &mdash; <em>Graph Databases</em> Book Review and Interview(著者Ian Robinson・Jim Webberへのインタビュー)</div>
-                  <Ext className="ref-url" href="https://www.infoq.com/articles/graph-databases-book-review">
+                  <div className="ref-title">
+                    InfoQ &mdash; <em>Graph Databases</em> Book Review and Interview(著者Ian
+                    Robinson・Jim Webberへのインタビュー)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.infoq.com/articles/graph-databases-book-review"
+                  >
                     https://www.infoq.com/articles/graph-databases-book-review
                   </Ext>
                 </div>
@@ -1173,7 +1327,10 @@ export default function Page() {
                 <IconStar size={20} />
                 <div>
                   <div className="ref-title">i-programmer.info &mdash; Kay Ewbank氏による書評</div>
-                  <Ext className="ref-url" href="https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html">
+                  <Ext
+                    className="ref-url"
+                    href="https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html"
+                  >
                     https://www.i-programmer.info/bookreviews/21-database/7977-graph-databases.html
                   </Ext>
                 </div>
@@ -1182,7 +1339,10 @@ export default function Page() {
                 <IconStar size={20} />
                 <div>
                   <div className="ref-title">datawookie.dev &mdash; 独立系開発者による書評</div>
-                  <Ext className="ref-url" href="https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/">
+                  <Ext
+                    className="ref-url"
+                    href="https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/"
+                  >
                     https://datawookie.dev/blog/2015-02-09-book-review-graph-databases/
                   </Ext>
                 </div>
@@ -1190,8 +1350,13 @@ export default function Page() {
               <div className="ref-card">
                 <IconRoute size={20} />
                 <div>
-                  <div className="ref-title">Dan McCreary &mdash; &ldquo;The Neighborhood Walk Story&rdquo;(Medium)</div>
-                  <Ext className="ref-url" href="https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a">
+                  <div className="ref-title">
+                    Dan McCreary &mdash; &ldquo;The Neighborhood Walk Story&rdquo;(Medium)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a"
+                  >
                     https://dmccreary.medium.com/how-to-explain-index-free-adjacency-to-your-manager-1a8e68ec664a
                   </Ext>
                 </div>
@@ -1199,8 +1364,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconCertificate size={20} />
                 <div>
-                  <div className="ref-title">Mingxi Wu(TigerGraph CEO)&mdash; &ldquo;The Rise of GQL: A New ISO Standard in Graph Query Language&rdquo;(TigerGraph公式ブログ)</div>
-                  <Ext className="ref-url" href="https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language">
+                  <div className="ref-title">
+                    Mingxi Wu(TigerGraph CEO)&mdash; &ldquo;The Rise of GQL: A New ISO Standard in
+                    Graph Query Language&rdquo;(TigerGraph公式ブログ)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language"
+                  >
                     https://www.tigergraph.com/blog/the-rise-of-gql-a-new-iso-standard-in-graph-query-language
                   </Ext>
                 </div>
@@ -1208,8 +1379,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconNews size={20} />
                 <div>
-                  <div className="ref-title">TheNewStack &mdash; &ldquo;GQL: A New ISO Standard for Querying Graph Databases&rdquo;</div>
-                  <Ext className="ref-url" href="https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/">
+                  <div className="ref-title">
+                    TheNewStack &mdash; &ldquo;GQL: A New ISO Standard for Querying Graph
+                    Databases&rdquo;
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/"
+                  >
                     https://thenewstack.io/gql-a-new-iso-standard-for-querying-graph-databases/
                   </Ext>
                 </div>
@@ -1217,8 +1394,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconTrendingUp size={20} />
                 <div>
-                  <div className="ref-title">Michael Hunger(Neo4j VP of Product Innovation)&mdash; &ldquo;Graph and AI Trends 2026: Why Is AI Running but Not Yet Delivering?&rdquo;</div>
-                  <Ext className="ref-url" href="https://www.wearedevelopers.com/magazine/680-graph-and-ai-trends-2026-why-is-ai-running-but-not-yet-delivering">
+                  <div className="ref-title">
+                    Michael Hunger(Neo4j VP of Product Innovation)&mdash; &ldquo;Graph and AI Trends
+                    2026: Why Is AI Running but Not Yet Delivering?&rdquo;
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.wearedevelopers.com/magazine/680-graph-and-ai-trends-2026-why-is-ai-running-but-not-yet-delivering"
+                  >
                     https://www.wearedevelopers.com/magazine/680-graph-and-ai-trends-2026-why-is-ai-running-but-not-yet-delivering
                   </Ext>
                 </div>
@@ -1226,8 +1409,13 @@ export default function Page() {
               <div className="ref-card">
                 <IconPencil size={20} />
                 <div>
-                  <div className="ref-title">Daniel Wertheim &mdash; 開発者個人ブログでの紹介記事</div>
-                  <Ext className="ref-url" href="https://danielwertheim.se/do-not-miss-the-free-e-book-graph-databases/">
+                  <div className="ref-title">
+                    Daniel Wertheim &mdash; 開発者個人ブログでの紹介記事
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://danielwertheim.se/do-not-miss-the-free-e-book-graph-databases/"
+                  >
                     https://danielwertheim.se/do-not-miss-the-free-e-book-graph-databases/
                   </Ext>
                 </div>
@@ -1239,8 +1427,15 @@ export default function Page() {
               <div className="ref-card">
                 <IconSchool size={20} />
                 <div>
-                  <div className="ref-title">David Easley &amp; Jon Kleinberg(コーネル大学)&mdash; <em>Networks, Crowds, and Markets: Reasoning About a Highly Connected World</em>(草稿版無料公開)</div>
-                  <Ext className="ref-url" href="https://www.cs.cornell.edu/home/kleinber/networks-book/">
+                  <div className="ref-title">
+                    David Easley &amp; Jon Kleinberg(コーネル大学)&mdash;{" "}
+                    <em>Networks, Crowds, and Markets: Reasoning About a Highly Connected World</em>
+                    (草稿版無料公開)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.cs.cornell.edu/home/kleinber/networks-book/"
+                  >
                     https://www.cs.cornell.edu/home/kleinber/networks-book/
                   </Ext>
                 </div>
@@ -1248,8 +1443,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconBook size={20} />
                 <div>
-                  <div className="ref-title">Martin Fowler &amp; Pramod Sadalage &mdash; <em>NoSQL Distilled</em> 書籍情報(グラフDBを含むNoSQL全体の分類)</div>
-                  <Ext className="ref-url" href="https://pearson.com/store/p/nosql-distilled-a-brief-guide-to-the-emerging-world-of-polyglot-persistence/P200000009587/9780321826626">
+                  <div className="ref-title">
+                    Martin Fowler &amp; Pramod Sadalage &mdash; <em>NoSQL Distilled</em>{" "}
+                    書籍情報(グラフDBを含むNoSQL全体の分類)
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://pearson.com/store/p/nosql-distilled-a-brief-guide-to-the-emerging-world-of-polyglot-persistence/P200000009587/9780321826626"
+                  >
                     https://pearson.com/store/p/nosql-distilled-a-brief-guide.../9780321826626
                   </Ext>
                 </div>
@@ -1257,8 +1458,13 @@ export default function Page() {
               <div className="ref-card">
                 <IconMicrophone size={20} />
                 <div>
-                  <div className="ref-title">ThoughtWorks &mdash; Martin Fowlerによる「Rise of NoSQL」ポッドキャスト</div>
-                  <Ext className="ref-url" href="https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql">
+                  <div className="ref-title">
+                    ThoughtWorks &mdash; Martin Fowlerによる「Rise of NoSQL」ポッドキャスト
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql"
+                  >
                     https://www.thoughtworks.com/insights/podcasts/technology-podcasts/rise-nosql
                   </Ext>
                 </div>
@@ -1270,8 +1476,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconRobot size={20} />
                 <div>
-                  <div className="ref-title">Atlan &mdash; &ldquo;Neo4j GraphRAG vs. LlamaIndex vs. LangChain Graph Transformer&rdquo;</div>
-                  <Ext className="ref-url" href="https://atlan.com/know/ai-agent/knowledge-graph/neo4j-graphrag-vs-llamaindex-vs-langchain/">
+                  <div className="ref-title">
+                    Atlan &mdash; &ldquo;Neo4j GraphRAG vs. LlamaIndex vs. LangChain Graph
+                    Transformer&rdquo;
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://atlan.com/know/ai-agent/knowledge-graph/neo4j-graphrag-vs-llamaindex-vs-langchain/"
+                  >
                     https://atlan.com/know/ai-agent/knowledge-graph/neo4j-graphrag-vs-llamaindex-vs-langchain/
                   </Ext>
                 </div>
@@ -1279,8 +1491,14 @@ export default function Page() {
               <div className="ref-card">
                 <IconTrendingUp size={20} />
                 <div>
-                  <div className="ref-title">&ldquo;Graph Databases in 2026: Neo4j, ArangoDB, TigerGraph and the GraphRAG Moment&rdquo;</div>
-                  <Ext className="ref-url" href="https://pdpspectra.com/blog/neo4j-vs-arangodb-2026">
+                  <div className="ref-title">
+                    &ldquo;Graph Databases in 2026: Neo4j, ArangoDB, TigerGraph and the GraphRAG
+                    Moment&rdquo;
+                  </div>
+                  <Ext
+                    className="ref-url"
+                    href="https://pdpspectra.com/blog/neo4j-vs-arangodb-2026"
+                  >
                     https://pdpspectra.com/blog/neo4j-vs-arangodb-2026
                   </Ext>
                 </div>
@@ -1290,7 +1508,8 @@ export default function Page() {
 
           <footer className="footer">
             <p>
-              Graph Databases: New Opportunities for Connected Data 初学者ガイド &mdash; 本ページは同書の要約・再構成であり、原文の引用ではありません。最新情報は各参照元をご確認ください。
+              Graph Databases: New Opportunities for Connected Data 初学者ガイド &mdash;
+              本ページは同書の要約・再構成であり、原文の引用ではありません。最新情報は各参照元をご確認ください。
             </p>
           </footer>
         </div>

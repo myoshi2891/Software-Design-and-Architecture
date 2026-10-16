@@ -39,11 +39,7 @@ export default function GraphDatabasesChecklist() {
       <div className="checklist-progress">
         <IconFlag2 style={{ color: "var(--forest)", flex: "0 0 auto" }} size={20} />
         <div className="bar">
-          <div
-            className="bar-fill"
-            id="cl-bar"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="bar-fill" id="cl-bar" style={{ width: `${progressPercent}%` }} />
         </div>
         <div className="count" id="cl-count">
           {doneCount} / {totalCount} 完了
@@ -55,11 +51,7 @@ export default function GraphDatabasesChecklist() {
           return (
             <li key={item} className={isDone ? "done" : ""}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => handleToggle(index)}
-                />
+                <input type="checkbox" checked={isDone} onChange={() => handleToggle(index)} />
                 <span className="txt">{item}</span>
               </label>
             </li>
