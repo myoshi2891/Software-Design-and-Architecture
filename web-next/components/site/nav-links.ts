@@ -173,6 +173,10 @@ export const navLinks: readonly NavLink[] = [
         name: "Graph Databases",
         href: "/recommended-books/graph-databases-guide",
       },
+      {
+        name: "High Performance MySQL",
+        href: "/recommended-books/high-performance-mysql-guide",
+      },
     ],
   },
   {

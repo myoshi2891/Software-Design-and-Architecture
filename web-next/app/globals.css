@@ -21324,3 +21324,529 @@ body.has-common-header .graph-databases-guide section {
 
 
 
+
+/* ==========================================================================
+   High Performance MySQL Guide (.high-performance-mysql-guide)
+   ========================================================================== */
+
+.high-performance-mysql-guide {
+  --paper:#f6f1e5;
+  --paper-alt:#efe6d0;
+  --card:#fffdf8;
+  --card-2:#faf4e6;
+  --ink:#2b2420;
+  --ink-soft:#5d5347;
+  --ink-faint:#726858;
+  --border:#ddd0b3;
+  --border-soft:#e8ddc4;
+  --indigo:#4b4a9e;
+  --indigo-dark:#2e2d68;
+  --indigo-soft:#e5e2f7;
+  --gold:#7d5c14;
+  --gold-soft:#f3e6c4;
+  --forest:#2f6f52;
+  --forest-soft:#d9ecdf;
+  --plum:#7a3f66;
+  --plum-soft:#efe0ea;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 2px 14px rgba(43,36,32,0.09);
+  --shadow-lg:0 8px 30px rgba(43,36,32,0.14);
+  --sidebar-w:298px;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Source Serif 4", "Zen Kaku Gothic New", serif;
+  line-height: 1.85;
+  font-size: 1.03rem;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-height: 100vh;
+
+  & *, & *::before, & *::after {
+    box-sizing: border-box;
+  }
+
+  /* 手書き span シンタックスハイライト */
+  & pre.cd {
+    background: #fffdf8;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem 1.3rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    color: var(--ink);
+
+    & .kw {
+      color: #3b3a8e;
+      font-weight: 700;
+    }
+    & .st {
+      color: #2f6f52;
+    }
+    & .nu {
+      color: #b84a28;
+    }
+    & .cm {
+      color: #726858;
+      font-style: italic;
+    }
+    & .fn {
+      color: #7a3f66;
+    }
+  }
+
+  h1,h2,h3,h4{
+  font-family:"Zen Kaku Gothic New","Source Serif 4",sans-serif;
+  color:var(--ink);
+  line-height:1.45;
+  font-weight:700;
+  overflow-wrap:break-word;
+}
+a{color:var(--indigo-dark);text-decoration-color:rgba(75,74,158,0.35);text-underline-offset:3px;}
+a:hover{color:var(--indigo);}
+img,svg{max-width:100%;}
+p{margin:0 0 1.1em;}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh;align-items:flex-start;}
+
+.sidebar{
+  position:fixed;
+  top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--card-2);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  padding:1.6rem 0 3rem;
+  z-index:40;
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.brand{
+  padding:0 1.4rem 1.2rem;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:1rem;
+}
+.brand .kicker{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.08em;
+  color:var(--indigo);
+  background:var(--indigo-soft);
+  padding:.3rem .6rem;border-radius:999px;
+  margin-bottom:.7rem;
+}
+.brand h1{font-size:1.12rem;margin:0 0 .3rem;line-height:1.5;}
+.brand p{font-size:1rem;color:var(--ink-soft);margin:0;}
+
+.nav-group{padding:0 .9rem;margin-bottom:.35rem;}
+.nav-group-title{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.06em;
+  color:var(--ink-faint);
+  text-transform:uppercase;
+  padding:.85rem .5rem .35rem;
+}
+.nav-link{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.44rem .55rem;
+  border-radius:var(--radius-sm);
+  font-size:1rem;
+  color:var(--ink-soft);
+  text-decoration:none;
+  transition:background .15s ease,color .15s ease;
+}
+.nav-link i{font-size:1rem;color:var(--ink-faint);flex-shrink:0;}
+.nav-link:hover{background:var(--paper-alt);color:var(--ink);}
+.nav-link.active{
+  background:var(--indigo-soft);
+  color:var(--indigo-dark);
+  font-weight:600;
+}
+.nav-link.active i{color:var(--indigo-dark);}
+
+.menu-toggle{
+  display:none;
+  position:fixed;top:.85rem;left:.85rem;z-index:60;
+  width:44px;height:44px;
+  align-items:center;justify-content:center;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  box-shadow:var(--shadow);
+  font-size:1.25rem;color:var(--ink);
+  cursor:pointer;
+}
+.scrim{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(30,25,20,.45);
+  z-index:45;
+}
+.scrim.show{display:block;}
+
+.content{
+  margin-left:var(--sidebar-w);
+  width:calc(100% - var(--sidebar-w));
+  min-width:0;
+  padding:3rem 3.4rem 6rem;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  background:linear-gradient(135deg,var(--indigo-dark),var(--indigo));
+  color:#fbf9ff;
+  border-radius:var(--radius);
+  padding:2.6rem 2.6rem;
+  margin-bottom:2.6rem;
+  box-shadow:var(--shadow-lg);
+}
+.hero .kicker{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.09em;
+  background:rgba(255,255,255,.14);
+  padding:.35rem .75rem;border-radius:999px;
+  margin-bottom:1rem;
+}
+.hero h1{color:#fff;font-size:1.9rem;margin:0 0 .8rem;line-height:1.5;}
+.hero p{color:rgba(255,255,255,.88);font-size:1.02rem;max-width:56em;margin:0 0 .3rem;}
+.hero .hero-meta{
+  display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.3rem;
+}
+.hero .hero-meta span{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:600;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  padding:.35rem .75rem;border-radius:999px;
+  display:inline-flex;align-items:center;gap:.35rem;
+}
+
+/* ---------- sections ---------- */
+section.block{
+  margin-bottom:3rem;
+  scroll-margin-top:1.5rem;
+}
+.step-badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.06em;
+  color:var(--indigo-dark);
+  background:var(--indigo-soft);
+  padding:.32rem .78rem;border-radius:999px;
+  margin-bottom:.9rem;
+}
+section.block h2{
+  font-size:1.5rem;
+  margin:0 0 1rem;
+  padding-bottom:.7rem;
+  border-bottom:2px solid var(--border);
+  display:flex;align-items:center;gap:.55rem;
+}
+section.block h2 i{color:var(--indigo);font-size:1.25rem;}
+section.block h3{
+  font-size:1.14rem;
+  margin:1.8rem 0 .8rem;
+  color:var(--indigo-dark);
+}
+.lede{
+  font-size:1.08rem;color:var(--ink-soft);
+  border-left:4px solid var(--indigo);
+  background:var(--card-2);
+  padding:1rem 1.3rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  margin:0 0 1.8rem;
+}
+
+/* ---------- cards / grids ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.4rem 1.6rem;
+  box-shadow:var(--shadow);
+}
+.grid{display:grid;gap:1rem;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+
+.role-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.15rem 1.3rem;
+}
+.role-card .role-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--indigo-soft);color:var(--indigo-dark);
+  font-size:1.15rem;margin-bottom:.7rem;
+}
+.role-card h4{margin:0 0 .4rem;font-size:1rem;}
+.role-card p{margin:0;font-size:1rem;color:var(--ink-soft);}
+
+/* ---------- tables ---------- */
+.table-wrap{
+  overflow-x:auto;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin:0 0 1.6rem;
+  background:var(--card);
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:0;
+  font-size:1rem;
+}
+table.kv{min-width:0;}
+th,td{
+  text-align:left;
+  padding:.72rem 1rem;
+  border-bottom:1px solid var(--border-soft);
+  vertical-align:top;
+}
+thead th{
+  background:var(--paper-alt);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  letter-spacing:.02em;
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--card-2);}
+td code,p code,li code{
+  background:var(--paper-alt);
+  border:1px solid var(--border-soft);
+  border-radius:5px;
+  padding:.12em .42em;
+  font-size:.88em;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  color:var(--indigo-dark);
+}
+
+/* ---------- diagrams ---------- */
+.diagram-wrap{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.4rem;
+  margin:0 0 1.6rem;
+  overflow-x:auto;
+}
+.diagram-wrap .mermaid-target{
+  display:flex;
+  justify-content:center;
+  min-width:min-content;
+}
+.diagram-caption{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;color:var(--ink-faint);
+  margin-top:.8rem;text-align:center;
+}
+.diagram-loading{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;color:var(--ink-faint);
+  padding:2rem;text-align:center;
+}
+
+/* ---------- code blocks ---------- */
+pre{
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  margin:0 0 1.5rem;
+  overflow-x:auto;
+  font-size:1rem;
+}
+pre code.hljs{padding:1.1rem 1.3rem !important;border-radius:var(--radius-sm);}
+.code-label{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:.05em;
+  color:var(--ink-faint);
+  margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.35rem;
+}
+
+/* ---------- lists ---------- */
+ul.plain,ol.plain{padding-left:1.35rem;margin:0 0 1.4rem;}
+ul.plain li,ol.plain li{margin-bottom:.55rem;}
+ul.tick{list-style:none;padding:0;margin:0 0 1.4rem;}
+ul.tick li{
+  position:relative;padding-left:1.7rem;margin-bottom:.6rem;
+}
+ul.tick li::before{
+  content:"\ea5e";
+  font-family:"tabler-icons";
+  position:absolute;left:0;top:.05em;
+  color:var(--forest);font-size:1.05rem;
+}
+
+/* ---------- checklist ---------- */
+.checklist-progress{
+  display:flex;align-items:center;gap:1rem;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem 1.3rem;
+  margin-bottom:1.2rem;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+}
+.checklist-progress .bar{
+  flex:1;height:10px;border-radius:999px;
+  background:var(--paper-alt);overflow:hidden;
+}
+.checklist-progress .bar-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--forest),var(--indigo));
+  transition:width .25s ease;
+}
+.checklist-progress .count{font-size:1rem;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
+.checklist{list-style:none;padding:0;margin:0;}
+.checklist li{
+  border-radius:var(--radius-sm);
+  transition:background .15s ease;
+}
+.checklist li label{
+  position:relative;display:flex;align-items:flex-start;gap:.75rem;
+  padding:.75rem .9rem;
+  cursor:pointer;
+}
+/* 視覚的に隠すがフォーカス・支援技術からは到達可能 */
+.checklist li input[type="checkbox"]{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+.checklist li input[type="checkbox"]:focus-visible + .box{
+  outline:2px solid var(--forest);outline-offset:2px;
+}
+.checklist li:hover{background:var(--card-2);}
+.checklist li .box{
+  flex-shrink:0;width:22px;height:22px;margin-top:.1rem;
+  border:2px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);
+  transition:all .15s ease;
+}
+.checklist li .box i{opacity:0;font-size:1rem;color:#fff;transition:opacity .15s ease;}
+.checklist li.done .box{background:var(--forest);border-color:var(--forest);}
+.checklist li.done .box i{opacity:1;}
+.checklist li.done span.label{color:var(--ink-faint);text-decoration:line-through;}
+.checklist li span.label{font-size:1rem;}
+
+/* ---------- reference cards ---------- */
+.ref-list{display:flex;flex-direction:column;gap:.7rem;}
+.ref-card{
+  display:flex;align-items:center;gap:.9rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:.85rem 1.1rem;
+  text-decoration:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.ref-card:hover{border-color:var(--indigo);box-shadow:var(--shadow);}
+.ref-card .ref-icon{
+  flex-shrink:0;width:36px;height:36px;border-radius:9px;
+  background:var(--indigo-soft);color:var(--indigo-dark);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.ref-card .ref-body{min-width:0;}
+.ref-card .ref-title{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;}
+.ref-card .ref-url{font-size:1rem;color:var(--ink-faint);word-break:break-all;}
+
+/* ---------- callouts ---------- */
+.callout{
+  border-radius:var(--radius);
+  padding:1.1rem 1.4rem;
+  margin:0 0 1.6rem;
+  border:1px solid var(--border);
+  display:flex;gap:.85rem;
+}
+.callout i{font-size:1.3rem;flex-shrink:0;margin-top:.1rem;}
+.callout.note{background:var(--indigo-soft);border-color:#c9c4ef;}
+.callout.note i{color:var(--indigo-dark);}
+.callout.warn{background:var(--gold-soft);border-color:#e3cd8e;}
+.callout.warn i{color:var(--gold);}
+.callout.critical{background:var(--plum-soft);border-color:#d9bccb;}
+.callout.critical i{color:var(--plum);}
+.callout p:last-child{margin-bottom:0;}
+.callout .callout-title{font-weight:700;margin-bottom:.3rem;font-family:"Zen Kaku Gothic New",sans-serif;font-size:1rem;}
+
+/* ---------- part divider ---------- */
+.part-divider{
+  display:flex;align-items:center;gap:1rem;
+  margin:3.4rem 0 2rem;
+}
+.part-divider .part-num{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-weight:900;font-size:1.6rem;color:var(--indigo);
+  flex-shrink:0;
+}
+.part-divider .part-text{flex-shrink:0;}
+.part-divider h2{
+  font-size:1.05rem;margin:0;color:var(--ink-soft);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  letter-spacing:.03em;
+  border:none;padding:0;
+}
+.part-divider .line{flex:1;height:1px;background:var(--border);}
+
+/* ---------- footer ---------- */
+footer.page-footer{
+  border-top:1px solid var(--border);
+  padding-top:2rem;margin-top:3rem;
+  font-size:1rem;color:var(--ink-faint);
+  font-family:"Zen Kaku Gothic New",sans-serif;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .sidebar{
+    transform:translateX(-100%);
+    visibility:hidden;
+    transition:transform .22s ease,visibility .22s;
+    box-shadow:var(--shadow-lg);
+  }
+  .sidebar.open{transform:translateX(0);visibility:visible;}
+  .menu-toggle{display:flex;}
+  .content{margin-left:0;width:100%;padding:5rem 1.2rem 4rem;}
+  .hero{padding:2rem 1.4rem;}
+  .hero h1{font-size:1.5rem;}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+}
+@media (max-width:600px){
+  body{font-size:1rem;}
+  section.block h2{font-size:1.28rem;}
+  .content{padding:4.6rem .9rem 3rem;}
+}
+}
+
+html:has(.high-performance-mysql-guide) {
+  background: #f6f1e5;
+}
+
+body.has-common-header:has(.high-performance-mysql-guide) {
+  background: #f6f1e5;
+  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .high-performance-mysql-guide .sidebar {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+  height: calc(100vh - var(--ch-height) - var(--ch-disclaimer-height, 0px));
+}
+
+body.has-common-header .high-performance-mysql-guide .mobile-toggle {
+  top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 14px);
+}
+
+body.has-common-header .high-performance-mysql-guide section {
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}

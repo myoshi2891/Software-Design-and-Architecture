@@ -266,6 +266,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Ian Robinsonら著『Graph Databases』を起点に接続されたデータのモデリングと活用を学ぶ",
         status: "published",
       },
+      {
+        name: "High Performance MySQL 第4版",
+        href: "/recommended-books/high-performance-mysql-guide",
+        summary:
+          "Silvia Botros・Jeremy Tinley著『High Performance MySQL 第4版』を起点に大規模運用の実践知を学ぶ",
+        status: "published",
+      },
     ],
   },
   {
