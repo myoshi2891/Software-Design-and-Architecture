@@ -99,7 +99,7 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 31 本を一覧する。全 31 本が公開済み（`status: "published"`）でリンクから閲覧でき、
+  カテゴリ別に全 32 本を一覧する。全 32 本が公開済み（`status: "published"`）でリンクから閲覧でき、
   未移行（`status: "planned"`）のページは 0 件。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
@@ -230,6 +230,14 @@ flowchart TD
     本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`DatabaseDesignSidebar.tsx`）に分離、
     学習チェックリスト（11項目）をクライアントコンポーネント（`DatabaseDesignChecklist.tsx`）に分離。
     原本 HTML・Markdown は `archive/recommended-books/database-design-for-mere-mortals-guide/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
+  - `app/recommended-books/database-internals-guide/page.tsx`
+    （URL `/recommended-books/database-internals-guide`）。Alex Petrov著
+    『Database Internals』を起点にストレージエンジンと分散システムの内部構造を学ぶガイド。
+    全28セクション、Mermaid 15図、表8件、コード0件、チェックリスト11項目を忠実移植。
+    本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`DatabaseInternalsSidebar.tsx`）に分離、
+    学習チェックリスト（11項目）をクライアントコンポーネント（`DatabaseInternalsChecklist.tsx`）に分離。
+    原本 HTML・Markdown は `archive/recommended-books/database-internals-guide/` に無変更で保存。
     `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/design-principles/domain-driven-design-comprehensive-guide/page.tsx`
     （URL `/design-principles/domain-driven-design-comprehensive-guide`）。固定サイドバー +

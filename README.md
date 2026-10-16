@@ -60,6 +60,7 @@
 - SQLアンチパターン 第2版
 - The Data Warehouse Toolkit
 - Database Design for Mere Mortals
+- Database Internals
 
 ### 7. 資格試験 (`certification-exams/`)
 
@@ -72,7 +73,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 31 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 32 本を
 一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -185,6 +186,10 @@ Testing Library（契約テスト）を採用しています。
     — Database Design for Mere Mortals 完全解説ガイドを移植（32 セクション・Mermaid 14 図・table 7・チェックリスト 11 項目）。
     固定サイドバー・scroll-spy を [`DatabaseDesignSidebar.tsx`](web-next/app/recommended-books/database-design-for-mere-mortals-guide/DatabaseDesignSidebar.tsx)、学習チェックリストを [`DatabaseDesignChecklist.tsx`](web-next/app/recommended-books/database-design-for-mere-mortals-guide/DatabaseDesignChecklist.tsx) でクライアント描画。
     原本 HTML・Markdown は `archive/recommended-books/database-design-for-mere-mortals-guide/` に無変更で保存。
+  - [`/recommended-books/database-internals-guide`](web-next/app/recommended-books/database-internals-guide/page.tsx)
+    — Database Internals 完全解説ガイドを移植（28 セクション・Mermaid 15 図・table 8・チェックリスト 11 項目）。
+    固定サイドバー・scroll-spy を [`DatabaseInternalsSidebar.tsx`](web-next/app/recommended-books/database-internals-guide/DatabaseInternalsSidebar.tsx)、学習チェックリストを [`DatabaseInternalsChecklist.tsx`](web-next/app/recommended-books/database-internals-guide/DatabaseInternalsChecklist.tsx) でクライアント描画。
+    原本 HTML・Markdown は `archive/recommended-books/database-internals-guide/` に無変更で保存。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画

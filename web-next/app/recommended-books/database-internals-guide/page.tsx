@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     "Database Internals: A Deep Dive into How Distributed Data Systems Work（Alex Petrov著）を初学者向けにステップバイステップで解説する完全ガイド。",
 };
 
-const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Zen Kaku Gothic New\\", \\"Noto Sans JP\\", sans-serif", "fontSize": "16px", "primaryColor": "#e8e9fa", "primaryBorderColor": "#4a54c4", "primaryTextColor": "#2a2318", "lineColor": "#8a7f6c", "secondaryColor": "#faf0da", "tertiaryColor": "#ffffff", "edgeLabelBackground": "#ffffff", "nodeBorder": "#a99a6f", "clusterBkg": "#ede1c8", "clusterBorder": "#d3bf94", "titleColor": "#2a2318", "actorBkg": "#e8e9fa", "actorBorder": "#4a54c4", "actorTextColor": "#2a2318", "signalColor": "#5c5241", "signalTextColor": "#2a2318"}}}%%
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Zen Kaku Gothic New\\", \\"Noto Sans JP\\", sans-serif", "fontSize": "16px", "primaryColor": "#eff6ff", "primaryBorderColor": "#2563eb", "primaryTextColor": "#0f172a", "lineColor": "#64748b", "secondaryColor": "#f0fdfa", "tertiaryColor": "#ffffff", "edgeLabelBackground": "#ffffff", "nodeBorder": "#94a3b8", "clusterBkg": "#f1f5f9", "clusterBorder": "#cbd5e1", "titleColor": "#0f172a", "actorBkg": "#eff6ff", "actorBorder": "#2563eb", "actorTextColor": "#0f172a", "signalColor": "#334155", "signalTextColor": "#0f172a"}}}%%
 `;
 
 const CLASS_DEFS = `
-    classDef hub fill:#e8e9fa,stroke:#4a54c4,stroke-width:2px,color:#2a2318;
-    classDef done fill:#e5f2e9,stroke:#3c7a55,stroke-width:2px,color:#2a2318;
-    classDef box fill:#f7e6ba,stroke:#ad7f26,stroke-width:2px,color:#2a2318;
+    classDef hub fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef done fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#0f172a;
+    classDef box fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
 `;
 
 const DIAG_1 = `${MERMAID_INIT}flowchart TB
@@ -221,10 +221,12 @@ export default function DatabaseInternalsPage() {
             </h1>
             <p className="hero-lead">
               原著 <em>Database Internals: A Deep Dive into How Distributed Data Systems Work</em>
-              （Alex Petrov 著、O&apos;Reilly Media、2019年）の構成を尊重しつつ、初めてデータベース内部構造や分散システム理論に触れる読者でも理解できるよう、独自の言葉で噛み砕いて再構成した学習用ドキュメントです。全14章を18のSTEPに整理し、Mermaid図と具体例を添えて解説します。
+              （Alex Petrov 著、O&apos;Reilly
+              Media、2019年）の構成を尊重しつつ、初めてデータベース内部構造や分散システム理論に触れる読者でも理解できるよう、独自の言葉で噛み砕いて再構成した学習用ドキュメントです。全14章を18のSTEPに整理し、Mermaid図と具体例を添えて解説します。
             </p>
             <p className="hero-note">
-              最終確認日 2026年9月21日時点の情報にもとづき作成。参考文献は本ページ末尾に一覧で掲載しています。
+              最終確認日
+              2026年9月21日時点の情報にもとづき作成。参考文献は本ページ末尾に一覧で掲載しています。
             </p>
           </header>
 
@@ -236,23 +238,39 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                私たちは普段、PostgreSQL や MySQL、MongoDB、Cassandra といったデータベースを「ブラックボックス」として扱いがちです。SQL や API を叩けばデータが返ってくる ― それで十分に思えます。しかし、次のような場面に直面したとき、内部構造の知識が決定的な差を生みます。
+                私たちは普段、PostgreSQL や MySQL、MongoDB、Cassandra
+                といったデータベースを「ブラックボックス」として扱いがちです。SQL や API
+                を叩けばデータが返ってくる ―
+                それで十分に思えます。しかし、次のような場面に直面したとき、内部構造の知識が決定的な差を生みます。
               </p>
               <ul>
-                <li>なぜこのクエリだけ極端に遅いのか、実行計画のどこがボトルネックなのかを推測したい</li>
-                <li>新しいデータベースを選定するとき、ストレージエンジンやレプリケーション方式の違いから本質的なトレードオフを判断したい</li>
-                <li>分散データベースで「たまに古いデータが読めてしまう」「ノード障害時にデータが消えた」といった問題の根本原因を理解したい</li>
-                <li>自分自身でデータベースやキャッシュ、キューといったインフラコンポーネントを設計・実装したい</li>
+                <li>
+                  なぜこのクエリだけ極端に遅いのか、実行計画のどこがボトルネックなのかを推測したい
+                </li>
+                <li>
+                  新しいデータベースを選定するとき、ストレージエンジンやレプリケーション方式の違いから本質的なトレードオフを判断したい
+                </li>
+                <li>
+                  分散データベースで「たまに古いデータが読めてしまう」「ノード障害時にデータが消えた」といった問題の根本原因を理解したい
+                </li>
+                <li>
+                  自分自身でデータベースやキャッシュ、キューといったインフラコンポーネントを設計・実装したい
+                </li>
               </ul>
               <p>
-                本書 <em>Database Internals</em> は、まさにこうした問いに答えるために書かれた一冊です。著者の Alex Petrov 氏は Apache Cassandra のコミッター兼 PMC（Project Management Committee）メンバーであり、分散データベースの開発に携わってきた実務家です。本書は特定の製品を分解するのではなく、PostgreSQL・MySQL・MongoDB（WiredTiger）・Cassandra・etcd・CockroachDB・Spanner など、多種多様なデータベースに共通する「概念」を抽出して解説する点に特徴があります。
+                本書 <em>Database Internals</em>{" "}
+                は、まさにこうした問いに答えるために書かれた一冊です。著者の Alex Petrov 氏は Apache
+                Cassandra のコミッター兼 PMC（Project Management
+                Committee）メンバーであり、分散データベースの開発に携わってきた実務家です。本書は特定の製品を分解するのではなく、PostgreSQL・MySQL・MongoDB（WiredTiger）・Cassandra・etcd・CockroachDB・Spanner
+                など、多種多様なデータベースに共通する「概念」を抽出して解説する点に特徴があります。
               </p>
               <div className="callout">
                 <IconRoute size={20} />
                 <div className="callout-body">
                   <span className="callout-title">本ガイドの進め方</span>
                   <p>
-                    原著全14章の内容を18のSTEPに整理し、それぞれに Mermaid 図と具体例を添えて解説します。左のサイドバーから気になるSTEPへ直接ジャンプできます。
+                    原著全14章の内容を18のSTEPに整理し、それぞれに Mermaid
+                    図と具体例を添えて解説します。左のサイドバーから気になるSTEPへ直接ジャンプできます。
                   </p>
                 </div>
               </div>
@@ -270,7 +288,9 @@ export default function DatabaseInternalsPage() {
                 <div>
                   <div className="book-cover-kicker">O&apos;Reilly Media 2019</div>
                   <div className="book-cover-title">Database Internals</div>
-                  <div className="book-cover-sub">A Deep Dive into How Distributed Data Systems Work</div>
+                  <div className="book-cover-sub">
+                    A Deep Dive into How Distributed Data Systems Work
+                  </div>
                 </div>
                 <div className="book-cover-author">著者 Alex Petrov</div>
               </div>
@@ -280,7 +300,9 @@ export default function DatabaseInternalsPage() {
                     <tbody>
                       <tr>
                         <th>原題</th>
-                        <td>Database Internals: A Deep Dive into How Distributed Data Systems Work</td>
+                        <td>
+                          Database Internals: A Deep Dive into How Distributed Data Systems Work
+                        </td>
                       </tr>
                       <tr>
                         <th>著者</th>
@@ -296,7 +318,10 @@ export default function DatabaseInternalsPage() {
                       </tr>
                       <tr>
                         <th>ページ数</th>
-                        <td>初版・紙版で xix + 351ページ（前付19ページ＋本文351ページ＝全370ページ）。書誌データベースでは表紙等を含め約376ページと表記されることもある</td>
+                        <td>
+                          初版・紙版で xix +
+                          351ページ（前付19ページ＋本文351ページ＝全370ページ）。書誌データベースでは表紙等を含め約376ページと表記されることもある
+                        </td>
                       </tr>
                       <tr>
                         <th>ISBN 紙版</th>
@@ -312,14 +337,15 @@ export default function DatabaseInternalsPage() {
                       </tr>
                       <tr>
                         <th>著者の経歴</th>
-                        <td>Apache Cassandra コミッター・PMCメンバー。分散データベース・ストレージエンジンの開発実務の経験を持つ</td>
+                        <td>
+                          Apache Cassandra
+                          コミッター・PMCメンバー。分散データベース・ストレージエンジンの開発実務の経験を持つ
+                        </td>
                       </tr>
                       <tr>
                         <th>公式サイト</th>
                         <td>
-                          <Ext href="https://www.databass.dev/">
-                            databass.dev
-                          </Ext>
+                          <Ext href="https://www.databass.dev/">databass.dev</Ext>
                           （著者本人が運営する本書の公式コンパニオンサイト。正誤表・著者情報を掲載）
                         </td>
                       </tr>
@@ -338,7 +364,11 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                本書は大きく2つのパートに分かれています。<strong>Part I（ストレージエンジン）</strong>は「1台のマシンの中でデータをどのように保存し、効率よく読み書きするか」を扱い、<strong>Part II（分散システム）</strong>は「複数台のマシンにまたがってデータを複製・分散させながら、いかに一貫性を保つか」を扱います。この2部構成こそが、現代のほとんどのデータベース製品の違いを生み出している核心部分だと著者は述べています。
+                本書は大きく2つのパートに分かれています。
+                <strong>Part I（ストレージエンジン）</strong>
+                は「1台のマシンの中でデータをどのように保存し、効率よく読み書きするか」を扱い、
+                <strong>Part II（分散システム）</strong>
+                は「複数台のマシンにまたがってデータを複製・分散させながら、いかに一貫性を保つか」を扱います。この2部構成こそが、現代のほとんどのデータベース製品の違いを生み出している核心部分だと著者は述べています。
               </p>
               <div className="diagram-wrap" data-diagram="d1">
                 <MermaidDiagram chart={DIAG_1} />
@@ -347,7 +377,9 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                原著と比較すると、しばしば話題になる <em>Designing Data-Intensive Applications</em>（Martin Kleppmann 著）が「データシステム全般の広く浅い地図」を描く本であるのに対し、本書はストレージエンジンの内部データ構造とコンセンサスアルゴリズムの実装レベルにまで踏み込む「深く狭い」本だと評されています。両者は競合ではなく補完関係にあると考えるとよいでしょう。
+                原著と比較すると、しばしば話題になる <em>Designing Data-Intensive Applications</em>
+                （Martin Kleppmann
+                著）が「データシステム全般の広く浅い地図」を描く本であるのに対し、本書はストレージエンジンの内部データ構造とコンセンサスアルゴリズムの実装レベルにまで踏み込む「深く狭い」本だと評されています。両者は競合ではなく補完関係にあると考えるとよいでしょう。
               </p>
             </div>
           </section>
@@ -369,7 +401,13 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                ここで重要なのは、SQL のパースやクエリ最適化を行う「クエリプロセッサ」層と、実際にバイト列をディスクへ読み書きする「ストレージエンジン」層は、はっきり分離されているという点です。実際、MySQL（InnoDB や MyRocks）・MongoDB（WiredTiger）のように、上位のクエリ層を保ったまま、下位のストレージエンジンだけを差し替えられる設計のデータベースも存在します。SQLite はストレージエンジン自体は差し替えられませんが、ディスクアクセスを抽象化した VFS（Virtual File System）層を独自実装に置き換えられる点で、同様の層分離の考え方を体現しています。本書はこの下側、つまりストレージエンジンと分散データ管理の部分に的を絞った一冊です。
+                ここで重要なのは、SQL
+                のパースやクエリ最適化を行う「クエリプロセッサ」層と、実際にバイト列をディスクへ読み書きする「ストレージエンジン」層は、はっきり分離されているという点です。実際、MySQL（InnoDB
+                や
+                MyRocks）・MongoDB（WiredTiger）のように、上位のクエリ層を保ったまま、下位のストレージエンジンだけを差し替えられる設計のデータベースも存在します。SQLite
+                はストレージエンジン自体は差し替えられませんが、ディスクアクセスを抽象化した
+                VFS（Virtual File
+                System）層を独自実装に置き換えられる点で、同様の層分離の考え方を体現しています。本書はこの下側、つまりストレージエンジンと分散データ管理の部分に的を絞った一冊です。
               </p>
               <p>
                 また、本書はデータベースを「データファイル」と「インデックスファイル」という2種類のファイルの組み合わせとして捉えます。
@@ -381,11 +419,14 @@ export default function DatabaseInternalsPage() {
                 </div>
                 <div className="mini-card">
                   <h4>インデックスファイル</h4>
-                  <p>キーから、対応するレコードの位置（データファイル上のオフセットなど）へのマッピングを保存するファイル</p>
+                  <p>
+                    キーから、対応するレコードの位置（データファイル上のオフセットなど）へのマッピングを保存するファイル
+                  </p>
                 </div>
               </div>
               <p>
-                多くの場合、インデックス自体が「キー→値」を直接保持する主インデックス（primary index）として振る舞い、値の部分にデータファイルへの間接参照（インダイレクション）を持たせる構成が取られます。
+                多くの場合、インデックス自体が「キー→値」を直接保持する主インデックス（primary
+                index）として振る舞い、値の部分にデータファイルへの間接参照（インダイレクション）を持たせる構成が取られます。
               </p>
             </div>
           </section>
@@ -397,9 +438,7 @@ export default function DatabaseInternalsPage() {
               メモリ型データベース vs ディスク型データベース
             </h2>
             <div className="prose">
-              <p>
-                データベースは、データの永続化場所によって大きく2種類に分類できます。
-              </p>
+              <p>データベースは、データの永続化場所によって大きく2種類に分類できます。</p>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -412,12 +451,16 @@ export default function DatabaseInternalsPage() {
                   <tbody>
                     <tr>
                       <td>ディスク型（Disk-Based）</td>
-                      <td>データセットがメモリに収まらないことを前提に、ディスク上の効率的なデータ構造（B-Tree、LSM-Treeなど）を中心に設計される</td>
+                      <td>
+                        データセットがメモリに収まらないことを前提に、ディスク上の効率的なデータ構造（B-Tree、LSM-Treeなど）を中心に設計される
+                      </td>
                       <td>PostgreSQL、MySQL、Cassandra</td>
                     </tr>
                     <tr>
                       <td>メモリ型（In-Memory）</td>
-                      <td>主要な処理をメモリ上で完結させ、高速なアクセスを実現する。ただしメモリは揮発性であるため、耐久性（Durability）の確保が別途必要になる</td>
+                      <td>
+                        主要な処理をメモリ上で完結させ、高速なアクセスを実現する。ただしメモリは揮発性であるため、耐久性（Durability）の確保が別途必要になる
+                      </td>
                       <td>Redis、SAP HANA（の一部モード）</td>
                     </tr>
                   </tbody>
@@ -436,9 +479,7 @@ export default function DatabaseInternalsPage() {
               行指向ストレージ vs 列指向ストレージ
             </h2>
             <div className="prose">
-              <p>
-                もう1つの重要な分類軸が、レコードをどう物理的にレイアウトするかです。
-              </p>
+              <p>もう1つの重要な分類軸が、レコードをどう物理的にレイアウトするかです。</p>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -463,14 +504,18 @@ export default function DatabaseInternalsPage() {
                 </table>
               </div>
               <p>
-                例えば「全顧客の平均年齢を求める」というクエリでは、<code>age</code> カラムの値だけを連続して読み込める列指向の方が、無駄なディスクI/Oが少なく高速になります。一方、「顧客IDで1件のレコード全体を取得する」というクエリでは、行指向の方が1回のディスクアクセスでレコード全体を読み込めるため有利です。
+                例えば「全顧客の平均年齢を求める」というクエリでは、<code>age</code>{" "}
+                カラムの値だけを連続して読み込める列指向の方が、無駄なディスクI/Oが少なく高速になります。一方、「顧客IDで1件のレコード全体を取得する」というクエリでは、行指向の方が1回のディスクアクセスでレコード全体を読み込めるため有利です。
               </p>
               <div className="callout gold">
                 <IconAlertTriangle size={20} />
                 <div className="callout-body">
                   <span className="callout-title">混同されやすい注意点</span>
                   <p>
-                    Cassandra や Bigtable に代表される「ワイドカラムストア」は、名前が似ているため列指向ストレージと混同されがちですが、両者は別の層の概念です。列指向がディスク上の物理配置の話であるのに対し、ワイドカラムストアは「行／パーティション／カラムファミリ」という構造でデータを表現する論理データモデルを指します。実際、Cassandra はパーティション単位で行のデータをまとめて保持しており、物理配置としては列指向 OLAP エンジンとは異なる特性を持ちます。
+                    Cassandra や Bigtable
+                    に代表される「ワイドカラムストア」は、名前が似ているため列指向ストレージと混同されがちですが、両者は別の層の概念です。列指向がディスク上の物理配置の話であるのに対し、ワイドカラムストアは「行／パーティション／カラムファミリ」という構造でデータを表現する論理データモデルを指します。実際、Cassandra
+                    はパーティション単位で行のデータをまとめて保持しており、物理配置としては列指向
+                    OLAP エンジンとは異なる特性を持ちます。
                   </p>
                 </div>
               </div>
@@ -485,18 +530,32 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                Part I の中心的なテーマの1つが B-Tree です。B-Tree は、1970年代に Rudolf Bayer と Ed McCreight によって考案されて以来、半世紀近くにわたって PostgreSQL、MySQL（InnoDB）、Oracle、SQLite、MongoDB（WiredTiger）など、極めて多くのリレーショナル／非リレーショナルデータベースの標準的なインデックス構造として使われ続けています。
+                Part I の中心的なテーマの1つが B-Tree です。B-Tree は、1970年代に Rudolf Bayer と Ed
+                McCreight によって考案されて以来、半世紀近くにわたって
+                PostgreSQL、MySQL（InnoDB）、Oracle、SQLite、MongoDB（WiredTiger）など、極めて多くのリレーショナル／非リレーショナルデータベースの標準的なインデックス構造として使われ続けています。
               </p>
               <p>
-                なぜ単純な二分探索木（Binary Search Tree）ではなく B-Tree なのでしょうか。理由はディスクの物理特性にあります。
+                なぜ単純な二分探索木（Binary Search Tree）ではなく B-Tree
+                なのでしょうか。理由はディスクの物理特性にあります。
               </p>
               <ul>
-                <li>ディスク（特に HDD）は、ランダムな位置への1回のアクセスに比較的大きなレイテンシがかかる</li>
-                <li>一方で、一度アクセスした位置の「近く」を読むコスト（シーケンシャルアクセス）は非常に低い</li>
-                <li>そのため、1回のディスクアクセスでできるだけ多くの情報（＝多くのキー）を読み込める構造が望ましい</li>
+                <li>
+                  ディスク（特に
+                  HDD）は、ランダムな位置への1回のアクセスに比較的大きなレイテンシがかかる
+                </li>
+                <li>
+                  一方で、一度アクセスした位置の「近く」を読むコスト（シーケンシャルアクセス）は非常に低い
+                </li>
+                <li>
+                  そのため、1回のディスクアクセスでできるだけ多くの情報（＝多くのキー）を読み込める構造が望ましい
+                </li>
               </ul>
               <p>
-                二分探索木は1ノードに1つのキーしか持てず、木の高さ（＝ディスクアクセス回数）は、平衡が保たれている場合でもキー数に対して対数的に増えていきます。さらに平衡化されていない二分探索木では、挿入順によって木が一方向に伸び、高さがキー数に対して線形にまで悪化します。これに対し B-Tree は、1ノード（多くの場合1ディスクページに対応）に多数のキーを持たせることで「扇（ファンアウト）」を大きくし、木の高さを低く保ちます。ファンアウトが十分に大きければ、数百万〜数十億件のレコードがあってもごく少数のディスクアクセスで目的のレコードにたどり着けます。ただし実際の I/O 回数は固定ではなく、木の高さ・ページサイズ・キーサイズ、そして上位ノードがバッファプールにキャッシュされているかどうかに左右されます。実務では上位数階層が常駐していることが多く、その場合ディスクへ実際に到達する回数はさらに減ります。
+                二分探索木は1ノードに1つのキーしか持てず、木の高さ（＝ディスクアクセス回数）は、平衡が保たれている場合でもキー数に対して対数的に増えていきます。さらに平衡化されていない二分探索木では、挿入順によって木が一方向に伸び、高さがキー数に対して線形にまで悪化します。これに対し
+                B-Tree
+                は、1ノード（多くの場合1ディスクページに対応）に多数のキーを持たせることで「扇（ファンアウト）」を大きくし、木の高さを低く保ちます。ファンアウトが十分に大きければ、数百万〜数十億件のレコードがあってもごく少数のディスクアクセスで目的のレコードにたどり着けます。ただし実際の
+                I/O
+                回数は固定ではなく、木の高さ・ページサイズ・キーサイズ、そして上位ノードがバッファプールにキャッシュされているかどうかに左右されます。実務では上位数階層が常駐していることが多く、その場合ディスクへ実際に到達する回数はさらに減ります。
               </p>
               <div className="diagram-wrap" data-diagram="d3">
                 <MermaidDiagram chart={DIAG_3} />
@@ -505,7 +564,8 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                B-Tree の各内部ノードは、子ノードへの「境界」となる「セパレータキー」を保持しています。探索時は、探索したいキーとセパレータキーを比較しながら、正しい子ノードへと下降していきます。
+                B-Tree
+                の各内部ノードは、子ノードへの「境界」となる「セパレータキー」を保持しています。探索時は、探索したいキーとセパレータキーを比較しながら、正しい子ノードへと下降していきます。
               </p>
             </div>
           </section>
@@ -526,7 +586,8 @@ export default function DatabaseInternalsPage() {
               </div>
               <h3>ノード分割（Split）</h3>
               <p>
-                B-Tree は「バランス木」であり、挿入や削除のたびに木のバランス（各リーフまでの深さが等しい状態）を保つよう再構成されます。あるノードにキーを挿入しようとしてページの容量を超えてしまう場合、そのノードは2つに分割され、分割の境界となったキーが親ノードへ「昇格」します。
+                B-Tree
+                は「バランス木」であり、挿入や削除のたびに木のバランス（各リーフまでの深さが等しい状態）を保つよう再構成されます。あるノードにキーを挿入しようとしてページの容量を超えてしまう場合、そのノードは2つに分割され、分割の境界となったキーが親ノードへ「昇格」します。
               </p>
               <div className="diagram-wrap" data-diagram="d5">
                 <MermaidDiagram chart={DIAG_5} />
@@ -535,7 +596,9 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                逆に、削除によってノード内のキー数が少なくなりすぎた場合には、隣接ノードとの「マージ（併合）」や「再分配（リバランス）」が行われ、木全体の充填率が一定水準以上に保たれます。この分割・マージのロジックこそが B-Tree 実装の中でも特にバグを生みやすい部分であり、原著第4章では、この処理を安全に行うための「ブレッドクラム（経路の記録）」といった実装テクニックが詳しく解説されています。
+                逆に、削除によってノード内のキー数が少なくなりすぎた場合には、隣接ノードとの「マージ（併合）」や「再分配（リバランス）」が行われ、木全体の充填率が一定水準以上に保たれます。この分割・マージのロジックこそが
+                B-Tree
+                実装の中でも特にバグを生みやすい部分であり、原著第4章では、この処理を安全に行うための「ブレッドクラム（経路の記録）」といった実装テクニックが詳しく解説されています。
               </p>
             </div>
           </section>
@@ -548,7 +611,9 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                B-Tree の各ノードは、多くの場合ディスク上の固定サイズの「ページ」（一般的に4KB〜16KB程度）1つに対応します。しかし、キーや値のサイズは可変長であることが多く、固定サイズのページの中に可変長データを効率よく詰め込む工夫が必要です。この目的でよく使われるのが「スロットページ（Slotted Page）」という構造です。
+                B-Tree
+                の各ノードは、多くの場合ディスク上の固定サイズの「ページ」（一般的に4KB〜16KB程度）1つに対応します。しかし、キーや値のサイズは可変長であることが多く、固定サイズのページの中に可変長データを効率よく詰め込む工夫が必要です。この目的でよく使われるのが「スロットページ（Slotted
+                Page）」という構造です。
               </p>
               <div className="table-wrap">
                 <table>
@@ -565,7 +630,9 @@ export default function DatabaseInternalsPage() {
                     </tr>
                     <tr>
                       <td>スロット配列（ポインタ配列）</td>
-                      <td>各セル（キーと値のペア）へのオフセットを保持する配列。ページ先頭側から伸びていく</td>
+                      <td>
+                        各セル（キーと値のペア）へのオフセットを保持する配列。ページ先頭側から伸びていく
+                      </td>
                     </tr>
                     <tr>
                       <td>セル領域</td>
@@ -591,15 +658,34 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                実際にプロダクション品質の B-Tree を実装するには、STEP4〜5で説明した理論だけでは不十分です。原著第4章では、現実のデータベース実装で使われている以下のような実践的なテクニックが解説されています。
+                実際にプロダクション品質の B-Tree
+                を実装するには、STEP4〜5で説明した理論だけでは不十分です。原著第4章では、現実のデータベース実装で使われている以下のような実践的なテクニックが解説されています。
               </p>
               <ul>
-                <li><strong>ページヘッダの設計</strong> マジックナンバー（フォーマット識別）、兄弟ページへのリンク（B-link Tree）、最右ポインタ、ノードのハイキー（そのノードが担当するキー範囲の上限）</li>
-                <li><strong>オーバーフローページ</strong> 1つのセルが1ページに収まらないほど大きい場合に、別ページへ値を逃がす仕組み</li>
-                <li><strong>インダイレクションポインタを使ったバイナリサーチ</strong> スロット配列を介した間接的な探索</li>
-                <li><strong>バルクロード</strong> 大量データを初期投入する際に、逐次挿入よりも効率的に木を構築する手法</li>
-                <li><strong>圧縮</strong> ページ単位・ブロック単位でのデータ圧縮</li>
-                <li><strong>バキュームとデフラグメンテーション</strong> 更新・削除によって発生した断片化を解消し、ページの利用効率を回復させる処理</li>
+                <li>
+                  <strong>ページヘッダの設計</strong>{" "}
+                  マジックナンバー（フォーマット識別）、兄弟ページへのリンク（B-link
+                  Tree）、最右ポインタ、ノードのハイキー（そのノードが担当するキー範囲の上限）
+                </li>
+                <li>
+                  <strong>オーバーフローページ</strong>{" "}
+                  1つのセルが1ページに収まらないほど大きい場合に、別ページへ値を逃がす仕組み
+                </li>
+                <li>
+                  <strong>インダイレクションポインタを使ったバイナリサーチ</strong>{" "}
+                  スロット配列を介した間接的な探索
+                </li>
+                <li>
+                  <strong>バルクロード</strong>{" "}
+                  大量データを初期投入する際に、逐次挿入よりも効率的に木を構築する手法
+                </li>
+                <li>
+                  <strong>圧縮</strong> ページ単位・ブロック単位でのデータ圧縮
+                </li>
+                <li>
+                  <strong>バキュームとデフラグメンテーション</strong>{" "}
+                  更新・削除によって発生した断片化を解消し、ページの利用効率を回復させる処理
+                </li>
               </ul>
               <p>
                 これらは地味に思える工夫の積み重ねですが、実際のデータベース製品の性能・信頼性を大きく左右する部分です。
@@ -620,19 +706,27 @@ export default function DatabaseInternalsPage() {
               </p>
               <h3>Write-Ahead Logging（WAL）とクラッシュリカバリ</h3>
               <p>
-                データベースが突然クラッシュしても、コミット済みのトランザクションのデータが失われてはいけません。これを実現する中心的な仕組みが<strong>WAL（Write-Ahead Log）</strong>です。「変更されたデータページをディスクへ書き出す前に、必ずその変更内容を記録したログを安定記憶へ永続化しておく」という原則です。メモリ上のページは先に書き換えて構わず、制約がかかるのはあくまでディスクへの書き出し順序である点が要点で、これによりランダムなページ書き込みを遅延させつつ、シーケンシャルなログ書き込みだけを同期化できます。
+                データベースが突然クラッシュしても、コミット済みのトランザクションのデータが失われてはいけません。これを実現する中心的な仕組みが
+                <strong>WAL（Write-Ahead Log）</strong>
+                です。「変更されたデータページをディスクへ書き出す前に、必ずその変更内容を記録したログを安定記憶へ永続化しておく」という原則です。メモリ上のページは先に書き換えて構わず、制約がかかるのはあくまでディスクへの書き出し順序である点が要点で、これによりランダムなページ書き込みを遅延させつつ、シーケンシャルなログ書き込みだけを同期化できます。
               </p>
               <div className="callout">
                 <IconInfoCircle size={20} />
                 <div className="callout-body">
                   <span className="callout-title">なぜREDOとUNDOの両方が必要なのか</span>
                   <p>
-                    未コミットの更新を含む dirty page もディスクへ書き出してよい Steal 構成では、クラッシュ時点のディスク上に未コミットの更新が混ざりうるため、ログを再生するだけでは復旧が完結しません。ARIES に代表される手順では、まずログ上の更新を Redo してクラッシュ時点の状態を再現し、そのうえで未コミットだった更新を Undo することで、整合性のとれた状態へ戻します。
+                    未コミットの更新を含む dirty page もディスクへ書き出してよい Steal
+                    構成では、クラッシュ時点のディスク上に未コミットの更新が混ざりうるため、ログを再生するだけでは復旧が完結しません。ARIES
+                    に代表される手順では、まずログ上の更新を Redo
+                    してクラッシュ時点の状態を再現し、そのうえで未コミットだった更新を Undo
+                    することで、整合性のとれた状態へ戻します。
                   </p>
                 </div>
               </div>
               <p>
-                多くの実プロダクトが採用しているリカバリアルゴリズムが<strong>ARIES</strong>（Algorithm for Recovery and Isolation Exploiting Semantics、IBMが考案）です。ARIESは大きく3つのフェーズで構成されます。
+                多くの実プロダクトが採用しているリカバリアルゴリズムが<strong>ARIES</strong>
+                （Algorithm for Recovery and Isolation Exploiting
+                Semantics、IBMが考案）です。ARIESは大きく3つのフェーズで構成されます。
               </p>
               <div className="diagram-wrap" data-diagram="d6">
                 <MermaidDiagram chart={DIAG_6} />
@@ -641,7 +735,9 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                このほか、ページを更新するタイミング（Steal / No-Steal）や、変更をいつディスクへ反映するか（Force / No-Force）というポリシーの組み合わせが、リカバリの複雑さと通常運用時の性能のトレードオフを決定づけます。
+                このほか、ページを更新するタイミング（Steal /
+                No-Steal）や、変更をいつディスクへ反映するか（Force /
+                No-Force）というポリシーの組み合わせが、リカバリの複雑さと通常運用時の性能のトレードオフを決定づけます。
               </p>
             </div>
           </section>
@@ -654,7 +750,8 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                複数のトランザクションが同時にデータへアクセスするとき、互いに干渉して不整合な結果（read/write anomaly）を生まないようにする仕組みが「同時実行制御（Concurrency Control）」です。
+                複数のトランザクションが同時にデータへアクセスするとき、互いに干渉して不整合な結果（read/write
+                anomaly）を生まないようにする仕組みが「同時実行制御（Concurrency Control）」です。
               </p>
               <div className="diagram-wrap" data-diagram="d7">
                 <MermaidDiagram chart={DIAG_7} />
@@ -665,15 +762,21 @@ export default function DatabaseInternalsPage() {
               <div className="two-col">
                 <div className="mini-card">
                   <h4>悲観的同時実行制御 PCC</h4>
-                  <p>あらかじめロックを取得してから処理を行い、競合を未然に防ぐ。ロック待ちによるスループット低下がトレードオフ</p>
+                  <p>
+                    あらかじめロックを取得してから処理を行い、競合を未然に防ぐ。ロック待ちによるスループット低下がトレードオフ
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>楽観的同時実行制御 OCC</h4>
-                  <p>処理はロックなしで進め、コミット直前に競合が起きていないか検証し、競合していればロールバックする。競合が稀な場合に高いスループットを発揮する</p>
+                  <p>
+                    処理はロックなしで進め、コミット直前に競合が起きていないか検証し、競合していればロールバックする。競合が稀な場合に高いスループットを発揮する
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>マルチバージョン同時実行制御 MVCC</h4>
-                  <p>各行について複数のバージョンを保持し、読み取りは書き込みをブロックせずに自分から見えるバージョンを参照する。PostgreSQLをはじめ多くの現代的なデータベースが採用</p>
+                  <p>
+                    各行について複数のバージョンを保持し、読み取りは書き込みをブロックせずに自分から見えるバージョンを参照する。PostgreSQLをはじめ多くの現代的なデータベースが採用
+                  </p>
                 </div>
               </div>
               <div className="callout gold">
@@ -686,7 +789,10 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                また、原著ではこれらの方式の上に成り立つ「分離レベル（Isolation Levels）」（Read Uncommitted、Read Committed、Repeatable Read、Serializable など）と、それぞれのレベルで許容されてしまう異常（Dirty Read、Non-repeatable Read、Phantom Read など）が体系的に整理されています。
+                また、原著ではこれらの方式の上に成り立つ「分離レベル（Isolation Levels）」（Read
+                Uncommitted、Read Committed、Repeatable Read、Serializable
+                など）と、それぞれのレベルで許容されてしまう異常（Dirty Read、Non-repeatable
+                Read、Phantom Read など）が体系的に整理されています。
               </p>
             </div>
           </section>
@@ -699,7 +805,9 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                素朴な B-Tree にはいくつかの弱点があります。特に「更新のたびにページをその場（in-place）で書き換える」という性質は、並行書き込み時のロック管理や、SSDの書き込み摩耗（wear）の観点で不利になることがあります。原著第6章では、これらの課題に対応するために考案された多様な B-Tree の派生構造が紹介されています。
+                素朴な B-Tree
+                にはいくつかの弱点があります。特に「更新のたびにページをその場（in-place）で書き換える」という性質は、並行書き込み時のロック管理や、SSDの書き込み摩耗（wear）の観点で不利になることがあります。原著第6章では、これらの課題に対応するために考案された多様な
+                B-Tree の派生構造が紹介されています。
               </p>
               <div className="table-wrap">
                 <table>
@@ -713,39 +821,54 @@ export default function DatabaseInternalsPage() {
                   <tbody>
                     <tr>
                       <td>Copy-on-Write B-Tree</td>
-                      <td>ページを直接書き換えず、変更が必要なページ（と、その祖先すべて）を新しいコピーとして書き出す。MVCCとの相性がよく、クラッシュ整合性も得やすい</td>
+                      <td>
+                        ページを直接書き換えず、変更が必要なページ（と、その祖先すべて）を新しいコピーとして書き出す。MVCCとの相性がよく、クラッシュ整合性も得やすい
+                      </td>
                       <td>LMDB</td>
                     </tr>
                     <tr>
                       <td>Lazy B-Tree</td>
-                      <td>変更をすぐにはツリー構造へ反映せず、ノードやページ単位のバッファへいったん溜めてからまとめて適用する</td>
+                      <td>
+                        変更をすぐにはツリー構造へ反映せず、ノードやページ単位のバッファへいったん溜めてからまとめて適用する
+                      </td>
                       <td>WiredTiger</td>
                     </tr>
                     <tr>
                       <td>Lazy-Adaptive Tree</td>
-                      <td>更新バッファをノード単位ではなくサブツリー単位で階層的に持ち、バッファが溢れた段階で下位のサブツリーへ伝播させる</td>
+                      <td>
+                        更新バッファをノード単位ではなくサブツリー単位で階層的に持ち、バッファが溢れた段階で下位のサブツリーへ伝播させる
+                      </td>
                       <td>研究論文由来</td>
                     </tr>
                     <tr>
                       <td>FD-Tree</td>
-                      <td>Fractional Cascading の技法を用いて、複数の「ラン」を効率よく検索できるようにした構造</td>
+                      <td>
+                        Fractional Cascading
+                        の技法を用いて、複数の「ラン」を効率よく検索できるようにした構造
+                      </td>
                       <td>研究論文由来</td>
                     </tr>
                     <tr>
                       <td>Bw-Tree</td>
-                      <td>ページをその場で更新せず、Compare-and-Swap（CAS）を用いた「更新チェーン」を追記していくことでロックフリーな並行性を実現する</td>
+                      <td>
+                        ページをその場で更新せず、Compare-and-Swap（CAS）を用いた「更新チェーン」を追記していくことでロックフリーな並行性を実現する
+                      </td>
                       <td>SQL Server Hekathonなどの研究に由来</td>
                     </tr>
                     <tr>
                       <td>Cache-Oblivious B-Tree</td>
-                      <td>van Emde Boas レイアウトを用い、特定のキャッシュサイズを意識しなくてもあらゆる階層のキャッシュに対して漸近的に最適なアクセス性能を発揮する</td>
+                      <td>
+                        van Emde Boas
+                        レイアウトを用い、特定のキャッシュサイズを意識しなくてもあらゆる階層のキャッシュに対して漸近的に最適なアクセス性能を発揮する
+                      </td>
                       <td>主に理論研究の文脈</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <p>
-                これらは、STEP11で扱う「ログ構造化ストレージ」と合わせて、「その場更新（in-place update）」から「追記（append-only）」へとデータベースの世界がシフトしてきた歴史の中間地点に位置づけられる技術群です。
+                これらは、STEP11で扱う「ログ構造化ストレージ」と合わせて、「その場更新（in-place
+                update）」から「追記（append-only）」へとデータベースの世界がシフトしてきた歴史の中間地点に位置づけられる技術群です。
               </p>
             </div>
           </section>
@@ -758,16 +881,31 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                B-Tree が「その場更新」を基本とするのに対し、<strong>LSM-Tree（Log-Structured Merge-Tree）</strong>は書き込みを主に「追記」として扱い、後段のコンパクションでデータを再編成する、まったく異なる設計思想のストレージ構造です。Cassandra、RocksDB、LevelDB、HBase など、多くの現代的な NoSQL データベースがこの方式を採用しています。
+                B-Tree が「その場更新」を基本とするのに対し、
+                <strong>LSM-Tree（Log-Structured Merge-Tree）</strong>
+                は書き込みを主に「追記」として扱い、後段のコンパクションでデータを再編成する、まったく異なる設計思想のストレージ構造です。Cassandra、RocksDB、LevelDB、HBase
+                など、多くの現代的な NoSQL データベースがこの方式を採用しています。
               </p>
-              <p>
-                LSM-Tree の基本的な考え方は次の通りです。
-              </p>
+              <p>LSM-Tree の基本的な考え方は次の通りです。</p>
               <ol>
-                <li>書き込みは、まずメモリ上のソート済み構造（<strong>Memtable</strong>、多くは Skiplist などで実装）へ即座に反映される。実装や設定で WAL が有効な場合は、同時に耐障害性のために WAL へも書き込まれる。WAL は無効化できる設定を持つ製品もあり（RocksDBの <code>disableWAL</code>、Cassandraの <code>durable_writes = false</code> など）、無効にするとフラッシュ前の書き込みはクラッシュ時に失われる</li>
-                <li>Memtable が一定サイズに達すると、その内容がソート済みのまま<strong>SSTable</strong>（Sorted String Table）としてディスクへ書き出される（フラッシュ）</li>
+                <li>
+                  書き込みは、まずメモリ上のソート済み構造（<strong>Memtable</strong>、多くは
+                  Skiplist などで実装）へ即座に反映される。実装や設定で WAL
+                  が有効な場合は、同時に耐障害性のために WAL へも書き込まれる。WAL
+                  は無効化できる設定を持つ製品もあり（RocksDBの <code>disableWAL</code>、Cassandraの{" "}
+                  <code>durable_writes = false</code>{" "}
+                  など）、無効にするとフラッシュ前の書き込みはクラッシュ時に失われる
+                </li>
+                <li>
+                  Memtable が一定サイズに達すると、その内容がソート済みのまま
+                  <strong>SSTable</strong>（Sorted String
+                  Table）としてディスクへ書き出される（フラッシュ）
+                </li>
                 <li>時間の経過とともにディスク上に多数の SSTable が蓄積していく</li>
-                <li>バックグラウンドで定期的に<strong>コンパクション</strong>が実行され、複数の SSTable がマージされて、より少数の・より大きな SSTable へと統合される</li>
+                <li>
+                  バックグラウンドで定期的に<strong>コンパクション</strong>が実行され、複数の
+                  SSTable がマージされて、より少数の・より大きな SSTable へと統合される
+                </li>
               </ol>
               <div className="diagram-wrap" data-diagram="d8">
                 <MermaidDiagram chart={DIAG_8} />
@@ -776,10 +914,19 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                LSM-Tree の読み取りは、B-Tree に比べて本質的に複雑です。あるキーの最新の値がどこにあるかは、Memtable と複数のレベルの SSTable のいずれにも存在しうるため、複数の場所をマージしながら探索する必要があります（Merge-Iteration）。この探索コストを削減するために<strong>Bloom Filter</strong>（あるキーがそのSSTableに「絶対に存在しない」ことを高速に判定できる確率的データ構造）が広く使われています。
+                LSM-Tree の読み取りは、B-Tree
+                に比べて本質的に複雑です。あるキーの最新の値がどこにあるかは、Memtable
+                と複数のレベルの SSTable
+                のいずれにも存在しうるため、複数の場所をマージしながら探索する必要があります（Merge-Iteration）。この探索コストを削減するために
+                <strong>Bloom Filter</strong>
+                （あるキーがそのSSTableに「絶対に存在しない」ことを高速に判定できる確率的データ構造）が広く使われています。
               </p>
               <p>
-                原著では、この読み取り・書き込み・空間の3つの増幅（<strong>RUM予想</strong>：Read／Update／Memory amplification）というトレードオフの枠組みで、LSM-Tree の設計判断を評価しています。さらに、SSTableのような整列済み構造すら持たない「非整列型LSMストレージ」の代表例として Bitcask（Riak の初期ストレージエンジン）や WiscKey（キーとバリューを分離して格納しコンパクションコストを削減する設計）も紹介されています。
+                原著では、この読み取り・書き込み・空間の3つの増幅（<strong>RUM予想</strong>
+                ：Read／Update／Memory amplification）というトレードオフの枠組みで、LSM-Tree
+                の設計判断を評価しています。さらに、SSTableのような整列済み構造すら持たない「非整列型LSMストレージ」の代表例として
+                Bitcask（Riak の初期ストレージエンジン）や
+                WiscKey（キーとバリューを分離して格納しコンパクションコストを削減する設計）も紹介されています。
               </p>
             </div>
           </section>
@@ -792,7 +939,10 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                ここまでの STEP1〜11 で、Part I「ストレージエンジン」の全体像を見てきました。要点を整理すると、ストレージエンジンの設計は、大きく「その場更新型（In-Place Update）」と「ログ構造化型（Log-Structured / Immutable）」という2つの系譜に分けられ、それぞれにトレードオフがあります。
+                ここまでの STEP1〜11 で、Part
+                I「ストレージエンジン」の全体像を見てきました。要点を整理すると、ストレージエンジンの設計は、大きく「その場更新型（In-Place
+                Update）」と「ログ構造化型（Log-Structured /
+                Immutable）」という2つの系譜に分けられ、それぞれにトレードオフがあります。
               </p>
               <div className="table-wrap">
                 <table>
@@ -828,7 +978,8 @@ export default function DatabaseInternalsPage() {
                 </table>
               </div>
               <p>
-                どちらが「優れている」というものではなく、書き込みが多いワークロードか読み取りが多いワークロードか、SSDかHDDか、といった条件によって最適解が変わる、というのが本書 Part I 全体を通じた重要なメッセージです。
+                どちらが「優れている」というものではなく、書き込みが多いワークロードか読み取りが多いワークロードか、SSDかHDDか、といった条件によって最適解が変わる、というのが本書
+                Part I 全体を通じた重要なメッセージです。
               </p>
             </div>
           </section>
@@ -841,12 +992,22 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                Part II では舞台が「1台のマシンの中」から「複数台のマシンをまたいだネットワーク」へと移ります。1台のマシンの中で完結する処理と比べ、分散システムには根本的に異なる難しさがあります。
+                Part II
+                では舞台が「1台のマシンの中」から「複数台のマシンをまたいだネットワーク」へと移ります。1台のマシンの中で完結する処理と比べ、分散システムには根本的に異なる難しさがあります。
               </p>
               <ul>
-                <li><strong>ネットワークは信頼できない</strong> メッセージは遅延する、失われる、重複する、順序が入れ替わることがある</li>
-                <li><strong>部分的な障害（Partial Failure）が起こりうる</strong> あるノードは正常に動き続け、別のノードだけがクラッシュする、というような「一部だけ壊れる」状況が常態化する</li>
-                <li><strong>クロックは同期していない</strong> 各ノードの時計にはズレ（クロックドリフト）があり、「イベントAとイベントBのどちらが先に起きたか」を単純なタイムスタンプ比較だけでは判定できない</li>
+                <li>
+                  <strong>ネットワークは信頼できない</strong>{" "}
+                  メッセージは遅延する、失われる、重複する、順序が入れ替わることがある
+                </li>
+                <li>
+                  <strong>部分的な障害（Partial Failure）が起こりうる</strong>{" "}
+                  あるノードは正常に動き続け、別のノードだけがクラッシュする、というような「一部だけ壊れる」状況が常態化する
+                </li>
+                <li>
+                  <strong>クロックは同期していない</strong>{" "}
+                  各ノードの時計にはズレ（クロックドリフト）があり、「イベントAとイベントBのどちらが先に起きたか」を単純なタイムスタンプ比較だけでは判定できない
+                </li>
               </ul>
               <p>
                 こうした難しさを理論的に裏付ける、分散システムの古典的な2つの結果が本章で紹介されます。
@@ -854,11 +1015,16 @@ export default function DatabaseInternalsPage() {
               <div className="two-col">
                 <div className="mini-card">
                   <h4>Two Generals&apos; Problem（二将軍問題）</h4>
-                  <p>信頼できない通信路を使って、2つの主体が「攻撃するタイミング」について100%確実な合意に至ることは、原理的に不可能であることを示す思考実験</p>
+                  <p>
+                    信頼できない通信路を使って、2つの主体が「攻撃するタイミング」について100%確実な合意に至ることは、原理的に不可能であることを示す思考実験
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>FLP不可能性</h4>
-                  <p>非同期分散システムにおいて、1つのプロセスがクラッシュしうるだけで、決定的なアルゴリズムではコンセンサスの停止性（必ず有限時間で決着すること）を保証できないことを示した、Fischer・Lynch・Paterson による有名な定理。安全性にあたるAgreementやValidityが崩れるという主張ではない</p>
+                  <p>
+                    非同期分散システムにおいて、1つのプロセスがクラッシュしうるだけで、決定的なアルゴリズムではコンセンサスの停止性（必ず有限時間で決着すること）を保証できないことを示した、Fischer・Lynch・Paterson
+                    による有名な定理。安全性にあたるAgreementやValidityが崩れるという主張ではない
+                  </p>
                 </div>
               </div>
               <div className="diagram-wrap" data-diagram="d9">
@@ -881,7 +1047,8 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                非同期システムでは、あるノードが「本当にクラッシュしたのか」「単にネットワークが遅いだけなのか」を確実に区別する方法が存在しません。メッセージ遅延に上限がない以上、応答がないという事実だけからは両者を判別できないためで、これは障害検出器（Failure Detector）モデルが本質的に抱える限界です。
+                非同期システムでは、あるノードが「本当にクラッシュしたのか」「単にネットワークが遅いだけなのか」を確実に区別する方法が存在しません。メッセージ遅延に上限がない以上、応答がないという事実だけからは両者を判別できないためで、これは障害検出器（Failure
+                Detector）モデルが本質的に抱える限界です。
               </p>
               <div className="callout plum">
                 <IconInfoCircle size={20} />
@@ -902,7 +1069,13 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                最もシンプルな方式は、一定間隔で「ハートビート」を送り合い、決められたタイムアウトを超えたら故障と「みなす」というものです。しかし、固定のタイムアウト値は「ネットワークが混雑している普段の状況」と「本当に落ちた状況」を区別できず、誤検出を生みがちです。この問題への改良として<strong>Φ (Phi) Accrual障害検出器</strong>が紹介されています。これは固定の閾値で二値判定するのではなく、過去のハートビート到着間隔の統計分布から「このノードの障害の疑わしさを表すスコア」Φ を連続値として算出する方式です。Φ は「生きている確率」そのものではなく、次のハートビートが現時点までに届かなかったことの起こりにくさを対数スケールで表した指標で、値が大きいほど故障の疑いが強いことを意味します。この方式は、Cassandra や Akka などで実際に採用されています。また、全ノードが個別に監視するのではなく、ゴシッププロトコル（STEP16）を通じて障害情報自体を伝播させる方式も紹介されています。
+                最もシンプルな方式は、一定間隔で「ハートビート」を送り合い、決められたタイムアウトを超えたら故障と「みなす」というものです。しかし、固定のタイムアウト値は「ネットワークが混雑している普段の状況」と「本当に落ちた状況」を区別できず、誤検出を生みがちです。この問題への改良として
+                <strong>Φ (Phi) Accrual障害検出器</strong>
+                が紹介されています。これは固定の閾値で二値判定するのではなく、過去のハートビート到着間隔の統計分布から「このノードの障害の疑わしさを表すスコア」Φ
+                を連続値として算出する方式です。Φ
+                は「生きている確率」そのものではなく、次のハートビートが現時点までに届かなかったことの起こりにくさを対数スケールで表した指標で、値が大きいほど故障の疑いが強いことを意味します。この方式は、Cassandra
+                や Akka
+                などで実際に採用されています。また、全ノードが個別に監視するのではなく、ゴシッププロトコル（STEP16）を通じて障害情報自体を伝播させる方式も紹介されています。
               </p>
             </div>
           </section>
@@ -917,17 +1090,28 @@ export default function DatabaseInternalsPage() {
               <p>
                 多くの分散システムでは、特定の決定（例：書き込みの受付順序を決めるなど）を単一のノード（リーダー）に集約することで、システム全体の設計をシンプルにします。しかし、そのリーダー自身が故障した場合には、残りのノードの中から新しいリーダーを選び直す必要があります。これが「リーダー選出」問題です。
               </p>
-              <p>
-                原著では、比較的古典的でシンプルなアルゴリズム群が紹介されています。
-              </p>
+              <p>原著では、比較的古典的でシンプルなアルゴリズム群が紹介されています。</p>
               <ul>
-                <li><strong>Bullyアルゴリズム</strong> 各ノードが一意のIDを持ち、自分より大きいIDを持つ生存ノードがいないことを確認できたノードが、自らをリーダーだと宣言する</li>
-                <li><strong>Next-In-Line Failover / Candidate-Ordinary最適化</strong> Bullyアルゴリズムの通信量を削減するための工夫</li>
-                <li><strong>招待アルゴリズム（Invitation Algorithm）</strong> ノードが自らグループを形成し、互いを「招待」し合う形でリーダーを決定する</li>
-                <li><strong>リングアルゴリズム</strong> ノードを論理的なリング状に並べ、メッセージをリングに沿って回覧することでリーダーを決定する</li>
+                <li>
+                  <strong>Bullyアルゴリズム</strong>{" "}
+                  各ノードが一意のIDを持ち、自分より大きいIDを持つ生存ノードがいないことを確認できたノードが、自らをリーダーだと宣言する
+                </li>
+                <li>
+                  <strong>Next-In-Line Failover / Candidate-Ordinary最適化</strong>{" "}
+                  Bullyアルゴリズムの通信量を削減するための工夫
+                </li>
+                <li>
+                  <strong>招待アルゴリズム（Invitation Algorithm）</strong>{" "}
+                  ノードが自らグループを形成し、互いを「招待」し合う形でリーダーを決定する
+                </li>
+                <li>
+                  <strong>リングアルゴリズム</strong>{" "}
+                  ノードを論理的なリング状に並べ、メッセージをリングに沿って回覧することでリーダーを決定する
+                </li>
               </ul>
               <p>
-                これらのアルゴリズムは、後の STEP18 で扱う Raft のような、コンセンサスアルゴリズムに内包された「より堅牢なリーダー選出の仕組み」の前提知識としても位置づけられます。
+                これらのアルゴリズムは、後の STEP18 で扱う Raft
+                のような、コンセンサスアルゴリズムに内包された「より堅牢なリーダー選出の仕組み」の前提知識としても位置づけられます。
               </p>
             </div>
           </section>
@@ -944,16 +1128,23 @@ export default function DatabaseInternalsPage() {
               </p>
               <h3>CAP定理</h3>
               <p>
-                分散システムの議論で頻繁に登場する<strong>CAP定理</strong>は、「Consistency（一貫性）」「Availability（可用性）」「Partition tolerance（ネットワーク分断耐性）」の3つのうち、ネットワーク分断が実際に発生した際には、CとAの両方を同時に完全には満たせない、ということを示しています。ここで言うCとAは日常語ではなく、定理の中で厳密に定義された性質である点に注意が必要です。
+                分散システムの議論で頻繁に登場する<strong>CAP定理</strong>
+                は、「Consistency（一貫性）」「Availability（可用性）」「Partition
+                tolerance（ネットワーク分断耐性）」の3つのうち、ネットワーク分断が実際に発生した際には、CとAの両方を同時に完全には満たせない、ということを示しています。ここで言うCとAは日常語ではなく、定理の中で厳密に定義された性質である点に注意が必要です。
               </p>
               <div className="two-col">
                 <div className="mini-card">
                   <h4>Consistency</h4>
-                  <p>atomic consistency、すなわち線形化可能性（linearizability）のこと。結果整合性やセッション一貫性といった任意の一貫性モデル一般を指すのではない</p>
+                  <p>
+                    atomic
+                    consistency、すなわち線形化可能性（linearizability）のこと。結果整合性やセッション一貫性といった任意の一貫性モデル一般を指すのではない
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>Availability</h4>
-                  <p>故障していないノードが受け取ったリクエストは必ず応答を返して完了できるという性質。稼働率やレイテンシの良さを指すのではない</p>
+                  <p>
+                    故障していないノードが受け取ったリクエストは必ず応答を返して完了できるという性質。稼働率やレイテンシの良さを指すのではない
+                  </p>
                 </div>
               </div>
               <p>
@@ -979,13 +1170,31 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <ul>
-                <li><strong>線形化可能性 Linearizability</strong> あたかもデータのコピーが1つしか存在しないかのように振る舞う、最も強い一貫性モデル</li>
-                <li><strong>逐次一貫性 Sequential Consistency</strong> すべてのノードが同じ順序で操作を観測することを保証するが、その順序が実時間と一致している必要はない</li>
-                <li><strong>因果一貫性 Causal Consistency</strong> 因果関係のある操作の順序のみを保証し、無関係な操作の順序は保証しない</li>
-                <li><strong>結果整合性 Eventual Consistency</strong> 新しい書き込みが止まったうえで、レプリカ間の通信と修復（アンチエントロピーなど）が継続し、各更新が最終的にすべての到達可能なレプリカへ配送・反映されるという前提のもとで、いずれ同じ値に収束することだけを保証する、最も緩いモデル</li>
+                <li>
+                  <strong>線形化可能性 Linearizability</strong>{" "}
+                  あたかもデータのコピーが1つしか存在しないかのように振る舞う、最も強い一貫性モデル
+                </li>
+                <li>
+                  <strong>逐次一貫性 Sequential Consistency</strong>{" "}
+                  すべてのノードが同じ順序で操作を観測することを保証するが、その順序が実時間と一致している必要はない
+                </li>
+                <li>
+                  <strong>因果一貫性 Causal Consistency</strong>{" "}
+                  因果関係のある操作の順序のみを保証し、無関係な操作の順序は保証しない
+                </li>
+                <li>
+                  <strong>結果整合性 Eventual Consistency</strong>{" "}
+                  新しい書き込みが止まったうえで、レプリカ間の通信と修復（アンチエントロピーなど）が継続し、各更新が最終的にすべての到達可能なレプリカへ配送・反映されるという前提のもとで、いずれ同じ値に収束することだけを保証する、最も緩いモデル
+                </li>
               </ul>
               <p>
-                さらに、Cassandra や DynamoDB に見られる「チューナブルな一貫性」、Spanner や Cassandra などに見られる「Witness Replica」、そして特定のデータ型と演算規則（可換・冪等な併合など）を満たす範囲で、ネットワーク分断中に並行して行われた更新を調整なしに収束させられる<strong>CRDT（Conflict-free Replicated Data Type）</strong>と、条件を満たす CRDT が「配信済みの更新をすべて受け取ったレプリカは同じ状態に収束する」ことを保証する性質である<strong>強収束性（Strong Eventual Consistency）</strong>といった、実践的で発展的な話題まで扱われています。
+                さらに、Cassandra や DynamoDB に見られる「チューナブルな一貫性」、Spanner や
+                Cassandra などに見られる「Witness
+                Replica」、そして特定のデータ型と演算規則（可換・冪等な併合など）を満たす範囲で、ネットワーク分断中に並行して行われた更新を調整なしに収束させられる
+                <strong>CRDT（Conflict-free Replicated Data Type）</strong>と、条件を満たす CRDT
+                が「配信済みの更新をすべて受け取ったレプリカは同じ状態に収束する」ことを保証する性質である
+                <strong>強収束性（Strong Eventual Consistency）</strong>
+                といった、実践的で発展的な話題まで扱われています。
               </p>
             </div>
           </section>
@@ -1003,15 +1212,21 @@ export default function DatabaseInternalsPage() {
               <div className="two-col">
                 <div className="mini-card">
                   <h4>Read Repair</h4>
-                  <p>読み取り時に複数レプリカへ問い合わせ、応答内容が食い違っていたら、その場で古いレプリカを最新の値に更新する</p>
+                  <p>
+                    読み取り時に複数レプリカへ問い合わせ、応答内容が食い違っていたら、その場で古いレプリカを最新の値に更新する
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>Hinted Handoff</h4>
-                  <p>書き込み先のレプリカが一時的に応答不能な場合、別のノードが代わりにその書き込みを一時保存しておき、対象ノードが復帰した際に転送する</p>
+                  <p>
+                    書き込み先のレプリカが一時的に応答不能な場合、別のノードが代わりにその書き込みを一時保存しておき、対象ノードが復帰した際に転送する
+                  </p>
                 </div>
                 <div className="mini-card">
                   <h4>Merkle Tree</h4>
-                  <p>レプリカ同士のデータ全体を1件ずつ比較するのは非効率なため、データをハッシュ値の木構造にまとめ、ルートハッシュから順に比較することで差分部分だけを効率的に特定する</p>
+                  <p>
+                    レプリカ同士のデータ全体を1件ずつ比較するのは非効率なため、データをハッシュ値の木構造にまとめ、ルートハッシュから順に比較することで差分部分だけを効率的に特定する
+                  </p>
                 </div>
               </div>
               <div className="diagram-wrap" data-diagram="d13">
@@ -1021,7 +1236,9 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                また、障害検出やメタデータの伝播に使われる<strong>Gossipプロトコル</strong>（各ノードがランダムに選んだ少数の他ノードへ情報を伝え、それが連鎖的にクラスタ全体へ広がっていく方式）についても、オーバーレイネットワークの構成や、通信量を抑える「Partial View（部分的なメンバーシップ管理）」といった実装上の工夫とあわせて解説されています。
+                また、障害検出やメタデータの伝播に使われる<strong>Gossipプロトコル</strong>
+                （各ノードがランダムに選んだ少数の他ノードへ情報を伝え、それが連鎖的にクラスタ全体へ広がっていく方式）についても、オーバーレイネットワークの構成や、通信量を抑える「Partial
+                View（部分的なメンバーシップ管理）」といった実装上の工夫とあわせて解説されています。
               </p>
             </div>
           </section>
@@ -1038,7 +1255,8 @@ export default function DatabaseInternalsPage() {
               </p>
               <h3>2相コミット（2PC）</h3>
               <p>
-                最も古典的な手法が<strong>2PC（Two-Phase Commit）</strong>です。文字通り2つのフェーズから構成されます。
+                最も古典的な手法が<strong>2PC（Two-Phase Commit）</strong>
+                です。文字通り2つのフェーズから構成されます。
               </p>
               <div className="diagram-wrap" data-diagram="d12">
                 <MermaidDiagram chart={DIAG_12} />
@@ -1047,7 +1265,9 @@ export default function DatabaseInternalsPage() {
                 </div>
               </div>
               <p>
-                2PCの弱点は、コーディネーターがCommitを送る直前でクラッシュした場合、参加者は「コミットすべきかロールバックすべきか」を自力で判断できず、コーディネーターが復旧するまでブロックし続けてしまう点です。この弱点を緩和しようとしたのが<strong>3PC（Three-Phase Commit）</strong>ですが、こちらもネットワーク分断が絡む状況では完全な解決策にはなりません。
+                2PCの弱点は、コーディネーターがCommitを送る直前でクラッシュした場合、参加者は「コミットすべきかロールバックすべきか」を自力で判断できず、コーディネーターが復旧するまでブロックし続けてしまう点です。この弱点を緩和しようとしたのが
+                <strong>3PC（Three-Phase Commit）</strong>
+                ですが、こちらもネットワーク分断が絡む状況では完全な解決策にはなりません。
               </p>
               <h3>より現代的なアプローチ</h3>
               <div className="table-wrap">
@@ -1061,21 +1281,31 @@ export default function DatabaseInternalsPage() {
                   <tbody>
                     <tr>
                       <td>Calvin</td>
-                      <td>あらかじめ決定論的な実行順序をスケジューリングすることで、実行時のロック調整コストを削減するアプローチ</td>
+                      <td>
+                        あらかじめ決定論的な実行順序をスケジューリングすることで、実行時のロック調整コストを削減するアプローチ
+                      </td>
                     </tr>
                     <tr>
                       <td>Spanner（Google）</td>
-                      <td>TrueTime（GPSと原子時計に支えられた分散時刻API）を活用し、コミット時にその不確実性区間が過ぎ去るまで待つ commit-wait と組み合わせることで、グローバル分散環境での外部一貫性を実現するアプローチ</td>
+                      <td>
+                        TrueTime（GPSと原子時計に支えられた分散時刻API）を活用し、コミット時にその不確実性区間が過ぎ去るまで待つ
+                        commit-wait
+                        と組み合わせることで、グローバル分散環境での外部一貫性を実現するアプローチ
+                      </td>
                     </tr>
                     <tr>
                       <td>Percolator（Google）</td>
-                      <td>Bigtable上にMVCCベースの分散トランザクションを構築し、大規模なインクリメンタル処理に使われたアプローチ</td>
+                      <td>
+                        Bigtable上にMVCCベースの分散トランザクションを構築し、大規模なインクリメンタル処理に使われたアプローチ
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <p>
-                また、データを複数ノードへ分割配置する「データベースパーティショニング」の代表的な手法として<strong>一貫性ハッシュ法（Consistent Hashing）</strong>も本章で扱われており、ノードの追加・削除時に再配置されるデータ量を最小限に抑える仕組みが解説されています。
+                また、データを複数ノードへ分割配置する「データベースパーティショニング」の代表的な手法として
+                <strong>一貫性ハッシュ法（Consistent Hashing）</strong>
+                も本章で扱われており、ノードの追加・削除時に再配置されるデータ量を最小限に抑える仕組みが解説されています。
               </p>
             </div>
           </section>
@@ -1088,7 +1318,9 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                Part II ― そして本書全体 ― の集大成にあたるのが、第14章で扱われる<strong>コンセンサス（合意形成）</strong>です。クラスタ内の複数ノードが、一部に故障が発生しても、ある1つの値について同じ結論に到達する問題であり、分散システム理論の中でも特に難易度が高い領域とされています。コンセンサスアルゴリズムが満たすべき性質は、一般に次の3つで定義されます。
+                Part II ― そして本書全体 ― の集大成にあたるのが、第14章で扱われる
+                <strong>コンセンサス（合意形成）</strong>
+                です。クラスタ内の複数ノードが、一部に故障が発生しても、ある1つの値について同じ結論に到達する問題であり、分散システム理論の中でも特に難易度が高い領域とされています。コンセンサスアルゴリズムが満たすべき性質は、一般に次の3つで定義されます。
               </p>
               <div className="two-col">
                 <div className="mini-card">
@@ -1115,17 +1347,31 @@ export default function DatabaseInternalsPage() {
               </div>
               <h3>Paxos</h3>
               <p>
-                <strong>Paxos</strong>（Leslie Lamportにより考案）は、コンセンサス問題に対する最初期の実用的な解として広く知られています。原著では、基本のPaxosアルゴリズムに加えて、実運用でのスループットを高めるための派生版が紹介されています。
+                <strong>Paxos</strong>（Leslie
+                Lamportにより考案）は、コンセンサス問題に対する最初期の実用的な解として広く知られています。原著では、基本のPaxosアルゴリズムに加えて、実運用でのスループットを高めるための派生版が紹介されています。
               </p>
               <ul>
-                <li><strong>Multi-Paxos</strong> 複数の合意インスタンスにまたがって安定したリーダーを維持し、毎回のリーダー選出コストを省く</li>
-                <li><strong>Fast Paxos</strong> 特定条件下でメッセージのラウンド数を削減する</li>
-                <li><strong>Egalitarian Paxos</strong> 単一リーダーへの依存を減らし、複数ノードが並行して提案できるようにする</li>
-                <li><strong>Flexible Paxos</strong> クォーラム（定足数）の構成条件を緩和し、より柔軟なデプロイを可能にする</li>
+                <li>
+                  <strong>Multi-Paxos</strong>{" "}
+                  複数の合意インスタンスにまたがって安定したリーダーを維持し、毎回のリーダー選出コストを省く
+                </li>
+                <li>
+                  <strong>Fast Paxos</strong> 特定条件下でメッセージのラウンド数を削減する
+                </li>
+                <li>
+                  <strong>Egalitarian Paxos</strong>{" "}
+                  単一リーダーへの依存を減らし、複数ノードが並行して提案できるようにする
+                </li>
+                <li>
+                  <strong>Flexible Paxos</strong>{" "}
+                  クォーラム（定足数）の構成条件を緩和し、より柔軟なデプロイを可能にする
+                </li>
               </ul>
               <h3>Raft</h3>
               <p>
-                Paxosはその正確な仕様が難解であることでも知られており、この「理解のしやすさ（Understandability）」を明示的な設計目標として2014年に発表されたのが<strong>Raft</strong>です。Raftはリーダー選出・ログレプリケーション・安全性の3つの要素に処理を明確に分割しており、etcd・Consul・CockroachDB・TiKVなど、現代の多くの分散システムで採用されています。
+                Paxosはその正確な仕様が難解であることでも知られており、この「理解のしやすさ（Understandability）」を明示的な設計目標として2014年に発表されたのが
+                <strong>Raft</strong>
+                です。Raftはリーダー選出・ログレプリケーション・安全性の3つの要素に処理を明確に分割しており、etcd・Consul・CockroachDB・TiKVなど、現代の多くの分散システムで採用されています。
               </p>
               <div className="diagram-wrap" data-diagram="d14">
                 <MermaidDiagram chart={DIAG_14} />
@@ -1135,10 +1381,16 @@ export default function DatabaseInternalsPage() {
               </div>
               <h3>ビザンチン合意</h3>
               <p>
-                これまでのアルゴリズムは、ノードが「クラッシュはするが嘘はつかない」ことを前提としています。しかし、ブロックチェーンのような信頼境界の低い環境や、悪意あるノードの存在を想定する必要がある場面では、この前提が崩れます。そのための手法が<strong>ビザンチン合意（Byzantine Consensus）</strong>であり、原著では代表的なアルゴリズムである<strong>PBFT（Practical Byzantine Fault Tolerance）</strong>が、リカバリとチェックポインティングの仕組みとあわせて紹介されています。
+                これまでのアルゴリズムは、ノードが「クラッシュはするが嘘はつかない」ことを前提としています。しかし、ブロックチェーンのような信頼境界の低い環境や、悪意あるノードの存在を想定する必要がある場面では、この前提が崩れます。そのための手法が
+                <strong>ビザンチン合意（Byzantine Consensus）</strong>
+                であり、原著では代表的なアルゴリズムである
+                <strong>PBFT（Practical Byzantine Fault Tolerance）</strong>
+                が、リカバリとチェックポインティングの仕組みとあわせて紹介されています。
               </p>
               <p>
-                原著全体の締めくくりとして、「Broadcast」「Atomic Broadcast」「Virtual Synchrony」「ZAB（Zookeeper Atomic Broadcast）」といった関連概念も整理されており、コンセンサスとブロードキャストプロトコルの関係性が体系的に理解できるようになっています。
+                原著全体の締めくくりとして、「Broadcast」「Atomic Broadcast」「Virtual
+                Synchrony」「ZAB（Zookeeper Atomic
+                Broadcast）」といった関連概念も整理されており、コンセンサスとブロードキャストプロトコルの関係性が体系的に理解できるようになっています。
               </p>
             </div>
           </section>
@@ -1163,11 +1415,16 @@ export default function DatabaseInternalsPage() {
                   <tbody>
                     <tr>
                       <td className="part-cell" rowSpan={7}>
-                        I<br />ストレージ<br />エンジン
+                        I<br />
+                        ストレージ
+                        <br />
+                        エンジン
                       </td>
                       <td className="chapter-num">1</td>
                       <td>Introduction and Overview</td>
-                      <td>DBMSアーキテクチャ、メモリ型/ディスク型、行指向/列指向、データファイルとインデックスファイル</td>
+                      <td>
+                        DBMSアーキテクチャ、メモリ型/ディスク型、行指向/列指向、データファイルとインデックスファイル
+                      </td>
                     </tr>
                     <tr>
                       <td className="chapter-num">2</td>
@@ -1177,12 +1434,16 @@ export default function DatabaseInternalsPage() {
                     <tr>
                       <td className="chapter-num">3</td>
                       <td>File Formats</td>
-                      <td>バイナリエンコーディング、スロットページ、可変長データの管理、チェックサム</td>
+                      <td>
+                        バイナリエンコーディング、スロットページ、可変長データの管理、チェックサム
+                      </td>
                     </tr>
                     <tr>
                       <td className="chapter-num">4</td>
                       <td>Implementing B-Trees</td>
-                      <td>ページヘッダ、オーバーフローページ、バイナリサーチ、リバランス、圧縮、デフラグ</td>
+                      <td>
+                        ページヘッダ、オーバーフローページ、バイナリサーチ、リバランス、圧縮、デフラグ
+                      </td>
                     </tr>
                     <tr>
                       <td className="chapter-num">5</td>
@@ -1192,7 +1453,9 @@ export default function DatabaseInternalsPage() {
                     <tr>
                       <td className="chapter-num">6</td>
                       <td>B-Tree Variants</td>
-                      <td>Copy-on-Write（LMDB）、WiredTiger、FD-Tree、Bw-Tree、Cache-Oblivious B-Tree</td>
+                      <td>
+                        Copy-on-Write（LMDB）、WiredTiger、FD-Tree、Bw-Tree、Cache-Oblivious B-Tree
+                      </td>
                     </tr>
                     <tr>
                       <td className="chapter-num">7</td>
@@ -1201,7 +1464,11 @@ export default function DatabaseInternalsPage() {
                     </tr>
                     <tr>
                       <td className="part-cell plum" rowSpan={7}>
-                        II<br />分散<br />システム
+                        II
+                        <br />
+                        分散
+                        <br />
+                        システム
                       </td>
                       <td className="chapter-num">8</td>
                       <td>Introduction and Overview</td>
@@ -1235,13 +1502,17 @@ export default function DatabaseInternalsPage() {
                     <tr>
                       <td className="chapter-num">14</td>
                       <td>Consensus</td>
-                      <td>Paxos系（Multi/Fast/Egalitarian/Flexible）、Raft、ビザンチン合意（PBFT）</td>
+                      <td>
+                        Paxos系（Multi/Fast/Egalitarian/Flexible）、Raft、ビザンチン合意（PBFT）
+                      </td>
                     </tr>
                     <tr>
                       <td className="part-cell gold">付録</td>
                       <td className="chapter-num">A</td>
                       <td>Bibliography</td>
-                      <td>100本以上の論文と10冊以上の書籍を中心に、OSS実装などの参考資料も含む参考文献一覧</td>
+                      <td>
+                        100本以上の論文と10冊以上の書籍を中心に、OSS実装などの参考資料も含む参考文献一覧
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1273,9 +1544,7 @@ export default function DatabaseInternalsPage() {
                 <IconQuote size={24} />
                 <span className="voice-name">Marc Brooker</span>
                 <span className="voice-role">Amazon Web Services, Distinguished Engineer</span>
-                <p className="voice-text">
-                  自身が日常的に人へ勧める一冊として本書を挙げている。
-                </p>
+                <p className="voice-text">自身が日常的に人へ勧める一冊として本書を挙げている。</p>
               </div>
               <div className="voice-card">
                 <IconQuote size={24} />
@@ -1304,7 +1573,9 @@ export default function DatabaseInternalsPage() {
               <div className="voice-card">
                 <IconQuote size={24} />
                 <span className="voice-name">Chris Seaton</span>
-                <span className="voice-role">TruffleRubyなどで知られるプログラミング言語処理系エンジニア</span>
+                <span className="voice-role">
+                  TruffleRubyなどで知られるプログラミング言語処理系エンジニア
+                </span>
                 <p className="voice-text">
                   アカデミックな出版社ではない書籍としては異例なほど深く精密な内容でありながら、非常に読みやすくコンパクトだと評している。
                 </p>
@@ -1312,7 +1583,9 @@ export default function DatabaseInternalsPage() {
             </div>
             <div className="prose" style={{ marginTop: "1.2rem" }}>
               <p>
-                このほかにも、<em>System Design Interview</em> の著者である Alex Xu、Apache Ignite PMCで <em>Just use Postgres</em> の著者である Denis Magda など、データベース・分散システム分野で広く知られる開発者たちから、継続的に推薦の声が寄せられています。詳細と原発言へのリンクは参考文献セクションを参照してください。
+                このほかにも、<em>System Design Interview</em> の著者である Alex Xu、Apache Ignite
+                PMCで <em>Just use Postgres</em> の著者である Denis Magda
+                など、データベース・分散システム分野で広く知られる開発者たちから、継続的に推薦の声が寄せられています。詳細と原発言へのリンクは参考文献セクションを参照してください。
               </p>
             </div>
           </section>
@@ -1334,10 +1607,23 @@ export default function DatabaseInternalsPage() {
                 初めて読む場合は、いきなり全ページを精読しようとせず、次のような順序をおすすめします。
               </p>
               <ol className="step-list-plain">
-                <li>まず Part I（STEP1〜11）を通読し、「その場更新型（B-Tree）」と「ログ構造化型（LSM-Tree）」という2大設計思想の違いを掴む</li>
-                <li>Part II（STEP12〜18）は、CAP定理や一貫性モデルなど比較的とっつきやすい章から入り、最後にコンセンサス（Paxos/Raft）という最も難解な領域へ進む</li>
-                <li>一度読んだだけで完全に理解しようとせず、実際に PostgreSQL のB-Treeインデックス実装や、etcdのRaft実装のソースコードを眺めながら再読すると理解が深まる</li>
-                <li>前提知識としての分散システム理論をより体系的に広く俯瞰したい場合は、Martin Kleppmann の『Designing Data-Intensive Applications』を並行して読むと相互補完的に理解が進む</li>
+                <li>
+                  まず Part
+                  I（STEP1〜11）を通読し、「その場更新型（B-Tree）」と「ログ構造化型（LSM-Tree）」という2大設計思想の違いを掴む
+                </li>
+                <li>
+                  Part
+                  II（STEP12〜18）は、CAP定理や一貫性モデルなど比較的とっつきやすい章から入り、最後にコンセンサス（Paxos/Raft）という最も難解な領域へ進む
+                </li>
+                <li>
+                  一度読んだだけで完全に理解しようとせず、実際に PostgreSQL
+                  のB-Treeインデックス実装や、etcdのRaft実装のソースコードを眺めながら再読すると理解が深まる
+                </li>
+                <li>
+                  前提知識としての分散システム理論をより体系的に広く俯瞰したい場合は、Martin
+                  Kleppmann の『Designing Data-Intensive
+                  Applications』を並行して読むと相互補完的に理解が進む
+                </li>
               </ol>
             </div>
           </section>
@@ -1364,7 +1650,8 @@ export default function DatabaseInternalsPage() {
             </h2>
             <div className="prose">
               <p>
-                <em>Database Internals</em> は、「データベースを使う人」から「データベースの中身を理解し、選定・設計・トラブルシューティングできる人」へとステップアップするための、稀有な一冊です。B-TreeとLSM-Treeという2つのストレージエンジンの系譜、そしてPaxosやRaftに代表されるコンセンサスアルゴリズムという、現代のあらゆる分散データベースの土台となる知識を、一冊で体系的に押さえられる点に大きな価値があります。
+                <em>Database Internals</em>{" "}
+                は、「データベースを使う人」から「データベースの中身を理解し、選定・設計・トラブルシューティングできる人」へとステップアップするための、稀有な一冊です。B-TreeとLSM-Treeという2つのストレージエンジンの系譜、そしてPaxosやRaftに代表されるコンセンサスアルゴリズムという、現代のあらゆる分散データベースの土台となる知識を、一冊で体系的に押さえられる点に大きな価値があります。
               </p>
               <p>
                 本ガイドで扱った18のステップは、あくまで最初の地図です。ぜひ原著、そして参考文献に挙げた一次資料（論文・カンファレンストーク・OSS実装）にあたりながら、実際に手を動かして理解を深めていってください。
@@ -1389,7 +1676,9 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">1</span>
                 <div className="ref-body">
-                  <span className="ref-title">O&apos;Reilly 公式書籍ページ（本書の概要・目次）</span>
+                  <span className="ref-title">
+                    O&apos;Reilly 公式書籍ページ（本書の概要・目次）
+                  </span>
                   <Ext
                     className="ref-url"
                     href="https://www.oreilly.com/library/view/database-internals/9781492040330/"
@@ -1401,7 +1690,10 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">2</span>
                 <div className="ref-body">
-                  <span className="ref-title">Alex Petrov 氏本人が運営する本書の公式コンパニオンサイト databass.dev（著者プロフィール、著名エンジニアからの推薦の声を掲載）</span>
+                  <span className="ref-title">
+                    Alex Petrov 氏本人が運営する本書の公式コンパニオンサイト
+                    databass.dev（著者プロフィール、著名エンジニアからの推薦の声を掲載）
+                  </span>
                   <Ext className="ref-url" href="https://www.databass.dev/">
                     databass.dev
                   </Ext>
@@ -1419,7 +1711,9 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">4</span>
                 <div className="ref-body">
-                  <span className="ref-title">本書の詳細な目次（章・節・ページ番号の一覧、O&apos;Reillyの公式PDFを図書館が収録）</span>
+                  <span className="ref-title">
+                    本書の詳細な目次（章・節・ページ番号の一覧、O&apos;Reillyの公式PDFを図書館が収録）
+                  </span>
                   <Ext className="ref-url" href="https://www.gbv.de/dms/ilmenau/toc/1688659285.PDF">
                     gbv.de/dms/ilmenau/toc/1688659285.PDF
                   </Ext>
@@ -1432,7 +1726,10 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">5</span>
                 <div className="ref-body">
-                  <span className="ref-title">Martin Kleppmann（『Designing Data-Intensive Applications』著者）による、本書を発展的な続編として推薦する投稿</span>
+                  <span className="ref-title">
+                    Martin Kleppmann（『Designing Data-Intensive
+                    Applications』著者）による、本書を発展的な続編として推薦する投稿
+                  </span>
                   <Ext className="ref-url" href="https://x.com/martinkl/status/1273913672885317632">
                     x.com/martinkl/status/1273913672885317632
                   </Ext>
@@ -1441,8 +1738,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">6</span>
                 <div className="ref-body">
-                  <span className="ref-title">Marc Brooker（Amazon Web Services, Distinguished Engineer）による推薦の投稿</span>
-                  <Ext className="ref-url" href="https://x.com/marcjbrooker/status/1591438104979984384">
+                  <span className="ref-title">
+                    Marc Brooker（Amazon Web Services, Distinguished Engineer）による推薦の投稿
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://x.com/marcjbrooker/status/1591438104979984384"
+                  >
                     x.com/marcjbrooker/status/1591438104979984384
                   </Ext>
                 </div>
@@ -1450,8 +1752,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">7</span>
                 <div className="ref-body">
-                  <span className="ref-title">Joran Dirk Greef（TigerBeetleDB 創業者・CEO）による推薦の投稿</span>
-                  <Ext className="ref-url" href="https://x.com/jorandirkgreef/status/1807429356525858904">
+                  <span className="ref-title">
+                    Joran Dirk Greef（TigerBeetleDB 創業者・CEO）による推薦の投稿
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://x.com/jorandirkgreef/status/1807429356525858904"
+                  >
                     x.com/jorandirkgreef/status/1807429356525858904
                   </Ext>
                 </div>
@@ -1459,7 +1766,9 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">8</span>
                 <div className="ref-body">
-                  <span className="ref-title">Ed Huang（PingCAP 共同創業者・CTO）による推薦の投稿</span>
+                  <span className="ref-title">
+                    Ed Huang（PingCAP 共同創業者・CTO）による推薦の投稿
+                  </span>
                   <Ext className="ref-url" href="https://x.com/dxhuang/status/1241244337922396161">
                     x.com/dxhuang/status/1241244337922396161
                   </Ext>
@@ -1468,8 +1777,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">9</span>
                 <div className="ref-body">
-                  <span className="ref-title">Dominik Tornow（『Thinking in Distributed Systems』著者）による投稿</span>
-                  <Ext className="ref-url" href="https://x.com/dominiktornow/status/1814446370578669654">
+                  <span className="ref-title">
+                    Dominik Tornow（『Thinking in Distributed Systems』著者）による投稿
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://x.com/dominiktornow/status/1814446370578669654"
+                  >
                     x.com/dominiktornow/status/1814446370578669654
                   </Ext>
                 </div>
@@ -1477,8 +1791,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">10</span>
                 <div className="ref-body">
-                  <span className="ref-title">Chris Seatonによる、本書の技術的な深さと読みやすさを評した投稿</span>
-                  <Ext className="ref-url" href="https://twitter.com/ChrisGSeaton/status/1208502843033837568">
+                  <span className="ref-title">
+                    Chris Seatonによる、本書の技術的な深さと読みやすさを評した投稿
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://twitter.com/ChrisGSeaton/status/1208502843033837568"
+                  >
                     twitter.com/ChrisGSeaton/status/1208502843033837568
                   </Ext>
                 </div>
@@ -1490,7 +1809,10 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">11</span>
                 <div className="ref-body">
-                  <span className="ref-title">Alex Petrov 氏自身による ACM Queue 誌への寄稿（ストレージエンジンのアルゴリズムに関する解説記事）</span>
+                  <span className="ref-title">
+                    Alex Petrov 氏自身による ACM Queue
+                    誌への寄稿（ストレージエンジンのアルゴリズムに関する解説記事）
+                  </span>
                   <Ext className="ref-url" href="https://queue.acm.org/detail.cfm?id=3220266">
                     queue.acm.org/detail.cfm?id=3220266
                   </Ext>
@@ -1499,8 +1821,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">12</span>
                 <div className="ref-body">
-                  <span className="ref-title">Alex Petrov 氏による InfoQ でのカンファレンス講演（Storage Algorithms）</span>
-                  <Ext className="ref-url" href="https://www.infoq.com/presentations/storage-algorithms">
+                  <span className="ref-title">
+                    Alex Petrov 氏による InfoQ でのカンファレンス講演（Storage Algorithms）
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.infoq.com/presentations/storage-algorithms"
+                  >
                     infoq.com/presentations/storage-algorithms
                   </Ext>
                 </div>
@@ -1512,8 +1839,14 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">13</span>
                 <div className="ref-body">
-                  <span className="ref-title">Hippocampus&apos;s Garden による書評（『Designing Data-Intensive Applications』との比較を含む）</span>
-                  <Ext className="ref-url" href="https://hippocampus-garden.com/book_review_petrov/">
+                  <span className="ref-title">
+                    Hippocampus&apos;s Garden による書評（『Designing Data-Intensive
+                    Applications』との比較を含む）
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://hippocampus-garden.com/book_review_petrov/"
+                  >
                     hippocampus-garden.com/book_review_petrov
                   </Ext>
                 </div>
@@ -1521,8 +1854,15 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">14</span>
                 <div className="ref-body">
-                  <span className="ref-title">Goodreads の本書ページ（Emre Sevinç氏による、『Designing Data-Intensive Applications』および『Cassandra: The Definitive Guide』と並ぶ位置づけについてのレビューを含む）</span>
-                  <Ext className="ref-url" href="https://www.goodreads.com/book/show/44647144-database-internals">
+                  <span className="ref-title">
+                    Goodreads の本書ページ（Emre Sevinç氏による、『Designing Data-Intensive
+                    Applications』および『Cassandra: The Definitive
+                    Guide』と並ぶ位置づけについてのレビューを含む）
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://www.goodreads.com/book/show/44647144-database-internals"
+                  >
                     goodreads.com/book/show/44647144-database-internals
                   </Ext>
                 </div>
@@ -1530,8 +1870,13 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">15</span>
                 <div className="ref-body">
-                  <span className="ref-title">章ごとの学習ノート・要約（コミュニティによる読書ノート）</span>
-                  <Ext className="ref-url" href="https://notes.stonecharioteer.com/books/database-internals/index.html">
+                  <span className="ref-title">
+                    章ごとの学習ノート・要約（コミュニティによる読書ノート）
+                  </span>
+                  <Ext
+                    className="ref-url"
+                    href="https://notes.stonecharioteer.com/books/database-internals/index.html"
+                  >
                     notes.stonecharioteer.com/books/database-internals
                   </Ext>
                 </div>
@@ -1539,7 +1884,9 @@ export default function DatabaseInternalsPage() {
               <li className="ref-card">
                 <span className="ref-num">16</span>
                 <div className="ref-body">
-                  <span className="ref-title">本書の販売ページ（書籍概要と著者紹介 Apache Cassandra コミッター・PMCメンバー）</span>
+                  <span className="ref-title">
+                    本書の販売ページ（書籍概要と著者紹介 Apache Cassandra コミッター・PMCメンバー）
+                  </span>
                   <Ext
                     className="ref-url"
                     href="https://bookshop.org/p/books/database-internals-a-deep-dive-into-how-distributed-data-systems-work-alex-petrov/79ff30324a22a51e"
@@ -1563,7 +1910,9 @@ export default function DatabaseInternalsPage() {
 
           <footer className="footer">
             <p>
-              本ガイドは公開情報にもとづく学習用の非公式解説であり、O&apos;Reilly Media および Alex Petrov 氏とは関係ありません。内容の解説はB-Tree・LSM-Tree・Paxos・Raft・CAP定理などコンピュータサイエンスの標準的な公知の知識にもとづき、著作権保護対象である書籍本文の再現を避けて独自の言葉で執筆しています。
+              本ガイドは公開情報にもとづく学習用の非公式解説であり、O&apos;Reilly Media および Alex
+              Petrov
+              氏とは関係ありません。内容の解説はB-Tree・LSM-Tree・Paxos・Raft・CAP定理などコンピュータサイエンスの標準的な公知の知識にもとづき、著作権保護対象である書籍本文の再現を避けて独自の言葉で執筆しています。
             </p>
           </footer>
         </div>

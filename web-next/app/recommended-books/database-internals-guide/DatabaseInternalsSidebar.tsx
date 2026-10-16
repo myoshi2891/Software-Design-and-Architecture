@@ -80,7 +80,11 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "step14", label: "STEP14 リーダー選出", icon: <IconCrown size={18} /> },
       { id: "step15", label: "STEP15 一貫性モデル", icon: <IconGitCompare size={18} /> },
       { id: "step16", label: "STEP16 アンチエントロピー", icon: <IconRefresh size={18} /> },
-      { id: "step17", label: "STEP17 分散トランザクション", icon: <IconArrowsExchange size={18} /> },
+      {
+        id: "step17",
+        label: "STEP17 分散トランザクション",
+        icon: <IconArrowsExchange size={18} />,
+      },
       { id: "step18", label: "STEP18 コンセンサス", icon: <IconUsersGroup size={18} /> },
     ],
   },

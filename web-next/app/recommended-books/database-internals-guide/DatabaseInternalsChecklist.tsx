@@ -41,10 +41,7 @@ export default function DatabaseInternalsChecklist() {
     <div className="checklist-panel">
       <div className="checklist-progress">
         <div className="checklist-bar">
-          <div
-            className="checklist-bar-fill"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="checklist-bar-fill" style={{ width: `${progressPercent}%` }} />
         </div>
         <div className="checklist-count" role="status" aria-live="polite">
           {doneCount} / {totalCount} 完了
@@ -54,24 +51,23 @@ export default function DatabaseInternalsChecklist() {
         {CHECKLIST_ITEMS.map((item, index) => {
           const isDone = checkedState[index];
           return (
-            <li
-              key={item}
-              className={`check-item ${isDone ? "done" : ""}`}
-              onClick={() => handleToggle(index)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleToggle(index);
-                }
-              }}
-              tabIndex={0}
-              role="checkbox"
-              aria-checked={isDone}
-            >
-              <span className="check-box" aria-hidden="true">
-                <IconCheck size={14} className="check-icon" />
-              </span>
-              <span className="check-label">{item}</span>
+            <li key={item}>
+              <button
+                type="button"
+                className={`check-item ${isDone ? "done" : ""}`}
+                onClick={() => handleToggle(index)}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  font: "inherit",
+                  textAlign: "left",
+                }}
+              >
+                <span className="check-box" aria-hidden="true">
+                  <IconCheck size={14} className="check-icon" />
+                </span>
+                <span className="check-label">{item}</span>
+              </button>
             </li>
           );
         })}

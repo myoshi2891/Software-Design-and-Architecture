@@ -31,11 +31,15 @@ describe("DatabaseInternalsSidebar", () => {
     expect(sidebar?.classList.contains("open")).toBe(false);
     expect(scrim?.classList.contains("open")).toBe(false);
 
-    fireEvent.click(menuBtn!);
+    if (menuBtn) {
+      fireEvent.click(menuBtn);
+    }
     expect(sidebar?.classList.contains("open")).toBe(true);
     expect(scrim?.classList.contains("open")).toBe(true);
 
-    fireEvent.click(scrim!);
+    if (scrim) {
+      fireEvent.click(scrim);
+    }
     expect(sidebar?.classList.contains("open")).toBe(false);
     expect(scrim?.classList.contains("open")).toBe(false);
   });
@@ -46,10 +50,18 @@ describe("DatabaseInternalsSidebar", () => {
     const sidebar = container.querySelector("#sidebar");
     const firstLink = container.querySelector(".nav-link");
 
-    fireEvent.click(menuBtn!);
+    expect(menuBtn).not.toBeNull();
+    expect(sidebar).not.toBeNull();
+    expect(firstLink).not.toBeNull();
+
+    if (menuBtn) {
+      fireEvent.click(menuBtn);
+    }
     expect(sidebar?.classList.contains("open")).toBe(true);
 
-    fireEvent.click(firstLink!);
+    if (firstLink) {
+      fireEvent.click(firstLink);
+    }
     expect(sidebar?.classList.contains("open")).toBe(false);
   });
 });
