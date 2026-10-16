@@ -110,4 +110,14 @@ describe("data-warehouse-toolkit-guide page contract", () => {
 
     expect(cssContent).toContain(".data-warehouse-toolkit-guide");
   });
+
+  it("globals.css でヒーローセクションの上部余白ゼロ・マージン相殺防止が定義されている", () => {
+    const fs = require("node:fs");
+    const path = require("node:path");
+    const cssPath = path.resolve(__dirname, "../../globals.css");
+    const cssContent = fs.readFileSync(cssPath, "utf-8");
+
+    expect(cssContent).toMatch(/\.hero\s*\{[^}]*display:\s*flow-root/);
+    expect(cssContent).toMatch(/\.hero\s*h1\s*\{[^}]*margin-top:\s*0/);
+  });
 });
