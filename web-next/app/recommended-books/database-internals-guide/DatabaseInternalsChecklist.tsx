@@ -55,6 +55,7 @@ export default function DatabaseInternalsChecklist() {
               <button
                 type="button"
                 className={`check-item ${isDone ? "done" : ""}`}
+                aria-pressed={isDone}
                 onClick={() => handleToggle(index)}
                 style={{
                   width: "100%",
