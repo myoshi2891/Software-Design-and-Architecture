@@ -80,15 +80,15 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     expect(container.querySelector(".overview-planned")).toHaveTextContent(
-      /^公開中 33 本 \/ 準備中 0 本$/
+      /^公開中 34 本 \/ 準備中 0 本$/
     );
     const stats = [...container.querySelectorAll(".index-stats > div")].map((item) => [
       item.querySelector("dt")?.textContent,
       item.querySelector("dd")?.textContent,
     ]);
     expect(stats).toEqual([
-      ["収録ガイド", "33本"],
-      ["公開中", "33"],
+      ["収録ガイド", "34本"],
+      ["公開中", "34"],
       ["カテゴリ", String(guideCatalog.length).padStart(2, "0")],
     ]);
   });
@@ -111,7 +111,7 @@ describe("HomePage (guide index)", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 本");
     fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
-    expect(container.querySelectorAll(".guide-row")).toHaveLength(33);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(34);
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
   });
