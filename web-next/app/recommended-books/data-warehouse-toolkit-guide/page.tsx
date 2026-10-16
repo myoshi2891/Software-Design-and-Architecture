@@ -33,7 +33,6 @@ import {
   IconSitemap,
   IconStairsUp,
   IconStar,
-  IconStars,
   IconTable,
   IconTopologyStar3,
   IconTransform,
@@ -46,8 +45,10 @@ import MermaidDiagram from "@/components/MermaidDiagram";
 import DataWarehouseToolkitChecklist from "./DataWarehouseToolkitChecklist";
 import DataWarehouseToolkitSidebar from "./DataWarehouseToolkitSidebar";
 
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, Hiragino Sans, Noto Sans JP, sans-serif", "fontSize": "16px", "primaryColor": "#fffdf9", "primaryBorderColor": "#3d3a8a", "primaryTextColor": "#2a2116", "lineColor": "#8a8060", "secondaryColor": "#f4ead0", "tertiaryColor": "#dcf0e4", "edgeLabelBackground": "#fffdf9"}, "flowchart": {"useMaxWidth": false, "htmlLabels": true, "curve": "basis"}}}%%`;
+
 const DIAGRAMS = {
-  d01: `flowchart TB
+  d01: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -65,7 +66,7 @@ const DIAGRAMS = {
     L --> M["Step 12　批判的に読む　論争と限界"]
     class A hub
     class M done`,
-  d02: `flowchart TB
+  d02: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -78,7 +79,7 @@ const DIAGRAMS = {
     O3 -.->|"ETLで抽出・変換・格納"| OLAP
     class OLTP hub
     class OLAP done`,
-  d03: `flowchart TB
+  d03: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -87,7 +88,7 @@ const DIAGRAMS = {
     P --> BI["BIアプリケーション　レポート・ダッシュボード・アドホック分析"]
     class S hub
     class BI done`,
-  d04: `flowchart TB
+  d04: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -104,7 +105,7 @@ const DIAGRAMS = {
     class IS hub
     class KBI done
     class IBI done`,
-  d05: `flowchart TB
+  d05: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -113,7 +114,7 @@ const DIAGRAMS = {
     P3 --> P4["④ ファクトを識別する　数量・売上金額・原価などの数値"]
     class P1 hub
     class P4 done`,
-  d06: `flowchart LR
+  d06: `${MERMAID_INIT}\nflowchart LR
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -129,7 +130,7 @@ const DIAGRAMS = {
     D4 --- F
     D5 --- F
     class F hub`,
-  d07: `flowchart TB
+  d07: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -137,7 +138,7 @@ const DIAGRAMS = {
     Types --> P["定期スナップショット・ファクトテーブル　1行は一定期間ごとの状態　例　月末の在庫残高"]
     Types --> A["累積スナップショット・ファクトテーブル　1行は1プロセス全体　複数マイルストーン日付を後から更新　例　受注から出荷までのパイプライン"]
     class Types hub`,
-  d08: `flowchart TD
+  d08: `${MERMAID_INIT}\nflowchart TD
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -152,7 +153,7 @@ const DIAGRAMS = {
     class Q1 box
     class Q2 box
     class T2 done`,
-  d09: `flowchart TB
+  d09: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -161,7 +162,7 @@ const DIAGRAMS = {
     D --> M["管理　Managing　13サブシステム　ジョブ運用・監視・セキュリティ"]
     class E hub
     class M done`,
-  d10: `flowchart LR
+  d10: `${MERMAID_INIT}\nflowchart LR
     BP1["小売販売"] --> DD1["日付"]
     BP1 --> DD2["商品"]
     BP1 --> DD3["店舗・拠点"]
@@ -172,7 +173,7 @@ const DIAGRAMS = {
     BP3["購買"] --> DD1
     BP3 --> DD2
     BP3 --> DD4["サプライヤー"]`,
-  d11: `flowchart TB
+  d11: `${MERMAID_INIT}\nflowchart TB
     classDef hub fill:#e6e5f7,stroke:#3d3a8a,color:#2a2116
     classDef box fill:#f4ead0,stroke:#7d5c14,color:#2a2116
     classDef done fill:#dcf0e4,stroke:#1f5c3d,color:#2a2116
@@ -220,10 +221,6 @@ export default function DataWarehouseToolkitGuidePage() {
 
         <div className="main">
           <header className="hero">
-            <div className="hero-eyebrow">
-              <IconStars aria-hidden="true" size={18} />
-              <span>ディメンショナルモデリング初学者向けガイド</span>
-            </div>
             <h1>The Data Warehouse Toolkit 完全読解ガイド</h1>
             <p className="hero-sub">
               ― ディメンショナルモデリング初学者のためのステップバイステップ解説

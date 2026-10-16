@@ -18981,19 +18981,41 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
     border-radius: 6px; font-family: var(--mono); font-size: 1rem; font-weight: 700;
   }
 
-  /* footer */
+  /* footer (ライトモード対応) */
   .footer {
     padding: 32px 56px;
-    background: var(--ink); color: rgba(255, 255, 255, .72);
-    font-size: 1rem; line-height: 1.8;
+    background: var(--paper-card);
+    border-top: 1px solid var(--border);
+    color: var(--ink-faint);
+    font-size: 1rem;
+    line-height: 1.8;
   }
-  .footer strong { color: #fff; }
+  .footer strong { color: var(--ink); }
   .disclaimer {
     display: flex; gap: 10px; align-items: flex-start;
-    background: rgba(255, 255, 255, .06); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;
+    background: var(--gold-soft);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+  .disclaimer i, .disclaimer svg {
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   .mermaidTooltip { font-size: 1rem !important; }
+  .diagram-wrap .mermaid svg .edgePath .path {
+    stroke: #8a8060 !important;
+    stroke-width: 1.5px;
+  }
+  .diagram-wrap .mermaid svg .marker {
+    fill: #8a8060 !important;
+    stroke: #8a8060 !important;
+  }
 
   /* responsive */
   @media (max-width: 960px) {
@@ -19009,6 +19031,7 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
 html:has(.data-warehouse-toolkit-guide),
 body.has-common-header:has(.data-warehouse-toolkit-guide) {
   background: #f6f1e7;
+  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
 }
 
 body.has-common-header .data-warehouse-toolkit-guide .sidebar {
