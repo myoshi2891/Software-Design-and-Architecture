@@ -128,6 +128,7 @@ describe("high-performance-mysql-guide page contract", () => {
     for (const diagram of diagrams) {
       const chart = diagram.getAttribute("data-chart") ?? "";
       expect(chart).toMatch(/^%%\{init:\s*\{.*"theme":\s*"base"/s);
+      expect(chart).toContain('"edgeLabelBackground": "#faf4e6"');
     }
   });
 });

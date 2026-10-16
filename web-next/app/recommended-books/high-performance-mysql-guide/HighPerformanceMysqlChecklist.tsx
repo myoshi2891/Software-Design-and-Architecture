@@ -50,7 +50,7 @@ export default function HighPerformanceMysqlChecklist() {
               <label>
                 <input type="checkbox" checked={isDone} onChange={() => handleToggle(index)} />
                 <span className="box" aria-hidden="true">
-                  <IconCheck size={14} />
+                  {isDone && <IconCheck size={14} />}
                 </span>
                 <span className="label">{item}</span>
               </label>

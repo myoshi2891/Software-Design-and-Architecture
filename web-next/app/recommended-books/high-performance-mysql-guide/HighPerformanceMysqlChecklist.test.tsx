@@ -29,4 +29,14 @@ describe("HighPerformanceMysqlChecklist", () => {
     expect(screen.getByText("0 / 9 完了")).toBeInTheDocument();
     expect(fill.style.width).toBe("0%");
   });
+
+  it("初期状態ではチェックアイコンが表示されず、クリックすると表示される", () => {
+    const { container } = render(<HighPerformanceMysqlChecklist />);
+    expect(container.querySelectorAll(".box svg")).toHaveLength(0);
+
+    const firstItem = screen.getByText(CHECKLIST_ITEMS[0]);
+    fireEvent.click(firstItem);
+
+    expect(container.querySelectorAll(".box svg")).toHaveLength(1);
+  });
 });

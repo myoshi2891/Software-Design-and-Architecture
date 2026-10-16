@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     "O'Reilly『High Performance MySQL, 4th Edition』を章立てに沿って初学者向けにステップバイステップで解説。Mermaid図解と参考文献URL付き。",
 };
 
-const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Zen Kaku Gothic New\\", \\"Source Serif 4\\", sans-serif", "fontSize": "15px", "primaryColor": "#faf4e6", "primaryBorderColor": "#c9bd9b", "primaryTextColor": "#2b2420", "lineColor": "#8a7f70", "secondaryColor": "#e5e2f7", "tertiaryColor": "#fffdf8", "clusterBkg": "#faf4e6", "clusterBorder": "#ddd0b3"}}}%%
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Zen Kaku Gothic New\\", \\"Source Serif 4\\", sans-serif", "fontSize": "15px", "primaryColor": "#faf4e6", "primaryBorderColor": "#c9bd9b", "primaryTextColor": "#2b2420", "lineColor": "#8a7f70", "secondaryColor": "#e5e2f7", "tertiaryColor": "#fffdf8", "clusterBkg": "#faf4e6", "clusterBorder": "#ddd0b3", "edgeLabelBackground": "#faf4e6"}}}%%
 `;
 
 const DIAGRAM_1 = `${MERMAID_INIT}flowchart LR

@@ -21683,10 +21683,9 @@ ul.tick li{
   position:relative;padding-left:1.7rem;margin-bottom:.6rem;
 }
 ul.tick li::before{
-  content:"\ea5e";
-  font-family:"tabler-icons";
-  position:absolute;left:0;top:.05em;
-  color:var(--forest);font-size:1.05rem;
+  content:"✓";
+  position:absolute;left:0;top:0;
+  color:var(--forest);font-size:1.05rem;font-weight:700;
 }
 
 /* ---------- checklist ---------- */
@@ -21735,11 +21734,30 @@ ul.tick li::before{
   background:var(--card);
   transition:all .15s ease;
 }
-.checklist li .box i{opacity:0;font-size:1rem;color:#fff;transition:opacity .15s ease;}
+.checklist li .box i,
+.checklist li .box svg{opacity:0;font-size:1rem;color:#fff;transition:opacity .15s ease;}
 .checklist li.done .box{background:var(--forest);border-color:var(--forest);}
-.checklist li.done .box i{opacity:1;}
+.checklist li.done .box i,
+.checklist li.done .box svg{opacity:1;}
 .checklist li.done span.label{color:var(--ink-faint);text-decoration:line-through;}
 .checklist li span.label{font-size:1rem;}
+
+/* ---------- mermaid edgeLabel fix ---------- */
+& .edgeLabel{
+  background-color:var(--card-2) !important;
+}
+& .edgeLabel rect,
+& .edgeLabel .label rect{
+  fill:var(--card-2) !important;
+  rx:4px;
+  ry:4px;
+}
+& .edgeLabel span,
+& .edgeLabel p,
+& .edgeLabel .labelText{
+  color:var(--ink) !important;
+  font-size:13px !important;
+}
 
 /* ---------- reference cards ---------- */
 .ref-list{display:flex;flex-direction:column;gap:.7rem;}
