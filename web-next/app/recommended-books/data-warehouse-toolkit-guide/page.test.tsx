@@ -1,6 +1,11 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
+// スタイル契約の検証用に globals.css を一度だけ読み込み、各テストで共有する。
+const cssContent = readFileSync(resolve(__dirname, "../../globals.css"), "utf-8");
 
 // Mermaid 図はクライアント描画のため、契約テストでは軽量モックに差し替える。
 vi.mock("@/components/MermaidDiagram", () => ({
@@ -103,20 +108,10 @@ describe("data-warehouse-toolkit-guide page contract", () => {
   });
 
   it("globals.css に .data-warehouse-toolkit-guide のスコープ定義が含まれている", () => {
-    const fs = require("node:fs");
-    const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../globals.css");
-    const cssContent = fs.readFileSync(cssPath, "utf-8");
-
     expect(cssContent).toContain(".data-warehouse-toolkit-guide");
   });
 
   it("globals.css でヒーローセクションの上部余白ゼロ・マージン相殺防止が定義されている", () => {
-    const fs = require("node:fs");
-    const path = require("node:path");
-    const cssPath = path.resolve(__dirname, "../../globals.css");
-    const cssContent = fs.readFileSync(cssPath, "utf-8");
-
     expect(cssContent).toMatch(/\.hero\s*\{[^}]*display:\s*flow-root/);
     expect(cssContent).toMatch(/\.hero\s*h1\s*\{[^}]*margin-top:\s*0/);
   });
