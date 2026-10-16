@@ -252,6 +252,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Michael J. Hernandez著『Database Design for Mere Mortals』を起点にリレーショナルデータベース設計を学ぶ",
         status: "published",
       },
+      {
+        name: "Database Internals",
+        href: "/recommended-books/database-internals-guide",
+        summary:
+          "Alex Petrov著『Database Internals』を起点にストレージエンジンと分散システムの内部構造を学ぶ",
+        status: "published",
+      },
     ],
   },
   {

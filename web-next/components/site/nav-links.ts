@@ -165,6 +165,10 @@ export const navLinks: readonly NavLink[] = [
         name: "Database Design for Mere Mortals",
         href: "/recommended-books/database-design-for-mere-mortals-guide",
       },
+      {
+        name: "Database Internals",
+        href: "/recommended-books/database-internals-guide",
+      },
     ],
   },
   {
