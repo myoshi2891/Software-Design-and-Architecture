@@ -18,13 +18,13 @@ describe("guideCatalog structure", () => {
     expect(guideCatalog.length).toBe(7);
   });
 
-  it("holds 35 guides in total", () => {
-    expect(allEntries().length).toBe(35);
+  it("holds 36 guides in total", () => {
+    expect(allEntries().length).toBe(36);
   });
 
-  it("splits into 35 published and 0 planned guides", () => {
+  it("splits into 36 published and 0 planned guides", () => {
     const entries = allEntries();
-    expect(entries.filter((e) => e.status === "published").length).toBe(35);
+    expect(entries.filter((e) => e.status === "published").length).toBe(36);
     expect(entries.filter((e) => e.status === "planned").length).toBe(0);
   });
 

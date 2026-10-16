@@ -181,6 +181,10 @@ export const navLinks: readonly NavLink[] = [
         name: "NoSQL Distilled",
         href: "/recommended-books/nosql-distilled-guide",
       },
+      {
+        name: "Refactoring Databases",
+        href: "/recommended-books/refactoring-databases-guide",
+      },
     ],
   },
   {

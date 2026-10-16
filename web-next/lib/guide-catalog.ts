@@ -280,6 +280,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Pramod J. Sadalage・Martin Fowler著『NoSQL Distilled』を起点にポリグロット・パーシステンスと4つのデータモデルを学ぶ",
         status: "published",
       },
+      {
+        name: "Refactoring Databases",
+        href: "/recommended-books/refactoring-databases-guide",
+        summary:
+          "Scott W. Ambler・Pramod J. Sadalage著『Refactoring Databases』を起点に進化的データベース設計と移行手法を学ぶ",
+        status: "published",
+      },
     ],
   },
   {

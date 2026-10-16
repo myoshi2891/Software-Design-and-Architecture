@@ -71,7 +71,8 @@
         "app/css-design-system-guide/design-system-css-fundamentals/page.tsx",
         "app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx",
         "app/recommended-books/graph-databases-guide/page.tsx",
-        "app/recommended-books/high-performance-mysql-guide/page.tsx"
+        "app/recommended-books/high-performance-mysql-guide/page.tsx",
+        "app/recommended-books/refactoring-databases-guide/page.tsx"
       ],
       "linter": {
         "rules": {
