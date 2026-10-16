@@ -273,6 +273,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Silvia Botros・Jeremy Tinley著『High Performance MySQL 第4版』を起点に大規模運用の実践知を学ぶ",
         status: "published",
       },
+      {
+        name: "NoSQL Distilled",
+        href: "/recommended-books/nosql-distilled-guide",
+        summary:
+          "Pramod J. Sadalage・Martin Fowler著『NoSQL Distilled』を起点にポリグロット・パーシステンスと4つのデータモデルを学ぶ",
+        status: "published",
+      },
     ],
   },
   {

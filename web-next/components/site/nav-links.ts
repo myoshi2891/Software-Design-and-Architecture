@@ -177,6 +177,10 @@ export const navLinks: readonly NavLink[] = [
         name: "High Performance MySQL",
         href: "/recommended-books/high-performance-mysql-guide",
       },
+      {
+        name: "NoSQL Distilled",
+        href: "/recommended-books/nosql-distilled-guide",
+      },
     ],
   },
   {
