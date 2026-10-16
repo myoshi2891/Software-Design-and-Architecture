@@ -245,6 +245,13 @@ export const guideCatalog: readonly GuideCategory[] = [
           "Ralph Kimball & Margy Ross著『The Data Warehouse Toolkit』を起点にディメンショナルモデリングを学ぶ",
         status: "published",
       },
+      {
+        name: "Database Design for Mere Mortals",
+        href: "/recommended-books/database-design-for-mere-mortals-guide",
+        summary:
+          "Michael J. Hernandez著『Database Design for Mere Mortals』を起点にリレーショナルデータベース設計を学ぶ",
+        status: "published",
+      },
     ],
   },
   {

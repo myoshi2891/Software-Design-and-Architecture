@@ -161,6 +161,10 @@ export const navLinks: readonly NavLink[] = [
         name: "The Data Warehouse Toolkit",
         href: "/recommended-books/data-warehouse-toolkit-guide",
       },
+      {
+        name: "Database Design for Mere Mortals",
+        href: "/recommended-books/database-design-for-mere-mortals-guide",
+      },
     ],
   },
   {
