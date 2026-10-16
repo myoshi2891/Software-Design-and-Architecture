@@ -99,6 +99,16 @@ export default function RefactoringDatabasesSidebar() {
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
 
+  // 開いている間だけ document で Escape を受け取り、フォーカス位置に関係なく閉じる
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   useEffect(() => {
     const allIds = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.id));
     const elements = allIds
@@ -154,10 +164,6 @@ export default function RefactoringDatabasesSidebar() {
         className={`scrim ${isOpen ? "open" : ""}`}
         id="sidebarOverlay"
         onClick={closeSidebar}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") closeSidebar();
-        }}
-        tabIndex={-1}
         aria-hidden="true"
       />
       <aside className={`sidebar ${isOpen ? "open" : ""}`} id="sidebar">
