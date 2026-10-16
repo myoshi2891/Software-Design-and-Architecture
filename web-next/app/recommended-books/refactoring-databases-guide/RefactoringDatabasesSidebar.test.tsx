@@ -5,9 +5,12 @@ import RefactoringDatabasesSidebar, { NAV_GROUPS } from "./RefactoringDatabasesS
 
 describe("RefactoringDatabasesSidebar", () => {
   it("26 個のナビゲーションリンクを描画する", () => {
-    const { container } = render(<RefactoringDatabasesSidebar />);
-    const links = container.querySelectorAll("#sidebar a.nav-a");
-    expect(links).toHaveLength(26);
+    render(<RefactoringDatabasesSidebar />);
+    const titles = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.title));
+    expect(titles).toHaveLength(26);
+    for (const title of titles) {
+      expect(screen.getByRole("link", { name: title }).textContent).toBe(title);
+    }
   });
 
   it("4 つのグループラベルを描画する", () => {
@@ -65,6 +68,22 @@ describe("RefactoringDatabasesSidebar", () => {
 
     // Assert
     expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("Escape で閉じるとトグルボタンへフォーカスが戻る", () => {
+    // Arrange
+    const { container } = render(<RefactoringDatabasesSidebar />);
+    const btn = screen.getByRole("button", { name: "目次メニュー" });
+    fireEvent.click(btn);
+    const link = screen.getByRole("link", { name: NAV_GROUPS[0].items[0].title });
+    link.focus();
+
+    // Act
+    fireEvent.keyDown(link, { key: "Escape" });
+
+    // Assert
+    expect(document.activeElement).toBe(btn);
+    expect(container.querySelector("#sidebar")?.classList.contains("open")).toBe(false);
   });
 
   it("Escape 以外のキーでは閉じない", () => {

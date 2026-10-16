@@ -64,4 +64,17 @@ describe("DatabaseInternalsSidebar", () => {
     }
     expect(sidebar?.classList.contains("open")).toBe(false);
   });
+
+  it("メニューを開くと最初のナビゲーションリンクへフォーカスが移る", () => {
+    // Arrange
+    render(<DatabaseInternalsSidebar />);
+    const menuBtn = screen.getByRole("button", { name: "メニューを開く" });
+    const firstLink = screen.getByRole("link", { name: NAV_GROUPS[0].items[0].label });
+
+    // Act
+    fireEvent.click(menuBtn);
+
+    // Assert
+    expect(document.activeElement).toBe(firstLink);
+  });
 });

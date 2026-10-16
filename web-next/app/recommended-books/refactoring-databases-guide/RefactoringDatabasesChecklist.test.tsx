@@ -17,7 +17,7 @@ describe("RefactoringDatabasesChecklist", () => {
     const label = container.querySelector("#checklistLabel");
     expect(label?.textContent).toBe("0 / 8 完了");
 
-    const checkboxes = container.querySelectorAll("input[type='checkbox']");
+    const checkboxes = CHECKLIST_ITEMS.map((item) => screen.getByRole("checkbox", { name: item }));
     expect(checkboxes).toHaveLength(8);
 
     fireEvent.click(checkboxes[0]);

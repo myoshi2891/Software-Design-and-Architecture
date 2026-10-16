@@ -66,4 +66,33 @@ describe("NosqlDistilledSidebar", () => {
     }
     expect(sidebar?.classList.contains("open")).toBe(false);
   });
+
+  it("メニューボタンにフォーカスがある状態で Escape を押すと閉じる", () => {
+    // Arrange
+    render(<NosqlDistilledSidebar />);
+    const btn = screen.getByRole("button", { name: "メニュー" });
+    fireEvent.click(btn);
+    btn.focus();
+
+    // Act
+    fireEvent.keyDown(btn, { key: "Escape" });
+
+    // Assert
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("ナビゲーションリンクにフォーカスがある状態で Escape を押すと閉じる", () => {
+    // Arrange
+    render(<NosqlDistilledSidebar />);
+    const btn = screen.getByRole("button", { name: "メニュー" });
+    fireEvent.click(btn);
+    const link = screen.getByRole("link", { name: NAV_GROUPS[0].items[0].title });
+    link.focus();
+
+    // Act
+    fireEvent.keyDown(link, { key: "Escape" });
+
+    // Assert
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
 });
