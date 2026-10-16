@@ -21470,7 +21470,7 @@ p{margin:0 0 1.1em;}
 }
 .nav-link.active i{color:var(--indigo-dark);}
 
-.menu-toggle{
+.mobile-toggle{
   display:none;
   position:fixed;top:.85rem;left:.85rem;z-index:60;
   width:44px;height:44px;
@@ -21834,7 +21834,7 @@ footer.page-footer{
     box-shadow:var(--shadow-lg);
   }
   .sidebar.open{transform:translateX(0);visibility:visible;}
-  .menu-toggle{display:flex;}
+  .mobile-toggle{display:flex;}
   .content{margin-left:0;width:100%;padding:5rem 1.2rem 4rem;}
   .hero{padding:2rem 1.4rem;}
   .hero h1{font-size:1.5rem;}

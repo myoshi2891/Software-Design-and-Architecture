@@ -12,8 +12,12 @@ import Page from "./page";
 describe("high-performance-mysql-guide page contract", () => {
   it("h1 見出しが書籍ガイドのタイトルである", () => {
     const { container } = render(<Page />);
-    const h1s = Array.from(container.querySelectorAll("h1")).map((h) => h.textContent?.trim());
-    expect(h1s.some((t) => t?.includes("High Performance MySQL"))).toBe(true);
+    // サイドバーの h1 を除外し、本文ヒーローのタイトル見出しのみを検証する
+    const h1s = Array.from(container.querySelectorAll("main .hero h1")).map((h) =>
+      h.textContent?.trim()
+    );
+    expect(h1s).toHaveLength(1);
+    expect(h1s[0]).toContain("High Performance MySQL");
   });
 
   it("h2 セクション見出しとパートディバイダー見出しが合計 34 個ある", () => {
