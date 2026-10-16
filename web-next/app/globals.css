@@ -18728,6 +18728,8 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
   .main {
     margin-left: var(--sidebar-w);
     min-height: 100vh;
+    margin-top: 0;
+    padding-top: 0;
   }
   .brand {
     padding: 0 24px 20px;
@@ -18775,19 +18777,18 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
 
   /* hero */
   .hero {
+    display: flow-root;
+    margin-top: 0;
     background: linear-gradient(135deg, var(--indigo) 0%, #1e1b4b 100%);
     color: #fff;
     padding: 48px 56px 42px;
   }
-  .hero-eyebrow {
-    font-size: 1rem; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--gold-soft); font-weight: 600; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
   .hero h1 {
     font-family: var(--serif); font-weight: 700;
     font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-    line-height: 1.35; margin: 0 0 14px;
+    line-height: 1.35;
+    margin: 0 0 14px;
+    margin-top: 0;
     color: #fff;
   }
   .hero .hero-sub {
@@ -19028,7 +19029,10 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
   }
 }
 
-html:has(.data-warehouse-toolkit-guide),
+html:has(.data-warehouse-toolkit-guide) {
+  background: #f6f1e7;
+}
+
 body.has-common-header:has(.data-warehouse-toolkit-guide) {
   background: #f6f1e7;
   margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
