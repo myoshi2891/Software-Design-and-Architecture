@@ -57,13 +57,21 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "structure", label: "本書の全体構成", icon: <IconSitemap className="ti" size={18} /> },
       { id: "philosophy", label: "設計思想", icon: <IconBulb className="ti" size={18} /> },
       { id: "roadmap", label: "学習ロードマップ", icon: <IconRoute className="ti" size={18} /> },
-      { id: "step0", label: "Step0 なぜ設計を学ぶのか", icon: <IconHelpCircle className="ti" size={18} /> },
+      {
+        id: "step0",
+        label: "Step0 なぜ設計を学ぶのか",
+        icon: <IconHelpCircle className="ti" size={18} />,
+      },
     ],
   },
   {
     label: "Part I 基礎",
     items: [
-      { id: "step1", label: "Step1 リレーショナルDB", icon: <IconDatabase className="ti" size={18} /> },
+      {
+        id: "step1",
+        label: "Step1 リレーショナルDB",
+        icon: <IconDatabase className="ti" size={18} />,
+      },
       { id: "step2", label: "Step2 設計目標", icon: <IconTarget className="ti" size={18} /> },
       { id: "step3", label: "Step3 用語", icon: <IconAbc className="ti" size={18} /> },
     ],
@@ -76,28 +84,64 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "step6", label: "Step6 現行DBの分析", icon: <IconSearch className="ti" size={18} /> },
       { id: "step7", label: "Step7 テーブル構造", icon: <IconTable className="ti" size={18} /> },
       { id: "step8", label: "Step8 キー", icon: <IconKey className="ti" size={18} /> },
-      { id: "step9", label: "Step9 フィールド仕様", icon: <IconListDetails className="ti" size={18} /> },
-      { id: "step10", label: "Step10 リレーションシップ", icon: <IconArrowsJoin className="ti" size={18} /> },
-      { id: "step11", label: "Step11 ビジネスルール", icon: <IconGavel className="ti" size={18} /> },
+      {
+        id: "step9",
+        label: "Step9 フィールド仕様",
+        icon: <IconListDetails className="ti" size={18} />,
+      },
+      {
+        id: "step10",
+        label: "Step10 リレーションシップ",
+        icon: <IconArrowsJoin className="ti" size={18} />,
+      },
+      {
+        id: "step11",
+        label: "Step11 ビジネスルール",
+        icon: <IconGavel className="ti" size={18} />,
+      },
       { id: "step12", label: "Step12 ビュー", icon: <IconEye className="ti" size={18} /> },
-      { id: "step13", label: "Step13 整合性レビュー", icon: <IconChecklist className="ti" size={18} /> },
+      {
+        id: "step13",
+        label: "Step13 整合性レビュー",
+        icon: <IconChecklist className="ti" size={18} />,
+      },
     ],
   },
   {
     label: "Part III その他",
     items: [
-      { id: "step14", label: "Step14 悪いデザイン", icon: <IconAlertTriangle className="ti" size={18} /> },
-      { id: "step15", label: "Step15 例外を理解する", icon: <IconAdjustments className="ti" size={18} /> },
+      {
+        id: "step14",
+        label: "Step14 悪いデザイン",
+        icon: <IconAlertTriangle className="ti" size={18} />,
+      },
+      {
+        id: "step15",
+        label: "Step15 例外を理解する",
+        icon: <IconAdjustments className="ti" size={18} />,
+      },
       { id: "step16", label: "Step16 結び", icon: <IconFlag2 className="ti" size={18} /> },
     ],
   },
   {
     label: "読みを深める",
     items: [
-      { id: "normalization", label: "正規化についての補足", icon: <IconHierarchy2 className="ti" size={18} /> },
+      {
+        id: "normalization",
+        label: "正規化についての補足",
+        icon: <IconHierarchy2 className="ti" size={18} />,
+      },
       { id: "critical", label: "批判的に読む", icon: <IconShieldCheck className="ti" size={18} /> },
-      { id: "next-steps", label: "次のステップ", icon: <IconArrowBigRightLines className="ti" size={18} /> },
-      { id: "checklist", label: "学習チェックリスト", icon: <IconSquareCheck className="ti" size={18} /> },
+      {
+        id: "next-steps",
+        label: "次のステップ",
+        icon: <IconArrowBigRightLines className="ti" size={18} />,
+      },
+      {
+        id: "checklist",
+        label: "学習チェックリスト",
+        icon: <IconSquareCheck className="ti" size={18} />,
+      },
       { id: "summary", label: "まとめ", icon: <IconNotes className="ti" size={18} /> },
       { id: "references", label: "参考文献", icon: <IconLink className="ti" size={18} /> },
     ],
@@ -145,7 +189,9 @@ export default function DatabaseDesignSidebar() {
       }
     );
 
-    elements.forEach((el) => observer.observe(el));
+    elements.forEach((el) => {
+      observer.observe(el);
+    });
     return () => observer.disconnect();
   }, []);
 
