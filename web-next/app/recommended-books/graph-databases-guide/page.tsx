@@ -180,17 +180,49 @@ const DIAGRAM_14 = `${MERMAID_INIT}flowchart TD
     class U1 hub
     class U5 done`;
 
-const CYPHER_CODE = `<span class="cm">// 田中さんが働いている会社を探す</span>
-<span class="kw">MATCH</span> (p:<span class="fn">Person</span> {name: <span class="st">"田中太郎"</span>})-[:<span class="fn">WORKS_AT</span>]->(c:<span class="fn">Company</span>)
-<span class="kw">RETURN</span> c.name
-
-<span class="cm">// 田中さんの知人のうち、田中さんと同じ会社で働いている人を探す</span>
-<span class="kw">MATCH</span> (p:<span class="fn">Person</span> {name: <span class="st">"田中太郎"</span>})-[:<span class="fn">KNOWS</span>]->(friend:<span class="fn">Person</span>)
-<span class="kw">MATCH</span> (p)-[:<span class="fn">WORKS_AT</span>]->(c:<span class="fn">Company</span>)&lt;-[:<span class="fn">WORKS_AT</span>]-(friend)
-<span class="kw">RETURN</span> friend.name, c.name
-
-<span class="cm">// 新しいノードとリレーションシップを作る</span>
-<span class="kw">CREATE</span> (p:<span class="fn">Person</span> {name: <span class="st">"佐藤次郎"</span>})-[:<span class="fn">WORKS_AT</span> {since: <span class="nu">2024</span>}]->(c:<span class="fn">Company</span> {name: <span class="st">"灯台商事"</span>})`;
+const CYPHER_CODE = (
+  <>
+    <span className="cm">{"// 田中さんが働いている会社を探す"}</span>
+    {"\n"}
+    <span className="kw">MATCH</span> (p:<span className="fn">Person</span> {"{"}name:{" "}
+    <span className="st">"田中太郎"</span>
+    {"})-[:"}
+    <span className="fn">WORKS_AT</span>
+    {"]->(c:"}
+    <span className="fn">Company</span>
+    {")\n"}
+    <span className="kw">RETURN</span>
+    {" c.name\n\n"}
+    <span className="cm">{"// 田中さんの知人のうち、田中さんと同じ会社で働いている人を探す"}</span>
+    {"\n"}
+    <span className="kw">MATCH</span> (p:<span className="fn">Person</span> {"{"}name:{" "}
+    <span className="st">"田中太郎"</span>
+    {"})-[:"}
+    <span className="fn">KNOWS</span>
+    {"]->(friend:"}
+    <span className="fn">Person</span>
+    {")\n"}
+    <span className="kw">MATCH</span>
+    {" (p)-[:"}
+    <span className="fn">WORKS_AT</span>
+    {"]->(c:"}
+    <span className="fn">Company</span>
+    {")<-[:"}
+    <span className="fn">WORKS_AT</span>
+    {"]-(friend)\n"}
+    <span className="kw">RETURN</span>
+    {" friend.name, c.name\n\n"}
+    <span className="cm">{"// 新しいノードとリレーションシップを作る"}</span>
+    {"\n"}
+    <span className="kw">CREATE</span> (p:<span className="fn">Person</span> {"{"}name:{" "}
+    <span className="st">"佐藤次郎"</span>
+    {"})-[:"}
+    <span className="fn">WORKS_AT</span> {"{"}since: <span className="nu">2024</span>
+    {"}]->(c:"}
+    <span className="fn">Company</span> {"{"}name: <span className="st">"灯台商事"</span>
+    {"})"}
+  </>
+);
 
 export default function Page() {
   return (
@@ -637,7 +669,7 @@ export default function Page() {
               <div className="code-label">
                 <IconTerminal2 size={16} /> Cypher
               </div>
-              <pre dangerouslySetInnerHTML={{ __html: CYPHER_CODE }} />
+              <pre>{CYPHER_CODE}</pre>
             </div>
             <p>
               ポイントは、<code>(ノード)-[:関係種別]-&gt;(ノード)</code>{" "}
