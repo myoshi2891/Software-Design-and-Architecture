@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "Ian Robinson、Jim Webber、Emil Eifrem 著『Graph Databases, 2nd Edition』(O'Reilly Media)をベースに、グラフデータベースの考え方をゼロからステップバイステップで学ぶための解説記事です。",
 };
 
-const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Zen Kaku Gothic New\\", sans-serif", "fontSize": "16px", "primaryColor": "#fffdf8", "primaryBorderColor": "#c8bfe0", "primaryTextColor": "#241f3d", "lineColor": "#8c84b8", "secondaryColor": "#f7f3ea", "tertiaryColor": "#ffffff", "edgeLabelBackground": "#ffffff"}}}%%
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Noto Sans JP\\", -apple-system, BlinkMacSystemFont, sans-serif", "fontSize": "16px", "primaryColor": "#fffdf8", "primaryBorderColor": "#c8bfe0", "primaryTextColor": "#241f3d", "lineColor": "#8c84b8", "secondaryColor": "#f7f3ea", "tertiaryColor": "#ffffff", "edgeLabelBackground": "#ffffff"}}}%%
 `;
 
 const DIAGRAM_1 = `${MERMAID_INIT}flowchart TD

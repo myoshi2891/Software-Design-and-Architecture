@@ -20539,7 +20539,7 @@ body.has-common-header .database-internals-guide section {
 
   background: var(--paper);
   color: var(--ink);
-  font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-noto-sans-jp), "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.85;
   font-size: 16px;
   min-height: 100vh;
@@ -20895,6 +20895,37 @@ body.has-common-header .database-internals-guide section {
   & .diagram-wrap > * {
     min-width: 0;
     flex-shrink: 0;
+  }
+
+  & .diagram-wrap .mermaid {
+    display: flex;
+    justify-content: safe center;
+    width: 100%;
+  }
+
+  & .diagram-wrap .mermaid svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  & .diagram-wrap .mermaid svg foreignObject {
+    overflow: visible;
+  }
+
+  & .diagram-wrap .mermaid svg foreignObject > div,
+  & .diagram-wrap .mermaid svg .nodeLabel,
+  & .diagram-wrap .mermaid svg text,
+  & .diagram-wrap .mermaid svg tspan {
+    overflow: visible;
+    font-family: var(--font-noto-sans-jp), "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  & .diagram-wrap .mermaid svg .edgeLabel {
+    overflow: visible;
+    color: var(--ink);
   }
 
   & .diagram-wrap .edgeLabel,
