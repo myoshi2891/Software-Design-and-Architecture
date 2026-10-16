@@ -39,11 +39,7 @@ export default function HighPerformanceMysqlChecklist() {
           {doneCount} / {totalCount} 完了
         </span>
         <div className="bar">
-          <div
-            className="bar-fill"
-            id="checklistBar"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="bar-fill" id="checklistBar" style={{ width: `${progressPercent}%` }} />
         </div>
       </div>
       <ul className="checklist" id="checklistItems">
@@ -52,11 +48,7 @@ export default function HighPerformanceMysqlChecklist() {
           return (
             <li key={item} className={isDone ? "done" : ""}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => handleToggle(index)}
-                />
+                <input type="checkbox" checked={isDone} onChange={() => handleToggle(index)} />
                 <span className="box" aria-hidden="true">
                   <IconCheck size={14} />
                 </span>

@@ -1,9 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import HighPerformanceMysqlChecklist, {
-  CHECKLIST_ITEMS,
-} from "./HighPerformanceMysqlChecklist";
+import HighPerformanceMysqlChecklist, { CHECKLIST_ITEMS } from "./HighPerformanceMysqlChecklist";
 
 describe("HighPerformanceMysqlChecklist", () => {
   it("原本通りの 9 項目が描画される", () => {

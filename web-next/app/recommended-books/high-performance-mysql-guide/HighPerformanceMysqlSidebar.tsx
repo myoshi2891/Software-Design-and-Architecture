@@ -146,8 +146,7 @@ export default function HighPerformanceMysqlSidebar() {
         }
       }
       const nearBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 4;
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
       if (nearBottom) {
         currentId = allIds[allIds.length - 1];
       }
