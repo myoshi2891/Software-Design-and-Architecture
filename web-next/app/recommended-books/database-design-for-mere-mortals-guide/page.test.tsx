@@ -137,6 +137,7 @@ describe("database-design-for-mere-mortals-guide page contract", () => {
     for (const diagram of diagrams) {
       const chart = diagram.getAttribute("data-chart") ?? "";
       expect(chart).toContain("%%{init:");
+      expect(chart).toContain('"edgeLabelBackground": "#ffffff"');
     }
   });
 });

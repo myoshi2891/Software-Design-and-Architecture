@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     "Michael J. Hernandez による、リレーショナルデータベース設計の定番入門書『Database Design for Mere Mortals』をステップバイステップで徹底解説。正規化理論ではなく独自の実践的メソッドを採る立ち位置まで丁寧に扱います。",
 };
 
-const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Noto Sans JP\\", sans-serif", "fontSize": "16px", "primaryColor": "#e4e7fb", "primaryBorderColor": "#3f51b5", "primaryTextColor": "#20233d", "lineColor": "#8a8272", "secondaryColor": "#faf0d4", "tertiaryColor": "#ffffff"}}}%%
+const MERMAID_INIT = `%%{init: {"theme": "base", "themeVariables": {"fontFamily": "\\"Noto Sans JP\\", sans-serif", "fontSize": "16px", "primaryColor": "#e4e7fb", "primaryBorderColor": "#3f51b5", "primaryTextColor": "#20233d", "lineColor": "#8a8272", "secondaryColor": "#faf0d4", "tertiaryColor": "#ffffff", "edgeLabelBackground": "#ffffff"}}}%%
 `;
 
 const CLASS_DEFS = `

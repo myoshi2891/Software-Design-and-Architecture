@@ -19168,7 +19168,6 @@ body.has-common-header .data-warehouse-toolkit-guide section {
     min-height: 100vh;
   }
 
-  .content { padding: 0 56px 80px; max-width: 1100px; }
 
   /* ---------- Mobile bar ---------- */
   .mobile-bar {
@@ -19197,7 +19196,7 @@ body.has-common-header .data-warehouse-toolkit-guide section {
 
   /* ---------- Hero ---------- */
   .hero {
-    padding: 64px max(56px, calc((100% - 1100px) / 2)) 40px;
+    padding: 64px 56px 40px;
     background: linear-gradient(180deg, var(--paper-alt) 0%, var(--paper) 100%);
     border-bottom: 1px solid var(--border);
   }
@@ -19218,7 +19217,7 @@ body.has-common-header .data-warehouse-toolkit-guide section {
   .hero-note { font-size: 0.88rem; color: var(--ink-soft); max-width: none; display: flex; align-items: center; gap: 6px; }
 
   /* ---------- Sections ---------- */
-  .section { padding: 34px max(56px, calc((100% - 1100px) / 2)); }
+  .section { padding: 34px 56px; }
   .section-eyebrow {
     display: flex; align-items: center; gap: 8px;
     font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em;
@@ -19328,6 +19327,15 @@ body.has-common-header .data-warehouse-toolkit-guide section {
     border-radius: var(--radius);
     padding: 24px 16px;
   }
+  .diagram-wrap .edgeLabel,
+  .diagram-wrap .edgeLabel rect,
+  .diagram-wrap .edgeLabel span,
+  .diagram-wrap .label {
+    color: var(--ink);
+  }
+  .diagram-wrap .edgeLabel rect {
+    fill: #ffffff;
+  }
   .diagram-caption {
     text-align: center;
     font-size: 0.86rem;
@@ -19398,7 +19406,7 @@ body.has-common-header .data-warehouse-toolkit-guide section {
   .ref-note { font-size: 0.86rem; color: var(--ink-soft); margin-top: 4px; }
 
   /* ---------- Footer ---------- */
-  .footer { padding: 40px max(56px, calc((100% - 1100px) / 2)) 60px; color: var(--ink-soft); font-size: 0.88rem; }
+  .footer { padding: 40px 56px 60px; color: var(--ink-soft); font-size: 0.88rem; }
 
   /* ---------- Misc ---------- */
   .pill { display: inline-block; background: var(--paper-alt); border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px; font-size: 0.82rem; color: var(--ink-soft); margin: 2px 4px 2px 0; }
