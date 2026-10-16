@@ -30,7 +30,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface NavItem {
   readonly id: string;
@@ -95,6 +95,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
 export default function RefactoringDatabasesSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("intro");
+  const menuToggleRef = useRef<HTMLButtonElement | null>(null);
 
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
@@ -103,7 +104,9 @@ export default function RefactoringDatabasesSidebar() {
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key !== "Escape") return;
+      menuToggleRef.current?.focus();
+      setIsOpen(false);
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
@@ -151,6 +154,7 @@ export default function RefactoringDatabasesSidebar() {
         <button
           type="button"
           id="menuToggle"
+          ref={menuToggleRef}
           aria-label="目次メニュー"
           aria-expanded={isOpen}
           aria-controls="sidebar"

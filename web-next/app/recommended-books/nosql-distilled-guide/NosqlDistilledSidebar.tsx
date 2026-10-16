@@ -86,6 +86,16 @@ export default function NosqlDistilledSidebar() {
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
 
+  // 開いている間だけ window で Escape を受け取り、フォーカス位置に関係なく閉じる
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   useEffect(() => {
     const allIds = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.id));
     const elements = allIds

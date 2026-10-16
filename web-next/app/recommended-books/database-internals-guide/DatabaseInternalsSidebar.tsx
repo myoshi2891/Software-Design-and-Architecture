@@ -105,10 +105,17 @@ export default function DatabaseInternalsSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("intro");
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
+
+  // 開いた直後に最初のリンクへフォーカスを移す（描画後に実行するため effect で行う）
+  useEffect(() => {
+    if (!isOpen) return;
+    firstLinkRef.current?.focus();
+  }, [isOpen]);
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
@@ -166,15 +173,17 @@ export default function DatabaseInternalsSidebar() {
             Database Internals<small>初学者向け完全ガイド</small>
           </div>
         </div>
-        {NAV_GROUPS.map((group) => (
+        {NAV_GROUPS.map((group, groupIndex) => (
           <div key={group.label}>
             <div className="nav-group-title">{group.label}</div>
             <ul className="nav-list">
-              {group.items.map((item) => {
+              {group.items.map((item, itemIndex) => {
                 const isActive = activeId === item.id;
+                const isFirst = groupIndex === 0 && itemIndex === 0;
                 return (
                   <li key={item.id} className="nav-item">
                     <a
+                      ref={isFirst ? firstLinkRef : undefined}
                       className={`nav-link ${isActive ? "active" : ""}`}
                       href={`#${item.id}`}
                       onClick={() => setIsOpen(false)}
