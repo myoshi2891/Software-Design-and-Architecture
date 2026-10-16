@@ -43,4 +43,19 @@ describe("DataWarehouseToolkitSidebar", () => {
     expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
     expect(document.activeElement).toBe(toggleBtn);
   });
+  it("目次リンク選択時はメニューを閉じるが、フォーカスをトグルボタンへ移さない", () => {
+    const { container } = render(<DataWarehouseToolkitSidebar />);
+    const toggleBtn = container.querySelector<HTMLButtonElement>("#menuToggle");
+    const sidebar = container.querySelector("#sidebar");
+    const firstLink = container.querySelector<HTMLAnchorElement>("#sidebar a.nav-a");
+    if (!toggleBtn || !firstLink) throw new Error("toggle or link not found");
+
+    fireEvent.click(toggleBtn);
+    firstLink.focus();
+    fireEvent.click(firstLink);
+
+    expect(sidebar?.classList.contains("open")).toBe(false);
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).not.toBe(toggleBtn);
+  });
 });
