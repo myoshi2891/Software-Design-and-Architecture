@@ -70,7 +70,7 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 29 本を
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 30 本を
 一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
@@ -175,6 +175,9 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/sql-antipatterns-guide`](web-next/app/recommended-books/sql-antipatterns-guide/page.tsx)
     — SQLアンチパターン第2版解説ガイドを移植（20 セクション・Mermaid 12 図・table 5・コードブロック 5・チェックリスト 25 項目）。
     固定サイドバー・scroll-spy を [`SqlAntipatternsSidebar.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsSidebar.tsx)、点検チェックリストを [`SqlAntipatternsChecklist.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsChecklist.tsx) でクライアント描画
+  - [`/recommended-books/data-warehouse-toolkit-guide`](web-next/app/recommended-books/data-warehouse-toolkit-guide/page.tsx)
+    — The Data Warehouse Toolkit 完全読解ガイドを移植（19 セクション・Mermaid 11 図・table 11・コードブロック 1・チェックリスト 12 項目）。
+    固定サイドバー・scroll-spy を [`DataWarehouseToolkitSidebar.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitSidebar.tsx)、学習チェックリストを [`DataWarehouseToolkitChecklist.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitChecklist.tsx) でクライアント描画
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
