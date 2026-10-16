@@ -19020,8 +19020,8 @@ body.has-common-header .normal-animation-architecture-tokens-performance-tools :
 
   /* responsive */
   @media (max-width: 960px) {
-    .sidebar { transform: translateX(-100%); transition: transform .25s ease; box-shadow: var(--shadow-lg); }
-    .sidebar.open { transform: translateX(0); }
+    .sidebar { transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; box-shadow: var(--shadow-lg); }
+    .sidebar.open { transform: translateX(0); visibility: visible; transition: transform .25s ease, visibility 0s; }
     .main { margin-left: 0; }
     .mobile-bar { display: flex; }
     .hero, .section, .footer { padding-left: 20px; padding-right: 20px; }
@@ -19417,8 +19417,8 @@ body.has-common-header .data-warehouse-toolkit-guide section {
 
   /* ---------- Mobile ---------- */
   @media (max-width: 980px) {
-    .sidebar { transform: translateX(-100%); transition: transform 0.25s; box-shadow: var(--shadow-lg); }
-    .sidebar.open { transform: translateX(0); }
+    .sidebar { transform: translateX(-100%); visibility: hidden; transition: transform 0.25s, visibility 0s linear 0.25s; box-shadow: var(--shadow-lg); }
+    .sidebar.open { transform: translateX(0); visibility: visible; transition: transform 0.25s, visibility 0s; }
     .main { margin-left: 0; }
     .mobile-bar { display: flex; }
     .hero, .section, .footer { padding-left: 22px; padding-right: 22px; }
@@ -20392,11 +20392,14 @@ body.has-common-header .database-design-for-mere-mortals-guide section {
   @media (max-width: 980px) {
     .sidebar {
       transform: translateX(-100%);
-      transition: transform 0.25s ease;
+      visibility: hidden;
+      transition: transform 0.25s ease, visibility 0s linear 0.25s;
       box-shadow: 0 0 32px rgba(15, 23, 42, 0.2);
     }
     .sidebar.open {
       transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.25s ease, visibility 0s;
     }
     .main {
       margin-left: 0;
