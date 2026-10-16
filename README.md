@@ -64,6 +64,7 @@
 - Graph Databases
 - High Performance MySQL
 - NoSQL Distilled
+- Refactoring Databases
 
 ### 7. 資格試験 (`certification-exams/`)
 
