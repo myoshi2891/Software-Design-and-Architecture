@@ -86,6 +86,22 @@ describe("data-warehouse-toolkit-guide page contract", () => {
     expect(container.querySelectorAll("pre")).toHaveLength(1);
   });
 
+  it("ヒーローセクションに無駄なフック（hero-eyebrow）が存在しない", () => {
+    const { container } = render(<Page />);
+    expect(container.querySelector(".hero-eyebrow")).toBeNull();
+  });
+
+  it("すべての Mermaid 図にライトテーマ用の初期化設定（%%{init:...}%%）が付与されている", () => {
+    const { container } = render(<Page />);
+    const diagrams = container.querySelectorAll(".mermaid");
+    expect(diagrams).toHaveLength(11);
+    for (const diagram of diagrams) {
+      const chart = diagram.getAttribute("data-chart") ?? "";
+      expect(chart).toContain("%%{init:");
+      expect(chart).toContain('"theme": "base"');
+    }
+  });
+
   it("globals.css に .data-warehouse-toolkit-guide のスコープ定義が含まれている", () => {
     const fs = require("node:fs");
     const path = require("node:path");
