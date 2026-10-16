@@ -1,9 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import RefactoringDatabasesChecklist, {
-  CHECKLIST_ITEMS,
-} from "./RefactoringDatabasesChecklist";
+import RefactoringDatabasesChecklist, { CHECKLIST_ITEMS } from "./RefactoringDatabasesChecklist";
 
 describe("RefactoringDatabasesChecklist", () => {
   it("8 個のチェック項目を正しく描画する", () => {

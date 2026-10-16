@@ -411,8 +411,9 @@ export default function RefactoringDatabasesGuidePage() {
             初学者向け完全ガイド
           </h1>
           <p className="lead">
-            原著：Scott W. Ambler, Pramod J. Sadalage『Refactoring Databases:
-            Evolutionary Database Design』(Addison-Wesley Professional, 2006)。本ガイドはウェブ検索で得られた一次情報・著者自身が公開している資料・国際的に著名な開発者の記事をもとに、2026年9月19日時点の情報を反映して作成しています。
+            原著：Scott W. Ambler, Pramod J. Sadalage『Refactoring Databases: Evolutionary Database
+            Design』(Addison-Wesley Professional,
+            2006)。本ガイドはウェブ検索で得られた一次情報・著者自身が公開している資料・国際的に著名な開発者の記事をもとに、2026年9月19日時点の情報を反映して作成しています。
           </p>
           <div className="badges">
             <span className="badge">
@@ -444,8 +445,8 @@ export default function RefactoringDatabasesGuidePage() {
               <p>
                 本書は2006年の出版ながら、著者の一人 Pramod Sadalage が Martin Fowler
                 と共著した記事「Evolutionary Database
-                Design」(martinfowler.com、2016年に全面改訂)や、現在の
-                Flyway・Liquibase といったマイグレーションツール、さらには「Expand/Contract(拡張・収縮)パターン」と呼ばれる今日のゼロダウンタイムデプロイ手法の直接の源流になっています。
+                Design」(martinfowler.com、2016年に全面改訂)や、現在の Flyway・Liquibase
+                といったマイグレーションツール、さらには「Expand/Contract(拡張・収縮)パターン」と呼ばれる今日のゼロダウンタイムデプロイ手法の直接の源流になっています。
               </p>
             </div>
           </div>
@@ -517,20 +518,17 @@ export default function RefactoringDatabasesGuidePage() {
                     </tr>
                     <tr>
                       <th>主な読者層</th>
-                      <td>
-                        アプリケーション開発者、DBA、アーキテクト、アジャイル / DevOpsチーム
-                      </td>
+                      <td>アプリケーション開発者、DBA、アーキテクト、アジャイル / DevOpsチーム</td>
                     </tr>
                     <tr>
                       <th>前提知識</th>
-                      <td>
-                        SQLの基礎、リレーショナルデータベースの基本概念(正規化・外部キーなど)
-                      </td>
+                      <td>SQLの基礎、リレーショナルデータベースの基本概念(正規化・外部キーなど)</td>
                     </tr>
                     <tr>
                       <th>収録リファクタリング数</th>
                       <td>
-                        60〜70種類以上(構造・データ品質・参照整合性・アーキテクチャ・メソッドの5分類 + 変換)
+                        60〜70種類以上(構造・データ品質・参照整合性・アーキテクチャ・メソッドの5分類
+                        + 変換)
                       </td>
                     </tr>
                   </tbody>
@@ -615,8 +613,8 @@ export default function RefactoringDatabasesGuidePage() {
           </div>
           <div className="prose">
             <p>
-              本書の目的は、Martin Fowlerが1999年の著書『Refactoring: Improving
-              the Design of Existing
+              本書の目的は、Martin Fowlerが1999年の著書『Refactoring: Improving the Design of
+              Existing
               Code』でコードに対して確立した「振る舞いを変えずに内部構造を改善する」という考え方を、データベースのスキーマ・データ・ストアドプロシージャにも適用できる形で体系化することにあります。
             </p>
           </div>
@@ -675,9 +673,7 @@ export default function RefactoringDatabasesGuidePage() {
                 <tr>
                   <td>第4章</td>
                   <td>Deploying into Production</td>
-                  <td>
-                    本番環境へのデプロイ戦略、スケジュールダウンタイムと継続稼働
-                  </td>
+                  <td>本番環境へのデプロイ戦略、スケジュールダウンタイムと継続稼働</td>
                 </tr>
                 <tr>
                   <td>第5章</td>
@@ -702,16 +698,12 @@ export default function RefactoringDatabasesGuidePage() {
                 <tr>
                   <td>第9章</td>
                   <td>Architectural Refactorings</td>
-                  <td>
-                    アーキテクチャリファクタリング(外部プログラムとの連携方法の改善)
-                  </td>
+                  <td>アーキテクチャリファクタリング(外部プログラムとの連携方法の改善)</td>
                 </tr>
                 <tr>
                   <td>第10章</td>
                   <td>Method Refactorings</td>
-                  <td>
-                    メソッドリファクタリング(ストアドプロシージャ・トリガー・関数の改善)
-                  </td>
+                  <td>メソッドリファクタリング(ストアドプロシージャ・トリガー・関数の改善)</td>
                 </tr>
                 <tr>
                   <td>第11章</td>
@@ -781,8 +773,10 @@ export default function RefactoringDatabasesGuidePage() {
           </h2>
           <div className="prose">
             <p>
-              コードに「コードの臭い(code smell)」があるように、データベースにも「データベースの臭い(database
-              smell)」があります。Scott Ambler が2003年に提唱したこの概念は、リファクタリングが必要かどうかを判断する手がかりになります。
+              コードに「コードの臭い(code
+              smell)」があるように、データベースにも「データベースの臭い(database
+              smell)」があります。Scott Ambler
+              が2003年に提唱したこの概念は、リファクタリングが必要かどうかを判断する手がかりになります。
             </p>
           </div>
           <div className="diagram-wrap">
@@ -821,9 +815,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>行が多すぎる表</td>
-                  <td>
-                    検索・更新に時間がかかり、パフォーマンス上の問題を引き起こしやすい状態
-                  </td>
+                  <td>検索・更新に時間がかかり、パフォーマンス上の問題を引き起こしやすい状態</td>
                 </tr>
                 <tr>
                   <td>スマートカラム</td>
@@ -833,9 +825,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>変更への恐怖</td>
-                  <td>
-                    誰もそのテーブルの仕組みを正確に把握しておらず、触るのを避けている状態
-                  </td>
+                  <td>誰もそのテーブルの仕組みを正確に把握しておらず、触るのを避けている状態</td>
                 </tr>
               </tbody>
             </table>
@@ -893,15 +883,12 @@ export default function RefactoringDatabasesGuidePage() {
           </div>
           <div className="prose">
             <p>
-              この「拡張 → 移行 →
-              収縮」という3段階の考え方は、のちにMartin
-              Fowlerが自身のbliki(ブログ的な用語辞典)で「Parallel
-              Change(並行変更、別名 expand/contract
+              この「拡張 → 移行 → 収縮」という3段階の考え方は、のちにMartin
+              Fowlerが自身のbliki(ブログ的な用語辞典)で「Parallel Change(並行変更、別名
+              expand/contract
               パターン)」として整理し直したものと本質的に同じです。現在では、ローリングデプロイやゼロダウンタイムデプロイを実現するための標準的な手法として、Flyway・Liquibaseのようなツールを使う多くのチームに広く使われています。
             </p>
-            <p>
-              例えばテーブル名を変更する場合、本書は次のようなテクニックを示しています。
-            </p>
+            <p>例えばテーブル名を変更する場合、本書は次のようなテクニックを示しています。</p>
           </div>
           <div className="code-block">
             <div className="code-block-head">
@@ -937,8 +924,7 @@ export default function RefactoringDatabasesGuidePage() {
           </div>
           <div className="prose">
             <p>
-              複数アプリケーションが同じデータベースを共有している状況(いわゆる Shared
-              Database
+              複数アプリケーションが同じデータベースを共有している状況(いわゆる Shared Database
               パターン)では、あるチームの変更が別のチームのアプリケーションを予期せず壊してしまうリスクが常につきまといます。本書はこのリスクを軽減するために、変更の事前告知、移行期間の確保、そして必要であれば外部キー制約・トリガー・ビューを使った後方互換性の維持を具体的な手順とともに紹介しています。
             </p>
           </div>
@@ -1020,9 +1006,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>参照整合性(Referential Integrity)</td>
-                  <td>
-                    関連する行の存在保証や、不要になった行の適切な削除に関する変更
-                  </td>
+                  <td>関連する行の存在保証や、不要になった行の適切な削除に関する変更</td>
                 </tr>
                 <tr>
                   <td>アーキテクチャ(Architectural)</td>
@@ -1030,9 +1014,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>メソッド(Method)</td>
-                  <td>
-                    ストアドプロシージャ・ストアド関数・トリガーの品質を改善する変更
-                  </td>
+                  <td>ストアドプロシージャ・ストアド関数・トリガーの品質を改善する変更</td>
                 </tr>
                 <tr>
                   <td>変換(Transformations)</td>
@@ -1044,8 +1026,8 @@ export default function RefactoringDatabasesGuidePage() {
             </table>
           </div>
           <p style={{ color: "var(--ink-soft)" }}>
-            出典：Scott Ambler自身が運営するAgile Data(agiledata.org)「Catalog of
-            Database Refactorings」、および著者自身の公式カタログサイト
+            出典：Scott Ambler自身が運営するAgile Data(agiledata.org)「Catalog of Database
+            Refactorings」、および著者自身の公式カタログサイト
             databaserefactoring.com(参考文献セクション参照)。
           </p>
         </section>
@@ -1116,9 +1098,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Replace LOB with Table</td>
-                  <td>
-                    大きなオブジェクト型(BLOB/CLOB)の列を別テーブルに置き換える
-                  </td>
+                  <td>大きなオブジェクト型(BLOB/CLOB)の列を別テーブルに置き換える</td>
                 </tr>
                 <tr>
                   <td>Replace Column</td>
@@ -1126,9 +1106,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Replace One-To-Many with Associative Table</td>
-                  <td>
-                    1対多の関係を、中間の関連テーブルを使った表現に置き換える
-                  </td>
+                  <td>1対多の関係を、中間の関連テーブルを使った表現に置き換える</td>
                 </tr>
                 <tr>
                   <td>Replace Surrogate Key with Natural Key</td>
@@ -1136,9 +1114,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Split Column</td>
-                  <td>
-                    1つの列に詰め込まれている複数の情報を、複数の列に分割する
-                  </td>
+                  <td>1つの列に詰め込まれている複数の情報を、複数の列に分割する</td>
                 </tr>
                 <tr>
                   <td>Split Table</td>
@@ -1175,9 +1151,7 @@ export default function RefactoringDatabasesGuidePage() {
               <tbody>
                 <tr>
                   <td>Add Lookup Table</td>
-                  <td>
-                    特定の値の集合を管理するためのルックアップテーブルを追加する
-                  </td>
+                  <td>特定の値の集合を管理するためのルックアップテーブルを追加する</td>
                 </tr>
                 <tr>
                   <td>Apply Standard Codes</td>
@@ -1185,16 +1159,11 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Apply Standard Type</td>
-                  <td>
-                    同じ意味の列で異なるデータ型が使われている状態を統一する
-                  </td>
+                  <td>同じ意味の列で異なるデータ型が使われている状態を統一する</td>
                 </tr>
                 <tr>
                   <td>Consolidate Key Strategy</td>
-                  <td>
-                    キーの採番方式(自然キー /
-                    代理キー)をデータベース全体で統一する
-                  </td>
+                  <td>キーの採番方式(自然キー / 代理キー)をデータベース全体で統一する</td>
                 </tr>
                 <tr>
                   <td>Drop Column Constraint</td>
@@ -1236,8 +1205,8 @@ export default function RefactoringDatabasesGuidePage() {
             </table>
           </div>
           <p style={{ color: "var(--ink-soft)" }}>
-            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings:
-            Data Quality Refactorings」(参考文献セクション参照)。
+            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Data Quality
+            Refactorings」(参考文献セクション参照)。
           </p>
         </section>
 
@@ -1275,15 +1244,11 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Introduce Cascading Delete</td>
-                  <td>
-                    親行が削除されたときに関連する子行も自動的に削除されるようにする
-                  </td>
+                  <td>親行が削除されたときに関連する子行も自動的に削除されるようにする</td>
                 </tr>
                 <tr>
                   <td>Introduce Hard Delete</td>
-                  <td>
-                    削除フラグ列を廃止し、行そのものを物理的に削除するようにする
-                  </td>
+                  <td>削除フラグ列を廃止し、行そのものを物理的に削除するようにする</td>
                 </tr>
                 <tr>
                   <td>Introduce Soft Delete</td>
@@ -1298,8 +1263,8 @@ export default function RefactoringDatabasesGuidePage() {
           </div>
           <div className="prose">
             <p>
-              このカテゴリで特に初学者が迷いやすいのが「論理削除(Soft
-              Delete)」と「物理削除(Hard Delete)」のどちらを選ぶかという判断です。
+              このカテゴリで特に初学者が迷いやすいのが「論理削除(Soft Delete)」と「物理削除(Hard
+              Delete)」のどちらを選ぶかという判断です。
             </p>
           </div>
           <div className="diagram-wrap">
@@ -1310,8 +1275,8 @@ export default function RefactoringDatabasesGuidePage() {
             <MermaidDiagram chart={chartD9} />
           </div>
           <p style={{ color: "var(--ink-soft)" }}>
-            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings:
-            Referential Integrity Refactorings」(参考文献セクション参照)。
+            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Referential Integrity
+            Refactorings」(参考文献セクション参照)。
           </p>
         </section>
 
@@ -1343,9 +1308,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Add Mirror Table</td>
-                  <td>
-                    別のデータベースに、既存テーブルの複製(ミラー)テーブルを作成する
-                  </td>
+                  <td>別のデータベースに、既存テーブルの複製(ミラー)テーブルを作成する</td>
                 </tr>
                 <tr>
                   <td>Add Read Method</td>
@@ -1359,9 +1322,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Introduce Calculation Method</td>
-                  <td>
-                    計算ロジックをストアドプロシージャ / 関数として切り出す
-                  </td>
+                  <td>計算ロジックをストアドプロシージャ / 関数として切り出す</td>
                 </tr>
                 <tr>
                   <td>Introduce Index</td>
@@ -1373,15 +1334,11 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Migrate Method from Database</td>
-                  <td>
-                    データベース内にあるロジックをアプリケーション層へ移す
-                  </td>
+                  <td>データベース内にあるロジックをアプリケーション層へ移す</td>
                 </tr>
                 <tr>
                   <td>Migrate Method to Database</td>
-                  <td>
-                    アプリケーション層にあるロジックをデータベース内へ移す
-                  </td>
+                  <td>アプリケーション層にあるロジックをデータベース内へ移す</td>
                 </tr>
                 <tr>
                   <td>Replace Method(s) with View</td>
@@ -1389,9 +1346,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Replace View with Method(s)</td>
-                  <td>
-                    ビューを、より柔軟なメソッド(ストアドプロシージャ)に置き換える
-                  </td>
+                  <td>ビューを、より柔軟なメソッド(ストアドプロシージャ)に置き換える</td>
                 </tr>
                 <tr>
                   <td>Use Official Data Source</td>
@@ -1403,8 +1358,8 @@ export default function RefactoringDatabasesGuidePage() {
             </table>
           </div>
           <p style={{ color: "var(--ink-soft)" }}>
-            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings:
-            Architectural Refactorings」(参考文献セクション参照)。
+            出典：Agile Data(agiledata.org)「Catalog of Database Refactorings: Architectural
+            Refactorings」(参考文献セクション参照)。
           </p>
         </section>
 
@@ -1484,9 +1439,7 @@ export default function RefactoringDatabasesGuidePage() {
               <tbody>
                 <tr>
                   <td>Insert Data</td>
-                  <td>
-                    新しいデータを挿入する(新機能のための初期データ投入など)
-                  </td>
+                  <td>新しいデータを挿入する(新機能のための初期データ投入など)</td>
                 </tr>
                 <tr>
                   <td>Introduce New Column</td>
@@ -1502,9 +1455,7 @@ export default function RefactoringDatabasesGuidePage() {
                 </tr>
                 <tr>
                   <td>Update Data</td>
-                  <td>
-                    既存データの値を更新する(新しい要件に合わせた書き換えなど)
-                  </td>
+                  <td>既存データの値を更新する(新しい要件に合わせた書き換えなど)</td>
                 </tr>
               </tbody>
             </table>
@@ -1560,22 +1511,19 @@ export default function RefactoringDatabasesGuidePage() {
               このスクリプトはローカルの開発用データベースでまず実行し、既存のテスト一式を流して振る舞いが壊れていないことを確認してから、バージョン管理システム(マイグレーションスクリプトとして)にコミットします。CIサーバーがこれを検知し、統合用データベースに同じスクリプトを適用してテストを再実行し、問題がなければステージング・本番へと同じスクリプトが順番に適用されていきます。
             </p>
             <p>
-              旧列 <code>product_inventory_code</code> は、Step
-              6で説明した「移行期間(transition
+              旧列 <code>product_inventory_code</code> は、Step 6で説明した「移行期間(transition
               period)」の考え方に沿って、この時点ではまだ削除しません。移行期間中は上記の同期トリガーが働くため、旧アプリケーションが連結文字列を更新しても新しい3列へ、新アプリケーションが3列を更新しても旧列へ、それぞれ即座に反映され、両方の表現が常に一致した状態を保てます。すべての利用者(アプリケーション・レポートなど)が新しい3列を参照するように切り替わったことを確認できてから、
               <code>DROP TRIGGER trg_inventory_code_sync;</code> と{" "}
-              <code>
-                ALTER TABLE inventory DROP COLUMN product_inventory_code;
-              </code>{" "}
+              <code>ALTER TABLE inventory DROP COLUMN product_inventory_code;</code>{" "}
               を実行する別のContractフェーズ用スクリプトとして、改めてコミット・適用します。ここで注意が必要なのは、Oracle
-              の DDL は文ごとに暗黙コミットされるため、<code>DROP TRIGGER</code>{" "}
-              と <code>ALTER TABLE ... DROP COLUMN</code>{" "}
+              の DDL は文ごとに暗黙コミットされるため、<code>DROP TRIGGER</code> と{" "}
+              <code>ALTER TABLE ... DROP COLUMN</code>{" "}
               を同じスクリプトにまとめても原子的にはならない点です。
               <code>DROP TRIGGER</code>{" "}
               が成功したあとに列削除が失敗すると、同期トリガーだけが失われ旧列が残った状態がコミット済みとして残り、以後の書き込みで旧列と新3列が乖離していきます(
               <code>WHENEVER SQLERROR EXIT FAILURE ROLLBACK</code>{" "}
-              は未コミットのトランザクションを戻すだけで、すでにコミットされた
-              DDL は取り消せません)。
+              は未コミットのトランザクションを戻すだけで、すでにコミットされた DDL
+              は取り消せません)。
             </p>
             <ol className="step-list">
               <li>
@@ -1583,16 +1531,15 @@ export default function RefactoringDatabasesGuidePage() {
                   <strong>事前確認</strong> — <code>USER_DEPENDENCIES</code> /{" "}
                   <code>ALL_DEPENDENCIES</code>{" "}
                   で旧列に依存するビュー・トリガー・ストアドプログラムを洗い出し、
-                  <code>ALTER TABLE</code> や <code>DROP ANY TRIGGER</code>{" "}
-                  の権限、および <code>ALTER TABLE ... DROP COLUMN</code>{" "}
+                  <code>ALTER TABLE</code> や <code>DROP ANY TRIGGER</code> の権限、および{" "}
+                  <code>ALTER TABLE ... DROP COLUMN</code>{" "}
                   が取る排他ロックを取得できる時間帯かを確認します。
                 </div>
               </li>
               <li>
                 <div>
                   <strong>実行後の検証</strong> — <code>USER_TRIGGERS</code> と{" "}
-                  <code>USER_TAB_COLUMNS</code>{" "}
-                  を照会し、同期トリガーと旧列の<strong>両方</strong>
+                  <code>USER_TAB_COLUMNS</code> を照会し、同期トリガーと旧列の<strong>両方</strong>
                   が消えていることを確認します。片方だけが残っていれば中途半端な状態です。
                 </div>
               </li>
@@ -1616,8 +1563,7 @@ export default function RefactoringDatabasesGuidePage() {
                       :両方の表現がそれぞれ異なる更新を受けた行(どちらを採っても片方の更新が失われる行)は機械的に上書きせず、更新履歴や監査ログ・業務担当者の確認に基づいて行ごとに正しい値を決めます。
                     </li>
                     <li>
-                      <strong>不一致の特定と修復</strong>:Step 15
-                      の検証クエリ(<code>DECODE</code>{" "}
+                      <strong>不一致の特定と修復</strong>:Step 15 の検証クエリ(<code>DECODE</code>{" "}
                       による NULL
                       安全な突き合わせ)で旧列と新3列の不一致行を洗い出し、上の方針に従って修復したうえで、同じ検証クエリが0件になることを確認します。
                     </li>
@@ -1661,8 +1607,8 @@ export default function RefactoringDatabasesGuidePage() {
             <p>
               続いて、Step
               6で紹介した「移行期間」の考え方を、テーブル名変更という具体的な例で確認します。
-              <code>customer</code> テーブルを、より業務の実態に合った{" "}
-              <code>client</code> という名前に変更したいとします。
+              <code>customer</code> テーブルを、より業務の実態に合った <code>client</code>{" "}
+              という名前に変更したいとします。
             </p>
             <p>
               複数のアプリケーションがこの <code>customer</code>{" "}
@@ -1688,8 +1634,7 @@ export default function RefactoringDatabasesGuidePage() {
             <p>
               このビューも、Step
               6で触れた「更新可能ビュー」の条件(単一テーブル由来である、集約や重複除去を含まないなど)を満たす場合に限り書き込みが可能であり、読み書きの互換性を無条件に保証するものではありません。条件を満たさないDBMS・列構成では、Step
-              6と同様にINSTEAD
-              OFトリガーを追加してclient側への書き込みを代行する実装が必要です。
+              6と同様にINSTEAD OFトリガーを追加してclient側への書き込みを代行する実装が必要です。
             </p>
             <p>
               この移行期間の長さは組織によって様々です。Martin FowlerとPramod
@@ -1702,8 +1647,7 @@ export default function RefactoringDatabasesGuidePage() {
         <section className="section" id="step17">
           <h2>
             <IconRocket size={24} />
-            Step 17：現代における位置づけ — Flyway・Liquibaseと Expand/Contract
-            パターン
+            Step 17：現代における位置づけ — Flyway・Liquibaseと Expand/Contract パターン
           </h2>
           <div className="prose">
             <p>
@@ -1719,12 +1663,10 @@ export default function RefactoringDatabasesGuidePage() {
           </div>
           <div className="prose">
             <p>
-              Martin FowlerとPramod Sadalageによる2016年改訂版の「Evolutionary
-              Database
+              Martin FowlerとPramod Sadalageによる2016年改訂版の「Evolutionary Database
               Design」では、本書で示された考え方を土台に、Flyway・Liquibase・MyBatis
               Migrationsなどの具体的なツールでの実装例が追加され、CI/CDパイプラインの中でどう自動化するかが詳しく解説されています。さらにこの記事の中では、本書のStep
-              6で紹介した「移行期間」の考え方が、Martin
-              Fowlerのbliki上の別記事「Parallel
+              6で紹介した「移行期間」の考え方が、Martin Fowlerのbliki上の別記事「Parallel
               Change」として独立して整理し直されており、現在では「Expand/Contract
               パターン」という呼び名で、ゼロダウンタイムデプロイやローリングデプロイを実現するための標準的な語彙として業界に広く定着しています。
             </p>
@@ -1765,9 +1707,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="callout gold">
             <IconDatabaseOff size={20} />
             <div className="callout-body">
-              <span className="callout-title">
-                NoSQLやスキーマレスDBへの言及はない
-              </span>
+              <span className="callout-title">NoSQLやスキーマレスDBへの言及はない</span>
               <p>
                 本書はリレーショナルデータベースを前提としています。NoSQLデータベースにおける「暗黙のスキーマ」の進化的な扱い方は、後年のMartin
                 Fowlerの記事や『NoSQL Distilled』(Fowler・Sadalage共著)で補完的に扱われています。
@@ -1777,9 +1717,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="callout gold">
             <IconListDetails size={20} />
             <div className="callout-body">
-              <span className="callout-title">
-                カタログの網羅性には既に限界がある
-              </span>
+              <span className="callout-title">カタログの網羅性には既に限界がある</span>
               <p>
                 2019年には研究者によって新しいカテゴリの追加提案がなされているなど、データベースリファクタリングというテーマ自体が本書出版後も学術的・実務的に発展を続けています。
               </p>
@@ -1788,9 +1726,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="callout forest">
             <IconCheck size={20} />
             <div className="callout-body">
-              <span className="callout-title">
-                それでも中核となる考え方は褪せていない
-              </span>
+              <span className="callout-title">それでも中核となる考え方は褪せていない</span>
               <p>
                 「スキーマ・データ・アクセスコードの3つを同時に扱う」「移行期間を設けて段階的に変更する」「小さな変更を積み重ねる」という原則は、2016年のMartin
                 Fowler・Sadalage共著記事、そして現在広く使われるExpand/Contractパターンにそのまま受け継がれており、内容の古さよりも先見性の方が際立つ一冊です。
@@ -1829,9 +1765,7 @@ export default function RefactoringDatabasesGuidePage() {
             <dt>共有データベース(Shared Database)</dt>
             <dd>複数のアプリケーションが同じデータベースを利用する構成</dd>
             <dt>サンドボックス</dt>
-            <dd>
-              開発者が他者に影響を与えずに自由に実験できる、自分専用のデータベース環境
-            </dd>
+            <dd>開発者が他者に影響を与えずに自由に実験できる、自分専用のデータベース環境</dd>
             <dt>変換(Transformation)</dt>
             <dd>意味論そのものを変える、リファクタリングではない変更</dd>
           </dl>
@@ -1883,10 +1817,7 @@ export default function RefactoringDatabasesGuidePage() {
                 Pramod Sadalage 公式カタログサイト「Refactoring
                 Databases」(全リファクタリング一覧、翻訳版情報)
               </span>
-              <Ext
-                className="ref-url"
-                href="https://databaserefactoring.com/"
-              >
+              <Ext className="ref-url" href="https://databaserefactoring.com/">
                 https://databaserefactoring.com/
               </Ext>
             </div>
@@ -1895,13 +1826,9 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Scott W. Ambler「The Agile Data (AD) Method: Catalog of Database
-                Refactorings」
+                Scott W. Ambler「The Agile Data (AD) Method: Catalog of Database Refactorings」
               </span>
-              <Ext
-                className="ref-url"
-                href="https://agiledata.org/?p=3391"
-              >
+              <Ext className="ref-url" href="https://agiledata.org/?p=3391">
                 https://agiledata.org/?p=3391
               </Ext>
             </div>
@@ -1910,13 +1837,10 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Scott W. Ambler「Catalog of Database Refactorings: Referential
-                Integrity Refactorings」
+                Scott W. Ambler「Catalog of Database Refactorings: Referential Integrity
+                Refactorings」
               </span>
-              <Ext
-                className="ref-url"
-                href="https://agiledata.org/?p=3539"
-              >
+              <Ext className="ref-url" href="https://agiledata.org/?p=3539">
                 https://agiledata.org/?p=3539
               </Ext>
             </div>
@@ -1925,13 +1849,9 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Scott W. Ambler「Catalog of Database Refactorings: Architectural
-                Refactorings」
+                Scott W. Ambler「Catalog of Database Refactorings: Architectural Refactorings」
               </span>
-              <Ext
-                className="ref-url"
-                href="https://agiledata.org/?p=3551"
-              >
+              <Ext className="ref-url" href="https://agiledata.org/?p=3551">
                 https://agiledata.org/?p=3551
               </Ext>
             </div>
@@ -1940,13 +1860,9 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Scott W. Ambler「Catalog of Database Refactorings: Data Quality
-                Refactorings」
+                Scott W. Ambler「Catalog of Database Refactorings: Data Quality Refactorings」
               </span>
-              <Ext
-                className="ref-url"
-                href="https://agiledata.org/?p=3520"
-              >
+              <Ext className="ref-url" href="https://agiledata.org/?p=3520">
                 https://agiledata.org/?p=3520
               </Ext>
             </div>
@@ -1960,13 +1876,9 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Martin Fowler, Pramod Sadalage「Evolutionary Database
-                Design」(2016年改訂版)
+                Martin Fowler, Pramod Sadalage「Evolutionary Database Design」(2016年改訂版)
               </span>
-              <Ext
-                className="ref-url"
-                href="https://martinfowler.com/articles/evodb.html"
-              >
+              <Ext className="ref-url" href="https://martinfowler.com/articles/evodb.html">
                 https://martinfowler.com/articles/evodb.html
               </Ext>
             </div>
@@ -1974,9 +1886,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="ref-card">
             <IconLink size={18} />
             <div className="ref-card-body">
-              <span className="ref-card-title">
-                Martin Fowler「ParallelChange」(bliki)
-              </span>
+              <span className="ref-card-title">Martin Fowler「ParallelChange」(bliki)</span>
               <Ext
                 className="ref-url"
                 href="https://www.martinfowler.com/bliki/ParallelChange.html"
@@ -1993,9 +1903,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="ref-card">
             <IconLink size={18} />
             <div className="ref-card-body">
-              <span className="ref-card-title">
-                O&apos;Reilly Online Learning 書籍ページ
-              </span>
+              <span className="ref-card-title">O&apos;Reilly Online Learning 書籍ページ</span>
               <Ext
                 className="ref-url"
                 href="https://www.oreilly.com/library/view/refactoring-databases-evolutionary/0321293533/"
@@ -2019,9 +1927,7 @@ export default function RefactoringDatabasesGuidePage() {
           <div className="ref-card">
             <IconLink size={18} />
             <div className="ref-card-body">
-              <span className="ref-card-title">
-                Pramod J. Sadalage 著者紹介(InformIt)
-              </span>
+              <span className="ref-card-title">Pramod J. Sadalage 著者紹介(InformIt)</span>
               <Ext
                 className="ref-url"
                 href="https://www.informit.com/authors/bio/E26DAF98-2469-43EB-A05C-CA60B2F82A27"
@@ -2049,8 +1955,7 @@ export default function RefactoringDatabasesGuidePage() {
             <div className="ref-card-body">
               <span className="ref-card-title">
                 ACM Queue「Review of Refactoring Databases: Evolutionary Database
-                Design」(原文は403で直接アクセス不可のためInternet
-                Archive保存版を掲載)
+                Design」(原文は403で直接アクセス不可のためInternet Archive保存版を掲載)
               </span>
               <Ext
                 className="ref-url"
@@ -2064,8 +1969,7 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Red Gate Simple Talk「Refactoring Databases: The
-                Process」(本書第3章からの抜粋記事)
+                Red Gate Simple Talk「Refactoring Databases: The Process」(本書第3章からの抜粋記事)
               </span>
               <Ext
                 className="ref-url"
@@ -2096,10 +2000,7 @@ export default function RefactoringDatabasesGuidePage() {
                 ApexSQL Solution Center「SQL database refactoring
                 techniques」(データベースの臭いの解説)
               </span>
-              <Ext
-                className="ref-url"
-                href="https://solutioncenter.apexsql.com/?p=3629"
-              >
+              <Ext className="ref-url" href="https://solutioncenter.apexsql.com/?p=3629">
                 https://solutioncenter.apexsql.com/?p=3629
               </Ext>
             </div>
@@ -2113,8 +2014,7 @@ export default function RefactoringDatabasesGuidePage() {
             <IconLink size={18} />
             <div className="ref-card-body">
               <span className="ref-card-title">
-                Pete Hodgson「Expand/Contract: making a breaking change without a
-                big bang」
+                Pete Hodgson「Expand/Contract: making a breaking change without a big bang」
               </span>
               <Ext
                 className="ref-url"
@@ -2135,10 +2035,7 @@ export default function RefactoringDatabasesGuidePage() {
               <span className="ref-card-title">
                 「リファクタリング (データベース)」Weblio辞書(Wikipedia由来、日本語版書誌情報を含む)
               </span>
-              <Ext
-                className="ref-url"
-                href="https://www.weblio.jp/content/Database+refactoring"
-              >
+              <Ext className="ref-url" href="https://www.weblio.jp/content/Database+refactoring">
                 https://www.weblio.jp/content/Database+refactoring
               </Ext>
             </div>
