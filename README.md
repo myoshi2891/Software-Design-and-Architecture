@@ -177,7 +177,8 @@ Testing Library（契約テスト）を採用しています。
     固定サイドバー・scroll-spy を [`SqlAntipatternsSidebar.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsSidebar.tsx)、点検チェックリストを [`SqlAntipatternsChecklist.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsChecklist.tsx) でクライアント描画
   - [`/recommended-books/data-warehouse-toolkit-guide`](web-next/app/recommended-books/data-warehouse-toolkit-guide/page.tsx)
     — The Data Warehouse Toolkit 完全読解ガイドを移植（19 セクション・Mermaid 11 図・table 11・コードブロック 1・チェックリスト 12 項目）。
-    固定サイドバー・scroll-spy を [`DataWarehouseToolkitSidebar.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitSidebar.tsx)、学習チェックリストを [`DataWarehouseToolkitChecklist.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitChecklist.tsx) でクライアント描画
+    固定サイドバー・scroll-spy を [`DataWarehouseToolkitSidebar.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitSidebar.tsx)、学習チェックリストを [`DataWarehouseToolkitChecklist.tsx`](web-next/app/recommended-books/data-warehouse-toolkit-guide/DataWarehouseToolkitChecklist.tsx) でクライアント描画。
+    原本 HTML・Markdown は `archive/recommended-books/data-warehouse-toolkit-guide/` に無変更で保存。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
