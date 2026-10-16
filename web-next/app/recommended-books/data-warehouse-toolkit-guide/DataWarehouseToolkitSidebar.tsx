@@ -188,7 +188,12 @@ export default function DataWarehouseToolkitSidebar() {
       >
         <div className="brand">
           <div className="brand-mark">
-            <IconDatabase className="ti" aria-hidden="true" size={22} style={{ color: "var(--indigo)" }} />
+            <IconDatabase
+              className="ti"
+              aria-hidden="true"
+              size={22}
+              style={{ color: "var(--indigo)" }}
+            />
             <span>DWH Toolkit ガイド</span>
           </div>
           <div className="brand-sub">

@@ -18,8 +18,8 @@ export const CHECKLIST_ITEMS: readonly string[] = [
 ];
 
 export default function DataWarehouseToolkitChecklist() {
-  const [checkedState, setCheckedState] = useState<boolean[]>(
-    () => new Array(CHECKLIST_ITEMS.length).fill(false)
+  const [checkedState, setCheckedState] = useState<boolean[]>(() =>
+    new Array(CHECKLIST_ITEMS.length).fill(false)
   );
 
   const handleToggle = (index: number) => {
