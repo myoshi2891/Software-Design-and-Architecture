@@ -49,12 +49,7 @@ export default function DataWarehouseToolkitChecklist() {
           return (
             <li key={item} className={isDone ? "done" : ""}>
               <label>
-                <input
-                  type="checkbox"
-                  checked={isDone}
-                  onChange={() => handleToggle(index)}
-                  aria-label={item}
-                />
+                <input type="checkbox" checked={isDone} onChange={() => handleToggle(index)} />
                 <span>{item}</span>
               </label>
             </li>
