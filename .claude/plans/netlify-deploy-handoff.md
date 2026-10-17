@@ -1,7 +1,7 @@
 # Netlify デプロイ準備 — 引き継ぎ（2026-10-17 時点）
 
 計画書: [netlify-deploy-preparation.md](./netlify-deploy-preparation.md)
-ブランチ: `dev`（未 push。main へのマージ／PR も未実施）
+ブランチ: `dev`（push 済み）。`dev` → `main` の PR #26 を 2026-10-16 に作成済みで、現在オープン。**新しい PR は作成せず、#26 を使う**
 
 ## 進捗サマリ
 
@@ -41,7 +41,7 @@
    - `README.md` / `GEMINI.md` に除外9件へのリンクや説明が残っており、GitHub 上ではリンク切れになる。「ローカル専用（追跡外）」の扱いに書き換える
    - デプロイ手順（Netlify・`netlify.toml`・`.env.local` フラグ）と、`CLAUDE.md` の overrides 説明（postcss の値・npm 前提）を追記する
 3. **任意**: 公開バンドルに除外9件の「書名・一行要約・href」と、ページ別 CSS（クラス名・配色のみ）が残っている。本文は含まれず法的リスクは低い。完全に消すなら、ローカル専用エントリを別モジュールに分け、存在する場合だけ alias で読み込む方式を検討する
-4. **ユーザー作業**: dev → main のマージ（または PR）、Netlify でサイトを作成してリポジトリを連携（netlify.toml は自動で読み込まれる）、デプロイブランチの指定
+4. **ユーザー作業**: オープン中の PR #26（dev → main）のマージ、Netlify でサイトを作成してリポジトリを連携（netlify.toml は自動で読み込まれる）、デプロイブランチの指定
 
 ## 注意事項
 
