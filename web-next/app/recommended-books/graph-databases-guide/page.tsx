@@ -28,6 +28,7 @@ import {
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import { UnofficialBookNotice } from "@/components/site/UnofficialBookNotice";
 import GraphDatabasesChecklist from "./GraphDatabasesChecklist";
 import GraphDatabasesSidebar from "./GraphDatabasesSidebar";
 
@@ -252,6 +253,12 @@ export default function Page() {
               </Ext>
             </div>
           </header>
+
+          <UnofficialBookNotice
+            title="Graph Databases, 2nd Edition"
+            author="Ian Robinson、Jim Webber、Emil Eifrem"
+            publisher="O'Reilly Media"
+          />
 
           <section className="section" id="about">
             <div className="section-eyebrow">

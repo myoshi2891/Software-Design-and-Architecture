@@ -22849,3 +22849,84 @@ body.has-common-header .refactoring-databases-guide section {
 }
 
 
+
+/* ── サイト共通フッター（著作権・商標・非提携の表記） ── */
+.site-footer {
+  border-top: 1px solid var(--color-border-primary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0.25rem auto;
+  max-width: 60rem;
+}
+
+.site-footer-copy {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.site-footer a {
+  color: var(--color-text-info);
+  text-decoration: underline;
+}
+
+/* ── 書籍ガイド冒頭の非公式・非提携の注記 ── */
+.unofficial-book-notice {
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  border-radius: 8px;
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  margin: 1rem 0 1.5rem;
+  padding: 0.75rem 1rem;
+}
+
+/* ── /licenses ── */
+.licenses-page {
+  color: var(--color-text-primary);
+  margin: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 2rem) auto 3rem;
+  max-width: 60rem;
+  padding: 0 1rem;
+}
+
+.licenses-page h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.licenses-page h2 {
+  font-size: 1.25rem;
+  margin: 2rem 0 0.75rem;
+}
+
+.licenses-page table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.licenses-page th,
+.licenses-page td {
+  border: 1px solid var(--color-border-primary);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.licenses-page a {
+  color: var(--color-text-info);
+}
+
+@media (max-width: 640px) {
+  .licenses-page table {
+    display: block;
+    overflow-x: auto;
+  }
+}

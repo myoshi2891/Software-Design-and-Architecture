@@ -27,6 +27,7 @@ import {
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import { UnofficialBookNotice } from "@/components/site/UnofficialBookNotice";
 import BuildingLlmPoweredSidebar, { type NavGroup } from "./BuildingLlmPoweredSidebar";
 import LaunchChecklist, { type ChecklistItem } from "./LaunchChecklist";
 
@@ -515,6 +516,12 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
               </span>
             </div>
           </section>
+
+          <UnofficialBookNotice
+            title="Building LLM Powered Applications"
+            author="Valentina Alto"
+            publisher="Packt Publishing"
+          />
 
           <div className="table-wrap">
             <div className="table-title">書誌情報</div>
