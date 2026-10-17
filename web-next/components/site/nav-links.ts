@@ -14,10 +14,14 @@
  * 総合リファレンスは「アーキテクチャ」の先頭に置く。
  */
 
+import { filterNavLinks, localGuidesEnabled } from "@/lib/guide-visibility";
+
 /** 末端リンク（単一ページ）。 */
 export type NavLeaf = {
   readonly name: string;
   readonly href: string;
+  /** 公開デプロイから除外するローカル専用ガイド（lib/guide-visibility.ts 参照）。 */
+  readonly localOnly?: true;
 };
 
 /** ドロップダウン（子リンクを束ねるグループ）。 */
@@ -28,7 +32,8 @@ export type NavDropdown = {
 
 export type NavLink = NavLeaf | NavDropdown;
 
-export const navLinks: readonly NavLink[] = [
+/** ローカル専用ガイドを含む全件定義。 */
+export const allNavLinks: readonly NavLink[] = [
   {
     name: "アーキテクチャ",
     children: [
@@ -144,10 +149,12 @@ export const navLinks: readonly NavLink[] = [
       {
         name: "生成AIアプリ構築ガイド",
         href: "/recommended-books/architecting-generative-ai-applications-guide",
+        localOnly: true,
       },
       {
         name: "生成AIデザインパターン",
         href: "/recommended-books/generative-ai-design-patterns-guide",
+        localOnly: true,
       },
       {
         name: "AIエージェントアプリ構築ガイド",
@@ -156,18 +163,22 @@ export const navLinks: readonly NavLink[] = [
       {
         name: "SQLアンチパターン 第2版",
         href: "/recommended-books/sql-antipatterns-guide",
+        localOnly: true,
       },
       {
         name: "The Data Warehouse Toolkit",
         href: "/recommended-books/data-warehouse-toolkit-guide",
+        localOnly: true,
       },
       {
         name: "Database Design for Mere Mortals",
         href: "/recommended-books/database-design-for-mere-mortals-guide",
+        localOnly: true,
       },
       {
         name: "Database Internals",
         href: "/recommended-books/database-internals-guide",
+        localOnly: true,
       },
       {
         name: "Graph Databases",
@@ -176,14 +187,17 @@ export const navLinks: readonly NavLink[] = [
       {
         name: "High Performance MySQL",
         href: "/recommended-books/high-performance-mysql-guide",
+        localOnly: true,
       },
       {
         name: "NoSQL Distilled",
         href: "/recommended-books/nosql-distilled-guide",
+        localOnly: true,
       },
       {
         name: "Refactoring Databases",
         href: "/recommended-books/refactoring-databases-guide",
+        localOnly: true,
       },
     ],
   },
@@ -197,3 +211,6 @@ export const navLinks: readonly NavLink[] = [
     ],
   },
 ];
+
+/** 公開版ナビ。フラグ無しでは localOnly を含まない。 */
+export const navLinks = filterNavLinks(allNavLinks, localGuidesEnabled);

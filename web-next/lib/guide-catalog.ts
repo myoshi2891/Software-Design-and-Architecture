@@ -11,7 +11,12 @@
  * status:
  * - "published" … Next.js へ移行済み。索引ではリンクとして出す。
  * - "planned"   … 未移行（アクセスすると 404）。索引では「準備中」の非リンク表示。
+ *
+ * localOnly: 著作権リスクのため公開デプロイから除外するガイド。ソースは git 追跡外で、
+ * 公開版の `guideCatalog` には含めない（lib/guide-visibility.ts 参照）。
  */
+
+import { filterCatalog, localGuidesEnabled } from "@/lib/guide-visibility";
 
 export type GuideStatus = "published" | "planned";
 
@@ -21,6 +26,7 @@ export type GuideEntry = {
   readonly href: string;
   readonly summary: string;
   readonly status: GuideStatus;
+  readonly localOnly?: true;
 };
 
 /** カテゴリ。`id` は索引画面のカテゴリ色（globals.css の data-category）のキーを兼ねる。 */
@@ -30,7 +36,8 @@ export type GuideCategory = {
   readonly entries: readonly GuideEntry[];
 };
 
-export const guideCatalog: readonly GuideCategory[] = [
+/** ローカル専用ガイドを含む全件定義。 */
+export const allGuideCatalog: readonly GuideCategory[] = [
   {
     id: "architecture",
     name: "アーキテクチャ",
@@ -216,6 +223,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Leonid Kuligin著『Architecting Generative AI Applications』を起点にプロトタイプから本番運用まで一気通貫で学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "生成AIデザインパターン",
@@ -223,6 +231,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Valliappa Lakshmananら著『Generative AI Design Patterns』を起点に32の設計パターンを学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "AIエージェントアプリ構築ガイド",
@@ -237,6 +246,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Bill Karwin著『SQL Antipatterns』日本語版第2版を起点に全27章のアンチパターンを学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "The Data Warehouse Toolkit",
@@ -244,6 +254,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Ralph Kimball & Margy Ross著『The Data Warehouse Toolkit』を起点にディメンショナルモデリングを学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "Database Design for Mere Mortals",
@@ -251,6 +262,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Michael J. Hernandez著『Database Design for Mere Mortals』を起点にリレーショナルデータベース設計を学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "Database Internals",
@@ -258,6 +270,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Alex Petrov著『Database Internals』を起点にストレージエンジンと分散システムの内部構造を学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "Graph Databases",
@@ -272,6 +285,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Silvia Botros・Jeremy Tinley著『High Performance MySQL 第4版』を起点に大規模運用の実践知を学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "NoSQL Distilled",
@@ -279,6 +293,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Pramod J. Sadalage・Martin Fowler著『NoSQL Distilled』を起点にポリグロット・パーシステンスと4つのデータモデルを学ぶ",
         status: "published",
+        localOnly: true,
       },
       {
         name: "Refactoring Databases",
@@ -286,6 +301,7 @@ export const guideCatalog: readonly GuideCategory[] = [
         summary:
           "Scott W. Ambler・Pramod J. Sadalage著『Refactoring Databases』を起点に進化的データベース設計と移行手法を学ぶ",
         status: "published",
+        localOnly: true,
       },
     ],
   },
@@ -302,3 +318,6 @@ export const guideCatalog: readonly GuideCategory[] = [
     ],
   },
 ];
+
+/** 公開版カタログ。フラグ無しでは localOnly を含まない。 */
+export const guideCatalog = filterCatalog(allGuideCatalog, localGuidesEnabled);

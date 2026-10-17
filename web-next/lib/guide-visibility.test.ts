@@ -78,7 +78,7 @@ describe("filterNavLinks", () => {
 
   it("removes a dropdown that loses all children", () => {
     const links: readonly NavLink[] = [
-      { name: "空", children: [{ name: "x", href: EXCLUDED_SLUGS[0] ?? "" }] },
+      { name: "空", children: [{ name: "x", href: EXCLUDED_SLUGS[0] ?? "", localOnly: true }] },
       { name: "残", children: [{ name: "y", href: "/general/comprehensive-guide" }] },
     ];
     expect(filterNavLinks(links, false).map((l) => l.name)).toEqual(["残"]);
