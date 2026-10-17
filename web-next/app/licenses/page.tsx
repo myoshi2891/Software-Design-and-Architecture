@@ -7,9 +7,10 @@ export const metadata: Metadata = {
   description: "本サイトが利用するオープンソースソフトウェアとフォントのライセンス一覧。",
 };
 
-function LicenseTable({ entries }: { entries: readonly LicenseEntry[] }) {
+function LicenseTable({ caption, entries }: { caption: string; entries: readonly LicenseEntry[] }) {
   return (
     <table>
+      <caption>{caption}</caption>
       <thead>
         <tr>
           <th>名称</th>
@@ -41,9 +42,9 @@ export default function LicensesPage() {
         本サイトは以下のオープンソースソフトウェアおよびフォントを利用しています。各ライセンスの全文は、それぞれの配布元を参照してください。
       </p>
       <h2>ソフトウェア</h2>
-      <LicenseTable entries={packageLicenses} />
+      <LicenseTable caption="ソフトウェアのライセンス一覧" entries={packageLicenses} />
       <h2>フォント</h2>
-      <LicenseTable entries={fontLicenses} />
+      <LicenseTable caption="フォントのライセンス一覧" entries={fontLicenses} />
     </main>
   );
 }
