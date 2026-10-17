@@ -1105,8 +1105,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">01</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition - Google
-                    Books
+                    Database Design for Mere Mortals: A Hands-On Guide to Relational Database
+                    Design, 3rd Edition - Google Books
                   </div>
                   <Ext
                     className="ref-url"
@@ -1114,7 +1114,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                   >
                     https://books.google.co.jp/books/about/Database_Design_for_Mere_Mortals.html?id=MVApxsrcHiAC&redir_esc=y
                   </Ext>
-                  <div className="ref-note">ユーザー指定の書籍情報ページ(Google Books)</div>
+                  <div className="ref-note">ユーザー指定の書籍情報ページ(Google Books・第3版)</div>
                 </div>
               </div>
 
