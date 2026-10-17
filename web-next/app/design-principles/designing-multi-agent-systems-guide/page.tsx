@@ -5,7 +5,7 @@ import MultiAgentChecklist from "./MultiAgentChecklist";
 import MultiAgentSidebar, { type NavH2Item } from "./MultiAgentSidebar";
 
 export const metadata: Metadata = {
-  title: "マルチエージェントシステムの設計（Designing Multi-Agent Systems）— 初学者向け実践ガイド",
+  title: "マルチエージェントシステムの設計 — 初学者向け実践ガイド",
   description:
     "Anthropic・OpenAI・Google・Cognition・Linux Foundation（Agentic AI Foundation）・OWASP など、著名な国際的組織・開発者の一次情報に基づき、ソフトウェア/AIエンジニアリングにおけるマルチエージェントシステム設計をステップバイステップで解説します。",
 };
@@ -627,10 +627,7 @@ export default function Page() {
         <main className="main">
           <header className="hero" id="top">
             <span className="hero-eyebrow">初学者向け実践ガイド &middot; 2026年9月</span>
-            <h1>
-              マルチエージェントシステムの設計（Designing Multi-Agent Systems）—
-              初学者向け実践ガイド
-            </h1>
+            <h1>マルチエージェントシステムの設計 — 初学者向け実践ガイド</h1>
             <p className="hero-sub">
               Anthropic・OpenAI・Google・Cognition・Linux Foundation（Agentic AI Foundation）・OWASP
               など、著名な国際的組織・開発者の一次情報に基づき、ソフトウェア/AIエンジニアリングにおけるマルチエージェントシステム設計をステップバイステップで解説します。
@@ -2004,25 +2001,6 @@ export default function Page() {
                       className="ref-item-url"
                     >
                       https://www.gartner.com/en/newsroom/press-releases/2025-08-26-gartner-predicts-40-percent-of-enterprise-apps-will-feature-task-specific-ai-agents-by-2026-up-from-less-than-5-percent-in-2025
-                    </Ext>
-                  </div>
-                </div>
-              </div>
-              <div className="ref-card">
-                <h3 className="ref-card-title">
-                  参考にした対象書籍（本ガイドの主題とは異なるAEC分野の書籍）
-                </h3>
-                <div className="ref-card-list">
-                  <div className="ref-item">
-                    <span className="ref-item-title">
-                      Designing with Multi-Agent Systems（Evangelos Pantazis著、De
-                      Gruyter／O'Reilly）
-                    </span>
-                    <Ext
-                      href="https://www.oreilly.com/library/view/designing-with-multi-agent/9783110797473/"
-                      className="ref-item-url"
-                    >
-                      https://www.oreilly.com/library/view/designing-with-multi-agent/9783110797473/
                     </Ext>
                   </div>
                 </div>

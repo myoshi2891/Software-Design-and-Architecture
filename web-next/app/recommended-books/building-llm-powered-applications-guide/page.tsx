@@ -489,7 +489,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
               初学者のためのステップバイステップ実践入門
             </h1>
             <p className="hero-lead">
-              本ガイドは、O'Reilly / Packt Publishing 刊の書籍{" "}
+              本ガイドは、Packt Publishing 刊の書籍（O'Reilly Learning でも配信）{" "}
               <em>Building LLM Powered Applications</em>（Valentina Alto 著, 2024年5月刊,
               出典0）を出発点としつつ、刊行から約2年の間に大きく様変わりしたLLMアプリケーション開発の実践知を、2026年9月9日時点の情報でアップデートした学習ガイドです。原著はLangChainを中心に「LLMの基礎
               → プロンプトエンジニアリング → 会話アプリ → 構造化データ → マルチモーダル →

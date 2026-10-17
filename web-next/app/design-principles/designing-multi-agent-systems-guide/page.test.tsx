@@ -53,7 +53,7 @@ describe("designing-multi-agent-systems-guide page contract", () => {
     const external = Array.from(container.querySelectorAll("a")).filter((a) =>
       (a.getAttribute("href") ?? "").startsWith("http")
     );
-    expect(external.length).toBe(26);
+    expect(external.length).toBe(25);
     for (const a of external) {
       expect(a.getAttribute("target")).toBe("_blank");
       expect(a.getAttribute("rel")).toBe("noopener noreferrer");

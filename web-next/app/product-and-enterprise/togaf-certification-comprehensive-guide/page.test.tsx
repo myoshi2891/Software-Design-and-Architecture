@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { assertFaithful, compact, source } from "./source-contract";
+import { assertFaithful, compact, source, TOGAF_LEGAL_NOTE } from "./source-contract";
 
 vi.mock("@/components/MermaidDiagram", () => ({
   default: ({
@@ -46,7 +46,10 @@ describe("TOGAF foundation", () => {
   it("provides route metadata and keeps the content on the server", () => {
     expect(metadata.title).toBe(source.title);
     expect(compact(metadata.description as string)).toBe(
-      compact(source.querySelector(".hero p")?.textContent ?? "")
+      compact(source.querySelector(".hero p")?.textContent ?? "").replace(
+        compact(TOGAF_LEGAL_NOTE),
+        ""
+      )
     );
     const { container } = render(<Page />);
     expect(

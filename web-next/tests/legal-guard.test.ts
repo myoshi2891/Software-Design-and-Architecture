@@ -3,7 +3,8 @@
 // 固定する契約:
 // - git 追跡下の app/ に、海賊版・違法アップロード・試験問題流出系サイトへの
 //   言及やリンクを含めない（著作権法 113 条のリーチサイト規制・受験規約への配慮）。
-//   追跡外のローカル専用ガイドは公開されないため対象外。
+//   追跡外のローカル専用ガイドと、テスト専用の原本照合ヘルパー (source-contract.ts) は
+//   配信されないため対象外。
 // - TOGAF: ExamTopics を推奨しない／冒頭にも商標・非公式表記／出題比率は筆者の目安と明記／
 //   Zachman® を商標表記に含める／サイドバーバッジが公式ブランド風でない。
 // - SAFe®: Scaled Agile, Inc. の商標表記。
@@ -18,7 +19,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => readFileSync(join(process.cwd(), "app", path), "utf8");
+// Biome は JSX テキストを折り返すため、空白を正規化して比較する（描画時の JSX 空白規則と同等）。
+const read = (path: string) =>
+  readFileSync(join(process.cwd(), "app", path), "utf8").replace(/\s+/g, " ");
 
 const FORBIDDEN = /flylib\.com|dokumen\.pub|examtopics|archive\.org\/details\/|libgen|z-lib/i;
 
@@ -26,9 +29,7 @@ describe("tracked sources", () => {
   it("never reference pirate or exam-dump sites", () => {
     const files = execFileSync("git", ["ls-files", "app"], { encoding: "utf8" })
       .split("\n")
-      .filter(
-        (f) => /\.(tsx?|css)$/.test(f) && !f.endsWith(".test.ts") && !f.endsWith(".test.tsx")
-      );
+      .filter((f) => /\.(tsx?|css)$/.test(f) && !/\.test\.tsx?$|source-contract\.ts$/.test(f));
     expect(files.length).toBeGreaterThan(0);
     const hits = files.filter((f) => FORBIDDEN.test(readFileSync(join(process.cwd(), f), "utf8")));
     expect(hits).toEqual([]);
