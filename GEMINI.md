@@ -234,9 +234,9 @@ flowchart TD
   - `app/recommended-books/database-internals-guide/page.tsx`
     （URL `/recommended-books/database-internals-guide`）。Alex Petrov著
     『Database Internals』を起点にストレージエンジンと分散システムの内部構造を学ぶガイド。
-    全28セクション、Mermaid 15図、表8件、コード0件、チェックリスト11項目を忠実移植。
+    全28セクション、Mermaid 15図、表8件、コード0件、チェックリスト14項目を忠実移植。
     本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`DatabaseInternalsSidebar.tsx`）に分離、
-    学習チェックリスト（11項目）をクライアントコンポーネント（`DatabaseInternalsChecklist.tsx`）に分離。
+    学習チェックリスト（14項目）をクライアントコンポーネント（`DatabaseInternalsChecklist.tsx`）に分離。
     原本 HTML・Markdown は `archive/recommended-books/database-internals-guide/` に無変更で保存。
     `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/recommended-books/graph-databases-guide/page.tsx`
