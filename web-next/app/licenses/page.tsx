@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
-import { fontLicenses, type LicenseEntry, packageLicenses } from "@/lib/third-party-licenses";
+import {
+  fontLicenses,
+  type LicenseEntry,
+  MIT_PERMISSION_NOTICE,
+  OFL_1_1_TEXT,
+  packageLicenses,
+} from "@/lib/third-party-licenses";
 
 export const metadata: Metadata = {
   title: "サードパーティライセンス | IT業界 主流設計手法・駆動開発 完全ガイド",
@@ -33,18 +39,63 @@ function LicenseTable({ caption, entries }: { caption: string; entries: readonly
   );
 }
 
+/** ライセンス本文を、対象の著作権表示と併せて掲載する節。 */
+function LicenseText({
+  id,
+  title,
+  notices,
+  text,
+}: {
+  id: string;
+  title: string;
+  notices: readonly string[];
+  text: string;
+}) {
+  return (
+    <section aria-labelledby={id}>
+      <h3 id={id}>{title}</h3>
+      <ul>
+        {notices.map((notice) => (
+          <li key={notice}>{notice}</li>
+        ))}
+      </ul>
+      <pre>{text}</pre>
+    </section>
+  );
+}
+
+// 同一の著作権表示（react / react-dom など）は 1 行にまとめる。
+const uniqueCopyrights = (entries: readonly LicenseEntry[]) => [
+  ...new Set(entries.map((e) => e.copyright)),
+];
+
 /** 本サイトが利用するサードパーティのライセンス一覧ページ。 */
 export default function LicensesPage() {
   return (
     <main className="licenses-page">
       <h1>サードパーティライセンス</h1>
       <p>
-        本サイトは以下のオープンソースソフトウェアおよびフォントを利用しています。各ライセンスの全文は、それぞれの配布元を参照してください。
+        本サイトは以下のオープンソースソフトウェアおよびフォントを利用しています。MIT License と SIL
+        Open Font License 1.1
+        の本文は下記「ライセンス本文」に掲載しています。その他のライセンスの全文は、それぞれの配布元を参照してください。
       </p>
       <h2>ソフトウェア</h2>
       <LicenseTable caption="ソフトウェアのライセンス一覧" entries={packageLicenses} />
       <h2>フォント</h2>
       <LicenseTable caption="フォントのライセンス一覧" entries={fontLicenses} />
+      <h2>ライセンス本文</h2>
+      <LicenseText
+        id="license-mit"
+        title="MIT License"
+        notices={uniqueCopyrights(packageLicenses.filter((e) => e.license === "MIT"))}
+        text={MIT_PERMISSION_NOTICE}
+      />
+      <LicenseText
+        id="license-ofl"
+        title="SIL Open Font License 1.1"
+        notices={uniqueCopyrights(fontLicenses)}
+        text={OFL_1_1_TEXT}
+      />
     </main>
   );
 }
