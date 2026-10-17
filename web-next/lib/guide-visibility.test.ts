@@ -6,7 +6,7 @@
 //
 // 固定する契約:
 // - 全件定義 (allGuideCatalog / allNavLinks) は 36 件で、うち localOnly は 9 件。
-// - フラグ無しの公開版 (guideCatalog / navLinks) は 27 件で localOnly を含まない。
+// - 公開版 (guideCatalog / navLinks) はフラグ無しで 27 件（localOnly を含まない）、フラグ有りで 36 件。
 // - フィルタ関数はフラグ有りで全件を返す。
 // - 判定は "1" のみ有効（"true" や空文字は無効）。
 
@@ -17,6 +17,7 @@ import {
   filterCatalog,
   filterNavLinks,
   isLocalGuidesEnabled,
+  localGuidesEnabled,
   localOnlyHrefs,
 } from "@/lib/guide-visibility";
 
@@ -85,10 +86,16 @@ describe("filterNavLinks", () => {
   });
 });
 
-describe("public exports (flag unset in tests)", () => {
-  it("exclude localOnly guides from guideCatalog and navLinks", () => {
-    expect(catalogHrefs(guideCatalog).length).toBe(27);
-    expect(navHrefs(navLinks).length).toBe(27);
+// 公開エクスポートはモジュール評価時のフラグで決まるため、期待値も同じフラグから導く。
+describe("public exports (follow NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES)", () => {
+  const expected = localGuidesEnabled ? 36 : 27;
+
+  it("match the flag-dependent guide count", () => {
+    expect(catalogHrefs(guideCatalog).length).toBe(expected);
+    expect(navHrefs(navLinks).length).toBe(expected);
+  });
+
+  it.skipIf(localGuidesEnabled)("exclude localOnly guides when the flag is off", () => {
     for (const href of EXCLUDED_SLUGS) {
       expect(catalogHrefs(guideCatalog)).not.toContain(href);
       expect(navHrefs(navLinks)).not.toContain(href);
