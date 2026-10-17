@@ -1,21 +1,21 @@
 // [Red] 契約テスト (guide-catalog)。lib/guide-catalog.ts を実装するまで失敗する。
 //
 // 固定する契約:
-// - guideCatalog は 5 カテゴリ、合計 22 エントリ。
+// - allGuideCatalog は 5 カテゴリ、合計 22 エントリ。
 // - published が 14 件、planned が 8 件。
 // - href はすべて "/" 始まりの絶対パスで、重複しない。
 // - name / summary は非空（索引画面がこの 2 つで行を組み立てるため）。
 
 import { describe, expect, it } from "vitest";
-import { type GuideEntry, guideCatalog } from "@/lib/guide-catalog";
+import { allGuideCatalog, type GuideEntry } from "@/lib/guide-catalog";
 
 function allEntries(): readonly GuideEntry[] {
-  return guideCatalog.flatMap((category) => category.entries);
+  return allGuideCatalog.flatMap((category) => category.entries);
 }
 
-describe("guideCatalog structure", () => {
+describe("allGuideCatalog structure", () => {
   it("defines 7 categories", () => {
-    expect(guideCatalog.length).toBe(7);
+    expect(allGuideCatalog.length).toBe(7);
   });
 
   it("holds 36 guides in total", () => {
@@ -55,19 +55,19 @@ describe("guideCatalog structure", () => {
   });
 
   it("never repeats a category id", () => {
-    const ids = guideCatalog.map((c) => c.id);
+    const ids = allGuideCatalog.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
   it("files the general comprehensive guide under architecture", () => {
-    const architecture = guideCatalog.find((c) => c.id === "architecture");
+    const architecture = allGuideCatalog.find((c) => c.id === "architecture");
     expect(architecture).toBeDefined();
     expect(architecture?.entries.map((e) => e.href)).toContain("/general/comprehensive-guide");
   });
 });
 
 it("publishes the MVP guide under product-and-enterprise", () => {
-  const category = guideCatalog.find((entry) => entry.id === "product-and-enterprise");
+  const category = allGuideCatalog.find((entry) => entry.id === "product-and-enterprise");
   expect(
     category?.entries.find(
       (entry) => entry.href === "/product-and-enterprise/minimum-viable-product-comprehensive-guide"
@@ -76,7 +76,7 @@ it("publishes the MVP guide under product-and-enterprise", () => {
 });
 
 it("publishes the TOGAF guide under product-and-enterprise", () => {
-  const category = guideCatalog.find((entry) => entry.id === "product-and-enterprise");
+  const category = allGuideCatalog.find((entry) => entry.id === "product-and-enterprise");
   expect(
     category?.entries.find(
       (entry) => entry.href === "/product-and-enterprise/togaf-certification-comprehensive-guide"
@@ -85,7 +85,7 @@ it("publishes the TOGAF guide under product-and-enterprise", () => {
 });
 
 it("publishes CSS fundamentals under CSS design systems", () => {
-  const category = guideCatalog.find((entry) => entry.id === "css-design-system-guide");
+  const category = allGuideCatalog.find((entry) => entry.id === "css-design-system-guide");
   expect(
     category?.entries.find(
       (entry) => entry.href === "/css-design-system-guide/design-system-css-fundamentals"
