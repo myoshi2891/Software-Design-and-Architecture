@@ -27,3 +27,18 @@ next-env.d.ts
 # ルート .gitignore の Python 向け `lib/` 無視を上書きし、Next.js の lib/ を追跡する
 !/lib/
 !/lib/**
+
+# ローカル環境変数（NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES 等）
+.env*.local
+
+# 著作権リスクのため公開デプロイから除外する書籍ガイド（ローカル専用）。
+# 索引・ナビへの表示は .env.local の NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES=1 で有効化する。
+/app/recommended-books/sql-antipatterns-guide/
+/app/recommended-books/generative-ai-design-patterns-guide/
+/app/recommended-books/database-design-for-mere-mortals-guide/
+/app/recommended-books/architecting-generative-ai-applications-guide/
+/app/recommended-books/data-warehouse-toolkit-guide/
+/app/recommended-books/database-internals-guide/
+/app/recommended-books/high-performance-mysql-guide/
+/app/recommended-books/nosql-distilled-guide/
+/app/recommended-books/refactoring-databases-guide/
