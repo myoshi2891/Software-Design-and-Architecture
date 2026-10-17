@@ -11,7 +11,7 @@
 | 2 | サイト共通の法務表記（フッター・/licenses・書籍注記） | ✅ 完了 |
 | 3 | コンテンツの法務修正（商標・出典・海賊版リンク） | ✅ 完了 |
 | 4 | Netlify 設定（静的エクスポート・netlify.toml） | ✅ 完了 |
-| 5 | ドキュメント同期（README / GEMINI / CLAUDE.md） | ⬜ 未着手 |
+| 5 | ドキュメント同期（README / GEMINI / CLAUDE.md） | ✅ 完了 |
 
 ## 実装済みの要点
 
@@ -36,8 +36,8 @@
 
 ## 残作業（次セッション）
 
-1. **Clean Architecture 図キャプションの目視再確認**: 最後の CSS 修正（`.hero-svg-wrap` を `height: auto` に変更し `.hero-svg-caption` を追加）はビルドのみ確認済み。`out/` を配信してキャプションが図の直下に収まっているか確認する
-2. **Phase 5 ドキュメント同期**（spec-sync スキル）
+1. ✅ **Clean Architecture 図キャプションの目視再確認**（2026-10-17 完了: 1280px 幅でキャプションが SVG 直下・`.hero-svg-wrap` 内に収まることを確認。モバイル幅は既存仕様で図ごと非表示）: 最後の CSS 修正（`.hero-svg-wrap` を `height: auto` に変更し `.hero-svg-caption` を追加）はビルドのみ確認済み。`out/` を配信してキャプションが図の直下に収まっているか確認する
+2. ✅ **Phase 5 ドキュメント同期**（spec-sync スキル。2026-10-17 完了）
    - `README.md` / `GEMINI.md` に除外9件へのリンクや説明が残っており、GitHub 上ではリンク切れになる。「ローカル専用（追跡外）」の扱いに書き換える
    - デプロイ手順（Netlify・`netlify.toml`・`.env.local` フラグ）と、`CLAUDE.md` の overrides 説明（postcss の値・npm 前提）を追記する
 3. **任意**: 公開バンドルに除外9件の「書名・一行要約・href」と、ページ別 CSS（クラス名・配色のみ）が残っている。本文は含まれず法的リスクは低い。完全に消すなら、ローカル専用エントリを別モジュールに分け、存在する場合だけ alias で読み込む方式を検討する
