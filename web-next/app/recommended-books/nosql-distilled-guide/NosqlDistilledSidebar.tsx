@@ -155,10 +155,6 @@ export default function NosqlDistilledSidebar() {
         className={`sidebar-overlay ${isOpen ? "open" : ""}`}
         id="sidebarOverlay"
         onClick={closeSidebar}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") closeSidebar();
-        }}
-        tabIndex={-1}
         aria-hidden="true"
       />
       <aside className={`sidebar ${isOpen ? "open" : ""}`} id="sidebar">
