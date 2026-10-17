@@ -292,7 +292,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               </div>
               <div className="book-card-body">
                 <div className="table-wrap">
-                  <table className="kv-table">
+                  <table className="kv-table" aria-label="書籍データ">
                     <tbody>
                       <tr>
                         <th>原題</th>
@@ -475,7 +475,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </p>
             <p>第1章で紹介される、リレーショナルデータベースの主な利点は次の通りです。</p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="リレーショナルデータベースの主な利点">
                 <thead>
                   <tr>
                     <th>利点</th>
@@ -541,7 +541,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               設計プロセスに入る前に、共通言語を整えておく必要があります。第3章では、本書全体を通じて使われる用語が4つのカテゴリに整理されています。
             </p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="第3章の用語カテゴリ">
                 <thead>
                   <tr>
                     <th>カテゴリ</th>
@@ -685,7 +685,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </p>
             <p>よくある問題とその対処も整理されています。</p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="テーブル構造のよくある問題と対処">
                 <thead>
                   <tr>
                     <th>問題</th>
@@ -830,7 +830,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               設計プロセスの最終フェーズは、これまで積み上げてきた整合性ルールをすべて見直す作業です。
             </p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="データ整合性の最終レビュー項目">
                 <thead>
                   <tr>
                     <th>レビュー対象</th>
@@ -938,7 +938,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               正規化理論そのものを体系的に学びたい読者のために、一般的な正規形の考え方を簡単な表にまとめておきます(これは本書独自の説明ではなく、リレーショナルデータベース理論一般における標準的な整理です)。
             </p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="主な正規形とその目的">
                 <thead>
                   <tr>
                     <th>正規形</th>
@@ -1030,7 +1030,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
             </div>
             <h2>次のステップ - あわせて読みたい資料</h2>
             <div className="table-wrap">
-              <table>
+              <table aria-label="次に読みたい資料と位置づけ">
                 <thead>
                   <tr>
                     <th>資料</th>

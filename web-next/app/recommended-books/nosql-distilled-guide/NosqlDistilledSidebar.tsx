@@ -16,7 +16,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface NavItem {
   readonly id: string;
@@ -82,15 +82,18 @@ export const NAV_GROUPS: readonly NavGroup[] = [
 export default function NosqlDistilledSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("about");
+  const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
 
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
 
-  // 開いている間だけ window で Escape を受け取り、フォーカス位置に関係なく閉じる
+  // 開いている間だけ window で Escape を受け取り、フォーカス位置に関係なく閉じてトグルへ戻す
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+      if (e.key !== "Escape") return;
+      mobileToggleRef.current?.focus();
+      setIsOpen(false);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -140,6 +143,7 @@ export default function NosqlDistilledSidebar() {
         <button
           type="button"
           id="mobileToggle"
+          ref={mobileToggleRef}
           aria-label="メニュー"
           aria-expanded={isOpen}
           onClick={() => (isOpen ? closeSidebar() : openSidebar())}

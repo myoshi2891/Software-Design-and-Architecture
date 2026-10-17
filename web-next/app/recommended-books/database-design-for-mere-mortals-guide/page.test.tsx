@@ -136,7 +136,7 @@ describe("database-design-for-mere-mortals-guide page contract", () => {
 
     // Act
     const labels = Array.from(container.querySelectorAll("table")).map(
-      (t) => t.getAttribute("aria-label")?.trim() ?? "",
+      (t) => t.getAttribute("aria-label")?.trim() ?? ""
     );
 
     // Assert
