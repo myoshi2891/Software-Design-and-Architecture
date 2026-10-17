@@ -127,7 +127,7 @@ export default function GraphDatabasesSidebar() {
         <button
           type="button"
           id="menuBtn"
-          aria-label="メニューを開く"
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
           aria-controls="sidebar"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((prev) => !prev)}
