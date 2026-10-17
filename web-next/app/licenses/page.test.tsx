@@ -26,6 +26,12 @@ describe("/licenses page", () => {
     }
   });
 
+  it("names each license table with a caption", () => {
+    render(<LicensesPage />);
+    expect(screen.getByRole("table", { name: "ソフトウェアのライセンス一覧" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "フォントのライセンス一覧" })).toBeInTheDocument();
+  });
+
   it("opens external links with noopener noreferrer", () => {
     const { container } = render(<LicensesPage />);
     const links = container.querySelectorAll('a[href^="https://"]');
