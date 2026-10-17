@@ -67,7 +67,7 @@ export default function Page() {
             <h1>{"TOGAF とは何か"}</h1>
             <p>
               {
-                "The Open Group Architecture Framework — ビジネスとITを整合させる世界標準のエンタープライズアーキテクチャフレームワーク。"
+                "The Open Group Architecture Framework — ビジネスとITを整合させる世界標準のエンタープライズアーキテクチャフレームワーク。TOGAF® は The Open Group の登録商標です。Zachman® は Zachman International, Inc. の登録商標です。本ガイドは The Open Group の公式資料ではなく、同団体とは関係のない非公式の学習資料です。"
               }
             </p>
             <div className="hero-stats">
@@ -1351,7 +1351,9 @@ export default function Page() {
           <div className="section-eyebrow">{"Exam Strategy"}</div>
           <h1 className="page-title">{"合格戦略とベストプラクティス"}</h1>
           <p className="page-subtitle">
-            {"Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。"}
+            {
+              "Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。※ 出題比率は公式発表ではなく、公開情報をもとにした筆者による目安です。"
+            }
           </p>
           <h2 id="togaf-table-8">{"Level 1 出題傾向（目安）"}</h2>
           <div className="table-wrap">
@@ -1498,7 +1500,7 @@ export default function Page() {
                 <strong>{"模擬試験を最低 200 問解く"}</strong>
                 <span>
                   {
-                    "問題のパターンと罠を把握するためには実践量が不可欠。Whizlabs・ExamTopics 等の模擬試験で間違えた問題を徹底的に復習する。"
+                    "問題のパターンと罠を把握するためには実践量が不可欠。The Open Group 公式の練習問題や正規の模擬試験（Whizlabs 等）で間違えた問題を徹底的に復習する。流出した実試験問題の利用は受験規約違反となるため避ける。"
                   }
                 </span>
               </div>
@@ -1675,7 +1677,7 @@ export default function Page() {
                   <td>
                     <strong style={{ color: "var(--color-text-warning)" }}>{"Should"}</strong>
                   </td>
-                  <td>{"Whizlabs / ExamTopics 模擬試験"}</td>
+                  <td>{"公式練習問題 / Whizlabs 模擬試験"}</td>
                   <td>{"問題パターンと弱点把握"}</td>
                 </tr>
                 <tr>
@@ -1880,7 +1882,7 @@ export default function Page() {
             <div>
               <strong>{"免責事項："}</strong>
               {
-                "TOGAF® は The Open Group の登録商標です。本ドキュメントは The Open Group の公式資料ではありません。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（opengroup.org/togaf）でご確認ください。"
+                "TOGAF® は The Open Group の登録商標です。Zachman® は Zachman International, Inc. の登録商標です。本ドキュメントは The Open Group の公式資料ではありません。試験情報・受験料・試験形式は変更される場合があります。受験前に必ず公式サイト（opengroup.org/togaf）でご確認ください。"
               }
             </div>
           </div>

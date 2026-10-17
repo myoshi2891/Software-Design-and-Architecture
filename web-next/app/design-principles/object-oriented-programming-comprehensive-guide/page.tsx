@@ -888,7 +888,7 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
               <div className="callout callout-quote">
                 <span className="callout-icon">💬</span>
                 <div className="callout-body">
-                  「拡張に対して開かれており、修正に対して閉じていなければならない」
+                  「拡張に対して開かれており、修正に対して閉じていなければならない」— Bertrand Meyer
                 </div>
               </div>
               <p>
@@ -1071,7 +1071,7 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
               <div className="callout callout-quote">
                 <span className="callout-icon">💬</span>
                 <div className="callout-body">
-                  「クライアントが使用しないメソッドへの依存を強制してはならない」
+                  「クライアントが使用しないメソッドへの依存を強制してはならない」— Robert C. Martin
                 </div>
               </div>
               <p>大きな1つのインターフェースより、小さな複数のインターフェースに分割しましょう。</p>
@@ -1120,7 +1120,8 @@ fetch_users(PostgreSQLConnection())  <span class="cm"># PostgreSQL を使う</sp
               <div className="callout callout-quote">
                 <span className="callout-icon">💬</span>
                 <div className="callout-body">
-                  「上位モジュールは下位モジュールに依存してはならない。両者は抽象に依存すべきだ」
+                  「上位モジュールは下位モジュールに依存してはならない。両者は抽象に依存すべきだ」—
+                  Robert C. Martin
                 </div>
               </div>
               <p>

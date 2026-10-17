@@ -189,7 +189,9 @@ export default function AiNativeValueArchitectPage() {
 
           <div className="disclaimer">
             <strong>免責事項:</strong> 本ガイドはScaled Agile, Inc.
-            の公式教材ではない、非公式の学習補助資料です。主要な主張には可能な範囲で一次情報源（公式ページ・公式サポート記事・認定トレーニングパートナーの公開ページ）を付記していますが、すべての項目に一次情報源が付いているわけではありません。試験の詳細・料金体系・出題比率は変更される可能性があるため、受験前に必ず
+            の公式教材ではない、非公式の学習補助資料です。SAFe® および Scaled Agile Framework® は
+            Scaled Agile, Inc.
+            の登録商標です。主要な主張には可能な範囲で一次情報源（公式ページ・公式サポート記事・認定トレーニングパートナーの公開ページ）を付記していますが、すべての項目に一次情報源が付いているわけではありません。試験の詳細・料金体系・出題比率は変更される可能性があるため、受験前に必ず
             <Ext href="https://scaledagile.com/certification/ai-native-value-architect/">
               公式サイト
             </Ext>
@@ -1922,7 +1924,9 @@ export default function AiNativeValueArchitectPage() {
 
           <footer className="footer">
             本ガイドは学習目的で作成された非公式資料であり、Scaled Agile, Inc.
-            の公式教材・著作物を複製したものではありません。試験内容・出題比率・料金体系は変更される可能性があるため、受験前に必ず公式サイトで最新情報をご確認ください。
+            の公式教材・著作物を複製したものではありません。SAFe® および Scaled Agile Framework® は
+            Scaled Agile, Inc.
+            の登録商標です。試験内容・出題比率・料金体系は変更される可能性があるため、受験前に必ず公式サイトで最新情報をご確認ください。
           </footer>
         </main>
       </div>

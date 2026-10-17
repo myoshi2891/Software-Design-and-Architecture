@@ -66,9 +66,13 @@
         "app/design-principles/object-oriented-programming-comprehensive-guide/page.tsx",
         "app/development-methodologies/test-driven-development-comprehensive-guide/page.tsx",
         "app/recommended-books/sql-antipatterns-guide/page.tsx",
+        "app/recommended-books/data-warehouse-toolkit-guide/page.tsx",
         "app/product-and-enterprise/minimum-viable-product-comprehensive-guide/page.tsx",
         "app/css-design-system-guide/design-system-css-fundamentals/page.tsx",
-        "app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx"
+        "app/css-design-system-guide/grid-bem-responsive-a11y-systems/page.tsx",
+        "app/recommended-books/graph-databases-guide/page.tsx",
+        "app/recommended-books/high-performance-mysql-guide/page.tsx",
+        "app/recommended-books/refactoring-databases-guide/page.tsx"
       ],
       "linter": {
         "rules": {

@@ -1,6 +1,6 @@
 # Software Architecture Design - Comprehensive Guide
 
-最終更新日: 2026-10-15
+最終更新日: 2026-10-17
 このプロジェクトは、ソフトウェアアーキテクチャ、デザイン原則、開発手法、およびプロダクト/エンタープライズ管理に関する包括的な知識を体系化したガイド集です。
 
 ## プロジェクトの目的
@@ -54,10 +54,21 @@
 
 技術書を起点に、最新実践知を体系化したガイドです。
 - Building LLM Powered Applications
+- Building Applications with AI Agents
+- Graph Databases
+
+著作権リスクのため、以下 9 件は公開デプロイから除外した**ローカル専用ガイド**です。
+ソースは git 追跡外（`web-next/.gitignore`）のため、本リポジトリには含まれません。
+
 - Architecting Generative AI Applications
 - Generative AI Design Patterns
-- Building Applications with AI Agents
 - SQLアンチパターン 第2版
+- The Data Warehouse Toolkit
+- Database Design for Mere Mortals
+- Database Internals
+- High Performance MySQL
+- NoSQL Distilled
+- Refactoring Databases
 
 ### 7. 資格試験 (`certification-exams/`)
 
@@ -70,11 +81,15 @@
 Next.js 16 + React 19 + TypeScript で構築し、Biome（lint/format）と Vitest +
 Testing Library（契約テスト）を採用しています。
 
-ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。カテゴリ別に全 29 本を
-一覧し、全ガイドが公開済みのためすべてリンクからアクセスできます。
+ルート [`/`](web-next/app/page.tsx) は全ガイドの索引画面です。公開版はカテゴリ別に 27 本を
+一覧し、すべてリンクからアクセスできます。
 収録内容は [`lib/guide-catalog.ts`](web-next/lib/guide-catalog.ts) が単一の情報源で、
 グローバルナビ [`nav-links.ts`](web-next/components/site/nav-links.ts) との
 ページ集合の一致は契約テストで保証しています。
+
+ローカル専用ガイド 9 本は、カタログ上で `localOnly: true` として定義しています。
+[`lib/guide-visibility.ts`](web-next/lib/guide-visibility.ts) が索引・ナビから除外し、
+`web-next/.env.local`（追跡外）に `NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES=1` を設定したときだけ表示します。
 
 - 移行済みページ:
   - [`/css-design-system-guide/normal-animation-architecture-tokens-performance-tools`](web-next/app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx)
@@ -157,12 +172,6 @@ Testing Library（契約テスト）を採用しています。
   - [`/recommended-books/building-llm-powered-applications-guide`](web-next/app/recommended-books/building-llm-powered-applications-guide/page.tsx)
     — LLMパワードアプリケーション構築ガイドを移植（18 セクション・Mermaid 15 図・table 7・コードブロック 2・チェックリスト 7 項目）。
     固定サイドバー・scroll-spy を [`BuildingLlmPoweredSidebar.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/BuildingLlmPoweredSidebar.tsx)、本番チェックリストを [`LaunchChecklist.tsx`](web-next/app/recommended-books/building-llm-powered-applications-guide/LaunchChecklist.tsx) でクライアント描画
-  - [`/recommended-books/architecting-generative-ai-applications-guide`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/page.tsx)
-    — 生成AIアプリケーションアーキテクチャ完全ガイドを移植（16 セクション・Mermaid 28 図・table 16・コードブロック 2・チェックリスト 19 項目）。
-    固定サイドバー・scroll-spy を [`ArchitectingGenAiSidebar.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiSidebar.tsx)、実践チェックリストを [`ArchitectingGenAiChecklist.tsx`](web-next/app/recommended-books/architecting-generative-ai-applications-guide/ArchitectingGenAiChecklist.tsx) でクライアント描画
-  - [`/recommended-books/generative-ai-design-patterns-guide`](web-next/app/recommended-books/generative-ai-design-patterns-guide/page.tsx)
-    — 生成AIデザインパターン実践ガイドを移植（17 セクション・Mermaid 23 図・table 5・チェックリスト 14 項目）。
-    固定サイドバー・scroll-spy を [`GenerativeAiDesignPatternsSidebar.tsx`](web-next/app/recommended-books/generative-ai-design-patterns-guide/GenerativeAiDesignPatternsSidebar.tsx)、導入前チェックリストを [`GenerativeAiDesignPatternsChecklist.tsx`](web-next/app/recommended-books/generative-ai-design-patterns-guide/GenerativeAiDesignPatternsChecklist.tsx) でクライアント描画
   - [`/recommended-books/building-applications-with-ai-agents-guide`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/page.tsx)
     — AIエージェントアプリケーション構築完全ガイドを移植（18 セクション・Mermaid 14 図・table 12・コードブロック 2・チェックリスト 6 項目）。
     固定サイドバー・scroll-spy を [`BuildingApplicationsWithAiAgentsSidebar.tsx`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/BuildingApplicationsWithAiAgentsSidebar.tsx)、まとめチェックリストを [`BuildingApplicationsWithAiAgentsChecklist.tsx`](web-next/app/recommended-books/building-applications-with-ai-agents-guide/BuildingApplicationsWithAiAgentsChecklist.tsx) でクライアント描画
@@ -172,9 +181,10 @@ Testing Library（契約テスト）を採用しています。
   - [`/certification-exams/ai-native-value-architect-guide`](web-next/app/certification-exams/ai-native-value-architect-guide/page.tsx)
     — AI-Native Value Architect Certification 学習ガイドを移植（11 セクション・Mermaid 7 図・table 14・チェックリスト 9 項目）。
     固定サイドバー・進捗バー・scroll-spy を [`AiNativeValueArchitectSidebar.tsx`](web-next/app/certification-exams/ai-native-value-architect-guide/AiNativeValueArchitectSidebar.tsx)、学習チェックリストを [`AiNativeChecklist.tsx`](web-next/app/certification-exams/ai-native-value-architect-guide/AiNativeChecklist.tsx) でクライアント描画
-  - [`/recommended-books/sql-antipatterns-guide`](web-next/app/recommended-books/sql-antipatterns-guide/page.tsx)
-    — SQLアンチパターン第2版解説ガイドを移植（20 セクション・Mermaid 12 図・table 5・コードブロック 5・チェックリスト 25 項目）。
-    固定サイドバー・scroll-spy を [`SqlAntipatternsSidebar.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsSidebar.tsx)、点検チェックリストを [`SqlAntipatternsChecklist.tsx`](web-next/app/recommended-books/sql-antipatterns-guide/SqlAntipatternsChecklist.tsx) でクライアント描画
+  - [`/recommended-books/graph-databases-guide`](web-next/app/recommended-books/graph-databases-guide/page.tsx)
+    — Graph Databases: New Opportunities for Connected Data 初学者ガイドを移植（21 セクション・Mermaid 14 図・table 7・コードブロック 1・チェックリスト 11 項目）。
+    固定サイドバー・scroll-spy を [`GraphDatabasesSidebar.tsx`](web-next/app/recommended-books/graph-databases-guide/GraphDatabasesSidebar.tsx)、学習チェックリストを [`GraphDatabasesChecklist.tsx`](web-next/app/recommended-books/graph-databases-guide/GraphDatabasesChecklist.tsx) でクライアント描画。
+    原本 HTML・Markdown は `archive/recommended-books/graph-databases-guide/` に無変更で保存。
   - [`/design-principles/domain-driven-design-comprehensive-guide`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/page.tsx)
     — ドメイン駆動設計 (DDD) 完全ガイドを移植（19 セクション・Mermaid 23 図・table 9・コードブロック 8）。
     固定サイドバー・進捗バー・scroll-spy を [`DddSidebar.tsx`](web-next/app/design-principles/domain-driven-design-comprehensive-guide/DddSidebar.tsx) でクライアント描画
@@ -209,6 +219,24 @@ bun run build      # production build
 ```
 
 新規ページの移行・保守手順は `.claude/skills/nextjs-page-migration/SKILL.md` を参照してください。
+
+### デプロイ（Netlify）
+
+`web-next/` を静的エクスポート（`next.config.ts` の `output: "export"`）し、`web-next/out/` を Netlify で配信します。
+ビルド設定はルートの [`netlify.toml`](netlify.toml) で、Netlify がリポジトリ連携時に自動で読み込みます。
+
+| 項目 | 値 |
+|---|---|
+| Base directory | `web-next` |
+| Build command | `npm run build` |
+| Publish directory | `out` |
+| Node | 22 |
+| `NPM_FLAGS` | `--legacy-peer-deps` |
+
+- `bun.lock` は追跡外のため、Netlify では npm で依存を解決します。npm 10 は本プロジェクトの peer 依存グラフで内部エラーになるため、`--legacy-peer-deps` が必須です。
+- ローカル専用ガイドは追跡外なので、公開ビルドには含まれません。
+- `next/font/google` の取得でビルドがまれに一時失敗することがあります。その場合はまず再デプロイしてください。
+- 法務表記は共通フッター（[`SiteFooter.tsx`](web-next/components/site/SiteFooter.tsx)）と [`/licenses`](web-next/app/licenses/page.tsx) に集約しています。
 
 ## メンテナンス
 

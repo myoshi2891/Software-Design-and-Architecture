@@ -28,6 +28,7 @@ import {
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import { UnofficialBookNotice } from "@/components/site/UnofficialBookNotice";
 import BuildingApplicationsWithAiAgentsChecklist, {
   type ChecklistItem,
 } from "./BuildingApplicationsWithAiAgentsChecklist";
@@ -441,6 +442,12 @@ export default function BuildingApplicationsWithAiAgentsGuidePage() {
               </span>
             </div>
           </header>
+
+          <UnofficialBookNotice
+            title="Building Applications with AI Agents"
+            author="Michael Albada"
+            publisher="O'Reilly Media"
+          />
 
           <div className="notice">
             <IconAlertTriangle size={20} className="ti" />

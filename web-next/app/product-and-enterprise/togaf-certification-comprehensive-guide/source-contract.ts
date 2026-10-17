@@ -185,6 +185,10 @@ function collectDiagrams(node: ts.Node) {
 }
 collectDiagrams(syntax);
 
+/** 公開デプロイ向けにヒーロー文へ追記した商標・非公式表記（metadata.description には含めない）。 */
+export const TOGAF_LEGAL_NOTE =
+  "TOGAF® は The Open Group の登録商標です。Zachman® は Zachman International, Inc. の登録商標です。本ガイドは The Open Group の公式資料ではなく、同団体とは関係のない非公式の学習資料です。";
+
 // 原本はバイト固定（archive.test.ts）のため、事実誤りの訂正は正誤表として原本の解析結果へ適用する。
 // OGEA-101 の合格基準は 60%（24/40問）、OGEA-102 は 4 択・5/3/1/0 点の段階採点で、
 // 資料は持参せず試験画面の REFERENCE ボタンから参照する。Combined（OGEA-103）は両範囲を受験し Practitioner のみ授与、
@@ -219,6 +223,26 @@ const TEXT_ERRATA: readonly (readonly [before: string, after: string, nodes?: nu
   ["両レベル同時取得", "両範囲を受験（Practitioner のみ授与）"],
   ["約 $320 USD", "約 $395 USD", 2],
   ["約 $495 USD", "約 $595 USD"],
+  // 以下は公開デプロイに向けた法務対応（商標・非公式表記、出題比率の出典明示、
+  // 流出問題サイトの推奨削除、公式風バッジの回避）。tests/legal-guard.test.ts 参照。
+  [
+    "The Open Group Architecture Framework — ビジネスとITを整合させる世界標準のエンタープライズアーキテクチャフレームワーク。",
+    `The Open Group Architecture Framework — ビジネスとITを整合させる世界標準のエンタープライズアーキテクチャフレームワーク。${TOGAF_LEGAL_NOTE}`,
+  ],
+  [
+    "Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。",
+    "Level 1・Level 2 それぞれの出題傾向と、合格のための 10 箇条を解説します。※ 出題比率は公式発表ではなく、公開情報をもとにした筆者による目安です。",
+  ],
+  [
+    "問題のパターンと罠を把握するためには実践量が不可欠。Whizlabs・ExamTopics 等の模擬試験で間違えた問題を徹底的に復習する。",
+    "問題のパターンと罠を把握するためには実践量が不可欠。The Open Group 公式の練習問題や正規の模擬試験（Whizlabs 等）で間違えた問題を徹底的に復習する。流出した実試験問題の利用は受験規約違反となるため避ける。",
+  ],
+  ["Whizlabs / ExamTopics 模擬試験", "公式練習問題 / Whizlabs 模擬試験"],
+  [
+    "TOGAF® は The Open Group の登録商標です。本ドキュメントは",
+    "TOGAF® は The Open Group の登録商標です。Zachman® は Zachman International, Inc. の登録商標です。本ドキュメントは",
+  ],
+  ["TOGAF v10", "TOGAF® 学習ガイド"],
 ];
 const DIAGRAM_ERRATA: Readonly<Record<string, readonly (readonly [string, string])[]>> = {
   "diag-1": [

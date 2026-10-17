@@ -9,7 +9,6 @@ import {
   IconBinaryTree,
   IconBook,
   IconBooks,
-  IconBrandCashapp,
   IconBriefcase,
   IconBuilding,
   IconBuildingBank,
@@ -24,6 +23,7 @@ import {
   IconCode,
   IconColumns,
   IconCpu,
+  IconCreditCard,
   IconCrown,
   IconDatabase,
   IconFileCode,
@@ -1934,7 +1934,7 @@ export default function ServiceOrientedArchitectureComprehensiveGuide() {
 
           <div className="subsection">
             <h3>
-              <IconBrandCashapp size={18} /> 分散トランザクション管理
+              <IconCreditCard size={18} /> 分散トランザクション管理
             </h3>
             <div className="mermaid-wrap">
               <MermaidDiagram

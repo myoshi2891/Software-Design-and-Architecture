@@ -72,7 +72,7 @@ export default function TogafGuideShell({
     <div className="shell">
       <nav className="sidebar" aria-label="TOGAFガイドの目次">
         <div className="sidebar-logo">
-          <div className="badge">TOGAF v10</div>
+          <div className="badge">TOGAF® 学習ガイド</div>
           <h1>完全解説ガイド</h1>
         </div>
         <div role="tablist" aria-label="章" aria-orientation="vertical">

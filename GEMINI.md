@@ -1,6 +1,6 @@
 # Software Architecture Design - Project Instructions
 
-Updated 2026-10-15
+Updated 2026-10-17
 このプロジェクトは、ソフトウェアアーキテクチャおよび設計原則に関する包括的なガイドラインを管理するドキュメントリポジトリです。
 このファイルに記載された指示は、AIエージェントが作業を行う際の**絶対的なルール**として機能します。
 
@@ -80,6 +80,7 @@ flowchart TD
 - 直接依存はバージョンを上げる。
 - transitive 依存は `overrides` で最低安全バージョンを宣言する（`bun update <pkg>` は未宣言パッケージを直接依存として追記してしまうため使用しない）。
 - 現在の `overrides`: ルートは `undici` / `js-yaml`、`web-next/` は `postcss` / `sharp` / `dompurify`。いずれも上流（`markdown-link-check`, `next`, `mermaid`）が古いバージョンを固定しているために必要。
+- `web-next/` の `postcss` override は devDependency と同じ範囲（`^8.5.28`）に揃える。範囲がずれると、Netlify で使う npm が `EOVERRIDE` で失敗する。
 
 #### 参考文献・ソース一覧
 
@@ -99,10 +100,26 @@ flowchart TD
 
 - 静的 HTML ガイドを Next.js 16 (App Router) + React 19 のページへ移行する Web アプリ。
 - ルート `/` (`app/page.tsx`) は全ガイドの索引画面。`lib/guide-catalog.ts` を単一の情報源とし、
-  カテゴリ別に全 29 本を一覧する。全 29 本が公開済み（`status: "published"`）でリンクから閲覧でき、
-  未移行（`status: "planned"`）のページは 0 件。
+  公開版はカテゴリ別に 27 本を一覧する。未移行（`status: "planned"`）のページは 0 件。
   カタログとグローバルナビ (`components/site/nav-links.ts`) の href 集合が一致することは
   `lib/guide-catalog-nav.test.ts` が保証する。新規ページ移行時は**両方**を更新すること。
+- **ローカル専用ガイド（9 本）**: 著作権リスクのため公開デプロイから除外した書籍ガイド
+  （`app/recommended-books/` の sql-antipatterns / generative-ai-design-patterns /
+  database-design-for-mere-mortals / architecting-generative-ai-applications / data-warehouse-toolkit /
+  database-internals / high-performance-mysql / nosql-distilled / refactoring-databases）。
+  - ソースは `web-next/.gitignore` に列挙して git 追跡外とする。clone や CI には存在しない。
+  - 全件定義は `allGuideCatalog` / `allNavLinks`、公開版は `guideCatalog` / `navLinks`。
+    各エントリの `localOnly: true` を `lib/guide-visibility.ts` がフィルタする。
+  - `web-next/.env.local`（追跡外）の `NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES=1` でローカルのみ索引・ナビに表示する。
+  - ローカルで `bun run test` を実行すると、追跡外ガイドのテストも走る（CI では走らない）。
+- **法務ガード**: 共通フッター（`components/site/SiteFooter.tsx`）、`app/licenses/page.tsx`、
+  公開書籍ガイドの `UnofficialBookNotice.tsx`。`tests/legal-guard.test.ts` は、追跡ファイル内の
+  海賊版や試験問題流出系の URL を検出する。
+- **デプロイ（Netlify）**: `next.config.ts` の `output: "export"` で `out/` を静的生成する。
+  設定はルートの `netlify.toml`（base=`web-next` / publish=`out` / `npm run build` / Node 22 /
+  `NPM_FLAGS=--legacy-peer-deps` / セキュリティヘッダ）にあり、`tests/deploy-config.test.ts` で検証する。
+  `bun.lock` は追跡外のため、Netlify は npm を使う。npm 10 は peer 解決で内部エラー（`edgesOut`）になるため、
+  `--legacy-peer-deps` は必須。`next/font/google` 取得の一時失敗が出たら、まず再デプロイする。
 - 移行済み:
   - `app/css-design-system-guide/normal-animation-architecture-tokens-performance-tools/page.tsx`
     （URL `/css-design-system-guide/normal-animation-architecture-tokens-performance-tools`）。Vol.4の8セクション・31小節・
@@ -191,14 +208,6 @@ flowchart TD
     （URL `/recommended-books/building-llm-powered-applications-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`BuildingLlmPoweredSidebar.tsx`）に分離、
     本番チェックリストをクライアントコンポーネント（`LaunchChecklist.tsx`）に分離。
-  - `app/recommended-books/architecting-generative-ai-applications-guide/page.tsx`
-    （URL `/recommended-books/architecting-generative-ai-applications-guide`）。固定サイドバー +
-    scroll-spy をクライアントコンポーネント（`ArchitectingGenAiSidebar.tsx`）に分離、
-    実践チェックリストをクライアントコンポーネント（`ArchitectingGenAiChecklist.tsx`）に分離。
-  - `app/recommended-books/generative-ai-design-patterns-guide/page.tsx`
-    （URL `/recommended-books/generative-ai-design-patterns-guide`）。固定サイドバー +
-    scroll-spy をクライアントコンポーネント（`GenerativeAiDesignPatternsSidebar.tsx`）に分離、
-    導入前チェックリストをクライアントコンポーネント（`GenerativeAiDesignPatternsChecklist.tsx`）に分離。
   - `app/recommended-books/building-applications-with-ai-agents-guide/page.tsx`
     （URL `/recommended-books/building-applications-with-ai-agents-guide`）。固定サイドバー +
     scroll-spy をクライアントコンポーネント（`BuildingApplicationsWithAiAgentsSidebar.tsx`）に分離、
@@ -211,10 +220,14 @@ flowchart TD
     （URL `/certification-exams/ai-native-value-architect-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`AiNativeValueArchitectSidebar.tsx`）に分離、
     学習チェックリストをクライアントコンポーネント（`AiNativeChecklist.tsx`）に分離。
-  - `app/recommended-books/sql-antipatterns-guide/page.tsx`
-    （URL `/recommended-books/sql-antipatterns-guide`）。固定サイドバー +
-    scroll-spy をクライアントコンポーネント（`SqlAntipatternsSidebar.tsx`）に分離、
-    点検チェックリストをクライアントコンポーネント（`SqlAntipatternsChecklist.tsx`）に分離。
+  - `app/recommended-books/graph-databases-guide/page.tsx`
+    （URL `/recommended-books/graph-databases-guide`）。Ian Robinson, Jim Webber, Emil Eifrem著
+    『Graph Databases 第2版』を起点に接続されたデータのモデリングと活用を学ぶガイド。
+    全21セクション、Mermaid 14図、表7件、コード1件（手書きspan Cypher）、チェックリスト11項目を忠実移植。
+    本文は Server Component、目次・scroll-spy をクライアントコンポーネント（`GraphDatabasesSidebar.tsx`）に分離、
+    学習チェックリスト（11項目）をクライアントコンポーネント（`GraphDatabasesChecklist.tsx`）に分離。
+    原本 HTML・Markdown は `archive/recommended-books/graph-databases-guide/` に無変更で保存。
+    `web-next/` で `bun run lint` / `bun run typecheck` / `bun run test` / `bun run build` の全通過を確認済み。目視確認はユーザーが担当する。
   - `app/design-principles/domain-driven-design-comprehensive-guide/page.tsx`
     （URL `/design-principles/domain-driven-design-comprehensive-guide`）。固定サイドバー +
     進捗バー + scroll-spy をクライアントコンポーネント（`DddSidebar.tsx`）に分離。
