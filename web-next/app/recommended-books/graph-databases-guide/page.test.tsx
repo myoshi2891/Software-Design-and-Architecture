@@ -112,6 +112,21 @@ describe("graph-databases-guide page contract", () => {
     expect(container.querySelectorAll("pre")).toHaveLength(1);
   });
 
+  it("7 つの表それぞれに内容を区別できる日本語の aria-label が付く", () => {
+    const { container } = render(<Page />);
+    expect(
+      Array.from(container.querySelectorAll("table"), (t) => t.getAttribute("aria-label"))
+    ).toEqual([
+      "書籍情報",
+      "原著の章立て",
+      "リレーショナルDB・NoSQL集約指向DB・グラフDBの比較",
+      "グラフアルゴリズムの比較",
+      "NoSQLデータベースのタイプ",
+      "主要グラフデータベースの比較",
+      "用語集",
+    ]);
+  });
+
   it("すべての Mermaid 図にライトテーマ用の初期化設定（%%{init:...}%%）が付与されている", () => {
     const { container } = render(<Page />);
     const diagrams = container.querySelectorAll(".mermaid");
