@@ -130,6 +130,21 @@ describe("database-design-for-mere-mortals-guide page contract", () => {
     expect(container.querySelectorAll("pre")).toHaveLength(0);
   });
 
+  it("7 個の表それぞれに一意で空でないアクセシブル名（aria-label）が付与されている", () => {
+    // Arrange
+    const { container } = render(<Page />);
+
+    // Act
+    const labels = Array.from(container.querySelectorAll("table")).map(
+      (t) => t.getAttribute("aria-label")?.trim() ?? "",
+    );
+
+    // Assert
+    expect(labels).toHaveLength(7);
+    expect(labels.every((l) => l.length > 0)).toBe(true);
+    expect(new Set(labels).size).toBe(7);
+  });
+
   it("すべての Mermaid 図にライトテーマ用の初期化設定（%%{init:...}%%）が付与されている", () => {
     const { container } = render(<Page />);
     const diagrams = container.querySelectorAll(".mermaid");

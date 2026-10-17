@@ -95,4 +95,19 @@ describe("NosqlDistilledSidebar", () => {
     // Assert
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
+  it("Escape で閉じるとメニューボタンへフォーカスが戻る", () => {
+    // Arrange
+    render(<NosqlDistilledSidebar />);
+    const btn = screen.getByRole("button", { name: "メニュー" });
+    fireEvent.click(btn);
+    const link = screen.getByRole("link", { name: NAV_GROUPS[0].items[0].title });
+    link.focus();
+
+    // Act
+    fireEvent.keyDown(link, { key: "Escape" });
+
+    // Assert
+    expect(document.activeElement).toBe(btn);
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
 });

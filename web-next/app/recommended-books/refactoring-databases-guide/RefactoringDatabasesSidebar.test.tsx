@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+import fs from "node:fs";
+import path from "node:path";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import RefactoringDatabasesSidebar, { NAV_GROUPS } from "./RefactoringDatabasesSidebar";
@@ -119,5 +121,22 @@ describe("RefactoringDatabasesSidebar", () => {
     expect(keydownCalls(removeSpy).some(([, handler]) => handler === registered)).toBe(true);
     addSpy.mockRestore();
     removeSpy.mockRestore();
+  });
+  it("モバイル幅では閉じたサイドバーを visibility: hidden にし、open 時のみ visible にする", () => {
+    // Arrange
+    const css = fs.readFileSync(path.resolve(__dirname, "../../globals.css"), "utf-8");
+    const scopeStart = css.indexOf(".refactoring-databases-guide {");
+    const mobileStart = css.indexOf("@media (max-width: 980px)", scopeStart);
+    const mobileEnd = css.indexOf("@media (max-width: 600px)", mobileStart);
+
+    // Act
+    const mobileBlock = css.slice(mobileStart, mobileEnd);
+    const closedRule = mobileBlock.match(/\.sidebar\s*\{([^}]*)\}/)?.[1] ?? "";
+    const openRule = mobileBlock.match(/\.sidebar\.open\s*\{([^}]*)\}/)?.[1] ?? "";
+
+    // Assert
+    expect(scopeStart).toBeGreaterThanOrEqual(0);
+    expect(closedRule).toMatch(/visibility:\s*hidden/);
+    expect(openRule).toMatch(/visibility:\s*visible/);
   });
 });
