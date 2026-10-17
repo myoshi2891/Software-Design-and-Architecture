@@ -18,6 +18,20 @@ describe("GraphDatabasesSidebar", () => {
     expect(links).toHaveLength(21);
   });
 
+  it("メニューボタンの aria-label が開閉状態に応じて切り替わる", () => {
+    // Arrange
+    render(<GraphDatabasesSidebar />);
+    const menuBtn = screen.getByRole("button", { name: "メニューを開く" });
+
+    // Act
+    fireEvent.click(menuBtn);
+
+    // Assert
+    expect(menuBtn.getAttribute("aria-label")).toBe("メニューを閉じる");
+    fireEvent.click(menuBtn);
+    expect(menuBtn.getAttribute("aria-label")).toBe("メニューを開く");
+  });
+
   it("モバイルメニューボタンのクリックで sidebar と scrim に open/show クラスがトグルされる", () => {
     const { container } = render(<GraphDatabasesSidebar />);
     const menuBtn = container.querySelector("#menuBtn");
