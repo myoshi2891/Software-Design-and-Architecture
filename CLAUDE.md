@@ -49,7 +49,8 @@ bun run build      # production build
 - `bun update <pkg>` は未宣言パッケージを**直接依存として追記してしまう**ため、transitive 依存の引き上げには使わない（`overrides` を使う）。
 - 現在の `overrides`（いずれも上流が古いバージョンを固定しているため必要）:
   - ルート: `undici` / `js-yaml` — `markdown-link-check` 配下の transitive
-  - `web-next/`: `postcss`（`next` が exact pin）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.8` 配下）
+  - `web-next/`: `postcss`（`next` が exact pin。値は devDependency と同じ `^8.5.28` に揃える。ずれると Netlify の npm が `EOVERRIDE` で失敗する）、`sharp`（`next` の optionalDependency・`next/image` 未使用）、`dompurify`（`mermaid@10.9.8` 配下）
+- Netlify は `bun.lock` が無いため **npm** で依存を解決する（`netlify.toml` の `NPM_FLAGS=--legacy-peer-deps` が必須）。依存変更時は bun だけでなく npm でも解決できることを意識する。
 - 変更後は `bun run audit` が exit 0 であること、加えて `web-next/` の `lint` / `typecheck` / `test` / `build` 全通過を必須とする。
 
 ```mermaid

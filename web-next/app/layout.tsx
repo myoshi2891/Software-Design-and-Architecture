@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DisclaimerBanner } from "@/components/site/DisclaimerBanner";
+import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { jetbrainsMono, notoSansJp, shipporiMincho, sourceSerif4 } from "@/lib/fonts";
 import "./globals.css";
@@ -35,6 +36,7 @@ export default function RootLayout({
         <SiteHeader />
         <DisclaimerBanner />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

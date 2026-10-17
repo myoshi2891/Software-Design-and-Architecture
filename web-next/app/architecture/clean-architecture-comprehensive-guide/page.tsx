@@ -698,6 +698,9 @@ export default function CleanArchitectureComprehensiveGuide() {
                   </text>
                 </g>
               </svg>
+              <p className="hero-svg-caption">
+                Robert C. Martin「The Clean Architecture」(2012) の概念を基に作図
+              </p>
             </div>
           </div>
         </div>

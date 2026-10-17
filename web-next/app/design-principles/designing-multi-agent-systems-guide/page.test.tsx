@@ -15,7 +15,7 @@ describe("designing-multi-agent-systems-guide page contract", () => {
     const h1 = container.querySelector("h1");
     expect(h1).not.toBeNull();
     expect(h1?.textContent?.replace(/\s+/g, " ").trim()).toBe(
-      "マルチエージェントシステムの設計（Designing Multi-Agent Systems）— 初学者向け実践ガイド"
+      "マルチエージェントシステムの設計 — 初学者向け実践ガイド"
     );
   });
 
@@ -53,7 +53,7 @@ describe("designing-multi-agent-systems-guide page contract", () => {
     const external = Array.from(container.querySelectorAll("a")).filter((a) =>
       (a.getAttribute("href") ?? "").startsWith("http")
     );
-    expect(external.length).toBe(26);
+    expect(external.length).toBe(25);
     for (const a of external) {
       expect(a.getAttribute("target")).toBe("_blank");
       expect(a.getAttribute("rel")).toBe("noopener noreferrer");

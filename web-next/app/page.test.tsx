@@ -10,7 +10,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { guideCatalog } from "@/lib/guide-catalog";
+import { localGuidesEnabled } from "@/lib/guide-visibility";
 import HomePage from "./page";
+
+// 収録数は NEXT_PUBLIC_INCLUDE_LOCAL_GUIDES に従う（無効 27 本 / 有効 36 本）。
+const GUIDE_TOTAL = localGuidesEnabled ? 36 : 27;
 
 const redirectMock = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -80,15 +84,15 @@ describe("HomePage (guide index)", () => {
   it("shows the guide counts", () => {
     const container = renderIndex();
     expect(container.querySelector(".overview-planned")).toHaveTextContent(
-      /^公開中 29 本 \/ 準備中 0 本$/
+      new RegExp(`^公開中 ${GUIDE_TOTAL} 本 / 準備中 0 本$`)
     );
     const stats = [...container.querySelectorAll(".index-stats > div")].map((item) => [
       item.querySelector("dt")?.textContent,
       item.querySelector("dd")?.textContent,
     ]);
     expect(stats).toEqual([
-      ["収録ガイド", "29本"],
-      ["公開中", "29"],
+      ["収録ガイド", `${GUIDE_TOTAL}本`],
+      ["公開中", String(GUIDE_TOTAL)],
       ["カテゴリ", String(guideCatalog.length).padStart(2, "0")],
     ]);
   });
@@ -111,7 +115,7 @@ describe("HomePage (guide index)", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "該当しないキーワード" } });
     expect(screen.getByRole("status")).toHaveTextContent("0 本");
     fireEvent.click(screen.getByRole("button", { name: "検索と絞り込みをリセット" }));
-    expect(container.querySelectorAll(".guide-row")).toHaveLength(29);
+    expect(container.querySelectorAll(".guide-row")).toHaveLength(GUIDE_TOTAL);
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "true");
   });

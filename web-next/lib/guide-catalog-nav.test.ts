@@ -3,8 +3,8 @@
 // ならない。片方にだけページを足す「ドリフト」をここで検出する。
 
 import { describe, expect, it } from "vitest";
-import { type NavLink, navLinks } from "@/components/site/nav-links";
-import { guideCatalog } from "@/lib/guide-catalog";
+import { allNavLinks, type NavLink, navLinks } from "@/components/site/nav-links";
+import { allGuideCatalog, guideCatalog } from "@/lib/guide-catalog";
 
 function navHrefs(links: readonly NavLink[]): string[] {
   return links.flatMap((link) =>
@@ -17,6 +17,14 @@ describe("guideCatalog / navLinks consistency", () => {
     const fromNav = [...new Set(navHrefs(navLinks))].sort();
     const fromCatalog = [
       ...new Set(guideCatalog.flatMap((c) => c.entries.map((e) => e.href))),
+    ].sort();
+    expect(fromCatalog).toEqual(fromNav);
+  });
+
+  it("covers the same set of hrefs in the full (local) definitions", () => {
+    const fromNav = [...new Set(navHrefs(allNavLinks))].sort();
+    const fromCatalog = [
+      ...new Set(allGuideCatalog.flatMap((c) => c.entries.map((e) => e.href))),
     ].sort();
     expect(fromCatalog).toEqual(fromNav);
   });

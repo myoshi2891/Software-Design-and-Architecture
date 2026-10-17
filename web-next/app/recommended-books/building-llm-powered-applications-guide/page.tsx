@@ -27,6 +27,7 @@ import {
 import type { Metadata } from "next";
 import { Ext } from "@/components/Ext";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import { UnofficialBookNotice } from "@/components/site/UnofficialBookNotice";
 import BuildingLlmPoweredSidebar, { type NavGroup } from "./BuildingLlmPoweredSidebar";
 import LaunchChecklist, { type ChecklistItem } from "./LaunchChecklist";
 
@@ -488,7 +489,7 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
               初学者のためのステップバイステップ実践入門
             </h1>
             <p className="hero-lead">
-              本ガイドは、O'Reilly / Packt Publishing 刊の書籍{" "}
+              本ガイドは、Packt Publishing 刊の書籍（O'Reilly Learning でも配信）{" "}
               <em>Building LLM Powered Applications</em>（Valentina Alto 著, 2024年5月刊,
               出典0）を出発点としつつ、刊行から約2年の間に大きく様変わりしたLLMアプリケーション開発の実践知を、2026年9月9日時点の情報でアップデートした学習ガイドです。原著はLangChainを中心に「LLMの基礎
               → プロンプトエンジニアリング → 会話アプリ → 構造化データ → マルチモーダル →
@@ -515,6 +516,12 @@ export default function BuildingLlmPoweredApplicationsGuidePage() {
               </span>
             </div>
           </section>
+
+          <UnofficialBookNotice
+            title="Building LLM Powered Applications"
+            author="Valentina Alto"
+            publisher="Packt Publishing"
+          />
 
           <div className="table-wrap">
             <div className="table-title">書誌情報</div>
