@@ -321,7 +321,7 @@ export default function Page() {
             </div>
             <h2>書籍情報</h2>
             <div className="table-wrap">
-              <table className="kv-table">
+              <table aria-label="書籍情報" className="kv-table">
                 <tbody>
                   <tr>
                     <th>原題</th>
@@ -384,7 +384,7 @@ export default function Page() {
             </div>
             <h2>章立て(原著の目次)</h2>
             <div className="table-wrap">
-              <table>
+              <table aria-label="原著の章立て">
                 <thead>
                   <tr>
                     <th>章</th>
@@ -565,7 +565,7 @@ export default function Page() {
               </p>
             </div>
             <div className="table-wrap">
-              <table>
+              <table aria-label="リレーショナルDB・NoSQL集約指向DB・グラフDBの比較">
                 <thead>
                   <tr>
                     <th>観点</th>
@@ -881,7 +881,7 @@ export default function Page() {
               <p className="diagram-caption">図12: A*アルゴリズムがDijkstra法を拡張する考え方</p>
             </div>
             <div className="table-wrap">
-              <table>
+              <table aria-label="グラフアルゴリズムの比較">
                 <thead>
                   <tr>
                     <th>アルゴリズム</th>
@@ -956,7 +956,7 @@ export default function Page() {
               本書の付録Aでは、グラフDBを含むNoSQLデータベース全体の見取り図が整理されています。
             </p>
             <div className="table-wrap">
-              <table>
+              <table aria-label="NoSQLデータベースのタイプ">
                 <thead>
                   <tr>
                     <th>タイプ</th>
@@ -1047,7 +1047,7 @@ export default function Page() {
             </div>
             <h2>主要グラフデータベースの比較(2026年時点)</h2>
             <div className="table-wrap">
-              <table>
+              <table aria-label="主要グラフデータベースの比較">
                 <thead>
                   <tr>
                     <th>製品</th>
@@ -1106,7 +1106,7 @@ export default function Page() {
             </div>
             <h2>用語集</h2>
             <div className="table-wrap">
-              <table className="kv-table">
+              <table aria-label="用語集" className="kv-table">
                 <tbody>
                   <tr>
                     <th>ノード(Node)</th>
