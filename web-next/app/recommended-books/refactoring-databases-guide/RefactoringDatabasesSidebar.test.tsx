@@ -128,6 +128,9 @@ describe("RefactoringDatabasesSidebar", () => {
     const scopeStart = css.indexOf(".refactoring-databases-guide {");
     const mobileStart = css.indexOf("@media (max-width: 980px)", scopeStart);
     const mobileEnd = css.indexOf("@media (max-width: 600px)", mobileStart);
+    expect(scopeStart).toBeGreaterThanOrEqual(0);
+    expect(mobileStart).toBeGreaterThan(scopeStart);
+    expect(mobileEnd).toBeGreaterThan(mobileStart);
 
     // Act
     const mobileBlock = css.slice(mobileStart, mobileEnd);
@@ -135,7 +138,6 @@ describe("RefactoringDatabasesSidebar", () => {
     const openRule = mobileBlock.match(/\.sidebar\.open\s*\{([^}]*)\}/)?.[1] ?? "";
 
     // Assert
-    expect(scopeStart).toBeGreaterThanOrEqual(0);
     expect(closedRule).toMatch(/visibility:\s*hidden/);
     expect(openRule).toMatch(/visibility:\s*visible/);
   });
