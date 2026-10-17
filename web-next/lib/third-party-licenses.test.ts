@@ -62,4 +62,18 @@ describe("fontLicenses", () => {
       expect(entry?.license).toBe("SIL Open Font License 1.1");
     }
   });
+
+  // 配布元 (google/fonts の ofl/<family>/OFL.txt) の著作権行をそのまま保持する。
+  it.each([
+    [
+      "Noto Sans JP",
+      "Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'",
+    ],
+    [
+      "Source Serif 4",
+      "Copyright 2014 The Source Serif 4 Project Authors (https://github.com/adobe-fonts/source-serif)",
+    ],
+  ])("keeps the upstream copyright notice of %s", (name, copyright) => {
+    expect(fontLicenses.find((f) => f.name === name)?.copyright).toBe(copyright);
+  });
 });
