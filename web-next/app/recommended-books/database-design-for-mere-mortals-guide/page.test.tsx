@@ -155,4 +155,20 @@ describe("database-design-for-mere-mortals-guide page contract", () => {
       expect(chart).toContain('"edgeLabelBackground": "#ffffff"');
     }
   });
+
+  it("参考文献01 の書名・注記がリンク先 Google Books の版（第3版）と一致する", () => {
+    // Arrange
+    const { container } = render(<Page />);
+
+    // Act
+    const card = Array.from(container.querySelectorAll(".ref-card")).find(
+      (c) => c.querySelector(".ref-num")?.textContent === "01"
+    );
+
+    // Assert
+    expect(card?.querySelector("a")?.getAttribute("href")).toContain("id=MVApxsrcHiAC");
+    expect(card?.querySelector(".ref-title")?.textContent).toContain("3rd Edition");
+    expect(card?.querySelector(".ref-title")?.textContent).not.toContain("4th Edition");
+    expect(card?.querySelector(".ref-note")?.textContent).toContain("第3版");
+  });
 });
