@@ -1141,7 +1141,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-body">
                   <div className="ref-title">
                     Database Design for Mere Mortals: 25th Anniversary Edition, 4th Edition -
-                    O'Reilly
+                    O&apos;Reilly
                   </div>
                   <Ext
                     className="ref-url"
@@ -1149,14 +1149,14 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                   >
                     https://www.oreilly.com/library/view/database-design-for/9780136788133/
                   </Ext>
-                  <div className="ref-note">O'Reilly Online Learning 上の書誌情報</div>
+                  <div className="ref-note">O&apos;Reilly Online Learning 上の書誌情報</div>
                 </div>
               </div>
 
               <div className="ref-card">
                 <div className="ref-num">04</div>
                 <div className="ref-body">
-                  <div className="ref-title">Appendix G: On Normalization - O'Reilly</div>
+                  <div className="ref-title">Appendix G: On Normalization - O&apos;Reilly</div>
                   <Ext
                     className="ref-url"
                     href="https://www.oreilly.com/library/view/database-design-for/9780136788133/appg.xhtml"
@@ -1172,7 +1172,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">05</div>
                 <div className="ref-body">
-                  <div className="ref-title">Appendix H: Recommended Reading(第3版) - O'Reilly</div>
+                  <div className="ref-title">
+                    Appendix H: Recommended Reading(第3版) - O&apos;Reilly
+                  </div>
                   <Ext
                     className="ref-url"
                     href="https://www.oreilly.com/library/view/database-design-for/9780133122282/app08.html"
@@ -1186,7 +1188,9 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
               <div className="ref-card">
                 <div className="ref-num">06</div>
                 <div className="ref-body">
-                  <div className="ref-title">Chapter 2: Design Objectives(第3版) - O'Reilly</div>
+                  <div className="ref-title">
+                    Chapter 2: Design Objectives(第3版) - O&apos;Reilly
+                  </div>
                   <Ext
                     className="ref-url"
                     href="https://www.oreilly.com/library/view/database-design-for/9780133122282/ch02.html"
@@ -1231,7 +1235,8 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">09</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Hacker News: "This is the book I recommend to everyone who is shy about DBs"
+                    Hacker News: &quot;This is the book I recommend to everyone who is shy about
+                    DBs&quot;
                   </div>
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=18807653">
                     https://news.ycombinator.com/item?id=18807653
@@ -1246,7 +1251,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">10</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Hacker News: "Buy the book Database Design for Mere Mortals"
+                    Hacker News: &quot;Buy the book Database Design for Mere Mortals&quot;
                   </div>
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=40193125">
                     https://news.ycombinator.com/item?id=40193125
@@ -1259,7 +1264,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">11</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Hacker News: "Huge +1 to Database Design for Mere Mortals"
+                    Hacker News: &quot;Huge +1 to Database Design for Mere Mortals&quot;
                   </div>
                   <Ext className="ref-url" href="https://news.ycombinator.com/item?id=28748545">
                     https://news.ycombinator.com/item?id=28748545
@@ -1364,7 +1369,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
                 <div className="ref-num">17</div>
                 <div className="ref-body">
                   <div className="ref-title">
-                    Summit '97: Normalization Is a Nice Theory - David Adams & Dan Beckett
+                    Summit &apos;97: Normalization Is a Nice Theory - David Adams & Dan Beckett
                   </div>
                   <Ext
                     className="ref-url"
@@ -1382,7 +1387,7 @@ export default function DatabaseDesignForMereMortalsGuidePage() {
 
           <footer className="footer">
             <p>
-              本ガイドは公開情報をもとに作成した解説資料です。原著の正確な内容については、出版元またはO'Reilly
+              本ガイドは公開情報をもとに作成した解説資料です。原著の正確な内容については、出版元またはO&apos;Reilly
               Online Learning等の一次情報を参照してください。
             </p>
           </footer>
