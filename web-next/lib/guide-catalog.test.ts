@@ -1,8 +1,8 @@
 // [Red] 契約テスト (guide-catalog)。lib/guide-catalog.ts を実装するまで失敗する。
 //
 // 固定する契約:
-// - allGuideCatalog は 5 カテゴリ、合計 22 エントリ。
-// - published が 14 件、planned が 8 件。
+// - allGuideCatalog は 7 カテゴリ、合計 36 エントリ。
+// - published が 36 件、planned が 0 件。
 // - href はすべて "/" 始まりの絶対パスで、重複しない。
 // - name / summary は非空（索引画面がこの 2 つで行を組み立てるため）。
 
