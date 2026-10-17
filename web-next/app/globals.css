@@ -1540,7 +1540,9 @@ body.has-common-header .event-driven-architecture-comprehensive-guide .section {
   .ht-a { background: rgba(251, 191, 36, .1); color: var(--amber); border: 1px solid rgba(251, 191, 36, .2); }
   .ht-g { background: rgba(74, 222, 128, .1); color: var(--green); border: 1px solid rgba(74, 222, 128, .2); }
   .hero-visual { display: flex; align-items: center; justify-content: center; }
-  .hero-svg-wrap { width: 380px; height: 380px; }
+  .hero-svg-wrap { width: 380px; height: auto; }
+  /* 原典の概念図を基に作図した旨の出典表記（法務対応） */
+  .hero-svg-caption { margin: 6px 0 0; font-size: 0.72rem; color: var(--t3); text-align: center; }
 
   .r-fw,
   .r-ad,
