@@ -23193,65 +23193,195 @@ body.has-common-header .refactoring-databases-guide section {
 }
 
 /* ── /licenses ── */
+html:has(.licenses-page) { background: #f5f7fb; color-scheme: light; }
+body:has(.licenses-page) {
+  --ch-bg: rgba(255, 255, 255, 0.97);
+  --ch-border: #d4ddea;
+  --ch-text: #3e526e;
+  --ch-text-hover: #255c9f;
+  --color-background-primary: #f5f7fb;
+  --color-background-secondary: #ffffff;
+  --color-border-primary: #ccd9e9;
+  --color-text-primary: #20334d;
+  --color-text-secondary: #475f7b;
+  --color-text-info: #2b64a5;
+  background: #f5f7fb;
+  .ch-brand { color: #203650; }
+  .ch-disclaimer { background: #fffaf0; color: #795714; border-bottom-color: #e7d9b9; }
+  .ch-submenu { box-shadow: 0 8px 24px #26355418; }
+}
+body.has-common-header:has(.licenses-page) {
+  margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px));
+}
 .licenses-page {
-  color: var(--color-text-primary);
-  margin: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 2rem) auto 3rem;
-  max-width: 60rem;
-  padding: 0 1rem;
+  color: #20334d;
+  background: #f5f7fb;
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  margin: 0;
+  min-width: 0;
+  * { box-sizing: border-box; }
 }
-
+.licenses-hero {
+  position: relative;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 100% 0, rgba(126, 151, 205, 0.13), transparent 65%), linear-gradient(125deg, #edf4ff, #eaf5f7);
+  border-bottom: 1px solid #cbd9eb;
+}
+.licenses-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(rgba(100, 125, 160, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 125, 160, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+}
+.licenses-hero-inner,
+.licenses-content {
+  max-width: 1184px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+.licenses-hero-inner { padding-block: 64px 48px; }
 .licenses-page h1 {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
+  font-size: clamp(26px, 3vw, 42px);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.035em;
+  margin: 0 0 24px;
+  color: #203b60;
 }
-
+.licenses-hero p {
+  max-width: 1000px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.95;
+  color: #475f7b;
+}
+.licenses-content { padding-block: 48px 80px; }
 .licenses-page h2 {
-  font-size: 1.25rem;
-  margin: 2rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: clamp(21px, 2vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
+  margin: 48px 0 20px;
 }
-
-.licenses-page h3 {
-  font-size: 1rem;
-  margin: 1.5rem 0 0.5rem;
+.licenses-page h2:first-child { margin-top: 0; }
+.licenses-page h2::before {
+  content: "";
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  background: #346db0;
+  flex-shrink: 0;
 }
-
-.licenses-page ul {
-  font-size: 0.85rem;
-  list-style: disc;
-  margin: 0 0 0.75rem 1.25rem;
-}
-
-.licenses-page pre {
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border-primary);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+.license-table-wrap {
   overflow-x: auto;
-  padding: 0.75rem 1rem;
-  white-space: pre-wrap;
+  border: 1px solid #ccd9e9;
+  border-radius: 14px;
+  background: #ffffff;
 }
-
+.license-table-wrap:focus-visible {
+  outline: 2px solid #346db0;
+  outline-offset: 4px;
+}
 .licenses-page table {
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 13px;
+  line-height: 1.8;
   width: 100%;
+  min-width: 680px;
 }
-
+.licenses-page caption {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334d6b;
+  padding: 20px 24px;
+  border-bottom: 1px solid #d7e2ef;
+}
 .licenses-page th,
 .licenses-page td {
-  border: 1px solid var(--color-border-primary);
-  padding: 0.5rem 0.75rem;
+  padding: 16px 24px;
   text-align: left;
   vertical-align: top;
+  border-bottom: 1px solid #e0e7f0;
 }
-
+.licenses-page th {
+  background: #edf3fb;
+  color: #3d597a;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.licenses-page th:first-child { width: 22%; }
+.licenses-page th:nth-child(2) { width: 20%; }
+.licenses-page td { color: #475f7b; }
+.licenses-page td:nth-child(2) { color: #65518c; font-size: 12px; }
+.licenses-page tbody tr:nth-child(even) { background: #f8fafd; }
+.licenses-page tbody tr:hover { background: #eef4fc; }
+.licenses-page tbody tr:last-child td { border-bottom: 0; }
 .licenses-page a {
-  color: var(--color-text-info);
+  color: #285f9f;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #b0c5df;
+  text-underline-offset: 4px;
 }
-
+.licenses-page a:hover { color: #18477e; text-decoration-color: currentColor; }
+.licenses-page a:focus-visible { outline: 2px solid #346db0; outline-offset: 4px; border-radius: 2px; }
+.license-text-section {
+  background: #ffffff;
+  border: 1px solid #ccd9e9;
+  border-radius: 14px;
+  margin: 0 0 28px;
+  overflow: hidden;
+}
+.licenses-page h3 {
+  background: #eaf1fc;
+  color: #29496f;
+  padding: 20px 24px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.6;
+  border-bottom: 1px solid #ccd9e9;
+  scroll-margin-top: calc(var(--ch-height) + var(--ch-disclaimer-height, 0px) + 24px);
+}
+.licenses-page ul {
+  background: #f7fafe;
+  padding: 20px 24px 20px 44px;
+  margin: 0;
+  color: #526882;
+  font-size: 12px;
+  line-height: 1.95;
+  border-bottom: 1px solid #e0e7f0;
+  overflow-wrap: anywhere;
+}
+.licenses-page li { padding-left: 3px; margin-block: 4px; }
+.licenses-page pre {
+  color: #354e6c;
+  background: #ffffff;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.95;
+  padding: 28px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 640px) {
-  .licenses-page table {
-    display: block;
-    overflow-x: auto;
-  }
+  .licenses-hero-inner,
+  .licenses-content { padding-inline: 20px; }
+  .licenses-hero-inner { padding-block: 40px 32px; }
+  .licenses-content { padding-block: 32px 56px; }
+  .licenses-page h2 { margin-top: 36px; }
+  .licenses-page h3 { font-size: 16px; padding: 18px 20px; }
+  .licenses-page pre { padding: 20px; font-size: 11px; }
+  .licenses-page ul { padding: 18px 20px 18px 36px; }
 }
