@@ -1815,6 +1815,7 @@ export default function ComprehensiveGuidePage() {
 
           <div className="mermaid-wrap">
             <MermaidDiagram
+              className="saa-domain-chart"
               chart={`pie title SAA-C03 出題比率
     "安全なアーキテクチャ設計 (30%)" : 30
     "弾力性の高いアーキテクチャ (26%)" : 26
