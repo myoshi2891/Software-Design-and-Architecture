@@ -530,6 +530,89 @@ app = <span class="fn text-info">create_app</span>()`,
             ))`,
 };
 
+const DIRECTORY_TREE = `my_app/
+│
+├── domain/                           # 🏛️ Entities 層（最内側）
+│   ├── entities/
+│   │   ├── order.py                  # Order, OrderLine, OrderStatus
+│   │   ├── product.py                # Product
+│   │   └── customer.py               # Customer
+│   ├── value_objects/
+│   │   ├── money.py                  # Money（不変・値比較）
+│   │   └── address.py                # Address
+│   └── exceptions.py                 # BusinessRuleError 等
+│
+├── application/                      # ⚙️ Use Cases 層
+│   ├── use_cases/
+│   │   ├── place_order.py            # PlaceOrderUseCase
+│   │   ├── cancel_order.py           # CancelOrderUseCase
+│   │   └── get_order.py              # GetOrderUseCase
+│   ├── interfaces/                   # リポジトリ・サービスの抽象 ← ここが鍵！
+│   │   ├── order_repository.py       # OrderRepository (ABC)
+│   │   ├── product_repository.py
+│   │   └── event_publisher.py
+│   └── dtos/
+│       ├── commands.py               # PlaceOrderCommand 等
+│       └── results.py                # PlaceOrderResult 等
+│
+├── adapters/                         # 🔌 Interface Adapters 層
+│   ├── controllers/
+│   │   └── order_controller.py       # FastAPI Router
+│   ├── presenters/
+│   │   └── order_presenter.py        # Result → JSON 変換
+│   └── repositories/
+│       ├── sqlalchemy_order_repo.py  # 本番 DB 実装
+│       └── in_memory_order_repo.py   # テスト用実装
+│
+├── infrastructure/                   # 🔧 Frameworks & Drivers 層
+│   ├── database/
+│   │   ├── models.py                 # SQLAlchemy モデル定義
+│   │   ├── session.py                # DB セッション設定
+│   │   └── migrations/               # Alembic マイグレーション
+│   └── messaging/
+│       └── kafka_publisher.py
+│
+├── main.py                           # Composition Root（全依存の組み立て）
+└── tests/
+    ├── unit/
+    │   ├── domain/                   # Entity ユニットテスト（最速・最重要）
+    │   └── application/              # Use Case ユニットテスト（DB 不要）
+    ├── integration/
+    │   └── adapters/                 # Repository 統合テスト
+    └── e2e/
+        └── api/                      # API E2E テスト`;
+
+function DirectoryTree() {
+  const lines = DIRECTORY_TREE.split("\n");
+  return (
+    <div className="dir-tree">
+      {lines.map((line, index) => {
+        const commentAt = line.indexOf("#");
+        const branch = commentAt < 0 ? line : line.slice(0, commentAt);
+        const prefix = branch.match(/^[│├└─ ]*/)?.[0] ?? "";
+        return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Immutable reference lines never reorder.
+          <span className="dir-row" key={`${index}:${line}`}>
+            <span className="dir-branch">
+              <span className="dir-prefix">
+                {Array.from(prefix, (character, column) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Fixed character positions in an immutable tree prefix.
+                  <span key={`${column}:${character}`} data-glyph={character}>
+                    {character}
+                  </span>
+                ))}
+              </span>
+              {branch.slice(prefix.length)}
+            </span>
+            {commentAt >= 0 && <span className="dir-comment">{line.slice(commentAt)}</span>}
+            {index < lines.length - 1 ? "\n" : null}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function CleanArchitectureComprehensiveGuide() {
   return (
     <div className="clean-architecture-comprehensive-guide">
@@ -546,8 +629,19 @@ export default function CleanArchitectureComprehensiveGuide() {
               <em>Complete Guide</em>
             </h1>
             <p className="hero-desc">
-              ビジネスロジックを技術的詳細から切り離し、フレームワーク・DB・UI
-              に支配されない堅牢なシステム設計を、具体的な Python コードとフロー図で徹底解説します。
+              <span className="hero-sentence">
+                <span className="hero-phrase">ビジネスロジックを</span>
+                <span className="hero-phrase">技術的詳細から切り離し、</span>
+              </span>
+              <span className="hero-sentence">
+                <span className="hero-phrase">フレームワーク・DB・UI</span>{" "}
+                <span className="hero-phrase">に支配されない</span>
+                <span className="hero-phrase">堅牢なシステム設計を、</span>
+              </span>
+              <span className="hero-sentence">
+                <span className="hero-phrase">具体的な Python コードと</span>
+                <span className="hero-phrase">フロー図で徹底解説します。</span>
+              </span>
             </p>
             <div className="hero-tags">
               <span className="hero-tag ht-i">フレームワーク非依存</span>
@@ -1351,59 +1445,7 @@ export default function CleanArchitectureComprehensiveGuide() {
               <strong>レイヤー構造がそのままディレクトリ構造</strong>
               になります。フォルダを開けばどのレイヤーのコードかが一目でわかる構成が理想です。
             </p>
-            <div className="dir-tree">
-              {`my_app/
-│
-├── domain/                           # 🏛️ Entities 層（最内側）
-│   ├── entities/
-│   │   ├── order.py                  # Order, OrderLine, OrderStatus
-│   │   ├── product.py                # Product
-│   │   └── customer.py               # Customer
-│   ├── value_objects/
-│   │   ├── money.py                  # Money（不変・値比較）
-│   │   └── address.py                # Address
-│   └── exceptions.py                 # BusinessRuleError 等
-│
-├── application/                      # ⚙️ Use Cases 層
-│   ├── use_cases/
-│   │   ├── place_order.py            # PlaceOrderUseCase
-│   │   ├── cancel_order.py           # CancelOrderUseCase
-│   │   └── get_order.py              # GetOrderUseCase
-│   ├── interfaces/                   # リポジトリ・サービスの抽象 ← ここが鍵！
-│   │   ├── order_repository.py       # OrderRepository (ABC)
-│   │   ├── product_repository.py
-│   │   └── event_publisher.py
-│   └── dtos/
-│       ├── commands.py               # PlaceOrderCommand 等
-│       └── results.py                # PlaceOrderResult 等
-│
-├── adapters/                         # 🔌 Interface Adapters 層
-│   ├── controllers/
-│   │   └── order_controller.py       # FastAPI Router
-│   ├── presenters/
-│   │   └── order_presenter.py        # Result → JSON 変換
-│   └── repositories/
-│       ├── sqlalchemy_order_repo.py  # 本番 DB 実装
-│       └── in_memory_order_repo.py   # テスト用実装
-│
-├── infrastructure/                   # 🔧 Frameworks &amp; Drivers 層
-│   ├── database/
-│   │   ├── models.py                 # SQLAlchemy モデル定義
-│   │   ├── session.py                # DB セッション設定
-│   │   └── migrations/               # Alembic マイグレーション
-│   └── messaging/
-│       └── kafka_publisher.py
-│
-├── main.py                           # Composition Root（全依存の組み立て）
-└── tests/
-    ├── unit/
-    │   ├── domain/                   # Entity ユニットテスト（最速・最重要）
-    │   └── application/              # Use Case ユニットテスト（DB 不要）
-    ├── integration/
-    │   └── adapters/                 # Repository 統合テスト
-    └── e2e/
-        └── api/                      # API E2E テスト`}
-            </div>
+            <DirectoryTree />
             <h3 className="sub">パッケージ間の依存関係</h3>
             <div className="diagram-wrap">
               <MermaidDiagram

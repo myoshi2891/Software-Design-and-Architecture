@@ -795,48 +795,47 @@ logger = logging.getLogger(__name__)
 export default function EventDrivenArchitectureGuidePage() {
   return (
     <div className="event-driven-architecture-comprehensive-guide">
-      <EdaSidebar groups={NAV_GROUPS} />
-      <main className="main">
-        <div className="hero">
-          <div className="hero-eyebrow">⚡ Complete Architecture Guide</div>
-          <h1 className="hero-title">
-            <span>EDA</span> — イベント駆動
-            <br />
-            アーキテクチャ完全ガイド
-          </h1>
-          <p className="hero-desc">
-            Event-Driven
-            Architecture（EDA）は、現代のスケーラブルなシステム設計の根幹をなすアーキテクチャスタイルです。本ガイドでは初学者から上級者まで、EDAの基礎概念から実践的な実装パターン、Apache
-            Kafka・AWS EventBridgeの使い方までステップバイステップで徹底解説します。
-          </p>
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <div className="hero-stat-num">16</div>
-              <div className="hero-stat-label">セクション</div>
-            </div>
-            <div className="hero-stat">
-              <div className="hero-stat-num">14+</div>
-              <div className="hero-stat-label">アーキテクチャ図</div>
-            </div>
-            <div className="hero-stat">
-              <div className="hero-stat-num">5+</div>
-              <div className="hero-stat-label">コード例</div>
-            </div>
-            <div className="hero-stat">
-              <div className="hero-stat-num">30+</div>
-              <div className="hero-stat-label">ベストプラクティス</div>
-            </div>
+      <header className="hero">
+        <div className="hero-eyebrow">⚡ Complete Architecture Guide</div>
+        <h1 className="hero-title">
+          <span>EDA</span> — イベント駆動
+          <br />
+          アーキテクチャ完全ガイド
+        </h1>
+        <p className="hero-desc">
+          Event-Driven
+          Architecture（EDA）は、現代のスケーラブルなシステム設計の根幹をなすアーキテクチャスタイルです。本ガイドでは初学者から上級者まで、EDAの基礎概念から実践的な実装パターン、Apache
+          Kafka・AWS EventBridgeの使い方までステップバイステップで徹底解説します。
+        </p>
+        <div className="hero-stats">
+          <div className="hero-stat">
+            <div className="hero-stat-num">16</div>
+            <div className="hero-stat-label">セクション</div>
           </div>
-          <div className="hero-tags">
-            <span className="tag blue">Apache Kafka</span>
-            <span className="tag orange">AWS EventBridge</span>
-            <span className="tag green">Event Sourcing</span>
-            <span className="tag purple">CQRS</span>
-            <span className="tag blue">Saga Pattern</span>
-            <span className="tag green">マイクロサービス</span>
+          <div className="hero-stat">
+            <div className="hero-stat-num">14+</div>
+            <div className="hero-stat-label">アーキテクチャ図</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-num">5+</div>
+            <div className="hero-stat-label">コード例</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-num">30+</div>
+            <div className="hero-stat-label">ベストプラクティス</div>
           </div>
         </div>
-
+        <div className="hero-tags">
+          <span className="tag blue">Apache Kafka</span>
+          <span className="tag orange">AWS EventBridge</span>
+          <span className="tag green">Event Sourcing</span>
+          <span className="tag purple">CQRS</span>
+          <span className="tag blue">Saga Pattern</span>
+          <span className="tag green">マイクロサービス</span>
+        </div>
+      </header>
+      <EdaSidebar groups={NAV_GROUPS} />
+      <main className="main">
         {/* ═══ SECTION 1 ═══ */}
         <section className="section" id="sec-1">
           <div className="sec-header">

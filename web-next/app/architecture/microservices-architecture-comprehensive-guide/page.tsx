@@ -1108,7 +1108,7 @@ export default function Page() {
           </div>
 
           {/*  SECTION 1  */}
-          <section id="s1">
+          <section id="s1" className="section">
             <div className="eye">
               <span className="snum">01</span>
               <span className="stag">Foundation</span>
@@ -1168,7 +1168,7 @@ export default function Page() {
             </div>
 
             <h3>1.2 マイクロサービスの特徴（全体図）</h3>
-            <div className="mermaid-wrap">
+            <div className="mermaid-wrap ms-features-map">
               <MermaidDiagram chart={MERMAID_DATA.dm1} />
               <div className="diagram-caption">図1-1: マイクロサービスの主な特徴</div>
             </div>
@@ -1220,7 +1220,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 2  */}
-          <section id="s2">
+          <section id="s2" className="section">
             <div className="eye">
               <span className="snum">02</span>
               <span className="stag">Comparison</span>
@@ -1344,7 +1344,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 3  */}
-          <section id="s3">
+          <section id="s3" className="section">
             <div className="eye">
               <span className="snum">03</span>
               <span className="stag">Design Principles</span>
@@ -1491,7 +1491,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 4  */}
-          <section id="s4">
+          <section id="s4" className="section">
             <div className="eye">
               <span className="snum">04</span>
               <span className="stag">Service Decomposition</span>
@@ -1559,7 +1559,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 5  */}
-          <section id="s5">
+          <section id="s5" className="section">
             <div className="eye">
               <span className="snum">05</span>
               <span className="stag">Communication</span>
@@ -1628,7 +1628,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 6  */}
-          <section id="s6">
+          <section id="s6" className="section">
             <div className="eye">
               <span className="snum">06</span>
               <span className="stag">API Gateway</span>
@@ -1696,7 +1696,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 7  */}
-          <section id="s7">
+          <section id="s7" className="section">
             <div className="eye">
               <span className="snum">07</span>
               <span className="stag">Service Discovery</span>
@@ -1781,7 +1781,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 8  */}
-          <section id="s8">
+          <section id="s8" className="section">
             <div className="eye">
               <span className="snum">08</span>
               <span className="stag">Data Management</span>
@@ -1878,7 +1878,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 9  */}
-          <section id="s9">
+          <section id="s9" className="section">
             <div className="eye">
               <span className="snum">09</span>
               <span className="stag">Resilience</span>
@@ -1950,7 +1950,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 10  */}
-          <section id="s10">
+          <section id="s10" className="section">
             <div className="eye">
               <span className="snum">10</span>
               <span className="stag">Security</span>
@@ -2013,7 +2013,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 11  */}
-          <section id="s11">
+          <section id="s11" className="section">
             <div className="eye">
               <span className="snum">11</span>
               <span className="stag">CI/CD</span>
@@ -2072,7 +2072,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 12  */}
-          <section id="s12">
+          <section id="s12" className="section">
             <div className="eye">
               <span className="snum">12</span>
               <span className="stag">Containers & K8s</span>
@@ -2129,7 +2129,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 13  */}
-          <section id="s13">
+          <section id="s13" className="section">
             <div className="eye">
               <span className="snum">13</span>
               <span className="stag">Observability</span>
@@ -2275,7 +2275,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 14  */}
-          <section id="s14">
+          <section id="s14" className="section">
             <div className="eye">
               <span className="snum">14</span>
               <span className="stag">Practical Case Study</span>
@@ -2389,7 +2389,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 15  */}
-          <section id="s15">
+          <section id="s15" className="section">
             <div className="eye">
               <span className="snum">15</span>
               <span className="stag">Migration</span>
@@ -2467,7 +2467,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 16  */}
-          <section id="s16">
+          <section id="s16" className="section">
             <div className="eye">
               <span className="snum">16</span>
               <span className="stag">Best Practices</span>
@@ -2585,7 +2585,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 17  */}
-          <section id="s17">
+          <section id="s17" className="section">
             <div className="eye">
               <span className="snum">17</span>
               <span className="stag">Anti-Patterns</span>
@@ -2697,7 +2697,7 @@ export default function Page() {
           </section>
 
           {/*  SECTION 18  */}
-          <section id="s18">
+          <section id="s18" className="section">
             <div className="eye">
               <span className="snum">18</span>
               <span className="stag">References</span>
