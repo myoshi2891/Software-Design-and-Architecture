@@ -564,7 +564,7 @@ const DIRECTORY_TREE = `my_app/
 │       ├── sqlalchemy_order_repo.py  # 本番 DB 実装
 │       └── in_memory_order_repo.py   # テスト用実装
 │
-├── infrastructure/                   # 🔧 Frameworks &amp; Drivers 層
+├── infrastructure/                   # 🔧 Frameworks & Drivers 層
 │   ├── database/
 │   │   ├── models.py                 # SQLAlchemy モデル定義
 │   │   ├── session.py                # DB セッション設定
