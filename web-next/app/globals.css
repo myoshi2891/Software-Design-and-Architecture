@@ -5203,9 +5203,9 @@ body:has(.api-first-design-comprehensive-guide) {
   --text-secondary: #475f7b;
   --text-muted: #576c87;
   --sidebar-w: 290px;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-body: "Inter", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-display: var(--font-noto-sans-jp), "Hiragino Sans", sans-serif;
+  --font-body: var(--font-noto-sans-jp), "Hiragino Sans", sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
   --radius: 12px;
 
   box-sizing: border-box;
@@ -5228,10 +5228,18 @@ body:has(.api-first-design-comprehensive-guide) {
     margin-left: 0;
   }
 
+  ::selection { background: #d8e7ff; color: #203b60; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+  .main { margin-left: var(--sidebar-w); }
+
   .hero {
-    padding: 56px 64px 36px;
+    margin: 32px 24px 0;
+    padding: 40px 36px 32px;
     background: radial-gradient(ellipse at 100% 0, rgba(126, 151, 205, 0.14), transparent 65%), linear-gradient(125deg, #edf4ff, #eaf5f7);
-    border-bottom: 1px solid var(--border);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 12px 40px #203b6008;
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -5249,7 +5257,17 @@ body:has(.api-first-design-comprehensive-guide) {
   }
 
   .hero::after {
-    content: none;
+    content: "";
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    right: -30px;
+    top: -130px;
+    border: 1px solid #7194c330;
+    border-radius: 28px;
+    transform: rotate(30deg);
+    pointer-events: none;
+    z-index: -1;
   }
 
   .hero-badge {
@@ -5317,11 +5335,11 @@ body:has(.api-first-design-comprehensive-guide) {
   }
 
   .content {
-    padding: 0 64px 80px;
+    padding: 0 24px 64px;
   }
 
   .section {
-    padding: 80px 0 56px;
+    padding: 56px 0;
     border-bottom: 1px solid var(--border-light);
   }
 
@@ -5334,10 +5352,8 @@ body:has(.api-first-design-comprehensive-guide) {
     align-items: center;
     gap: 16px;
     margin-bottom: 32px;
-    padding: 24px;
-    background: linear-gradient(110deg, #eaf1fc, #f0f6fb);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    padding: 0 0 22px;
+    border-bottom: 1px solid var(--border);
   }
 
   .section-num {
@@ -5666,6 +5682,8 @@ body:has(.api-first-design-comprehensive-guide) {
 
   .diag-inner {
     padding: 28px 16px 48px;
+    background-image: radial-gradient(#7194c326 1px, transparent 1px);
+    background-size: 20px 20px;
     overflow-x: auto;
     overflow-y: visible;
     -webkit-overflow-scrolling: touch;
@@ -5986,13 +6004,13 @@ body:has(.api-first-design-comprehensive-guide) {
   }
 
   .footer {
-    padding: 48px 64px;
+    padding: 36px 24px;
     border-top: 1px solid var(--border);
     background: var(--bg-sidebar);
   }
 
   .footer-inner {
-    max-width: 900px;
+    max-width: none;
   }
 
   .footer h3 {
@@ -6061,7 +6079,7 @@ body:has(.api-first-design-comprehensive-guide) {
     width: var(--sidebar-w);
     min-width: var(--sidebar-w);
     height: 100vh;
-    position: sticky;
+    position: fixed;
     align-self: flex-start;
     top: 0;
     left: 0;
@@ -6169,7 +6187,7 @@ body.has-common-header .api-first-design-comprehensive-guide section {
     .hero { padding-top: 40px; padding-bottom: 32px; }
     .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px; }
     .stat:nth-child(3) { padding-left: 0; border-left: 0; }
-    .section-header { padding: 20px; gap: 12px; }
+    .section-header { padding: 0 0 20px; gap: 12px; }
     .section-num { width: 34px; height: 34px; }
 
     .comp-grid,
@@ -6182,6 +6200,33 @@ body.has-common-header .api-first-design-comprehensive-guide section {
     .progress-bar {
       left: 0;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  .api-first-design-comprehensive-guide {
+    .hero { margin: 24px 18px 0; padding: 28px 22px; border-radius: 12px; }
+    .content, .footer { padding-inline: 18px; }
+    .section { padding-block: 40px; }
+    .section-title { font-size: 22px; }
+    .hero-badge { font-size: 9px; letter-spacing: 0.04em; padding-inline: 8px; }
+    .hero-subtitle { font-size: 14px; }
+    .stat { padding-left: 16px; }
+    .stat-num { font-size: 28px; }
+    .stat-label { font-size: 11px; }
+    .card, .highlight-box, .comp-card { padding: 20px; }
+    .callout { padding: 18px; gap: 12px; }
+    .code-header { flex-wrap: wrap; padding: 12px 16px; }
+    pre { padding: 18px; }
+    th, td { min-width: 120px; }
+    .source-card { overflow-wrap: anywhere; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .api-first-design-comprehensive-guide {
+    .progress-bar, .sb-nav a, .step-card, .copy-btn { transition: none; }
+    .copy-btn:hover { transform: none; }
   }
 }
 
